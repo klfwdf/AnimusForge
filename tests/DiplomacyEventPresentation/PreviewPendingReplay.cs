@@ -28,7 +28,12 @@ internal static class PreviewPendingReplay
 }
 namespace AnimusForge
 {
-    internal static class DiplomacyEventPopup { internal static bool IsPreparing; }
+    internal static class DiplomacyEventPopup
+    {
+        internal static bool IsPreparing;
+        internal static bool TryShowPreview(DiplomacyEventPresentation data, out string image)
+            => DiplomacyEventPresentationBridge.TryShow(data, out image);
+    }
     internal static class SaveRuntimeGuard
     {
         internal static long Generation = 1;

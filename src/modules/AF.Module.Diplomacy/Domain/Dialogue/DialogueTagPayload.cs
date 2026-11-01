@@ -17,13 +17,19 @@ public sealed class DialogueTagPayload
     public string SupersedesArrangementId { get; private set; }
     public int SupersedesVersion { get; private set; }
     public string RevisionReason { get; private set; }
+    public string Condition { get; private set; }
+    public int SponsorGold { get; private set; }
+    public string SponsorReceipt { get; private set; }
+    public string Continuation { get; private set; }
+    public bool HasLobbyistFields { get; private set; }
     public static bool TryParse(string payload, out DialogueTagPayload result)
     {
         result = null;
         if (string.IsNullOrWhiteSpace(payload) || payload.Length > 1800) return false;
         var fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var allowed = new HashSet<string>(new[] { "action", "move", "target", "source_document", "source_action", "receiving", "joining",
-            "payer", "receiver", "tribute", "days", "cession_from", "cession_to", "settlement", "supersedes", "version", "reason", "event" }, StringComparer.OrdinalIgnoreCase);
+            "payer", "receiver", "tribute", "days", "cession_from", "cession_to", "settlement", "supersedes", "version", "reason", "event",
+            "condition", "sponsor_gold", "sponsor_receipt", "continuation" }, StringComparer.OrdinalIgnoreCase);
         foreach (string part in payload.Split(';'))
         {
             int separator = part.IndexOf('=');
@@ -37,6 +43,12 @@ public sealed class DialogueTagPayload
             || !Enum.TryParse(Get("move"), true, out DialogueDiplomaticMove move) || !Enum.IsDefined(typeof(DialogueDiplomaticMove), move)
             || string.IsNullOrWhiteSpace(Get("target"))) return false;
         int tribute = 0, days = 0;
+        int sponsor = 0;
+        string condition = Get("condition");
+        if (condition != "" && condition != "none" && condition != "player_gold" && condition != "clarify") return false;
+        if (fields.ContainsKey("sponsor_gold") && (!int.TryParse(Get("sponsor_gold"), out sponsor) || sponsor <= 0)) return false;
+        if ((condition == "player_gold") != (sponsor > 0)
+            || (condition != "player_gold" && fields.ContainsKey("sponsor_receipt"))) return false;
         if ((fields.ContainsKey("tribute") && (!int.TryParse(Get("tribute"), out tribute) || tribute < 0))
             || (fields.ContainsKey("days") && (!int.TryParse(Get("days"), out days) || days < 0 || days > 252))) return false;
         if (move == DialogueDiplomaticMove.NewMatter && (!string.IsNullOrEmpty(Get("source_document")) || !string.IsNullOrEmpty(Get("source_action")))) return false;
@@ -46,6 +58,9 @@ public sealed class DialogueTagPayload
             || !int.TryParse(Get("version"), out version) || version <= 0 || version == int.MaxValue
             || string.IsNullOrWhiteSpace(Get("reason")) || Get("reason").Length > 180)) return false;
         result = new DialogueTagPayload { Action = action, Move = move, TargetKingdomId = Get("target"),
+            Condition = condition, SponsorGold = sponsor, SponsorReceipt = Get("sponsor_receipt"), Continuation = Get("continuation"),
+            HasLobbyistFields = fields.ContainsKey("condition") || fields.ContainsKey("sponsor_gold")
+                || fields.ContainsKey("sponsor_receipt") || fields.ContainsKey("continuation"),
             EventRoundId = Get("event"),
             SupersedesArrangementId = Get("supersedes"), SupersedesVersion = version, RevisionReason = Get("reason"),
             SourceDocumentId = Get("source_document"), SourceActionId = Get("source_action"),

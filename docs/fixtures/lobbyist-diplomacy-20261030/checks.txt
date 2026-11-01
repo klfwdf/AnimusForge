@@ -1,0 +1,248 @@
+cn --lobbyist PASS lobbyist assertions=168
+cn --sovereign-control PASS sovereign control assertions=980
+cn --bilateral-direct PASS bilateral direct assertions=194
+cn --speech-review PASS SpeechReviewReplay assertions=741
+cn --oral-declaration Oral AI declaration replay passed: 645 assertions.
+cn --original-oral-vassalage PASS OriginalOralVassalageReplay assertions=343
+en --lobbyist PASS lobbyist assertions=168
+en --sovereign-control PASS sovereign control assertions=980
+en --bilateral-direct PASS bilateral direct assertions=194
+en --speech-review PASS SpeechReviewReplay assertions=741
+en --oral-declaration Oral AI declaration replay passed: 645 assertions.
+en --original-oral-vassalage PASS OriginalOralVassalageReplay assertions=343
+
+An issue was encountered verifying workloads. For more information, run "dotnet workload update".
+PASS true absent namespace is normal new save
+PASS valid old inline remains compatible
+PASS zero count valid inline accepted
+PASS complete real multi-chunk payload accepted
+PASS healthy SyncData snapshot save/load unchanged
+PASS invalid-json {bad json load rejects, not healthy empty
+PASS invalid-json {bad json drops prior memory and resets without normalizing invalid domain
+PASS invalid-json {bad json Save new record map carries quarantine, not empty domain
+PASS invalid-json {bad json safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS invalid-json {bad json safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS invalid-json {bad json safe UTF8 record _af_world_diplomacy_v1
+PASS invalid-json {bad json reload still quarantined
+PASS invalid-json {bad json every original key/value represented across repeated saves
+PASS invalid-json null load rejects, not healthy empty
+PASS invalid-json null drops prior memory and resets without normalizing invalid domain
+PASS invalid-json null Save new record map carries quarantine, not empty domain
+PASS invalid-json null safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS invalid-json null safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS invalid-json null safe UTF8 record _af_world_diplomacy_v1
+PASS invalid-json null reload still quarantined
+PASS invalid-json null every original key/value represented across repeated saves
+PASS invalid-json [] load rejects, not healthy empty
+PASS invalid-json [] drops prior memory and resets without normalizing invalid domain
+PASS invalid-json [] Save new record map carries quarantine, not empty domain
+PASS invalid-json [] safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS invalid-json [] safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS invalid-json [] safe UTF8 record _af_world_diplomacy_v1
+PASS invalid-json [] reload still quarantined
+PASS invalid-json [] every original key/value represented across repeated saves
+PASS invalid-json 17 load rejects, not healthy empty
+PASS invalid-json 17 drops prior memory and resets without normalizing invalid domain
+PASS invalid-json 17 Save new record map carries quarantine, not empty domain
+PASS invalid-json 17 safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS invalid-json 17 safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS invalid-json 17 safe UTF8 record _af_world_diplomacy_v1
+PASS invalid-json 17 reload still quarantined
+PASS invalid-json 17 every original key/value represented across repeated saves
+PASS invalid-json {}{} load rejects, not healthy empty
+PASS invalid-json {}{} drops prior memory and resets without normalizing invalid domain
+PASS invalid-json {}{} Save new record map carries quarantine, not empty domain
+PASS invalid-json {}{} safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS invalid-json {}{} safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS invalid-json {}{} safe UTF8 record _af_world_diplomacy_v1
+PASS invalid-json {}{} reload still quarantined
+PASS invalid-json {}{} every original key/value represented across repeated saves
+PASS invalid-json   load rejects, not healthy empty
+PASS invalid-json   drops prior memory and resets without normalizing invalid domain
+PASS invalid-json   Save new record map carries quarantine, not empty domain
+PASS invalid-json   safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS invalid-json   safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS invalid-json   safe UTF8 record _af_world_diplomacy_v1
+PASS invalid-json   reload still quarantined
+PASS invalid-json   every original key/value represented across repeated saves
+PASS invalid-json  load rejects, not healthy empty
+PASS invalid-json  drops prior memory and resets without normalizing invalid domain
+PASS invalid-json  Save new record map carries quarantine, not empty domain
+PASS invalid-json  safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS invalid-json  safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS invalid-json  safe UTF8 record _af_world_diplomacy_v1
+PASS invalid-json  reload still quarantined
+PASS invalid-json  every original key/value represented across repeated saves
+PASS missing-chunk load rejects, not healthy empty
+PASS missing-chunk drops prior memory and resets without normalizing invalid domain
+PASS missing-chunk Save new record map carries quarantine, not empty domain
+PASS missing-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS missing-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_1
+PASS missing-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_2
+PASS missing-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS missing-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_1
+PASS missing-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_2
+PASS missing-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_3
+PASS missing-chunk safe UTF8 record _af_world_diplomacy_v1
+PASS missing-chunk reload still quarantined
+PASS missing-chunk every original key/value represented across repeated saves
+PASS positive-manifest no-inline-fallback load rejects, not healthy empty
+PASS positive-manifest no-inline-fallback drops prior memory and resets without normalizing invalid domain
+PASS positive-manifest no-inline-fallback Save new record map carries quarantine, not empty domain
+PASS positive-manifest no-inline-fallback safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS positive-manifest no-inline-fallback safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_1
+PASS positive-manifest no-inline-fallback safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_2
+PASS positive-manifest no-inline-fallback safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS positive-manifest no-inline-fallback safe UTF8 record _af_world_diplomacy_v1__af_chunk_1
+PASS positive-manifest no-inline-fallback safe UTF8 record _af_world_diplomacy_v1__af_chunk_2
+PASS positive-manifest no-inline-fallback safe UTF8 record _af_world_diplomacy_v1__af_chunk_3
+PASS positive-manifest no-inline-fallback safe UTF8 record _af_world_diplomacy_v1
+PASS positive-manifest no-inline-fallback reload still quarantined
+PASS positive-manifest no-inline-fallback every original key/value represented across repeated saves
+PASS null-empty-wrong-chunk load rejects, not healthy empty
+PASS null-empty-wrong-chunk drops prior memory and resets without normalizing invalid domain
+PASS null-empty-wrong-chunk Save new record map carries quarantine, not empty domain
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_1
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_2
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_1
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_2
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_3
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1
+PASS null-empty-wrong-chunk reload still quarantined
+PASS null-empty-wrong-chunk every original key/value represented across repeated saves
+PASS null-empty-wrong-chunk load rejects, not healthy empty
+PASS null-empty-wrong-chunk drops prior memory and resets without normalizing invalid domain
+PASS null-empty-wrong-chunk Save new record map carries quarantine, not empty domain
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_1
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_2
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_0
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_1
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_2
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_3
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1
+PASS null-empty-wrong-chunk reload still quarantined
+PASS null-empty-wrong-chunk every original key/value represented across repeated saves
+PASS null-empty-wrong-chunk load rejects, not healthy empty
+PASS null-empty-wrong-chunk drops prior memory and resets without normalizing invalid domain
+PASS null-empty-wrong-chunk Save new record map carries quarantine, not empty domain
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_1
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_2
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_1
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_2
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_3
+PASS null-empty-wrong-chunk safe UTF8 record _af_world_diplomacy_v1
+PASS null-empty-wrong-chunk reload still quarantined
+PASS null-empty-wrong-chunk every original key/value represented across repeated saves
+PASS invalid-manifest load rejects, not healthy empty
+PASS invalid-manifest drops prior memory and resets without normalizing invalid domain
+PASS invalid-manifest Save new record map carries quarantine, not empty domain
+PASS invalid-manifest safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS invalid-manifest safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS invalid-manifest safe UTF8 record _af_world_diplomacy_v1
+PASS invalid-manifest reload still quarantined
+PASS invalid-manifest every original key/value represented across repeated saves
+PASS invalid-manifest load rejects, not healthy empty
+PASS invalid-manifest drops prior memory and resets without normalizing invalid domain
+PASS invalid-manifest Save new record map carries quarantine, not empty domain
+PASS invalid-manifest safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS invalid-manifest safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS invalid-manifest safe UTF8 record _af_world_diplomacy_v1
+PASS invalid-manifest reload still quarantined
+PASS invalid-manifest every original key/value represented across repeated saves
+PASS invalid-manifest load rejects, not healthy empty
+PASS invalid-manifest drops prior memory and resets without normalizing invalid domain
+PASS invalid-manifest Save new record map carries quarantine, not empty domain
+PASS invalid-manifest safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS invalid-manifest safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS invalid-manifest safe UTF8 record _af_world_diplomacy_v1__af_chunk_count
+PASS invalid-manifest safe UTF8 record _af_world_diplomacy_v1
+PASS invalid-manifest reload still quarantined
+PASS invalid-manifest every original key/value represented across repeated saves
+PASS orphan-chunk load rejects, not healthy empty
+PASS orphan-chunk drops prior memory and resets without normalizing invalid domain
+PASS orphan-chunk Save new record map carries quarantine, not empty domain
+PASS orphan-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS orphan-chunk safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS orphan-chunk safe UTF8 record _af_world_diplomacy_v1__af_chunk_1
+PASS orphan-chunk reload still quarantined
+PASS orphan-chunk every original key/value represented across repeated saves
+PASS declared-empty load rejects, not healthy empty
+PASS declared-empty drops prior memory and resets without normalizing invalid domain
+PASS declared-empty Save new record map carries quarantine, not empty domain
+PASS declared-empty safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS declared-empty safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS declared-empty safe UTF8 record _af_world_diplomacy_v1
+PASS declared-empty reload still quarantined
+PASS declared-empty every original key/value represented across repeated saves
+PASS oversized orphan key load rejects, not healthy empty
+PASS oversized orphan key drops prior memory and resets without normalizing invalid domain
+PASS oversized orphan key Save new record map carries quarantine, not empty domain
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_1
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_2
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_3
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_4
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_5
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_6
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_v1__af_chunk_0
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_v1__af_chunk_1
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_v1__af_chunk_2
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_v1__af_chunk_3
+PASS oversized orphan key safe UTF8 record _af_world_diplomacy_v1
+PASS oversized orphan key reload still quarantined
+PASS oversized orphan key every original key/value represented across repeated saves
+PASS overlimit original key is archived and never replayed as unsafe .sav string
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS all new save keys UTF8 bounded
+PASS full oversized original key retained in safe envelope without truncation
+PASS oversized rejected scalar load rejects, not healthy empty
+PASS oversized rejected scalar drops prior memory and resets without normalizing invalid domain
+PASS oversized rejected scalar Save new record map carries quarantine, not empty domain
+PASS oversized rejected scalar safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_0
+PASS oversized rejected scalar safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_1
+PASS oversized rejected scalar safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_2
+PASS oversized rejected scalar safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_3
+PASS oversized rejected scalar safe UTF8 record _af_world_diplomacy_quarantine_v1__af_chunk_4
+PASS oversized rejected scalar safe UTF8 record _af_world_diplomacy_quarantine_v1
+PASS oversized rejected scalar reload still quarantined
+PASS oversized rejected scalar every original key/value represented across repeated saves
+PASS oversized original inline is archived, never rewritten as unsafe scalar
+PASS oversized original content preserved exactly inside safe chunks
+PASS read fault unavailable
+PASS incomplete raw evidence refuses save
+PASS read fault unavailable
+PASS incomplete raw evidence refuses save
+PASS unknown native record map refuses save
+PASS healthy strict write fault propagates
+PASS healthy strict write fault propagates
+PASS quarantine write rejected, no fake successful save
+PASS new game clears only own quarantine
+PASS later complete valid Load clears own quarantine
+PASS another campaign adapter cannot inherit invalid evidence
+PASS strict diplomacy checks=227; full actual helper/adapter/store + actual SyncData, synthetic native record/DTO/runtime leaves; live sav/save error UI NOT-RUN
+
+PASS integrity: old-inline/old-chunks/new-checksum/null/missing/corrupt/failed-write/native-add-only
+PASS civilWarChunkRegression roundTripCases=11 hostWiring=1 coupKeys=4 courierKeys=1 negativeWiring=2 incidentBytes=33365 incidentChunks=3 utf8Limit=12000 legacyReadAndResave=1 staleTail=2 missingChunk=1
+PASS persistenceChunkReplay smallInline=1 utf8Boundary=1 missingChunk=1 oversizeCount=1 legacyFallback=1 dictionaryRoundTrip=1 corruptDictionary=1 safeSyncIsolation=1
+
+{"chunkMaxBytes": 12000, "chunkedStringKeys": 22, "flattenedDictionaryKeys": 47, "knownOpenDirectJsonRisks": 0, "scope": "current-chunk-contract-only", "status": "PASS"}

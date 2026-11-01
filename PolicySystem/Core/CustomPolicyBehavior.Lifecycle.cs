@@ -3577,10 +3577,11 @@ public sealed partial class CustomPolicyBehavior
 		}
 	}
 
-	private List<DynamicPolicySaveData> LoadDynamicPolicies()
+	private List<DynamicPolicySaveData> LoadDynamicPolicies(ISet<string> recordIds = null)
 	{
 		return _dynamicPolicyRegistry
 			.Where(item => !_quarantinedDynamicPolicyIds.Contains(item.Key))
+            .Where(item => PolicyMaterialRecordFilter.HasRecord(item.Value, recordIds))
 			.Select(item => item.Value)
 			.Select(raw =>
 		{

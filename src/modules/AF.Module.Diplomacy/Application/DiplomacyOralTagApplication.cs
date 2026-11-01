@@ -25,6 +25,11 @@ internal interface IDiplomacySubjectReleaseTagSource
     string ReleaseSubject(string payload);
 }
 
+internal interface IDiplomacyBilateralTagSource
+{
+    bool TryProcessBilateral(string action, string payload);
+}
+
 internal static class DiplomacyOralTagApplication
 {
     private static readonly Regex TagRegex = new Regex(
@@ -36,8 +41,19 @@ internal static class DiplomacyOralTagApplication
     internal static void Process<TSource>(TSource source, ref string responseText, List<string> receipts = null)
         where TSource : struct, IDiplomacyOralTagSource
     {
-        bool reviewing = source.HasSpeaker && source.IsAvailable && source is IDiplomacyCommitmentReviewSource review
-            && review.CaptureCommitmentReview(responseText);
+        bool reviewing = false;
+        try
+        {
+            reviewing = source.HasSpeaker && source.IsAvailable && source is IDiplomacyCommitmentReviewSource review
+                && review.CaptureCommitmentReview(responseText);
+        }
+        catch (Exception ex)
+        {
+            // Isolate the retained complex review owner; its failure must not
+            // suppress independent lobbyist/direct items or enable its fallback.
+            reviewing = true;
+            source.Log("[SpeechReview] capture error=" + ex.GetType().Name);
+        }
         if (string.IsNullOrEmpty(responseText) || responseText.IndexOf("DIPLOMACY", StringComparison.OrdinalIgnoreCase) < 0) return;
         if (!source.HasSpeaker || !source.IsAvailable)
         {
@@ -48,15 +64,35 @@ internal static class DiplomacyOralTagApplication
 
         responseText = TagRegex.Replace(responseText, match =>
         {
-            // The review owns NPC promises. Immediate player actions still pass
+            // The review owns remaining complex self-country matters. Immediate actions pass
             // through their existing authority/consent checks in the executor.
             string action = match.Groups[1].Value;
+            // Country-based ownership and lossless format normalization precede
+            // suppression by the retained complex-matter review.
+            if (source is IDiplomacyLobbyistTagSource lobbyist)
+            {
+                try { if (lobbyist.TryProcessLobbyist(action, match.Groups[2].Value)) return ""; }
+                catch (Exception ex)
+                { source.Log("[Lobbyist] action=" + action + " error=" + ex.GetType().Name); return ""; }
+            }
+            if (source is IDiplomacyBilateralTagSource bilateral)
+            {
+                try { if (bilateral.TryProcessBilateral(action, match.Groups[2].Value)) return ""; }
+                catch (Exception ex)
+                {
+                    // An effect may already have a durable receipt. Never fall
+                    // through to another executor or abandon remaining tags.
+                    source.Log("[Bilateral] action=" + action + " error=" + ex.GetType().Name);
+                    return "";
+                }
+            }
             bool immediate = string.Equals(action, "RELEASE_SUBJECT", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(action, "INDEPENDENT_CLAN_PEACE", StringComparison.OrdinalIgnoreCase)
                 || (string.Equals(action, "DECLARE_WAR", StringComparison.OrdinalIgnoreCase)
                     && source is IDiplomacyCommitmentTagSource actor
                     && !string.Equals(match.Groups[2].Value.Split(':')[0].Trim(), actor.SpeakerKingdomId, StringComparison.OrdinalIgnoreCase));
-            if (reviewing && !immediate) return "";
+            if (reviewing && !immediate)
+            { source.Log("[Dispatch] not executed by immediate owners; retained review boundary action=" + action); return ""; }
             string status = ProcessSingle(source, match.Groups[1].Value, match.Groups[2].Value);
             if (!string.IsNullOrWhiteSpace(status)) source.Log("[Outcome] " + status);
             // All modes keep outcomes in diagnostics/owned facts and notifications.

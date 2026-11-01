@@ -93,6 +93,22 @@ internal static class Program
     private static int Main(string[] args)
     {
         SmokeLocalizationEnvironment.Initialize();
+        if (args.Contains("--country-routing")) { CountryRoutingReplay.Run(); Console.WriteLine("PASS country routing assertions=" + Test.Assertions); return 0; }
+        if (args.Contains("--lobbyist")) { LobbyistReplay.FullRun(); Console.WriteLine("PASS lobbyist assertions=" + Test.Assertions); return 0; }
+        if (args.Contains("--bilateral-direct"))
+        { try { BilateralReplay.Run(); Console.WriteLine("PASS bilateral direct assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--acceptance-terms-repair"))
+        { AcceptanceTermsRepairReplay.Run(); Console.WriteLine("PASS acceptance terms repair assertions=" + Test.Assertions); return 0; }
+        if (args.Contains("--runtime-maintenance"))
+        { try { RuntimeMaintenanceReplay.Run(); Console.WriteLine("PASS runtime maintenance assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--token-log"))
+        { try { TokenLogProjectionReplay.Run(args[Array.IndexOf(args, "--token-log") + 1]); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--token-optimization"))
+        { try { MaterialCountryThirdReplay.TokenOptimization(); Console.WriteLine("PASS token optimization assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--sovereign-control"))
+        { try { SovereignControlReplay.Run(); Console.WriteLine("PASS sovereign control assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--sovereign-regression"))
+        { try { SpeechReviewReplay.Run(); MaterialRecoveryReplay.Run(); CountryAdmissionReplay.Run(); Console.WriteLine("PASS sovereign regression assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--worldbook-repair"))
         { try { MaterialCountryThirdReplay.WorldBookWaitEnding(); Console.WriteLine("PASS worldbook repair assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--diplomacy-stall-repair"))
@@ -370,6 +386,8 @@ internal static class Program
             Console.WriteLine($"R1 generation task replay passed: {Test.Assertions} assertions.");
             return 0;
         }
+        AcceptanceTermsRepairReplay.Run();
+        MaterialCountryThirdReplay.TokenOptimization();
         MaterialSupplyReplay.StructureObservation();
         OralDeclarationReplay.Run();
         MaterialSupplyReplay.StructureSelection();

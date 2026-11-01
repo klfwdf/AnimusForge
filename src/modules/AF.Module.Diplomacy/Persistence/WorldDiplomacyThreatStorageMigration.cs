@@ -80,6 +80,12 @@ public static class WorldDiplomacyThreatStorageMigration
         }
     }
 
+    MaintainOpenThreats(storage, validateOpenThreatWorld, currentDay);
+    }
+
+    public static void MaintainOpenThreats(WorldDiplomacyStorage storage,
+        Func<WorldDiplomacyThreat, string> validateOpenThreatWorld, int currentDay)
+    {
     if (validateOpenThreatWorld != null)
     {
         foreach (WorldDiplomacyThreat threat in storage.DiplomaticThreats.Where(x => x != null && WorldDiplomacyRoundLifecycleRules.IsOpenDiplomaticThreatStatus(x.Status)))

@@ -25,6 +25,7 @@ internal static class WorldDiplomacyCampaignApplication
 			return;
 		}
 		source.DisabledStateApplied = false;
+		if (orchestration is WorldDiplomacyOrchestration owner) WorldDiplomacyMemoryApplication.Warm(owner.CurrentStorage);
 		if (!source.NativeQueueSanitized)
 		{
 			source.RemoveQueuedNativeDiplomacyDecisions();
@@ -35,9 +36,7 @@ internal static class WorldDiplomacyCampaignApplication
 		{
 			source.LastSchedulerDay = day;
             orchestration.RefreshRoundIntervalScheduleIfNeeded();
-			orchestration.RefreshPolicyDiplomacySignals();
 			orchestration.ProcessRoundLifecycle();
-			orchestration.TrySchedulePolicyTriggeredRound();
 			orchestration.TryScheduleNormalRound();
 		}
 	}
@@ -47,7 +46,7 @@ internal static class WorldDiplomacyCampaignApplication
 	{
 		if (orchestration == null) return;
 		using var dailyScope = FreezeWatchdog.Scope("WorldDiplomacy.DailyTick");
-		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.NormalizeStorage")) orchestration.NormalizeStorage(allowWorldValidation: true);
+		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.MaintainStorage")) orchestration.MaintainDailyStorage();
 		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RetryDeferredCanonicalHistoryEntries")) orchestration.RetryDeferredCanonicalHistoryEntries();
         using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.MaintainDialogueAndMemory")) (orchestration as WorldDiplomacyOrchestration)?.MaintainDialogueAndMemory();
 		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RetryDiplomaticThreatComplianceConsequences")) orchestration.RetryDiplomaticThreatComplianceConsequences();
@@ -69,13 +68,11 @@ internal static class WorldDiplomacyCampaignApplication
 		source.NativeQueueSanitized = true;
 		(orchestration as WorldDiplomacyOrchestration)?.ReconcileHiddenPrestige();
 		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.DecayWarPressure")) orchestration.DecayWarPressure();
-		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RefreshPolicyDiplomacySignals")) orchestration.RefreshPolicyDiplomacySignals();
 		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RetryDeferredDocumentPropagation")) orchestration.RetryDeferredDocumentPropagation();
 		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.ProcessPropagationArrivals")) orchestration.ProcessPropagationArrivals();
 		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.RetryDeferredRoundProgress")) orchestration.RetryDeferredRoundProgress();
 		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.ProcessRoundLifecycle")) orchestration.ProcessRoundLifecycle();
 		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.TryScheduleTokenCompression")) orchestration.TryScheduleTokenCompression();
-		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.TrySchedulePolicyTriggeredRound")) orchestration.TrySchedulePolicyTriggeredRound();
 		using (FreezeWatchdog.Scope("WorldDiplomacy.DailyTick.TryScheduleNormalRound")) orchestration.TryScheduleNormalRound();
 	}
 }

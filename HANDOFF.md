@@ -1,3 +1,14 @@
+# 合并远端 origin/main（2026-11-01）
+
+用户要求“拉取远端并合并”，冲突逐项确认后执行：
+- 远端 50 个提交（外交按国家分流、说客登记提示、双边君主直接执行、外交受理与恢复、地图外交弹窗等）整体并入；远端独有的 115 个文件逐字节取远端。
+- 代码与文本冲突取本地：`OpenAiTtsVoiceCatalog.cs`、`TtsEngine.cs`、TTS 回归 `Harness.cs.txt`/`run.py`、`NpcPersonaGenerationApplicationAdapter.cs`、`afllm_ui_strings` 与 `af_ui_strings` 中英。远端这些版本本地 `4d3865cd86` 已逐字节收入，本地之后继续改进，远端新增/改写的字符串行本地均已有。
+- 文档冲突两边都留（本地条目在上）：`HANDOFF.md`、主台账、`af-framework-code-scope.md`，逐行核对两边无缺失。
+- 自动合并后 `KingdomCivilWarTexts.cs` 出现两份相同的 `Date(int)`（两边各自加过同一方法），保留一份，结果与本地版本一致。
+
+验证：合并树 1.3/1.4 Release 0 错误；终端设置 1.3 PASS 1174、1.4 PASS 1230；外交 smoke 回放通过；外交弹窗生命周期 PASS 261；TTS 回归 103 PASS / 1 FAIL（`/audio/voices 404 → /v1/models` 回退一项，合并前本地 HEAD 同样失败，非合并引入）。未部署、未推送、未实机。
+备份：stash `backup before origin merge 2026-11-01`（237b49cae3）与 `.tmp/merge-20261101/*.patch`。回滚：`git reset --soft <合并前 HEAD fb138b0ca3>` 后按备份恢复，或 `git revert -m 1 <合并提交>`。
+
 # 大地图扎营：营地自定义刑场与完整处决仪式（2026-11-01）
 
 用户确认：营地处决要和城镇一样（按 B 开刑场编辑器、完整仪式）；营地去掉城镇后果；营地士兵围观。
@@ -451,6 +462,103 @@
 - 原日志确认详情8次、召开12次空引用；首发早于外交复议，不能认定外交对象缺失。57caba7f7增加失败阶段、议程身份和完整堆栈，纠正请求界面被误记为打开成功；未改变投票规则。双API/Bootstrap、既有注册检查与议程专项5项通过；未复现玩家存档、未确认根因、未部署或打包/push。[唯一台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#agenda-vote-failure-20261029)、[源码范围](docs/architecture/af-framework-code-scope.md#agenda-vote-failure-20261029)。诊断候选artifacts/agenda-vote-failure-20261029/candidate/；下一步需玩家对应版本复现后的新堆栈。此诊断不是无法召开问题的修复验收。
 
 ---
+<a id="merge-push-20261031"></a>
+## 2026-10-31 远端语音改动与本地外交改动已合并推送
+
+按用户确认，正常合并远端 `134365229` 与本地 `cdc855d40`，检查点 `99622baf6`，合并产品 `fb9d38d15` 已普通推送并经远端回读确认。唯一交叉文件保留远端音色入口及本地外交弹窗按键保护；远端其他改动与本地外交改动逐文件核对未丢失。
+
+**PUSH_VERIFIED / OFFLINE_VERIFIED / LIVE_NOT_RUN**。双 API、Bootstrap、seam/注册通过；CN/EN 外交各 3552、TTS 104、弹窗 261、原生会话退出 21 项通过。一项远端既有静态检查格式失配保留并单独核对真实回调。原 8 份未提交资料保留且未上传；本次未部署或打包。[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merge-push-20261031)与[代码范围](docs/architecture/af-framework-code-scope.md#merge-push-20261031)记录完整边界。此条仅替代已纳入历史的未推送状态，不更改历史实机/安装结论。
+
+<a id="diplomacy-country-routing-deployed-20261031"></a>
+## 2026-10-31 国家分流与说客提示已部署
+
+用户明确“部署”后，使用原脚本将产品 `b7cf2db8b` 覆盖到 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，CN 内容包。安装 DLL、分流规则和双语 UI 已核对；4825 个清单项、39 份受保护配置/提示词和 418 个清单外文件校验通过。
+
+**DEPLOYED_VERIFIED / LIVE_NOT_RUN / NO_PACKAGE_NO_PUSH**。本条替代下方该修复的未部署状态，回归及实机限制保留。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-country-routing-deployed-20261031)。
+
+<a id="diplomacy-country-routing-20261031"></a>
+## 2026-10-31 外交按国家分流与说客登记提示已本地完成
+
+产品 `b7cf2db8b`，检查点 `787aff7dd`。等价外交标签按当前 NPC 国和玩家统治国分流；第三国事项进入同一说客承诺/事件/发文链路，玩家直接外交复用原执行 owner。只有登记成功才经原左下角消息显示君主、国家、承诺事项，重复格式及读档不重复通知；CN/EN 同步。
+
+**OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN / NOT_PUSHED**。CN/EN 七组定向回归各 3,552 项与双 API/Bootstrap/managed gates 通过；实际失败宣战标签已在受控回放完成登记→发文→单方执行。原有未提交文档保留，未改赞助机制。[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-country-routing-20261031)与[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-country-routing-20261031)记录证据和限制。本条替代此前“说客 COMMIT 是唯一可识别语法”的交付约定；执行与存档 owner 不变，之前部署仍是旧产品。
+
+<a id="lobbyist-diplomacy-deployed-20261030"></a>
+## 2026-10-30 说客外交已部署
+
+用户明确“部署”授权后，已通过原部署脚本将已独立验收的 `c6d2b69d8` 产品覆盖到 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`（CN 内容包）。更新 10 个文件，双 API/Bootstrap 安装哈希与验收产物一致；4,825 个清单项目、39 个受保护配置/提示词及 418 个清单外文件元数据复核通过。
+
+此记录将下方说客交付状态更新为 **DEPLOYED_VERIFIED / LIVE_NOT_RUN**。未打包或推送。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#lobbyist-diplomacy-deployed-20261030)，代码范围及原有验证限制不变。
+
+<a id="lobbyist-diplomacy-20261030"></a>
+## 2026-10-30 说客外交确定登记交付
+
+产品 `5ddc8a0b5` + 最终修正 `c6d2b69d8`（意图检查点 `61750a208`）：说客 COMMIT 逐项校验后复用固定事件/发文/目标答复/执行；真实付款及跨轮 pending、旧复核退出、CN/EN 接线已完成。原直接外交、AI-off、特殊臣属及复杂本国责任保留。
+
+**LOCAL_VERIFIED / LIVE_NOT_RUN**。双 API、Bootstrap、两实现 managed gates、CN/EN 六组定向回归和分块验证通过；两个外围 smoke 在改动前检查点同样失败，未扩大修复。未实机、部署、打包或 push。
+
+**独立验收已通过（2026-10-30，LOCAL_ONLY）**：CN/EN 各重新编译 333 个源码/测试文件，六组回归全通过，源码与三个交付 DLL 哈希匹配，未发现未修复的本次范围内新增问题。[独立审查](docs/fixtures/lobbyist-diplomacy-20261030/supervisor-review.json)及[回放记录](docs/fixtures/lobbyist-diplomacy-20261030/supervisor-replays.txt)已保存；实机等未验边界不变。
+
+完整状态、测试与限制：[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#lobbyist-diplomacy-20261030)；[已核对代码图](docs/architecture/af-framework-code-scope.md#lobbyist-diplomacy-20261030)。开工前未提交文档保持未提交；不要把该交付记录视为推送授权。
+
+<a id="diplomacy-acceptance-deployed-20261030"></a>
+## 停战/贸易修复已部署 — 2026-10-30
+
+用户明确“部署”授权后，按现有统一脚本将main/bfd1239d3（产品8e7f48b46，含此前地图菜单/百科通知修复49087e5e4）覆盖到 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。双API/Bootstrap/seam/注册与干净Stage校验通过，更新10个文件；独立核对410个非保留例外文件及39个原配置/自定义文件通过，实际游戏/实际旧档仍NOT_RUN，未打包或推送。
+
+本段将下方停战修复及地图覆盖层通知记录的部署状态更新为 **DEPLOYED**，不改变它们原有验收限制。旧Stage因保留旧规则资源被前置校验拒绝，完整移存到本次本地证据目录后重新生成；未更改脚本或绕过门禁。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-acceptance-deployed-20261030)，代码范围仍见[本次修复](docs/architecture/af-framework-code-scope.md#diplomacy-acceptance-repair-20261030)。
+
+<a id="diplomacy-acceptance-repair-20261030"></a>
+## 停战/贸易接受与旧拒稿恢复 — 2026-10-30
+
+产品 `8e7f48b46`，检查点 `4fe263734`。按用户“那就一起修吧”授权，修复无附加停战条款的空表示比较、贸易接受省略条款与显式改动的区分、CN/EN付款方向代称识别，并对可证明未执行的旧接受拒稿按原来源排队恢复一次。恢复不在读档时执行外交或发布文书；不扩张最后通牒/玩家沉默规则。**OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**。
+
+中文全量15466项、本次CN/EN专项各77项、口头外交CN/EN各644项、双API/Bootstrap/seam/注册与存档分块通过。英文全量仍在事件素材快照断言失败，修改前源码及资源独立回放复现同点；不宣称英文全量通过。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-acceptance-repair-20261030)及[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-acceptance-repair-20261030)。保留原有其他工作和部署状态；这次未覆盖游戏。
+
+<a id="event-map-overlays-20261030"></a>
+## 地图菜单与百科允许事件通知 — 2026-10-30
+
+产品49087e5e4，检查点77d17852e。城镇/城堡/村庄等待、百科及地图管理面板不再因菜单、暂停或焦点被排除；对话、三维场景和独立页面仍暂缓。事件Esc保留父界面，百科热键在事件期间暂停；新对话接管时不再抢回旧菜单焦点。261项事件、586项展示与146项输入回归及双API/Bootstrap/seam通过。**OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#event-map-overlays-20261030)和[代码范围](docs/architecture/af-framework-code-scope.md#event-map-overlays-20261030)；现有部署仍为此前版本。
+
+<a id="deploy-all-local-20261029"></a>
+## 全部本地产品改动已部署 — 2026-10-29
+
+用户明确要求“部署所有本地改动”。从当前工作区 `main@1e6ccf7ca` 完整重建并通过原脚本安装，包含通牒回复修复、外交运行/token 优化及最终薄款按钮。**DEPLOYED / FILE_VERIFIED / LIVE_NOT_RUN / NOT_PUSHED**：双 API/Bootstrap/seam/registration 与 Stage 成功；更新 35 个文件，410 个受管文件校验通过，4,450 个玩家文件内容保持一致。本条替代相关产品条目的未部署状态，实机与既有专项测试限制仍保留。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-all-local-20261029)及[代码范围](docs/architecture/af-framework-code-scope.md#deploy-all-local-20261029)。
+
+<a id="diplomacy-entry-slim-20261029"></a>
+## 外交宣言薄款按钮已部署 — 2026-10-29
+
+用户确认最后一版预览；产品a176510db，检查点0f416a8b1。宣言按钮250×30，比原生提议227×30略宽；上间距18、下间距4，靠近总兵力，中英文22/20字体，权限与悬停行为保持。隔离已提交源码加本次两文件构建，排除工作区其他未完成修改；双API/Bootstrap/seam及每API267项通过。**DEPLOYED / FILE_VERIFIED / LIVE_NOT_RUN**：原脚本安装及410受管文件核对成功，4450玩家文件内容与部署前一致。已解决前次部署中断，替代 diplomacy-entry-position-20261028 的待安装状态。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-entry-slim-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-entry-slim-20261029)。
+
+<a id="player-ultimatum-reply-repair-20261029"></a>
+## 玩家回复最后通牒后卡收尾已本地修复 — 2026-10-29
+
+产品 `421aad45e`，检查点 `d577f21b7`。对应通牒的发言先算回复，再判断服从；晚归案与确切旧回答补齐通牒状态，保留原沉默/服从/NPC 后续决定及幂等。CN 全套 15,389 项、CN/EN 相关专项各 844 项、双 API/Bootstrap/seam/registration 与分块检查通过；EN 全套及两项旧专项有修前同点失败，详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-ultimatum-reply-repair-20261029)和[代码证据图](docs/architecture/af-framework-code-scope.md#player-ultimatum-reply-repair-20261029)。**SCOPED_OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**；未操作玩家存档，保留其他会话改动。
+
+<a id="diplomacy-token-optimization-20261029"></a>
+## 外交 token 优化已本地完成，尚未部署 — 2026-10-29
+
+产品提交 `4a0f405bd`，检查点 `faf42ac9e`。紧凑世界请求、审核上下文去重、网络失败有效草稿/隔离复用、阻止相同条件反复补满审核重试额度已接入。CN 完整回放 15,363 项、CN/EN 专项各 72 项与双 API/Bootstrap 构建通过；EN 全套一项材料快照断言在改动前也同点失败，未声称全套通过。实机/付费模型未运行，不作为本次门禁；未部署、未推送，后续授权覆盖后由用户正常游玩再查实际用量。完整证据、收益边界、旧失败与其他方案交界见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-token-optimization-20261029)与[代码证据图](docs/architecture/af-framework-code-scope.md#diplomacy-token-optimization-20261029)。下方其他任务的设计状态和未提交修改保留。
+
+<a id="oral-sovereign-deploy-20261029"></a>
+## 口头外交修复已部署 — 2026-10-29
+
+用户授权部署，源码e1aba41bc，含外交控制权修复cf963f440及大地图弹窗修复967fd59cc。原一键流程重新构建双API、Bootstrap并通过seam/注册检查后，部署至`E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。19个文件更新，410个受管理文件与Stage哈希一致，32个自定义文件未变。**DEPLOY_VERIFIED / LIVE_NOT_RUN**；未启动游戏。本条替代上述修复的NOT_DEPLOYED状态，推送状态沿用前条；本次交付记录仅本地提交。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-sovereign-deploy-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#oral-sovereign-control-20261029)。
+
+<a id="oral-sovereign-push-20261029"></a>
+## 口头外交修复已推送 — 2026-10-29
+
+用户明确授权后，普通推送origin/main至e68aa14b5并回读确认。包含口头外交控制权修复cf963f440、先前大地图弹窗修复967fd59cc及各自验证记录；正常合并远端8d3619f88，未重写历史。合并后双API、Bootstrap、seam及注册smoke通过，原有未提交资料未上传。**PUSH_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。本条取代上述修复的NOT_PUSHED状态；详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-sovereign-push-20261029)及[代码范围](docs/architecture/af-framework-code-scope.md#oral-sovereign-control-20261029)。
+
+<a id="oral-sovereign-control-20261029"></a>
+## 口头外交区分所属国与掌权国 — 2026-10-29
+
+产品cf963f440，检查点2d2876229。各身份玩家均可劝说本国/外国NPC君主；生成与审核明确NPC掌权、保留承诺，精确旧空立场挂起记录获一次有限重试。宣战单方执行，结盟/贸易保留双方君主同意及无需玩家重复接受的规则。CN/EN各1086专项与6092原有回归通过，最终双API/Bootstrap/seam通过；英文预算回归已修正。**OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-sovereign-control-20261029)和[代码范围](docs/architecture/af-framework-code-scope.md#oral-sovereign-control-20261029)。未处理回应另开事件，待实机验证；此前未提交资料保留。
+
+<a id="diplomacy-event-map-only-20261029"></a>
+## 外交事件通知限制大地图并修复退出 — 2026-10-29
+
+产品967fd59cc，检查点9576aa700。自动事件通知仅在空闲大地图出现；对话、场景、菜单与其他窗口期间保留未读，显示后被打断则收起待重试。Esc/知晓均可确认关闭，焦点变化不再搁置已收到的关闭请求；终端手动预览保留。旧版对话拦截回归复现失败；修复后112项生命周期与586项既有展示/资源检查通过，最终双API/Bootstrap/seam通过。**OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-event-map-only-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-event-map-only-20261029)。
 
 <a id="vassal-diplomacy-buttons-20261029"></a>
 ## 封臣原版外交按钮已对齐 — 2026-10-29
@@ -3890,3 +3998,12 @@ Apolytea同意命令自己的队伍巡逻 Diathma 三天；provider真实输出 
 - 按用户追加要求，最终字符/token/输出预留目标仅诊断，不再旁路或重置缓存；保留当日压缩/近期窗口/召回及既有150000字符缓存容量与TTL。此条覆盖前一切片的“超标回退”说明；不删已选历史继续有效。CN/EN说明与原双入口同步。
 - 缓存CN/EN各68、长聊20、协议13组、实际双DLL各76项通过，旧实现负控确认绕缓存。native/scene/courier连续两轮完整前缀一致、system一份、旧回复保留、未变状态不重发、变更/移除/当前输入保留；双构建/Bootstrap/Coup/注册通过。未实机/真实provider命中/旧档，未部署/打包/push。
 - [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#conversation-cache-no-budget-bypass-20261022)；代码范围、提交、候选哈希和focused回滚见 `artifacts/conversation-no-budget-drop-20261022/cache-prefix/receipt.json`、`code-map.json`、`before/`。本地 `codex/conversation-no-budget-drop-20261022`，独立索引保留共享main/index及其他作者改动。
+
+
+## AF-BILATERAL-DIRECT-20261030
+
+- 本地产品 `57cf6c15c` + 队列修补 `22ad71b9e`：AI 开启时现任双君主六类双边事项直接校验执行，真实回执先入原 owner，后续 NPC 声明只公告结果；无重复承诺提取/重签/重执行。第三国、复杂/耦合条款、非君主、拒绝/控制及关闭模式保留原能力；精确原案只结算所选事项。
+- 目标回放 194、剩余审核 715、CountryAdmission 5937（含贸易/和平/玩家宣战完整事件结案）、主权 1088、臣属 343、结案 214、声明 645、阻塞回归 138、事件结构 482、受影响双语与持久化门禁通过；最终 1.3/1.4/Bootstrap 与原双 seam/registration 通过。四项宽范围既存失败已用原码复现，未宣称全仓测试绿色；实机/provider/旧玩家档/Stage/打包/部署/push 均 NOT_RUN。
+- [唯一主台账与命令/风险](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af-bilateral-direct-20261030) / [准确代码范围](docs/architecture/af-framework-code-scope.md#af-bilateral-direct-20261030)。源/DLL SHA 与日志在 `artifacts/bilateral-direct-20261030/verification.json`。父会话已完成独立审查，无本次剩余须修问题；下一步仍需新任务授权；保留原有 dirty 文档，仅选择性提交本项追加段落，无新发布授权。
+
+- 2026-10-30 后续部署已完成，更新本项此前“部署 NOT_RUN”：原统一 Debug 双 API/Bootstrap 与门禁通过，目标为 Steam 的 `Modules/AnimusForge`，更新 11 文件；4825 项安装核对通过（4822 同 SHA、3 项保留自定义），39 个既有配置/提示词 SHA 不变。详见主台账同节“部署补记”和 `artifacts/bilateral-direct-20261030-deploy/deployment-verification.json`。实机/真实模型/旧档、打包、push 仍未验或未执行。

@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
 using AnimusForge.Refactor.Contracts;
+using SandBox.View.Map;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.Core;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
@@ -21,16 +25,18 @@ internal sealed class DiplomacyEventPopup
     private readonly Action _onAcknowledged;
     private readonly long _generation;
     private readonly GameStateManager _pauseOwner;
+    private readonly bool _mapOnly;
     private GauntletMovieIdentifier _movie;
     private DevPopupInputLease _parentLease;
     private bool _pauseRegistered, _added, _closed, _closeRequested;
     internal static bool IsOpen => _active != null && !_active._closed;
     internal static bool IsPreparing { get; private set; }
 
-    private DiplomacyEventPopup(ScreenBase screen, DiplomacyEventPresentation data, string imageId, Action acknowledged)
+    private DiplomacyEventPopup(ScreenBase screen, DiplomacyEventPresentation data, string imageId, Action acknowledged, bool mapOnly)
     {
         _screen = screen; _onAcknowledged = acknowledged; _generation = data.Generation;
         _pauseOwner = Game.Current?.GameStateManager;
+        _mapOnly = mapOnly;
         _layer = new GauntletLayer("DiplomacyEventPopup", 4200, false);
         string chrome = DiplomacyEventSprites.Load("event-chrome");
         if (chrome.Length == 0) throw new InvalidOperationException("Event chrome is unavailable.");
@@ -40,12 +46,24 @@ internal sealed class DiplomacyEventPopup
     // Returns false without consuming the caller's announcement when another modal owns input.
     internal static bool TryShow(DiplomacyEventPresentation data, out string selectedImageId,
         Action onAcknowledged = null, IReadOnlyList<string> recentImageIds = null)
+        => TryShowCore(data, out selectedImageId, onAcknowledged, recentImageIds, mapOnly: true);
+
+    // Explicit terminal previews are not queued campaign notifications.
+    internal static bool TryShowPreview(DiplomacyEventPresentation data, out string selectedImageId)
+        => TryShowCore(data, out selectedImageId, null, null, mapOnly: false);
+
+    private static bool TryShowCore(DiplomacyEventPresentation data, out string selectedImageId,
+        Action onAcknowledged, IReadOnlyList<string> recentImageIds, bool mapOnly)
     {
         selectedImageId = "";
         IsPreparing = false;
         if (data == null || !SaveRuntimeGuard.IsCurrentGeneration(data.Generation) || IsOpen || ScreenManager.TopScreen == null || InformationManager.IsAnyInquiryActive()
             || CourierLetterReplyPopup.IsOpen || CourierLetterInputPopup.IsOpen || DiplomacyPresentationBridge.IsOpen)
             return false;
+        if (mapOnly && !IsNotificationContextAvailable()) return false;
+        // A global modal outside this screen cannot be leased/restored as a map panel.
+        // Check membership only when opening, never in the per-frame context check.
+        if (mapOnly && ScreenManager.FocusedLayer != null && !ScreenManager.TopScreen.HasLayer(ScreenManager.FocusedLayer)) return false;
         DiplomacyEventPopup popup = null;
         try
         {
@@ -59,7 +77,7 @@ internal sealed class DiplomacyEventPopup
             { IsPreparing = true; return false; }
             if (DiplomacyEventSprites.Load("event-chrome").Length == 0) return false;
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            popup = new DiplomacyEventPopup(ScreenManager.TopScreen, data, id, onAcknowledged);
+            popup = new DiplomacyEventPopup(ScreenManager.TopScreen, data, id, onAcknowledged, mapOnly);
             popup.Open();
             _active = popup;
             selectedImageId = id;
@@ -73,6 +91,25 @@ internal sealed class DiplomacyEventPopup
             Logger.Log("DiplomacyEventPopup", "Open failed: " + ex);
             return false;
         }
+    }
+
+    private static bool IsNotificationContextAvailable()
+    {
+        // Only scalar state reads. Pending notices retry once per second; an open
+        // notice rechecks here each frame without scanning layers or game objects.
+        if (Campaign.Current == null || Mission.Current != null
+            || Game.Current?.GameStateManager?.ActiveState is not MapState
+            || ScreenManager.TopScreen is not MapScreen map || map.IsFinalized || !map.IsReady
+            || Campaign.Current.ConversationManager?.IsConversationInProgress == true
+            || Campaign.Current.ConversationManager?.IsConversationFlowActive == true
+            || ShoutTextInputPopup.IsOpen || AnimusForgeNativeConversationOverlay.IsOpen
+            || InformationManager.IsAnyInquiryActive()
+            || CourierLetterReplyPopup.IsOpen || CourierLetterInputPopup.IsOpen || DiplomacyPresentationBridge.IsOpen)
+            return false;
+        // Settlement waiting, encyclopedia and management menus remain on MapScreen.
+        // Their focus and pause requests do not mean a conversation/mission started.
+        // Open leases the focused parent UI; Close restores it and releases only our pause.
+        return true;
     }
 
     private void Open()
@@ -103,10 +140,22 @@ internal sealed class DiplomacyEventPopup
         if (!SaveRuntimeGuard.IsCurrentGeneration(popup._generation) || !ReferenceEquals(ScreenManager.TopScreen, popup._screen)
             || popup._screen.IsFinalized || popup._layer.IsFinalized)
         { popup.Close(false); return; }
-        if (ScreenManager.FocusedLayer != popup._layer) return;
         // Defer Escape by one tick so its release cannot also close the restored terminal/map UI.
+        // A button/Exit request already received must survive focus changes.
         if (popup._closeRequested) { popup.Close(true); return; }
-        if (popup._layer.Input.IsHotKeyReleased("Exit") || popup._layer.Input.IsKeyReleased(InputKey.Escape))
+        if ((popup._mapOnly && !IsNotificationContextAvailable()) || !popup._layer.IsActive)
+        { popup.Close(false); return; }
+        if (ScreenManager.FocusedLayer != popup._layer)
+        {
+            // Recover only from unowned/map focus. Yield to another modal and
+            // leave the announcement unread so the existing queue can retry.
+            if (ScreenManager.FocusedLayer == null
+                || (popup._mapOnly && ReferenceEquals(ScreenManager.FocusedLayer, ((MapScreen)popup._screen).SceneLayer)))
+                ScreenManager.TrySetFocus(popup._layer);
+            if (ScreenManager.FocusedLayer != popup._layer) { popup.Close(false); return; }
+        }
+        if (popup._layer.Input.IsHotKeyReleased("Exit") || popup._layer.Input.IsKeyReleased(InputKey.Escape)
+            || Input.IsKeyReleased(InputKey.Escape))
             popup._closeRequested = true;
     }
 

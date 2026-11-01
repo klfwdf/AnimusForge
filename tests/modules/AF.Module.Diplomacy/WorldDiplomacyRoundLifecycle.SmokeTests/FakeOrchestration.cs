@@ -239,6 +239,8 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
     {
         Calls.Add("SyncData");
     }
+    public virtual void MaintainDailyStorage() { Calls.Add("MaintainDailyStorage"); }
+
     public virtual void NormalizeStorage(bool allowWorldValidation)
     {
         Calls.Add("NormalizeStorage");

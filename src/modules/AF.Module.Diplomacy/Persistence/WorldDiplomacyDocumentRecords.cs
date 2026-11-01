@@ -30,6 +30,8 @@ public sealed class WorldDiplomacyDocumentAction
 
 public sealed class WorldDiplomacyDocument
 {
+    // One bounded recovery of a pre-execution acceptance rejection; survives reload.
+    [JsonProperty("acceptanceRepairVersion")] public int AcceptanceRepairVersion { get; set; }
     [JsonProperty("endingRecoveryDocumentId")] public string EndingRecoveryDocumentId { get; set; } = "";
     [JsonProperty("playerEventParticipation")] public string PlayerEventParticipation { get; set; } = "";
     [JsonProperty("responseRequests")] public List<DiplomacyResponseRequest> ResponseRequests { get; set; } = new();

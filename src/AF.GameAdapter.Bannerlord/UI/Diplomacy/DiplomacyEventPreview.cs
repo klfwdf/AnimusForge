@@ -20,7 +20,7 @@ internal static class DiplomacyEventPreview
         _pending = null;
         ScreenBase screen = _screen; _screen = null;
         if (!SaveRuntimeGuard.IsCurrentGeneration(_generation) || !ReferenceEquals(screen, ScreenManager.TopScreen)) return;
-        if (!DiplomacyEventPresentationBridge.TryShow(Create(stage), out _))
+        if (!DiplomacyEventPopup.TryShowPreview(Create(stage), out _))
         {
             if (DiplomacyEventPopup.IsPreparing) { _pending = stage; _screen = screen; return; }
             InformationManager.DisplayMessage(new InformationMessage(T("PreviewUnavailable", "The event preview could not open. Close other dialogs and try again.")));

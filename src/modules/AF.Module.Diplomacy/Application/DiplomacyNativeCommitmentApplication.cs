@@ -12,7 +12,7 @@ internal static class DiplomacyNativeCommitmentApplication
     internal static string Execute<TSource>(TSource source, string actorId, string payload)
         where TSource : struct, IDiplomacyOralTagSource
     {
-        if (!DialogueTagPayload.TryParse(payload, out var parsed) || string.IsNullOrWhiteSpace(actorId)
+        if (!DialogueTagPayload.TryParse(payload, out var parsed) || parsed.HasLobbyistFields || string.IsNullOrWhiteSpace(actorId)
             || actorId.IndexOf(':') >= 0 || parsed.TargetKingdomId.IndexOf(':') >= 0
             || parsed.Terms.TributePayerKingdomId.IndexOf(':') >= 0 || parsed.Terms.TributeReceiverKingdomId.IndexOf(':') >= 0)
             return DiplomacyMiscPromptTexts.Get("Commitment_InvalidTerms", "Diplomatic action not executed: invalid terms format.");

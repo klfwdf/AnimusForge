@@ -8,6 +8,14 @@
     <BannerlordBin Condition="'$(BannerlordBin)' == ''">F:/SteamLibrary/steamapps/common/Mount &amp; Blade II Bannerlord/bin/Win64_Shipping_Client</BannerlordBin>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Lobbyist.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/DiplomacySponsorReceiptRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Bilateral.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/DiplomacyBilateralRouting.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/DiplomacyBilateralPayload.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/DiplomacyBilateralEffects.cs" />
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyMakePeaceContracts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/DiplomacyRequestProjection.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SpeechEventRouting.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.BaselineMigration.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/DiplomacyRetiredIssueState.cs" />
@@ -114,6 +122,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentApplication.cs" Link="WorldDiplomacyDocumentApplication.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundApplication.cs" Link="WorldDiplomacyRoundApplication.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPolicyRoundApplication.cs" Link="WorldDiplomacyPolicyRoundApplication.cs" />
+    <Compile Include="../../../../PolicySystem/Context/PolicyMaterialRecordFilter.cs" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>

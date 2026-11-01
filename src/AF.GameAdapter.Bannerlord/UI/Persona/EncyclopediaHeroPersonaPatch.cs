@@ -249,7 +249,7 @@ public static class EncyclopediaHeroPersonaPatch
 
 	{
 
-		return !DevHistoryEditPopup.IsOpen && !CourierDeliveryBehavior.IsCourierInputOpen;
+		return !DiplomacyEventPopup.IsOpen && !DevHistoryEditPopup.IsOpen && !CourierDeliveryBehavior.IsCourierInputOpen;
 
 	}
 

@@ -30,7 +30,7 @@ internal static class LiveBlockerReplay
     private static WorldDiplomacyJob Capture(WorldDiplomacyOrchestration o, string channel = "native")
     {
         o.CaptureSpeechReview("ruler_a", "a", new(channel, "source", "session",
-            "Please propose an alliance to b; I cannot accept for b.", "I will propose an alliance to b."), "");
+            "Please propose an alliance to b; I cannot accept for b.", "I will propose an alliance to b."), "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + (""));
         return o.CurrentStorage.Jobs.Single();
     }
     private static void Complete(WorldDiplomacyOrchestration o, WorldDiplomacyJob job, JObject response) =>
@@ -47,7 +47,7 @@ internal static class LiveBlockerReplay
             var prior = o.CurrentStorage.DialogueArrangements.Single(); prior.Status = status; prior.DocumentId = "original_document";
             string original = JsonConvert.SerializeObject(prior); int jobs = o.CurrentStorage.Jobs.Count;
             string npc = "My original commitment stands: the same thirty-day proposal, no second letter.";
-            o.CaptureSpeechReview("ruler_a", "a", new(channel, "confirmation", "session", "Confirm the same proposal only", npc), "");
+            o.CaptureSpeechReview("ruler_a", "a", new(channel, "confirmation", "session", "Confirm the same proposal only", npc), "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + (""));
             var job = o.CurrentStorage.Jobs.Single(x => x.Kind == "oral_review"); o.PrepareSharedRequest(job);
             var known = JObject.Parse(job.UserPrompt)["registered_commitments"]![0]!;
             Test.True((int)known["Terms"]!["DurationDays"]! == 30 && (string)known["DocumentId"]! == prior.DocumentId,
@@ -163,7 +163,7 @@ internal static class LiveBlockerReplay
         var oldReview = oldOwner.CurrentStorage.SpeechReviews.Single();
         oldReview.ExtractionContractVersion = 1; oldReview.Status = "technical_hold"; oldReview.Reason = "speech_extraction_invalid"; oldReview.Attempts = 3;
         Call(oldOwner, "MaintainSpeechReviews");
-        Test.True(oldReview.ExtractionContractVersion == 3 && oldReview.Status == "pending" && oldReview.Attempts == 0,
+        Test.True(oldReview.ExtractionContractVersion == 4 && oldReview.Status == "pending" && oldReview.Attempts == 0,
             "previous contract's unapplied extraction failure receives one reevaluation");
         oldReview.Status = "technical_hold"; oldReview.Reason = "speech_extraction_invalid"; oldReview.Attempts = 3; oldHost.CurrentDayValue++;
         Call(oldOwner, "MaintainSpeechReviews");

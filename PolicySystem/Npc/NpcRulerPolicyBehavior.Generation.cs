@@ -2845,7 +2845,7 @@ public sealed partial class NpcRulerPolicyBehavior
 
 	internal static bool TryCaptureUnifiedPolicyHistorySnapshotForExternal(
 		out List<NpcPolicyHistoryEntry> entries,
-		out string error)
+		out string error, int minimumDay = 0)
 	{
 		entries = new List<NpcPolicyHistoryEntry>();
 		error = string.Empty;
@@ -2857,7 +2857,7 @@ public sealed partial class NpcRulerPolicyBehavior
 				error = "NPC policy behavior is not initialized";
 				return false;
 			}
-			entries = behavior.CaptureUnifiedNpcPolicyHistorySnapshot();
+			entries = behavior.CaptureUnifiedNpcPolicyHistorySnapshot(minimumDay);
 			return true;
 		}
 		catch (Exception ex)
@@ -2868,16 +2868,17 @@ public sealed partial class NpcRulerPolicyBehavior
 		}
 	}
 
-	private List<NpcPolicyHistoryEntry> CaptureUnifiedNpcPolicyHistorySnapshot()
+	private List<NpcPolicyHistoryEntry> CaptureUnifiedNpcPolicyHistorySnapshot(int minimumDay = 0)
 	{
 		if (!CustomPolicyBehavior.TryCapturePolicyHistoryEntriesForNpcExternal(
 			out List<NpcPolicyHistoryEntry> playerEntries,
-			out string playerHistoryError))
+			out string playerHistoryError, minimumDay))
 		{
 			playerEntries = new List<NpcPolicyHistoryEntry>();
 		}
 		List<NpcPolicyHistoryEntry> result = new List<NpcPolicyHistoryEntry>(playerEntries ?? new List<NpcPolicyHistoryEntry>());
-		foreach (NpcRulerPolicyRecord record in _policyRecords.Values.Select(DeserializeRecord))
+		foreach (NpcRulerPolicyRecord record in _policyRecords.Values
+            .Where(raw => PolicyMaterialRecordFilter.Since(raw, "Day", minimumDay)).Select(DeserializeRecord))
 		{
 			if (record == null || record.IsPlayerPolicy || !TryMapNpcPolicyHistoryStatus(record.AgendaStatus, out string policyStatus))
 			{

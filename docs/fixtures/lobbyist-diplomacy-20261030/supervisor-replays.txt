@@ -1,0 +1,53 @@
+[cn --lobbyist]
+PASS lobbyist assertions=168
+
+[cn --sovereign-control]
+PASS sovereign control assertions=980
+
+[cn --bilateral-direct]
+PASS bilateral direct assertions=194
+
+[cn --speech-review]
+PLAYER FULL LIFECYCLE PASS statement -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS declare_war -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS condemn -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PASS SpeechReviewReplay assertions=741
+
+[cn --oral-declaration]
+PLAYER FULL LIFECYCLE PASS statement -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS declare_war -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS condemn -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+Oral AI declaration replay passed: 645 assertions.
+
+[cn --original-oral-vassalage]
+PLAYER FULL LIFECYCLE PASS statement -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS declare_war -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS condemn -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PASS OriginalOralVassalageReplay assertions=343
+
+[en --lobbyist]
+PASS lobbyist assertions=168
+
+[en --sovereign-control]
+PASS sovereign control assertions=980
+
+[en --bilateral-direct]
+PASS bilateral direct assertions=194
+
+[en --speech-review]
+PLAYER FULL LIFECYCLE PASS statement -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS declare_war -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS condemn -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PASS SpeechReviewReplay assertions=741
+
+[en --oral-declaration]
+PLAYER FULL LIFECYCLE PASS statement -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS declare_war -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS condemn -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+Oral AI declaration replay passed: 645 assertions.
+
+[en --original-oral-vassalage]
+PLAYER FULL LIFECYCLE PASS statement -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS declare_war -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PLAYER FULL LIFECYCLE PASS condemn -> plan -> audit -> effect/opening -> delivery -> reply -> progression -> ending -> reload
+PASS OriginalOralVassalageReplay assertions=343

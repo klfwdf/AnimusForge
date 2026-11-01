@@ -51,7 +51,7 @@ internal static class WorldDiplomacyHistoryCaptureApplication
             }
             observedWeeklyRevision = revision;
         }
-        orchestration.SyncPublishedPolicyArtifacts(force ? forcePolicyBatches : 1);
+        // Policies enter only through event material selection; existing history remains readable.
         lastSyncHour = hour;
     }
 

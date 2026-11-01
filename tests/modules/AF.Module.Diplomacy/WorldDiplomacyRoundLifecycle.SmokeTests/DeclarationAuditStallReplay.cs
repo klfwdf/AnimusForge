@@ -29,7 +29,7 @@ internal static partial class MaterialCountryThirdReplay
             // The observed provider response has all booleans/spans but no continuity object.
             for (int cycle = 0; cycle < 3; cycle++)
             {
-                for (int n = 0; n < 3; n++)
+                for (int n = 0; cycle == 0 && n < 3; n++)
                 {
                     var omission = SpanReview(Evidence(o, reply), true, first.DocumentId);
                     omission.Remove("response_continuity"); Complete(o, reply, omission);
@@ -49,7 +49,7 @@ internal static partial class MaterialCountryThirdReplay
             {
                 for (int cycle = 0; cycle < 3; cycle++)
                 {
-                    for (int n = 0; n < 3; n++)
+                    for (int n = 0; cycle == 0 && n < 3; n++)
                     {
                         var bad = SpanReview(Evidence(o, reply), true, first.DocumentId);
                         bad["response_continuity"]!["digest"] = "stale"; Complete(o, reply, bad);

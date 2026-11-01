@@ -210,8 +210,9 @@ internal sealed partial class WorldDiplomacyOrchestration
     {
         if (document?.IsPlayerAuthored != true || !document.IsReadyForPublication
             || document.AnalysisStatus == "pending_analysis" || CurrentPlayerAuthority() != document.AuthorKingdomId) return;
-        // The drafting shortcut is advisory. Only analyzed relevance and exact
-        // mechanical/discussion source bindings answer a particular incoming matter.
+        BindPlayerThreatAnswerSources(document);
+        // A directed reply to a pending threat counts even when its prose evades
+        // the demand. Other incoming matters retain their existing source rules.
         var sources = (document.AnsweredNpcDocumentIds ?? new()).Concat(new[] {
             document.RespondingToOfferDocumentId, document.RespondingToThreatDocumentId, document.DiscussionSourceDocumentId })
             .Concat((document.Actions ?? new()).Where(x => x != null).SelectMany(x => new[] {
@@ -223,6 +224,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             if (source?.IsReadyForPublication != true || !IsLiveRound(round) || source.AuthorKingdomId == document.AuthorKingdomId) continue;
             EnsurePlayerDocumentParticipant(round, document);
             TransferEvent(round, true, "player_analyzed_related_reply");
+            ReconcilePlayerThreatAnswer(document, source);
             foreach (var wait in round.PlayerNegotiationWaits ?? new())
                 if (wait.SourceDocumentId == id && string.IsNullOrEmpty(wait.AnswerDocumentId) && wait.RequiresAnswer)
                     wait.AnswerDocumentId = document.DocumentId;

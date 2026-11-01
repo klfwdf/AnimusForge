@@ -1020,6 +1020,9 @@ internal sealed class SceneTradeBannerlordAdapter
 
                         authoritativeReceipt = shoutPendingTradeItem.Amount > 0;
 
+                        if (authoritativeReceipt)
+                            WorldDiplomacyBehavior.ObserveSponsorPayment("player_give_" + Guid.NewGuid().ToString("N"), hero.StringId, shoutPendingTradeItem.Amount);
+
                         RecordObservedTransferSourceRemainder(shoutPendingTradeItem, Math.Max(0, sourceGoldBefore - Hero.MainHero.Gold));
 
 						try

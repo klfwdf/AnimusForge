@@ -43,21 +43,21 @@ internal static class HistoryCaptureReplay
         var port = new Port();
         var orch = new Orch(port);
         WorldDiplomacyHistoryCaptureApplication.SyncSources(port, orch, false, ref hour, ref revision, 4);
-        Test.True(string.Join(",", port.Events) == "init,weekly:w,policy:1" && hour == 6 && revision == 2,
-            "source sync preserves initialization, changed weekly revision, bounded policy and clock order");
+        Test.True(string.Join(",", port.Events) == "init,weekly:w" && hour == 6 && revision == 2,
+            "source sync preserves weekly order without reading policy history");
         port.Events.Clear();
         WorldDiplomacyHistoryCaptureApplication.SyncSources(port, orch, false, ref hour, ref revision, 4);
         Test.True(port.Events.SequenceEqual(new[] { "init" }), "hour gate prevents repeated source scans");
         port.Events.Clear();
         WorldDiplomacyHistoryCaptureApplication.SyncSources(port, orch, true, ref hour, ref revision, 4);
-        Test.True(string.Join(",", port.Events) == "init,policy:4", "forced sync expands policy batches but preserves weekly revision gate");
+        Test.True(string.Join(",", port.Events) == "init", "forced history sync never requests policy history");
         port.Hour++; port.Revision++; orch.FailPolicy = true; port.Events.Clear();
         try { WorldDiplomacyHistoryCaptureApplication.SyncSources(port, orch, false, ref hour, ref revision, 4); }
         catch (InvalidOperationException) { }
-        Test.True(hour == 6 && revision == 3, "failed policy sync retains successful weekly cursor but does not advance hour gate");
+        Test.True(hour == 7 && revision == 3, "retired policy sync cannot fail or block weekly history");
         orch.FailPolicy = false; port.Events.Clear();
         WorldDiplomacyHistoryCaptureApplication.SyncSources(port, orch, false, ref hour, ref revision, 4);
-        Test.True(string.Join(",", port.Events) == "init,policy:1" && hour == 7, "retry avoids duplicate weekly publication");
+        Test.True(string.Join(",", port.Events) == "init" && hour == 7, "retry avoids duplicate weekly publication");
         var storage = new WorldDiplomacyStorage();
         storage.CanonicalHistory.NextSequence = 12;
         storage.CanonicalHistory.Revision = 9;

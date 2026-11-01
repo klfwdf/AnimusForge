@@ -24,7 +24,7 @@ public sealed partial class WorldDiplomacyBehavior
         { string reason; return CanAiAuthorDiplomaticDocument(ResolveKingdom(job.AuthorKingdomId), out reason) ? null : reason; }
         public string GetLlmConfigError() { string error; return WorldDiplomacyLlmClient.IsConfigured(out error) ? null : error; }
         public bool TryConsumeRequestBudget(bool consume) => _owner.TryConsumeDiplomacyLlmRequestBudget(consume);
-        public JArray BuildMessageArray(WorldDiplomacyJob job) => WorldDiplomacyLlmMessageApplication.BuildLlmMessageArray(job, _owner._orchestration.BuildCanonicalHistoryBlock);
+        public JArray BuildMessageArray(WorldDiplomacyJob job) => WorldDiplomacyLlmMessageApplication.BuildLlmMessageArray(job, _owner._orchestration.BuildCanonicalHistoryBlock, WorldDiplomacyBehavior.Log);
         public long InputTokenLimit => GetHistoryCompressionTriggerTokens();
         public int HistoryCompressionTargetTokens => GetHistoryCompressionTargetTokens();
         public int EstimateTokens(string text) => Logger.EstimateTokens(text);
@@ -32,7 +32,7 @@ public sealed partial class WorldDiplomacyBehavior
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);
         public bool TryClaim(string jobId, long generation, int maxTokens, int timeoutMilliseconds, out WorldDiplomacyRequestSnapshot request) => _owner._llmRequestLease.TryClaim(jobId, generation, maxTokens, timeoutMilliseconds, out request);
         public void MarkRunning(WorldDiplomacyJob job, string cacheAffinityKey) { job.IsRunning = true; job.CacheAffinityKey = cacheAffinityKey; }
-        public void LogPromptCacheShape(WorldDiplomacyJob job) => _owner.LogPromptCacheShape(job);
+        public void LogPromptCacheShape(WorldDiplomacyJob job, JArray messages) => _owner.LogPromptCacheShape(job, messages);
         public void StartRequest(WorldDiplomacyRequestSnapshot request, JArray messages)
         {
             LlmGenerateRequest detachedRequest = WorldDiplomacyLlmApplication.PrepareRequest(request, messages);

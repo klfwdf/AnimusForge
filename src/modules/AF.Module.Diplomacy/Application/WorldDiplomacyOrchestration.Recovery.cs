@@ -8,11 +8,26 @@ namespace AnimusForge;
 
 internal sealed partial class WorldDiplomacyOrchestration
 {
+    private static bool HasExhaustedLocalReview(WorldDiplomacyJob job)
+    {
+        string reason = job.SuspendedReason ?? "";
+        return !job.RecoverOnService && (job.PrivacyAuditRetries >= 3
+            && (reason.StartsWith("declaration_audit_invalid:", StringComparison.Ordinal)
+                || reason.StartsWith("event_concept_audit_invalid:", StringComparison.Ordinal)
+                || reason.StartsWith("boundary_audit_invalid:", StringComparison.Ordinal)
+                || reason.StartsWith("event_progress_audit_invalid:", StringComparison.Ordinal))
+            || job.DeclarationRepairAttempts >= 3 && reason.StartsWith("declaration_field_repair_exhausted:", StringComparison.Ordinal));
+    }
+
     private void HoldTechnicalRequest(WorldDiplomacyJob job, string reason)
     {
         job.IsRunning = false;
         job.SuspendedReason = string.IsNullOrWhiteSpace(reason) ? "technical_request_failed" : reason;
         job.TechnicalRecoveryAttempts++;
+        // Local review already used its full repair allowance. Do not multiply
+        // that allowance by the outer recovery loop. Existing abandonment/search
+        // rules still release uncommitted NPC work; binding obligations stay held.
+        if (HasExhaustedLocalReview(job)) job.TechnicalRecoveryAttempts = Math.Max(3, job.TechnicalRecoveryAttempts);
         // Internal repair state belongs in diagnostics, never in diplomatic news.
         // Log before recovery selection without falsely claiming that it stopped.
         _host.Log("diplomacy.request_repair event=" + job.RoundId + " job=" + job.JobId
@@ -213,13 +228,15 @@ internal sealed partial class WorldDiplomacyOrchestration
             && (job.SuspendedReason.Contains("narrative_world_book_")
                 || job.SuspendedReason.StartsWith("boundary_audit_rejected:", StringComparison.Ordinal)
                     && job.SuspendedReason.Contains("world_book_basis"));
-        bool changed = resumedWorldBook || repairedEndingEvidence || repairedBoundMatter || repairedEndingBudget || repairedProgressBudget || repairedEndingAuthor || recoveredAdmissionIdentity || IsLegacyAdmissionProtocolFailure(job, job.SuspendedReason) || repairedWorldBookAudit || repairedOpeningEffects || repairedEmptyPlayerOpening || repairedProgressRoute || repairedDraftContract || repairedFoundationContract || repairedDeclarationContract || repairedEvidenceContract || repairedOptionalTermsContract || repairedAnswerContract || explicitResume || job.RecoveryConfiguration != configuration
+        bool repairedSovereignControl = TryRecoverLegacyOralNpcPosition(job, out string sovereignFeedback);
+        bool changed = repairedSovereignControl || resumedWorldBook || repairedEndingEvidence || repairedBoundMatter || repairedEndingBudget || repairedProgressBudget || repairedEndingAuthor || recoveredAdmissionIdentity || IsLegacyAdmissionProtocolFailure(job, job.SuspendedReason) || repairedWorldBookAudit || repairedOpeningEffects || repairedEmptyPlayerOpening || repairedProgressRoute || repairedDraftContract || repairedFoundationContract || repairedDeclarationContract || repairedEvidenceContract || repairedOptionalTermsContract || repairedAnswerContract || explicitResume || job.RecoveryConfiguration != configuration
             || job.RecoveryRevision != round.ConversationRevision
             || job.RecoveryKnowledgeRevision != DiplomacyEventRules.KnowledgeRevision(round, job.AuthorKingdomId)
             || job.RecoverOnService && job.RecoveryServiceEpoch < Storage.SpeechServiceRecoveryEpoch;
-        if (!changed && job.TechnicalRecoveryAttempts >= 3) return;
+        if (!changed && (job.TechnicalRecoveryAttempts >= 3 || HasExhaustedLocalReview(job))) return;
         if (!changed && job.SuspendedReason.StartsWith("event_required_input_budget_exceeded:", StringComparison.Ordinal)) return;
         if (changed) job.TechnicalRecoveryAttempts = 0;
+        if (repairedSovereignControl) job.MaterialRepairFeedback = sovereignFeedback;
         if (repairedBoundMatter) { job.StoryReviewVersion = 2; job.MaterialRepairFeedback = ""; }
         if (repairedEndingBudget) job.EndingContextVersion = 1;
         if (repairedEndingEvidence)
@@ -235,13 +252,18 @@ internal sealed partial class WorldDiplomacyOrchestration
             job.PrivacySourceMaterial = "event_progress_route_contract_changed:recheck_available_continuations_and_exact_open_offers;never_generate_player_decisions";
         }
         bool resumeBoundaryAudit = job.Kind == "event_boundary_audit"
-            && reason.StartsWith("boundary_audit_invalid:", StringComparison.Ordinal)
+            && (reason.StartsWith("boundary_audit_invalid:", StringComparison.Ordinal) || job.RecoverOnService && !changed)
             && !string.IsNullOrEmpty(job.PrivacyDraft) && job.RoundConversationRevision == round.ConversationRevision;
         bool resumeAudit = (job.Kind == "privacy_audit" || repairedDraftContract)
-            && (repairedDraftContract || repairedDeclarationContract || repairedAnswerContract || reason.StartsWith("declaration_audit_invalid:", StringComparison.Ordinal))
+            && (repairedDraftContract || repairedDeclarationContract || repairedAnswerContract || reason.StartsWith("declaration_audit_invalid:", StringComparison.Ordinal)
+                || job.RecoverOnService && !changed)
             && !string.IsNullOrEmpty(job.PrivacyDraft)
             && job.RoundConversationRevision == round.ConversationRevision
             && job.CourtKnowledgeRevision == DiplomacyEventRules.KnowledgeRevision(round, job.AuthorKingdomId);
+        bool reuseIsolation = !changed && job.RecoverOnService && job.Kind == "generate"
+            && job.PrivacyRevision == round.ConversationRevision
+            && job.PrivacyKnowledgeRevision == DiplomacyEventRules.KnowledgeRevision(round, job.AuthorKingdomId)
+            && !string.IsNullOrWhiteSpace(job.PrivacyPublicContext) && !string.IsNullOrWhiteSpace(job.PrivacySourceMaterial);
         if (repairedFoundationContract || repairedEmptyPlayerOpening) job.PrivacySourceMaterial = reason;
         job.SuspendedReason = ""; job.RetryAfterUtcTicks = 0; job.TransportRetryAttempts = 0;
         job.SemanticRepairAttempts = 0; job.LifecycleClassificationAttempts = 0;
@@ -251,9 +273,10 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (repairedDraftContract) job.DeclarationRepairVersion = 1;
         bool resumeConceptAudit = job.Kind == "event_concept_audit"
             && (repairedBoundMatter || reason.StartsWith("event_concept_audit_invalid:", StringComparison.Ordinal)
-                || reason.StartsWith("event_required_evidence_budget_exceeded:", StringComparison.Ordinal))
+                || reason.StartsWith("event_required_evidence_budget_exceeded:", StringComparison.Ordinal) || job.RecoverOnService && !changed)
             && !string.IsNullOrEmpty(job.PrivacyDraft) && job.RoundConversationRevision == round.ConversationRevision;
-        if (!resumeAudit && job.Kind != "privacy_repair") { job.PrivacyPublicContext = ""; job.PrivacyRevision = -1; }
+        if (!resumeAudit && !reuseIsolation && job.Kind != "privacy_repair") { job.PrivacyPublicContext = ""; job.PrivacyRevision = -1; }
+        if (reuseIsolation) _host.Log("diplomacy.isolation_retained job=" + job.JobId + " action=revalidate_source_before_send");
         // Metadata completion owns this draft, not a disposable audit response.
         if (!resumeAudit && !resumeBoundaryAudit && !IsUnpublishedPlayerLifecycleJob(job) && !IsEventPlanningJob(job)
             && job.Kind is not "privacy_repair" and not "event_boundary" and not "event_boundary_audit" and not "event_progress" and not "event_progress_audit") job.PrivacyDraft = "";
@@ -266,7 +289,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (job.Kind == "event_concept_audit" && !resumeConceptAudit) job.Kind = "event_concept";
         if (job.Kind == "event_progress_audit" && !((repairedProgressBudget && !string.IsNullOrEmpty(job.PrivacyDraft)
                 && job.RoundConversationRevision == round.ConversationRevision)
-            || reason.StartsWith("event_progress_audit_invalid:", StringComparison.Ordinal)
+            || (reason.StartsWith("event_progress_audit_invalid:", StringComparison.Ordinal) || job.RecoverOnService && !changed)
             && !string.IsNullOrEmpty(job.PrivacyDraft) && job.RoundConversationRevision == round.ConversationRevision)) job.Kind = "event_progress";
         if (job.Kind == "event_boundary_audit" && !resumeBoundaryAudit) job.Kind = "event_boundary";
         if ((round.TechnicalHoldReason == reason || round.TechnicalHoldReason == round.TechnicalRequestHoldReason)
@@ -409,6 +432,67 @@ internal sealed partial class WorldDiplomacyOrchestration
         NormalizePlayerEventState();
         NormalizePlayerLifecycleRecovery();
         RestoreEventBaselineAfterLoad();
+        RecoverRejectedAcceptanceDrafts();
+    }
+
+    // Load/reconciliation boundary only. No archive scan is added to Tick.
+    // Requeue an exact unpublished reply, never execute or silently alter its terms.
+    private void RecoverRejectedAcceptanceDrafts()
+    {
+        var rounds = GetLiveRounds().Where(x => x.TechnicalHoldReason is
+            "invalid_draft:action_not_executable:player_accept_peace_changes_offer_terms"
+            or "invalid_draft:trade_acceptance_changes_terms").ToList();
+        if (rounds.Count == 0) return;
+        var rejectedByRound = Storage.Documents.Where(x => x != null && x.AnalysisStatus == "rejected_draft")
+            .ToLookup(x => x.RoundId, StringComparer.Ordinal);
+        foreach (var round in rounds)
+        {
+            string reason = round.TechnicalHoldReason;
+            if (!string.IsNullOrEmpty(round.TechnicalRequestHoldReason)
+                || !string.IsNullOrEmpty(round.EventEndingId)
+                || Storage.Jobs.Any(x => x.RoundId == round.RoundId)
+                || Storage.EventEffects.Any(x => x.EventId == round.RoundId && x.Status is "applying" or "uncertain")) continue;
+            var candidates = rejectedByRound[round.RoundId].Where(x => !x.IsPlayerAuthored && x.AcceptanceRepairVersion < 1
+                && !x.IsReadyForPublication && !x.ChangedDiplomaticState && !x.EventExecutionPending && !x.HistoryResultRecorded
+                && string.IsNullOrEmpty(x.MechanicalResult)
+                && (x.Actions == null || (x.Actions.Count <= 1 && x.Actions.All(a => a != null && !a.ChangedDiplomaticState
+                    && !a.HistoryResultRecorded && string.IsNullOrEmpty(a.ExecutionState) && string.IsNullOrEmpty(a.MechanicalResult))))
+                && x.Intent == (reason.EndsWith("player_accept_peace_changes_offer_terms", StringComparison.Ordinal)
+                    ? "accept_peace" : "accept_trade")).Take(2).ToList();
+            if (candidates.Count != 1) continue;
+            var document = candidates[0];
+            string sourceId = document.RespondingToOfferDocumentId;
+            string actionId = document.RespondingToOfferActionId ?? "";
+            var source = ResolveDocument(sourceId);
+            if (source?.IsReadyForPublication != true || source.RoundId != round.RoundId
+                || !DialogueDocumentKnown(document.AuthorKingdomId, source.DocumentId)
+                || !round.PendingOffers.Any(o => o.Status == "open" && o.SourceDocumentId == sourceId
+                    && o.SourceActionId == actionId && o.ProposerKingdomId == document.TargetKingdomId
+                    && o.TargetKingdomId == document.AuthorKingdomId
+                    && o.Intent == WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(document.Intent))) continue;
+            var oral = Storage.DialogueArrangements.FirstOrDefault(x => x.ArrangementId == document.DialogueArrangementId);
+            if (!string.IsNullOrEmpty(document.DialogueArrangementId))
+            {
+                if (oral == null || oral.DocumentId != document.DocumentId || oral.Version != document.DialogueArrangementVersion
+                    || oral.Status != "cancelled" || oral.ExplicitlyDeferred || !string.IsNullOrEmpty(oral.SupersededByArrangementId)
+                    || !string.IsNullOrEmpty(oral.TreatyExecutionState)) continue;
+                oral.Status = "accepted";
+                if (!TryValidateOralDeclarationWork(oral, out var intent) || intent != document.Intent)
+                { oral.Status = "cancelled"; continue; }
+                oral.GenerationRetryAfterDay = _host.CurrentDay();
+                // Queue a fresh audited draft; never use the immediate fallback
+                // writer while normalizing a loaded campaign.
+                oral.GenerationFailureAttempts = 0;
+                PublishDialogueArrangement(oral);
+            }
+            else QueueEventDeclaration(round, document.AuthorKingdomId, document.TargetKingdomId, source, 100, false, false);
+            if (!Storage.Jobs.Any(x => x.RoundId == round.RoundId && x.AuthorKingdomId == document.AuthorKingdomId)) continue;
+            document.AcceptanceRepairVersion = 1;
+            AccrueTechnicalPause(round);
+            round.TechnicalHoldReason = ""; round.TechnicalHoldStartedHour = -1;
+            MarkEventDirty(round);
+            _host.Log("diplomacy.acceptance_draft_requeued document=" + document.DocumentId + " source=" + sourceId);
+        }
     }
 
 }

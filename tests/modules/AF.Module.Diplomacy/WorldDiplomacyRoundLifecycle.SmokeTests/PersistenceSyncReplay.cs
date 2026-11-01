@@ -162,4 +162,25 @@ internal static class PersistenceSyncReplay
         orch.SyncData(false, true, () => null, () => null, s => { }, e => { }, () => { });
         Test.True(orch.CurrentStorage != null, "a null load must still yield one canonical record");
     }
+
+    internal static void DailyArchiveIsUntouched()
+    {
+        var host = new Host();
+        var owner = new WorldDiplomacyOrchestration(host, new WorldDiplomacyRuntimeState());
+        var s = owner.CurrentStorage;
+        s.HistoryMemorySchemaVersion = 1; s.PromptContractVersion = 1; s.DecisionArchitectureVersion = 1;
+        for (int i = 0; i < 10000; i++) s.Documents.Add(new() { DocumentId = "old:" + i, Body = "  Original body  " });
+        var documents = s.Documents; var first = documents[0]; var addressed = first.AddressedKingdomIds;
+        long revision = s.CanonicalHistory.Revision;
+        owner.MaintainDailyStorage();
+        Test.True(ReferenceEquals(documents, s.Documents) && ReferenceEquals(first.AddressedKingdomIds, addressed)
+            && first.Body == "  Original body  " && s.CanonicalHistory.Revision == revision,
+            "daily maintenance leaves ten thousand unchanged documents and their history revision untouched");
+        var open = new WorldDiplomacyThreat { ThreatId = "live", Status = "open", IssuerKingdomId = "a", TargetKingdomId = "b" };
+        s.DiplomaticThreats.Add(open);
+        AnimusForge.Refactor.Persistence.WorldDiplomacyThreatStorageMigration.MaintainOpenThreats(s,
+            _ => "war_already_started_outside_pending_declaration", 42);
+        Test.True(open.Status == "invalidated" && open.HistoryResultRecorded,
+            "daily world validation still resolves a live threat without replaying a war");
+    }
 }

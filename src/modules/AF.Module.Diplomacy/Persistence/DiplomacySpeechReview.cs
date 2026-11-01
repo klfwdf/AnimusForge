@@ -6,6 +6,8 @@ namespace AnimusForge;
 // Temporary evidence for unfinished commitment extraction, not personal history.
 public sealed class DiplomacySpeechReview
 {
+    // False for persisted pre-direct reviews: preserve their original contract.
+    public bool ExcludeDirectBilateral { get; set; }
     [JsonProperty("id")] public string Id { get; set; } = "";
     [JsonProperty("sourceKey")] public string SourceKey { get; set; } = "";
     [JsonProperty("actor")] public string Actor { get; set; } = "";

@@ -8,6 +8,20 @@ namespace AnimusForge;
 // Policy topics share ordinary event capacity and the persisted daily opening limit.
 internal static class WorldDiplomacyPolicyRoundApplication
 {
+    internal static bool WasUsed(WorldDiplomacyStorage storage, WorldDiplomacyPolicySignalSnapshot policy)
+    {
+        var keys = storage.ProcessedPolicySignalKeys;
+        if (keys.Contains(policy.SignalKey, StringComparer.OrdinalIgnoreCase)) return true;
+        // Old saves recorded adoption by ID/target, without a content revision.
+        // Baseline that legacy receipt once, then allow later content revisions.
+        // This converts an existing adoption receipt; ordinary queries never mark new policies used.
+        string marker = "policy_material_baseline:" + policy.PolicyId;
+        if (keys.Contains(marker, StringComparer.OrdinalIgnoreCase)) return false;
+        if (!keys.Any(x => x != null && x.StartsWith("policy:" + policy.PolicyId + ":", StringComparison.OrdinalIgnoreCase))) return false;
+        keys.Add(marker); keys.Add(policy.SignalKey);
+        return true;
+    }
+
     internal static void RefreshSignals(WorldDiplomacyStorage storage, Func<int> currentDay,
         Func<IEnumerable<WorldDiplomacyPolicySignalSnapshot>> getSignals, int retentionDays, int maxSignals)
     {

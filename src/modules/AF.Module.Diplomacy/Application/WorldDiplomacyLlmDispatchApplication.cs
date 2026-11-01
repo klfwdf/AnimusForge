@@ -128,7 +128,7 @@ internal interface IWorldDiplomacyLlmDispatchSource
     void Log(string message);
     bool TryClaim(string jobId, long generation, int maxTokens, int timeoutMilliseconds, out WorldDiplomacyRequestSnapshot request);
     void MarkRunning(WorldDiplomacyJob job, string cacheAffinityKey);
-    void LogPromptCacheShape(WorldDiplomacyJob job);
+    void LogPromptCacheShape(WorldDiplomacyJob job, JArray messages);
     void StartRequest(WorldDiplomacyRequestSnapshot request, JArray messages);
     long RuntimeGeneration { get; }
     int DefaultApiTimeoutMilliseconds { get; }
@@ -190,7 +190,7 @@ internal static class WorldDiplomacyLlmDispatchApplication
         string cacheAffinityKey = WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(job);
         source.MarkRunning(job, cacheAffinityKey);
         source.SetLastCacheAffinityKey(cacheAffinityKey);
-        source.LogPromptCacheShape(job);
+        source.LogPromptCacheShape(job, requestMessages);
         source.StartRequest(request, requestMessages);
         scheduler?.RecordLaneDispatch(job);
     }

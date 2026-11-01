@@ -104,7 +104,9 @@ internal static class DiplomacyPromptApplication
                 sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_ConversationIndependentClan", "The player has not founded a kingdom, but their independent clan holds towns/castles and may discuss political recognition, truces, non-aggression, tribute, or pre-foundation conditions with monarchs. Formal kingdom alliances, trade agreements, and kingdom peace treaties require a founded kingdom."));
                 sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_ConversationIdentityPrefix", "[Player political identity] Independent landholding clan: ") + s.PlayerClanName + DiplomacyPromptTexts.Get("AF_DIP_ConversationFiefs", "; Bases: ") + s.PlayerFiefs + DiplomacyPromptTexts.Get("AF_DIP_ConversationFullStop", "."));
             }
-            else sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_ConversationNotRuler", "The player is not a monarch and cannot conclude formal kingdom diplomacy; political negotiations, audiences, recognition, truces, or pre-foundation conditions may be discussed."));
+            else sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_ConversationNotRuler", "The player is not a monarch and cannot sign formal agreements for a kingdom, but may persuade their own or a foreign current ruler to declare war, seek peace, or propose alliance or trade. That ruler decides whether to agree. Never treat player affiliation as sovereign control or player support as the target ruler's acceptance."));
+            if (!(source is IDiplomacyOralPromptSource persuasion) || persuasion.UseFormalCommitments)
+                sb.AppendLine(DiplomacyPromptTexts.Get("ConversationPersuasion", ""));
             var wars = source.CaptureWars();
             foreach (var war in wars) AppendWar(sb, war, wars);
             if (!string.IsNullOrEmpty(s.PeaceKingdomName))

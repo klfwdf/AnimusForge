@@ -27,6 +27,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         var item = owner.Storage.DialogueArrangements?.FirstOrDefault(x => x.ArrangementId == id && x.RulerId == rulerId
             && x.ActorKingdomId == actorId);
         if (item == null || string.IsNullOrWhiteSpace(reason)) return DiplomacyMiscPromptTexts.Get("DialogueControl_AmbiguousSourceReason", "Commitment disposition not submitted: source or reason unclear.");
+        if (!string.IsNullOrEmpty(item.DirectExecutionState))
+            return DiplomacyMiscPromptTexts.Get("DialogueControl_HasFormalResult", "This commitment already has a formal outcome and cannot be rolled back through private discussion.");
         owner.RecoverDialoguePublicationReceipt(item);
         if (DiplomacyCommitmentRules.IsPending(item) && state != "accepted")
             return DiplomacyMiscPromptTexts.Get("DialogueControl_CommitmentBinding", "An accepted commitment must be fulfilled; further conversation cannot cancel or postpone it.");

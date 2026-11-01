@@ -1,0 +1,175 @@
+{
+  "reviewer": "supervising chat 01a18a5a-75e1-7640-b70e-630e97cbe498",
+  "workerChat": "01a18c87-01c6-7f73-9114-47133fea4621",
+  "status": "INDEPENDENT_REVIEW_PASSED_LOCAL_ONLY",
+  "sourceRevision": "c6d2b69d8c67403d76c5f2392444af79a506f29d",
+  "observedHead": "0c0f775a67e2fc5029adfe74f2138aff8f32b44d",
+  "method": "Read final source and baseline diff; generated fresh CN/EN harnesses using unchanged repository run_response_recovery.py; independently compiled 333 actual source/test files per package and ran six targeted modes per package. Controlled model/native-effect leaves; no live game/provider calls.",
+  "replays": [
+    {
+      "package": "cn",
+      "mode": "--lobbyist",
+      "result": "PASS lobbyist assertions=168",
+      "logSha256": "3bd4b1e8704b9eea9f73be8dbd0702b04c7022f476f27b78695ebc2f12cad0b1"
+    },
+    {
+      "package": "cn",
+      "mode": "--sovereign-control",
+      "result": "PASS sovereign control assertions=980",
+      "logSha256": "7f8bc0ba044d4dc9526fadef88ad892bf2c3354d9b4cbfdb43ef746f4a5623b3"
+    },
+    {
+      "package": "cn",
+      "mode": "--bilateral-direct",
+      "result": "PASS bilateral direct assertions=194",
+      "logSha256": "8b9501b4e8f75948dab36ec22f0f3343cbea84101488297143704e8ce20a1967"
+    },
+    {
+      "package": "cn",
+      "mode": "--speech-review",
+      "result": "PASS SpeechReviewReplay assertions=741",
+      "logSha256": "40cc29f08fdf122104264ce9a4a2aab76a62a85bc9644d19dee6400a7070e1ed"
+    },
+    {
+      "package": "cn",
+      "mode": "--oral-declaration",
+      "result": "Oral AI declaration replay passed: 645 assertions.",
+      "logSha256": "c8c560acff43d2cfba6d75935ada1013625bf93743e4d2e0c64b8f799dfe5324"
+    },
+    {
+      "package": "cn",
+      "mode": "--original-oral-vassalage",
+      "result": "PASS OriginalOralVassalageReplay assertions=343",
+      "logSha256": "b20a2fa7e8d0149432901b918d8faa04c34fde57db51655c13b20583d00849cb"
+    },
+    {
+      "package": "en",
+      "mode": "--lobbyist",
+      "result": "PASS lobbyist assertions=168",
+      "logSha256": "3bd4b1e8704b9eea9f73be8dbd0702b04c7022f476f27b78695ebc2f12cad0b1"
+    },
+    {
+      "package": "en",
+      "mode": "--sovereign-control",
+      "result": "PASS sovereign control assertions=980",
+      "logSha256": "7f8bc0ba044d4dc9526fadef88ad892bf2c3354d9b4cbfdb43ef746f4a5623b3"
+    },
+    {
+      "package": "en",
+      "mode": "--bilateral-direct",
+      "result": "PASS bilateral direct assertions=194",
+      "logSha256": "8b9501b4e8f75948dab36ec22f0f3343cbea84101488297143704e8ce20a1967"
+    },
+    {
+      "package": "en",
+      "mode": "--speech-review",
+      "result": "PASS SpeechReviewReplay assertions=741",
+      "logSha256": "40cc29f08fdf122104264ce9a4a2aab76a62a85bc9644d19dee6400a7070e1ed"
+    },
+    {
+      "package": "en",
+      "mode": "--oral-declaration",
+      "result": "Oral AI declaration replay passed: 645 assertions.",
+      "logSha256": "c8c560acff43d2cfba6d75935ada1013625bf93743e4d2e0c64b8f799dfe5324"
+    },
+    {
+      "package": "en",
+      "mode": "--original-oral-vassalage",
+      "result": "PASS OriginalOralVassalageReplay assertions=343",
+      "logSha256": "b20a2fa7e8d0149432901b918d8faa04c34fde57db51655c13b20583d00849cb"
+    }
+  ],
+  "compiledSourceEvidence": {
+    "cn": {
+      "count": 333,
+      "sourceManifestSha256": "a692c1475fa756372d8773746966d79bf478d3aa7fcff377f52e5da185e3a3f4",
+      "currentSourceMatches": true
+    },
+    "en": {
+      "count": 333,
+      "sourceManifestSha256": "a692c1475fa756372d8773746966d79bf478d3aa7fcff377f52e5da185e3a3f4",
+      "currentSourceMatches": true
+    }
+  },
+  "deliverySourceHashesMatched": true,
+  "deliveredBuildArtifactHashesMatched": true,
+  "protectedFilesAndDirectoriesUnchanged": [
+    "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Bilateral.cs",
+    "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Bilateral.cs",
+    "src/modules/AF.Module.Diplomacy/Application/DiplomacyBilateralEffects.cs",
+    "scripts/build",
+    "一键编译覆盖推送"
+  ],
+  "diffWhitespaceCheck": "PASS with cr-at-eol matching existing CRLF files; default check reports carriage returns on added lines, not additional trailing spaces.",
+  "reviewedBoundaries": [
+    "Sole tag owner for scoped lobbyist matters and explicit retirement of old extraction/audit jobs",
+    "Per-matter routing preserving player direct diplomacy, AI-off fallback, special vassal signing and complex own-country review",
+    "Actual payment evidence, legacy/new same-day equal-value distinction, permanent used-receipt ownership, continuation and idempotent retry",
+    "Known event/source binding, fixed proposal publication, target response, coupled conditions and formal effect owner",
+    "Private conversation exclusion from public draft/event input and CN/EN actual consumers",
+    "Legacy terminal-state reload and late-callback isolation; bounded daily recovery; no Tick IO"
+  ],
+  "supervisionFindingsResolved": [
+    "Registration failures retain technical retry status",
+    "Legacy continued records remain terminal after reload",
+    "Known public announcements and multi-action target events can be referenced",
+    "Old payment plus new same-day equal-value payment remain distinct; typed/AFEF duplicate evidence cannot be reused",
+    "Continuation field-name/condition casing agrees with accepted parser semantics"
+  ],
+  "unresolvedNewInScopeFindings": [],
+  "preexistingFailures": [
+    {
+      "mode": "--audit-fixes",
+      "baseline": "61750a208",
+      "currentAndBaselineFailure": "System.InvalidOperationException: real UI resource and literal author/title/body placeholders compose correctly",
+      "scope": "Unaffected existing path; not repaired in this task"
+    },
+    {
+      "mode": "--concurrent-oral-migration",
+      "baseline": "61750a208",
+      "currentAndBaselineFailure": "System.InvalidOperationException: player merges into existing country speech instead of side conversation",
+      "scope": "Unaffected existing path; not repaired in this task"
+    }
+  ],
+  "limitations": [
+    "Live Bannerlord campaign",
+    "Real provider output reliability",
+    "Actual in-game gold transfer and target negotiation",
+    "Old physical .sav recovery",
+    "Release package / Stage / deployment / push"
+  ],
+  "productChangedFileSha256": {
+    "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.en.json": "90065c04792fd18deb93e9a68527b49eaa6d36b710e8f3f1dfdb288a2003665c",
+    "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json": "e64fab3c76c1f7c23fee9d7474477bcb82e118d7ad90b0d8a6d4287c98256c31",
+    "docs/fixtures/phase4-persistence-profile-config/persistence-catalog.json": "299e02aa6d17f9e8efd31c4ebd14b0a3898f5b0c98e86daeddcf4b104b5aafae",
+    "src/AF.GameAdapter.Bannerlord/Scene/SceneTradeBannerlordAdapter.cs": "10a4abd6705abaa46bfe949508e5dbf1e43a1b430c20ec9a1e62728dfde3872c",
+    "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs": "a5b0cd28b8ba749a6faf7783c7d4c7256d3322446dbc03b094a687695af6cd24",
+    "src/modules/AF.Module.Diplomacy/Adapters/DiplomacyOralTagSource.cs": "fdfa0bfd6251e11411868f0ca3f2fdec7922b5f95091a7941342bb9c110cc904",
+    "src/modules/AF.Module.Diplomacy/Application/DiplomacyNativeCommitmentApplication.cs": "43a51fb7909f3f7fff752842a3b995919e7110913286d6d964d857d5224e0075",
+    "src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs": "92bebc345b81681b93e490ba891399eac461e2fcaf1a5374a8516461c138e08d",
+    "src/modules/AF.Module.Diplomacy/Application/DiplomacyPostprocessContextApplication.cs": "6eef0e6ad1e9e7663c4f1ac0477dee3d974cf70725e80b275ef82e2e2fb8f840",
+    "src/modules/AF.Module.Diplomacy/Application/IDiplomacyCommitmentTagSource.cs": "dcc69a7ca18723d10dc29964f526f01238636b4cf858a4096ac0473f56978114",
+    "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.CountryAdmission.cs": "59adee6c6c7456c234e36c9241a2fbbef307886173f0f717a63d2ebcdacd8b75",
+    "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Dialogue.cs": "6571e9501dfa3740d3e577d9600a948e428595af05c0ee181478dad8fce210d8",
+    "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.EventRequestEvidence.cs": "9a89a232bc9245f73a92774353bf17229debe80ccc3e1608e42b4b68e74cb3ec",
+    "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.LegacyOral.cs": "c4a4ddfa8e2b4ad68d5415a6da5c4c15bd7cd17f001cc5475b9a5478c4fe60e5",
+    "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.OralGeneration.cs": "bf8cbece69f8ff58e82a27445da6fda54376ce1ede0776c0dddb2dd8366065b2",
+    "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SpeechReview.cs": "e873fbee383704d9985e569bf0ec023cad92cccda64d58001edc5e165e4859b3",
+    "src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialoguePeaceClarificationRules.cs": "0cfd7c82ce89fef6e569b225cde97e7b2600ad18b52c685d54df3b90a73a8a64",
+    "src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueTagPayload.cs": "cd683e514a7df4aa1e7ade25c2b8d6b9e997d260dd845c5ff7a7e2825b61bb12",
+    "src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyDialogueRecords.cs": "f2e307343b94e49d287a7914594576e3b653a035286c318c93484239ec48ed4a",
+    "src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyStorageRecord.cs": "303a95d3232aea7d8ecde5427431c98440424974db89717f86247bbc41f279af",
+    "src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyStorageShapeNormalizer.cs": "8d905ccbe5af989caa4a2994250d63dda1cb7072babc6cbf6a71a8acdb2ce646",
+    "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DialogueAdapter.cs": "0d55cb25ce3ce93b0f3ed054499952b66d08b9536d94e4afb266ec4ec1e0c52a",
+    "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DialogueHost.cs": "fbb1cec11aa302f472282913d418ccbeb38df1ecc091c3e52aa2de2d7b0884aa",
+    "tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/BilateralReplay.cs": "634663179f8ba0bc89d6215797c748d64a9846736a2e70654ee583d688dc9ed9",
+    "tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/OralEventAttributionReplay.cs": "5e3eeef90dde94bd84096ae1eaf4bd11f6f8ebd7ec907eb241c19df012cb1da9",
+    "tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/Program.cs": "37c6ebc0fe37d0cf372b4ca337c2e446ed5396582a0aec53e58b0c04bdf07634",
+    "tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/SovereignControlReplay.cs": "17f0ca881f6500c95d72bb07b09321c643ed228c7202f2900b0f6a3d79ebbb94",
+    "tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/SpeechReviewReplay.cs": "f214c9f67fc52d674bb9f6df9b664d2768cba7b681085cf0f0c26979dbbc26c5",
+    "tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/WorldDiplomacyRoundLifecycle.SmokeTests.csproj": "ea87569832fc0fe49b945fd61970990264955c8de3a51f594352bf8278b698a6",
+    "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Lobbyist.cs": "c991aab2da46d94a6296a2fe2e83c80adb8ee3447075e6a337759010e9f165ca",
+    "src/modules/AF.Module.Diplomacy/Domain/DiplomacySponsorReceiptRules.cs": "91d4ed25f258c37b7f9b58e5bcfce6e266f2b837239473e98fecbedf9e0f4bd1",
+    "tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/LobbyistReplay.cs": "35688e3461148f54541c2ab994d70adcac5546d16acbb2c75636fbeed6540e07"
+  }
+}

@@ -171,6 +171,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         job.SystemPrompt = DiplomacyPromptTexts.Get(job.Kind == "event_progress_audit" ? "EventProgressAudit" : "EventProgressWriter", "");
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("EventEffectPayloadContract", "");
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SovereignPositionContract", "");
+        job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("SovereignControlContract", "");
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("EventProgressRoutes", "");
         job.SystemPrompt += "\n" + DiplomacyPromptTexts.Get("EventEndingContract", "");
         job.EventProgressContractVersion = 1;
@@ -192,7 +193,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             available_continuations = EventContinuationOptions(round, evidence),
             player_waits = round.PlayerNegotiationWaits.Where(x => x.RequiresAnswer && string.IsNullOrEmpty(x.AnswerDocumentId)
                 && string.IsNullOrEmpty(x.ClosureDocumentId)),
-            sovereign_speakers = round.Participants.Select(x => new { kingdom = x.KingdomId, ruler_hero_id = _host.PartyRulerId(x.KingdomId) }),
+            sovereign_speakers = SovereignSpeakersForModel(round.Participants.Select(x => x.KingdomId)),
             opening_document_missing = ResolveDocument(round.RootDocumentId)?.IsReadyForPublication != true,
             PendingOffers = evidence["pending_offers"], documents = evidence["documents"],
             public_announcements = Storage.EventAnnouncements.Where(x => x.EventId == round.RoundId && x.State == "public")

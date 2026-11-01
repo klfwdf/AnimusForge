@@ -107,6 +107,7 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private void BindPlayerDeclarationToSharedEvent(WorldDiplomacyDocument document)
     {
+        BindPlayerThreatAnswerSources(document);
         var provisional = ResolveRound(document.RoundId);
         if (provisional == null || provisional.DialogueArrangementId != "player_manual_declaration") return;
         var answerSources = (document.AnsweredNpcDocumentIds ?? new()).Select(ResolveDocument)

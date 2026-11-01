@@ -4,6 +4,18 @@
     <tag language="简体中文" />
   </tags>
   <strings>
+    <string id="AF_DIP_UI_LobbyistRegistered_DeclareWar" text="{KINGDOM}君主{RULER}已承诺向{TARGET}宣战。" />
+    <string id="AF_DIP_UI_LobbyistRegistered_Peace" text="{KINGDOM}君主{RULER}已承诺向{TARGET}提出议和。" />
+    <string id="AF_DIP_UI_LobbyistRegistered_Alliance" text="{KINGDOM}君主{RULER}已承诺向{TARGET}提出结盟。" />
+    <string id="AF_DIP_UI_LobbyistRegistered_Trade" text="{KINGDOM}君主{RULER}已承诺向{TARGET}提出贸易协定。" />
+    <string id="AF_DIP_UI_LobbyistRegistered_BreakAlliance" text="{KINGDOM}君主{RULER}已承诺解除与{TARGET}的同盟。" />
+    <string id="AF_DIP_UI_LobbyistRegistered_CancelTrade" text="{KINGDOM}君主{RULER}已承诺取消与{TARGET}的贸易协定。" />
+    <string id="AF_DIP_UI_LobbyistRegistered_Annexation" text="{KINGDOM}君主{RULER}已承诺提出由{RECEIVING}吞并{JOINING}的方案。" />
+    <string id="AF_DIP_UI_LobbyistRegistered_Tributary" text="{KINGDOM}君主{RULER}已承诺提出由{JOINING}向{RECEIVING}称臣纳贡的方案。" />
+    <string id="AF_DIP_UI_LobbyistRegistered_Garrison" text="{KINGDOM}君主{RULER}已承诺提出由{JOINING}接受{RECEIVING}驻军的方案。" />
+    <string id="AF_DIP_UI_LobbyistRegistered_Vassal" text="{KINGDOM}君主{RULER}已承诺提出由{JOINING}成为{RECEIVING}附庸的方案。" />
+    <string id="AF_DIP_UI_LobbyistRegistered_AcceptProposal" text="{KINGDOM}君主{RULER}已承诺正式接受{TARGET}的外交提案。" />
+    <string id="AF_DIP_UI_LobbyistRegistered_RejectProposal" text="{KINGDOM}君主{RULER}已承诺正式拒绝{TARGET}的外交提案。" />
     <string id="AF_DIP_UI_Aid_RequestTitle" text="请求盟友援助" />
     <string id="AF_DIP_UI_Aid_RequestBody" text="请求{ALLY}参加对{ENEMY}的战争吗？盟友将单独决定。本次请求不会替盟友宣战，也不支付原版自动召战费用。" />
     <string id="AF_DIP_UI_Aid_Send" text="发出求援" />

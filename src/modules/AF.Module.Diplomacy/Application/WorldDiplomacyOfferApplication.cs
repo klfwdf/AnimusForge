@@ -11,21 +11,7 @@ internal static class WorldDiplomacyOfferActionApplication
 {
     internal static bool TryResolveTradeAcceptanceTerms(WorldDiplomacyDocument source, string sourceActionId,
         WorldDiplomacyDialogueTerms acceptedTerms, out WorldDiplomacyDialogueTerms original, out string reason)
-    {
-        original = null;
-        reason = "trade_acceptance_missing_source_offer";
-        if (source == null) return false;
-        var action = source.Actions?.Find(x => x != null && string.Equals(x.ActionId, sourceActionId, StringComparison.Ordinal));
-        if (source.Actions?.Count > 0 && action == null) return false;
-        original = action != null ? action.TreatyTerms : source.TreatyTerms;
-        reason = "trade_acceptance_changes_terms";
-        if (original?.DurationDays < 0 || original?.DailyTribute < 0
-            || acceptedTerms?.DurationDays < 0 || acceptedTerms?.DailyTribute < 0) return false;
-        var expected = (original ?? new WorldDiplomacyDialogueTerms()).ToTerms();
-        if (acceptedTerms != null && !acceptedTerms.ToTerms().Equals(expected)) return false;
-        reason = "";
-        return true;
-    }
+        => WorldDiplomacyOfferContractRules.TryResolveTradeAcceptanceTerms(source, sourceActionId, acceptedTerms, out original, out reason);
 
     internal static WorldDiplomacyOfferOutcome Execute(string intent, WorldDiplomacyRoundOffer offer, WorldDiplomacyDocument source,
         WorldDiplomacyDocument response, IWorldDiplomacyOfferActionPort port, IWorldDiplomacyOrchestration orchestration)

@@ -53,6 +53,162 @@ a1e9cf147；[唯一台账](../animusforge-refactoring-and-repository-reorganizat
 | src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.cs:2833–2864、2856 | TryLaunchRequiredAgendaVote | 将仅PushState的日志标为请求UI，不能作为成功投票证据；其他行为保持。 |
 | 同文件:4302–4495 | KingdomAgendaItemVM.LoadDetail | 候选/排序/赞助/支持/选项VM/时序分阶段；catch记录类型、国家、提议家族、标题和完整异常。仅定位日志，不保证任一原生对象非空。 |
 | 同文件:4900–4954 | KingdomAgendaVMMixin.StartVoteMeeting | 资格、取消、时序、原生RefreshWith/激活/通知分阶段；完整堆栈，成功路径独立日志。未验证玩家真实存档或UI渲染，也未更改原生投票状态。 |
+<a id="merge-push-20261031"></a>
+## 2026-10-31 远端/本地正常合并证据
+
+源码修订 `fb9d38d1561d5872532d6123dbd0925c0201f253`，父修订为本地检查点 `99622baf6` 和远端 `134365229`。本轮没有新写业务算法；远端改动完整保留，本地外交责任沿用既有对应条目。
+
+| 核对位置（一基行号） | 符号/责任 | 本次证据与边界 |
+| --- | --- | --- |
+| `src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs:248-253` | `EncyclopediaDataOnTickPrefix`，外交弹窗期间拦百科按键 | 本地新增判断保留；真实prefix及popup/input lease回放261通过；非实机 |
+| `src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs:2193-2199` | 音色按钮点击回调，按当前TTS provider选择编辑入口 | 远端分流保留；双API编译与TTS104行为检查；百科实际点击未验 |
+
+其余远端变化文件与 `134365229` Git对象一致，其余本地独有变化文件与 `cdc855d40` Git对象一致；详见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#merge-push-20261031)。原生会话退出21、CN/EN外交各3552及双API/Bootstrap/seam/注册通过；远端既有静态测试格式失配、真实游戏/服务/旧档未验边界不变。
+
+<a id="diplomacy-country-routing-20261031"></a>
+## 2026-10-31 国家分流与说客登记提示：代码责任证据
+
+修订 `b7cf2db8b`；状态、构建与验收仅见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-country-routing-20261031)。以下为一基行号，未新增公开 API、存档键或独立执行器。
+
+| 源码位置 | 符号 / 责任 | 消费者与边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Diplomacy/Domain/DiplomacyBilateralPayload.cs:16-102` | `TryLobbyistCommit` / `TryFromCommit`，六动作等价格式转换、国家/方向/完整条款约束 | 复用原 `TryParse`，不执行游戏效果，不丢条件/来源，不授权其他国家发起 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Lobbyist.cs:64-254` | `TryProcessLobbyistTag`、`SameLobbyistPayload`、`NotifyLobbyistRegistered` | 共享分发器先入；同一持久承诺登记与事件 owner；已登记才原生消息，重复/失败不误报；原赞助功能不改 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Bilateral.cs:53-80` | `TryProcessBilateralTag`，直接范围格式规范化及入场 | 仍调用原 `ExecuteBilateral` 的精确来源/条件/效果幂等；复杂正式来源不降级 |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Bilateral.cs:12-19` | `TryProcessBilateral` 薄接线 | 替换原 COMMIT 空消费分支，复用原 `ApplyBilateral` 六类原生权限与效果检查 |
+| `src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs:66-100` | `Process`，逐事项路由优先于复杂复核边界 | 入口异常隔离与未接收诊断；没有增加另一轮 LLM；标签不成为 NPC 正文 |
+| `content/modules/AF.Module.Diplomacy/ModuleData/Languages/{afdip_ui_strings.xml,CNs/afdip_ui_strings-zh-CN.xml}:7-18` | `AF_DIP_UI_LobbyistRegistered_*` 12 对模板 | `DiplomacyUiLocalization.Format` → host `Notify` → `InformationManager.DisplayMessage`；随 UI 语言，原语言注册/内容映射不变 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/CountryRoutingReplay.cs:1-184` | 新国家分流/通知专项，真实 owner + controlled leaves | CN/EN 各 481 项；覆盖源失败标签正式发文执行、三渠道、条件/身份/方向、提示与跨日等价重放；不代替实机 |
+
+相关 `DiplomacyPromptTexts.json/.en.json` 的 `Lobbyist_Protocol` / `Bilateral_Postprocess` 和 `RuleBehaviorPrompts.json/.en.json` 的六动作说明同步新规则。生产调用从 Native、Scene、Courier 各自效果阶段经 `DiplomacyConversationBridge` → `DiplomacyConversationModuleAdapter.ProcessDiplomacyTags` 进入同一分发器；没有修改各渠道自有历史、付款、动作或话题执行链。
+
+<a id="lobbyist-diplomacy-20261030"></a>
+## 2026-10-30 说客外交确定登记代码图
+
+版本 `c6d2b69d8c67403d76c5f2392444af79a506f29d`。当前状态、完整验收与未验边界只登记于[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#lobbyist-diplomacy-20261030)。以下行号为该提交一基行号；不改写旧范围表。
+
+| 源码 / 行范围 | 符号与责任 | 覆盖 / 未覆盖 |
+| --- | --- | --- |
+| src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs:40–106 | Process：逐事项说客优先，隔离旧复核失败，保留直接/原机制 | 共用 dispatcher 回放；实机未验 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Lobbyist.cs:15–52 | ObserveSponsorPayment / SponsorPayments：真实交付边界、旧事实导入、UsedBy 防重复 | 同日同额、AFEF别名、归档后去重复；经济 API 是替身 |
+| 同上:64–204 | TryProcessLobbyistTag / LinkLegacyLobbyistEvidence：身份、条件、条款、来源、去重、原项接续与旧证据链接 | 真实日志派生及异常反例；不声称真实模型验收 |
+| 同上:206–287 | CompletesLobbyistPayload / MaintainLobbyistPending / BuildLobbyistContext / ValidLobbyistEvent | 补缺、公平四项/日、自然上下文、公开事件/多动作目标；日常不读取旧历史 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Dialogue.cs:31–126,131–187,244–321,350–414 | SubmitReviewedOralCommitment / BuildOralArrangementContext / SubmitDialogueWork / MaintainDialogueArrangements | 复用确定事件、同条记录升级、失败恢复、版本/来源；名称沿用，未增加重识别 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SpeechReview.cs:20–140,227–228,288–303 | EnsureSpeechReviewIndex / LegacyReviewHasRetainedMatter / CaptureSpeechReview / MaintainSpeechReviews / IsCurrentSpeechReview | 退出说客旧提取与迟到结果，保留明确复杂本国事项；无批量清队列 |
+| src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueTagPayload.cs:19–71；Domain/DiplomacySponsorReceiptRules.cs:10–28 | 新可选条件字段严格解析；精确旧 AFEF 兼容投影 | 未知文本不作金钱证明；不改既有协议身份 |
+| src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyDialogueRecords.cs:8–31；WorldDiplomacyStorageRecord.cs:9；WorldDiplomacyStorageShapeNormalizer.cs 的 SponsorReceipts 初始化 | 同存档追加 DTO/defaults，原严格分块容器 | helper/catalog/strict replay；真实 sav 未验 |
+| src/AF.GameAdapter.Bannerlord/Scene/SceneTradeBannerlordAdapter.cs:1015–1026；src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs:250–259 | 原金币增量确认后观察，不修改经济结算 | 源码接线 + 双 API 编译；无实机转账声称 |
+| src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DialogueAdapter.cs:8–28；DialogueHost.cs:9–28；Adapters/DiplomacyOralTagSource.cs | 同 DLL host 接口、260 条历史边界 | 维持原分层与游戏主线程边界，无新 public API |
+| src/modules/AF.Module.Diplomacy/Application/DiplomacyPostprocessContextApplication.cs:75–106,145–157；DiplomacyPromptApplication.cs:55–78 | 主/后处理消费者及独立家族事实共存 | 11 对 CN/EN 键及双包真实消费者；主回复无标签协议指令 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.OralGeneration.cs:150–157；CountryAdmission.cs:616–627；EventRequestEvidence.cs:59–70 | 新说客的公开任务材料排除私人原话 | 公开写作和隐私/audit owner 仍复用 |
+| src/modules/AF.Module.Conversation/Actions/ConversationActionExecutorComposition.cs:170,301；Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs:53–54；src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs:32–42 | 原三渠道 origin → 共用标签/上下文消费者（本轮未修改） | 源码追踪 + 共用实际 dispatcher 三渠道回放；非实际 UI 回放 |
+| tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/LobbyistReplay.cs:76–335；SovereignControlReplay.cs:27–108 | 新168项、主权执行980项和相关旧回归 | CN/EN；效果/模型替身边界见台账 |
+
+<a id="diplomacy-acceptance-repair-20261030"></a>
+## 外交接受与旧拒稿恢复代码范围 — 2026-10-30
+
+源码修订8e7f48b46，检查点4fe263734。[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-acceptance-repair-20261030)。仓库相对路径、一基行号；仅维护本次链路，非全仓框架验收。
+
+| 路径与行号 | 符号 / 责任 | 已覆盖与边界 |
+|---|---|---|
+| src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyOfferContractRules.cs:85–158 | ArePeaceTermsEquivalent / ParseTreatyTerms / TryResolveTradeAcceptanceTerms | 空停战语义统一；贸易省略继承、显式改动拒绝；不放宽真实条款 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Treaties.cs:58–59；Application/WorldDiplomacyAnalysisApplication.cs:339–341；Application/WorldDiplomacyOfferApplication.cs:12–14 | 生成、玩家分析、执行共用规则 | 共享条款解析/接受判定，其他正式条约保持旧语义 |
+| src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyGenerationValidationRules.cs:532–535 | TryGetGeneratedSingleActionLegalityViolation | 贸易接受提前验证，复用有限修稿；最终执行仍重查 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Recovery.cs:435–496；Persistence/WorldDiplomacyDocumentRecords.cs:33–34 | RecoverRejectedAcceptanceDrafts / AcceptanceRepairVersion | 两种明确旧拒稿，来源/状态/回执保护、一次性排队；读档不执行外交；不处理不确定副作用 |
+| content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json:207–215 | 主客体、付款、方向识别模式 | CN/EN共用资源的真实reader；同义称谓通过，方向/数额/期限错误仍拒绝 |
+| tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/AcceptanceTermsRepairReplay.cs:1–186；Program.cs:96–97,385 | 修复专项及完整runner接线 | 77项，实际owner生成准入/口头执行/序列化读档回放；不等于实际存档或在线语义验收 |
+
+<a id="event-map-overlays-20261030"></a>
+## 地图覆盖层事件通知边界 — 2026-10-30
+
+源码修订49087e5e4，基线f99a73748，检查点77d17852e。[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#event-map-overlays-20261030)。以下为仓库相对路径与一基行号；本段取代旧通知资格说明，不改变外交执行职责。
+
+| 路径与行号 | 符号 / 责任 | 覆盖与未覆盖 |
+|---|---|---|
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPopup.cs:55–69 | TryShowCore | 允许所属地图面板焦点，拒绝无法接管的全局焦点；未动通知owner |
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPopup.cs:96–113 | IsNotificationContextAvailable | MapState/MapScreen与对话/Mission边界；无菜单/百科/暂停整体屏蔽，保留原模态交互保护 |
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPopup.cs:134–164 | OnApplicationTick | 同一资格重验、延迟Esc及未读撤回；无每帧层枚举 |
+| src/AF.GameAdapter.Bannerlord/UI/Common/DevPopupInputLease.cs:64–68 | Dispose焦点恢复 | 恢复父层但不夺取新对话/面板焦点；原资源与输入恢复保持 |
+| src/AF.GameAdapter.Bannerlord/UI/Persona/EncyclopediaHeroPersonaPatch.cs:248–254 | EncyclopediaDataOnTickPrefix | 事件期间暂停百科原生快捷键；原历史编辑/信使保护保持，现有注册入口未变 |
+| tests/DiplomacyEventPopupLifecycle/Program.cs:49–187; run.py:25–36 | 地图面板回放 / prefix源码截取 | 生产popup/VM/lease与实际prefix函数体，原生边界fixture；未实机/未部署 |
+
+<a id="deploy-all-local-20261029"></a>
+## 当前工作区完整部署范围 — 2026-10-29
+
+部署源码 revision `1e6ccf7cacc8c43051e07a773128261440d87609`；本次未修改产品实现或部署脚本，完整工作区重建与安装证据由[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#deploy-all-local-20261029)维护。通牒回复、运行优化、token 优化与按钮职责仍分别由本文件既有 `player-ultimatum-reply-repair-20261029`、`diplomacy-runtime-optimization-code-20261029`、`diplomacy-token-optimization-20261029`、`diplomacy-entry-slim-20261029` 条目的符号、一基行号和原产品 revision 定义，不重复扩张代码验收范围。双 API/Bootstrap/seam/registration 与 410 个受管文件核对通过；文件部署验收不等同游戏内事件收尾、外交性能或 UI 实机验收。
+
+<a id="diplomacy-entry-slim-20261029"></a>
+## 宣言按钮最终薄款比例 — 2026-10-29
+
+产品a176510db05132ffd646c654be7b4162cd6eb503；替代上一位置条目的135×40尺寸和16/14字号，布局锚点及业务边界不变。[主台账负责状态与部署证据](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-entry-slim-20261029)。
+
+| 源码与一基行号 | 符号 | 职责与验证边界 |
+| --- | --- | --- |
+| src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomDiplomacyDeclarationEntry.cs:84–97 | Inject wrapper | 250×30薄款、统计区居中、上18下4间距；仅加载时布局。 |
+| src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomDiplomacyDeclarationEntry.cs:152–161 | Entry.Refresh | CN22/EN20文字，沿用已有权限及灰绿brush；不增加规则或设置。 |
+| tests/AF.GameAdapter.Bannerlord/DiplomacyDeclarationEntryTests/Program.cs:90–137 | Run | 行尺寸/间距与双语字号断言、既有交互回归；合并已有提议接管专项每API267项。渲染/字体/战役为fixture，不等同实机验收。 |
+
+<a id="player-ultimatum-reply-repair-20261029"></a>
+## 玩家通牒回复与沉默/收尾衔接 — 2026-10-29
+
+源码 `421aad45e`，检查点 `d577f21b7`。[主台账、范围及未验项](../animusforge-refactoring-and-repository-reorganization-plan.md#player-ultimatum-reply-repair-20261029)。下表路径相对仓库，行号一基；同 DLL 外交 Application 责任，不新增公开 API、存档字段或配置。
+
+| 源码路径 | 符号 / 行号 | 已覆盖责任与边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Threats.cs` | `RecordThreatNonCompliance` 67–75；`BindPlayerThreatAnswerSources` 79–100；`IsPublishedPlayerThreatAnswer` 102–111 | 复用原未服从记录；明确来源优先，同案面向通牒方不依赖内容相关性；资格、时间、发布及知情守卫 |
+| 同上 | `ReconcilePlayerThreatAnswer` 113–137；`RecoverPublishedPlayerThreatAnswers` 139–155 | 晚归案同步原通牒、沿用历史重试，加载仅恢复确切旧回答；不重执行外交动作或重置一次性标记 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Scheduling.cs` | `BindPlayerDeclarationToSharedEvent` 108–111 | 归案前补确定性回复来源，复用原归案消费者 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerEvents.cs` | `RegisterPublishedPlayerAnswer` 209–238 | 回复记账与通牒决定同步；普通问答及沉默资格原入口保留 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerLifecycle.cs` | `NormalizePlayerLifecycleRecovery` 310–314 | 加载入口接入确切旧回答恢复；不新增 Tick 档案扫描 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/EventConvergencePlayerThreatReplyReplay.cs` | `PlayerThreatReplyRepair`、`DirectedPlayerThreatReplies`、`PlayerThreatReplyRecovery`、`PlayerThreatReplyGuards` | 真实生产方法与记录序列化回放；假宿主模拟游戏对象，未覆盖实机、真实模型及玩家 `.sav` |
+
+<a id="diplomacy-token-optimization-20261029"></a>
+## 外交 token 优化发送与恢复边界 — 2026-10-29
+
+源码修订 `4a0f405bd`，检查点 `faf42ac9e`。[主台账与验证限制](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-token-optimization-20261029)。下表路径相对仓库、一基行号；同 DLL Application/host 适配，无独立公共 API 或新 DLL。
+
+| 路径与行号 | 符号 / 责任 | 覆盖及未覆盖 |
+|---|---|---|
+| src/modules/AF.Module.Diplomacy/Application/DiplomacyRequestProjection.cs:15–99 | Project / TryWorld / ExtractShared / AppendContextOnce | 有界 detached 发送投影与完整块去重；保留未知字段/原材料，不改变游戏事实或审核裁决 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmMessageApplication.cs:34–70 | BuildLlmMessageArray | 实际 messages 消费 CN/EN 契约，仅净减量采用；固定语义修复链不改 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Privacy.cs:90–120,252–278 | PrepareDiplomacyPrivacy / PrepareDeclarationAudit | 新源重验、阶段空尾保留已隔离源、完全重复生成块只传一次；保密审核仍执行 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Recovery.cs:11–30,233–299 | HasExhaustedLocalReview / HoldTechnicalRequest / TryResumeTechnicalRequest | 同条件额度不补满，网络恢复保留当前有效阶段草稿；不改未知执行结果阻断及公文义务 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs:131,193 | IWorldDiplomacyLlmDispatchSource / Dispatch | 将实际发送消息交给诊断；本地接口变更，无外部 API 版本变化 |
+| src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs:27–35; WorldDiplomacyBehavior.cs:625–693 | BuildMessageArray / LogPromptCacheShape / LogPromptCacheUsage | host 薄适配；实际消息形状及 event/job/attempt 归因，未自行估算为 provider usage |
+| content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json:2; DiplomacyPromptTexts.en.json:2 | RequestWorldProjection | 双语固定契约由既有 resource reader 读取；不强制输出语言，不引入配置 |
+| tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/TokenOptimizationReplay.cs:7–103; TokenLogProjectionReplay.cs:8–57 | TokenOptimization / Run | 中英文实际消费者及恢复回放、只读历史字符估算；无真实模型行为或游戏验收保证 |
+
+<a id="oral-sovereign-control-20261029"></a>
+## 口头外交国家控制权 — 2026-10-29
+
+源码修订cf963f440，检查点2d2876229。[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#oral-sovereign-control-20261029)。以下路径相对仓库，行号为一基；现有执行与权限owner仍为唯一实际授权依据。
+
+| 路径与行号 | 符号 / 责任 | 覆盖及未覆盖 |
+|---|---|---|
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.NarrativeSafety.cs:16–45 | SovereignSpeakersForModel / NpcConceptPositionFailure / TryRecoverLegacyOralNpcPosition | 复用host当前君主与玩家掌权判断；精确旧故障恢复；不新建权限状态 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.NarrativeSafety.cs:328–337 | TryReadConceptPosition | NPC必须填写立场，纠正携带控制权；保留玩家主权国留空规则 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SpeechReview.cs:125–131 | PrepareSpeechReview | 抽取/审核请求携带实际掌权国、所属国与君主事实；共享三渠道入口 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.OralGeneration.cs:124–131 | RebuildOralDeclarationJob | 正式发布请求携带发起/目标掌权事实；沿用既有外交执行链 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.EventPlanning.cs:451–478 | PrepareEventConceptRequest | 形成与审核共用短控制权规则和顶层快照；不重复增加内层快照 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.EventProgress.cs:174–192 | PrepareEventProgressRequest | 后续事件维持当前控制权；既有材料预算不变 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.EventRuntime.cs:232–267 | 收尾请求 | 收尾/审核使用同一控制权快照；不直接授权效果 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Recovery.cs:216–227 | TryResumeTechnicalRequest | 精确旧错误恢复正常有限次数；新标记阻止读档无限重试 |
+| src/modules/AF.Module.Diplomacy/Application/DiplomacyPromptApplication.cs:103–110 | Build | 正式模式主对话说明劝说与签署权限；原版模式不注入正式承诺规则 |
+| content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json:2–9; 同名.en.json:2–9 | SovereignControlContract / ConversationPersuasion / CountryAdmissionOral | CN/EN成对资源，真实消费者及预算回归；非规则词法替换 |
+| tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/SovereignControlReplay.cs:27–149 | Run / Persuasion / PlanningAndRecovery | 身份×渠道×行为矩阵、原日志失败形状、恢复上限；受控模型/游戏端口，不代表实机 |
+
+<a id="diplomacy-event-map-only-20261029"></a>
+## 外交事件通知显示与退出边界 — 2026-10-29
+
+源码修订967fd59cc，基线5a2558130，检查点9576aa700。[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-event-map-only-20261029)。
+
+| 路径与一基行号 | 符号 / 责任 | 覆盖及未覆盖 |
+|---|---|---|
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPopup.cs:47–116 | TryShow / TryShowPreview / TryShowCore / IsNotificationContextAvailable | 自动通知仅空闲地图；保留显式终端预览；未改变事件执行owner |
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPopup.cs:138–183 | OnApplicationTick / Close | 关闭请求优先、Esc延迟、上下文与失焦撤回、输入/暂停清理；未实机验证 |
+| src/AF.GameAdapter.Bannerlord/UI/Diplomacy/DiplomacyEventPreview.cs:16–29 | ProcessPending | 真实预览消费者改接专用入口，沿用准备中重试与双语提示 |
+| tests/DiplomacyEventPopupLifecycle/Program.cs:1–133；Stubs.cs:1–123；run.py:1–44 | 生产源码生命周期回放 | 112项，native边界是替身；runner记录源码哈希，输出隔离 |
+| tests/DiplomacyEventPresentation/PreviewPendingReplay.cs:1–65 | 既有预览替身入口适配 | 既有展示/本地化/异步资源合集586项；不代表真实绘制 |
 
 <a id="vassal-diplomacy-buttons-20261029"></a>
 ## 封臣原版外交按钮接管 — 2026-10-29
@@ -2348,3 +2504,30 @@ Product/source `530e8813f`; [single ledger](../animusforge-refactoring-and-repos
 | `tests/AF.GameAdapter.Bannerlord/TerminalLiveSettingsTests/TtsLiteGuideChecks.cs` / `Run` | 11–48 | Actual DLL/MCM metadata, native Inquiry data, original-owner terminal callback, four-provider visibility, bilingual contents and no settings mutation. No native rendering/audio acceptance. |
 
 Player docs live under `docs/tts/`; `.agents/skills/af-gptsovits-guides/` maintains stable release workflow and separate future U guide requirements. Synthesis/runtime/voice identity and all unrelated gameplay are outside this product delta.
+
+
+## AF-BILATERAL-DIRECT-20261030
+
+核实最终产品修订 `22ad71b9ebe44f03dec7fb2e6b898b57b27d5c89`（含主实现 `57cf6c15c`）；[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#af-bilateral-direct-20261030)记录状态、命令、既存失败及未验项。本表只描述本次批准的六类双边职责；不宣布全外交框架或实机完成。
+
+| 源码路径 / 符号 | 核实一基行号 | 本次职责与边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Diplomacy/Domain/DiplomacyBilateralRouting.cs` / NeedsRemainingReview、OwnsMatter | 11–40 | 按事项能力分流，六类双边与拒绝/第三国/复杂事项分开；owner 注入精确来源条件判定 |
+| 同模块 `Domain/DiplomacyBilateralPayload.cs` / TryParse | 13–59 | 原标签格式的严格前置校验、当前国家稳定 ID、完整贡金/割地与精确文书/动作关联；不推断语义同意 |
+| 同模块 `World/WorldDiplomacyBehavior.Bilateral.cs` / TryProcessBilateral、ApplyBilateral | 12–115 | live host/当前双君主入口、原 native 规则和效果端口、主线程、真实回执；实际游戏端口本次只编译，未实机 |
+| 同模块 `Application/DiplomacyOralTagApplication.cs` / Process | 27–83 | 可选双边 port 优先于旧审核抑制，逐事项异常消隐/隔离，不 fallback 重执行；其余旧标签入口保留 |
+| 同模块 `Application/DiplomacyBilateralEffects.cs` / Peace | 8–35 | 原和平 receipt + 割地回执组合，partial/unknown 不冒充整包 applied |
+| 同模块 `Application/WorldDiplomacyOrchestration.Bilateral.cs` / ExecuteBilateral、RequiresFormalBilateralSource | 45–149 | 当前权限、interaction 去重、未知结果防重试、精确来源/条件、无来源冲突检查、真实回执入原 owner |
+| 同文件 / DirectDocumentResult、RecoverDirectResultPublication、CompleteDirectResultSource | 17–43、171–235 | 缓存只读结果证据、实际行为国、只恢复 AFEF/事件/公告、只结算确切原案；不改其他备选提案 |
+| 同模块 `Application/WorldDiplomacyOrchestration.SpeechReview.cs` / EnsureSpeechReviewIndex、CaptureSpeechReview、CompleteSpeechReview | 20–65、203–272 | 契约 v4，旧捕获的双君主六能力退役；剩余事项、耦合源、无 marker 合法 COMMIT、非君主原审核保留 |
+| 同模块 `Application/WorldDiplomacyOrchestration.OralGeneration.cs` / OralIntent、RebuildOralDeclarationRequest、CommitOralDeclaration、RecoverSkippedOralTreaty | 33–57、134–151、247、310、365–367 | 已执行结果只能 statement/无重签；原作者与实际行为方分离；禁止旧 treaty 恢复路径重执行 |
+| 同模块 `Application/WorldDiplomacyOrchestration.cs` / ProcessAnalyzedDocument | 1053–1064 | 已执行声明强制 non_binding、无 actions/执行 terms，真实文书/version 校验 |
+| 同模块 `Application/WorldDiplomacyOrchestration.CountryAdmission.cs` / EnsureOralAdmissionPlan | 622–623 | 已执行结果进入原评分/入场，保留原权重与额外参与国 |
+| 同模块 `Application/WorldDiplomacyOrchestration.EventRequestEvidence.cs` / 事件资料投影 | 56–62 | `executed_oral_result` 及实际 actor/target/terms 原样供后续事件消费 |
+| 同模块 `Application/WorldDiplomacyOrchestration.EventRuntime.cs` / 结案校验与通知；`Convergence.cs` / EnsureConvergence、RecordConvergencePublication | 148、430、533；74–79、114–118、194–199 | confirmed_documents 认识实际结果；玩家实际宣战不因公告 intent=statement 而丢失；不确定源不作已解决结案 |
+| 同模块 `Application/WorldDiplomacyOrchestration.Dialogue.cs` / MaintainDialogueArrangements；DialogueControl、DialogueIndex、DialogueMemory | 325–359；各本次差异 | 既有维护点限额恢复/保留回执，实际结果不可私下撤回；索引随原失效；原事件关联不跳过 AFEF |
+| 同模块 `Persistence/WorldDiplomacyDialogueRecords.cs` / DirectExecution*；DiplomacySpeechReview / ExcludeDirectBilateral | 11–14；新增字段 | 原 JSON/chunk owner 内可选字段；旧缺失字段不生成成功回执，无新增 save key |
+| `src/modules/AF.Module.Conversation/Actions/ConversationActionExecutorComposition.cs` / 原生/场景来源 scope | 170、301 | 复用 captured trace 身份；信使原 session 身份保留，不跨 await 持有 scope |
+| `content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts{,.en}.json` / Bilateral_*、OralArrangementHeader、CountryAdmissionOral；Prompt/RuleBehaviorPrompts{,.en}.json / diplomacy | 955–961、519、10；对应 diplomacy 段 | 原真实 lazy reader/内容映射，CN/EN 成对资源与实际消费者；关闭模式六标签原条件保留，不强制模型输出语言 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/BilateralReplay.cs`；CountryAdmissionReplay / Entrances；NativeDiplomacyFallbackReplay；PromptMemoryReplay | 1–245；对应新增分支；本次差异 | 执行/异常/原案/重载/legacy 与完整事件 host 离线验证；机械回执受控，非实机证明 |
+| `tests/content/J15ContentContractTests/DiplomacyBilateralContractTests.py` | 全文件 | 7 key 配对、协议/变量、真实 reader、native 模式隔离；不冒充全历史语料门禁 |

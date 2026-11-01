@@ -16,11 +16,11 @@ public sealed partial class WorldDiplomacyBehavior
         public long HistoryCompressionTriggerTokens => GetHistoryCompressionTriggerTokens();
         public int TargetHistoryMemorySchemaVersion => HistoryMemorySchemaVersion;
         public int RelaySchemaVersion => WorldDiplomacyBehavior.RelaySchemaVersion;
-        public string PublishedPolicyLedgerId() => DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryLedgerId();
-        public void AcknowledgePolicyArtifactsThrough(long throughSequence) => DiplomacyModuleServices.Policy.TryAcknowledgePublishedPolicyHistoryThrough(throughSequence);
+        public string PublishedPolicyLedgerId() => "";
+        public void AcknowledgePolicyArtifactsThrough(long throughSequence) { }
         public void ClearSourceKeys() => _owner._runtime.CanonicalHistorySourceKeys.Clear();
         public IEnumerable<WorldDiplomacyWeeklyArtifact> WeeklyArtifacts() => new HistoryCapturePort(_owner).WeeklyArtifacts();
-        public IEnumerable<PublishedPolicyArtifactLedgerEntry> PolicyArtifacts() => ReadAllPublishedPolicyArtifactsForMigration();
+        public IEnumerable<PublishedPolicyArtifactLedgerEntry> PolicyArtifacts() => System.Array.Empty<PublishedPolicyArtifactLedgerEntry>();
         public void SetObservedWeeklyRevision(long revision) => _owner._runtime.LastObservedWorldWeeklyHistoryRevision = revision;
         public long WeeklyRevision() => MyBehavior.GetPublishedWorldWeeklyReportHistoryRevisionForExternal();
         public WorldDiplomacyDocument ResolveDocument(string documentId) => _owner.ResolveDocument(documentId);

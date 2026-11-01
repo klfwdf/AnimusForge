@@ -167,7 +167,7 @@ internal LegacyNativeActionPlanExecutor CreateNativeConversationActionPlanExecut
 				return InteractionStatus.RejectedByValidation;
 			}
 			string content = actionPlan?.RawPostprocessId ?? "";
-            using var diplomacySource = DiplomacyDialogueSourceScope.Begin(content, "native", snapshot.Identity.SessionId, snapshot.PlayerText, content);
+            using var diplomacySource = DiplomacyDialogueSourceScope.Begin(content, "native", snapshot.Identity.SessionId, snapshot.PlayerText, content, snapshot.Trace.TraceId);
 			NativeConversationGameActionResult actionResult = instance._nativeGameEffects.ApplyNativeConversationGameActionsLegacyCore(
 				targetHero,
 				targetCharacter,
@@ -298,7 +298,7 @@ internal LegacyNativeActionPlanExecutor CreateSceneShoutActionPlanExecutorForExt
 				return InteractionStatus.RejectedByValidation;
 			}
 			string content = actionPlan.RawPostprocessId ?? string.Empty;
-            using var diplomacySource = DiplomacyDialogueSourceScope.Begin(content, "scene", snapshot.Identity.SessionId, snapshot.PlayerText, content);
+            using var diplomacySource = DiplomacyDialogueSourceScope.Begin(content, "scene", snapshot.Identity.SessionId, snapshot.PlayerText, content, snapshot.Trace.TraceId);
 			bool consumed = instance._boundary.TryApplyDeferredSceneMoodTag(npc, content);
 			content = StripDeferredSceneMoodTags(content);
 			if (instance._boundary.TryApplyDeferredScenePostprocessActionTagsDirectly(

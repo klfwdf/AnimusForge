@@ -14,7 +14,7 @@ public sealed partial class WorldDiplomacyBehavior
     // Leaf-only host adapter for WorldDiplomacyOrchestration. Every member is a
     // synchronous identity/snapshot/settings/effect capability; no member calls
     // back into an Application or into the orchestration itself.
-    private sealed partial class OrchestrationHost : IWorldDiplomacyOrchestrationHost, IDiplomacyModelConfiguration, IDiplomacyMaterialWorld, IWorldDiplomacySemanticSource
+    private sealed partial class OrchestrationHost : IWorldDiplomacyOrchestrationHost, IDiplomacyModelConfiguration, IDiplomacyMaterialWorld, IWorldDiplomacySemanticSource, IDiplomacyPolicyMaterialHost
     {
         private readonly WorldDiplomacyBehavior _owner;
         private System.Threading.Tasks.Task<bool> _embeddingInitialization;
@@ -214,6 +214,7 @@ public sealed partial class WorldDiplomacyBehavior
         public IReadOnlyList<WorldDiplomacyThreat> Threats() => _owner._storage?.DiplomaticThreats;
 
         // Module/service leafs.
+        public IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> QueryPolicyMaterials(int minimumDay, IReadOnlyCollection<string> kingdoms) => DiplomacyModuleServices.Policy.QueryRecentMaterials(minimumDay, kingdoms);
         public IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> ForeignPolicySignals() => DiplomacyModuleServices.Policy.GetForeignPolicySignals();
         public string PublishedPolicyHistoryLedgerId() => DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryLedgerId();
         public long PublishedPolicyHistoryRevision() => DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryCurrentRevision();

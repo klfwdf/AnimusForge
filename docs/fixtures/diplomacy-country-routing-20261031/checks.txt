@@ -1,0 +1,22 @@
+CN
+PASS country routing assertions=481
+PASS lobbyist assertions=168
+PASS bilateral direct assertions=194
+PASS SpeechReviewReplay assertions=741
+PASS sovereign control assertions=980
+Oral AI declaration replay passed: 645 assertions.
+PASS OriginalOralVassalageReplay assertions=343
+
+EN
+PASS country routing assertions=481
+PASS lobbyist assertions=168
+PASS bilateral direct assertions=194
+PASS SpeechReviewReplay assertions=741
+PASS sovereign control assertions=980
+Oral AI declaration replay passed: 645 assertions.
+PASS OriginalOralVassalageReplay assertions=343
+
+Build: PASS 1.3 + 1.4 + Bootstrap + managed seam/registration gates. Existing compiler warnings and offline NU1900 vulnerability-source warning retained.
+Localization: PASS 12 paired UI templates/variables; paired prompt keys; real CN and EN UI string assertions.
+Self-review: reviewed production diff, actual three-channel callers, branch authority and condition boundaries, exact source/cession preservation, effect/notice idempotency; no unresolved in-scope issue identified.
+NOT RUN: live game, provider generation, deployment, packaging, push; no whole-repository green claim.

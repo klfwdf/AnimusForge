@@ -31,12 +31,13 @@ internal static class PromptMemoryReplay
     private struct Postprocess : IDiplomacyPostprocessContextSource, IDiplomacyOralPostprocessSource
     {
         internal bool Native;
+        internal bool PlayerNonRuler;
         public bool UseFormalCommitments => !Native;
         public string NativeActionInstruction() => "AI外交已关闭 [ACTION:DIPLOMACY:DECLARE_WAR:a:b] 原版执行";
         public bool HasSpeaker => true;
         public bool TryCaptureIndependentPeace(out DiplomacyIndependentPeaceContextSnapshot snapshot) { snapshot = default; return false; }
         public DiplomacyConversationEligibilitySnapshot CaptureEligibility() => new(true, false, false, true, false, true, true, false, true, true);
-        public DiplomacyPostprocessKingdomSnapshot CaptureKingdoms() => new(true, "a", "甲", true, false, "p", "玩家国", true, true, Array.Empty<DiplomacyKingdomSummary>());
+        public DiplomacyPostprocessKingdomSnapshot CaptureKingdoms() => new(true, "a", "甲", true, false, "p", "玩家国", !PlayerNonRuler, true, Array.Empty<DiplomacyKingdomSummary>());
         public string GetAnnexationHint() => "";
         public bool ArePlayerAndNpcAtWar() => false;
         public int CalculateDailyTribute(bool npcPays) => 0;
@@ -52,8 +53,8 @@ internal static class PromptMemoryReplay
             "shared main reply asks for missing tribute duration before promising publication");
         var peacePostprocess = new Postprocess();
         Test.True(DiplomacyPostprocessContextApplication.Build(ref peacePostprocess).Contains(
-            AnimusForge.DiplomacyDialogue.DialoguePeaceClarificationRules.PostprocessInstruction),
-            "shared postprocess checks complete peace terms without inventing duration");
+            DiplomacyPromptTexts.Get("Bilateral_Postprocess", "MISSING")),
+            "shared royal postprocess uses the direct contract including complete peace terms without inventing duration");
         Test.True(text.Contains((SmokeLocalizationEnvironment.EnglishPackage ? "both monarchs" : "都是国王")) && text.Contains((SmokeLocalizationEnvironment.EnglishPackage ? "Your side has a clear advantage" : "你方明显占优")) && text.Contains("兼并规则") && text.Contains("level_3"), "royal prompt, war position, annexation and trust share one application");
         Test.True(prompt.Captures == 1 && prompt.Wars == 1, "capture world values once per selected prompt");
         prompt = new Prompt { Oral = "arrangement=owned;source_document=original;version=2" };
@@ -63,10 +64,13 @@ internal static class PromptMemoryReplay
             "selected diplomacy includes exact arrangement/source identity through the module read port");
         var postprocess = new Postprocess();
         string post = DiplomacyPostprocessContextApplication.Build(ref postprocess);
-        Test.True(post.Contains(postprocess.OralArrangementContext()) && post.Contains("DIPLOMACY:COMMIT:action=") && post.Contains("DIPLOMACY:COMMITMENT:arrangement="),
-            "postprocessing receives arrangement identity and the previously approved oral tags");
-        Test.True(!post.Contains("DIPLOMACY:MAKE_TRADE:") && post.Contains("DIPLOMACY:DECLARE_WAR:p:a"),
-            "NPC consent submits formal documents while the existing player's explicit-war exception remains available");
+        Test.True(post.Contains(postprocess.OralArrangementContext()) && post.Contains("DIPLOMACY:REVIEW_REMAINING"),
+            "royal postprocessing receives arrangement identity and remaining-matter routing");
+        Test.True(post.Contains("DIPLOMACY:MAKE_TRADE:") && post.Contains("DIPLOMACY:DECLARE_WAR:ACTOR:TARGET"),
+            "royal bilateral execution exposes the six direct actions with separate actual war actor");
+        var nonRulerPost=new Postprocess{PlayerNonRuler=true};string formal= DiplomacyPostprocessContextApplication.Build(ref nonRulerPost);
+        Test.True(formal.Contains("DIPLOMACY:COMMIT:action=")&&formal.Contains("DIPLOMACY:COMMITMENT:arrangement=")&&!formal.Contains("DIPLOMACY:MAKE_TRADE:"),
+            "non-ruler persuasion preserves formal commitments and their controls");
         var nativePost = new Postprocess { Native=true };
         string nativeTags = DiplomacyPostprocessContextApplication.Build(ref nativePost);
         Test.True(nativeTags.Contains(nativePost.NativeActionInstruction()) && !nativeTags.Contains("DIPLOMACY:COMMIT") && !nativeTags.Contains("arrangement=owned"),
@@ -80,6 +84,16 @@ internal static class PromptMemoryReplay
         Test.True(text.Contains((SmokeLocalizationEnvironment.EnglishPackage ? "Independent landholding clan: 家族" : "独立有城家族：家族")) && prompt.Templates.SequenceEqual(new[] { "player_independent_settlement_clan", "level_3" }), "missing independent-clan template retains trust fallback");
         prompt = new Prompt { PlayerRuler = false };
         Test.True(DiplomacyPromptApplication.Build(prompt, "【附加规则:diplomacy】").Contains("player_not_king") && prompt.Templates.Count == 1, "non-ruler state stops before trust template");
+        foreach (bool independent in new[] { false, true })
+        foreach (bool ruler in new[] { false, true })
+        {
+            var participant = new Prompt { Independent = independent, PlayerRuler = ruler };
+            string instruction = DiplomacyPromptTexts.Get("ConversationPersuasion", "");
+            Test.True(instruction.Length > 100 && DiplomacyPromptApplication.Build(participant, "【附加规则:diplomacy】").Contains(instruction),
+                "actual shared main reply includes persuasion independent of player signing authority");
+        }
+        Test.True(!nativeMain.Contains(DiplomacyPromptTexts.Get("ConversationPersuasion", "missing")),
+            "AI diplomacy disabled does not acquire formal publication requirements");
         prompt = new Prompt { TopicAllowed = false };
         Test.True(DiplomacyPromptApplication.Build(prompt, "【附加规则:diplomacy】").Length == 0 && prompt.Wars == 0, "ineligible NPC never scans wars");
         var memory = new Memory();

@@ -25,7 +25,7 @@ internal static class OriginalOralVassalageReplay
             Test.True(!registered && owner.CurrentStorage.DialogueArrangements.Count == 0
                 && owner.CurrentStorage.Jobs.Count == 0 && host.Effects == 0,
                 "COMMIT cannot replace original oral signing: " + channel + type);
-            Test.True(owner.CaptureSpeechReview("ruler_a", "a", origin, ""), "real speech captured without a tag");
+            Test.True(owner.CaptureSpeechReview("ruler_a", "a", origin, "[ACTION:DIPLOMACY:REVIEW_REMAINING]" + ("")), "real speech captured without a tag");
             var job = owner.CurrentStorage.Jobs.Single();
             owner.PrepareSharedRequest(job);
             Test.True(job.SystemPrompt.Contains(DiplomacyPromptTexts.Get("SpeechReview_OriginalVassalage", "missing")),
@@ -39,10 +39,9 @@ internal static class OriginalOralVassalageReplay
                 Content = new JObject { ["unresolved"] = false, ["commitments"] = entries }.ToString() });
             Test.True(job.Kind == "oral_review_audit", "valid mixed extraction reaches independent audit");
             owner.TryCompleteDiplomacyPipeline(job, new LlmJobResult { Success = true, Content = "{\"approved\":true}" });
-            Test.True(owner.CurrentStorage.DialogueArrangements.Count == 1
-                && owner.CurrentStorage.DialogueArrangements.Single().Action == DialogueDiplomaticAction.Trade
+            Test.True(owner.CurrentStorage.DialogueArrangements.Count == 0
                 && owner.CurrentStorage.SpeechReviews.Count == 0 && host.Effects == 0,
-                "original submission skipped without blocking independent trade or creating a treaty: " + channel + type);
+                "original signing and direct bilateral trade cannot be duplicated by formal review: " + channel + type);
         }
         foreach (string type in new[] { "Tributary", "Garrison", "Vassal" })
         {

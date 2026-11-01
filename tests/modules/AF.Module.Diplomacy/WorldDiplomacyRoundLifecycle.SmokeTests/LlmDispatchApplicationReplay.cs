@@ -36,7 +36,7 @@ internal static class LlmDispatchApplicationReplay
         public bool TryClaim(string id, long generation, int maxTokens, int timeout, out WorldDiplomacyRequestSnapshot request)
         { s.Events.Add("claim"); request = null; return s.Claim && s.Lease.TryClaim(id, generation, maxTokens, timeout, out request); }
         public void MarkRunning(WorldDiplomacyJob job, string key) { job.IsRunning = true; job.CacheAffinityKey = key; s.Events.Add("running"); }
-        public void LogPromptCacheShape(WorldDiplomacyJob job) => s.Events.Add("shape");
+        public void LogPromptCacheShape(WorldDiplomacyJob job, JArray messages) { s.Events.Add("shape"); Test.True(messages != null, "diagnostics receive the actual prepared wire messages"); }
         public void StartRequest(WorldDiplomacyRequestSnapshot request, JArray messages) { s.Request = request; s.Events.Add("start"); }
         public long RuntimeGeneration => s.Generation;
         public int DefaultApiTimeoutMilliseconds => 90000;
