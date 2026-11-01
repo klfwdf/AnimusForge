@@ -1,32 +1,19 @@
 {
   "Id": "rule_bortnichestvo_wild_pine_beekeeping",
   "Keywords": [
-    "Bortnichestvo Wild Pine Beekee",
-    "Bortnichestvo Wild Pine Beekee Lore",
-    "Bortnichestvo Wild Pine Beekee Chronicles",
-    "AD1259 Bortnichestvo Wild Pine Beekee"
+    "keeping bees in woodland hollows",
+    "rights to honey trees"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Bortnichestvo Wild Pine Beekee in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Bortnichestvo W",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Bortnichestvo "
+    "Tree-hollow colonies supply honey and wax and require climbing and skilled work.",
+    "Bee-tree rights, wax demand and transport vessels affect a keeper’s returns."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Bortnichestvo Wild Pine Beekee constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Bortnichestvo Wild Pine Beekee. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Woodland beekeepers find or prepare tree hollows for colonies. They remember nest sites and routes, and face falls and stings while climbing and taking comb. Honey feeds households, trades for goods or supplies fermented drink; wax serves lighting and worship. Removing every reserve endangers the colony, creating a choice between an immediate larger jar and another season’s yield.\n\nA bee tree is not simply open to whoever finds it. Woodland users, keepers and lords make claims over hollows and shares. Marks, witnesses and continued care help identify the keeper. Honey and wax still need vessels and transport out of the forest, with leakage, damp and robbery reducing returns. Church demand for wax and household needs for sweetness and exchange give one colony several destinations."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Bortnichestvo Wild Pine Beekee. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "A lord demanding honey and wax needs keepers and safe transport. Seizing nests or taking excessive shares may reduce next year’s dues; protecting the forest route protects income."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers taking an unfamiliar nest risk a keeper’s claim. Honey purchases require sound closures and weighing, while wax needs protection from heat and crushing cargo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A beekeeping household needs climbing skill alongside cooking and field work. In a poor season, jars must be divided among children, salt purchases and obligations."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

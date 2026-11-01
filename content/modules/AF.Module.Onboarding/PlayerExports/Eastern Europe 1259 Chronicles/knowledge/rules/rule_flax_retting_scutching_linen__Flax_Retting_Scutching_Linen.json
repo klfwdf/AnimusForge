@@ -1,32 +1,19 @@
 {
   "Id": "rule_flax_retting_scutching_linen",
   "Keywords": [
-    "Flax Retting Scutching Linen",
-    "Flax Retting Scutching Linen Lore",
-    "Flax Retting Scutching Linen Chronicles",
-    "AD1259 Flax Retting Scutching Linen"
+    "retting flax for fibre",
+    "breaking and spinning flax"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Flax Retting Scutching Linen in 1259 Easte",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Flax Retting Sc",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Flax Retting S"
+    "Flax stems are retted, dried and dressed before spinning and weaving.",
+    "Fibre quality, water and household labour shape cloth costs beyond the crop yield."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Flax Retting Scutching Linen constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Flax Retting Scutching Linen. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Flax takes land and substantial work after harvest. Retting loosens fibres from woody stems, followed by drying, breaking and combing to prepare long fibres for spinning. Too little retting makes dressing hard and too much weakens the fibre; water, weather and experience affect the result. Seed has separate uses, so the whole harvest is not cloth fibre.\n\nSpinning, warping and weaving require tools, time and skill, and woven cloth needs finishing for clothing or household use. Fineness, knots and the closeness of the weave affect value. Spinners still share cooking, child care and stock work. Selling cloth for grain competes with keeping it for clothes, wrapping or dues."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Flax Retting Scutching Linen. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Flax, yarn and cloth dues demand different amounts of work. Delivery terms must consider when households can also tend fields and dependants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Linen shirts and foot wraps need dry replacements on the road. Buyers inspect holes and loose weaving; cheap weak cloth can fail as cargo wrapping."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Spinning fits between chores but still costs time. Long fibres for finer yarn and short fibres for coarse uses divide a crop among household needs."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

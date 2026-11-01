@@ -1,32 +1,19 @@
 {
   "Id": "rule_laika_bear_hound_breeding_division",
   "Keywords": [
-    "Laika Bear Hound Breeding Divi",
-    "Laika Bear Hound Breeding Divi Lore",
-    "Laika Bear Hound Breeding Divi Chronicles",
-    "AD1259 Laika Bear Hound Breeding Divi"
+    "tracking dogs in a woodland hunt",
+    "feeding and handling hunting dogs"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Laika Bear Hound Breeding Divi in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Laika Bear Houn",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Laika Bear Hou"
+    "Hunting dogs track, warn or hold quarry and need food, training and handling.",
+    "Large animals injure dogs and people; a dog does not guarantee a safe hunt or journey."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Laika Bear Hound Breeding Divi constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Laika Bear Hound Breeding Divi. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Woodland hunting dogs help locate quarry through scent, pursuit and barking, with different temperaments and habits. Young dogs need feeding and familiarity with handlers and terrain; adults need strength before a hunt. A long pursuit can lose them, and injuries consume part of a hunt’s proceeds in food and care.\n\nAgainst bears and other large animals, dogs can distract or hold quarry but may be struck and injured. Hunters still face danger on arrival. Dogs, beaters and armed people must cooperate; one brave animal does not complete a hunt. Chasing livestock or another party’s quarry can provoke compensation and boundary disputes, affecting future hunting partnerships."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Laika Bear Hound Breeding Divi. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Noble kennels require feed, handlers and training alongside prestige. Failure to take quarry does not remove claims for a neighbour’s injured stock."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts distinguish warnings at animals, strangers or familiar scents. A strange hunting dog should not be allowed to scatter pack animals or draw people into the woods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Dogs take a share of household food and need care after injury. Borrowers should agree responsibility for loss or harm before dividing any game."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

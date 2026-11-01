@@ -1,32 +1,19 @@
 {
   "Id": "rule_smerd_zakup_debt_bondage_boundary",
   "Keywords": [
-    "Smerd Zakup Debt Bondage Bound",
-    "Smerd Zakup Debt Bondage Bound Lore",
-    "Smerd Zakup Debt Bondage Bound Chronicles",
-    "AD1259 Smerd Zakup Debt Bondage Bound"
+    "zakup debt service obligations",
+    "smerd status and rural claims"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Smerd Zakup Debt Bondage Bound in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Smerd Zakup Deb",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Smerd Zakup De"
+    "Rus law distinguishes debt service, rural people and household slaves rather than one status.",
+    "Debts, work, flight and masters’ duties require specific judgment and affect families."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Smerd Zakup Debt Bondage Bound constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Smerd Zakup Debt Bondage Bound. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Rus rural people occupy different positions in person and property; smerd, zakup and household slave are distinct legal terms. A debt servant’s borrowed money, goods or seed creates labour obligations whose amount and use matter. Working for another does not automatically place an entire family in hereditary ownership; disputes depend on status, events and applicable rules.\n\nDebt links present food with future work, while a servant’s own fields and children also need care. Flight can have serious consequences, but a master’s abuse can also be disputed. Witnesses and a clear debt history shape the case. Poor harvests may force further borrowing, and help from neighbours can preserve a family’s sowing."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Smerd Zakup Debt Bondage Bound. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Creditors need clear debts and services rather than merged statuses. Taking all seed and working time can make repayment harder instead of increasing real returns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Recruiters need to check existing duties rather than accept claims of freedom without inquiry. Clothing alone does not distinguish flight from lawful travel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Seed loans save sowing but promised labour competes with home fields. Families need debt and work terms, while help from kin can prevent another loan."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

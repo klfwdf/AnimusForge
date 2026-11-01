@@ -1,32 +1,19 @@
 {
   "Id": "rule_velikiy_post_seed_oil_fasting",
   "Keywords": [
-    "Velikiy Post Seed Oil Fasting",
-    "Velikiy Post Seed Oil Fasting Lore",
-    "Velikiy Post Seed Oil Fasting Chronicles",
-    "AD1259 Velikiy Post Seed Oil Fasting"
+    "household meals during Orthodox fasts",
+    "Great Lent provisions"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Velikiy Post Seed Oil Fasting in 1259 East",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Velikiy Post Se",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Velikiy Post S"
+    "Orthodox fasts restrict meat and dairy; fish, oil and feast exceptions follow church practice.",
+    "Household fasting also depends on stores, health and work rather than abundant substitutes."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Velikiy Post Seed Oil Fasting constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Velikiy Post Seed Oil Fasting. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Rus Christians follow a church calendar of fasting, with limits on meat, dairy and some uses of oil changing household cooking. Fish days and provision for sick people require clerical and local guidance rather than merely replacing a dish name. Prayer, repentance and alms accompany restraint, and neighbours judge reputations for observance.\n\nStores diminish toward spring, so suitable meals depend on grain, dried vegetables, fish and fuel. Wealthy people buy alternatives while poor homes may simply lose already scarce dairy or meat. Elders, sick people and heavy workers have different needs. Food shares should reflect strength, and grain given to a poor neighbour helps more than criticism alone."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Velikiy Post Seed Oil Fasting. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Estates need fasting meals and work planned together, with people actually fed rather than only compliant kitchen accounts. Alms and sick dependants require ongoing provision."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers and soldiers have limited food choices and can seek clerical advice. Fish or vegetable alternatives still require money, fuel and pots."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families stretch stores to the next supply and reserve food for sick people. Borrowed grain or a neighbour’s hot meal helps more than an inaccessible rich menu."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

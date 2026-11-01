@@ -1,32 +1,19 @@
 {
   "Id": "rule_wild_lingonberry_frostbite_paste",
   "Keywords": [
-    "Wild Lingonberry Frostbite Pas",
-    "Wild Lingonberry Frostbite Pas Lore",
-    "Wild Lingonberry Frostbite Pas Chronicles",
-    "AD1259 Wild Lingonberry Frostbite Pas"
+    "lingonberries as stored food",
+    "berries and cold-weather hardship"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Wild Lingonberry Frostbite Pas in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Wild Lingonberr",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Wild Lingonber"
+    "Lingonberries supply seasonal food, with storage and exchange limited by weather and vessels.",
+    "Cold-injured people need shelter, dry clothes and care rather than a guaranteed berry cure."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Wild Lingonberry Frostbite Pas constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Wild Lingonberry Frostbite Pas. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Woodland lingonberries and other berries provide food to eat or store, depending on ripeness, weather and place. Pressure releases juice, while leaks and spoiled fruit reduce what reaches home. Keeping, gifting or trading the harvest depends on grain and access to market; sour flavour does not replace bread or porridge.\n\nCold-weather gatherers face wet feet, wind and delayed returns. Numb hands and feet or damaged skin impair future work. Families offer available food to sufferers, who still need shelter, dry clothing, nourishment and continuing care. Fruit pulp on an injury does not establish recovery, and pain, inability to walk or worsening illness requires further help."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Wild Lingonberry Frostbite Pas. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Forest dues should not force dangerous returns. Cold injuries reduce labour, and food, shelter and relief from duties matter beyond a jar of fruit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Scouts need dry foot coverings and should not fall behind for berries. Unsteady companions or failing fingers call for shelter and help."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Gathering families share work according to strength. Bringing a cold-injured person home needs carts, clothes and help with missed chores."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

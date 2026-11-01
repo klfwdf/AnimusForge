@@ -1,32 +1,19 @@
 {
   "Id": "rule_dvina_river_timber_rafting",
   "Keywords": [
-    "Dvina River Timber Rafting",
-    "Dvina River Timber Rafting Lore",
-    "Dvina River Timber Rafting Chronicles",
-    "AD1259 Dvina River Timber Rafting"
+    "timber floating on the Dvina",
+    "securing a river timber load"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Dvina River Timber Rafting in 1259 Eastern",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Dvina River Tim",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Dvina River Ti"
+    "Water carries timber, but levels, shoals and landings govern passage.",
+    "Floating wood needs watching and securing; floods, losses and unloading add costs."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Dvina River Timber Rafting constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Dvina River Timber Rafting. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "The Dvina waterways connect forests and settlements, letting timber avoid part of a land haul. Cut wood still needs moving to the bank, a suitable water level and people to watch it. Shoals trap logs and bends or fast currents break loads apart. Lost wood may never be recovered downstream, and a busy river is not navigable for every timber load every day.\n\nAt a landing, logs must be hauled out, stacked and sorted, with wet wood weighing differently from dry. Boats, fishers and ferries share the river and can be blocked by timber. Owners, woodland claimants and local authorities may demand proof of origin or dues, so cheap floating transport still includes labour, losses and negotiation."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Dvina River Timber Rafting. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Building projects need delivery dates as well as felling. Without workers and carts at landings, arriving timber piles up and obstructs crossings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts risk drowning while chasing loose logs, especially in armour. Before crossing, watching upstream timber can matter as much as inspecting the far bank."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Timber work pays but takes people from fields. Families provide ropes, food and a return plan; changing water can delay promised farm work."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_radonitsa_graveyard_libation_pagan_feast",
   "Keywords": [
-    "Radonitsa Graveyard Libation P",
-    "Radonitsa Graveyard Libation P Lore",
-    "Radonitsa Graveyard Libation P Chronicles",
-    "AD1259 Radonitsa Graveyard Libation P"
+    "commemorating the dead with kin",
+    "prayers at a family grave"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Radonitsa Graveyard Libation P in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Radonitsa Grave",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Radonitsa Grav"
+    "Christians pray for the dead and tend graves; kin meetings involve food and alms.",
+    "Clergy and families can differ over conduct at graves, while poor homes balance subsistence."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Radonitsa Graveyard Libation P constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Radonitsa Graveyard Libation P. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Rus Christians remember the dead in worship and visit family graves to pray, tend the surroundings and meet relatives. Remembering names and seeking clerical prayers depend on kin ties and daily devotion. Graves also need accessible paths, boundaries and repairs to damaged woodwork.\n\nKin share food, receive visitors or give to the poor, using the living household’s grain, drink and time. Families may see an act as respect for ancestors while clergy oppose food or drink intended to sustain spirits. Debt, orphan care and work arrangements continue after bereavement and return to discussion at grave visits."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Radonitsa Graveyard Libation P. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Noble memorial gifts concern heirs and dependants as well as devotion. Public alms do not replace continuing support for the dead person’s household."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Soldiers may entrust death news and belongings to companions. Kin need names and a clear account; grave visits require routes, leave and travel provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Poor families count grain for visitors and value meals from neighbours. Children and elders need ongoing support beyond a single memorial gathering."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

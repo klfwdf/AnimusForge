@@ -1,32 +1,19 @@
 {
   "Id": "rule_cradle_solar_wheel_warding_amulet",
   "Keywords": [
-    "Cradle Solar Wheel Warding Amu",
-    "Cradle Solar Wheel Warding Amu Lore",
-    "Cradle Solar Wheel Warding Amu Chronicles",
-    "AD1259 Cradle Solar Wheel Warding Amu"
+    "prayers beside an infant cradle",
+    "baptism and care of infants"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Cradle Solar Wheel Warding Amu in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Cradle Solar Wh",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Cradle Solar W"
+    "Infant care combines feeding, warmth and prayer; protective objects express family hopes.",
+    "Baptism and household customs coexist with practical care for the child and mother."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Cradle Solar Wheel Warding Amu constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Cradle Solar Wheel Warding Amu. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "A cradle’s place depends on fire, smoke, draughts and whether carers can hear crying. Families prepare swaddling and washable cloths, arrange feeding and find food and rest for the mother. Poor homes crowd cooking, sleeping and work together, so several relatives may share watching the child.\n\nChristian households seek baptism and godparents, whose religious duties extend the family’s support. Prayer and the sign of the cross express hopes of protection. An inherited ornament or ribbon may also be treasured as a safeguard, although clergy may dispute such customs. Whatever protection the family trusts, cold, hunger, wet cloth and an exhausted mother still require hands-on care."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Cradle Solar Wheel Warding Amu. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "A noble infant concerns inheritance and kinship, and choosing godparents matters. Servants can share care, but feeding and night watches still need clear responsibility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Billeting and requisitions particularly burden families with infants. Lodgers must leave space around cradles and hearth routes; night movements disturb carers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Kin watching a child free a mother for field or market work. Dry cloth and a sheltered sleeping place require time and materials alongside blessings."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

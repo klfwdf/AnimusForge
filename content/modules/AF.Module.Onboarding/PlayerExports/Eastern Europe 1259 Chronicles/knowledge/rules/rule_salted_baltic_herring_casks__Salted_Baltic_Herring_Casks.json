@@ -1,32 +1,19 @@
 {
   "Id": "rule_salted_baltic_herring_casks",
   "Keywords": [
-    "Salted Baltic Herring Casks",
-    "Salted Baltic Herring Casks Lore",
-    "Salted Baltic Herring Casks Chronicles",
-    "AD1259 Salted Baltic Herring Casks"
+    "salted herring cargo in barrels",
+    "Baltic fish and salt trade"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Salted Baltic Herring Casks in 1259 Easter",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Salted Baltic H",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Salted Baltic "
+    "Herring and other sea fish travel salted; salt, barrels and prompt handling limit trade.",
+    "Barrel handovers need checks of count, leakage and condition, beyond a shared cargo name."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Salted Baltic Herring Casks constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Salted Baltic Herring Casks. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Baltic fish needs cleaning, salt and containers before leaving the shore. A large catch does not automatically increase income: without salt and barrels, fresh fish spoils while waiting. Staves, hoops and closures must withstand handling; leaks damage the fish and neighbouring cargo, while loading must avoid crushing and excess weight.\n\nSalted fish travels inland to people who cannot regularly obtain fresh catches, with freight, salt and intermediaries included in the price. Opening a barrel involves agreeing species, number or weight and inspecting the contents rather than trusting the outside. Fasts may bring more buyers, but household purchases still depend on money and storage."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Salted Baltic Herring Casks. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Purchases need agreed inspection, losses and port costs. Requisitioning boats or barrels can delay the next supply as well."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts check leaks and keep wet fish cargo away from cloth and grain. Reporting broken barrels at handover prevents old damage becoming an accusation of theft."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Urban households may afford small portions rather than a whole barrel. Retailers must keep opened stock, with slow sales and warmer weather reducing what remains saleable."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_black_banya_birch_venik_detox",
   "Keywords": [
-    "Black Banya Birch Venik Detox",
-    "Black Banya Birch Venik Detox Lore",
-    "Black Banya Birch Venik Detox Chronicles",
-    "AD1259 Black Banya Birch Venik Detox"
+    "smoke clearing in a bathhouse",
+    "bathhouse fuel and water"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Black Banya Birch Venik Detox in 1259 East",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Black Banya Bir",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Black Banya Bi"
+    "Bathing with heated stones needs wood and water, with smoke and heat carefully managed.",
+    "Washing and leafy switches are bathing customs; frail people still need care and rest."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Black Banya Birch Venik Detox constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Black Banya Birch Venik Detox. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "A bathhouse needs water, split wood and heated stones. Water cast on the stones fills a small room with moist heat. Where smoke shares the room, dense fumes must be cleared before entry and embers watched. Wet benches, doors and the water point can be slippery; carrying water, firing and cleaning take labour.\n\nLeafy birch switches and similar branches serve for tapping and washing, while neighbours meet and discuss household affairs. Preferences for heat, cold and cleanliness differ: some cool themselves after steaming, others only wash off sweat and dirt. The weak, drunk or wounded cannot all tolerate the same heat and need watching, with drink, clothing and a resting place afterwards."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Black Banya Birch Venik Detox. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "An estate bathhouse needs fuel, water and repairs to stonework and timber. Hosts must consider fire and frail guests, particularly when drinking leaves the fire unattended."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers need to dry shirts and foot wraps after washing; putting wet clothes back on soon chills them. A wounded companion’s strength, wounds and available help govern bathing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sharing a bath can save fuel but requires agreement over turns and the work of fetching wood and water. Children and elders need suitable heat, water and dry clothes."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

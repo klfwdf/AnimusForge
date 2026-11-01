@@ -1,32 +1,19 @@
 {
   "Id": "rule_solikamsk_brine_boiling_process",
   "Keywords": [
-    "Solikamsk Brine Boiling Proces",
-    "Solikamsk Brine Boiling Proces Lore",
-    "Solikamsk Brine Boiling Proces Chronicles",
-    "AD1259 Solikamsk Brine Boiling Proces"
+    "boiling brine for salt",
+    "fuel and vessels at a salt working"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Solikamsk Brine Boiling Proces in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Solikamsk Brine",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Solikamsk Brin"
+    "Evaporating brine yields salt, with concentration, pans and fuel shaping cost.",
+    "Salt supplies preservation and exchange, with damp, dues and freight affecting price."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Solikamsk Brine Boiling Proces constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Solikamsk Brine Boiling Proces. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Where brine is available it can be carried or led to a boiling place, water evaporated and salt collected. Weak brine requires more evaporation; leaking pans, damp fuel and interrupted fires waste effort. Workers need brine, wood, cleaning and packing as well as tending the heat, and supplies of timber and vessels limit continuous work.\n\nSalt then travels by cart or boat to markets in packages protected from damp. Buyers season or preserve food and use salt in exchange; without it they cannot simply keep every fish or cut of meat until winter. Dues, handling and damaged sacks separate prices at the source from those in town, reflecting fuel and distance behind a small pile."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Solikamsk Brine Boiling Proces. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Rulers need pans, timber and transport behind salt dues. Removing repair and hauling labour can halt supply; garrisons need salt delivered with food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts protect salt from rain and wet cargo; spilled salt is hard to recover. Supplies must arrive before food spoils, not afterwards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households divide resources among salt, grain and tools and can share transport. Rising salt prices alter how much fish or meat they can keep."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

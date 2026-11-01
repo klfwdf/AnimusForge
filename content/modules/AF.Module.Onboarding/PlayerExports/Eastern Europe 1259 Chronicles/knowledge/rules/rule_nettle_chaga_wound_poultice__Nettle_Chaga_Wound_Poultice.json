@@ -1,32 +1,19 @@
 {
   "Id": "rule_nettle_chaga_wound_poultice",
   "Keywords": [
-    "Nettle Chaga Wound Poultice",
-    "Nettle Chaga Wound Poultice Lore",
-    "Nettle Chaga Wound Poultice Chronicles",
-    "AD1259 Nettle Chaga Wound Poultice"
+    "herbs and the care of wounds",
+    "herb gatherers and sick households"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Nettle Chaga Wound Poultice in 1259 Easter",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Nettle Chaga Wo",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Nettle Chaga W"
+    "Local healers use familiar plants and families weigh experience, costs and reports.",
+    "Covering and tending wounds do not ensure a cure; worsening illness leads to further help."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Nettle Chaga Wound Poultice constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Nettle Chaga Wound Poultice. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Cuts, burns and falls bring people to relatives, herb gatherers or experienced carers. Cloth, plants and other available materials are used according to teaching and experience; payment may be food, goods, money or an obligation. Families see bleeding, swelling, pain and whether someone can eat without understanding everything within a wound.\n\nThe injured still need rest, drink, food, changes of dirty coverings and sometimes help moving or watching at night. Sticking dressings, continued bleeding and increased pain cause renewed concern. Repeated assurances may lead relatives to another carer or to clerical prayer. Care also consumes labour as others take over the wounded person’s work, while purchased remedies reduce food money."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Nettle Chaga Wound Poultice. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Estates need continuing food, shelter and carers, beyond one payment for a remedy. Distinguishing reputation from a patient’s condition helps address kin complaints."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wounded companions need transport, food and replacement watches. Unknown plants add uncertainty, while slower marching requires loads to be redistributed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Healers’ supplies vary by season and relatives often change cloth and watch at night. When a main worker is injured, borrowed grain and help with work become urgent too."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_silver_needle_hound_poison_testing",
   "Keywords": [
-    "Silver Needle Hound Poison Tes",
-    "Silver Needle Hound Poison Tes Lore",
-    "Silver Needle Hound Poison Tes Chronicles",
-    "AD1259 Silver Needle Hound Poison Tes"
+    "poison fears at a feast",
+    "trust in household food service"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Silver Needle Hound Poison Tes in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Silver Needle H",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Silver Needle "
+    "Poison fears concern kitchens, servers and trust, and rumours easily become accusations.",
+    "Tasting or watching silver cannot ensure safety, nor does illness alone prove poisoning."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Silver Needle Hound Poison Tes constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Silver Needle Hound Poison Tes. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "A host with enemies worries who entered the kitchen, brought a wine jar or served a dish. Many people handle purchase, storage and cooking; spoiled leftovers, dirty vessels and mistaken ingredients also cause illness, though onlookers may immediately suspect a plot. Trusted duties and known vessels make later inquiries easier without removing every risk.\n\nSome trust tasting or a change in silver as reassurance, but foods, utensils and onset times differ, and one uneventful taste does not prove a table safe. A suddenly ill guest needs care, drink and experienced help while the host asks who ate what. Threatening servants into admissions turns fear and guesses into statements and damages household ties."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Silver Needle Hound Poison Tes. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Lords need care for patients and clear accounts from kitchen workers. Punishing guesses can silence people who actually know purchases and handovers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Guards respond to poison alarms without rash violence or blocking care. Ill travelers need accounts of food, water and companions rather than an immediate scapegoat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Kitchen workers’ livelihoods suffer when guests fall ill. Clear recollection of supplies and handovers explains events better than echoing a patron’s suspicion."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

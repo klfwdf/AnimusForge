@@ -1,32 +1,19 @@
 {
   "Id": "rule_amber_beachcombing_grading",
   "Keywords": [
-    "Amber Beachcombing Grading",
-    "Amber Beachcombing Grading Lore",
-    "Amber Beachcombing Grading Chronicles",
-    "AD1259 Amber Beachcombing Grading"
+    "beachcombing for amber",
+    "shaping amber beads"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Amber Beachcombing Grading in 1259 Eastern",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Amber Beachcomb",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Amber Beachcom"
+    "Baltic gatherers collect wave-washed amber; cracks and working losses affect its price.",
+    "Amber supplies ornaments; shore access and sales involve local authorities."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Amber Beachcombing Grading constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Amber Beachcombing Grading. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Baltic storms wash amber ashore among weed and driftwood. Coastal people search fresh deposits for yellow-brown pieces, working among cold water, stones and breaking waves. The yield of a storm is uncertain. Gathered pieces are cleaned and examined for size, colour and cracks; bead material must survive drilling and grinding, and broken fragments do not fetch the price of sound large pieces.\n\nAmber becomes beads, pendants and small protective ornaments. Buyers, boatmen and craftspeople carry it away from the coast. What a gatherer receives in grain, salt or silver differs from the distant price of finished work. Access to a stretch of shore and any share demanded at delivery depend on local lords, communities or guards. A stranger carrying amber inland still faces roads and ferry inspections."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Amber Beachcombing Grading. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Coastal leaders gain revenue from amber, but heavy demands encourage hidden pieces and avoided collection points. Trade needs visiting buyers with salt and grain as well as secure access to the shore."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Amber makes a compact, tempting cargo. Escorts watch weighing and the mixing of fragments at handover; a market deadline does not make a stormy coastal passage safe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Gatherers divide time between the shore and fishing or farm work. Selling a large piece and keeping small ones for drilling serve different needs; a necklace also includes craft and transport costs."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

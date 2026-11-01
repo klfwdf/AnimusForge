@@ -1,32 +1,19 @@
 {
   "Id": "rule_pagan_tree_burial_remnants",
   "Keywords": [
-    "Pagan Tree Burial Remnants",
-    "Pagan Tree Burial Remnants Lore",
-    "Pagan Tree Burial Remnants Chronicles",
-    "AD1259 Pagan Tree Burial Remnants"
+    "woodland funerals and burial grounds",
+    "cremation and Christian burial"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Pagan Tree Burial Remnants in 1259 Eastern",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Pagan Tree Buri",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Pagan Tree Bur"
+    "Baltic traditional and Christian funerals differ; cremation and burial are not one rite.",
+    "Funerals require kin, resources and decisions about possessions that groups may dispute."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Pagan Tree Burial Remnants constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Pagan Tree Burial Remnants. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Baltic woodland communities with older beliefs and Christian settlements make different arrangements for bodies, fire and graves. Some value cremation and grave goods, while Christians seek burial in recognised church ground and prayers for the dead. Woodland origin alone does not identify a rite: marriage, conversion and mixed kin can divide a family.\n\nFuel or coffins, carrying bodies, digging and receiving relatives all require labour. Clothing, tools and animals also concern the survivors’ livelihood. Relatives and ritual leaders debate what to devote to the funeral and what to keep. Disputes can continue into inheritance; food, child care and household help are practical forms of mourning support."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Pagan Tree Burial Remnants. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Leaders’ funerary gifts display status and reduce inherited resources. Converted relatives’ funerals require consideration of both kin and clerical claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Campaign dead may be far from home; returning bodies takes carts and time. Belongings and a clear account help kin more than a vague death report."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Funerals interrupt poor households’ work, making neighbours’ food and help essential. Ritual gifts compete with survivors’ food needs."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

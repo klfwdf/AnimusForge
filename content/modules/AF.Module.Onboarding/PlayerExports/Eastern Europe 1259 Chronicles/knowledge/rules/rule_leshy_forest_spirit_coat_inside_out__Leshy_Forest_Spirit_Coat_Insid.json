@@ -1,32 +1,19 @@
 {
   "Id": "rule_leshy_forest_spirit_coat_inside_out",
   "Keywords": [
-    "Leshy Forest Spirit Coat Insid",
-    "Leshy Forest Spirit Coat Insid Lore",
-    "Leshy Forest Spirit Coat Insid Chronicles",
-    "AD1259 Leshy Forest Spirit Coat Insid"
+    "forest disorientation and stories",
+    "finding a route out of woodland"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Leshy Forest Spirit Coat Insid in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Leshy Forest Sp",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Leshy Forest S"
+    "Getting lost invites spirit stories, while routes still depend on terrain and local guides.",
+    "Snow, daylight and loads shape a return; clothing rituals do not ensure escape."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Leshy Forest Spirit Coat Insid constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Leshy Forest Spirit Coat Insid. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Leaves, snow and fallen trees hide small forest paths, while branching streams and similar thickets lead strangers in circles. Local people remember channels, village approaches and firm banks; visitors can mistake a shortcut for a through route. Stories of forest beings explain strange sounds, lost people or straying stock, conveying fear and caution to children and outsiders.\n\nReturning requires light, recognised landmarks and guides. Injury, burdens or livestock change a route that one person could walk. Scattered searching can widen separation; familiar stopping places and calls to companions help more than pushing on blindly. Prayers may accompany the search, but wet clothing, hunger and night cold still require shelter."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Leshy Forest Spirit Coat Insid. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Search parties need the last known place and time. Mobilising unfamiliar retainers can create more missing people; local hunters and herders often know more."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Scouts need return landmarks and meeting places if separated. Pursuing an unknown sound can leave orders, supplies and companions behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households tell each other where wood gatherers go and search familiar routes if they are late. Spirit stories warn children; actual searches need local knowledge."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

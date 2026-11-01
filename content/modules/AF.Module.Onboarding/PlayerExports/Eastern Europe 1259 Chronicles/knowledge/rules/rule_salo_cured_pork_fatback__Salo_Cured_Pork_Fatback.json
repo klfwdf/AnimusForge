@@ -1,32 +1,19 @@
 {
   "Id": "rule_salo_cured_pork_fatback",
   "Keywords": [
-    "Salo Cured Pork Fatback",
-    "Salo Cured Pork Fatback Lore",
-    "Salo Cured Pork Fatback Chronicles",
-    "AD1259 Salo Cured Pork Fatback"
+    "salting pork fat for storage",
+    "dividing pork and observing fasts"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Salo Cured Pork Fatback in 1259 Eastern Eu",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Salo Cured Pork",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Salo Cured Por"
+    "Pork and fat can be divided and salted, with keeping affected by salt, damp and vessels.",
+    "Wealth, custom and fasts govern access to meat and fat rather than universal daily use."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Salo Cured Pork Fatback constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Salo Cured Pork Fatback. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Keeping a pig invests food, space and labour in an animal. Slaughter then requires prompt division among meat, fat, hide and offal. Salt can help keep thick fatty portions, subject to adequate salt, suitable vessels and storage. A sound-looking surface does not prove the whole piece keeps well, so smell and spoilage need checking.\n\nFat can flavour grain food or serve as a gift or exchange, but poor homes may have little spare. Christian fasts alter when meat and fat are eaten, while illness, guests and workers raise questions of shares. Selling some for grain competes with winter food, and borrowed salt or slaughter help creates debts."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Salo Cured Pork Fatback. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Estate dues distinguish fresh and preserved meat, whose value changes with delay. Demand shifts around fasts and requires real provisioning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travel meat needs protection and inspection for spoilage. Salted fat does not replace all rations, and water and grain remain necessary."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families separate immediate portions from winter stores and reward helpers. Expensive salt creates a choice between preserving meat and buying staples."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

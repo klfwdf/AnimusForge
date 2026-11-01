@@ -1,32 +1,19 @@
 {
   "Id": "rule_bog_iron_bloomery_smelting",
   "Keywords": [
-    "Bog Iron Bloomery Smelting",
-    "Bog Iron Bloomery Smelting Lore",
-    "Bog Iron Bloomery Smelting Chronicles",
-    "AD1259 Bog Iron Bloomery Smelting"
+    "bog ore and iron blooms",
+    "hammering slag from a bloom"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Bog Iron Bloomery Smelting in 1259 Eastern",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Bog Iron Bloome",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Bog Iron Bloom"
+    "Iron-rich wetland deposits can feed furnaces; blooms need hammering to remove slag.",
+    "Ore, charcoal, air and smiths together limit the amount of usable iron."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Bog Iron Bloomery Smelting constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Bog Iron Bloomery Smelting. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Not every patch of wetland mud is useful iron ore. Gatherers identify deposits, clean and dry the material and take it to a furnace. Charcoal heat and a blast produce a bloom mixed with slag. Repeated hot hammering consolidates useful iron; a basket of ore does not yield its own weight in metal.\n\nIronworking continuously consumes ore, charcoal and labour, while bellows, furnace walls and tools wear out. Farm implements, nails, harness fittings and weapons compete for working time, and iron must suit its purpose. Ore nearby is insufficient without fuel and skilled workers. Shipping iron is easier than carrying bulky low-grade ore, but someone first bears the smelting losses."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Bog Iron Bloomery Smelting. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Iron levies compete with seasonal farm repairs. Reserving all charcoal and smiths for arms delays plough and cart fittings, reducing estate food and carrying capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A repaired rivet or harness ring is more useful than a raw bloom in a pack. Camp smiths need clear priorities, and protecting fuel carts helps keep repairs going."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Worn iron has reuse value, and cutting edges need repair before busy field seasons. Households may pay in grain or scrap; waiting for a fire and a smith also delays work."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

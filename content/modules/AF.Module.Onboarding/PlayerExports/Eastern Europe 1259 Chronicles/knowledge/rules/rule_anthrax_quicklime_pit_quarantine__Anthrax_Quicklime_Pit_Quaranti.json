@@ -1,32 +1,19 @@
 {
   "Id": "rule_anthrax_quicklime_pit_quarantine",
   "Keywords": [
-    "Anthrax Quicklime Pit Quaranti",
-    "Anthrax Quicklime Pit Quaranti Lore",
-    "Anthrax Quicklime Pit Quaranti Chronicles",
-    "AD1259 Anthrax Quicklime Pit Quaranti"
+    "sudden sickness among livestock",
+    "caring for sick working animals"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Anthrax Quicklime Pit Quaranti in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Anthrax Quickli",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Anthrax Quickl"
+    "Livestock sickness costs food, draught power and dues; its cause may be disputed.",
+    "Nursing animals, disposing of carcasses and replacing oxen consume household resources."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Anthrax Quicklime Pit Quaranti constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Anthrax Quicklime Pit Quaranti. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "When an ox or horse suddenly collapses, a household loses more than a saleable animal. Oxen pull ploughs and carts, dairy animals feed children, and dead breeding females mean fewer young next season. Carers recognise poor appetite, fever, swelling or weakness without necessarily knowing the cause. Neighbours dispute bad fodder, water, weather or ill fortune and may seek an experienced herder or cleric.\n\nWater, fodder, shelter and someone to watch a sick beast must be found. A carcass raises problems of removal, hides, meat and filth. Selling a failing animal can provoke a buyer, while mixing borrowed oxen with household stock complicates compensation. A neighbour lending draught power may save a sowing season, but fodder costs and responsibility for another death still need agreement."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Anthrax Quicklime Pit Quaranti. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "After oxen die, collecting unchanged grain rents can consume seed. Estate stewards must consider surviving draught animals, arrears and loans of beasts, rather than treat deaths only as a cash loss."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A sick packhorse puts its load on other animals or human backs. Travelers judge whether it can stand and drink, then decide whether to halt, unload or leave someone to care for it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A poor household may repay a borrowed plough animal with labour or grain. Nursing costs field work as well, and neighbours lend according to trust and their own spare capacity."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_khren_horseradish_winter_invigoration",
   "Keywords": [
-    "Khren Horseradish Winter Invig",
-    "Khren Horseradish Winter Invig Lore",
-    "Khren Horseradish Winter Invig Chronicles",
-    "AD1259 Khren Horseradish Winter Invig"
+    "horseradish roots for the table",
+    "pungent roots in winter meals"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Khren Horseradish Winter Invig in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Khren Horseradi",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Khren Horserad"
+    "Horseradish supplies a pungent relish and needs harvesting, storage and preparation.",
+    "Pungency and hot meals do not replace warmth, food and care of the sick."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Khren Horseradish Winter Invig constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Khren Horseradish Winter Invig. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Pungent roots add flavour to grain, fish or meat. They need cleaning and chopping or crushing, with even a little sharply felt in the mouth and nose. Excess damp spoils stored roots and excessive dryness shrivels them, so cooks inspect them with other vegetables. Having roots at home differs from finding them at every market, and tastes vary.\n\nWinter meals depend on grain and stores; a relish changes flavour without creating more staple food. For weak people or those with poor teeth, cooks consider swallowing and appetite rather than assume pungency restores strength. A sick person in a cold home still needs dry clothes, shelter, food and watching, while preparing a relish competes with fetching water and fuel."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Khren Horseradish Winter Invig. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Feast condiments differ from staple provisioning. Hosts need to know what a sick dependant actually eats, beyond serving a sharp relish."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Finding a relish does not mean supplies are adequate. Cold travelers need edible food, fire and shelter; a pungent mouthful does not dry wet boots."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Keeping roots, gifting them or trading for salt are household choices. Sharp-smelling preparation still leaves pots and children needing attention."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

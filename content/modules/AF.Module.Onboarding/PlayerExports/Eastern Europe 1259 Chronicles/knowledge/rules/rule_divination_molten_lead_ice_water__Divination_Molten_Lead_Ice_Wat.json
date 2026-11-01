@@ -1,32 +1,19 @@
 {
   "Id": "rule_divination_molten_lead_ice_water",
   "Keywords": [
-    "Divination Molten Lead Ice Wat",
-    "Divination Molten Lead Ice Wat Lore",
-    "Divination Molten Lead Ice Wat Chronicles",
-    "AD1259 Divination Molten Lead Ice Wat"
+    "consulting omens before a journey",
+    "divination at a camp"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Divination Molten Lead Ice Wat in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Divination Molt",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Divination Mol"
+    "People consult diviners over travel and illness; readings influence gifts and decisions.",
+    "Specialists oversee divination and fire rites in Mongol camps; envoys must ask about protocol."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Divination Molten Lead Ice Wat constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Divination Molten Lead Ice Wat. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Uncertain journeys, marriages and illness lead some people to consult diviners and choose a departure or avoidance through ritual. Diviners in Mongol camps may be called during illness or important undertakings, and misfortune can be explained as a breached taboo. Consultation costs time and gifts; an adverse reading may bring delays, further rites and suspicion of others.\n\nOutsiders need interpreters or experienced companions to explain camp practices. Passing fire rites, entering tents and presenting gifts follow the host’s requirements. Rearranging baggage may look innocent to a visitor but offensive to a guard. Travelers can hear both omens and guides, while water levels, fodder and weather continue to shape the actual journey."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Divination Molten Lead Ice Wat. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Explaining taboos helps receive envoys without conflict, while repeated demands for ritual gifts can damage negotiation. Hosts must decide who speaks with authority about omens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts ask about fire rites and tent entrances before approaching with weapons or baggage. An auspicious day may still lack horses, and departure waits for people and animals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A reassuring reading may cost grain or a small gift. When it delays or redirects travel, the household must rearrange work and food."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

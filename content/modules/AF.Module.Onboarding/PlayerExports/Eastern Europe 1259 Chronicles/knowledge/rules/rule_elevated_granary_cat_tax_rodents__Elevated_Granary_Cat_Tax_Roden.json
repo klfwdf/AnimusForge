@@ -1,32 +1,19 @@
 {
   "Id": "rule_elevated_granary_cat_tax_rodents",
   "Keywords": [
-    "Elevated Granary Cat Tax Roden",
-    "Elevated Granary Cat Tax Roden Lore",
-    "Elevated Granary Cat Tax Roden Chronicles",
-    "AD1259 Elevated Granary Cat Tax Roden"
+    "rodents in the grain store",
+    "cats and stored grain"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Elevated Granary Cat Tax Roden in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Elevated Granar",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Elevated Grana"
+    "Grain stores need dry roofs, sound walls and rodent checks; cats provide only part of care.",
+    "Losses to rent grain and seed affect estates and homes beyond the recorded intake."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Elevated Granary Cat Tax Roden constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Elevated Granary Cat Tax Roden. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Stored grain remains vulnerable to rats, mice and damp. Rodents enter cracks and holes, while a leaking roof spoils a corner of the stock. Raised dry floors, sound covers and containers need maintenance, and spilled grain at doors needs clearing. Cats hunt around homes and stores but do not mend holes, move wet sacks or identify spoiled grain.\n\nStocks must be divided among eating, seed, dues and promised loans, with inspections reaching below the surface. Losses accumulate quietly; discovering a shortage in spring may force borrowing or smaller sowings. Keys, access and observed movements can cause disputes over whether grain was issued or stolen. Reliable handovers matter more than counting bags alone."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Elevated Granary Cat Tax Roden. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Storekeepers must report condition and available shares. Keeping a cat does not account for leaks and holes; owners still need repair workers and materials."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops inspect sack bottoms for damp clumps and mend bags that spill in transit. An unattended store risks both rations and trust in distribution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Poor households feel even small losses. Cats also need care while roofs and vessels need checking; a seed shortage can mean borrowing from kin."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_dried_porcini_chanterelle_strings",
   "Keywords": [
-    "Dried Porcini Chanterelle Stri",
-    "Dried Porcini Chanterelle Stri Lore",
-    "Dried Porcini Chanterelle Stri Chronicles",
-    "AD1259 Dried Porcini Chanterelle Stri"
+    "drying woodland mushrooms",
+    "recognising edible fungi"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Dried Porcini Chanterelle Stri in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Dried Porcini C",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Dried Porcini "
+    "Edible woodland fungi can be dried; identification, weather and damp affect supplies.",
+    "Dried fungi add to soups while gathering competes with farming, fuel and grain work."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Dried Porcini Chanterelle Stri constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Dried Porcini Chanterelle Stri. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Woodland households use familiar edible fungi as seasonal food, recognising them through experience and rejecting decayed portions. Rain, place and season govern the harvest, so no fixed yearly amount can be promised. Distant gathering delays the return, children need watching, and fields, animals and the hearth still require care.\n\nCutting or spreading fungi for drying reduces weight and helps storage. Strings need ventilation and protection from smoke, dirt and returning damp. Cooks take some for a pot while protecting the remainder from spoilage. Dried fungi add flavour rather than replace grain; market exchanges for salt depend on dryness, cleanliness and transport."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Dried Porcini Chanterelle Stri. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Estate shares should distinguish fresh and dry produce rather than equate their weights. Leaking stores can spoil food already counted as received."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Roadside gathering needs someone who really recognises the food; hunger supplies no identification skill. Dry fungi still need water, pots and fuel and do not replace staple rations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Drying takes room in a house or shelter. Keeping food or trading for salt depends on grain and weather, while gatherers may share knowledge but guard productive places."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

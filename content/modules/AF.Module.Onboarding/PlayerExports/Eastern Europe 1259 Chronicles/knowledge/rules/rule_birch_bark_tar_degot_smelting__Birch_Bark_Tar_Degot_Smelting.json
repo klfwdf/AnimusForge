@@ -1,32 +1,19 @@
 {
   "Id": "rule_birch_bark_tar_degot_smelting",
   "Keywords": [
-    "Birch Bark Tar Degot Smelting",
-    "Birch Bark Tar Degot Smelting Lore",
-    "Birch Bark Tar Degot Smelting Chronicles",
-    "AD1259 Birch Bark Tar Degot Smelting"
+    "birch tar for leatherwork",
+    "making bark tar"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Birch Bark Tar Degot Smelting in 1259 East",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Birch Bark Tar ",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Birch Bark Tar"
+    "Heating birch bark yields tar and requires fuel, vessels and labour.",
+    "Tar dressing and seam repairs serve different needs; coating cannot mend torn leather."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Birch Bark Tar Degot Smelting constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Birch Bark Tar Degot Smelting. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Birch supplies more than bark notes and firewood: heating its bark can produce thick, strongly scented tar. Production needs controlled heat, a collecting vessel and a covering arrangement so that the product is not burnt away or contaminated with ash and earth. Damp bark, the fire and the vessel affect the yield; workers judge suitability through appearance, flow and smell.\n\nTar can dress leather and wooden articles, but coating is different from mending. A split sole still needs repair and a broken strap replacement. Excess tar stains clothes, collects dirt and gives cargo an odour. Buyers inspect impurities and closures; a leaking container can spoil nearby cloth as well as waste its contents."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Birch Bark Tar Degot Smelting. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Estates and caravans buying tar must also budget for vessels, transport and repair materials. Tar alone cannot restore harness without thread, leather and time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wet shoes, saddlery and reins need drying and inspection. Dressing a surface cannot repair a load-bearing break; finding a split before departure avoids a failure on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tar workers gather bark and fuel and tie up household vessels. Repairing a neighbour’s shoes involves separate leather, stitching and dressing work, beyond the amount of black liquid used."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

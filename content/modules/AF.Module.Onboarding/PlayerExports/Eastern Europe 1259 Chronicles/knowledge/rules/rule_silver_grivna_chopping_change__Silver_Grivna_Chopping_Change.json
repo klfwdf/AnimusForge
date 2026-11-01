@@ -1,32 +1,19 @@
 {
   "Id": "rule_silver_grivna_chopping_change",
   "Keywords": [
-    "Silver Grivna Chopping Change",
-    "Silver Grivna Chopping Change Lore",
-    "Silver Grivna Chopping Change Chronicles",
-    "AD1259 Silver Grivna Chopping Change"
+    "weighing Novgorod silver bars",
+    "Kyiv ingots in exchange"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Silver Grivna Chopping Change in 1259 East",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Silver Grivna C",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Silver Grivna "
+    "Novgorod bars and Kyiv ingots differ in form; weighed silver needs weight and quality checks.",
+    "Account units differ from pieces of silver, so delivery and division need agreement."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Silver Grivna Chopping Change constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Silver Grivna Chopping Change. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Larger Rus exchanges can use weighed silver, with bar-shaped ingots familiar in Novgorod and different forms in Kyiv. Recognising a shape does not remove the need to weigh and judge the metal. Uses of the grivna differ by place, and a recorded account amount need not correspond to one identical piece in hand.\n\nPayment may involve a whole ingot, other silver or acceptable goods, while dividing metal raises weighing and loss issues. Entrusted payments need a named recipient, an accepted standard and acknowledgment. Small traders may lack silver or suitable scales, leaving grain, furs and credit in exchange. Possessing silver does not mean every needed item is available immediately."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Silver Grivna Chopping Change. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Rent and compensation stewards distinguish accounts from metal received and check unfamiliar ingots. Ambiguous receipts carry disputes into later payments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Traveling with silver needs trusted company, a clear recipient and reliable scales. Stolen plate remains disputed property and attracts discounted offers and claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Small debts can lack an accepted means of payment rather than merely a number. Grain or fur settlement needs prior agreement to avoid a later demand."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

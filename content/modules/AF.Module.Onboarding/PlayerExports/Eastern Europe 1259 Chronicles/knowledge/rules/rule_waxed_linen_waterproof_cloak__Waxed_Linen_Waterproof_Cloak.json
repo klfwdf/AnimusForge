@@ -1,32 +1,19 @@
 {
   "Id": "rule_waxed_linen_waterproof_cloak",
   "Keywords": [
-    "Waxed Linen Waterproof Cloak",
-    "Waxed Linen Waterproof Cloak Lore",
-    "Waxed Linen Waterproof Cloak Chronicles",
-    "AD1259 Waxed Linen Waterproof Cloak"
+    "rain shedding cloaks and seams",
+    "drying wet traveling clothes"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Waxed Linen Waterproof Cloak in 1259 Easte",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Waxed Linen Wat",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Waxed Linen Wa"
+    "Weave, surface dressing and seams affect rain shedding; wet clothes still grow heavy and cold.",
+    "Wax or oil treatments cost materials and care and do not imply universal waterproof clothing."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Waxed Linen Waterproof Cloak constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Waxed Linen Waterproof Cloak. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "In rain, travelers try to cover head, shoulders, baggage and dry contents. A close weave and suitable overlap shed some water, while necks, ties and seams still leak. Wax or oily dressing costs materials and work and wears or collects dirt, requiring maintenance. Cloth and thickness vary, so a cloak’s name alone does not establish protection.\n\nWet clothes make cold wind harder to endure and add weight. Drying needs shelter alongside food and lodging. Fire can scorch garments or stain them with tar, while spare clothes also need protection. Wealthy travelers have replacements and servants; poor walkers balance progress, delays and lodging, valuing even one dry layer."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Waxed Linen Waterproof Cloak. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Outfitting retainers needs fit, wind cover and repairability rather than a waxed label. Spares, needles and shelter also cost resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts keep spare wraps and rations dry separately. A wet cloak against food spoils both; night travel needs a drying destination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Mending needs thread, patches and time, while wax competes with lighting and sale. Lending dry clothes leaves the lender short of a garment."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

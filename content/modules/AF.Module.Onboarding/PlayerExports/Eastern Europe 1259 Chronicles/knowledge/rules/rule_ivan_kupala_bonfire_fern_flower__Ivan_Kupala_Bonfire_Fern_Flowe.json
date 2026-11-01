@@ -1,32 +1,19 @@
 {
   "Id": "rule_ivan_kupala_bonfire_fern_flower",
   "Keywords": [
-    "Ivan Kupala Bonfire Fern Flowe",
-    "Ivan Kupala Bonfire Fern Flowe Lore",
-    "Ivan Kupala Bonfire Fern Flowe Chronicles",
-    "AD1259 Ivan Kupala Bonfire Fern Flowe"
+    "midsummer gatherings and night travel",
+    "Saint John feast observances"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Ivan Kupala Bonfire Fern Flowe in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Ivan Kupala Bon",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Ivan Kupala Bo"
+    "Midsummer gatherings coincide with Saint John observances and can provoke clerical disputes.",
+    "Night travel and fires need care; wishes do not guarantee wealth or safety."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Ivan Kupala Bonfire Fern Flowe constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Ivan Kupala Bonfire Fern Flowe. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Long days still require field work and stock care, while feasts create occasions for neighbours, songs and shared food. Christians commemorate John the Baptist through the church calendar, worship and appeals for help. Elders, young people and clergy may disagree about suitable celebrations; local custom, means and leadership shape each gathering.\n\nEvening meetings near woodland, water or fire need a return route, clothing and companions. Drink, play and tales of wonders attract the young and worry parents. Flames near dry hay or sheds can become a disaster, and festival nights do not remove ditches in the dark. Wishes and stories fill the evening while mowing and livestock await the next day."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Ivan Kupala Bonfire Fern Flowe. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Notables sponsoring food or gatherings sustain ties while managing drink-related disputes and fire. Clerical objections need attention to the actual practice and conflict."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers find news at feasts but also drunken quarrels. Leaving at night requires companions and horses accounted for, rather than pursuing tales of forest treasure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Festival food comes from ordinary stores. Young people staying out leave someone else to watch children, tend the hearth and secure animals."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_yam_post_relay_horse_station",
   "Keywords": [
-    "Yam Post Relay Horse Station",
-    "Yam Post Relay Horse Station Lore",
-    "Yam Post Relay Horse Station Chronicles",
-    "AD1259 Yam Post Relay Horse Station"
+    "remounts and supplies for Mongol envoys",
+    "relay permissions and local service"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Yam Post Relay Horse Station in 1259 Easte",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Yam Post Relay ",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Yam Post Relay"
+    "Mongol envoys rely on permission, interpreters, remounts and supplies despite long-route hardship.",
+    "Priority service burdens local horses, fodder and labour; private travelers cannot take freely."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Yam Post Relay Horse Station constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Yam Post Relay Horse Station. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Messages between Mongol courts and local officials pass through envoys, interpreters and hosts. Remounts reduce the fatigue of one animal, but authorised requests for horses, guides and food still require available people and beasts. Written powers, the escort delivering a visitor and responsibility for the next stage shape progress; misunderstandings delay audiences.\n\nPriority does not remove hunger or cold. Horses unfamiliar with snow, insufficient fodder or earlier parties exhausting stock still halt travel. Local horses, carts and guides cost households work, and excessive demands damage later service. Decrees, travel tokens and a spoken claim to carry a message differ and need recognition. Private travelers must arrange transport, food and shelter rather than treat every horse as available."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Yam Post Relay Horse Station. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Local authorities balance communications with surviving stock. Clear authority reduces false claims, while reliable handovers help account for supplies and distribute service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Envoy escorts confirm next-stage mounts and guides and preserve their own animals. Priority service is not unlimited seizure, and abuse brings claims and resentment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Supplying horses removes household draught power and uses fodder and guiding time. Claims of official status need locally informed checks before a family surrenders its supplies."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

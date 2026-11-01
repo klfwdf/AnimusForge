@@ -1,32 +1,19 @@
 {
   "Id": "rule_bog_walking_wooden_snowshoes",
   "Keywords": [
-    "Bog Walking Wooden Snowshoes",
-    "Bog Walking Wooden Snowshoes Lore",
-    "Bog Walking Wooden Snowshoes Chronicles",
-    "AD1259 Bog Walking Wooden Snowshoes"
+    "travel on broad snow boards",
+    "finding footing in wet woodland"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Bog Walking Wooden Snowshoes in 1259 Easte",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Bog Walking Woo",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Bog Walking Wo"
+    "Broad boards spread weight on snow; loads, slopes and snow conditions still limit travel.",
+    "Floating bog and thin ice require separate judgment and local route knowledge."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Bog Walking Wooden Snowshoes constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Bog Walking Wooden Snowshoes. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "In deep northern forest snow, broad boards or framed footgear spread a walker’s weight and reduce sinking. Bindings must hold without cutting circulation, and turning, climbing and carrying loads take effort. A broken trail helps followers, but fresh snow, crust and fallen trees alter footing. A pedestrian route does not necessarily admit a loaded cart.\n\nBogs present different problems: roots can cover soft mud, light snow conceal channels, and surface ice fail beneath people or horses. Those familiar with ditches, woodland margins and high ground can choose firmer routes, but probing and spacing still matter. Wet foot wraps, broken bindings and a lost way home can cost more than a shorter journey saves."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Bog Walking Wooden Snowshoes. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Winter messengers need provisions, guides and a return route. A short line across wet ground may in practice require a long detour to a maintained crossing or firm bank."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A scout’s trail may not carry an armoured party. Reports need snow depth, channels and stopping places, not merely the claim that one person crossed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Wood gathering and stock searches need enough daylight for return. Bindings can be repaired, but wet feet slow every step; a companion who knows the route helps find the way back."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

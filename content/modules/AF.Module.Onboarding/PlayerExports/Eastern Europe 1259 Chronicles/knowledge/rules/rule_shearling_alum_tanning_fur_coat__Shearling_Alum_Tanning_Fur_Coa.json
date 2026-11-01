@@ -1,32 +1,19 @@
 {
   "Id": "rule_shearling_alum_tanning_fur_coat",
   "Keywords": [
-    "Shearling Alum Tanning Fur Coa",
-    "Shearling Alum Tanning Fur Coa Lore",
-    "Shearling Alum Tanning Fur Coa Chronicles",
-    "AD1259 Shearling Alum Tanning Fur Coa"
+    "mending and drying sheepskin coats",
+    "warmth from fleece-lined clothing"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Shearling Alum Tanning Fur Coa in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Shearling Alum ",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Shearling Alum"
+    "Sheepskin clothing needs dressing, sewing and dry keeping; seams and wetness affect use.",
+    "Skin quality varies by means, while fit and shelter from wind matter in practice."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Shearling Alum Tanning Fur Coa constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Shearling Alum Tanning Fur Coa. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Sheepskins retaining fleece can become warm coats after dressing, cutting and sewing shoulders, sleeves and stressed areas. Thickness, old wounds and usable area vary, so equal numbers of skins do not make equal garments. Herders, dressers and sewers each contribute labour and cost beyond fleece thickness.\n\nOpen collars, cuffs and seams admit wind, while soaked skins grow heavy and take time to dry. Poor people repeatedly mend old clothing and join small pieces; wealthy owners can choose better skins and keep replacements. Insects, damp and crushing in storage damage garments, making inspection before winter useful."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Shearling Alum Tanning Fur Coa. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Retainers need suitable sizes and garments for their work. Repair materials help prevent a small split growing during distant travel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Riding, packs and armour wear shoulders and backs. Wet weather requires drying opportunities and shelter arranged before a night watch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Passing an old coat to a child needs altered sleeves and seams. Lending a coat commits winter resources, and damaged returns strain family ties."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

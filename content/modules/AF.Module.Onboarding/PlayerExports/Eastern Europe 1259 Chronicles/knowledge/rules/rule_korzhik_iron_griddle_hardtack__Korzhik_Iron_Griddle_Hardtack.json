@@ -1,32 +1,19 @@
 {
   "Id": "rule_korzhik_iron_griddle_hardtack",
   "Keywords": [
-    "Korzhik Iron Griddle Hardtack",
-    "Korzhik Iron Griddle Hardtack Lore",
-    "Korzhik Iron Griddle Hardtack Chronicles",
-    "AD1259 Korzhik Iron Griddle Hardtack"
+    "baking flat cakes for a journey",
+    "softening hard travel bread"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Korzhik Iron Griddle Hardtack in 1259 East",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Korzhik Iron Gr",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Korzhik Iron G"
+    "Flat cakes cook on a suitable heated surface; keeping depends on dryness and packing.",
+    "Hard bread needs sound teeth or softening, alongside an adequate staple supply."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Korzhik Iron Griddle Hardtack constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Korzhik Iron Griddle Hardtack. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Ground grain mixed with water can be made into thin cakes at a hearth, on hot stone or on a suitable baking surface. Tools and habits vary the shape and thickness. Thin cakes cook quickly while a thick centre needs more heat. Grain in hand does not immediately become cooked provisions without fuel or milling.\n\nTravel bread needs cloth or containers that keep out rain and animal sweat. Dry hardness helps carrying but does not prevent all mould. Poor teeth may require broken bread soaked soft; gruel needs water, a pot, fuel and time to stop. Ration counts must consider size, edible remains and the next supply point rather than pieces alone."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Korzhik Iron Griddle Hardtack. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Provisioning workers needs milling, baking and distribution planned together. Grain requisitioned only at departure transfers the shortage to cooks and carriers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops inspect wet rations and crumbs at the bottom of packs. Wounded people unable to chew need water, heat and companions’ time, which affects the march."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households may cook extra while a fire is hot, balancing travel food against what remains at home. Breaking borrowed cookware can cost far more than a few cakes."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

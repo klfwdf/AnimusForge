@@ -1,32 +1,19 @@
 {
   "Id": "rule_borscht_smetana_fermented_beet",
   "Keywords": [
-    "Borscht Smetana Fermented Beet",
-    "Borscht Smetana Fermented Beet Lore",
-    "Borscht Smetana Fermented Beet Chronicles",
-    "AD1259 Borscht Smetana Fermented Beet"
+    "sour broth and garden greens",
+    "soured milk with grain foods"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Borscht Smetana Fermented Beet in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Borscht Smetana",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Borscht Smetan"
+    "Sour soups use available greens and souring agents; dairy and meat depend on means and fasts.",
+    "Soup needs water, fuel and vessels, and a shared name does not ensure one recipe."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Borscht Smetana Fermented Beet constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Borscht Smetana Fermented Beet. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "A household sour soup may combine garden vegetables, edible wild greens and available souring ingredients, with bread or porridge to feed several people. Stored sour greens, fermented grain liquor or other sour ingredients give different flavours, and cooks adapt to supplies. Meat stock and dairy depend on animals, money and the religious calendar; a rich table does not establish what an inn or poor home serves.\n\nA pot also requires water, split wood, cleaning and someone to watch the fire. Dry fuel and an intact vessel can determine when hot food is ready in bad weather. Soured milk and milk fat accompany other foods, subject to storage and preference. Children, elders and sick people may need softer portions and help with eating, taking time from other work."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Borscht Smetana Fermented Beet. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "An estate feast and workers’ meal use different resources: one pot of soup can hide very different meat, grain and fuel costs. Fasts also require meals without meat or dairy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Hot soup on the road needs a halt, a pot and fuel. Softening dry food helps those with poor teeth or injuries, but water and remaining rations still need accounting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Cooks may save scarce rich ingredients for guests or sick people while grain fills most stomachs. Exchanging sour greens or dairy with neighbours adds variety and creates obligations."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

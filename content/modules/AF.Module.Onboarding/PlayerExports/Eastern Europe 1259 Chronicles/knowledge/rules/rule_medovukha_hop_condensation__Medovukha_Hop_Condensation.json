@@ -1,32 +1,19 @@
 {
   "Id": "rule_medovukha_hop_condensation",
   "Keywords": [
-    "Medovukha Hop Condensation",
-    "Medovukha Hop Condensation Lore",
-    "Medovukha Hop Condensation Chronicles",
-    "AD1259 Medovukha Hop Condensation"
+    "fermenting a honey drink",
+    "keeping vessels of mead"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Medovukha Hop Condensation in 1259 Eastern",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Medovukha Hop C",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Medovukha Hop "
+    "Honey supplies fermented drinks shaped by ingredients, vessels and keeping.",
+    "Drinking concerns hospitality, food shares and quarrels, rather than a reliable wound cure."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Medovukha Hop Condensation constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Medovukha Hop Condensation. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Honey can be eaten or made into fermented drink, requiring mixing, vessels and attention during keeping. Sweetness, sourness, strength and storage vary with ingredients and handling; a shared name does not assure the same contents. Brewing commits honey that could otherwise buy grain, and damaged jars, hoops or closures waste ingredients and work.\n\nServing drink expresses hospitality and rank. Quantities and a guest’s refusal may draw comment. Drink can relax people and also worsen quarrels, careless speech and lost work. Offering some to a sick person may express concern, while food, rest and continued care remain separate needs; a lively feast does not provide a night watcher for the wounded."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Medovukha Hop Condensation. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Feasts require honey, grain, fuel and vessels. Gifts of drink affect next day’s work, and someone must stay sober enough to handle property and agreements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers need money left for food and lodging. Drunk guards or drivers endanger companions, while wounded people need carers able to respond."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Limited honey competes among brewing, eating and salt purchases. More guests also mean cooking and cleaning after the drinking ends."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

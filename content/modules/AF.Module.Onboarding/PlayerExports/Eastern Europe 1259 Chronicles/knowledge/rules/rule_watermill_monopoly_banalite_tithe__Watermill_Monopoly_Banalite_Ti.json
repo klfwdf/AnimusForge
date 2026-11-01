@@ -1,32 +1,19 @@
 {
   "Id": "rule_watermill_monopoly_banalite_tithe",
   "Keywords": [
-    "Watermill Monopoly Banalite Ti",
-    "Watermill Monopoly Banalite Ti Lore",
-    "Watermill Monopoly Banalite Ti Chronicles",
-    "AD1259 Watermill Monopoly Banalite Ti"
+    "watermill charges for grinding grain",
+    "water levels and mill repairs"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Watermill Monopoly Banalite Ti in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Watermill Monop",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Watermill Mono"
+    "Watermills grind grain through maintained waterworks and stones and adequate flow.",
+    "Grinding fees and access depend on local arrangements rather than one universal tithe."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Watermill Monopoly Banalite Ti constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Watermill Monopoly Banalite Ti. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "A watermill transmits moving water to grinding stones, but farmers bringing grain must wait until it can work. Low flow, ice, flood damage and worn timber halt milling. Stones need dressing and grain roads need maintenance. Whole grain in store does not become bread without grinding or extra hand labour.\n\nOwners or operators may charge, retain part of grain or flour, or assume repairs under local terms. Amounts delivered and returned need consideration of losses and impurities rather than treating every deduction as one tax. Lordly rights, church demands and milling wages can coexist; households need access, good work and enough food left."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Watermill Monopoly Banalite Ti. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "A lord’s milling income needs waterworks, workers and roads. Higher deductions without repairs delay household food and estate supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A large military grain load displaces local users and requires capacity and water checks. Orders do not repair broken stones."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Milling costs journeys, waiting and weather risks as well as fees, competing with fuel, seed and household meals."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

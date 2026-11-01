@@ -1,32 +1,19 @@
 {
   "Id": "rule_pood_sazhen_body_measurements",
   "Keywords": [
-    "Pood Sazhen Body Measurements",
-    "Pood Sazhen Body Measurements Lore",
-    "Pood Sazhen Body Measurements Chronicles",
-    "AD1259 Pood Sazhen Body Measurements"
+    "pood and local weighing",
+    "body measures in land bargains"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Pood Sazhen Body Measurements in 1259 East",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Pood Sazhen Bod",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Pood Sazhen Bo"
+    "Traders must confirm local weights and lengths even when names sound familiar.",
+    "Grain, cloth and boundaries need agreed methods, witnesses and checks."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Pood Sazhen Body Measurements constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Pood Sazhen Body Measurements. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Grain, wax and metal are delivered by weight, while cloth, timber and boundaries use lengths. Names such as pood, cubit or fathom need local interpretation rather than recognition alone. Body measures are convenient but arms differ; agreed rods and familiar weights reduce disputes.\n\nSacks and barrels vary too, with packing, tare and damage affecting delivery. An outsider needs an intermediary to explain net contents, containers and whether cloth means a whole piece or a cut length. Boundary changes affect fields and paths; people remembering old markers should attend rather than have a casual armspan erase a claim."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Pood Sazhen Body Measurements. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Ambiguous units let stewards overcollect or underdeliver. Owners need accepted measures and practices for recorded amounts to mean anything."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ration and cargo handovers require the actual measuring method, not the previous town’s barrel. Relief escorts need the agreement as well as the goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A few missing fingers of cloth may leave no sleeve, and short grain means fewer meals. Neighbours witnessing measures protect small households’ property."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

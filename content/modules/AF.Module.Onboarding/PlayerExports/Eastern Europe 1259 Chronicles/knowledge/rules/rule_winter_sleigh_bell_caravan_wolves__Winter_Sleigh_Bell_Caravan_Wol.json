@@ -1,32 +1,19 @@
 {
   "Id": "rule_winter_sleigh_bell_caravan_wolves",
   "Keywords": [
-    "Winter Sleigh Bell Caravan Wol",
-    "Winter Sleigh Bell Caravan Wol Lore",
-    "Winter Sleigh Bell Caravan Wol Chronicles",
-    "AD1259 Winter Sleigh Bell Caravan Wol"
+    "winter freight by sleigh",
+    "ice crossings and fodder"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Winter Sleigh Bell Caravan Wol in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Winter Sleigh B",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Winter Sleigh "
+    "Snow permits sleigh freight while thin ice, storms and changing tracks interrupt travel.",
+    "Fodder, shelter and guides govern winter hauling beyond any protection from bells."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Winter Sleigh Bell Caravan Wol constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Winter Sleigh Bell Caravan Wol. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Packed snowy tracks carry sleigh loads, making some roads usable when wheels struggle and sometimes changing routes over frozen rivers. Currents, springs and snow cover obscure ice thickness; one crossing does not prove safety for a heavier load. Wind erases tracks and darkness and cold worsen disorientation, giving guides and known lodgings value.\n\nSleigh runners, lashings and loads need checks while horses still need fodder, water and rest. High loads overturn and frozen knots resist handling. Recovering a lost grain sack affects the whole party. Bells help companions locate each other or warn other travelers, but do not replace guards or guarantee avoidance by wolves and robbers."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Winter Sleigh Bell Caravan Wol. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Lords need fodder and lodging along winter routes rather than assume frozen rivers ensure speed. Taking village hay can weaken the very horses needed next."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts seek local advice and actual ice conditions and space loaded sleighs carefully. A distant bell calls for checking the companion’s location."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villagers balance winter haulage with fodder at home. Lodging travelers adds water and fuel work requiring agreement over payment and duration."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

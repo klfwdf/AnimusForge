@@ -1,32 +1,19 @@
 {
   "Id": "rule_rusalka_water_maiden_willow_drowning",
   "Keywords": [
-    "Rusalka Water Maiden Willow Dr",
-    "Rusalka Water Maiden Willow Dr Lore",
-    "Rusalka Water Maiden Willow Dr Chronicles",
-    "AD1259 Rusalka Water Maiden Willow Dr"
+    "drowning and tales of water beings",
+    "warnings about deep river pools"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Rusalka Water Maiden Willow Dr in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Rusalka Water M",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Rusalka Water "
+    "Deep pools, current and cold water cause danger and inspire local spirit stories.",
+    "Crossings require boats, local knowledge and suitable conditions beyond tales or offerings."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Rusalka Water Maiden Willow Dr constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Rusalka Water Maiden Willow Dr. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "River households know that quiet water can hide channels, flood-softened banks collapse and shallows shift. Falls, capsized boats and swimmers swept away leave grieving families sometimes unable to recover a body. Stories of water creatures, spirits or enticing figures explain danger, often tied to a willow bank, old ferry or pool where someone died.\n\nDescriptions vary, and darkness, drink and isolation intensify fear. Actual crossings depend on a boat’s load, sound ropes and oars and a guide’s knowledge. Soaked armour and cargo drag people down. Prayers or offerings express hopes without making a current safe; people watching the bank and calling for help still matter."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Rusalka Water Maiden Willow Dr. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Ferry authorities need maintained boats, approaches and ropes. After a drowning, those taking fees face questions that a spirit story cannot answer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops need loading plans and help on both banks rather than crowding one boat. Rescuers must judge footing and direction to avoid adding casualties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families use familiar banks but children wander toward deep water. Warnings help alongside companions, watching and repaired footing."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_squirrel_pelt_currency_kuny",
   "Keywords": [
-    "Squirrel Pelt Currency Kuny",
-    "Squirrel Pelt Currency Kuny Lore",
-    "Squirrel Pelt Currency Kuny Chronicles",
-    "AD1259 Squirrel Pelt Currency Kuny"
+    "valuing squirrel skins in trade",
+    "kuna accounts and fur cargo"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Squirrel Pelt Currency Kuny in 1259 Easter",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Squirrel Pelt C",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Squirrel Pelt "
+    "Furs serve as goods and payment, but monetary names do not always denote actual skins.",
+    "Quality, local agreements and demand govern valuation rather than one universal fur rate."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Squirrel Pelt Currency Kuny constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Squirrel Pelt Currency Kuny. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Squirrel and other small pelts from northern forests accumulate into lots through hunters, buyers and merchants, each bearing preparation and transport costs. Coat, season and damage affect price; damp or fragment-filled packages cannot all be valued as the best skins. Counting is only part of inspection and sorting.\n\nAccount names such as kuna have historical links to fur, but an amount need not demand whole skins of the named animal. Silver, pelts or other goods can settle an agreed payment if the receiver accepts it. Exchanging skins for salt and grain helps where small money is scarce, while foreign markets set different values and require travel expenses first."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Squirrel Pelt Currency Kuny. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Fur dues need quality and delivery terms beyond counts. Poor storage reduces what an estate can sell later."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers offering pelts need willing recipients and risk poor prices when hungry. Damp protection matters as much as armed security."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A small bundle represents many forest hours. Familiar buyers simplify exchange but can create debt and dependence."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

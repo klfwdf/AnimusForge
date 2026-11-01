@@ -1,32 +1,19 @@
 {
   "Id": "rule_dung_bed_winter_earth_cellar",
   "Keywords": [
-    "Dung Bed Winter Earth Cellar",
-    "Dung Bed Winter Earth Cellar Lore",
-    "Dung Bed Winter Earth Cellar Chronicles",
-    "AD1259 Dung Bed Winter Earth Cellar"
+    "winter storage in an earth cellar",
+    "cellar damp and ventilation"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Dung Bed Winter Earth Cellar in 1259 Easte",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Dung Bed Winter",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Dung Bed Winte"
+    "Earth cellars moderate temperature but need protection from seepage, mould and rodents.",
+    "Seed, vegetables and fuel have different storage needs, and inspection takes labour."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Dung Bed Winter Earth Cellar constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Dung Bed Winter Earth Cellar. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "An underground store shields vegetables and vessels from wind and severe cold, but a low site can admit rain and meltwater. Covers, drainage and supports need maintenance, and a household must check beyond the top basket. Freezing, mould and rodents steadily consume reserves; one leak can reduce a planned winter supply.\n\nGrain, seed and fresh produce require suitable storage, with damp bedding renewed rather than spoiled food buried beneath good supplies. Animal dung has agricultural uses but also brings dirt and smells, so food stores must be considered alongside stock and runoff. Opening the store, carrying baskets and sorting all take labour, and illness can delay even regular inspection."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Dung Bed Winter Earth Cellar. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Stewards need usable stores rather than a mere count of sacks. Drainage and sound covers can preserve more food than another hurried grain levy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops using village stores disrupt arrangements through repeated access. Recording condition and handovers helps avoid blaming all spring spoilage on hidden food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families keep sound seed apart despite immediate hunger. Leaks require quick movement, and a neighbour’s dry space can determine the scale of loss."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

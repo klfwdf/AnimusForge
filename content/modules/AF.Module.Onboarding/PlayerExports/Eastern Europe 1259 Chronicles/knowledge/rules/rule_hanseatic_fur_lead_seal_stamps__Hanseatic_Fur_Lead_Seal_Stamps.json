@@ -1,32 +1,19 @@
 {
   "Id": "rule_hanseatic_fur_lead_seal_stamps",
   "Keywords": [
-    "Hanseatic Fur Lead Seal Stamps",
-    "Hanseatic Fur Lead Seal Stamps Lore",
-    "Hanseatic Fur Lead Seal Stamps Chronicles",
-    "AD1259 Hanseatic Fur Lead Seal Stamps"
+    "inspecting packed furs",
+    "fur bales and cargo marks"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Hanseatic Fur Lead Seal Stamps in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Hanseatic Fur L",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Hanseatic Fur "
+    "Fur cargo needs checks of dryness, wear and count; marks help identify a bale.",
+    "Inspection, witnesses and handovers matter; a lead seal alone cannot prove quality or title."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Hanseatic Fur Lead Seal Stamps constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Hanseatic Fur Lead Seal Stamps. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Furs reaching Novgorod pass through hunting, preparation, buying and repeated handling. Species matters, but so do the coat, damage and keeping. Damp skins spoil inside a bale and damage others, making drying and rain protection essential. Buyers may open part of the cargo to distinguish whole skins, pieces and mixtures rather than value everything by the best visible skin.\n\nKnots, seals and owners’ marks help identify a package, but substitution, shortages and uncertain responsibility remain possible. An intact mark does not prove the skins stayed dry or that a suspicious seller owns them. Porters, stores and recipients need to know the agreement, including how an inspected bale is tied again."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Hanseatic Fur Lead Seal Stamps. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Merchant leaders need trusted witnesses for inspection, storage and claims. Arbitrary opening and exactions by guards enter the price of future trade."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts watch bindings and covers and count packages at relief. Reporting a broken mark immediately avoids carrying both the problem and suspicion to the destination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Transport and intermediaries reduce hunters’ returns. Sound preservation helps bargaining, but drying furs competes for household shelter and labour."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

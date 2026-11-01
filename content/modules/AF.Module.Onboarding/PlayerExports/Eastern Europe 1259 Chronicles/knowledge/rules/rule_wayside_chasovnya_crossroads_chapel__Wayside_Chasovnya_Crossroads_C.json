@@ -1,32 +1,19 @@
 {
   "Id": "rule_wayside_chasovnya_crossroads_chapel",
   "Keywords": [
-    "Wayside Chasovnya Crossroads C",
-    "Wayside Chasovnya Crossroads C Lore",
-    "Wayside Chasovnya Crossroads C Chronicles",
-    "AD1259 Wayside Chasovnya Crossroads C"
+    "prayer at a wayside cross",
+    "small worship places by a crossing"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Wayside Chasovnya Crossroads C in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Wayside Chasovn",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Wayside Chasov"
+    "Wayside crosses and small worship sites serve prayer, memory and route finding through local care.",
+    "Travelers still need food, shelter and local safety information beyond a religious marker."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Wayside Chasovnya Crossroads C constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Wayside Chasovnya Crossroads C. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "A cross near a village, road or ferry lets travelers pray and can commemorate a death or local event. A small worship place may have a keeper or occasional clergy, but entry and services need local inquiry. Timber decays and approaches grow muddy; a marker still needs repair and does not mean a town has been reached.\n\nPeople pray, ask directions and meet travelers whose news covers only their own route. A religious marker provides no automatic grain store, dry bed or guards. Rainy nights need shelter and injured people need help. Gifts of wax or food support upkeep, alongside local labour and materials seldom noticed by visitors."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Wayside Chasovnya Crossroads C. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Patrons need upkeep and access behind their gifts. Any promise to host travelers needs a key keeper and actual food and shelter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops use crosses as landmarks without dropping vigilance. Meeting plans need the precise junction and waiting time to avoid confusion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Local repairs help visitors arrive, while hosting strangers competes with fuel and food for dependants."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

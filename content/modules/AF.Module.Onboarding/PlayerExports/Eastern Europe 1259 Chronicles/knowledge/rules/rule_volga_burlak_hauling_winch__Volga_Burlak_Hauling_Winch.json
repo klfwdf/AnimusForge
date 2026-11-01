@@ -1,32 +1,19 @@
 {
   "Id": "rule_volga_burlak_hauling_winch",
   "Keywords": [
-    "Volga Burlak Hauling Winch",
-    "Volga Burlak Hauling Winch Lore",
-    "Volga Burlak Hauling Winch Chronicles",
-    "AD1259 Volga Burlak Hauling Winch"
+    "hauling a boat upstream on the Volga",
+    "towpaths and river cargo"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Volga Burlak Hauling Winch in 1259 Eastern",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Volga Burlak Ha",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Volga Burlak H"
+    "Upstream boats use hauling, poles or favourable wind and water, limited by banks and loads.",
+    "Towing needs people, rope and coordination; bad banks and broken lines endanger cargo."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Volga Burlak Hauling Winch constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Volga Burlak Hauling Winch. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "Volga cargo generally moves more easily downstream. Upstream passage depends on wind, current, banks and draught. A usable bank permits hauling; other stretches need poles, transshipment or waiting. Lightening a boat may save effort but require more trips, and suitable landings govern rest and supply.\n\nHaulers, steersmen and bank watchers must coordinate. Snags, shoals and slippery mud abruptly alter tension, and a broken line can injure people or lose cargo. Hiring needs clear wages, food and the stretch to be worked. Added loads or unpaid wages drive helpers away; inexpensive river carriage still depends on substantial human work."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Volga Burlak Hauling Winch. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "Owners need upstream time and workers’ food in their costs, beyond downstream estimates. Exactions blocking tow routes reduce supplies and local income."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts avoid taut-line danger and cooperate with the steersman at shoals. Threats do not change the current and may drive away local skill."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villagers earn from hauling while balancing farm work. Food and the end point need agreement before work, so families know when to expect them."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }

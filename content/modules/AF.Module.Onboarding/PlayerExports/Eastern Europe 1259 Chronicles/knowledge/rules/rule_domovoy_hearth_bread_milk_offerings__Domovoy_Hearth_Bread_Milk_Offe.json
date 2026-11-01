@@ -1,32 +1,19 @@
 {
   "Id": "rule_domovoy_hearth_bread_milk_offerings",
   "Keywords": [
-    "Domovoy Hearth Bread Milk Offe",
-    "Domovoy Hearth Bread Milk Offe Lore",
-    "Domovoy Hearth Bread Milk Offe Chronicles",
-    "AD1259 Domovoy Hearth Bread Milk Offe"
+    "household prayers at the hearth",
+    "domestic spirits and clergy"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Domovoy Hearth Bread Milk Offe in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Domovoy Hearth ",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Domovoy Hearth"
+    "The hearth gathers cooking, warmth and family life as well as hopes of protection.",
+    "Clerical and household explanations differ; rituals do not replace fuel and food work."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The institutional custom, legal charter, and socio-economic tradition of Domovoy Hearth Bread Milk Offe constituted a cornerstone of feudal society in 1259. Deeply intertwined with manorial privileges, municipal autonomy, and church tithes, this established practice governed the seasonal extraction of wealth, trade monopolies over high-value commodities, and judicial dispute resolution among the ruling nobility. In a frontier civilization fractured by regional rivalries, adhering to these codified norms provided vital stability across Baltic and Slavic marches."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Common travelers, caravan escorts, and peasant levy troops encamped near road-side stations respect the ancient rules of Domovoy Hearth Bread Milk Offe. Whether exchanging raw furs for salt or seeking sanctuary under ancient guest-rights, breaking established oaths on the king's highway brings swift justice and no mercy from the duke's roving provosts."
+      "Content": "The hearth supplies hot food, drying and warmth, with household rules about fuel, ash and children nearby. Families connect a home’s fortunes with ancestors, blessings and prohibitions, especially after moving, fire or repeated loss. Some pray before meals and others trust inherited practices; elders often explain the rules.\n\nRus Christians pray before icons and make the sign of the cross while sharing homes with relatives attached to older customs. Clergy may oppose offerings to spirits, and families may dispute how to judge inherited observances. Seeking protection changes neither fuel nor grain supplies: damp wood burns poorly, and offerings or hospitality also consume food needed at home."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Boyars and bailiffs scrutinize parchment charters confirming ancestral rights under Domovoy Hearth Bread Milk Offe. Defending court tolls, mill monopolies, and forest mast against encroachments by rival princes or imperial legates demands perpetual legal vigilance and decisive diplomatic assertion at general assemblies."
+      "Content": "In a lord’s household, hearth rules concern fires and provisioning. Punishment alone over spirit customs can damage trust; religious advice and practical duties both need responsible people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lodgers observe where hosts place icons and valued objects before touching things around the hearth. A household has its own fire and meal arrangements beyond camp habits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Elders may explain taboos while younger people worry about fuel. Someone must still cook and watch children during a dispute; cooperation matters beyond winning an argument."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "Culture"
 }
