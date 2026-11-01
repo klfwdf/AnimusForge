@@ -1,3 +1,16 @@
+<a id="field-camp-continuation-review-fix-20261102"></a>
+
+## 2026-11-02 营地连续处决审查修复：活动互斥与 Begin 失败重试
+
+- 最新要求“修复”授权修复本会话审查的两项问题；范围为营地活动准入与接续事务顺序，保留普通城镇离场结算，未部署/打包/push。产品 `93df60b436`；检查点 `2d73c6349`。替代上一条接续实现在这两项边界的验收结论。
+- 代码证据（产品提交一基行号）：`src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:39-63` 的注册/注销及 `CanStartCeremony` 由营地 owner 核验已生成、未退场、无现行仪式、无 SlaughterBusy、无 duelists；`Vengeance/Source/Core/VengeanceIntegration.cs:34-48` 的 `FieldCampCeremonyAdmissionProbe` / `CanStartFieldCampCeremony` 提供薄钩子，缺失或异常拒绝。与原有“是营地”身份探针分开。
+- `Vengeance/Source/Scene/TownExecutionMissionBehavior.Continuation.cs:21-29,74-151` 在 F/弹窗回调、上一场结算后及 Begin 回调后核验实际活动资格；增加接续重入守卫。顺序调整为：上一场幂等结算 → Begin 下一场（拒绝时保留原刑场、刽子手、控制器）→ 再次核验 → 清理/移除上一场 → 同 Mission 注入。Begin 回调变为忙碌或失效时，仅取消新请求并保留旧入口；恢复后可重试，不重复上一场结算。`TownExecutionMissionBehavior.Scene.cs:117-123` 在真正 staging 前再次检查，不接管其他活动。
+- 性能：资格只读 owner 字段/集合 Count，通过已有 Mission behavior 查询找到营地；替代 F 资格中的原身份查询，没有新增全场 Agent/俘虏扫描、Tick IO、反射或后台游戏对象访问。列表枚举仍仅发生于玩家选人时。
+- 验证：原统一构建 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Release`：1.3/1.4 Release、Bootstrap、双 coup seam gates、registration smoke 全通过。日志 `.tmp/fc-chain-fix-build.log`；产物 `bin/Release/single_module_artifacts/`。`dotnet run --project tests/Vengeance/FieldCampContinuationTests -c Release` PASS 32：链接真实接续和真实 VengeanceIntegration，Mission/Service 与营地资格回调为替身；覆盖忙碌拒绝、过期弹窗、Begin 后忙碌/退场、重入、缺失/异常钩子、拒绝后 F 可用且重试成功、旧结算不重复。原围观回归 TOTAL 105。日志 `.tmp/fc-chain-fix-tests.log`、`.tmp/fc-chain-fix-crowd.log`。
+- 双语：没有新增文案，复用已登记的 CN/EN `REX_Error_FieldCamp_Unavailable`。双语表 26 表、0 失败；全仓 l10n_gate 仍为既有外交 `DiplomacySponsorReceiptRules.cs` 4 处中文常量失败（本任务未修改）。日志 `.tmp/fc-chain-fix-tables.log` / `.tmp/fc-chain-fix-l10n.log`。
+- 未验证：实机屠俘/决斗期间按 F、实际扩展拒绝后同场景重试、连续多场和各刑罚、战役即时死亡事件/记忆/旧档。专项替身回归不等于原生引擎验收。独立 RichExecutions.csproj 约定路径缺失（此前已核实），本轮未宣称独立构建通过。下一场获准后若后续实体清理/注入失败，沿用原失败处理；本轮保留重试入口的保证针对 Begin 拒绝/回调准入失效。
+- 回滚：只 `git revert 93df60b436`；保留 `e3dca92e64` 原接续功能和其他会话 dirty。不重置整个工作区。
+
 <a id="field-camp-continuation-20261102"></a>
 
 ## 2026-11-02 营地同场景连续处决（本地源码验收）
