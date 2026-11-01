@@ -1,3 +1,23 @@
+## 2026-11-02 扎营处决：进营即可部署刑场、俘虏绑手（已完成）；同场景连续处决（未完成，转手）
+
+用户要求：(1) 进营地就能按 B 部署刑场，不要单独的菜单入口；(2) 可以一个接一个处决；(3) 进营地时给俘虏安排位置，绑住双手。
+
+已完成（本提交，1.3/1.4 Release 均 0 错误，输出 `.tmp/fc-exec-b`；未部署、未实机）：
+- 进营即部署：`FieldCampBehavior.Menu.cs` 删除菜单项 `af_fc_execution` 及其条件/结果方法。现在“巡视营地”（`OnPatrolConsequence`）在 Vengeance 可用且有可处决的英雄俘虏时，先调用 `TryBeginFieldCampDeployment` 预备一个临时自定义刑场会话，再打开营地；进营后按 B 即可。不部署直接离开，会话按原有流程取消（不花钱、不伤人）。营地没开成功时调用 `CancelPending`。同时删除 `FieldCampText.ExecutionTooltip/ExecutionNoPrisoner` 和 UI 字符串 `AF_FC_Menu_Execution/AF_FC_ExecutionTooltip/AF_FC_ExecutionNoPrisoner`（中英各 3 条）。
+- 俘虏绑手：`FieldCampMissionLogic.People.cs` 的 `ApplyPrisonerPose` 改为调用新增的 `PlayBoundIdle`：把俘虏切到 `as_human_warrior` 动作集（女性、平民动作集里没有绑手动作，做法同 Vengeance 受刑者），播放 `act_prisoner_conversation_idle_1/2`（双手反绑待机）；失败则退回 `act_scared_idle_1`。位置仍是原来的围栏 3×3 槽位（`FieldCampLayout.Zones.cs` `PlacePen`）。
+- 脚手架（未接线）：`Vengeance/Source/Scene/ExecutionSessionCoordinator.cs` 新增 `InjectChainedSession(mission, request, service)`，用于在同一任务里注入新的处决控制器和死亡逻辑。目前没有调用方。
+
+未完成：同场景连续处决（用户已确认：处决完一个后与刽子手对话选下一个，**同一场景、不读条**）。调查结论与建议方案：
+- 难点：`TownExecutionMissionBehavior` 把战役结算（`_service.Commit`、`KillCharacterAction.ApplyByExecution`、后果规则）推迟到离开任务时（`OnEndMission`→`CommitCampaignExecutionOnMissionExit`）。若任务进行中移除控制器，`OnRemoveBehavior` 会报 `DEATH_INVARIANT_FAILED` 且不结算。一个任务里很多代码默认只有一个控制器（`GetMissionBehavior<TownExecutionMissionBehavior>()`：`ExecutionSiteBuilderMissionView`、`ExecutionSpeechDirector`、`ExecutionWitnessObservationController`、`PublicExecutionOrderRuntime`、`SceneAgentIdentityPromptCaptureAdapter`、`ExecutionSceneConflictBridge.Register`）。
+- 建议步骤：
+  1. 控制器新增“营地接续”路径：`Request.IsFieldCamp`，并且 `State==Aftermath`、`_aftermathSessionReleased`、玩家状态已恢复时，玩家对刽子手按 F（营地没有原版对话逻辑，见 `OnAgentInteraction` 里 `MissionConversationLogic is null` 分支；`CanPlayerUseExecutionPoint` 和 `GetExecutionFocusText` 需放开 Aftermath 下的刽子手），弹出 `MultiSelectionInquiryData`（复用 `REX_Continue_Title/Description/Confirm/Cancel/Leave`），候选为 `GetDeploymentPrisonerOptions(null)` 去掉本场受刑者。
+  2. 选定后，在任务内提前结算本场：调用现有 `CommitCampaignExecutionOnMissionExit()`（它自己防重复），再 `CleanupRuntimeObjects(removeAgents: true, removeEntities: true)`。注意尸体 Agent 会被 FadeOut（穿刺尸体展示在 `CommitPendingImpaledCorpseDisplay` 已保存）。然后 `FinalizeSession()`，并 `Mission.RemoveMissionBehavior` 移除本控制器和 `_deathLogic`（先置 `_cleanupComplete`，确保 `OnRemoveBehavior` 不再报错）。
+  3. 用 `BuildDeploymentRequest(hero, source, CurrentMethod, Request.Charge, Request.Tone, null)` 生成新请求，`_service.Begin` 后调用 `ExecutionSessionCoordinator.InjectChainedSession`，再 `ExecutionSceneConflictBridge.Register`（在 AF 桥接侧，经 `VengeanceIntegration` 加一个回调，因为 Vengeance 源码不能直接引用 AF 类型，见 `Vengeance/AGENTS.md`）。
+  4. 新控制器要直接用上一场的方法、预设和根点：给控制器加一个内部入口，在 `AfterStart` 绑定玩家后调用 `TryAcceptCustomSiteLayout(method, preset, origin, forward)` 并跳过编辑器（新请求已 Begin，`TryCommitDeploymentRequest` 那一步不需要）。上一场的 `_customSitePreset`、`_placement.Origin/Forward`、`_runtimeMethod` 要在移除前取出传过去。
+  5. 营地钩子：上一场的 `FieldCampCeremonyReleased` 已触发；新一场会再次触发 `FieldCampCeremonyStaged`（`_fieldCampCeremonyStaged` 是每个控制器自己的字段，没问题）。`FieldCampMissionLogic.OnCeremonyStaged` 会再次隐藏营地里该俘虏的副本。
+  6. 验证：两版构建；独立 `RichExecutions.csproj` 目前在本机找不到（`AGENTS.md` 写的联接路径不存在），需要确认。实机需要测：连续 2 到 3 场、中途离开、选“离开刑场”、每种处决方法、旧存档。
+- 回滚：`git revert` 本提交。
+
 ## 2026-11-01 扎营：摆设实体碰撞 + 士兵用场景闲聊当面反映营中问题
 
 用户实测反馈：营地物品和营帐没有碰撞；士兵反馈不要再用顶部的指挥式提示，改成复用场景喊话的闲聊，并在输入里带上反馈话题。

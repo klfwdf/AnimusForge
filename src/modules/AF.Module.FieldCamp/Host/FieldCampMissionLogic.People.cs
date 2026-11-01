@@ -323,15 +323,47 @@ public sealed partial class FieldCampMissionLogic
 				agent.RemoveEquippedWeapon((EquipmentIndex)i);
 			}
 			agent.UpdateWeapons();
-			ActionIndexCache action = ResolveAction("act_scared_idle_1");
-			if (action != ActionIndexCache.act_none)
-			{
-				agent.SetActionChannel(0, in action, true);
-			}
+			PlayBoundIdle(agent);
 		}
 		catch (Exception ex)
 		{
 			Logger.Log(LogSource, "prisoner pose failed agent=" + agent.Index + " error=" + ex.Message);
+		}
+	}
+
+	private static readonly string[] BoundIdleActions = { "act_prisoner_conversation_idle_1", "act_prisoner_conversation_idle_2" };
+
+	/// <summary>
+	/// Hands tied behind the back. The bound-prisoner idles exist only in the base warrior
+	/// action set (the female and settlement sets do not inherit them), so the prisoner is
+	/// moved onto it first, as the Vengeance condemned are. Falls back to a cowering idle.
+	/// Once per prisoner at spawn and after a slaughter restore.
+	/// </summary>
+	private void PlayBoundIdle(Agent agent)
+	{
+		ActionIndexCache bound = ResolveAction(BoundIdleActions[Math.Abs(agent.Index) % BoundIdleActions.Length]);
+		try
+		{
+			MBActionSet warrior = MBActionSet.GetActionSet("as_human_warrior");
+			if (bound != ActionIndexCache.act_none && MBActionSet.CheckActionAnimationClipExists(warrior, in bound))
+			{
+				if (!string.Equals(agent.ActionSet.GetName(), "as_human_warrior", StringComparison.Ordinal))
+				{
+					AnimationSystemData data = agent.Monster.FillAnimationSystemData(warrior, agent.Character?.GetStepSize() ?? 1f, false);
+					agent.SetActionSet(ref data);
+				}
+				agent.SetActionChannel(0, in bound, true);
+				return;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(LogSource, "bound idle failed agent=" + agent.Index + " error=" + ex.Message);
+		}
+		ActionIndexCache cower = ResolveAction("act_scared_idle_1");
+		if (cower != ActionIndexCache.act_none)
+		{
+			agent.SetActionChannel(0, in cower, true);
 		}
 	}
 

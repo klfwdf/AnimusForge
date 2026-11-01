@@ -187,6 +187,30 @@ internal static class ExecutionSessionCoordinator
             downstreamDecider);
     }
 
+    // Field-camp chained ceremony: the previous controller has already settled
+    // and removed itself, so the mission holds exactly one controller again.
+    // The new request is begun by the caller; this only adds its behaviors.
+    internal static TownExecutionMissionBehavior InjectChainedSession(
+        Mission mission,
+        ExecutionRequest request,
+        ExecutionService service)
+    {
+        RexLog.Info(
+            $"Injecting chained field-camp session {request.SessionId} into mission scene " +
+            $"'{mission.SceneName ?? "<null>"}'.");
+        var downstreamDecider = mission.MissionBehaviors
+            .OfType<IAgentStateDecider>()
+            .FirstOrDefault();
+        var deathLogic = new ExecutionVictimDeathMissionLogic(request, downstreamDecider);
+        var controller = new TownExecutionMissionBehavior(
+            request,
+            service,
+            RichExecutionApi.SceneActs,
+            deathLogic);
+        AddExecutionMissionBehaviorsAtomically(mission, deathLogic, controller, downstreamDecider);
+        return controller;
+    }
+
     private static void AddExecutionMissionBehaviorsAtomically(
         Mission mission,
         ExecutionVictimDeathMissionLogic deathLogic,

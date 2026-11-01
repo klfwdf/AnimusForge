@@ -46,10 +46,6 @@ internal static class FieldCampText
 
 	internal static TextObject PatrolFailed() => new TextObject("{=AF_FC_PatrolFailed}The camp scene could not be opened here.");
 
-	internal static TextObject ExecutionTooltip() => new TextObject("{=AF_FC_ExecutionTooltip}Enter the camp, choose a place and press B to set up the execution site. In camp no influence is spent and no town is affected; your traits and the condemned's kin and realm still react.");
-
-	internal static TextObject ExecutionNoPrisoner() => new TextObject("{=AF_FC_ExecutionNoPrisoner}Your party holds no adult hero prisoner who can be executed.");
-
 	internal static TextObject Assembled() => new TextObject("{=AF_FC_Assembled}The troops fall in by troop type.");
 
 	internal static TextObject Dismissed() => new TextObject("{=AF_FC_Dismissed}The troops are dismissed and return to camp.");
