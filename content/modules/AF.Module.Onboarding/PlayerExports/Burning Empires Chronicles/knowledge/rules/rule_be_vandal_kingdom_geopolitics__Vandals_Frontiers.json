@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "On the palisade above the Silesian plain, the watch counts campfires in the valley below. Enemy horsemen have raided the outer farms three times this month, and every embrasure now holds a loaded ballista. A sentry who dozes at his post will be the first body the raiders find at dawn, and his comrades will bury him without ceremony."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "At the border fort, the Vandal warden unseals a dispatch from the chancery and finds the subsidy cut once more. Without silver to hire auxiliary companies, he must trade land rights with neighboring petty lords to keep the passes guarded. Each season the raiders probe closer, so every sealed report he sends now ends with a plea for funds before the snows block the roads."
     }
   ],
   "SemanticPrototypes": [],

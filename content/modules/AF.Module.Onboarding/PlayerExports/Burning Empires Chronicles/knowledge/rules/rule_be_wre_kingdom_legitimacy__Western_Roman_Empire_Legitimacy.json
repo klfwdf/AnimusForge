@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Valentinian I's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Legionaries speak in low voices about the standards carried at Mediolanum and Trier. When Valentinian I's banners are raised, every soldier must buckle on his mail and fall in at the eagle. Blood spent on the campaign is repaid in gold or land grants, though the wounded wait a long time before the clerks write their names."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "In the palace offices, the magnates read each imperial rescript twice before they agree to obey. The emperor's authority is acknowledged in public, yet municipal liberties and tax revenues remain under local control. Every oath of loyalty is weighed against the privileges the great houses already hold, and quiet envoys carry the true terms between cities."
     }
   ],
   "SemanticPrototypes": [],

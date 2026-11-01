@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Commanding the Homs gap in Syria, Krak des Chevaliers represents the zenith of Hospitaller military architecture. Its concentric ring layout places towering inner walls above lower outer circuits, backed by deep cisterns, windmills, and subterranean granaries capable of sustaining two thousand defenders for years."
+      "Content": "Krak des Chevaliers commanded the Homs gap in Syria and stood as the finest surviving example of concentric castle design. Its inner walls rose above the lower outer circuit, so that each ring could fire over the one in front of it. Deep cisterns, mills and subterranean granaries let the garrison hold out for long periods, and the fortress was provisioned to sustain a large defending force through a siege. The Hospitallers held it for the crusader states, and its towers guarded the caravan routes between Aleppo and Damascus. The castle's strength rested on this layout and on the reserves stored within it, which turned a blockade into a long and costly test for any attacker."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "While the Hospitaller white cross flies above its battlements, caravan routes between Aleppo and Damascus remain exposed to sudden cavalry sallies. Saladin himself bypassed it; only relentless artillery can breach its defenses."
+      "Content": "While the Hospitaller white cross flies above its battlements, the caravan routes between Aleppo and Damascus remain exposed to sudden cavalry sallies from the Homs gap. Mounted garrison riders strike at convoys that slip past the walls, and the Order's stewards must keep those riders paid and fed. Any attacker would need heavy siege engines and months of supplies to breach the inner ring."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Storming the Krak is suicide. Even if you cross the dry ditch and scale the outer talus, defenders on the towering inner circuit rain crossbolts and boiling oil into the killing ground between the walls."
+      "Content": "Storming the Krak is a fool's errand. Crossing the dry ditch and scaling the outer talus exposes a man to defenders on the towering inner circuit, who rain crossbolts and boiling oil into the killing ground between the walls. Keep your shield high and your ladder moving, because every man who stops in that ground becomes a target for the next volley."
     }
   ],
   "TextMappings": []

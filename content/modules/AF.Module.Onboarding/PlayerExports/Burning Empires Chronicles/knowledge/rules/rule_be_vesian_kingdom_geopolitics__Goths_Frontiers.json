@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "The lookout on the timber tower has seen no fire tonight, which troubles him more than a blaze would. Cavalry sweeps have doubled along the forest edge, so each embrasure keeps a loaded ballista ready. If the watch falls asleep, the raiders will be inside the palisade before the bell rings."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "The chieftain's steward reads a dispatch and finds the royal subsidy reduced once more. Without silver to hire auxiliary companies, he must trade grazing rights with neighboring lords to keep the crossings guarded. Every sealed report to the court now ends with a request for grain and men before winter closes the roads."
     }
   ],
   "SemanticPrototypes": [],

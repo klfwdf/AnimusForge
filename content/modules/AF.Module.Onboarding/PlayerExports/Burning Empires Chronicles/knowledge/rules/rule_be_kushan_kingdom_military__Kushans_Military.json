@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "Horsemen form a line on the valley floor, lances lowered and shields raised. The front rank holds against the enemy charge while the archers loose volleys over their heads. A horse that falls in the mud means death for its rider, so each man checks his girth and his grip before the drums sound."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "A fortified tower gives the view down the valley, and messengers carry orders to the flanking squadrons. Victory depends on keeping the baggage train out of the river crossings and holding the center until the heavy cavalry can strike. Each lord's levy is judged by its discipline, and those who retreat early will lose their place at the next muster."
     }
   ],
   "SemanticPrototypes": [],

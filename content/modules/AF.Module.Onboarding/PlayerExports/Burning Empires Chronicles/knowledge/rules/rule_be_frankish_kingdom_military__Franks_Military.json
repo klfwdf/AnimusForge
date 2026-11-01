@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "Shoulder to shoulder, the spearmen in the front rank brace against shield rims as the drums roll. The charge of warhorses must be absorbed by locked ranks while the rear files thrust through any gap. A man who loosens his grip for a moment is trampled. The sergeant bellows the watchword before the first arrows fall, and the line holds or breaks on the courage of the man beside you."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "Staff officers crowd the command redoubt, messengers waiting at the door. Victory depends on keeping the baggage train moving over wet roads and on holding the infantry center until the shock reserve is released. Once the enemy line gives way, the cavalry wings will strike its flanks. Every commander knows that a defeat is entered in the ledger of whose men were sacrificed."
     }
   ],
   "SemanticPrototypes": [],

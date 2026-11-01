@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "Shields lock into a wall as the horns sound, and the front rank braces for the charge. Each man takes the shock of warhorses on his shoulder while spears thrust through the gaps behind him. Breaking formation means the sergeant's sword, so every soldier keeps his place in the file. At the Quadians post, the night watchword is \"Salt.\""
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "The field marshal weighs the day from a hilltop redoubt, counting wagons against distance. Victory needs the supply carts to reach the center and the center to hold. Once the infantry stands firm, the flank horsemen ride wide to close the trap, and the enemy's broken ranks become the army's spoil."
     }
   ],
   "SemanticPrototypes": [],

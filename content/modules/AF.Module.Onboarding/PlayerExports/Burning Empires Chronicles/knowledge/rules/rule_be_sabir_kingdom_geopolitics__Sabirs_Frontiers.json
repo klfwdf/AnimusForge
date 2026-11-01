@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "A sentry lies flat on the ridge above the caravan road and watches the dust for hours. Smoke columns rose on two horizons last night, and scouts now ride the grazing grounds three times a week. Every post has a loaded bow and a tethered horse, and the watch changes at midnight because no one trusts the dark. At the Sabirs post, the night watchword is \"Stone.\""
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "A courier arrives at the frontier fort with a dispatch sealed in red wax. The khan has cut the border subsidy again, while raiders probe the passes each month. Without silver to hire auxiliary riders, the warden must borrow from local clans and pledge them the caravan tolls, and every debt gives a neighboring clan a claim on the pass."
     }
   ],
   "SemanticPrototypes": [],

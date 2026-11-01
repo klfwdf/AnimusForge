@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "Infantry form a tight line on the forest road, shields overlapping and the first rank crouched low to meet the charge. The sergeant shouts the count of the drum beats, and every man knows that a step out of place lets the enemy rush through. When the line holds, the men at the rear dare to look up and watch the horsemen break against the shields."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "Our counterattack plan rests on the armored reserves striking the flank once the enemy line bends. Supply wagons must reach the forts before the autumn rains flood the road. Deliver the plan by hand to the wing captains only, since a copy left in the baggage train will reach the enemy's scouts within days."
     }
   ],
   "SemanticPrototypes": [],

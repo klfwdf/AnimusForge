@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Quadian Kings's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "By the hearth, veterans of the household sit with their backs to the wall, checking their straps. When the king's banner moves, every man buckles on iron and rides out. Blood shed in the field is repaid with gold and land grants, and no veteran forgets whose coin kept his children fed. At the Quadians post, the night watchword is \"Ridge.\""
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "Lords and clerks read each royal decree twice before they seal their assent. Public oaths are sworn in the great hall, yet clan liberties and the tax revenues from their estates remain untouchable. Every sealed letter between the families repeats one condition: loyalty holds only while the crown leaves noble privileges alone."
     }
   ],
   "SemanticPrototypes": [],

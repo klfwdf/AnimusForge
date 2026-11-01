@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Votadinian Rulers's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Old veterans speak quietly about the Votadinian Rulers and what their banners mean. When those banners rise from the hill fort, every man must strap on iron armor and march down the glen. Gold or land is promised for blood spent in the field, though most of the wounded wait years before the clerk writes their names."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "In the great hall at Traprain, the lords read each royal decree twice before they agree to obey. The Votadinian Rulers are acknowledged in public, yet clan liberties and tax revenues remain under local seals. Every oath of loyalty is weighed against the privileges already held, and a quiet messenger carries the real terms through the glens."
     }
   ],
   "SemanticPrototypes": [],

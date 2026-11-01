@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Balamber's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Warriors gather around the fire and repeat the oath they swore to Balamber at the spring gathering. Their horses were promised spoils from the Roman frontier, and they remember which chiefs kept those promises. A rider who swears loyalty earns the lead, but one who breaks it is left behind in the next raid."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "The chieftains' council meets in a ring of tents, and each man presses his claim to the king's favor. Balamber's authority rests on the tribute he distributes, and every chieftain tallies what he received against what he gave. A king who lets the herds dwindle will find his council voting against him."
     }
   ],
   "SemanticPrototypes": [],

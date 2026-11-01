@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "Horns sound the advance, and the spearmen step forward with shields locked edge to edge. Mounted attackers crash against the front rank while the men behind thrust through the gaps. A soldier who turns his back is cut down by his own file, since retreat without an order means death for the one who runs."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "Officers at the rear of the Thervingian host plot the flanks on a cloth map weighted with stones. Victory depends on provisions reaching the wings on time and on keeping every unit in a straight line. Once the center holds, the cavalry can encircle the enemy and seal the trap, and the men who funded the campaign will divide the spoils by rank."
     }
   ],
   "SemanticPrototypes": [],

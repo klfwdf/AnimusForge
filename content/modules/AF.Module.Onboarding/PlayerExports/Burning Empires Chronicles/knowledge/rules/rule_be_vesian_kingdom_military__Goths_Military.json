@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "At the bronze horn's call, spearmen step into place with shields overlapped edge to edge. Mounted attackers crash against the front rank while the second rank thrusts through the gaps. Whoever breaks the line to run is cut down by his own file, since retreat without an order is death."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "A grey-bearded commander studies the field from a wagon bed, comparing the ranks with the list of levies he summoned. Battles like this are won in the supply tent before the first arrow flies: grain must arrive on time and the line must hold straight. Once the enemy center gives way, the riders are ordered forward to close the gap."
     }
   ],
   "SemanticPrototypes": [],

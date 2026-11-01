@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Frankish Kings's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Veterans speak in low voices at the campfire about the Frankish king's war banners. When they advance, every man must buckle on iron armor, and the blood spilled in the field must be repaid with gold and land. A sergeant swears the promise will be kept, though the recruits remember the last campaign, when a land grant was delayed for two full harvests and widows waited at the gate."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "Lords of the great clans gather behind closed doors. The king's decrees are read, but each lord's clan liberties and tax revenues remain his own, and most oaths hold only while the crown protects those privileges. One counselor proposes reforming the court; another warns that stripping a clan of its tithes would start revolt along the Lower Rhine marches."
     }
   ],
   "SemanticPrototypes": [],

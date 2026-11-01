@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Bosporan Kings's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Veterans in the Panticapaeum garrison speak of the Bosporan kings with pride, though they do not agree on which king deserves the praise. When the royal standards are raised for the summer muster, every man must put on his armor and march to the harbor gate. The soldiers hope the promise of land and silver will hold, because the last muster was paid in part and the rest is still owed."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "The council in the palace will not confirm the royal decrees on land grants until the harbor houses agree to the new tolls. Summon the leaders of the harbor houses and offer to keep their trading privileges in exchange for their support at the council. Write nothing down before the council meets, since the royal clerks will record any document that names the houses."
     }
   ],
   "SemanticPrototypes": [],

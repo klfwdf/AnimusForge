@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Established during the First Crusade by Bohemond I, the Principality of Antioch crowns the Orontes River valley beneath Mount Silpius. Its perimeter is defended by hundreds of masonry towers and the fortified Iron Bridge. Under Bohemond VI, allied with Cilician Armenia, it stands as Outremer's northern bastion."
+      "Content": "Bohemond I took Antioch in 1098 after a long siege during the First Crusade, and the principality he founded grew out of that conquest. The city lies in the Orontes valley, with its citadel climbing Mount Silpius above the rooftops. Walls ran along the slope and were studded with masonry towers, while the Iron Bridge carried the road across the river below. Control of that bridge and the citadel decided who could move armies between the coast and the interior. Through the thirteenth century the principality faced pressure from Mamluk Egypt to the south and from Mongol campaigns that reached Syria in 1260. Its walls and crusader garrisons held the northern approaches to Outremer for as long as its princes could pay for them."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Holding both Antioch and Tripoli, Bohemond VI commanded singular chivalric prestige. To shield his frontiers against Mamluk expansion, he accepted vassalage to Mongol Hulagu, drawing his lands into high-stakes imperial conflict."
+      "Content": "Bohemond VI held Antioch and used that position to bargain with every neighbour. Armenian lords from Cilicia looked to his court for alliance. When Mamluk power grew on his southern border, he chose vassalage to the Mongol Hulagu as cheaper protection, and his lands were dragged into an imperial quarrel he could not control. Sealed letters from Acre and Cyprus shaped each of his choices."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "The ramparts climb steep mountain crags where sentries appear like ravens. Without traitors opening a sally port from within, assaulting Antioch head-on is madness against plunging boulders."
+      "Content": "The ramparts climb steep crags on Mount Silpius, and sentries on the upper towers see the valley for miles. Stone steps grow slick in winter, and every night watch means cold hands on a wet parapet. Storming the walls head on is madness, since boulders come down faster than a column can climb. The only realistic way in is a traitor opening a postern from within."
     }
   ],
   "TextMappings": []

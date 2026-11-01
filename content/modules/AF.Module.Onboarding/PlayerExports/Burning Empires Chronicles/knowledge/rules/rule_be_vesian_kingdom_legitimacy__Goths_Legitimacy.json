@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Fritigern's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Fritigern's war banners rise over the camp, and the quartermasters begin handing out armor. Every man must put on iron mail and march at first light, with no excuses from the wagon line. Those wounded in the fighting are paid in gold or land grants, though the paperwork can take years to clear."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "In the hall of the great households, the lords read each royal decree and then decide how much of it to obey. The crown's authority is acknowledged in public, yet clan liberties and tax revenues stay under their own seals. Every pledge of loyalty is weighed against the privileges they already hold."
     }
   ],
   "SemanticPrototypes": [],

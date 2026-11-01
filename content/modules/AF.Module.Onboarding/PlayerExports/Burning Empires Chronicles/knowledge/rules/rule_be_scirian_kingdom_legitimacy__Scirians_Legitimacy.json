@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Scirian Chieftains's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Around the campfires of the Scirian camp, the sergeants tell newcomers the same thing: when the chieftain's banners move, every man buckles on iron armor and marches. Pay for blood spilled in the field arrives as gold coin or a plot of land, though the wounded often wait months for either. Nobody sleeps well until the password has passed through every tent."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "Behind the chancery's closed doors, the magnates weigh each royal decree. They bow to the words, but they will not surrender clan liberties or the tax revenues that feed their households. Their allegiance lasts exactly as long as the crown defends the noble prerogatives they have already secured."
     }
   ],
   "SemanticPrototypes": [],

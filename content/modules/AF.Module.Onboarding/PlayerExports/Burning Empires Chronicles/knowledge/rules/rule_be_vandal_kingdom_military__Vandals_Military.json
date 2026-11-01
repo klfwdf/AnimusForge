@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "The line closes at the sound of the bronze horn, each shield pressed against the next. Heavy horsemen smash into the front files, and the men behind thrust their spears through every gap. A spearman who flees the line is killed by his own file, because the formation has no room for deserters."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "On the hill above the battle, the commanders study the formation from a lookout post. Victory depends on wagons reaching the wings with grain and on the battle line keeping its shape under pressure. Once the center breaks, the flanking cavalry can seal the field, and the nobles who paid for the levy will divide the plunder by rank."
     }
   ],
   "SemanticPrototypes": [],

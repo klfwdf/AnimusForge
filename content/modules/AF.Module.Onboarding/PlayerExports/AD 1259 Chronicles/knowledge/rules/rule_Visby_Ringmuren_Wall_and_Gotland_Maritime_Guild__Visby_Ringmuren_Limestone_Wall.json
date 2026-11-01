@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Stationed in the heart of the Baltic on Gotland Island, Visby formed the critical crossroads of northern maritime routes. Enclosed by the 3.4-kilometer limestone Ringmuren wall with over thirty defense towers, it operated under Wisby Sea Laws. German and Gotlander merchant guilds assembled armed convoys of cogs to transport timber, furs, and tar safely past pirates."
+      "Content": "Visby stood on the west coast of Gotland, the largest island in the Baltic, and it grew into the hub of the northern sea routes. Merchants from German towns and Gotlandic traders met there to exchange timber, furs, tar, and wax for cloth and metal from the west. The town was enclosed by a limestone wall of roughly 3.4 kilometers, reinforced by more than thirty defense towers that rose above the harbor. Its trading community followed the Wisby sea law, a body of maritime custom that governed contracts, salvage, and the conduct of crews on the Baltic. German and Gotlander guilds assembled convoys of cogs that carried their cargoes past pirates and rival fleets. The wall protected the merchant quarter, and the guild halls kept the accounts of every voyage that left the harbor."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Legends claimed Visby pigs ate from silver troughs and women spun with golden distaffs. Yet the imposing Ringmuren was erected not merely against pirates, but to keep resentful rural Gotland freeholders from storming urban gates."
+      "Content": "Stories in the Baltic told of pigs eating from silver troughs in Visby and of women spinning with golden distaffs, but the town's wealth was real enough. The great wall was built not only against sea raiders but to keep the resentful rural freeholders of Gotland out of the city's gates. A town councillor who owned a share in a cog had to keep the wall men paid and the rural folk quiet."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Heavy arbalests line the limestone battlements. When longship sails appear on the horizon, harbor alarm bells ring, and mercenary sentries drop harbor chains to seal the haven tight."
+      "Content": "Heavy crossbows line the limestone battlements. When a longship sail appears on the horizon, the harbor bells ring, and the mercenary sentries drop the chain across the harbor mouth. Keep your bolts dry, your torch lit for the night watch, and your post on the wall until the bell changes its tone."
     }
   ],
   "TextMappings": []

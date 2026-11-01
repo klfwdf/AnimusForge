@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Cilician Gates form a narrow mountain defile carving through the Taurus Mountains, serving as the sole military conduit connecting the Anatolian plateau with the Levant. Kingdom of Cilician Armenia commands this gateway through perched crag castles, where modest garrisons can throttle imperial hosts."
+      "Content": "The Cilician Gates cut through the Taurus Mountains in a narrow defile, and no other military road linked the Anatolian plateau with the Levant so directly. The Kingdom of Cilician Armenia held this gateway through castles perched on crags above the pass, and modest garrisons on those heights could throttle an imperial host marching south. Armies that tried the pass had to climb steep switchbacks in single file, with baggage and horses strung out behind them. A king who controlled the Gates could tax the caravans that passed through and could deny passage to enemies. Holding the defile was therefore a matter of both trade and survival, because the Armenians had to guard it against every power that wanted the road."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Neither Rum Seljuk sultans nor Mongol tumens can traverse the Taurus without negotiating treaties with King Hethum I. At its narrowest breach, only a single wagon passes between towering limestone precipices."
+      "Content": "Neither Rum Seljuk sultans nor Mongol tumens could cross the Taurus without negotiating with King Hethum I. Whoever held the Gates set the terms for every treaty and could name his price for passage. At its narrowest breach, only one wagon could pass between the towering precipices."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Marching through the Gates feels like entering a stone tomb. Damp stones slip beneath iron-shod hooves while icy gusts roar down the cliffs. A few boulders dropped from above will trap an entire baggage train."
+      "Content": "Marching through the Gates feels like entering a stone tomb. Damp rock slips under iron-shod hooves while icy gusts roar down the cliffs. A few boulders pushed from above can trap an entire baggage train, and the men at the rear rarely see the rocks coming until they land."
     }
   ],
   "TextMappings": []

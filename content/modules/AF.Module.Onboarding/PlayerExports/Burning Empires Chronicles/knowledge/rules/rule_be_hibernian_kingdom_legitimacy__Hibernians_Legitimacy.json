@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when High Kings & Ri Chieftains's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "On the hill, the warriors raise their cups and swear to the high king before the assembled chieftains. The oath is repeated word for word, and every spearman hopes the king will keep the herds safe. The veterans remember a king who fell in battle and the feud that followed, so they watch the chieftains closely."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "A high king is accepted only when the Ri chieftains acclaim him on the hill, and the ritual binds each tuath to his law. Lords at the inauguration weigh the king's gifts against their own claims to land and cattle. A king who cannot feed his followers will find that acclamation withdrawn at the next assembly."
     }
   ],
   "SemanticPrototypes": [],

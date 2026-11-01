@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "Warriors on the hillside tighten their shields as enemy horns sound from the valley below. The front rank plants its spears in the turf and waits for horsemen to charge uphill. Men at the rear shout to keep each other steady, and nobody wants to be first to break and run down the slope."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "The high chiefs have decided to hold the pass with the spearmen and send the riders around the glen to strike the enemy's flank. Food for the men must reach the fort before autumn snow closes the road. Send the plan only to the chiefs who will lead the attack, since a copy in a rival clan's hands could be used to ambush our riders."
     }
   ],
   "SemanticPrototypes": [],

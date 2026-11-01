@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when King Pap (Arsacid Dynasty)'s war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Veterans of the royal guard speak of King Pap's campaigns while they polish their helmets in the armory. When the Arsacid banners advance, every man knows he must wear his armor and stand under the standard, and their pay in silver and land is spoken of as a sacred debt. The younger men listen and promise each other that they will not desert in the first battle."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "The chancery has confirmed the decrees on land grants, yet the great houses still dispute the tax terms. Summon the highland heads to a quiet gathering and promise their hereditary rights in exchange for oaths. Leave the royal seal off the pledge, since the chancellor would read it as a challenge to the crown."
     }
   ],
   "SemanticPrototypes": [],

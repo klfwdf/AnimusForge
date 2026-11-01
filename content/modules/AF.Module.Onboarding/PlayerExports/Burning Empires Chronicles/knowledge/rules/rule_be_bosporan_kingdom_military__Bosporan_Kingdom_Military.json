@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "Heavy spearmen at the Kerch gate stand in close order, shields locked and the front rank bracing for the horsemen's charge. The sergeant walks the line checking each man's grip, because one gap will let the riders into the city. When the horns sound for the counterattack, the reserves must advance without breaking step."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "Orders for the eastern forts place heavy infantry at the gate and light cavalry in the hills. Harbor grain must reach the garrison before steppe raiders cut the road. Send the order by sealed courier to the commanders, and keep it out of the harbor house, where merchants may sell the details to the enemy."
     }
   ],
   "SemanticPrototypes": [],

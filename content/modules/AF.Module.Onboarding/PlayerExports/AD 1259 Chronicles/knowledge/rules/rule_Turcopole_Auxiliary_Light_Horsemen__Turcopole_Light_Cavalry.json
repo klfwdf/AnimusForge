@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Turcopoles ('sons of Turks') formed essential light cavalry contingents for the Templars and Hospitallers. Composed of indigenous Levantine Christians and converted converts, they ride nimble steeds equipped with composite recurve bows and light lances, mirroring mobile Mamluk tactics in arid marches."
+      "Content": "Turcopoles, a name said to mean sons of Turks, formed the light cavalry of the Templars and Hospitallers in the crusader states. Recruited from Levantine Christians and converts, they fought with composite recurve bows and light lances, mounted on nimble horses that could outpace Seljuk and Mamluk riders on the arid plains. Their tactics mirrored the mobile warfare of their enemies, so the Frankish command used them to screen the army, scout the wells, and harass hostile horse archers. The heavy knights who formed the decisive charge depended on them, and a Turcopole company was often the only force that could reach a retreating raid before it reached the coast."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "In desert heat, Frankish heavy knights risk fatal exhaustion without screening horsemen. Turcopole scouts secure water wells and harass enemy screens, preserving heavy lancers for the decisive charge."
+      "Content": "In the desert heat, heavy Frankish knights risk fatal exhaustion without a screen of light horsemen. Turcopole scouts find the water wells and harass enemy patrols, which keeps the heavy lancers fresh for the decisive charge. Their captain reports each night on the state of the wells and the strength of enemy screens."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Turcopoles read desert tracks like an open psalter. Heavy-plated barons mock their skirmishing retreats, but when Mamluk horse archers encircle the baggage train, Turcopole arrows buy us time to deploy."
+      "Content": "Turcopoles read desert tracks as easily as a monk reads a psalter. The heavy barons mock their skirmishing retreats, but when Mamluk horse archers ring the baggage train, Turcopole arrows buy the time the army needs to form. Keep your bow strung in the heat, drink only at the wells the scouts have checked, and do not chase a feigned flight."
     }
   ],
   "TextMappings": []

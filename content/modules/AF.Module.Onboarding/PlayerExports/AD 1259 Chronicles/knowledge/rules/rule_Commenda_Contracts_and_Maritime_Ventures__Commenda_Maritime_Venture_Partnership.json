@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "The commenda contract served as the premier financial instrument driving Mediterranean maritime trade. A sedentary investor (stans) provided venture capital, while a traveling merchant-captain (tractator) navigated the voyage. Profits were typically split three-quarters to the investor and one-quarter to the voyager, while shipwreck losses fell solely upon capital."
+      "Content": "The commenda contract was the main financial instrument behind Mediterranean maritime trade. A sedentary investor, the stans, supplied capital, while a travelling merchant-captain, the tractator, sailed the voyage and sold the cargo abroad. Profits were usually split three-quarters to the investor and one-quarter to the voyager, while losses from shipwreck fell solely on the capital. The arrangement let a shopkeeper in Genoa or Venice place money in a ship bound for the Levant without going to sea himself. Because each contract covered a single voyage, the investor's risk stayed bounded, and the traveller earned a share of profit without holding the capital. Notaries recorded every agreement, which turned maritime risk into something a family could reckon with."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Public notaries along Venetian and Genoese docks drafted thousands of parchment commenda deeds. Pooling capital enabled urban widows and small craftsmen to invest in Levantine spice fleets."
+      "Content": "Public notaries along the Venetian and Genoese docks drafted thousands of commenda deeds, each a notarised parchment that bound investors and captains alike. Pooling small sums let urban widows and craftsmen take a share in Levantine spice fleets. A patrician who lent to a captain could spread his fortune across several hulls at once."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Voyaging to Acre or Caffa is a high-stakes gamble against storms and corsairs. But returning with holds laden with cloves and raw silk elevates a deckhand into a prosperous burgher."
+      "Content": "Sailing to Acre or Caffa is a gamble against storms and corsairs, and a deckhand who goes down with the hull leaves his family nothing. Yet a ship returning with holds full of cloves and raw silk could lift a deckhand into the ranks of prosperous burghers."
     }
   ],
   "TextMappings": []

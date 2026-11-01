@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Founded in Jerusalem, the Knights Hospitaller combined monastic vows with martial discipline. Clad in black mantles bearing the white eight-pointed cross, they garrisoned colossal fortresses like Krak des Chevaliers and Margat, while running advanced medical infirmaries in Acre to tend wounded crusaders and pilgrims."
+      "Content": "The Knights Hospitaller grew from a hospice in Jerusalem into an order that joined monastic vows to martial discipline. Their members wore black mantles bearing the white eight-pointed cross, and they garrisoned major fortresses across the Levant, including Krak des Chevaliers and Margat. In Acre they ran advanced medical infirmaries that treated wounded crusaders and pilgrims alike. The order's revenues from European estates paid for both the hospitals and the soldiers, and each commandery in the West sent money and men eastward. Their dual role as nursing brothers and fighting knights defined the order's character for generations."
     },
     {
       "Priority": 0,
@@ -25,7 +25,7 @@
           "scholar"
         ]
       },
-      "Content": "Exempt from secular jurisdictions, the Grand Master answered solely to the Pope. Their hospices treated wounded combatants with medicinal salves and clean bandages, embodying Christian charity alongside feudal prowess."
+      "Content": "Answerable to no secular court and bound to the Pope alone, the Grand Master ruled the order from its houses in Acre. Hospices received the sick and wounded with clean linen, salves and wine, so the brothers' charity ran alongside their fighting vows. Chaplains and scholars who served in the hospices kept the cures and the deaths in the order's registers."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "wanderer"
         ]
       },
-      "Content": "Do not mistake their healing vows for softness. In the battle line, a Hospitaller wedge of barded warhorses strikes like a thunderbolt, bound by solemn vows never to retreat so long as their banner flies."
+      "Content": "Do not mistake their healing vows for softness. A Hospitaller wedge of barded warhorses hits the enemy line like a thunderbolt, and the brothers swear never to leave the field while their banner still flies. Squires stand beside each rider with spare lances and a second mount, and a fallen knight is carried back under the banner if the line can hold."
     }
   ],
   "TextMappings": []

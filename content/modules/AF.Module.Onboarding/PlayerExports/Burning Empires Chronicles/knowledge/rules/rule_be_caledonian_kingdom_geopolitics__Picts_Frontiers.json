@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "Watchers in the hill forts keep fires banked low so that the glow cannot be seen from the valley below. When a rider comes over the pass at night, the sentry blows a horn once for a friend and twice for an enemy. The garrison's dogs bark at the scent of strangers, and the men at the gate know their lives depend on which sound comes first."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "The southern clans have been raiding our cattle, and the frontier forts need fresh wood and spears before winter. Offer the southern chieftains grazing rights in exchange for a promise not to cross the pass without notice. Speak to them in person only, since any written treaty will be read aloud at the clan gathering and may start a feud."
     }
   ],
   "SemanticPrototypes": [],

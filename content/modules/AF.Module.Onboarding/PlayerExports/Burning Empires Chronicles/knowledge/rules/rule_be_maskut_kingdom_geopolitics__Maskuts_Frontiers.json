@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "The sentry on the pass wall squints into the dust at dusk. Signal smoke rose on two ridges last night, and horse scouts now ride the caravan road three times a week. Every embrasure has a loaded bolt-thrower, and the watch changes at midnight because no one trusts the dark. At the Maskuts post, the night watchword is \"Dawn.\""
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "The pass warden receives a dispatch from the capital after dark. The treasury has trimmed the frontier subsidy again, while raiders probe the gap each week. Without silver to hire auxiliary bands, the warden must borrow from the local khan's household and pledge them the caravan tolls, and every debt gives a neighboring house a claim on the pass."
     }
   ],
   "SemanticPrototypes": [],

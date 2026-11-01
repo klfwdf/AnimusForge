@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "Smoke has been rising from the valley villages, and a guard on the mountain tower scans the passes toward the north. Riders from beyond the ridge have appeared twice in the last month, and the captain orders the gate barred at dusk. The men on the wall take turns sleeping, knowing the ridge is the only place an attack could come from."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "Sealed by the king of Iberia, a letter arrives with the royal envoy, and the lord breaks its seal with care. The treasury can spare few men for the passes, so he proposes to hold the ridge with local levies and promise tax relief to the mountain villages. A frontier governor who fails to hold the pass will answer for it at court."
     }
   ],
   "SemanticPrototypes": [],

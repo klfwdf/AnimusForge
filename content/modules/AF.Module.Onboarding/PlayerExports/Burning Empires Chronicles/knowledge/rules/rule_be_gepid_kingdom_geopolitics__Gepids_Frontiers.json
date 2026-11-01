@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "Dusk brings a count of the enemy campfires across the water. Rumors say riders from the steppe have crossed the lower ford, so the lookout hoods his torch and keeps his bow strung. Each night the gate guard changes, and each dawn the sergeant checks whether the palisade has been dug under."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "The crown's letter promises more men for the Tisza march but no coin. The border count knows which neighboring chieftains are watching the ford for an opening, so he offers them grazing rights in exchange for a truce. Every fortified village on his border must hold for a month without relief, and he plans accordingly."
     }
   ],
   "SemanticPrototypes": [],

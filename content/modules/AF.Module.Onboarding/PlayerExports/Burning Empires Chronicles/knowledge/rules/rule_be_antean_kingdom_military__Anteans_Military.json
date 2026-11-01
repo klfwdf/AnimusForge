@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "Spearmen form a wall of shields in the muddy field, and the front line sets its feet to meet the horsemen. Each man counts his breath as the enemy approaches, and the sergeant walks the line to check that no one has stepped backward. When the first charge strikes the shields, the men holding the line can feel the ground shake beneath them."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "Infantry will hold the river line while cavalry wheels around the flank through the forest, the council has decided. The supply convoy must cross the ford before the enemy can block the road. Send orders by a trusted messenger who knows the river paths, and do not share the flanking route with local chiefs, since their men may warn the enemy."
     }
   ],
   "SemanticPrototypes": [],

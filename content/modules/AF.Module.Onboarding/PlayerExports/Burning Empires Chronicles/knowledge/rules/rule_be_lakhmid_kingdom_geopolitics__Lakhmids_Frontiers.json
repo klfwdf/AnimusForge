@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "A sentinel on the walls of Al-Hirah scans the desert edge for dust clouds. Rumors say rival tribes are gathering at the wells, and the captain orders the gates barred at dusk. Men take turns sleeping on the wall, because a surprise raid across the sand is the only thing the captain fears."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "The Nasrid king's envoy brings a letter from the eastern court, and the lord reads it with care. The subsidies have been cut again, and the desert tribes keep probing the wells. Without coin to hire mounted archers, he must hold the wells with local levies and promise relief from tolls to the tribes who stay loyal."
     }
   ],
   "SemanticPrototypes": [],

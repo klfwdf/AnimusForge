@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when King Boz's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Men sworn to King Boz's household gather around the watchfire, retelling the old songs about his victories on the river. The sergeant reminds them that when the war banners are raised, every spear must be ready and every shield must bear the royal sign. The pay they received after the last campaign was fair, and that memory keeps the ranks quiet during the long wait."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "The king's steward asks your house to confirm the tributes owed by the river chiefs before the spring assembly. Speak with the chiefs privately and promise to reduce the tribute by one tenth if they swear to the king on the feast day. Keep the reduction off the written tally, since the king's accountants will report any shortfall to the council."
     }
   ],
   "SemanticPrototypes": [],

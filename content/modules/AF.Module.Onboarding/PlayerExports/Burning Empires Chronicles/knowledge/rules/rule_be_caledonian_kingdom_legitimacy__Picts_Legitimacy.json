@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Pictish Chieftains's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Warriors sit around the fire in the glen and tell stories of the Pictish chiefs who led them to victory in the hills. When the chief raises his spear, every man must take up his shield and follow the banner into the valley. Their reward is the cattle and the grazing rights that the chief promises to share after the raid."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "The chiefs of the glens say they will recognize the high chief's authority only after he confirms their grazing rights in writing. Meet the chiefs at the standing stones and promise them the rights in exchange for their oaths of loyalty. Leave the matter unwritten until the assembly, because a document in the chief's hand could be used to claim the rights for himself."
     }
   ],
   "SemanticPrototypes": [],

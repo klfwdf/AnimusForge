@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Venedi Clan Elders's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Rain drips from the tent flaps as the household veterans talk in low voices. When the Venedi Clan Elders raise their banners, every man buckles on iron armor and marches at first light. Pay for blood spilled in the field comes in gold or land grants, though the wounded often wait months for either, and the sergeants know it."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "In the chancery, the magnates weigh each royal decree before they acknowledge it. Clan liberties and tax revenues stay beyond the crown's reach, and every oath they swear depends on keeping those privileges intact. Secret letters between houses decide which elder's banner they will follow when the time comes."
     }
   ],
   "SemanticPrototypes": [],

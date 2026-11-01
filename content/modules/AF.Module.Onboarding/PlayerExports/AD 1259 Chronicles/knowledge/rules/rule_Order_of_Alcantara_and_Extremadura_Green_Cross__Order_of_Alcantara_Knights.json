@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Distinguished by green flory cross surcoats, the Order of Alcántara held the western marches of Extremadura. Their stronghold was anchored upon the colossal Roman bridge over the Tagus River chasm, guarding rugged mountain defiles against both Moorish incursions and Portuguese encroachments."
+      "Content": "The Order of Alcantara wore green flory crosses and held the western marches of Extremadura. Its principal stronghold stood beside the great Roman bridge that spans the Tagus gorge, and from that height the knights watched the mountain defiles against Moorish raiders from the south and Portuguese encroachment from the west. The order drew its brothers from the frontier nobility and trained them for guerrilla warfare, because the land was too broken for massed armies. Its commanders also controlled broad sheep pastures on the plateau, so their power rested on land and military service in equal measure."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Renowned for stoic asceticism and guerrilla border warfare, Alcántara commanders exercised autonomous territorial authority over vast sheep pasture plateaus."
+      "Content": "Alcantara commanders ran their commanderies with a large measure of independence. Wool from the plateau flocks brought in steady revenue, and the rents and tithes from those pastures paid for castles and horses. A lord who sought a place among the Extremaduran frontier families had to win the order's favour first, since its masters decided who could graze and who could raise a company."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Standing atop the Roman bridge arches looking down into the churning river induces dread. Sentry checkpoints inspect pack trains rigorously for contraband arms."
+      "Content": "Standing on the Roman bridge arches and looking down into the churning river is enough to unsettle any man. The sentries search every pack train for contraband arms, and they do it slowly, because a smuggled blade can start a fight in a border village. Keep your hands where the sergeant can see them, and never bargain with a muleteer who offers to hide a bundle in his load."
     }
   ],
   "TextMappings": []

@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Genoese crossbowmen constitute Europe's premier ranged mercenary corps. Operating in coordinated pairs, one specialist plants a man-tall curved pavise shield into the soil, while the arbalester spans heavy composite cross-bows with foot stirrups, discharging armor-piercing iron bolts."
+      "Content": "The Genoese crossbowmen formed Europe's premier ranged mercenary corps. They fought in coordinated pairs. One specialist planted a man-tall curved pavise into the soil, while the arbalester spanned a heavy composite crossbow with a foot stirrup and discharged armour-piercing iron bolts. The shield gave the crossbowman a moment of safety to reload, and the bolts gave the line its killing power. Commanders who understood the pair's rhythm could place them in front of a cavalry charge or behind a siege breach, and the crews were prized for their steady nerves."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Behind a locked line of pavises, we can break any cavalry charge at eighty paces. Keep your cord dry in the rain, and never let light horsemen get behind your shield-bearer while spanning."
+      "Content": "Behind a locked line of pavises, we can break any cavalry charge at eighty paces. Keep your cord dry in the rain, and never let light horsemen get behind your shield-bearer while you are spanning. Hold your place in the file until the officer's whistle sounds, because a single gap in the line can cost the whole company."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "Contracting five hundred Genoese crossbowmen demands heavy chests of Genoese florins, but whether assaulting an Andalusian breach or garrisoning Acre, their disciplined volleys deliver unmatched suppression."
+      "Content": "Contracting five hundred Genoese crossbowmen demands heavy chests of Genoese florins, and no lord can hire them on credit. Whether they are assaulting an Andalusian breach or garrisoning Acre, their disciplined volleys deliver a suppression that no other infantry can match. A lord who pays for them expects results."
     }
   ],
   "TextMappings": []

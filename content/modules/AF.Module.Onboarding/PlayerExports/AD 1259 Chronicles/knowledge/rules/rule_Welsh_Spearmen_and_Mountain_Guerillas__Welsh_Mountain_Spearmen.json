@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Amidst the mist-shrouded defiles of Snowdonia, Welsh native clans waged tenacious mountain defense. Armed with long ash spears and light throwing darts, unarmored skirmishers lured heavy Anglo-Norman cavalry into treacherous peat bogs, pinning armored knights under lethal flanking ambushes."
+      "Content": "The Welsh clans of Snowdonia and the upland commotes defended their hills with a style of warfare that suited the mist and the bog. Their skirmishers carried long ash spears and light throwing darts, and they fought without heavy armor so they could move quickly over peat and rock. They lured the Anglo-Norman cavalry into boggy ground where horses floundered, then struck from the flanks and rear while the armored knights were pinned. The campaigns of the thirteenth century saw the Welsh princes of Gwynedd exploit this terrain against the Marcher lords, and the tactics kept English armies from fully occupying the mountain heartlands. Clan loyalty bound the spearmen to their chieftains and to the defense of ancestral land."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "priest"
         ]
       },
-      "Content": "Prince Llywelyn ap Gruffudd harnessed clan loyalty to check Marcher lord incursions. Bound by ancient Celtic customs, these spearmen defended ancestral hills with fierce mountain pride."
+      "Content": "Prince Llywelyn ap Gruffudd drew on clan loyalty to check the incursions of the Marcher lords. The spearmen were bound by old Welsh custom to defend their hills, and their pride in those hills made them hard to bribe or to break. A Marcher lord who rode into the mountains without local guides was taking a risk that his retainers would not forget."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Heavy warhorses founder in Welsh bogs up to their hocks. Horn signals echo off granite crags before spearmen lunge from bracken thickets, thrusting into armpits before vanishing back into the fog."
+      "Content": "Heavy warhorses founder in the Welsh bogs up to their hocks. Horn signals echo off the granite crags, and then the spearmen break out of the bracken and thrust under the armpits of the knights before vanishing back into the fog. Keep your spear low in the mist, never ride ahead of your file on the peat, and listen for the horn before you move."
     }
   ],
   "TextMappings": []

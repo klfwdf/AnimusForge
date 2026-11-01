@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "Sentries on the timber watchtower above the Bohemian plain stare into the fog. Smoke columns rose beyond the ridge twice last night, and cavalry scouts have doubled their rides along the forest tracks. Every embrasure has a loaded catapult, and the men sleep in mail with their boots laced. At the Marcomans post, the night watchword is \"Stone.\""
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "The frontier reeve breaks a seal on the dispatch and reads it twice. The subsidy has been reduced again, while raiders probe the passes closer each month. Without coin to hire auxiliary bands, he must pledge land to local chiefs, and every such pledge gives a rival house a stake in whether the pass holds."
     }
   ],
   "SemanticPrototypes": [],

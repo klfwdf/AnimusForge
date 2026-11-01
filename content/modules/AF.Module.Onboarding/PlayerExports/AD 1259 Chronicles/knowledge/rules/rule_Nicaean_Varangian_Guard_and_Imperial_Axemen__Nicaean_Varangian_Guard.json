@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Varangian Guard remained the legendary royal bodyguard of the Byzantine emperors during their exile in Nicaea. Composed of Norse warriors and Anglo-Saxon refugees who fled Norman England, these armored axemen carried six-foot Danish battleaxes, swearing lifelong oaths to defend the purple-born basileus."
+      "Content": "The Varangian Guard kept its place as the imperial bodyguard even after the Latin conquest of 1204 drove the Byzantine court into exile at Nicaea. Its ranks were drawn from Norse men and Anglo-Saxon refugees who had fled the Norman conquest of England, and the emperors trusted them because they owed loyalty to the throne and to no great family. Armed with long Danish battleaxes, they swore lifelong oaths to guard the purple-born basileus. Their discipline and distance from court factions made them useful in the palace, where they watched treasuries and throne rooms, and the Nicaean court relied on them while the empire worked to reclaim its capital."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Untangled from court conspiracies, Varangians guarded treasury chambers and throne rooms under strict military honor, serving Michael VIII Palaiologos during the campaign to reclaim Constantinople."
+      "Content": "Michael VIII Palaiologos relied on the Varangians in palace business, because men without local ties could not be bought by court factions. The guard held the treasury and the throne room while the emperor prepared the campaign that retook Constantinople in 1261. A lord at the Nicaean court would do well to remember that the axes at the door answered to the emperor alone."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Towering northern giants who drink mead by the flagon, they stand impassive on guard duty. When their heavy Danish axes cleave downward, they split iron bascinets down to the teeth."
+      "Content": "The northern guardsmen stand motionless at the palace gate for hours, and that stillness is the hardest part of the duty. When their long Danish axes come down, the blades split iron bascinets to the teeth. Keep your post, keep your breath steady, and do not let a night of drinking cost you your place in the line."
     }
   ],
   "TextMappings": []

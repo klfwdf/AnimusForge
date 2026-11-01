@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Marcomannic Council's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Around the fire, the household's old warriors check their straps and buckles before the council's banners rise. When the war standard moves, every man straps on iron armor and marches. Blood spilled in the field is paid in gold and land grants, and a veteran who does not come home leaves a widow with nothing. At the Marcomans post, the night watchword is \"Ash.\""
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "Councillors weigh each decree before they agree to it in the hall. They will acknowledge the council's decrees in public, yet clan liberties and the tax revenues from their lands stay beyond the crown's reach. Each sealed letter between the great houses repeats one condition: loyalty lasts only while the council protects noble privileges."
     }
   ],
   "SemanticPrototypes": [],

@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "A watchman on the rock above the wells scans the haze for dust. Smoke columns rose beyond the wadi last night, and scouts now ride the desert tracks three times a week. Every post has a loaded bow and a tethered camel, and the watch changes at midnight because no one trusts the dark. At the Salihids post, the night watchword is \"Dawn.\""
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "A courier rides in through the gate with a dispatch sealed in red wax. The phylarch's subsidy from the frontier fort has been cut again, while raiders probe the wells each month. Without silver to hire auxiliary riders, the warden must borrow from local tribes and pledge them the caravan tolls, and every debt gives a rival chief a claim on the water."
     }
   ],
   "SemanticPrototypes": [],

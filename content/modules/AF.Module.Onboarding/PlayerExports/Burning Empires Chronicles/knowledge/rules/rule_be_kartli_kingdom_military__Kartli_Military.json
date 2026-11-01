@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "The spearmen form up on the road below the fortress, shields locked and spears set. The front rank takes the first charge of horsemen, and the rear files thrust through the gaps. A man who breaks the line will be dragged back by his comrades, and the captain's watchword is the only thing that keeps the formation together."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "Standing on the fortress wall, the valley is surveyed and riders are sent to the flanks. Victory depends on holding the road below Mtskheta until the armored reserve can be unleashed. Once the enemy line gives way, the cavalry wings will sweep its sides. Each noble house keeps a record of which men were lost, and the record will matter when the land is divided."
     }
   ],
   "SemanticPrototypes": [],

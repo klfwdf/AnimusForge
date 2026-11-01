@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Evolving along the Welsh Marches, the English yew warbow was mastered by freeholder yeomen trained from youth. Spanning over six feet with draw weights exceeding 100 pounds, these bows hurled square steel bodkin heads that pierced mail and padded arming doublets, revolutionizing field tactics."
+      "Content": "The English longbow grew out of the Welsh borderlands, and free yeomen who held their land by freehold trained with it from boyhood. A yew warbow stood over six feet tall, and its draw weight often exceeded 100 pounds, so only a practised archer could pull it to full draw. Its arrows carried square steel bodkin heads that pierced mail and padded arming doublets at distance. Commanders who massed archers behind stakes and ditches found that the bows could stop a cavalry charge before it reached the line. The weapon changed field tactics, because a well-trained company could decide a battle without ever engaging in close combat."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Prince Edward increasingly mobilized shire archers against rebellious barons. Loosing ten to twelve shafts per minute, massed archery arrays eroded the historic invulnerability of noble mounted charges."
+      "Content": "Prince Edward increasingly mobilized shire archers against rebellious barons, and the bows that once defended the realm were turned on its nobles. A company that loosed ten to twelve shafts a minute could shatter a noble charge. The old invulnerability of mounted knights was eroding in front of massed archery, and the barons who had depended on their horses began to feel the threat."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Drawing a warbow bends the archer's entire spine. When flights of goose-feathered shafts block out the sun with a deafening hiss, unbarded horses stumble and crash into bloodied confusion."
+      "Content": "Drawing a warbow bends the archer's entire spine. When a flight of goose-feathered shafts blots out the sun with a whistling hiss, unbarded horses stumble and crash into bloodied confusion. Your arms ache from the pull, and the man beside you counts each volley aloud so the line can keep its rhythm."
     }
   ],
   "TextMappings": []

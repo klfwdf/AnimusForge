@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "Drums sound along the Venedian line, and the front rank locks shields against the rim of the next man's. Warhorses crash into the wall while the men behind thrust spears through the gaps. A soldier who breaks rank without the horn is cut down, because retreat in this formation means instant death for whoever runs."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "The staff tent sits behind the hill, where officers trace the line on a wax tablet and count the wagons still rolling toward the wings. Victory depends on supplies that arrive on time and on a straight, disciplined line. When the center holds, the flanking cavalry can close the trap, and the lord's share of the spoils is reckoned at once."
     }
   ],
   "SemanticPrototypes": [],

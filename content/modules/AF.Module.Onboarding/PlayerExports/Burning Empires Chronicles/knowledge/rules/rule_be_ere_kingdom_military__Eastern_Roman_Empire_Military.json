@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "With shields locked, the front rank waits for the drums to roll. It must absorb the charge of enemy horsemen while the rear files thrust through gaps in the line. Mud under their boots, a dented helm, a password shouted by the centurion. Break formation and the cavalry will catch you on the open flank, and once the line tears there is no second chance."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "Commanders study the tactical map inside the redoubt. Victory depends on keeping supply wagons moving along the valley road and on keeping the infantry center steady until the armored reserve is released. When the enemy line wavers, flank cavalry sweeps behind it. Each provincial commander keeps a private ledger of promised grain and horses, and he will remember whose men bore the cost of defeat."
     }
   ],
   "SemanticPrototypes": [],

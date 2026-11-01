@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when King Urnayr's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Citadel gatekeepers keep their helmets on and their backs to the stone, watching the courtyard for the next royal messenger. The older soldiers say King Urnayr's word has always been good, though the tax men who collect the promised silver have a reputation for cheating. Anyone who grumbles aloud about unpaid wages can expect a flogging before the next muster."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "The royal chamberlain asks you to confirm the decrees on tax exemptions for the river towns, while the great families quietly demand a larger share of the revenue. Promise the families a larger share of the coastal tolls in return for their oaths at the next assembly. Do not write the promise into the royal register, since the chamberlain would call it a grant that the crown never approved."
     }
   ],
   "SemanticPrototypes": [],

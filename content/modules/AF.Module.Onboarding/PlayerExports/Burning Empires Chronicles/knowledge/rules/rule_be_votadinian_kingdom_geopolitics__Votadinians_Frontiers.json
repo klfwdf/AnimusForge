@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "The night watch on the stone rampart keeps its eyes on the northern glens, where smoke from enemy fires has been seen twice this week. Horsemen have tested the outer posts, and each embrasure now holds a loaded ballista. A watchman who falls asleep at his post will be found in the morning frost, if the raiders leave any of him to find."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "The chieftain's reeve breaks open a letter from the royal court and finds the subsidy trimmed yet again. Without silver to hire auxiliary bands from the glens, he must trade pasture rights with neighboring lords to keep the passes watched. Each sealed report he sends north now carries a request for grain before the winter snows close the roads."
     }
   ],
   "SemanticPrototypes": [],

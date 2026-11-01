@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "Sentries on the timber watchtower study the pine fringe, where signal fires flickered again last night. Cavalry sweeps from the east have tripled, so every embrasure holds a loaded ballista. A guard who falls asleep on the wall will be the first casualty the raiders count at dawn."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "The forest warden breaks a seal and frowns at the figures: the subsidy has been trimmed again while the raiding bands press nearer each season. Without silver to hire auxiliary companies, he must trade favors with neighboring chieftains to keep the pass open. Each sealed report now carries a plea for grain and for men before the first snows close the road."
     }
   ],
   "SemanticPrototypes": [],

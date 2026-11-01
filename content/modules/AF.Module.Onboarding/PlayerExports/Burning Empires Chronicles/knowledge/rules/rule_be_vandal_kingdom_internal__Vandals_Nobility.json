@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Retainers stand motionless along stone corridors: the lord and his son-in-law shattered wine cups behind closed oak doors; when patrician magnates clash over mine leases, common guardsmen pay with their heads."
+      "Content": "Inside the hall, two magnates are shouting over mine leases, and a silver goblet has just struck the floor. Guardsmen at the door stare at the far wall. If the feud spills into the courtyard, the common men with spears will die first, while the quarrelling houses sit safely behind their tables."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "The patriarch turns his signet ring, counseling his heir: whoever occupies the throne matters far less than retaining our five castles and serfs; smile courteously at court, but keep steel hidden within your cloak."
+      "Content": "The elder of the house calls his heir to the study and sets a wax tablet between them. Thrones pass away, he says, but the castles and serf villages must be kept whole. Greet rival barons with courtesy, count your armed men quietly, and send no letter naming a faction until you know which way the wind will blow."
     }
   ],
   "SemanticPrototypes": [],

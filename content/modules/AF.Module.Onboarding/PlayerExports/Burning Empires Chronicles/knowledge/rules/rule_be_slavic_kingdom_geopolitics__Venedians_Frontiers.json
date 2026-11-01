@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "Frost clings to the palisade at the frontier, and the sentries scan the forest edge for smoke. Signal fires flickered through the pines again last night, and hostile cavalry sweeps have tripled this month. Every embrasure holds a loaded ballista, and no sentry leaves his post until the password has passed to the next watch."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "Dispatches from the capital reach the Venedian palisade, and the warden finds the subsidy cut once more. Each season he trades grain for mercenary bands with neighboring lords, since no silver remains for auxiliary companies. Raiders probe closer at every new moon, so his sealed reports to the chancery now plead for the pass to be funded before winter."
     }
   ],
   "SemanticPrototypes": [],

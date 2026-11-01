@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Anglian Sea-Kings's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Sea-king's warriors swear their oaths by the banner at dusk, repeating each line after the priest. Their sergeant tells them that when the Anglian war standards move, every man must wear iron armor and carry his shield to the front. The promise of gold and land keeps them steady, though a few wonder whether the king will remember them after the battle."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "The sea-king's reeve reports that several coastal clans refuse to honor the royal writs until their old rights to the ferries are confirmed. Invite the clan chiefs to a private meeting and offer to reaffirm their ferry tolls in exchange for their oaths. Do not seal any such promise in the king's name, because the chancellor will treat it as an unauthorized grant."
     }
   ],
   "SemanticPrototypes": [],

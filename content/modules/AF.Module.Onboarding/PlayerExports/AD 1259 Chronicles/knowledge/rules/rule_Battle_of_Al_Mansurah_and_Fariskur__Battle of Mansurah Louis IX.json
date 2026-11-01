@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "The 1250 Seventh Crusade disaster at Mansurah unfolded when Robert of Artois rashly spurred crusader cavalry into labyrinthine town lanes. Baibars closed the city gates, systematically annihilating the vanguard. Starvation and dysentery forced Louis IX's retreat to Fariskur, where the king and barons surrendered to Mamluk forces."
+      "Content": "The Seventh Crusade ended in disaster in 1250. Louis IX's army crossed into the delta to take Mansurah, but Robert of Artois led the vanguard into the town's narrow lanes without waiting for the main force. The Mamluk garrison, supported by Baibars, closed the gates behind the crusaders and cut the vanguard down in the streets. The main army was then caught in the open, and disease spread through its camp. Starvation and dysentery forced Louis IX to retreat toward Fariskur, where the king and his barons surrendered to the Mamluk forces. The king paid a heavy ransom before his release, and the defeat ended the crusade's hopes in Egypt."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "soldier"
         ]
       },
-      "Content": "The catastrophe demonstrated the vulnerability of heavy feudal cavalry within confined urban kill-zones."
+      "Content": "Heavy feudal cavalry had no room to manoeuvre in the streets of a walled town. A knight in full harness could not turn in a lane wide enough for two horses, and his armour made him slow to escape. Foot soldiers who followed the knights into the alleys learned how fast a narrow kill-zone could close behind them, so scouts had to clear the town before any charge."
     }
   ],
   "TextMappings": []

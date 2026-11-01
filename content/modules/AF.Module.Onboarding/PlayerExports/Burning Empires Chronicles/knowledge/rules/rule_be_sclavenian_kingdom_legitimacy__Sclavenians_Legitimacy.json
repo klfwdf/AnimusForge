@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Sclavenian Elders's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Veterans of the Sclavenian host talk low beside the campfires, repeating the same warning each time a rider arrives from the capital. When the Sclavenian Elders raise their war banners, every man buckles on iron armor and marches without argument. Blood shed in the field is repaid in gold or land grants, though the wounded often wait a long time for either."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "In the chancery rooms, the magnates and chancellors read each royal decree twice before they answer. They acknowledge the Elders in public, yet clan liberties and tax revenues remain beyond the crown's reach. Every alliance they sign is a wager on whether the throne will protect the privileges they already hold, and a secret letter to a neighboring house is the usual way to hedge that bet."
     }
   ],
   "SemanticPrototypes": [],

@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Macrian's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Veterans from the Main Valley gather by the cookfires and speak of the duke's oath as if it were a scripture. When the war horns sound, every man must buckle his mail and march, and the widows of the fallen are promised land grants from the crown. The younger soldiers listen closely, because they know that loyalty to the banner is the only thing that keeps the household guard paid."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "The duke's chamberlain has asked you to confirm the feudal oaths of the Black Forest counts before the spring assembly. Confirm the oaths only after you have secured the support of the two counts who control the river crossings. Your letters to the other nobles should carry the crown's seal, since a plain note can be disowned by any noble who later wishes to deny the promise."
     }
   ],
   "SemanticPrototypes": [],

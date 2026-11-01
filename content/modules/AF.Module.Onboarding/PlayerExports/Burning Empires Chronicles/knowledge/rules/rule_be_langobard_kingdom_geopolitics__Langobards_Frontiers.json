@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "Night on the frontier tower is long, and the sentry keeps his hand on the bell rope. Signal fires flickered through the pines again last night, and hostile horsemen now sweep the valley tracks three times as often as last spring. Every embrasure holds a loaded ballista, and the men sleep in mail with their boots laced, waiting for the next blaze to answer. Watchword: \"Dawn.\""
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "Frontier wardens break a fresh wax seal and read the treasury's notice with dread. The subsidy has been cut again, and raiding vanguards probe the passes closer each month. Without silver to hire auxiliary bands, the wardens must borrow from local magnates in exchange for land, and each loan gives a rival house a stake in whether the pass holds."
     }
   ],
   "SemanticPrototypes": [],

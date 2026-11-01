@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "A sentry on the ridge-top watchtower counts the campfires glowing across the pass and reports them to the sergeant at dawn. Ballistae are loaded and wedged into every embrasure, and the sentries sleep in their boots. A signal fire that goes unanswered means a cavalry sweep has already crossed the river, and the men on the wall know the fort will not be relieved in time."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "The frontier commander sends a sealed warning from the pass forts: raiders now probe the river fords every week, and promised grain has not reached the garrison towns. Offer nearby rival lords a grain truce in exchange for mutual warning signals along the ridge. Keep the proposal off the dispatch rolls, because the king's council will refuse any deal that looks like surrender."
     }
   ],
   "SemanticPrototypes": [],

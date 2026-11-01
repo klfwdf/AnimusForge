@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Jazygian Chieftains's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Beside the campfire, the men recall the oath they swore to the chieftains at the spring meeting. Their loyalty is tied to horses and cattle, and each man hopes his clan will hold its ground. The veterans speak of earlier chieftains who fell in feuds, and they keep their knives sharp in case the oath is broken."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "Among the reed rafters of the marsh hall, the chiefs meet and weigh the authority of each other's oaths. Clan privileges over reed beds and salt pans are written into old agreements, and no chieftain wants to surrender his share. A proposal to unite the clans under one lord draws sharp objections from families who fear losing their weirs."
     }
   ],
   "SemanticPrototypes": [],

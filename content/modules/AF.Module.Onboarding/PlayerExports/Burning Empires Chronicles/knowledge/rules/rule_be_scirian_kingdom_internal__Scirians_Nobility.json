@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Retainers stand motionless along stone corridors: the lord and his son-in-law shattered wine cups behind closed oak doors; when patrician magnates clash over mine leases, common guardsmen pay with their heads."
+      "Content": "Lantern light trembles along the stone corridors of the Scirian keep. Guardsmen keep their spears grounded and their eyes forward, because a quarrel between magnates over mine leases can leave a dead sentry by morning. Rumors travel faster than orders, and the men on the wall know they will be blamed first if swords come out."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "The patriarch turns his signet ring, counseling his heir: whoever occupies the throne matters far less than retaining our five castles and serfs; smile courteously at court, but keep steel hidden within your cloak."
+      "Content": "Our house holds five castles and the serfs who work their fields, and the patriarch reminds his heir that thrones change hands while estates endure. Courtly smiles cost nothing, so practice them daily. Keep the hidden blade under your cloak, and sign no letter binding the family to a faction before the vassals have been counted."
     }
   ],
   "SemanticPrototypes": [],

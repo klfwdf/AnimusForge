@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Druzhina formed the intimate warrior brotherhood and political council surrounding Rus princes. Composed of senior boyars and seasoned junior retainers, they wore riveted mail coats and pointed conical helms, wielding broad Slavic axes alongside lances to counter both Western knights and steppe nomads."
+      "Content": "The druzhina was the close warrior brotherhood and political council that surrounded the Rus princes. Its senior boyars and younger retainers wore riveted mail coats and pointed conical helms. They fought with broad Slavic axes and with lances, and that mix let them meet both Western knights and steppe nomads on equal terms. The druzhina also advised the prince on policy, so its members took part in war and in government alike. Loyalty to the prince bound the retinue together, and a leader who lost that loyalty lost his followers as well."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Serving as princely councillors in the Duma, senior druzhinniki administered land revenues (kormlenie). Their unbreakable loyalty anchored Alexander Nevsky's defensive triumphs against Livonian crusaders."
+      "Content": "Senior druzhinniki sat as councillors in the prince's duma and collected land revenues through the kormlenie system of feeding, which paid them for local administration. Their loyalty made Alexander Nevsky's defensive victories against the Livonian crusaders possible, since the retinue would fight beside him on the field and in council."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "These northern veterans possess massive physical frames beneath fur-lined mantles. Swinging two-handed bearded axes with crushing force, their melee charges splinter shield-walls effortlessly."
+      "Content": "These northern veterans carry great bulk beneath fur-lined mantles, and they fight as hard as they look. Two-handed bearded axes swing with crushing force, and their melee charges split a shield wall before it can close. Keep your shield up when they come, and remember that a single good blow from one of them can end your fight."
     }
   ],
   "TextMappings": []

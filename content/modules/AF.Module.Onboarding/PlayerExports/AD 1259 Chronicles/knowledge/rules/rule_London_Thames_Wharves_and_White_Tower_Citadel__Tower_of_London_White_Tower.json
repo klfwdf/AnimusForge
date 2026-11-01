@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Hugging the north bank of the Thames, the City of London serves as England's commercial heartbeat. The massive White Tower stands as fortress, treasury, and royal refuge for Henry III against rebellious barons, while Westminster Hall hosts the Great Council, held in balance by autonomous City guild aldermen."
+      "Content": "Hugging the north bank of the Thames, the City of London served as England's commercial heart. The White Tower stood as fortress, treasury and royal refuge for Henry III against rebellious barons, while Westminster Hall hosted the Great Council. The City's guilds and aldermen kept a measure of autonomy, and their charters gave them a voice in the government of the realm. Merchant wealth flowed through the wharves, where wool and wine were loaded for Flanders and the Continent. In the struggles of 1258 to 1265, the king and the barons each looked to the City for money and men, which made London's guilds a force in the kingdom's politics."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "The Mayor of London commands the civic militia bell. When Henry III barred himself within the Tower, Simon de Montfort courted City guild masters; without London merchant loans, no baronial host can remain in the field."
+      "Content": "The Mayor of London commanded the civic militia and rang the bell that summoned the city's men to arms. When Henry III shut himself inside the Tower, Simon de Montfort courted the guild masters, because without London merchant loans no baronial host could stay in the field. Each loan and pledge of support was recorded in the aldermen's rolls."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Shooting the narrow arches of London Bridge by skiff is perilous in tidal currents. Sentry patrols along the Tower moat are doubled; everyone senses that open rebellion brews across the kingdom."
+      "Content": "Shooting the narrow arches of London Bridge by skiff is perilous in the tidal currents, and boatmen lose their oars to the rapids every winter. Sentry patrols along the Tower moat are doubled after dark. Every man on the watch senses that open rebellion is brewing across the kingdom, and he keeps his pike ready for the order to close the gates."
     }
   ],
   "TextMappings": []

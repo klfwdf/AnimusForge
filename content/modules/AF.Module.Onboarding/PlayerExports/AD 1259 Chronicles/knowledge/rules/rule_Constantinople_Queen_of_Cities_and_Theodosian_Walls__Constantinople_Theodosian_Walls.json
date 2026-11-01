@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Revered as the 'Queen of Cities', Constantinople commands the Bosphorus maritime crossroads. Defended on its landward side by the triple Theodosian Walls featuring 96 bastion towers and a deep moated talus, its Golden Horn is sealed by an iron boom chain. Despite the plunder of the Fourth Crusade in 1204, its possession remains the supreme prize of Eastern Christendom."
+      "Content": "Constantinople sat on the seam between Europe and Asia, where the Bosphorus met the Sea of Marmara and the Golden Horn opened into a deep natural harbour. Its landward side was protected by the Theodosian Walls, a triple line of masonry and moat built in the fifth century, with around ninety-six towers along the circuit. An iron boom could be stretched across the mouth of the Golden Horn to block enemy ships. The city had survived sieges by Persians, Avars, and Arabs, but the Fourth Crusade broke through in 1204 and sacked it, and the Latin conquerors carried relics and bronze horses off to the West. Even so, it remained the prize every Eastern Christian ruler dreamed of holding, because its harbours and markets could make or break the trade of the sea."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Control of Constantinople dictates customs tolls linking the Black Sea with Mediterranean markets. Bankrupted Latin emperors strip lead from palace roofs, while Byzantine sovereigns plot tirelessly to reclaim the throne of the Caesars."
+      "Content": "Whoever held Constantinople controlled the customs tolls on every ship sailing from the Black Sea into the Mediterranean, and Venetian and Genoese merchants fought for that trade. The Latin emperors, bankrupt since 1204, stripped lead from palace roofs to pay their creditors, while Byzantine exiles at Nicaea plotted without rest to win back the throne of the Caesars."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Peering down from the outer ramparts of the Theodosian Wall induces vertigo. Thirty-foot masonry curtains look down upon the killing ground; scaling those stones requires filling the ditches with thousands of corpses."
+      "Content": "Looking down from the outer ramparts of the Theodosian Walls makes a man dizzy. Thirty-foot masonry curtains overlook the killing ground, and anyone who wants to scale them must first fill the ditches with the dead. Sergeants sleep in mail on the walls, and each night the watch counts the bastions one by one, listening for sudden sallies from the gates."
     }
   ],
   "TextMappings": []

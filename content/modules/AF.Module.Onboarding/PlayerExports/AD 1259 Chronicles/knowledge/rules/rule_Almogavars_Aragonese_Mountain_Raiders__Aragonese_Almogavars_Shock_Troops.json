@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Hailing from the Pyrenean crags of Aragon and Catalonia, Almogavars fought as feral mountain shock infantry. Wearing sheepskin smocks and rawhide sandals, they carried two heavy throwing darts (azconas) and broad cleaving knives (coltells). Before battle, they struck flint stones with their blades to shower sparks, roaring 'Desperta Ferro!' (Awake, Iron!)."
+      "Content": "Almogavars were light shock infantry from the Pyrenean and Aragonese uplands, and they fought without heavy armour. They wore sheepskin smocks and rawhide sandals and carried two throwing darts called azconas plus broad cleaving knives known as coltells. Before battle they struck flint with their blades to throw sparks and shouted Desperta Ferro, awake, iron. Their mobility came from cheap rations and high endurance, so commanders used them to screen columns, raid enemy territory, and hit cavalry from unexpected directions on rough ground where armoured knights could not manoeuvre."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "King James I of Aragon deployed them to spearhead assaults across the Balearics and Valencia. Unencumbered by armor, they slip past feudal lines to disembowel warhorses and slaughter unhorsed knights."
+      "Content": "King James I of Aragon could raise Almogavars more cheaply than a mounted company, and he sent them against the Balearics and Valencia. A baron whose fief lay in the path of those raids had to weigh feudal duty against lost livestock. The raiders held no fiefs and lived on pay and plunder, so any lord who wanted a share of the spoils had to deal with royal quartermasters."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "These mountain wolves run across jagged scree without flinching. Subsisting on garlic, dried cheese, and wild game, their sudden midnight ambushes leave entire camps strewn with severed limbs."
+      "Content": "These mountain fighters run across scree without stopping and sleep in the open with a blanket and a bag of dried cheese. When supply wagons fall behind, live on garlic and wild game. At night they creep into enemy camps and silence the sentries before the column rises. Wait in the dark and move only on the command word."
     }
   ],
   "TextMappings": []

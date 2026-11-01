@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Valens's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Around a smoky fire in the eastern camp, a sergeant repeats the order from Constantinople: the banners of Valens will march, and every man must strap on mail before the drums sound. Blood spilled in the field must be paid in gold coin and a plot of land. The recruits nod, but they have seen the paymaster's chest, and they know which veterans were left waiting for their grants."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "Curtained halls hold magnates and chancellors, who weigh each imperial decree against their own charters. Royal orders are read aloud and then ignored in the provinces, where clan liberties and tax exemptions remain intact. A chancellor offers a bargain: fund the eastern garrison and the crown will confirm your estates. Each alliance lasts only while the noble's prerogatives stand."
     }
   ],
   "SemanticPrototypes": [],

@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Burgos stood as the historic royal seat of Castile and legendary cradle of El Cid. Commanding the high plains of Old Castile, its gleaming white Gothic cathedral watched over central wool convoys organized by the Mesta sheep-farming guild."
+      "Content": "Burgos served as the royal seat of Castile and the cradle of the legend of El Cid, the warrior whose exploits were sung across the peninsula. Its cathedral, begun in 1221, rose in the Gothic style, and its spires can be seen across the high plains of Old Castile. The city lay on the routes that carried wool from the sheep pastures of the north and central plateau. Wool convoys organised by the Mesta, the powerful sheep-farmers' guild, passed through Burgos on their way to the northern ports. Royal officials kept a close watch on the guild's privileges, since its transhumance routes and tolls brought substantial revenue to the crown."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "merchant"
         ]
       },
-      "Content": "Northern Basque ports funneled Burgos wool convoys to Flanders, enriching Castilian royalty with unyielding customs gold."
+      "Content": "Northern Basque ports carried Burgos wool to the cloth towns of Flanders, and each convoy paid tolls along the way. The Castilian crown took its share at the ports and the Burgos fairs, and merchant houses kept agents watching the price of wool. Lords with estates on the transhumance routes had to decide whether to resist the Mesta or share in its privileges."
     }
   ],
   "TextMappings": []

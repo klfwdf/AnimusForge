@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "Mist rolls off the river and the ferryman refuses to cross until dawn, so the sentry keeps a hand on his hilt. Men on the outer post sharpen their spears at every sound of horses in the forest. Before the rotation changes, each sentry must tell the next one which fords the scouts have marked as unsafe."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "The marcher lord fears Gothic and steppe riders will cross the eastern fords in force, with the Dniester forts holding barely half their garrisons. Send a sealed letter to the neighboring elders, offering a share of the tolls if they keep their riders on our side of the river. Let no written pact name the enemy, lest the king's officers treat it as treason."
     }
   ],
   "SemanticPrototypes": [],

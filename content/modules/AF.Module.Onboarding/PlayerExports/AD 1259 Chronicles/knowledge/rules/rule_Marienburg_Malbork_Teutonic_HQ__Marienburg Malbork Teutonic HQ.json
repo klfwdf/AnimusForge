@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Constructed along the Nogat River, Marienburg represented the architectural zenith of Teutonic defensive engineering. As the seat of the Grand Master, this immense brick-Gothic fortress integrated grand vaulted refectories, deep granaries, and triple-curtain wall defenses."
+      "Content": "Constructed along the Nogat River, Marienburg represented the architectural zenith of Teutonic defensive engineering. As the seat of the Grand Master, this immense brick-Gothic fortress integrated a grand vaulted refectory, deep granaries and a triple-curtain wall. Its halls, chapels and cellars were built to house a full convent of brothers along with their servants and stores. The castle stood as a symbol of the Order's control over Prussia, and its granaries and amber revenue gave the garrison the means to hold out through long sieges and bad harvests."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "soldier"
         ]
       },
-      "Content": "White mantles bearing black crosses rallied knight-brothers across Prussia, directing Baltic crusades and monopolizing regional amber revenues."
+      "Content": "White mantles bearing black crosses rallied knight-brothers across Prussia, directing Baltic crusades and monopolising the regional amber trade. Each commander's report went to the Grand Master's chancery, and every amber shipment passed through Order inspectors before it reached the markets of the Hanseatic towns."
     }
   ],
   "TextMappings": []

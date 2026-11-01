@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries atop the border tower scan frosty forest fringes: signal fires flickered through the pines again last night; hostile cavalry sweeps have tripled, demanding loaded ballistae at every embrasure."
+      "Content": "A lookout on the earthen mound scans the grey distance until his eyes ache. Smoke rose beyond the river twice last night, and scouts now ride the grazing grounds three times a week. Every post keeps a strung bow and a saddled horse, and the watch changes at midnight because no one trusts the dark. At the Sarmatians post, the night watchword is \"Thorn.\""
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break wax seals with grave concern: treasury subsidies have been slashed again, yet foreign raiding vanguards probe ever closer; without silver to recruit auxiliary bands, this pass will fall."
+      "Content": "A rider arrives at the river fort with a dispatch sealed in wax. The chieftain's subsidy from the frontier garrison has been cut again, while raiders probe the fords each month. Without silver to hire auxiliary riders, the garrison commander must borrow from local clans and pledge them the river tolls, and every debt gives a rival clan a claim on the ford."
     }
   ],
   "SemanticPrototypes": [],

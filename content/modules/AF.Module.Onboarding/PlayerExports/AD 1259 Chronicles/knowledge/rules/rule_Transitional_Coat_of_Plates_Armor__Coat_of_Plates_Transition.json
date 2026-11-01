@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Faced with crushing warhammers and heavy crossbow bolts, traditional mail hauberks proved inadequate. Armourers developed the coat of plates: overlapping iron plates riveted within a stout canvas or leather surcoat. This hybrid defence absorbed concussion while preserving torso mobility, paving the path toward full plate harness."
+      "Content": "Traditional mail hauberks gave poor protection against crushing warhammers and heavy crossbow bolts, which could drive rings into the flesh without cutting them. Armourers answered by developing the coat of plates, a garment in which overlapping iron plates were riveted to the inside of a stout canvas or leather surcoat. The hybrid design absorbed concussion and deflected points while leaving the torso free to move, and it prepared the way for the full plate harness of the later fourteenth century. Its cost put it within reach of wealthier knights and sergeants, and a good coat could be worth several months of a retainer's wages."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Armourers in Milan and Nuremberg now craft tailor-fitted plates beneath rich velveteen shells. Gilded rivets trace heraldic motifs across the chest, combining chivalric prestige with vital protection against direct missile strikes."
+      "Content": "Armourers in Milan and Nuremberg now craft plates tailored to the body beneath velvet shells. Gilded rivets trace heraldic motifs across the chest, so the armor shows rank as well as protecting the wearer. A lord who commissions such a coat expects his plates to hold against a crossbow at close range and his household to see the expense."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "A mace strike through plain mail shatters ribs without cutting the skin. But with shaped iron plates riveted over your chest, a spear point skates right off. That leather-and-iron vest makes all the difference in a breach."
+      "Content": "A mace strike through plain mail shatters ribs without cutting the skin. Shaped iron plates riveted under the surcoat turn a spear point aside. Oil the rivets, check the straps before every breach, and keep the plates clean of mud so the leather does not rot where it sits against your chest."
     }
   ],
   "TextMappings": []

@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "A mounted archer loads his composite bow while his horse wheels beneath him. The screen feigns a retreat, drawing enemy riders into a volley of arrows, and then turns to meet them. A horse that stumbles means death for its rider, so every man trains until animal and bow move as one."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "Signal riders run along the ridge to coordinate the mounted bowmen. Victory depends on wearing down the enemy's heavy horsemen before the main column closes. Each clan's riders are judged by how quickly they answer the call, and slow riders lose their share of the spoils."
     }
   ],
   "SemanticPrototypes": [],

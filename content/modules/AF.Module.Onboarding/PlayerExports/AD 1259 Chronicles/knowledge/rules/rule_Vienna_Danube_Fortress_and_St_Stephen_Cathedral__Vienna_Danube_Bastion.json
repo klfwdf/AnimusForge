@@ -14,7 +14,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "Perched on the southern bank of the Danube, Vienna served as the proud ducal seat of the Babenbergs. Anchored around Romanesque St. Stephen's Cathedral, its strategic position made it the fiercely contested prize between Ottokar II of Bohemia and Béla IV of Hungary following the extinction of the ducal line in 1246."
+      "Content": "Vienna lay on the southern bank of the Danube and served as the ducal seat of the Babenbergs until the dynasty died out in 1246. Around the Romanesque St Stephen's Cathedral, the city grew into a centre of trade on the river route between the Alpine passes and the Hungarian plain. After the extinction of the line, the duchy became the object of a fierce contest between Ottokar II of Bohemia and Béla IV of Hungary, each of whom claimed the lands and the rights of the Babenbergs. The city's walls and bridges gave whoever held it control of the river, and the struggle over its gates shaped the politics of the Danube lands for the next decade."
     },
     {
       "Priority": 0,
@@ -24,7 +24,7 @@
           "notable"
         ]
       },
-      "Content": "Vienna enforces mandatory staple rights (Stapelrecht); merchant barges transporting Alpine salt and Hungarian grain must unlade cargo for three days, enriching civic burghers and drawing sovereign suitors."
+      "Content": "Vienna enforces the staple right, and merchant barges carrying Alpine salt and Hungarian grain must unload their cargo in the city for three days. The rule fills the civic treasury and the burghers' storehouses, and it draws the attention of any sovereign who wants the duchy. A lord who wishes to sell grain on the Danube must first pay the city's dues."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Heavy barges clog the Danube wharves with smoked beef and shields. Whichever army holds Vienna immediately throws chain barricades across the streets to regulate armed travelers."
+      "Content": "Heavy barges crowd the Danube wharves, stacked with smoked beef and bundles of shields. Whichever army holds Vienna soon drops chain barricades across the streets to check armed travelers. Keep your weapons wrapped in cloth on the quay, show your pass at each chain, and never sleep in a boat tied to the wharf."
     }
   ],
   "TextMappings": []

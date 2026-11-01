@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "Shield rims clatter as the Gepid line closes the gap in the ford. The first rank absorbs the riders' initial charge, and the rear files thrust spears through the holes between shoulders. The sergeant shouts the countersign before the drums stop, and any man who steps back is cut down by his own side."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "From a hill above the river, the commander sends runners to the flank cavalry. Victory depends on keeping the baggage wagons out of the marsh and holding the center until the armored reserve is released. The lords of each contingent watch closely who pulls back early, because those names will be remembered when the spoils are divided."
     }
   ],
   "SemanticPrototypes": [],

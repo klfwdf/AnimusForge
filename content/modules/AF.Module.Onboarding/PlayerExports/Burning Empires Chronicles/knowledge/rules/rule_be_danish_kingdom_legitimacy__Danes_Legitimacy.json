@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Danish Island Chieftains's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Shieldmen in the island hall drink to their chieftain before the tide turns, and the oldest among them recounts the last sea raid. When the war horns of the island sound, every man must sail with the fleet and fight beneath the chieftain's banner. The warriors trust the promise of silver and land, though they know the chieftain's word lasts only until the next harvest."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "The jarls of the outer islands have asked whether the chieftain's grant of the harbor tolls will be honored at the autumn Thing. Speak to the jarls in person and confirm the toll grant in exchange for their oaths to your house. Do not write the grant down until the Thing has met, because an unrecorded oath is easier to deny if a rival chieftain disputes it."
     }
   ],
   "SemanticPrototypes": [],

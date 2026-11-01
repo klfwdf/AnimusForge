@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "The horn sounds, and the horse archers wheel into a crescent, loosing arrows over the heads of the spearmen. Armored horsemen smash into the front line while the rear files thrust lances through the gaps. A rider who turns his horse from the fight is cut down by his own squadron, since a broken formation on the steppe means death for everyone who rides with him."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "The commanders gather on a low rise with a crude map of the steppe scratched into a felt sheet. Victory depends on remounts reaching the wings and grain wagons keeping pace with the army. Once the center holds, the lancers can sweep around the enemy's flank, and the lords who raised the troops will claim their share of the horses and captured herds."
     }
   ],
   "SemanticPrototypes": [],

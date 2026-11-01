@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frontline spearmen brace against shield rims as drums roll: the first ranks must absorb charging warhorses with locked shoulders, while rear spears thrust through gaps; retreat means instant death."
+      "Content": "Drums roll and the shield wall locks tight, the first ranks bracing their rims against charging warhorses. Rear files thrust spears through the gaps while their shoulders hold the line. A man who steps back to breathe is struck down by his own officers, because retreat without an order means instant death."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "General staff inspect tactical lines from the command redoubt: victory hinges on supply supply lines and linear discipline; once the center holds firm, flanking cavalry wings seal the enemy's doom."
+      "Content": "On the eve of the muster, the commanders bend over a charcoal map scratched onto a hide. Victory depends on supply convoys reaching the wings on time and on keeping every unit in a straight line. Once the center holds, the flanking cavalry can close the trap on the enemy."
     }
   ],
   "SemanticPrototypes": [],

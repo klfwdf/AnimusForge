@@ -25,7 +25,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans and household guards whisper by campfires: when Athanaric's war banners advance, every man must gird iron armor; blood bought in the field must be paid in gold and land grants."
+      "Content": "Around the forest campfires the warriors keep their voices low, but the message is plain. When Athanaric's war banners advance, every man puts on his iron armor and marches. Blood spilled in the forest is repaid in gold or land, though the wounded often wait long years for either."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "notable"
         ]
       },
-      "Content": "Magnates and chancellors calculate behind closed doors: royal decrees are acknowledged, yet clan liberties and tax revenues remain inviolable; allegiances hinge on the preservation of noble prerogatives."
+      "Content": "Among the forest lords, every royal decree is read twice before it is obeyed. The crown's word is acknowledged, yet the tax revenues and clan liberties of their lands remain their own. Every pledge of loyalty is tied to the privileges they already hold, and secret envoys carry the real bargains between houses."
     }
   ],
   "SemanticPrototypes": [],
