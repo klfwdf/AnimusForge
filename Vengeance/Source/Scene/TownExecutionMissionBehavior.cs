@@ -24,7 +24,7 @@ namespace RichExecutions.Scene;
 /// uses a BasicBattleAgentOrigin so a real battlefield death can drive the
 /// native corpse pipeline without killing the campaign hero through
 /// SimpleAgentOrigin.SetKilled. Campaign execution, costs and consequences stay
-/// deferred until the player leaves the mission. No substitute character is
+/// deferred until mission exit (or an explicit field-camp continuation). No substitute character is
 /// permitted.
 /// </summary>
 public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecutionSceneHost
@@ -1007,6 +1007,18 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
         ExecutionSessionCoordinator.RegisterController(this);
         if (Request.SceneMode == ExecutionSceneMode.CustomPreset)
         {
+            if (_chainedLayout is not null)
+            {
+                var layout = _chainedLayout.Value;
+                _chainedLayout = null;
+                if (!TryAcceptCustomSiteLayout(Request.Method, layout.Preset, layout.Origin, layout.Forward, out var error))
+                {
+                    CancelSceneAndReturn(ExecutionFailureReason.ScenePlacementFailed, error!);
+                    return;
+                }
+                TryInitializeScene();
+                return;
+            }
             if (TryBindPlayerForCustomBuilder())
             {
                 EnsureCustomSiteBuilderCreated();

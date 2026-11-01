@@ -19,6 +19,11 @@ public sealed partial class TownExecutionMissionBehavior
     public override void OnAgentInteraction(Agent userAgent, Agent agent, sbyte agentBoneIndex)
     {
         base.OnAgentInteraction(userAgent, agent, agentBoneIndex);
+        if (IsBoundPlayer(userAgent) && agent == _executionerAgent && CanContinueFieldCamp)
+        {
+            ShowFieldCampContinuation();
+            return;
+        }
         if (_strategy is IMultiStageExecutionStrategy &&
             State != ExecutionSessionState.WaitingForPlayer)
         {
@@ -64,6 +69,8 @@ public sealed partial class TownExecutionMissionBehavior
 
     public override bool IsThereAgentAction(Agent userAgent, Agent agent)
     {
+        if (IsBoundPlayer(userAgent) && agent == _executionerAgent && CanContinueFieldCamp)
+            return true;
         if (_strategy is IMultiStageExecutionStrategy &&
             State != ExecutionSessionState.WaitingForPlayer)
         {

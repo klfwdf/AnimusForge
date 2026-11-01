@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using RichExecutions.Core;
+using RichExecutions.Customization;
+using TaleWorlds.Library;
 using RichExecutions.Diagnostics;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Encounters;
@@ -193,7 +195,10 @@ internal static class ExecutionSessionCoordinator
     internal static TownExecutionMissionBehavior InjectChainedSession(
         Mission mission,
         ExecutionRequest request,
-        ExecutionService service)
+        ExecutionService service,
+        ExecutionSitePreset preset,
+        Vec3 origin,
+        Vec2 forward)
     {
         RexLog.Info(
             $"Injecting chained field-camp session {request.SessionId} into mission scene " +
@@ -207,8 +212,25 @@ internal static class ExecutionSessionCoordinator
             service,
             RichExecutionApi.SceneActs,
             deathLogic);
+        controller.PrepareChainedLayout(preset, origin, forward);
         AddExecutionMissionBehaviorsAtomically(mission, deathLogic, controller, downstreamDecider);
-        return controller;
+        try
+        {
+            // AddMissionBehavior only invokes OnCreated on an already-running
+            // mission. Its original startup passes will never visit these two.
+            VengeanceIntegration.FieldCampControllerChanged?.Invoke(mission, controller);
+            deathLogic.OnBehaviorInitialize();
+            controller.OnBehaviorInitialize();
+            deathLogic.AfterStart();
+            controller.AfterStart();
+            return controller;
+        }
+        catch
+        {
+            TryRemoveInjectedBehavior(mission, controller);
+            TryRemoveInjectedBehavior(mission, deathLogic);
+            throw;
+        }
     }
 
     private static void AddExecutionMissionBehaviorsAtomically(

@@ -2234,6 +2234,14 @@ public sealed partial class TownExecutionMissionBehavior
         out FocusableObjectInformation information)
     {
         information = default;
+        if (IsBoundPlayer(requesterAgent) && focusableObject == _executionerAgent && CanContinueFieldCamp)
+        {
+            information.IsActive = true;
+            information.PrimaryInteractionText = new TextObject("{=REX_Executioner_Name}Executioner");
+            information.SecondaryInteractionText = BuildKeyAction(
+                new TextObject("{=REX_Action_Talk_Executioner}talk to the executioner"));
+            return;
+        }
         if (_strategy is IMultiStageExecutionStrategy &&
             State != ExecutionSessionState.WaitingForPlayer)
         {

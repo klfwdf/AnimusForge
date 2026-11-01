@@ -31,6 +31,7 @@ public static class VengeanceIntegration
     public static Func<Mission?, bool>? FieldCampMissionProbe { get; set; }
     public static Action<Hero, Vec3, Vec2>? FieldCampCeremonyStaged { get; set; }
     public static Action? FieldCampCeremonyReleased { get; set; }
+    internal static Action<Mission, RichExecutions.Scene.TownExecutionMissionBehavior>? FieldCampControllerChanged { get; set; }
 
     public static bool IsFieldCampAvailable()
     {
