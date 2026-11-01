@@ -7,14 +7,15 @@
     "Shattering Venetian Naval Primacy"
   ],
   "RagShortTexts": [
-    "The 1261 Treaty of Nymphaeum traded Galata commercial rights for Genoese naval war fleets."
+    "A treaty and its consequences belong to the uncertain future, not current fact.",
+    "Michael Palaiologos has not exchanged Galata concessions for a fleet."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Concluded in March 1261 at Nymphaeum, the treaty bound Michael VIII Palaiologos of Nicaea to the Republic of Genoa. Genoa pledged up to fifty war galleys to help break the Latin hold on Constantinople and to check Venetian fleets. In return, Genoa received exclusive trading quarters in Galata, duty-free commerce, and commercial primacy across the Black Sea. The Genoese gained a foothold that lasted for generations, while the Byzantine emperor gained the sea power he needed to retake the capital. Each side accepted the bargain because neither could win a naval war alone."
+      "Content": "In 1259 Nicaea still seeks a way to recover Constantinople from the Latin Empire, and control of the sea is central to that ambition. Genoa and Venice compete for trade and influence, giving Michael Palaiologos reason to sound out potential naval partners. Yet no Treaty of Nymphaeum has been concluded, and Genoa has not received the later privileges at Galata or the Black Sea. Negotiators may discuss ships, customs exemptions and commercial quarters, but each concession would require bargaining and could provoke rivals. Nicaean officials must weigh the immediate value of galleys against long-term revenue and political dependence. A treaty and its consequences belong to the uncertain future, not current fact."
     },
     {
       "Priority": 0,
@@ -24,7 +25,7 @@
           "notable"
         ]
       },
-      "Content": "Michael VIII traded commercial privileges across the Golden Horn to turn Genoese naval power against Venice, buying the fleet he needed to liberate Constantinople. Every trade quarter granted to Genoa was revenue the emperor gave up, which made the bargain a gamble on the outcome of the war."
+      "Content": "A Nicaean notable may argue Genoese ships could isolate Latin-held Constantinople; rivals fear lost customs income. Michael Palaiologos has not exchanged Galata concessions for a fleet. Proposals must specify ships, tolls and legal rights. Lords debate alliance costs rather than celebrate a bargain already made."
     },
     {
       "Priority": 0,
@@ -34,17 +35,16 @@
           "wanderer"
         ]
       },
-      "Content": "Genoese galley crossbowmen work the rowing benches and the rails with iron discipline. When Nicaean signal fires flare across the Bosporus, Genoese ram-irons are ready to sink any Venetian cog that enters the straits. Keep your bolt case dry, count your quarrels before the signal, and never leave your station to chase a single enemy boat."
+      "Content": "A Nicaean sailor may hear Genoese captains are open to bargaining, but no treaty fleet is summoned and no squadron is pledged against Venice. Patrols watch merchants and carry messages between forts. A commander checks stores and awaits orders. Italian ships may be allies, rivals or neutral traders; a soldier cannot treat a future pact as a standing battle plan."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Greek caïque rowers watch red-cross banners multiply along the shoreline. Italian merchants drive hard bargains, but if Genoese steel drives the Latin usurpers into the Aegean, our families will feast under our true Emperor."
+      "Content": "A Greek coastal household in 1259 may hope that Nicaea can find ships and allies against Latin sea power. Italian merchants offer trade while seeking favourable terms for themselves. The pact later concluded at Nymphaeum has not yet been signed, so a boatman cannot describe its privileges or military consequences as events already transforming the shore."
     }
   ],
   "TextMappings": []

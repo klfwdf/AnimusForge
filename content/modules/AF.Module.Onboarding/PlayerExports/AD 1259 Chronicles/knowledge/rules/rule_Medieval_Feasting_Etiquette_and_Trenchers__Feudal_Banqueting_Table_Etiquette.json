@@ -7,7 +7,8 @@
     "Peacock Presentation and Ewer Washing"
   ],
   "RagShortTexts": [
-    "Medieval feasts used trenchers of stale bread, placing guests strictly 'above or below the."
+    "A great hall feast displays rank through seating, service and food.",
+    "Kitchen labour and access to leftovers reveal different interests behind elite hospitality."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Huge hearths roast whole oxen on timber spits. Securing a crust of bread drenched in rich deer lard from the castle scullery is a banquet feast for a laborer's family."
+      "Content": "A labourer helping at a great feast sees fuel, water, washing and wasted food behind the display at the high table. Bread soaked with gravy or a share of kitchen scraps can supplement a household's meal, but access depends on service and charity. A grand roast does not describe everyday diet, and it gives no assurance that the neighbouring poor will eat well."
     }
   ],
   "TextMappings": []

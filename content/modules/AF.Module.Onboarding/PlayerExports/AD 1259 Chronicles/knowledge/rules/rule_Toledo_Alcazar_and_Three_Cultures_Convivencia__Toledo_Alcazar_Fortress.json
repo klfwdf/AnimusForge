@@ -7,7 +7,8 @@
     "Three Cultures Convivencia"
   ],
   "RagShortTexts": [
-    "Toledo, protected by the Tagus gorge, fostered intellectual translation between Christian,."
+    "Toledo's learned work draws on Arabic texts and readers able to move between languages.",
+    "Translators depend on patrons, manuscripts and collaborators with different skills."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,12 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "In workshops along the Judería, Averroës's commentaries and Ptolemaic star tables are translated under tallow candles. Shared intellectual dedication transfigured wartime prejudices into a golden age of learning."
+      "Content": "Toledo's learned work draws on Arabic texts and readers able to move between languages. Translators depend on patrons, manuscripts and collaborators with different skills. That cooperation does not erase legal inequality or religious conflict, and not every author being translated lives in the city. A particular commission is stronger evidence than a tale of universal harmony."
     },
     {
       "Priority": 0,

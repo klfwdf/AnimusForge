@@ -7,7 +7,8 @@
     "Richard de Clare Political Pivot"
   ],
   "RagShortTexts": [
-    "The House of Clare bore three red chevrons, commanding vast Welsh marches as Earls of."
+    "Richard's choices carried weight because his retinue could decide a contested county.",
+    "The family's border revenues and its standing with the crown rested on that balance."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Across Gloucestershire manors, Clare bailiffs maintain rigorous estate ledgers. When Welsh raiders strike across the Severn, chevron-clad riders hunt them down without quarter."
+      "Content": "Across Gloucestershire manors, Clare bailiffs maintain rigorous estate ledgers. When Welsh raiders strike across the Severn, chevron-clad riders hunt them down without quarter. Villagers owed weekly labour on the lord's demesne and paid rents in coin or grain at harvest. Reeves kept tallies of every sheaf and bushel, and disputes went before the manor court."
     }
   ],
   "TextMappings": []

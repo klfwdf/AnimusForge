@@ -7,7 +7,8 @@
     "Hundred Years War Catalyst"
   ],
   "RagShortTexts": [
-    "The 1259 Treaty of Paris resolved French claims as Henry III paid homage, breeding deep seeds."
+    "In exchange he kept Gascony, the Duchy of Aquitaine, as a fief held from Louis IX.",
+    "The settlement brought a measure of peace, but it did not settle what a vassal owed his lord."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Bells pealed in Notre-Dame de Paris for Christian amity. Peasant vine-growers in Gascony care little for legal homage, praying only that neither royal army marches through to commandeer winter oxen and burn the casks."
+      "Content": "A Gascon household hopes the settlement between Henry III and Louis IX will make the next journey with wine less dangerous. Homage and renunciations concern rights that lords will continue to argue over. Peace may reduce the chance of a royal campaign, but it does not promise an end to rent, port duties or the requisition of a cart by a local officer."
     }
   ],
   "TextMappings": []

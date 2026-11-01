@@ -7,24 +7,25 @@
     "Bologna University Medical Surgery"
   ],
   "RagShortTexts": [
-    "William of Saliceto revolutionized 13th-century surgery at Bologna, rejecting 'laudable."
+    "William of Saliceto's surgical text of 1275 is not a completed book in 1259.",
+    "Period wound-care practices do not prove modern antisepsis or guaranteed survival."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "William of Saliceto (c. 1210–1277) taught surgery at the University of Bologna and reshaped the way medieval physicians treated wounds. In his Chirurgia, completed around 1275, he challenged the Galenic belief that pus, which he called laudable pus, was a sign of healing and natural ripening of a wound. He argued that suppuration caused harm to the tissue and slowed recovery, so the surgeon should aim for clean closure. He advocated sharp scalpel incisions to drain abscesses and clean wounds, in place of the indiscriminate use of the hot cautery irons that had long been standard. His work reunited internal medicine with manual surgery and helped move the craft from the barber's shop toward a learned academic discipline."
+      "Content": "William of Saliceto is an active physician and teacher in northern Italy in the mid-thirteenth century, but his best-known surgical work has not yet been completed in 1259. He belongs to a learned medical culture in which physicians debate how to treat wounds, when to drain an abscess and how much trust to place in inherited Galenic teaching. A practitioner may favour careful incision, ligature or wine cleansing based on experience, while another relies more heavily on cautery. These are competing practices rather than a settled revolution led by a published textbook. The treatise later called Chirurgia is still ahead, so contemporaries cannot quote its finished arguments or know its later reputation."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "doctor",
-          "scholar"
+          "townsfolk",
+          "wanderer"
         ]
       },
-      "Content": "Italian-trained surgeons employed delicate arterial ligatures and wine antiseptic dressings, drastically improving battlefield survivability."
+      "Content": "William of Saliceto's later surgical writing belongs to a developing learned tradition, not a completed textbook available in 1259. A contemporary healer may discuss training and wound care without predicting the contents of a work dated 1275. Wine dressings and ligatures are period practices to describe critically, rather than proof of modern antisepsis or guaranteed survival."
     }
   ],
   "TextMappings": []

@@ -7,7 +7,8 @@
     "Urban Liberty One Year and a Day"
   ],
   "RagShortTexts": [
-    "Serfs bound by corvée labor and marriage fines gained freedom by dwelling in chartered."
+    "Villein obligations and opportunities for manumission depend on particular rights and courts.",
+    "A year-and-a-day town custom is not a universal automatic release from bondage."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Bailiff whips urge reapers through hot harvest days. Fleeing to a chartered town to apprentice in a cobbler's shop means surviving in hiding for twelve months to walk free forever."
+      "Content": "A runaway considering a town asks whether its charter protects newcomers and whether a lord can still reclaim a tenant. The saying about a year and a day expresses a custom found in some places, not a universal release from bondage. Work, lodging and recognition by the town matter as much as reaching the gate with a bundle of clothes."
     }
   ],
   "TextMappings": []

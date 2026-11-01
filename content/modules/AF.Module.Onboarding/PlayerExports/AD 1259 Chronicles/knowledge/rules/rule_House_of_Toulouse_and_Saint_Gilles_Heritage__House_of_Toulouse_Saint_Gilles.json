@@ -7,7 +7,8 @@
     "Alphonse of Poitiers Regency"
   ],
   "RagShortTexts": [
-    "The House of Toulouse once ruled Occitania under the sun cross, now merging into Capetian."
+    "Toulouse's inheritance and religious conflicts shape its relations with northern power.",
+    "Mill dues, patronage and local jurisdiction affect households beyond courtly politics."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,21 +21,19 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "The University of Toulouse was founded under treaty terms to train orthodox theologians against heresy, yet troubadours still sing of ancient southern liberties in shaded cloisters."
+      "Content": "Toulouse's university emerged from the settlement of 1229, linking higher learning to the contest over religious authority in the south. Masters need students, books and reliable income; church patrons seek orthodox teaching. That setting does not make every lecturer an inquisitor or every song sung in the city a declaration of political resistance."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Watermills on the Garonne turn as ever, but royal bailiffs speaking northern French now audit grain tithes, checking church attendance for heresy."
+      "Content": "A mill on the Garonne remains important whoever claims authority over Toulouse. Customers reckon with the miller's share, queues at the wheel and the price of carrying flour home. Countal, ecclesiastical and royal rights may overlap in the region. A grain tally is not automatically a record of church attendance, although religious investigation can bring a separate fear."
     }
   ],
   "TextMappings": []

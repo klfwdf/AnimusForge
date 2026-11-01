@@ -7,14 +7,15 @@
     "Anglo French Marchlands"
   ],
   "RagShortTexts": [
-    "Vague feudal boundaries across Gascony and Guyenne remain a powder keg between England and France."
+    "Local lords, towns and religious institutions retain interests in courts, dues and routes.",
+    "Bordeaux's wine trade makes access to the Garonne and overseas shipping particularly valuable."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Henry III held Gascony as a fief of the French crown under the Treaty of Paris of 1259, which settled a long dispute by making the English king a vassal rather than a sovereign rival. The treaty did not draw clean lines on the ground. Anglo-Gascon bastides, planned towns founded along the rivers, faced French royal provosts who claimed the right to hear cases and levy customs. Every toll on river traffic and every disputed land grant gave both sides a reason to send letters, lawyers, and armed men. Jurisdiction in Gascony stayed uncertain for decades, and the boundary between English and French authority was contested in courts and on the road alike."
+      "Content": "Gascony and the remaining Plantagenet lands connect the English king's continental position with the feudal authority claimed by the French crown. The Paris settlement of 1259 addresses homage, renunciations and rights, but does not draw a simple modern national frontier across every disputed holding. Local lords, towns and religious institutions retain interests in courts, dues and routes. Bordeaux's wine trade makes access to the Garonne and overseas shipping particularly valuable. A conflict may concern whose officer can hear an appeal or collect a payment as much as the movement of an army. Peace between kings therefore reduces some dangers without ending all local bargaining or competing claims."
     },
     {
       "Priority": 0,
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Nobles argue over Latin parchments, but common folk pay the toll in every grape harvest. As soon as the French bailiff departs, the Duke's collectors arrive to inspect our cellars."
+      "Content": "Nobles argue over Latin parchments, but common folk pay the toll in every grape harvest. As soon as the French bailiff departs, the Duke's collectors arrive to inspect our cellars. Vine dressers carry baskets down muddy lanes to the press houses, counting every cask because the taxmen will measure it again at the quay."
     }
   ],
   "TextMappings": []

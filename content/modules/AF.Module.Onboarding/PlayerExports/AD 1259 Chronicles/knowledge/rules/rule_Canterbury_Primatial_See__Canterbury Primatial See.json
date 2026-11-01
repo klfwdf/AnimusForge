@@ -7,7 +7,8 @@
     "Ecclesiastical Immunity Papal Legate"
   ],
   "RagShortTexts": [
-    "Canterbury anchored the spiritual head of the English Church, revered for Saint Thomas."
+    "Canterbury's archbishop asserts religious authority in English royal and church affairs.",
+    "Ecclesiastical jurisdiction can conflict with royal demands and legal process."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "priest",
-          "scholar"
+          "townsfolk"
         ]
       },
-      "Content": "The Archbishop alone possessed ancient rights to crown English kings, asserting canon law immunities against intrusive royal writs."
+      "Content": "The Archbishop of Canterbury held the ancient right to crown English kings, and he asserted canon law immunities against intrusive royal writs. Bishops of the province answered to the primate in matters of Church discipline, and the primate guarded the independence of the Church against the king's justices."
     }
   ],
   "TextMappings": []

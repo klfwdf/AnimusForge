@@ -7,15 +7,14 @@
     "Hibernians Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Hibernians comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "The Hibernian faction is a module grouping, not proof of a united kingdom in 374.",
+    "Kin, cattle and reciprocal support shape local leadership; later law is not projected back."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Hibernians, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "The module groups Hibernian communities into a faction, but fourth-century Ireland should not be treated as a single documented feudal monarchy. Local kin connections, cattle, land and armed followings provide a more cautious basis for political disputes than invented senatorial estates. Written evidence for this period is limited, and later Irish legal texts cannot be transferred intact into 374. Contacts across the sea can bring goods, captives and claims to prestige, while also exposing households to retaliation and absence of labour. A leader's standing depends on sustaining people and reciprocal obligations, not merely occupying a magnificent palace."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Two kin groups have fought over a boundary stone for a whole summer, and the chieftain's bodyguard was ordered to stand between them. A young warrior takes a spear cut he did not deserve, while the men who started the feud walk away with their pride. He spends the night cleaning his blade and wondering whose cattle the quarrel was really about."
+      "Content": "A man called to a sea expedition thinks about the boat, the weather and who will watch the animals while he is gone. A chief's promises must cover the return as well as departure. Plunder may enrich one following, but a wreck or retaliation leaves losses for the people who supplied the voyage and never boarded it."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "Your foster brother is worth more than your cousin, the old chieftain tells his son, because the fosterage bond outlasts any blood feud. Keep the boundary stones where your grandfather set them, and take hostages from the families that argue. A marriage binds a border better than a sword, but only if the bride's kin keep their oaths."
+      "Content": "A Hibernian leader builds support through kin and useful allies, yet obligations can pull in different directions. Lending men to a voyage may favour a partner while weakening protection at home. Later law books offer no ready answer to every dispute in 374; he needs an arrangement the households concerned will actually honour."
     }
   ],
   "SemanticPrototypes": [],

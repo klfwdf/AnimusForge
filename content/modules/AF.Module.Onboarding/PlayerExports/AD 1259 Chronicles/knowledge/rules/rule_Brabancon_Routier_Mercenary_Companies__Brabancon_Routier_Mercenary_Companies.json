@@ -7,7 +7,8 @@
     "Third Lateran Council Condemned Bands"
   ],
   "RagShortTexts": [
-    "Brabançons were hardened mercenary foot soldiers condemned by the Church but hired across."
+    "Routier companies offer rulers sustained armed service for payment.",
+    "The same company may support a garrison while threatening nearby food-producing households."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
+          "villager",
           "wanderer"
         ]
       },
-      "Content": "Villagers dread the approach of Brabançon baggage trains. They pillage cellars down to dry barley meal and hang resisters, yet their unyielding battle discipline earns dread on field lines."
+      "Content": "Villagers dread the approach of Brabancon baggage trains. They pillage cellars down to dry barley meal and hang resisters, yet their unyielding battle discipline earns dread on field lines. Wanderers who stumble on their camps learn quickly to keep silent and hide what food they carry."
     }
   ],
   "TextMappings": []

@@ -7,14 +7,15 @@
     "English Parliamentary Democracy Pioneer"
   ],
   "RagShortTexts": [
-    "The House of Montfort combined crusader religious piety with revolutionary parliamentary."
+    "The Montfort family produced crusaders and political leaders on both sides of the Channel.",
+    "His supporters and opponents dispute whether the reforms protect lawful counsel or weaken the crown."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Montfort arms, a silver lion with a forked tail on red, appeared on the banners of a family that produced crusaders and statesmen whose careers ran across France, Italy, and England. Amaury de Montfort led crusade forces in the Albigensian wars, and the family's piety shaped its politics for generations. Simon de Montfort, sixth Earl of Leicester, married Eleanor, the sister of King Henry III, in 1238. He then led the baronial rebellion against Henry's government, pressing the Provisions of Oxford and reform of royal finance. In 1265 he summoned knights and burgesses to a great parliament, a step that set a precedent for representative assemblies in England. His death at Evesham in 1265 ended his rule, but the precedent remained."
+      "Content": "The Montfort family produced crusaders and political leaders on both sides of the Channel. Amaury de Montfort fought in the Albigensian campaigns, while Simon de Montfort, Earl of Leicester, married Eleanor, sister of Henry III, in 1238. In 1258 and 1259 Simon is a leading voice among barons pressing Henry to accept the Provisions of Oxford and reform royal government. His supporters and opponents dispute whether the reforms protect lawful counsel or weaken the crown. Knights and town representatives may be discussed as possible participants in future councils, but the parliament of 1265 has not been summoned, and Simon’s defeat and death at Evesham lie in the future. For now, the struggle concerns who controls appointments, finance and the king’s ministers."
     },
     {
       "Priority": 0,
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Commoners hail 'Righteous Simon' across London and Oxford. Elevating merchant guild aldermen to royal councils created a precedent that permanently altered English feudalism."
+      "Content": "People hearing the reforms of 1258 and 1259 may welcome limits on royal officers while wondering whose complaints the barons will hear. Simon de Montfort's name offers a focus for hopes and quarrels, but his later parliament has not yet met. A villager still faces the manor court and must judge reform through the burdens that actually reach the household."
     }
   ],
   "TextMappings": []

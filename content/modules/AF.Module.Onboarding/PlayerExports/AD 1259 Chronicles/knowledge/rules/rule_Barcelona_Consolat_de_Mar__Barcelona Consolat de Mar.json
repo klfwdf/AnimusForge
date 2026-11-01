@@ -7,7 +7,8 @@
     "Aragonese Mediterranean Hub"
   ],
   "RagShortTexts": [
-    "Barcelona's Drassanes shipyards and Consolat de Mar maritime courts projected Catalan sea."
+    "Barcelona's maritime trade depends on contracts, freight and shipboard responsibilities.",
+    "Storms, piracy and embargoes expose merchants and crews to different losses."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,12 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "merchant",
-          "sailor"
+          "commoner",
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "Catalan merchants exported fine woolens, saffron, and weapons, establishing profitable trading outposts in Sicily and Alexandria."
+      "Content": "Catalan merchants exported fine woolens, saffron, and weapons, establishing profitable trading outposts in Sicily and Alexandria. Sailors loaded their galleys at the city quays under written contracts that set out freight and crew duties. Storms, pirates, and sudden royal embargoes could ruin a cargo before it reached market."
     }
   ],
   "TextMappings": []

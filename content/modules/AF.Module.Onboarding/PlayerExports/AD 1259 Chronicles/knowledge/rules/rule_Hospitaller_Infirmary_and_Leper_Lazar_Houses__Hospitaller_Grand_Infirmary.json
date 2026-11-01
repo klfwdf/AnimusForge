@@ -7,7 +7,8 @@
     "Crusader Battlefield Triage"
   ],
   "RagShortTexts": [
-    "The Knights Hospitaller ran advanced hospitals in Acre, providing clean linens, surgery,."
+    "Hospitaller care joins religious service with the practical needs of sick pilgrims.",
+    "Beds, food, washing and staff require continuing resources rather than devotion alone."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Black-mantled Hospitallers tend penniless pilgrims as if serving the Lord Himself. A fever-stricken camp follower receives clean water, fresh bread, and compassionate nursing denied by his own village elders."
+      "Content": "Black-mantled Hospitallers tend penniless pilgrims as if serving the Lord Himself. A fever-stricken camp follower receives clean water, fresh bread, and compassionate nursing denied by his own village elders. The infirmary keeps straw pallets, washing basins, and herb stores. Those who recover are sent back on the road with bread and a blessing."
     }
   ],
   "TextMappings": []

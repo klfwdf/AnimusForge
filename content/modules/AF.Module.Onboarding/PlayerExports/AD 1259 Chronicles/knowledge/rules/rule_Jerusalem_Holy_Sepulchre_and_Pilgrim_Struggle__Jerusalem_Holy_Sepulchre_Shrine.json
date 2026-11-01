@@ -7,7 +7,8 @@
     "Khwarazmian Sack Aftermath"
   ],
   "RagShortTexts": [
-    "Jerusalem encompasses the Holy Sepulchre and Temple Mount, venerated across three Abrahamic."
+    "Jerusalem's shrines sustain pilgrimage under changing political conditions.",
+    "Travellers depend on access, lodging and local custodians as well as religious hope."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,12 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Kneeling at Golgotha represents the ultimate cleansing of worldly sin. Weeping penitents hold olivewood crosses before the Tomb of Christ, lighting tapers in the crypt to beg for divine mercy."
+      "Content": "Kneeling at Golgotha represents the ultimate cleansing of worldly sin. Weeping penitents hold olivewood crosses before the Tomb of Christ, lighting tapers in the crypt to beg for divine mercy. Priests who served the Holy Sepulchre tended its lamps and altars, and craftsmen who made crosses and candles depended on steady pilgrim traffic. Pilgrims left alms at the shrine for the custodians to count."
     },
     {
       "Priority": 0,

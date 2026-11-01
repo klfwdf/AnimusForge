@@ -7,15 +7,14 @@
     "Sclavenians Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Sclavenians comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "The Sclavenian faction is a scenario convention, not a documented unified state in 374.",
+    "Later Slavic courts and administrative institutions are not projected into this setting."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Sclavenians, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "The module's Sclavenian faction is a scenario convention. The better documented use of Sclaveni belongs to later sources, so a detailed unified court or a fixed national constitution must not be invented for 374. A cautious portrayal can centre on households, settlements, local leaders and the need to obtain food and security among neighbouring peoples. Decisions about moving, sharing stores or joining an armed party may divide communities whose cooperation a leader needs. That gives the faction political life without claiming that a later medieval Slavic kingdom, nobility or administrative apparatus already governs all its members."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "At the manor gate, the guardsmen keep their eyes forward while the lord and his son-in-law argue inside. Shattered wine cups still lie on the flagstones. When patrician clans fight over mine leases, the men on the wall pay the price, since nobody at the table answers for the blood spilled in the yard."
+      "Content": "A household member taking a watch wants to know which path brings help and where the children can shelter. Leaving to accompany an armed party means fewer hands for daily work. An offer of protection must be weighed against that cost; a heroic speech does not harvest a field or repair a leaking roof."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "Hold the five castles and the serfs who work the land, the old patriarch tells his heir, because thrones change hands while estates endure. Smile at court and make every courtier feel useful. Keep steel hidden under your cloak, and never let a rival learn how many men you can call to arms."
+      "Content": "A local notable gains authority by arranging cooperation, hearing disputes and securing useful neighbours. He cannot simply issue orders as if every settlement belonged to a later centralised kingdom. Supplies offered to one ally may be needed at home, and confidence is lost if the agreement leaves contributing households without food."
     }
   ],
   "SemanticPrototypes": [],

@@ -7,7 +7,8 @@
     "Eastern Orthodox Ascetic Mysticism"
   ],
   "RagShortTexts": [
-    "Mount Athos hermits practiced Hesychasm, repeating the Jesus Prayer to behold the divine light."
+    "Athonite religious life depends on monastic discipline, property and particular privileges.",
+    "Later hesychast controversies should not be projected intact into 1259."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,21 +21,19 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "Protected by imperial chrysobulls forbidding women and female livestock, Athos maintained strict ascetic self-governance, emphasizing mystical union with divine energies over Latin dialectic theology."
+      "Content": "An Athonite monk values the monastery's rule, property grants and freedom to maintain its religious life. Such privileges must be read in their particular charters rather than inferred from a general description of the Holy Mountain. Prayer and ascetic discipline belong to the period; the precise controversies and formulations of later hesychast debates do not yet govern every conversation."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Hermits clad in coarse black wool subsist on dry bread and wild olives. Tying knotted wool prayer ropes, they spend lifetimes in candlelit caves interceding for mankind's sins."
+      "Content": "Hermits clad in coarse black wool subsist on dry bread and wild olives, and their cells cling to the cliffs above the sea. Tying knotted wool prayer ropes, they spend lifetimes in candlelit caves interceding for mankind's sins. Villagers on the mainland trust these hermits to pray for their sick and their dead."
     }
   ],
   "TextMappings": []

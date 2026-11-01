@@ -7,7 +7,8 @@
     "Medieval Sumptuary Law Restrictions"
   ],
   "RagShortTexts": [
-    "Lucca and Palermo produced gold-woven silks and damasks that draped European kings and."
+    "Luccan silk was famous across Tuscany for good reason.",
+    "Merchants arrange supplies while different hands prepare, weave and finish the cloth."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Inside Luccan guild compounds, secret draft-loom patterns are closely guarded under pain of exile. Unwinding cocoons in copper cauldrons requires delicate touch to spin unbroken filament."
+      "Content": "A Luccan silk worker values a sound thread, an even weave and a buyer willing to pay for costly material. Merchants arrange supplies while different hands prepare, weave and finish the cloth. Imported raw silk is not necessarily a cocoon to be unwound at that same workshop, and later machinery or guild penalties should not be invented to explain a thirteenth-century loom."
     }
   ],
   "TextMappings": []

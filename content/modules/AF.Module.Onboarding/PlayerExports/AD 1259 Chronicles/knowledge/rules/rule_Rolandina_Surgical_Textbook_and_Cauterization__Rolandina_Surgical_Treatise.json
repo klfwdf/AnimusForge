@@ -7,7 +7,8 @@
     "Humoral Battlefield Dressing"
   ],
   "RagShortTexts": [
-    "Roland of Parma's Rolandina formalized wound debridement, hot iron cautery, and cranial surgery."
+    "Medieval surgery transmits practical methods alongside period theories of the body.",
+    "Missile removal and cautery carry risks; a historical description is not proof of safety."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,12 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Operating under humoral doctrines, surgeons regarded 'laudable pus' as natural bodily purgation. A master chirurgeon must know vascular pathways intimately, lest unskillful extraction of barbed bolts sever arterial junctions."
+      "Content": "A surgical text transmits practical experience together with theories about the body that a modern reader should not treat as established medicine. Removing an embedded missile risks bleeding and further injury. A learned character may discuss wound cleaning, instruments and cautery as period practices, without promising that any one procedure is safe or reliably saves a life."
     },
     {
       "Priority": 0,

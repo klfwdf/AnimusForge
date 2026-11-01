@@ -7,7 +7,8 @@
     "Atlantic Fishery Salt Trade"
   ],
   "RagShortTexts": [
-    "Lisbon guarded the deep Tagus estuary, becoming Portugal's definitive capital for."
+    "Lisbon's Tagus harbour links royal government with merchants and coastal shipping.",
+    "Mariners in 1259 rely on period navigation, not the institutions of later oceanic expansion."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,12 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "sailor",
-          "merchant"
+          "commoner",
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "Jewish cartographers, Flemish mariners, and seasoned Portuguese sailors converged along the docks, exchanging maps and navigational lore."
+      "Content": "A Lisbon shipmaster gathers knowledge from pilots, soundings, landmarks and experience of winds on particular coasts. Merchants arriving at the Tagus exchange news as well as goods. The city is a royal centre by 1259, but this does not place the developed institutions and oceanic cartography of later Portuguese expansion on its medieval quays."
     }
   ],
   "TextMappings": []

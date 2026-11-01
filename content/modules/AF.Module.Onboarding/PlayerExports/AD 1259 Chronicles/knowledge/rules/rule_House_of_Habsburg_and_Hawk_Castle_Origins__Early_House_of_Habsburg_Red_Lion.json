@@ -7,14 +7,15 @@
     "Alpine Foreland Domain Accumulation"
   ],
   "RagShortTexts": [
-    "From Habichtsburg Castle in Swiss Aargau, the House of Habsburg steadily accumulated Alpine."
+    "In 1259 Rudolf of Habsburg is a count, not yet king of the Romans.",
+    "Upper Rhine land, rights and alliances shape the family's contemporary position."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Habichtsburg ('Hawk's Castle') in Swiss Aargau gave the Habsburgs their name, and they bore a crowned red lion rampant on gold. Count Rudolf I expanded patrimonial estates across Swabia and the Aargau through marriage contracts, clientage to bishops, and the suppression of robber knights. Rudolf kept his lands together while the Empire had no emperor, using the Great Interregnum to build alliances with towns and bishops. Those ties let his family outmatch the older princes on the Upper Rhine. His steady accumulation of land made the Habsburg name a power to reckon with long before he took the crown."
+      "Content": "The Habsburg name derives from a castle in the Aargau, while the family's influence rests on a changing network of lands, rights and relationships in the Upper Rhine region. In 1259 Rudolf is a count, not yet king of the Romans. Marriage connections, dealings with churches and towns, and disputes with neighbouring lords can enlarge or constrain his position. The lack of an uncontested imperial ruler creates opportunities but does not guarantee any family's eventual victory. A contemporary account should explain the particular rights at issue and the people supporting a claim, without treating Rudolf's later election as an outcome already known."
     },
     {
       "Priority": 0,
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Habsburg bailiffs enforce predictable manorial tithes without extortion. Count Rudolf personally leads cavalry to hang highwaymen preying on rustic trade routes."
+      "Content": "A household on Habsburg lands judges a count through the men collecting rents, the safety of a market journey and the hearing it gets in court. A patrol may restrain robbery while still demanding supplies from nearby farms. Local custom and written grants matter more than a story that one ruler personally makes every road safe and every payment predictable."
     }
   ],
   "TextMappings": []

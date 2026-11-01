@@ -7,7 +7,8 @@
     "Nile Granary and Royal Barracks"
   ],
   "RagShortTexts": [
-    "Saladin's Cairo Citadel atop the Muqattam hills anchored Mamluk military and administrative."
+    "Cairo sits at the apex of the Nile Delta and was the metropolis of the Mamluk sultanate.",
+    "The citadel was the place where sultans were enthroned and deposed."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "When the annual Nile inundation enriches the silt, barley grows taller than a man. We row heavy barges downriver to unload royal granaries beneath the fortress towers."
+      "Content": "When the annual Nile inundation enriches the silt, barley grows taller than a man. We row heavy barges downriver to unload royal granaries beneath the fortress towers. Boatmen wait at the quays from dawn, and each sack is weighed by a scribe before it enters the state storehouse. Villagers who cannot pay the land tax see their share of the harvest taken before the grain is threshed."
     }
   ],
   "TextMappings": []

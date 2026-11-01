@@ -7,7 +7,8 @@
     "Batu Khan 1240 Desolation"
   ],
   "RagShortTexts": [
-    "Once the proud 'Mother of Rus Cities', Kyiv languished in ruins post-1240, sustained by."
+    "Their monastery became the spiritual centre of the surviving Rus lands.",
+    "Yet in deep caverns, monks pray in continuous liturgies, copying Old Church Slavonic psalters."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,12 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Papal envoy Plano Carpini noted unburied skulls littering fields around Kyiv, with barely two hundred houses standing. Yet in deep caverns, monks pray in continuous liturgies, copying Old Church Slavonic psalters."
+      "Content": "Papal envoy Plano Carpini noted unburied skulls littering fields around Kyiv, with barely two hundred houses standing. Yet in deep caverns, monks pray in continuous liturgies, copying Old Church Slavonic psalters. Carpini travelled through the region on his mission to the Mongol court from 1245 to 1247. The Mongols wrecked Kyiv in 1240, yet the cave monastery kept its copyists at work."
     },
     {
       "Priority": 0,

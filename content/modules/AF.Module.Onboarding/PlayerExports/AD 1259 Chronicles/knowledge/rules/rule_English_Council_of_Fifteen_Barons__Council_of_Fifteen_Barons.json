@@ -7,7 +7,8 @@
     "Royal Treasury Co-Rule"
   ],
   "RagShortTexts": [
-    "The Council of Fifteen established by the Provisions of Oxford stripped Henry III of unchecked rule."
+    "The Provisions of Oxford in 1258 placed government under a council of fifteen.",
+    "Baronial reform did not automatically remove a village's rents, labour or local burdens."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "The lords in London argue whether the King is tyrant or the barons rebels. But whoever serves as sheriff, their tax measures never get any lighter for our village."
+      "Content": "In 1258 the barons forced King Henry III to accept the Provisions of Oxford, which placed royal government under a council of fifteen. The lords in London still argue whether the King is a tyrant or the barons are rebels. The Provisions promised sheriffs serving one-year terms, but the tax assessors still come to our village each autumn, and their demands never grow lighter for the hamlet."
     }
   ],
   "TextMappings": []

@@ -7,7 +7,8 @@
     "Andalusian Survival Strategy"
   ],
   "RagShortTexts": [
-    "Under the 1246 Treaty of Jaén, Muhammad I paid massive gold parias to Castile to ensure."
+    "In return the Nasrid emir kept his throne and his lands beneath the Sierra Nevada.",
+    "The arrangement traded territory and cash for time."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Silk spinners and olive tenders in the Vega surrender coin to tax collectors so the King can fill the Castilian gold carts. Heavy tributes drain our purses, but our homes remain unburnt and our children sleep in peace."
+      "Content": "Silk spinners and olive tenders in the Vega surrender coin to tax collectors so the King can fill the Castilian gold carts. Under the 1246 Treaty of Jaen, our Nasrid lord accepted Ferdinand III's overlordship for a twenty-year truce, and the tribute that followed drains our purses. Still, our homes remain unburnt and our children sleep in peace."
     }
   ],
   "TextMappings": []

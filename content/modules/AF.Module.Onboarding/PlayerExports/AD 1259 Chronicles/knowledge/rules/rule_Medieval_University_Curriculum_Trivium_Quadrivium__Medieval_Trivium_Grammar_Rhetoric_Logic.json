@@ -7,7 +7,8 @@
     "Thomas Aquinas Summa Antecedents"
   ],
   "RagShortTexts": [
-    "Universities climbed the seven liberal arts, applying scholastic disputatio to harmonize."
+    "The arts curriculum joins language and reasoning with mathematical disciplines.",
+    "Disputation and university privileges do not abolish legal jurisdiction or study costs."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,21 +21,20 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "Autonomous guilds of masters and students held papal charters exempting them from municipal bailiffs. Disputes between Dominican Thomists and Averroist philosophers sparked fiery campus controversies."
+      "Content": "A scholar studies grammar, rhetoric and logic before pursuing more advanced learning; arithmetic, geometry, music and astronomy also frame the arts curriculum. University privileges concern particular courts and jurisdictions, not freedom from all law. In 1259 disputes over Aristotle and mendicant teaching are real, while later condemnations cannot be cited as judgments already delivered."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
+          "villager",
           "wanderer"
         ]
       },
-      "Content": "Pauper clerks sit on straw-strewn floors copying glosses onto costly vellum folios. Earning a master's hood transforms even a yeoman's son into a royal chancellor or ecclesiastical advocate."
+      "Content": "A poor clerk must find food, lodging and access to books before arguing over a master's lecture. Copying texts may bring income, but parchment and study time remain expensive. Learning can open service in a church or chancery; it does not guarantee that a peasant's son becomes a chancellor. Many students leave before taking a degree."
     }
   ],
   "TextMappings": []

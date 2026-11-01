@@ -7,14 +7,15 @@
     "Salt Smuggling and Bailiff Enforcement"
   ],
   "RagShortTexts": [
-    "Salt was essential for winter meat preservation, exploited by royal gabelle tax monopolies."
+    "Salt revenues arise from particular production, market and transport rights.",
+    "A mature uniform later French gabelle administration is not assumed to exist in 1259."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Salt was essential for curing meat and salting herring through the winter, which made it the most sought-after commodity in Europe. Monarchs turned it into a source of revenue by creating state monopolies. The French gabelle required each household to buy a fixed quota of salt from royal storehouses, the greniers a sel, at prices set well above the cost of production. The money filled the standing treasuries that paid for armies and officials. Because every family needed salt, the tax reached the poorest households in the land."
+      "Content": "Salt is essential to cooking and preserving food, making its production, carriage and sale valuable sources of revenue. Rights over a saltworks, market or route may belong to different rulers, towns or other holders, and obligations vary widely. In 1259 there is no single mature French gabelle administration governing every household's purchase. A useful account identifies the particular toll, privilege or monopoly instead of importing later offices and penalties wholesale. Costs can fall differently on producers, carriers and buyers; a levy that enriches one treasury may encourage a competing route or make preserved food harder for poor families to afford."
     },
     {
       "Priority": 0,
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Official salt is gray, gritty, and exorbitant. Despite brutal gallows penalties for smuggling (faux-saunage), highland runners risk everything to pack untaxed sea salt through nocturnal mountain trails."
+      "Content": "Every household needs salt for cooking and preserving food, so control of its sale can sharpen a local dispute over tolls or monopoly. Charges and privileges differ between regions in 1259. The later French gabelle administration, with its familiar offices and penalties, must not be treated as a uniform institution already searching every peasant's house."
     }
   ],
   "TextMappings": []

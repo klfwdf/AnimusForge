@@ -7,7 +7,8 @@
     "Feudal Oath of Fealty Dissolution"
   ],
   "RagShortTexts": [
-    "Papal interdicts silenced church bells and suspended sacraments, releasing vassals from."
+    "Excommunication and interdict apply religious pressure with different targets and terms.",
+    "Ritual restrictions and exceptions matter to households facing sickness and burial."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "A shuttered church without ringing bells chills every hearth. Watching loved ones buried in unconsecrated ditches without Christian prayers incites terror that breaks peasant forbearance."
+      "Content": "When an interdict restricts public worship, villagers ask which rites remain available and how to care for the dying. Its terms and exceptions matter: baptism and urgent ministrations are not simply suspended everywhere without distinction. Anxiety about burial can turn a political struggle into a household crisis, even when people do not understand the dispute between rulers and clergy."
     }
   ],
   "TextMappings": []

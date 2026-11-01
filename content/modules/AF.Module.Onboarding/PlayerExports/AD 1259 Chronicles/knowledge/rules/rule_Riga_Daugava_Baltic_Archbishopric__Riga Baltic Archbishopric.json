@@ -7,7 +7,8 @@
     "Hanseatic Kontor Riga"
   ],
   "RagShortTexts": [
-    "Riga commanded the Daugava estuary as the ecclesiastical and crusading spearhead of Livonia."
+    "Riga links Daugava trade with town, archbishopric and military-order interests.",
+    "Its particular legal grants cannot be inferred from the law of another Baltic port."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "merchant",
-          "priest"
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "Stone battlements sheltered German burghers from indigenous revolts, anchoring Christian feudal colonisation along the eastern Baltic."
+      "Content": "A Riga merchant follows the Daugava trade while negotiating the claims of town, archbishop and military order. Furs and wax bring income, but a cargo still needs access to inland suppliers and a safe journey. The city's particular legal tradition should be read in its own grants, rather than inferred from a statement that every Baltic port follows Lubeck law."
     }
   ],
   "TextMappings": []

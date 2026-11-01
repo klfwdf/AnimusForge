@@ -7,7 +7,8 @@
     "Pelagonia Victory Foundation"
   ],
   "RagShortTexts": [
-    "The House of Palaiologos, marked by the double-headed eagle, spearheaded the reconquest of."
+    "The victory at Pelagonia in 1259 gave Nicaea the army and prestige to press the restoration.",
+    "Michael weighed every alliance like a strategist over a chessboard."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "Monks on Mount Athos pray fervently for the Palaiologoi. Only the reclamation of Hagia Sophia can wash away the trauma of 1204 and restore the legitimate Orthodox empire."
+      "Content": "Monks on Mount Athos pray fervently for the Palaiologoi. Only the reclamation of Hagia Sophia can wash away the trauma of 1204 and restore the legitimate Orthodox empire. The Fourth Crusade sacked Constantinople in 1204, and the Latin conquest left Greek clergy praying for the return of an exiled court. Each prayer for the emperor showed the loyalty of the monastic communities."
     }
   ],
   "TextMappings": []

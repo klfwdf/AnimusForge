@@ -7,7 +7,8 @@
     "Water Powered Fulling Mill Technology"
   ],
   "RagShortTexts": [
-    "English raw fleeces woven in Flanders and finished in Florence formed Europe's textile."
+    "Wool manufacture was the economic base of Western Europe's towns and trade.",
+    "The whole chain, from sheep to market, depended on credit and on the trust of distant partners."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Waterwheels drive rhythmic timber trip-hammers inside riverside fulling mills, beating soaked cloth in fermented vats. Combers and weavers endure greasy wool dust to earn honest groats."
+      "Content": "A textile household divides work among spinning, carrying yarn, weaving and finishing according to local practice and available equipment. Payment for one task may be all that stands between the family and debt. Mills assist some processes, but not every town or workshop uses the same machinery. Dust, water, fatigue and rejected cloth shape earnings more directly than a guild's proud name."
     }
   ],
   "TextMappings": []

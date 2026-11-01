@@ -7,7 +7,8 @@
     "Guelf and Ghibelline Civil War"
   ],
   "RagShortTexts": [
-    "Pope Alexander IV sought the eradication of Manfred of Sicily, fueling bloody Guelf-Ghibelline."
+    "Manfred's Saracen horse archers from Lucera do not fear excommunication bulls.",
+    "God reigns in heaven, but misery walks the soil of Italy."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Monks demand tithes to finance holy war against fellow Christians, while soldiers raid olive groves regardless of which cross or eagle their captain wears. God reigns in heaven, but misery walks the soil of Italy."
+      "Content": "Monks demand tithes to finance holy war against fellow Christians, while soldiers raid olive groves regardless of which cross or eagle their captain wears. Pope Alexander IV excommunicated Manfred on 25 March 1255 and invested Edmund, son of Henry III of England, with the Sicilian crown, so papal levies grew heavier. God reigns in heaven, but misery walks the soil of Italy."
     }
   ],
   "TextMappings": []

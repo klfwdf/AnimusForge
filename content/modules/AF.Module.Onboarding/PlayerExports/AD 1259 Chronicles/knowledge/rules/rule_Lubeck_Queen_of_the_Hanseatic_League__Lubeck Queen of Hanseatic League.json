@@ -7,7 +7,8 @@
     "Baltic Salt Herring Guilds"
   ],
   "RagShortTexts": [
-    "Lübeck presided as Queen of the Hanseatic League, dictating Baltic maritime trade through."
+    "Lubeck merchants pursue trade privileges and cooperation among northern towns.",
+    "Town law does not imply one permanent fleet commanding every Baltic port in 1259."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,12 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "merchant",
-          "sailor"
+          "commoner",
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "The city's armed cog fleets enforced mercantile blockades against predatory princes, safeguarding autonomous burgher liberties."
+      "Content": "A Lubeck sailor thinks of freight, wages, weather and the terms offered in the next harbour. The town's merchants seek shared privileges and protection, yet each dispute still needs allies, money and negotiation. A distant town's adoption of Lubeck law does not put its ships under one permanent league fleet or remove the risks of blockade and piracy."
     }
   ],
   "TextMappings": []

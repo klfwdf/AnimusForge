@@ -7,35 +7,33 @@
     "Spiritual Franciscan Portents"
   ],
   "RagShortTexts": [
-    "Joachim of Fiore's prophecy that the Age of the Spirit would commence in 1260 ignited."
+    "Joachim of Fiore died in 1202, but his writings continue to circulate in 1259.",
+    "The year ahead is a focus of speculation, not a known turning point."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Abbot Joachim of Fiore, who died in 1202, divided world history into three ages: the Age of the Father under Law, the Age of the Son under Grace, and a final Age of the Holy Spirit that his followers expected around 1260. His writings were copied widely, and their numerological schemes gave believers a calendar of the end. In late 1259, news of Mongol devastation in the east and strange portents at home stirred apocalyptic fear across Christendom. The coming age promised a church without the old sacramental hierarchy, and that promise was sharpened by the corruption of many clergy. The papal curia watched the prophecy closely, since its supporters challenged the order of bishops and monasteries, and extreme preachers were silenced when they predicted the end of the sacraments."
+      "Content": "Joachim of Fiore died in 1202, but his writings continue to circulate in 1259. Readers interpret his division of history into ages in different ways, and some followers associate the coming year 1260 with an approaching spiritual transformation. Reports of Mongol campaigns in the east and local illness or unusual weather can intensify such fears, but they do not prove that the end is near. Preachers may criticise clerical wealth or call for apostolic poverty; bishops and abbots respond according to local circumstances. A courtier can worry that radical interpretations challenge church authority, yet should distinguish an expectation from a fulfilled prophecy. The year ahead is a focus of speculation, not a known turning point."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Radical Spiritual Franciscans embraced Joachimite prophecies, preaching that corrupt clerical hierarchies would wither before voluntary apostolic poverty in 1260. The Curia watches warily, censuring extremists who predict the obsolescence of church sacraments."
+      "Content": "A scholar or friar in 1259 encounters Joachimite readings and debates whether 1260 marks a new age. Some Franciscans stress poverty; others reject attempts to calculate divine history. Bishops monitor arguments that may challenge authority, but Flagellant processions have not begun. Teachers attribute predictions to their proponents and note disagreement."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Barefoot flagellants march through marketplace mud whipping their shoulders bloody, crying that judgment comes in 1260. Common folk crowd into parish chapels, weeping for mercy before the sky turns red."
+      "Content": "A preacher's expectation of a turning point around 1260 can unsettle a household already living with war and scarcity. Some listeners seek confession or give alms; others doubt the prediction. In 1259 no one can speak as a witness to next year's flagellant processions. Prophecy belongs to the speaker's belief and must remain distinct from a certain future event."
     }
   ],
   "TextMappings": []

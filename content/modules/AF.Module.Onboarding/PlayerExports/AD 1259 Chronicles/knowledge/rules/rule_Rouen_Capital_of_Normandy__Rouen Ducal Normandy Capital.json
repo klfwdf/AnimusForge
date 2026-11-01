@@ -7,7 +7,8 @@
     "Plantagenet Norman Seat"
   ],
   "RagShortTexts": [
-    "Rouen dominated lower Seine river trade, anchoring rich Norman agriculture and maritime."
+    "Rouen served as the historic capital of ducal Normandy, perched on the lower Seine.",
+    "Ships that reached Rouen unloaded there, and the merchants who handled their cargoes grew rich."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "merchant",
-          "artisan"
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "The Seine water merchants' guild dictated river shipping tariffs, enriching town burghers through massive wool and wine transit."
+      "Content": "The Seine water merchants' guild dictated river shipping tariffs, enriching town burghers through massive wool and wine transit. Boatmen unload wine casks and bales of wool at the quays, paying the guild's dues on each barrel. Dyers and drapers depend on the river for water and carriage."
     }
   ],
   "TextMappings": []

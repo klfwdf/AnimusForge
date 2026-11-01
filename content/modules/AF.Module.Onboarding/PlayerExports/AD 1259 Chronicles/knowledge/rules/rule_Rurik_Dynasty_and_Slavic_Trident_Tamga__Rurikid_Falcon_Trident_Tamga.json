@@ -7,14 +7,15 @@
     "Daniel of Galicia Western Crown"
   ],
   "RagShortTexts": [
-    "The Rurikid dynasty preserved Rus princely bloodlines across fragmented principalities."
+    "Rurikid branches competed across Rus before the Mongol conquest.",
+    "Mongol power adds tribute and political pressures to older regional and dynastic divisions."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Rurikid dynasty traced its descent to Rurik the Varangian, and it held every Rus land under the falcon-trident tamga. The Mongol conquest of 1240 broke that unity into rival branches. Alexander Nevsky, ruling from Vladimir, chose stoic submission to the Golden Horde, which he judged the only way to protect Orthodox churches from destruction. Daniel of Galicia took a different path and accepted a papal crown, hoping for Western help in a war against the Tatars. Their choices split the dynasty along the line between Christian Europe and the Mongol khanate."
+      "Content": "The Rurikid princes ruled a network of Rus' lands through related but often competing branches. Political fragmentation had advanced well before the Mongol invasion: by the twelfth century, regional principalities and rival dynastic claims had weakened any single center, even while Kyiv retained symbolic importance. The campaigns of 1237–1240 devastated many lands and the fall of Kyiv in 1240 further changed the balance; they did not split a previously unified state for the first time. Under Mongol rule, khans issued yarlyks confirming princely authority and demanded tribute, shaping rival rulers' choices."
     },
     {
       "Priority": 0,
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "The Orthodox Metropolitan of Kyiv, residing across northern towns, preserved ecclesiastical unity, counseling princes against fratricidal squabbling."
+      "Content": "The Orthodox Metropolitan of Kyiv, residing across northern towns, preserved ecclesiastical unity while the southern cities lay in ruin. Monks copied chronicles in their cells, and parish priests held the faithful together under Tatar overlordship. Counseling princes against fratricidal squabbling, the clergy warned that a divided Rus only eased tribute collection for the Horde's agents."
     }
   ],
   "TextMappings": []

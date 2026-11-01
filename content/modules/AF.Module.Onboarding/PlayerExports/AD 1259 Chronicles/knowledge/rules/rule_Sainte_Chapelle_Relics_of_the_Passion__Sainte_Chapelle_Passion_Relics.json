@@ -7,7 +7,8 @@
     "Saint Louis Holy Sovereignty"
   ],
   "RagShortTexts": [
-    "Louis IX redeemed Christ's Crown of Thorns from Baldwin II, enshrining it in Paris's."
+    "Louis IX's Sainte-Chapelle houses Passion relics in a royal religious setting.",
+    "Its consecration in 1248 links monumental craft with Capetian sacred kingship."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,12 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Towering stained-glass lancets depict over eleven hundred biblical scenes, casting jewel-like radiance across the gilded reliquary shrine, inspiring awe among pilgrims from across the Christian world."
+      "Content": "Towering stained-glass lancets depict over eleven hundred biblical scenes, casting jewel-like radiance across the gilded reliquary shrine. Louis IX bought the Crown of Thorns from the Latin emperor Baldwin II in 1239, and the chapel was consecrated in 1248 to house it. Scholars and priests read the windows as a biblical catechism, and pilgrims from across Christendom came to see the relics."
     },
     {
       "Priority": 0,

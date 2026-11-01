@@ -7,7 +7,8 @@
     "Andalusian Reconquest Settlement"
   ],
   "RagShortTexts": [
-    "Seville commands the Guadalquivir inland port, distinguished by the soaring Giralda tower."
+    "Castile recaptured Seville in 1248, and the city became the royal capital of Lower Andalusia.",
+    "The architecture records a city in which Muslim and Christian craft traditions sit side by side."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "The river bustles with lateen-rigged barges loading olive oil and sweet Andalusian wines. Even in uncertain times, working the wharves pays honest copper to keep bread on family tables."
+      "Content": "The river bustles with lateen-rigged barges loading olive oil and sweet Andalusian wines. The Almohad minaret of the Great Mosque, now the Giralda, rises above the rooftops. Even in uncertain times, working the wharves pays honest copper to keep bread on family tables, though the toll men take their share first."
     }
   ],
   "TextMappings": []

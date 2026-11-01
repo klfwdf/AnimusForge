@@ -7,15 +7,14 @@
     "Bosporan Kingdom Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Bosporan Kingdom comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Bosporan leaders bargain over harbours, supplies and armed protection.",
+    "Evidence for a uniform fourth-century Bosporan feudal court is lacking."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Bosporan Kingdom, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Bosporan power rests on the towns and routes around the strait joining the Black Sea to the Maeotis. Harbour access, grain, fish and dealings with neighbouring peoples give local leaders different interests. A ruler needs armed support without driving away the traders and cultivators who sustain that support. Fourth-century evidence is fragmentary, so the module's court should not be presented as a fully documented medieval feudal hierarchy. Its internal disputes can concern access to a landing place, the cost of a guard and which household bears a loss after a raid, rather than identical senatorial conspiracies borrowed from Rome."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Men of the royal guard keep watch outside the council chamber in Panticapaeum, listening for the signal that the session has ended. Rumors in the barracks say two families have begun to muster their clients for a dispute over the harbor tolls. Soldiers who wish to keep their posts learn to answer every question with a shrug."
+      "Content": "A guard at a Bosporan landing watches the water and the approaches from inland. Merchants want cargo moved before bad weather, while his party needs food and a clear promise of pay. An argument between patrons becomes dangerous when it leaves a gate undermanned or a boat waiting offshore with provisions aboard."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "The strategos who holds the eastern forts has sided with your rival, and the harbor merchants are already split between the two houses. Offer the port factors a lower levy on wine shipments for their support at the next council. Send the offer through a private steward, since council clerks review every sealed letter from the harbor district."
+      "Content": "A local notable wants the harbour open, but also wants a voice in who collects its dues and supplies its watch. A rival's agreement with an inland chief can change that balance. Prestige depends on sustaining useful connections, not on claiming that every disputed shore is a hereditary fief under one uniform law."
     }
   ],
   "SemanticPrototypes": [],

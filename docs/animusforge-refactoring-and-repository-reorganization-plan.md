@@ -1,3 +1,42 @@
+<a id="worldbook-pending-178-completion-20261102"></a>
+## 2026-11-02 原178个待提交世界书文件完善
+
+**LOCAL_CONTENT_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。本项范围来自用户“完善这178条然后提交”，并明确要求读取根目录《世界书指导.md》及派Luna协作；不等于重新制作三套整书或授权部署、打包、push。实际工作区 `F:/AnimusForge-main` / `main`。开始基线 `cc08798af1`，已先以检查点 `304b879fef` 保留原178文件。期间其他会话在main继续提交扎营工作，未重置历史、切换分支或收录其工作区差异。
+
+### 内容范围和责任
+
+原178文件为AD1259英文规则136、AD1259中文规则26、燃烬英文规则15、东欧中文阵营综述1。为了同任务完成双语，最终范围为304个JSON：AD1259中英各136条规则、燃烬中英各15条规则、东欧中英各1份综述。即151对知识规则、302条规则和2份10-key综述；没有增加/删除规则或改名。
+
+- 补齐原规则的欠缺视角，核对150项AD英文待补变体及其中文对应；保留原主题，改掉未来事件被视为1259已发生、后世制度倒用、无来源的绝对化叙述。另对8条明显问题规则作中英专项复核，包括库特纳霍拉、米兰装备、牛津条例、罗斯分裂、斯库奥达斯、上帝休战与巴格达。
+- 燃烬15对内政规则逐条改写，区分374年的罗马官职与军需、萨珊贵族关系、部族追随者、海峡贸易、草场和聚落责任；不再复用同一段“封建庄园/元老/密室毒杀”模板。史料稀薄的模组族群归组明确同已证实的历史国家制度区分。
+- 东欧保留原10个阵营key与六部分结构，中英同步局部修正8条综述，处理特拉凯岛堡、马林堡、普鲁士起义及后世事件前置等问题；没有借此补成20国，也不声称整本覆盖率完成。
+- 每条规则提供2条完整RAG短摘要，合计604条，最长100字符。不是截断长正文；短摘要按规则自身主题重选/重写。
+- 发现旧When含运行时不会产生的职业名，导致相应视角通常选不中。本次只修资源内Roles：`peasant→villager`；`artisan/priest/scholar→townsfolk`；`sailor→townsfolk/commoner`；`merchant→notable/townsfolk`；`doctor→wanderer/townsfolk`。列表保持OR并去重，共310个变体角色列表有调整。该投影是现有粗粒度Occupation桶，不是新增“学者/医者”等精确职业识别；不承诺职业专属命中。除此之外，Id、Keywords、文件名、Priority、其他When字段、TextMappings及变体数量保持。
+
+### 消费者与运行边界
+
+原路径仍为 `content/modules/AF.Module.Onboarding/PlayerExports/<book>/knowledge/rules/` 和 `event_data/KingdomOpeningSummaries.json`。`src/AF.GameAdapter.Bannerlord/ImportExport/KnowledgeImportExportAdapter.cs:430-432,575-593` 仍走原目录导入和 `ImportDatabaseRulesTolerant`；`WeeklyEventImportExportAdapter.cs:26-32` 仍读取原KV综述。未改变content-map、打包脚本、运行入口或用户已安装数据。
+
+角色核对依据为 `src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs:4015-4078` 的 `RoleFromOccupation/GetRoleKeyForHero/GetRoleKeyForCharacter`，以及 `:5207-5224,5426-5455` 的变体选择/匹配。条件签名依据 `src/modules/AF.Module.Knowledge/Import/KnowledgeImportSupport.cs:279-309` 的 `BuildKnowledgeWhenSignatureForImport`。这些源码本项未改。只改随原loader加载的数据，不引入Tick扫描、IO、反射、序列化或新的后台任务。
+
+### 验证证据与明确限制
+
+本地证据根 `.tmp/worldbook-complete-20261102/`：`before/`保留修改前文件，`candidate/`为逐文件候选，`candidate-manifest.json`、`verified-files.json`绑定范围与SHA256；`luna-validation.json`、`bilingual-and-role-replay.json`记录结果，`role-projection-report.json`列明每项条件调整。Luna草稿由主agent合并、修正并统一验收，未直接覆盖产品。
+
+- `python .tmp/worldbook-complete-20261102/luna-validate.py`：304个JSON，**0错误**。正文、RAG、空SemanticPrototypes、文件名/首关键词、条件唯一、稳定元数据及整目录关键词交叉检查通过。中英通用各151段，EN502–800字符、CN250–448字符；中英条件各311段，EN251–400、CN150–249；中文每条规则总正文>=600字符。这里“字符”按指导3.5计算，不误把所有标点与数字排除成纯汉字计数。
+- 151对知识规则的ID映射、条件集合与Priority一致；302条规则在7种真实角色桶上作2114次离线选择检查，无缺省缺失、无投影后不可达变体、无重复When。这是资源/选择契约检查，不是游戏内执行或C#集成实测。
+- 东欧中英综述保留同一组10keys，CN1300–1800字符、EN700–900词；JSON与语言成对。原178全部包含在最终304范围，落盘后逐个SHA256同候选一致。
+- `check_bilingual_tables.py`：26表、missing_english=0、failures=0。全仓 `l10n_gate.py` 仍失败4项，均在本项未修改的 `src/modules/AF.Module.Diplomacy/Domain/DiplomacySponsorReceiptRules.cs:17-19`；日志分别存于证据根。
+- 全书交叉检查另记录12组checkpoint已有重复Id：东欧英文10组、卡拉迪亚中文2组；本批规则无新增重复Id/关键词冲突。这些整书旧问题未借本次改写身份修掉，不能把局部通过说成所有世界书完整可发布。
+
+阅读与事实核对参考包括[阿米阿努斯第28卷](https://www.tertullian.org/fathers/ammianus_28_book28.htm)、[第31卷](https://www.tertullian.org/fathers/ammianus_31_book31.htm)、[夏里鲁和平原典](https://sourcebooks.web.fordham.edu/source/pc-of-god.asp)、[苏格兰国家博物馆](https://www.nms.ac.uk/discover-catalogue/the-romans-in-scotland-in-five-objects)、[特拉凯历史博物馆](https://trakaimuziejus.lt/en/apie-mus/salos_pilis/)、[马尔堡城堡博物馆](https://zamek.malbork.pl/en/home/visit/history-of-the-castle/years-1280-1457/)。具体草稿中的来源与理由留在本地审阅文件。**没有完成所有保留史实的逐条原典核验**；数值/生平和其他整书内容仍可进一步考据。
+
+未运行生产构建（未改C#/项目/嵌入闭包）、正式Stage、CN/EN ZIP、游戏部署、实机导入/对话或旧档验收。英文AD阵营综述等不在原178范围的整书缺口，以及既有EN整包映射/重复Id问题，不因本项而视为解决。只提交本项304资源和本节/HANDOFF的新增记录，保留其他作者dirty。
+
+回滚：对包含本节的收尾提交执行聚焦 `git revert <commit>`；它将本批恢复到检查点已保留的状态。更早原178内容仍在 `304b879fef` 和本地 `before/`，不使用hard reset或改写其他会话历史。
+
+---
+
 <a id="field-camp-continuation-review-fix-20261102"></a>
 
 ## 2026-11-02 营地连续处决审查修复：活动互斥与 Begin 失败重试

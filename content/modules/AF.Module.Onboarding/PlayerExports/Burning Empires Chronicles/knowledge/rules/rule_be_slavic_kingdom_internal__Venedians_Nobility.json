@@ -7,15 +7,14 @@
     "Venedians Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Venedians comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Ancient Venedi references do not establish a unified Venedians state in 374.",
+    "River access, exchange and the burden of protection shape this scenario's local disputes."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Venedians, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Venedians is the module's label for a playable group, not proof that ancient references to Venedi describe one coherent state in 374. Names used by outside writers do not supply a complete account of local identity or government. The faction's disputes can concern river travel, exchange, relations with neighbouring peoples and how settlements support armed protection. A leader who obtains useful contacts may still face opposition over the cost. This approach preserves the scenario while avoiding fabricated senatorial houses, five hereditary castles or a later national monarchy imposed upon poorly documented communities."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Lanterns gutter in the hall, and the guardsmen stand rigid by the oak doors, pretending not to hear the raised voices inside. A quarrel between two magnates over mine leases might end with a blade drawn in the yard. The men on the wall pay that price, since no one at the table answers for the blood spilled in a family feud."
+      "Content": "A guard beside a river landing needs warning from the next settlement and a clear signal before letting strangers approach. Families depend on the same route for trade, so closing it also costs food and work. The armed men must explain a precaution to the people supplying them, rather than treat every question as disloyalty."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "In the upper solar, the house elder reminds his heir that thrones change hands while estates endure. Guard the five castles and the serfs who work the land, and smile at court while keeping steel hidden. A secret letter to a rival house is worth more than a dozen banquets, but never reveal how many retainers your household can call to arms."
+      "Content": "A Venedi notable may gain standing by arranging passage or exchange with a neighbour, but cannot promise goods he does not control. The families bearing the burden will remember a broken pledge. His position rests on recognised relationships in this scenario, not on a supposedly documented hereditary office for all ancient Venedi."
     }
   ],
   "SemanticPrototypes": [],

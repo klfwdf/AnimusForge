@@ -7,7 +7,8 @@
     "Byzantine Restoration Turning Point"
   ],
   "RagShortTexts": [
-    "The 1259 Battle of Pelagonia crushed Latin Frankish power, clearing Michael VIII's path to."
+    "The victory dealt a fatal blow to Western Latin power in Greece.",
+    "William's capture ended any real coordination among the Frankish lords."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Greek villagers blessed icons of the Theotokos in the olive groves. For half a century Latin crusaders seized our tithes, but the True Roman Emperor has broken their iron grip on the mountains."
+      "Content": "Greek villagers blessed icons of the Theotokos in the olive groves. For half a century Latin crusaders seized our tithes and ruled our districts. At Pelagonia in 1259 the Nicaean army broke the Frankish lines, and the True Roman Emperor has now loosened their iron grip on the mountains."
     }
   ],
   "TextMappings": []

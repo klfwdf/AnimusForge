@@ -7,7 +7,8 @@
     "Bohemian Austrian Central European Empire"
   ],
   "RagShortTexts": [
-    "The Přemyslid dynasty forged a Central European empire funded by Kutná Hora silver mines."
+    "The Premyslid dynasty of Bohemia bore a crowned silver double-tailed lion on a red field.",
+    "Under Ottokar II, the Iron and Golden King, it reached its greatest height."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Mining engineers and masonry guilds flooded into Bohemia. Royal towns founded under Přemyslid charters sparked explosive urbanization across Central Europe."
+      "Content": "Bohemian patrons draw miners, merchants and builders into projects that need capital as well as skill. Town charters specify rights and obligations, while ore must be dug, drained, carried and smelted before it becomes coin. German-speaking newcomers are part of that exchange, but it is false to assume local workers possessed no relevant knowledge before they arrived."
     }
   ],
   "TextMappings": []

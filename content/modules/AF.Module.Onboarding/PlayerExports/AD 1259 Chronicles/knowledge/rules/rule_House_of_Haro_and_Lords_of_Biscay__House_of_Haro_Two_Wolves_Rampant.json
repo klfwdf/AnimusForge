@@ -7,7 +7,8 @@
     "Cantabrian Iron and Basque Navies"
   ],
   "RagShortTexts": [
-    "The House of Haro ruled Biscay under the two-wolves crest, wielding Basque iron and sea power."
+    "They controlled the Cantabrian iron mines and a fleet of Basque ships that sailed the Bay of Biscay.",
+    "Diego López de Haro exercised supreme influence at court."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
+          "villager",
           "wanderer"
         ]
       },
-      "Content": "Basque seamen brave treacherous Bay of Biscay storms with tough iron-fastened keels. Whalers and harpooners on Haro cogs repel corsairs with savage proficiency."
+      "Content": "Basque seamen brave treacherous Bay of Biscay storms with tough iron-fastened keels. Whalers and harpooners on Haro cogs repel corsairs with savage proficiency. Crews rowed and sailed in shifts, pumping bilges and reefing sails when squalls struck. Their pay came as a share of the catch or cargo, so a poor voyage could leave a family in debt."
     }
   ],
   "TextMappings": []

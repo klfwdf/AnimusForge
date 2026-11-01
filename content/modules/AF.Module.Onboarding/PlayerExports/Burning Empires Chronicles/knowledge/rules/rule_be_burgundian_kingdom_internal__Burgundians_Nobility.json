@@ -7,15 +7,14 @@
     "Burgundians Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Burgundians comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Ammianus distinguishes Burgundian royal and chief-priestly offices.",
+    "Military and harvest failure could endanger a Burgundian ruler's standing."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Burgundians, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Among the Burgundians, authority cannot be reduced to a Roman palace full of senators. Ammianus distinguishes the royal office called hendinos from the chief priest called sinistus: failure in war or harvest could threaten the former, while the latter held a more enduring position. His Roman account is an outside description, not a complete constitution. It nevertheless offers a particular source of internal tension: leaders need support from armed followers and communities whose food supply makes campaigning possible. Religious standing, success and relations with neighbouring powers all matter, rather than possession of imaginary hereditary castles."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Household knights sit around the great hearth, speaking low about the quarrel between the count and his uncle. A serving boy slips out to the stables with a folded message, and the men who saw it pass look away before anyone asks. They know that taking a side too early can cost them their lands when the next assembly convenes."
+      "Content": "A follower wants to know who is leading the expedition and who will bring grain after the first day's march. Praise for a chief rings hollow when horses lack forage or a raid brings no return. The men left behind must still tend households, so a failed campaign becomes a dispute over losses as well as courage."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "The count's river barons now back him, and the duke's steward has begun questioning your rent payments. Offer those barons a share of the bridge tolls for a pledge of loyalty before the assembly. Send only a trusted kinsman, and keep the offer verbal, since any letter naming the count may be opened before it reaches the duke."
+      "Content": "A Burgundian leader cannot assume that command survives every defeat. He must hear the people who supply fighters and those whose religious standing helps make authority credible. Bargaining with Rome or a neighbouring group may strengthen him, yet an agreement that benefits only his companions can cost wider support."
     }
   ],
   "SemanticPrototypes": [],

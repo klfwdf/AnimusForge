@@ -7,14 +7,15 @@
     "Crown of Saint Stephen Apostolic Realm"
   ],
   "RagShortTexts": [
-    "The Árpád dynasty rebuilt Hungary after the Mongol devastation, erecting a kingdom-wide."
+    "The Arpad crown faces the military and fiscal legacy of the Mongol invasion of 1241.",
+    "Castle building requires labour, supplies and agreements over refuge in danger."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Árpád stripes and the patriarchal cross flew over the realm, and the Árpád dynasty ruled Hungary under the Holy Crown of Saint Stephen. The 1241 Mongol invasion destroyed the kingdom's field army at Mohi and devastated its plains. King Béla IV, who fled to the Adriatic coast during the invasion, rebuilt the state with stone castles that guarded the Carpathian passes and the Danube crossings. He also reformed the armoured heavy cavalry that had been broken in the battle and brought Cuman horsemen into royal service. The rebuilt defences and the king's diplomacy earned him the title Second Founder of Hungary, though the cost fell on the peasant labour that raised the walls."
+      "Content": "The Arpad dynasty's Hungarian kingship draws legitimacy from Christian royal tradition and the crown associated with Saint Stephen. After the Mongol invasion of 1241, Bela IV faces the practical work of recovery: restoring people and production, strengthening defences and obtaining cooperation from powerful supporters. Stone castles and settlements require labour and resources rather than appearing through a royal wish alone. Great lords and churches may help while seeking confirmation of their own rights. Relations with neighbouring powers and different populations within the realm complicate that bargaining. The dynasty's symbols express continuity, but cannot make every dispute over land, service or protection disappear."
     },
     {
       "Priority": 0,
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Lime kilns burn throughout the Hungarian plain. Villagers find security behind stone curtain walls at Buda and Visegrád, confident that nomad raids will break against masonry."
+      "Content": "The invasion of 1241 remains a warning whenever horsemen appear beyond the fields. A peasant helping to cart lime or stone wants to know whether the nearest castle will admit the household's children and animals. Strong walls offer a chance of shelter, but an unfinished enclosure or an empty storehouse gives little comfort during a siege."
     }
   ],
   "TextMappings": []

@@ -7,15 +7,14 @@
     "Thervingians Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Thervingians comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Thervingian authority combines followings, religious commitments and Roman relations.",
+    "The crossing of 376 and battle of 378 remain future events in the 374 setting."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Thervingians, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Thervingian leadership north of the lower Danube draws on rulers, armed followings and communities with differing interests in Rome. Athanaric's position and religious policy show that authority and belief can be closely connected, while other leaders may seek another route to security. The later crossing of 376 and the battle of 378 are not certain knowledge in 374. Nor does the module's western Gothic label import the institutions of the later Visigothic kingdoms. Internal politics concerns who can obtain support, supply and protection, and whether an agreement with imperial power benefits enough households to endure under pressure."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "The guardsmen stand rigid by the oak doors, pretending not to hear the raised voices inside. A quarrel between two magnates over mine leases might end with a blade drawn in the yard. The men on the wall pay that price, since no one at the table answers for the blood spilled in a family feud."
+      "Content": "A warrior watching the Danube needs scouts, provisions and a clear account of which bank is safe. Rumour about another leader's dealings with Rome may unsettle his companions. Before following any order to move, men ask how their families and carts will cross; a plan for the fighters alone leaves the following divided."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "Over wine in the solar, the house elder reminds his heir that thrones change hands while estates endure. Guard the five castles and the serfs who work the land, and smile at court while keeping steel hidden. A secret letter to a rival house is worth more than a dozen banquets, but never reveal how many retainers your household can call to arms."
+      "Content": "A Thervingian leader may regard Roman contact as opportunity or dependence, while religious commitments affect whom people trust. Neither view makes every household obedient. He must explain the costs of staying, moving or negotiating without invoking later disasters as proof that one choice in 374 is already ordained."
     }
   ],
   "SemanticPrototypes": [],

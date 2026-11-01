@@ -7,7 +7,8 @@
     "Canterbury Pilgrims Way Lore"
   ],
   "RagShortTexts": [
-    "Canterbury Cathedral housed Becket's gilded shrine, drawing pilgrims seeking miracle cures."
+    "Pilgrims came for cures and bought lead ampullae filled with water that had touched his relics.",
+    "Becket stood as an unyielding martyr for church immunities against royal encroachment."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,21 +21,19 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "Becket stood as an unyielding martyr for church immunities against royal encroachment. Vast pilgrim donations funded the soaring early English Gothic choir erected by William of Sens."
+      "Content": "Becket stood as an unyielding martyr for church immunities against royal encroachment. After the fire of 1174 destroyed the choir, William of Sens rebuilt it in the early English Gothic style, and the Trinity Chapel, built between 1179 and 1184, housed the shrine. Pilgrim donations at the shrine funded the rebuilding and the new choir."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "At the Tabard Inn in Southwark, knights, milling churls, and prioresses mingle before journeying down the Kent road. Prostrating before the golden shrine dissolves all differences."
+      "Content": "A family reaching Canterbury hopes to pray at Becket's shrine and find lodging it can afford. Roads, shoes and food have already consumed much of its money. Some pilgrims buy a small badge as a reminder of the visit. Stories of healing sustain their hope, while the offerings collected at the cathedral also support a costly building and religious community."
     }
   ],
   "TextMappings": []

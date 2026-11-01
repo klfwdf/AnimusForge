@@ -7,7 +7,8 @@
     "Black Lion Banner Flanders"
   ],
   "RagShortTexts": [
-    "The Dampierre dynasty governed prosperous Flemish weaving cities, balancing royal."
+    "Urban pike militias guarded the town gates and could turn on a count's officers in an afternoon.",
+    "The weavers of Ghent pay countal duties solely to preserve ancient charters."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "merchant",
-          "artisan"
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "The weavers of Ghent pay countal duties solely to preserve ancient charters. Disrupt the English fleece convoys, and dockworkers will shut the rivergates."
+      "Content": "The weavers of Ghent pay countal duties solely to preserve ancient charters. Disrupt the English fleece convoys, and dockworkers will shut the rivergates. Wool was washed, carded and woven in town workshops, and each finished bolt was stamped with the town seal before sale. Cloth merchants who sold outside the town's rules lost their right to trade in the market."
     }
   ],
   "TextMappings": []

@@ -7,7 +7,8 @@
     "Richard of Cornwall Alfonso X Rivalry"
   ],
   "RagShortTexts": [
-    "After 1254 Hohenstaufen extinction, the Empire entered the Great Interregnum amidst dual."
+    "The rival election of 1257 divides supporters of Richard of Cornwall and Alfonso X.",
+    "Princes, towns and local rights remain important without an uncontested imperial ruler."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "When the imperial throne is vacant, peasant granaries are looted twice over. Mainz bailiffs seize the rye on Monday, and Bavarian mercenaries steal the cattle on Wednesday. We pray for an Emperor to restore the broken law."
+      "Content": "When the imperial throne is vacant, peasant granaries are looted twice over. Mainz bailiffs seize the rye on Monday, and Bavarian mercenaries take the cattle on Wednesday. The harvest is divided among the bailiff, the mercenary captains, and the lord's men-at-arms, and no court hears our complaints. We pay the tithe and still starve in winter. We pray for an Emperor to restore the law."
     }
   ],
   "TextMappings": []

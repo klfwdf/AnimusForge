@@ -7,7 +7,8 @@
     "Polish Seniorate Fragmentation"
   ],
   "RagShortTexts": [
-    "Krakow on the Vistula, crowned by Wawel Castle, remained the ceremonial heart of Poland."
+    "Krakow's ducal and commercial roles connect Wawel with the Vistula and the market.",
+    "The 1257 charter and Stanislaus's cult matter without importing later monumental forms."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,22 +21,19 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "The martyred Saint Stanislaus lies enshrined in Wawel Cathedral. Piast faithful believe that just as the martyr's severed limbs miraculously re-fused, fractured Polish duchies will one day reunite into a single kingdom."
+      "Content": "The martyred Saint Stanislaus lies enshrined in Wawel Cathedral. Piast faithful believe that just as the martyr's severed limbs miraculously re-fused, fractured Polish duchies will one day reunite into a single kingdom. The saint was canonized in 1253, and his cult made the cathedral the chief shrine of the realm. Clergy who served the altar kept the relics and tended the pilgrims."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Barges drift down the river loaded with salt from Wieliczka mines. Inside the Cloth Hall, villagers trade home-spun linen for Flemish wool, hoping the watchman's trumpet never again sounds the alarm of Tatar raiders."
+      "Content": "Salt from the Wieliczka district reaches customers through carriers, dealers and market stalls. A farm family bringing linen to Krakow weighs the price of salt against cloth and food. The newly ordered market of 1257 is a working place of trade; its later monumental appearance and a familiar trumpet legend must not be assumed to exist unchanged in 1259."
     }
   ],
   "TextMappings": []

@@ -7,15 +7,14 @@
     "Votadinians Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Votadinians comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Votadinian communities maintained contacts beyond Rome's provincial frontier.",
+    "Traprain finds do not alone establish a specific treaty or royal constitution in 374."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Votadinians, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "The module's Votadinian faction draws on communities around south-eastern Scotland, beyond the Roman provincial frontier. Sites such as Traprain Law show long-lived centres and contact with the Roman world, but finds do not by themselves prove a permanent treaty, a precise royal succession or a feudal court in 374. Local leadership can be described through settlements, kin, exchange and the capacity to provide protection. Neighbours may disagree over how closely to deal with Roman authorities and how to distribute the costs of guarding routes. Later Gododdin traditions and early fifth-century silver deposits must not be treated as eyewitness records of this opening year."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Inside the great hall, the guardsmen stand straight beside the carved doors, pretending not to hear the shouting. Two clan heads are arguing over the mine leases, and a horn cup has cracked on the flagstones. When the nobles fight, the men at the gate are the ones who bleed, so the guards keep their spears low and their faces blank."
+      "Content": "A man watching an upland approach needs to recognise familiar drovers and notice strangers before they reach the settlement. Trade with the south may bring valued goods, but guarding it takes time from animals and fields. A dispute between leaders matters when it closes a route or leaves a household without the help it expected."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "The old chief calls his heir to the hearth and speaks of the clan's castles and the crofters who work its land. Thrones change hands, he says, but lands endure only when the family keeps them whole. Smile at the rival chiefs, count your armed men in silence, and send no letter naming a faction until you know which way the wind blows."
+      "Content": "A Votadinian notable gains influence from people and connections he can sustain, not from a later heroic genealogy alone. Roman objects may display access to exchange, yet say little about a particular agreement's terms. He must balance outside opportunities with the protection and supplies his own neighbours expect him to arrange."
     }
   ],
   "SemanticPrototypes": [],

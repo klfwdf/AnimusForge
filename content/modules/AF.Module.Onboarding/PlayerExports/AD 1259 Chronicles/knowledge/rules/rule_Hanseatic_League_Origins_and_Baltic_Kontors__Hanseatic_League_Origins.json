@@ -7,7 +7,8 @@
     "Novgorod Peterhof Kontor"
   ],
   "RagShortTexts": [
-    "Lübeck and northern merchant cities formed early Hanseatic networks dominating Baltic trade."
+    "A merchant's charter is valuable because it specifies an actual privilege and who must honour it.",
+    "Hanseatic crews live on a cog's wet deck, sleeping in the hold beside the cargo."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,12 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "The Hanse operates under autonomous Lübeck civic law, governed by patrician burghers. When trading charters are signed, even Scandinavian kings and Teutonic Grand Masters must respect commercial credits."
+      "Content": "A merchant's charter is valuable because it specifies an actual privilege and who must honour it. Northern towns cooperate over safe passage and trade, but in 1259 there is no single authority governing every Hanseatic merchant or Baltic city. A scribe must read each grant carefully; invoking Lubeck's name does not automatically compel a foreign ruler to cancel a toll."
     },
     {
       "Priority": 0,

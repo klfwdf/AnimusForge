@@ -7,14 +7,15 @@
     "Galata Commercial Concessions"
   ],
   "RagShortTexts": [
-    "Venice and Genoa waged bitter naval war over Levantine ports, prompting Genoa's alliance with."
+    "The conflict of Saint Sabas disrupts Italian commercial access at Acre.",
+    "Venetian gold ducats belong to a later coinage, not the payments of 1259."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The War of Saint Sabas began in the Levant in 1256, after the Venetians were expelled from Tyre and a dispute over Acre land once owned by the monastery of St Sabas drew Venice and Genoa into open warfare. Each republic wanted control of the Acre quarter, the trade of the Syrian coast, and the grain and slave markets of the Black Sea. Genoa turned to the Byzantine emperor Michael VIII through the Treaty of Nymphaeum of 1261, and that alliance tied the Latin war to the struggle over Constantinople. Venetian and Genoese fleets fought a series of sea battles in the eastern Mediterranean, and each defeat drove the losing side toward new alliances with the Greeks, the Mamluks, or the Mongols."
+      "Content": "By 1259 Venice and Genoa already rival each other for harbour access, warehouses and influence in Acre. Their conflict around St Sabas disrupts trade and pushes both republics to seek allies, but its course is unknown. Genoese envoys may approach Nicaea, whose ruler hopes to weaken Latin control of Constantinople; no Treaty of Nymphaeum has been concluded. Merchants discuss tolls, safe conduct and naval protection as each city guards its privileges. Rivalry is active, but later treaties and sea battles are not completed episodes in 1259."
     },
     {
       "Priority": 0,
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Wharf laborers unload bales under whatever banner flies highest. Venetian ducats or Genoese silver make little difference to the carters whose backs break hauling amphorae into stone vaults."
+      "Content": "An Acre porter earns wages moving bales between quay and warehouse while rival Italian communities fight over access and property. Since the conflict of Saint Sabas began, a change of armed control can end a day's work or close a route. Venetian gold ducats belong to a later coinage; in 1259 payment must be described without that anachronism."
     }
   ],
   "TextMappings": []

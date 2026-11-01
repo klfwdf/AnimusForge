@@ -7,7 +7,8 @@
     "Saxon Jurisprudence Eike"
   ],
   "RagShortTexts": [
-    "The Sachsenspiegel codified Saxon customary and feudal law into German vernacular text."
+    "The Sachsenspiegel records customary land and feudal law in a vernacular legal tradition.",
+    "Its written rules do not erase differences among courts, status and local practice."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "The Landrecht guards our boundary stones; not even a baron may remove a village mark without trial. Burdened as we are, customary law prevents the manor steward from inventing arbitrary new levies."
+      "Content": "A villager hearing the Sachsenspiegel read aloud may find language for an argument about tenure, inheritance or a boundary. Winning still depends on standing, witnesses and the court that hears the plea. Written custom does not make every lord powerless to demand a payment, nor does one Saxon law book govern every village in the German lands."
     }
   ],
   "TextMappings": []

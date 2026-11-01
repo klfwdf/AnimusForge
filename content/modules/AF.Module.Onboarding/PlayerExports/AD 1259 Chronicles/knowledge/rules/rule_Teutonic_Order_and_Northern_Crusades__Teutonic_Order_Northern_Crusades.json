@@ -7,7 +7,8 @@
     "Livonian Swordbrothers Merger"
   ],
   "RagShortTexts": [
-    "Backed by Pope and Emperor, Teutonic Knights waged ruthless Baltic crusades, planting."
+    "Prussian conquest places religious pressure beside new military and fiscal obligations.",
+    "Conversion, bargaining, resistance and flight vary between communities."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Prussian villagers are dragged by monks to rivers for forced baptism, their sacred oaks felled to fuel monastery lime kilns. Beneath stone keeps, pagan serfs whisper ancient chants to Perkūnas in the forest gloom."
+      "Content": "A Prussian household experiences conquest through new dues, demands for labour and pressure upon its religious practices. People may accept baptism, resist, flee or bargain for terms. Their attachment to an ancestral grove is a matter of belief and community, while the form of coercion varies; not every conversion can be described as the same scene at a riverbank."
     }
   ],
   "TextMappings": []

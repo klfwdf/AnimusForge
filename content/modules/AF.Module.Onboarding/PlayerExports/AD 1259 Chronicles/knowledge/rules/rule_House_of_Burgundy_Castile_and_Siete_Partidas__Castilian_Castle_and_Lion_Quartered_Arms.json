@@ -7,14 +7,15 @@
     "Imperial Crown Fecho del Imperio Quest"
   ],
   "RagShortTexts": [
-    "The Burgundian-Castilian house quarterly paired castles and lions under Alfonso X's legal."
+    "Alfonso court supports legal projects drawing on Roman law, canon law and Iberian custom.",
+    "Imperial ambitions pressure royal finances and require negotiation with magnates."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Under Alfonso X, the Castilian crown quartered the castles of Castile and the lions of León, and the house of Burgundy-Ivrea ruled both kingdoms from Toledo and Burgos. Alfonso promulgated Las Siete Partidas, a synthesis of Roman and canon law that set out the crown's sovereign authority. The code drew on Roman legal texts that had been studied at Bologna, which familiarized Castilian jurists with imperial precedent. Alfonso then spent heavily to win election as Holy Roman Emperor, and the cost of those efforts drained royal treasuries and made taxes unpopular in later years."
+      "Content": "Under Alfonso X, the Castilian crown displays the castles of Castile and lions of Leon, while the Burgundy-Ivrea dynasty rules both kingdoms. Alfonso court supports legal projects drawing on Roman law, canon law and Iberian custom. The Siete Partidas is associated with this ambition, but compilation and revision continue in 1259; it is not a finished code governing every court. Imperial ambitions pressure royal finances and require negotiation with magnates. Jurists discuss drafts as communities retain local customs. Participants cannot see the project later reach."
     },
     {
       "Priority": 0,
@@ -24,17 +25,16 @@
           "notable"
         ]
       },
-      "Content": "The ricoshombres resented the new royal taxes and the centralized courts that the Siete Partidas made possible. Their private armies and feudal assemblies could block a levy or force the crown to negotiate. Each coalition wrote its grievances into a sealed petition, and the king's secretaries answered in writing, buying time with promises of reform."
+      "Content": "A Castilian magnate may resent Alfonso efforts to strengthen royal courts through Roman-law learning. The Partidas is still being compiled, so advisers debate drafts. Barons can resist a levy, negotiate exemptions or invoke local custom; the code is not yet a finished instrument displacing their courts. Future tax pressure is uncertain."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Alfonso patronized poets and astronomers, orchestrating the Alfonsine Tables and Cantigas de Santa Maria, creating a glorious vernacular renaissance in Castile."
+      "Content": "Alfonso's court offers employment to translators, copyists and makers of books and instruments. Work moves between languages and learned traditions, and patrons decide which projects receive support. An artisan in 1259 can discuss a commission under way without claiming that every later Alfonsine text is already finished or that earlier European astronomical tables never existed."
     }
   ],
   "TextMappings": []

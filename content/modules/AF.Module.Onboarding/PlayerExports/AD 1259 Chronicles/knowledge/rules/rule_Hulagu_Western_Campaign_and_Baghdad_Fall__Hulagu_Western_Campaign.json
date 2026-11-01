@@ -7,7 +7,8 @@
     "Tigris Inked and Bloodied"
   ],
   "RagShortTexts": [
-    "Hulagu sacked Baghdad in 1258, extinguishing the Abbasid Caliphate and thrusting Mongol power."
+    "Hulagu's western campaign culminates in the capture of Baghdad in 1258.",
+    "Destruction of homes and irrigation threatens survivors without a certain exact death toll."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "They tell of books darkening the river, but common folk remember the mounds of unburied dead. When the great khans ride, stone castles tumble and peasants are ground into the desert dirt."
+      "Content": "People fleeing Baghdad remember relatives, homes and workshops lost in 1258. Reported totals of the dead vary greatly and cannot be counted from a village rumour. For surviving cultivators, damaged canals, missing labour and insecure roads threaten the next harvest as well. Those practical losses explain enduring fear without requiring a precise but unsupported number of victims."
     }
   ],
   "TextMappings": []

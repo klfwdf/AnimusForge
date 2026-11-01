@@ -7,24 +7,24 @@
     "Tragic Blinding of John IV"
   ],
   "RagShortTexts": [
-    "The House of Laskaris preserved Roman sovereignty at Nicaea, laying foundations for."
+    "Laskarid authority developed in the Nicaean response to the Latin conquest of 1204.",
+    "Vatatzes's egg-crown story praises prudence without explaining all imperial finance."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "After the Latin capture of Constantinople in 1204, Theodore I Laskaris built the Empire of Nicaea from the Anatolian provinces that escaped the crusader partition. Exile turned the Nicaean court into a state of farmers, garrison commanders, and tax collectors, all bent on recovering the capital. Under John III Doukas Vatatzes the dynasty fortified its frontiers against Seljuk raids and crusader expeditions, and it grew its treasury by taxing the Anatolian plains. The accession of his grandson John IV in 1258, while still a child, opened the door to a power struggle. Michael VIII Palaiologos, who ruled as regent, had himself crowned co-emperor and then recovered Constantinople in 1261, ending the Nicaean exile."
+      "Content": "After Constantinople fell in 1204, Theodore I Laskaris established a rival Byzantine court at Nicaea. By 1259 the Laskarid dynasty has ruled there for generations, taxing Anatolian agriculture, maintaining garrisons and seeking allies against Seljuk and Latin rivals. John IV is still a child, and Michael Palaiologos has emerged as a leading court figure and co-emperor, sharpening questions of succession and authority. Nicaean leaders continue to look toward Constantinople, but the city remains under Latin rule. Michael has not yet recovered it, and the exile has not ended. Court officials balance frontier defence, revenue and political loyalty while the outcome of the struggle remains unknown."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "Orthodox clergy revered Laskaris rulers for ascetic fiscal integrity, famously commemorated by Vatatzes purchasing an empress's crown purely from royal egg sales."
+      "Content": "The story of Vatatzes buying a crown with proceeds from an estate's egg sales praises prudent imperial housekeeping. A learned speaker should identify it as an exemplary court anecdote, rather than a complete account of Nicaean finance. Monastic charters and estate records reveal other obligations, and admiration for a ruler's piety need not settle a dispute over a monastery's dues."
     },
     {
       "Priority": 0,
@@ -34,7 +34,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veteran soldiers remember Laskaris rule with respect, since the borderers received tax exemptions and grain rations on time. Vatatzes kept the garrisons fed and paid through lean years, and frontier forts were repaired before each spring campaign. Once the court's attention shifted to the struggle for the capital and to palace intrigue, those supplies grew thin, and the men on the walls noticed."
+      "Content": "A Nicaean veteran recalls provisions under Vatatzes, but service now reflects frontier needs. Garrisons need supplies as Michael Palaiologos strengthens his position alongside the young emperor. A soldier may complain of late rations, but cannot describe a later shortage as the result of the capital struggle. His judgement comes from food in hand and the state of the wall, not hindsight."
     }
   ],
   "TextMappings": []

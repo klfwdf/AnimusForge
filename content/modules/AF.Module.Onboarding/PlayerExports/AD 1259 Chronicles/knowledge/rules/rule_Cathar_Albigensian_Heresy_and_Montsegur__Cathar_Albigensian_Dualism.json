@@ -7,7 +7,8 @@
     "Montsegur Castle Pyre Aftermath"
   ],
   "RagShortTexts": [
-    "The Cathars preached radical dualism, driven into Pyrenean caves after the Montségur pyres."
+    "Montsegur's fall in 1244 leaves a dangerous memory for followers and their protectors.",
+    "Admiration for the Good Men coexists with investigation, confiscation and fear."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -21,7 +22,7 @@
       "When": {
         "Roles": [
           "lord",
-          "priest"
+          "townsfolk"
         ]
       },
       "Content": "The Albigensian Crusades let the Capetian crown absorb Languedoc, and the Treaty of Paris in 1229 placed the southern counties under royal control. Lords who had sheltered heretics lost castles and inheritances. Dominican inquisitors interrogated witnesses village by village and recorded their confessions in registers that outlived them. A lord who hid a Perfectus risked confiscation."
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Highland shepherds whisper reverence for the fugitive 'Good Men' sheltering in limestone caverns, who never lie or charge tithes, living in total apostolic poverty."
+      "Content": "A shepherd who shelters a fugitive preacher risks questions from both secular officers and church investigators. Memories of Montsegur's fall in 1244 make such decisions dangerous. Admirers praise the Good Men's poverty, while opponents call their teaching heresy. A household's account should reveal that divided loyalty, rather than assert that every preacher is incapable of lying."
     }
   ],
   "TextMappings": []

@@ -7,7 +7,8 @@
     "Leonese Castilian Chivalric Elite"
   ],
   "RagShortTexts": [
-    "The Order of Santiago bore red sword-crosses, safeguarding the pilgrimage route to Compostela."
+    "Santiago's military order connects religious commitments, land and armed service.",
+    "Pilgrim welfare and frontier obligations require resources and do not guarantee safety everywhere."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -21,7 +22,7 @@
       "When": {
         "Roles": [
           "lord",
-          "priest"
+          "townsfolk"
         ]
       },
       "Content": "The Grand Master of Santiago commanded revenues that rivalled those of the royal domains. The order blended secular inheritance with the brotherhood of a religious order, and its knights kept the Augustinian rule that allowed married men to serve. That mix let it field disciplined divisions during royal sieges in Andalusia."
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Pilgrim hospices and bridges along the Camino are sustained by Santiago commanderies. When mountain brigands strike unwary travelers, knights ride out promptly to hang culprits along roadsides."
+      "Content": "Pilgrim hospices and bridges along the Camino are sustained by Santiago commanderies. When mountain brigands strike unwary travelers, knights ride out promptly to hang culprits along roadsides. Villagers sell bread, wine, and straw to passing pilgrims, and the coin they earn pays the tithe and the lord's dues."
     }
   ],
   "TextMappings": []

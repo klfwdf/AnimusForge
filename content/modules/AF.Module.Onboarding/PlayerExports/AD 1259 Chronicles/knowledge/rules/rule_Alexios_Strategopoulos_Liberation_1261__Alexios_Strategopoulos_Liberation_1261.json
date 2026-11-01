@@ -7,14 +7,15 @@
     "Extinction of Latin Empire"
   ],
   "RagShortTexts": [
-    "On July 25, 1261, general Alexios Strategopoulos infiltrated Constantinople with 800 men,."
+    "Merchants, Greek residents and exiles argue over how secure the Latin regime is.",
+    "Venetian ships, Latin garrisons and the city’s own factions all shape the balance of power."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Alexios Strategopoulos reached Constantinople in late July 1261 with a reconnaissance force of only about 800 men. Local Greek informants, the Thelematarioi, reported that the Venetian fleet was away attacking an island, so the seaward defences were thin. The Byzantines slipped through a neglected passage in the walls, overwhelmed the sentries, and opened a gate for the army outside. Venetian quarters were set alight, and Latin Emperor Baldwin II fled. The episode ended the Latin Empire of Constantinople, founded in 1204, and restored Byzantine rule under the Palaiologan house."
+      "Content": "In 1259 Constantinople remains under Latin rule, while the Nicaean court of the young John IV Laskaris is shaped by Michael Palaiologos, now a leading power-holder and co-emperor. Merchants, Greek residents and exiles argue over how secure the Latin regime is. Venetian ships, Latin garrisons and the city’s own factions all shape the balance of power. A Greek household may preserve church customs and resent foreign officials while still bargaining with them over rent, work and market dues. Talk of liberation is a hope, a political claim or a rumour; there is no reliable date or account of an operation to retake the city."
     },
     {
       "Priority": 0,
@@ -24,7 +25,7 @@
           "notable"
         ]
       },
-      "Content": "Eight hundred frontier troops achieved what fifty years of continental warfare could not. When Emperor Michael VIII processed through the Golden Gate behind the Hodegetria icon of the Virgin, tears of gratitude bathed the marble floors of Hagia Sophia."
+      "Content": "A Nicaean lord weighs troops near the straits against the risk of provoking Latin patrols. Michael Palaiologos is ambitious, but the capital remains Latin. Magnates debate diplomacy; merchant reports are partial. A prudent courtier discusses opportunity and risk, not liberation already achieved, and keeps accounts ready for renewed war or continued exile."
     },
     {
       "Priority": 0,
@@ -34,17 +35,16 @@
           "wanderer"
         ]
       },
-      "Content": "The work that night was quiet and close. Sentries near the Pege Gate were dispatched with knives while they slept, and the men moved without torches until the valves swung open. One cough or one dropped buckle in a narrow lane would alert the whole column. By the time Venetian merchants smelled smoke, Byzantine banners were flying from the battlements."
+      "Content": "A frontier soldier hears that Venetian patrols watch the approaches to Constantinople. Stories of neglected gates or helpful townsfolk circulate, but are unverified. He checks his bowstring and waits for orders; no night assault has occurred. Veterans recall 1204; younger men worry about pay and raids. A daring entry is rumour, not firsthand memory."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Citizens filled the squares singing hymns in Greek! Fifty-seven years of Latin desecration was erased in a single glorious sunrise. The imperial bells rang out across the Bosporus: the Roman Empire lives again!"
+      "Content": "Families under Latin rule remember the 1204 sack: lost church goods, displaced kin and unfamiliar officials collecting dues. Nicaea may be a source of aid, but it has not restored its rule in the capital. Villagers hope for return, fear a siege, or bargain with local officers. Market rumours cannot reveal how Latin quarrels will end. Hope is not knowledge of a future recapture."
     }
   ],
   "TextMappings": []

@@ -7,7 +7,8 @@
     "Hugh Bigod Justiciar Reforms"
   ],
   "RagShortTexts": [
-    "The House of Bigod held the office of Earl Marshal, governing East Anglia from Framlingham."
+    "Their prestige made the reform programme look legitimate to the county knights.",
+    "Framlingham's walls make the earl's power visible to the surrounding countryside."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Framlingham's curtain walls loom above surrounding meres. Serfs respect Earl Roger's itinerant justices who curb the extortion of predatory forest bailiffs."
+      "Content": "Framlingham's walls make the earl's power visible to the surrounding countryside. A tenant approaching his court still worries about rent, fines and the cost of a dispute. Protection against a stranger's demands can matter, but it is no proof that every officer is fair. A poor petitioner needs witnesses and a recognised claim, rather than confidence in the family's reputation alone."
     }
   ],
   "TextMappings": []

@@ -7,14 +7,15 @@
     "Pragmatic Outremer Diplomacy"
   ],
   "RagShortTexts": [
-    "Facing Mongol destruction, Acre Crusaders granted Mamluk forces unmolested passage and grain."
+    "Acre barons hear conflicting advice about the Mongols.",
+    "Qutuz intentions and Hulagu next move are unclear."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In a display of cold geopolitical pragmatism, the Frankish barons of Acre refused Bohemond VI's call to submit to the Mongols. Instead they granted safe transit and grain to Sultan Qutuz's Mamluk army, which had encamped beneath Acre's ramparts on its march against the Mongol invasion. The Mamluks then went south unmolested toward Goliath's Spring, where the battle of Ain Jalut would be fought in September 1260. The Franks wanted no part in a war between Muslims and Mongols, and they had little to lose by standing aside. Their choice kept the coastal enclaves alive for another generation, though it earned them the scorn of papal legates and of crusaders who saw any truce with Islam as betrayal. In the narrow world of Outremer, survival outweighed the old demands of holy war."
+      "Content": "In 1259 Acre's Frankish barons confront a dangerous change in the region: Hülegü's Mongol forces have entered Syria, while the Mamluk government in Egypt prepares to defend its frontier. The coastal lords have reason to fear that either army could threaten their ports, but no established passage agreement between Qutuz's host and Acre can yet be described as fact. Merchants and envoys may discuss whether neutrality, supplies or safe conduct could keep the city out of a wider war. Such proposals are politically sensitive because crusading vows and daily survival pull in different directions. The barons must judge incomplete reports and protect the port; they cannot know in advance how the armies will meet in 1260."
     },
     {
       "Priority": 0,
@@ -24,7 +25,7 @@
           "notable"
         ]
       },
-      "Content": "Papal legates might preach damnation against anyone who aided the infidel, but the barons of Outremer know what survival costs. The Mamluks keep their truces and trade with honest men, while the Mongols raze cities and slaughter without distinction. Between extinction and compromise, the lords of Acre chose life, and they will defend that choice before any council that dares to judge them."
+      "Content": "Acre barons hear conflicting advice about the Mongols. Some fear papal censure if they aid a Muslim army; others warn that denying Egypt supplies could bring war to the coast. Qutuz intentions and Hulagu next move are unclear. Councils discuss grain, envoys and neutrality. Accommodation may protect the port, but it remains a proposal to negotiate, not a pact with a known outcome."
     },
     {
       "Priority": 0,
@@ -34,17 +35,16 @@
           "wanderer"
         ]
       },
-      "Content": "Looking over Acre's parapets at tens of thousands of Mamluk cataphracts peacefully filling their waterskins was uncanny. Men who had traded blows the season before passed loaves of barley bread across the palisades, and the guards kept their bowstrings slack. Every sergeant knew a truce could break overnight, so no man slept without his mail buckled on and his helm within reach."
+      "Content": "A sentry on Acre wall watches road and sea. He may hear that Mongols entered Syria and Egypt is mustering, but has not seen Mamluk cavalry beneath the battlements. An envoy assurance is no secure truce. Officers keep crossbows ready and ask what terms were agreed. Possible safe passage is not a witnessed event; the watch is shaped by uncertainty, not hindsight."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Market day brought gold from Cairo into Frankish stalls. When emperors and sultans sign pacts, common merchants pocket silver and thank the saints that arrows remain in their quivers for another sunrise."
+      "Content": "Market day brings Cairo gold into the Frankish stalls. When emperors and sultans sign pacts, common merchants pocket the silver and hope the truce holds through harvest. A treaty written in a distant court does not stop a raid on a lone shepherd's flock. We thank the saints for quiet roads and count our arrows each night."
     }
   ],
   "TextMappings": []

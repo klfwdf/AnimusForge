@@ -7,7 +7,8 @@
     "Champagne Chivalry and Navarre"
   ],
   "RagShortTexts": [
-    "The House of Champagne commanded international trade fairs, ascending to Navarre's throne."
+    "Letters of fair credit, sealed by Champagne wardens, carried enforcement across the Latin West.",
+    "French kings and the Roman curia both relied on those wardens to collect debts owed to their envoys."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "merchant",
-          "artisan"
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "At the opening of Troyes market bells, silver coin flows across counting benches. Paying fair tolls guarantees armed escorts against highway robbers."
+      "Content": "At the opening of Troyes market bells, silver coin flows across counting benches. Paying fair tolls guarantees armed escorts against highway robbers. Fair clerks recorded each bargain in ledgers, and merchants settled debts on fixed fair dates so that obligations could move between cities. Cloth bales, spices and furs were weighed and sealed before they left the fair."
     }
   ],
   "TextMappings": []

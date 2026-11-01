@@ -7,7 +7,8 @@
     "Civic Patron Saint Relic Protection"
   ],
   "RagShortTexts": [
-    "Furta Sacra pious thefts of saintly bones were celebrated as heavenly approval of a city's."
+    "Relic transfers connect devotion with rivalry among churches and cities.",
+    "Reliquary craft and public belief do not independently establish a relic's provenance."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Goldsmiths fashioned crystal and cloisonné reliquaries to house sacred bones. Parading the reliquary across city walls during sieges inspired unshakeable civic faith in divine protection."
+      "Content": "Goldsmiths fashioned crystal and cloisonné reliquaries to house sacred bones, and the finest work came from Mosan workshops. Parading the reliquary across city walls during sieges inspired unshakeable civic faith in divine protection. The Shrine of the Three Kings at Cologne held relics brought from Milan in 1164."
     }
   ],
   "TextMappings": []

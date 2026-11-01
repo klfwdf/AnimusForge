@@ -7,34 +7,33 @@
     "Orthodox Catholic Union Impasse"
   ],
   "RagShortTexts": [
-    "The 1054 Schism and Fourth Crusade plunder left deep theological rifts between East and West."
+    "Greek clergy remember doctrinal disputes together with the violence of 1204.",
+    "In 1259 church union is a contested possibility, not the accomplished settlement of a later council."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The mutual excommunications of 1054 stayed in force for centuries, and the rift became a matter of money as much as theology. Venetian merchants held privileges in Constantinople under the chrysobull of 1082, and local craftsmen watched Latin ships take the harbor's profits. Doctrinal quarrels over the filioque clause and papal primacy hardened as each side labeled the other's rites heretical. The 1204 sack by Fourth Crusaders turned that resentment into lasting hatred, because Greek chroniclers remembered crusaders stripping the altars of churches. Any reunion treaty had to settle both a theological question and a fiscal one, and the union agreed at Lyon in 1274 was rejected by much of the Byzantine clergy."
+      "Content": "By 1259 the breach associated with the mutual excommunications of 1054 is centuries old, and the sack of Constantinople in 1204 has made religious division inseparable from political memory. Greek clergy dispute papal primacy and the filioque, while Latin authorities defend their claims; Venetian commercial privileges add a material dimension. In exile at Nicaea, Michael Palaiologos may consider diplomacy with the papacy, but no union council has settled the matter. A village priest or city official can debate compromise, yet cannot know that an agreement will be announced at Lyon in 1274 or how Byzantine subjects will react."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "Michael VIII explored diplomatic church union to stave off western crusades, but Byzantine clergy vehemently resisted papal submission, proclaiming they preferred the Turkish turban to the Latin mitre."
+      "Content": "Greek clergy remember doctrinal disputes together with the violence of 1204. Questions of papal authority and liturgical practice therefore carry political as well as theological weight. In 1259 church union is a contested possibility, not the accomplished settlement of a later council. The famous comparison with a Turkish turban belongs to a much later crisis."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Commoners care little for abstract scholastic grammar, but know Latins use unleavened bread for communion. Crossing themselves with three fingers instead of two can incite tavern brawls."
+      "Content": "A family recognises religious difference in bread used at communion, the language of worship and the clergy it trusts. Memories of looted churches can matter more than an argument about a creed. Practices vary, and neighbours need not quarrel at every meeting. The modern opposition between two-finger and three-finger signs must not explain a thirteenth-century village feud."
     }
   ],
   "TextMappings": []

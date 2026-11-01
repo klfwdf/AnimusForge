@@ -7,14 +7,15 @@
     "French Crown Demesne Expansion"
   ],
   "RagShortTexts": [
-    "The Capetian dynasty expanded the royal demesne under Louis IX's revered Christian justice."
+    "Envoys seek Parisian support, while magnates weigh royal favour.",
+    "A courtier may speculate about southern ambitions but cannot cite the 1266 conquest as completed."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Capetians had ruled France since Hugh Capet's election in 987, and the direct male line passed from father to son without a break until 1328. Under Louis IX the royal demesne grew, and the king's moral standing reached a new height. Royal bodies were laid in the abbey of Saint-Denis, and the golden fleurs-de-lis on azure became the emblem of French kingship. Louis centralized justice through itinerant royal inspectors, the enquêteurs, who heard complaints against local officials, and through the Parlement of Paris, which grew into the kingdom's highest court. His reforms made the crown the most respected judge in Christendom."
+      "Content": "A French lord watches royal sons and marriage alliances, since each may shape claims to land and titles. The Capetian house reaches beyond France through cadet branches, but Charles of Anjou has not seized Sicily and the Hohenstaufen conflict remains unresolved. Envoys seek Parisian support, while magnates weigh royal favour. A courtier may speculate about southern ambitions but cannot cite the 1266 conquest as completed. Diplomacy is active; results remain open. The king still governs through present institutions and must negotiate with living rivals."
     },
     {
       "Priority": 0,
@@ -24,17 +25,16 @@
           "notable"
         ]
       },
-      "Content": "Cadet branches of the family, most notably the house of Anjou, carried Capetian ambitions into southern Italy and the crusader principalities. Charles of Anjou seized the kingdom of Sicily in 1266, which tied the French crown to papal wars against the Hohenstaufen. Royal envoys from Paris were courted by rival princes, so the Capetian court became the place where disputes were arbitrated."
+      "Content": "A French lord watches royal sons and marriage alliances, since each may shape claims to land and titles. Cadet branches already extend Capetian influence, but Charles of Anjou has not seized Sicily and the Hohenstaufen conflict remains unresolved. Envoys seek Parisian support; magnates weigh royal favour. Southern ambitions are debated, but the 1266 conquest is not completed. Results remain open."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Commoners revere King Louis dispensing open-air justice beneath the Oak of Vincennes, where any aggrieved pauper can petition the crown without aristocratic intimidation."
+      "Content": "Commoners revere King Louis dispensing open-air justice beneath the Oak of Vincennes, where any aggrieved pauper can petition the crown without aristocratic intimidation. Joinville recorded that the king often sat in the Vincennes woods after Mass, and anyone with a grievance could speak to him without ushers blocking the way. Villagers carried the king's answers home."
     }
   ],
   "TextMappings": []

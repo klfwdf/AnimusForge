@@ -7,7 +7,8 @@
     "Verderers Foresters and Greenwood Outlaws"
   ],
   "RagShortTexts": [
-    "Royal Forest Laws claimed vert and venison exclusively for the King, punishable by blinding."
+    "English forest law regulates resources, game and recognised local rights.",
+    "The Forest Charter limits abuses; not every forest offence brings death or mutilation."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
+          "villager",
           "wanderer"
         ]
       },
-      "Content": "In royal oak forests, poachers grease bowstrings to loose shafts into the dusk. Salting illicit venison inside hay ricks feeds starving families when winter blizzards ruin harvest stores."
+      "Content": "A family using a royal forest needs to know its recognised rights to wood, grazing and other resources, as well as restrictions on deer. The Charter of the Forest has already challenged abuses by 1259. An officer's demand can still be frightening, but tales of automatic death for every offence misstate the charter's limits and the variety of legal penalties."
     }
   ],
   "TextMappings": []

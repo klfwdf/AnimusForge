@@ -7,15 +7,14 @@
     "Marcomans Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Marcomans comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Marcomannic politics centres on middle Danube crossings, Roman power and local support.",
+    "Neighbouring Quadi events are not automatically Marcomannic events."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Marcomans, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Marcomannic politics belongs to the middle Danube frontier, where local communities face Roman power and neighbouring groups. The name does not make every dispute identical to those of the Quadi, even when Roman narratives discuss neighbouring peoples together. Forts, crossings, trade and military demands create reasons both to negotiate and to resist. A leader's following can gain from a bargain while other households bear its supply costs. In 374 no one can recount the full outcome of Valentinian's later campaign. Internal tension should grow from frontier choices and unequal burdens, rather than a transplanted medieval parliament of hereditary landowners."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Behind a carved door in the cold hall, two voices rise and then fall silent. The chieftain's son and his brother-in-law have just smashed a drinking horn, and the watch fixes its gaze on the floor. When senior kinsmen quarrel over mining rights, the common spearmen are the first sent to the gates and the first to die. At the Marcomans post, the night watchword is \"Reed.\""
+      "Content": "A watchman on the Danube needs to distinguish a trading party from armed men seeking a crossing. Floodwater, a missing boat or an officer's new demand can turn an ordinary journey into danger. News of one neighbouring group's quarrel with Rome does not tell him that his own chief has made the same decision."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "The old chieftain lectures his heir with a mead cup still in his hand. Keep the strongholds and their dependent households in the family's hands, and the quarrels of the crown will pass. Smile at the assembly and take every toast, but keep a blade under your cloak until the rival house's herds are yours."
+      "Content": "A Marcomannic leader may want access to Roman goods and recognition without accepting every demand from the frontier officers. Sending fighters away can help an ally but expose local fields. He must establish who speaks for which community; treating all peoples beyond the river as one obedient nation invites a costly misjudgment."
     }
   ],
   "SemanticPrototypes": [],

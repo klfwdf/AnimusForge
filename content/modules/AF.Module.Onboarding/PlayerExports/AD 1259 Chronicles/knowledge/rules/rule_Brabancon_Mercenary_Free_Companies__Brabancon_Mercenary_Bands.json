@@ -7,7 +7,8 @@
     "Excommunicated Mercenaries"
   ],
   "RagShortTexts": [
-    "Brabançons and Routier companies offered lethal pike discipline but devastated countryside."
+    "Mercenary companies need pay and provisions to sustain service beyond short levies.",
+    "Unpaid armed bands expose rural households to requisition and pillage."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "A plague of locusts is gentler than Brabançon hirelings. They take our seed corn, roast the village prior to extort altar chalices, and leave nothing behind but burnt thatch and weeping widows."
+      "Content": "A village near an unpaid mercenary company worries first about seed, livestock and the next demand for provisions. Captains may offer protection while their employer pays, then take supplies by force when wages stop. Families hide portable goods and watch the road; the same armed band can be a garrison's support and a farmer's immediate danger."
     }
   ],
   "TextMappings": []

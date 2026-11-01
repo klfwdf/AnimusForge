@@ -7,7 +7,8 @@
     "Cuman Horse Auxiliaries Settlement"
   ],
   "RagShortTexts": [
-    "After 1241 devastation, Bela IV and Danylo constructed stone castles and enlisted Cumans."
+    "Hungarian castle building responds to the destructive memory of the invasion of 1241.",
+    "Walls need stores, labour and an agreement about which households can seek refuge."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Serfs quarried limestone until hands bled, yet no man cursed the labor. When horsemen descend with torch and lariat, survival means racing cattle across the drawbridge before the iron portcullis drops."
+      "Content": "Béla IV allowed barons and prelates to erect stone fortresses after the Mongol invasion of 1241, reversing the old rule against private castles. Serfs quarried limestone until their hands bled, yet few men cursed the labor, because the walls promised shelter. When horsemen descend with torch and lariat, survival means driving cattle across the drawbridge before the portcullis drops."
     }
   ],
   "TextMappings": []

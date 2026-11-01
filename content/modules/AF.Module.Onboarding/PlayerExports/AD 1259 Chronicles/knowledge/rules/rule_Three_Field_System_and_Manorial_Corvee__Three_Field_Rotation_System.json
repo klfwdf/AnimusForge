@@ -7,24 +7,24 @@
     "Spring Autumn Fallow Cycle"
   ],
   "RagShortTexts": [
-    "The three-field crop rotation improved agricultural yields, underpinning manorial serfdom."
+    "Three-field rotation coordinates winter crops, spring crops and fallow land.",
+    "Draught power, pasture, seed and labour obligations limit the benefits of additional cultivation."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The three-field rotation divided arable land into three parts each year: one sown with winter cereals such as wheat and rye, one with spring crops such as oats, barley, and peas, and one left fallow as pasture. Peas and beans fixed nitrogen in the soil, and spring oats fed draft animals and warhorses. This rhythm let villages grow more grain than the older two-field system and supported a growing population. The labor behind it came from unfree serfs who owed weekly corvée on the lord's demesne, a service recorded in manorial rolls. Lords used the surplus to pay for knights and building projects, and when a harvest failed the same obligations pressed hardest on the poorest families, who had no reserves."
+      "Content": "In a three-field rotation, part of the arable is sown with winter crops, another with spring crops and a third left fallow, with the allocation changing over time. Grazing, manure and legumes can help maintain fertility, while weather and local practice determine the actual crop mix. This is not a universal plan followed by every medieval village. Its operation depends on coordinating strips, animals and common rights. Where households also owe labour on a lord's demesne, competing demands can be sharpest at sowing and harvest. More cultivated ground is not automatically more food if there is too little draught power, seed or pasture to support it."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Oats and beans in spring, rye in autumn, while the third field rests for grazing. So long as the bailiff leaves our water rights alone and we pay the lord's mill multure, barley pottage keeps our children alive through frost."
+      "Content": "Oats and beans in spring, rye in autumn, while the third field rests for grazing. Each household sends its own plough team to the lord's demesne on fixed days, but so long as the bailiff leaves our water rights alone and we pay the mill multure, barley pottage keeps our children alive through frost."
     },
     {
       "Priority": 0,

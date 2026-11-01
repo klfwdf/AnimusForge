@@ -7,34 +7,33 @@
     "Sanctuary Protection for Peasants and Clergy"
   ],
   "RagShortTexts": [
-    "The Truce of God halted feudal feuds from Thursday to Monday, protecting church sanctums."
+    "The Peace of God protects specified people and property; the Truce restricts fighting times.",
+    "Councils and enforcement differ, so no universal safe interval is assumed for every village."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Church launched the Peace of God and the Truce of God in the late tenth and eleventh centuries to restrain the private wars that tore through the countryside. Councils gathered local lords and bishops to swear oaths on relics, promising never to attack unarmed clergy, pilgrims, or peasants, and never to seize draft oxen and farm tools. The Truce of God added time limits: fighting was forbidden from Thursday evening, the hour commemorating the Last Supper, through Monday morning, and throughout Lent. The restrictions tried to protect those who worked the land and travelled the roads, and they set moral limits on the warrior class. Enforcement depended on local bishops and on public oaths, so the movement rested on the willingness of lords to keep their word."
+      "Content": "Church councils promoted Peace of God protections for people and property, while Truce of God rules restricted fighting at specified times. These movements began in particular regions and their terms varied by council, ruler and date. Some proclamations prohibited violence from Thursday evening through Monday morning and added seasons or feast days; others set different calendars and protections. They were not one universal law automatically observed across Christendom. Bishops and local authorities relied on oaths, public pressure and spiritual penalties, with uneven results. Such measures sought to reduce harm to clergy, travelers, peasants and the tools or animals needed for work, but could not guarantee safety during every feud."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "Bishops gathered feuding barons on open fields, demanding solemn oaths of pacification. Breaching the Truce brought immediate anathema, laying early foundations for civilian immunity in warfare."
+      "Content": "The Peace of God condemns attacks on specified people and property, while the Truce of God restricts fighting at specified times. Councils differ in the protection they proclaim. A cleric records oaths and threatens spiritual penalties, but these are contested attempts to restrain violence, not a universal medieval law that all armed men invariably obey."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "When parish bells toll on Thursday dusk, serfs breathe relief. Within the consecrated boundary of the churchyard cemetery, armed retainers dare not unsheathe swords without fearing divine judgment."
+      "Content": "A household seeks the church's protection when a feud threatens its animals and grain. Bells and an oath may encourage neighbours to travel or return to work, yet fear remains if a lord ignores the ban. The days covered by a truce depend on the local proclamation; a village cannot assume that every Thursday begins the same safe interval throughout Christendom."
     }
   ],
   "TextMappings": []

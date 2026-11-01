@@ -7,7 +7,8 @@
     "Galician Archbishopric Seat"
   ],
   "RagShortTexts": [
-    "Santiago de Compostela marked the culmination of the pilgrimage way, enshrining the relics."
+    "Santiago de Compostela stood beside Rome as one of the two great goals of Western pilgrimage.",
+    "The pilgrim routes carried faith, news and trade across the continent."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "priest",
-          "notable"
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "Vast pilgrim hospices and imperial immunities granted the Archbishops of Compostela tremendous feudal and spiritual sovereignty in Galicia."
+      "Content": "Vast pilgrim hospices and imperial immunities granted the Archbishops of Compostela tremendous feudal and spiritual sovereignty in Galicia. Diego Gelmirez became the first archbishop in 1120. His successors ran the hospices and drew rents from the estates, while notables balanced pilgrim welfare against the archbishop's demand for revenue."
     }
   ],
   "TextMappings": []

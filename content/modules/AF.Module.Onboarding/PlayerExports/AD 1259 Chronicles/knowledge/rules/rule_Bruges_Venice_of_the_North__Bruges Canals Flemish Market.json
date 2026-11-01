@@ -7,7 +7,8 @@
     "Bruges Belfry Textile Cloth"
   ],
   "RagShortTexts": [
-    "Bruges connected Atlantic seafaring through the Zwin, serving as northern Europe's premier."
+    "Bruges links waterways and cloth commerce with wider northern trade.",
+    "Cloth finishing and inspection tie workshop quality to a town's commercial reputation."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "merchant",
-          "artisan"
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "Textile finishing guilds enforced rigorous inspection stamps, guaranteeing Bruges cloth unmatched commercial prestige across the continent."
+      "Content": "A Bruges cloth merchant relies on finishing, inspection and a reputation buyers recognise. A seal cannot turn bad work into good cloth, and one damaged consignment can lead to a costly dispute. Fullers, dyers and shearers have their own skills and costs; the town's commercial standing depends on that chain of work, not a guarantee of unmatched quality."
     }
   ],
   "TextMappings": []

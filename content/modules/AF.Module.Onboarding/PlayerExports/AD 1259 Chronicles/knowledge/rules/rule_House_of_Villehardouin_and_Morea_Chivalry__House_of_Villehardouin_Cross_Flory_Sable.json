@@ -7,7 +7,8 @@
     "Chronicle of the Morea Feudal Lore"
   ],
   "RagShortTexts": [
-    "The House of Villehardouin established Achaea in the Peloponnese, detailed in the Chronicle."
+    "Guillaume's ransom bound him to surrender Mystras, Monemvasia and Maina to Michael VIII.",
+    "Oil presses ran through the autumn, and each family paid a fixed measure at the lord's press."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Greek olive farmers delivered customary tithes to Frankish castellans in exchange for coastal anti-corsair patrols, living under a mixed Franco-Byzantine rural feudal balance."
+      "Content": "Greek olive farmers delivered customary tithes to Frankish castellans in exchange for coastal anti-corsair patrols, living under a mixed Franco-Byzantine rural feudal balance. Oil presses ran through the autumn, and each family paid a fixed measure at the lord's press. Villagers kept their Greek saints, while sergeants watched the coast road."
     }
   ],
   "TextMappings": []

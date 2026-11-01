@@ -7,7 +7,8 @@
     "Vitek Partition Five Roses Legend"
   ],
   "RagShortTexts": [
-    "The House of Vítkovci bore the five-petaled rose, commanding southern Bohemia under Vok I."
+    "The foundation at Vyssi Brod in 1259 links noble patronage with a new religious house.",
+    "Its later estates and benefits cannot all be assumed to exist at the moment of foundation."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "The red rose banner flies above Český Krumlov. The lords patronized Cistercian monks at Vyšší Brod, erecting mills and safeguarding rural communities from external tax extortions."
+      "Content": "A farmer near the new abbey at Vyssi Brod sees carts, craftsmen and requests for provisions before seeing any promised prosperity. The foundation of 1259 binds the lords' family memory to a religious house. Its future granges and mills must still be established; neither a pious charter nor a rose banner guarantees exemption from other local demands."
     }
   ],
   "TextMappings": []

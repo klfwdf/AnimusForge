@@ -7,7 +7,8 @@
     "Cordovan Leather Silver Guilds"
   ],
   "RagShortTexts": [
-    "Once the splendid jewel of the Umayyad Caliphate, Córdoba served as a premier Christian."
+    "Its old columns survived, and Gothic chapels were added along its walls over the following decades.",
+    "The finest pieces give cordovan its name and sell to saddlers and shoemakers."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "artisan",
-          "scholar"
+          "townsfolk"
         ]
       },
-      "Content": "Renowned Mudéjar tanners perfected supple cordovan leather, supplying elite European footwear and horse gear markets."
+      "Content": "Mudéjar tanners in Córdoba soak horsehide in sumac and gall-nut liquor, then scrape it until the dense inner layer takes a fine grain. The finest pieces give cordovan its name and sell to saddlers and shoemakers. A journeyman needs years to learn the work, because one rushed scraping ruins a hide. Scholars who admire the boots seldom ask who cut the leather."
     }
   ],
   "TextMappings": []

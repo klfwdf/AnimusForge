@@ -7,7 +7,8 @@
     "Byzantine Empire Renaissance 1261"
   ],
   "RagShortTexts": [
-    "Between 1259 and 1261 Latin Emperor Baldwin II pawned crown relics to Venice as Nicaea."
+    "In 1259 Constantinople remains under Latin rule while Nicaea seeks recovery.",
+    "Memories of 1204 shape Greek hopes without supplying certain knowledge of a future return."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Greek townsfolk whisper beneath Hagia Sophia of ancient prophecies. The Latin heretics looted our sacred vessels, but true Orthodox liturgy shall soon echo beneath the great golden dome once more."
+      "Content": "Greek townsfolk in the lanes below Hagia Sophia still tell old prophecies of the Latins' fall. Their elders remember the looted sacred vessels, and every household recalls the coins it paid to ransom a relative. Grain costs more each winter while the Latin court taxes what remains. Men mutter that true Orthodox liturgy will echo under the great dome again."
     }
   ],
   "TextMappings": []

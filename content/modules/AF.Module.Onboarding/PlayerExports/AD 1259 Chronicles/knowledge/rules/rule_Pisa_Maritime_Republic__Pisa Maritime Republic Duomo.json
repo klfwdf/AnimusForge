@@ -7,7 +7,8 @@
     "Sardinia Corsica Maritime Dominance"
   ],
   "RagShortTexts": [
-    "Pisa commanded Tuscan Ghibelline naval power, dominating Sardinian and Corsican maritime."
+    "Pisa was a maritime republic that projected naval power from the mouth of the Arno.",
+    "That rivalry shaped Pisa's naval budget as much as its commerce did."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,12 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "merchant",
-          "sailor"
+          "commoner",
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "Towering Romanesque marble galleries celebrated Crusader victories, funding aggressive naval galleys deployed against rival Genoese convoys."
+      "Content": "Towering Romanesque marble galleries celebrated Crusader victories, funding aggressive naval galleys deployed against rival Genoese convoys. Sailors load Pisan galleys with timber, iron, and oars from the arsenal, and wharf dues pay for each voyage. Rival Genoese convoys often meet them off the coast, so every merchant weighs the risk before loading cargo."
     }
   ],
   "TextMappings": []

@@ -7,7 +7,8 @@
     "Cologne Archbishop Elector Power"
   ],
   "RagShortTexts": [
-    "Cologne Cathedral, housing the golden Shrine of the Three Kings, anchored Rhine trade and."
+    "Cologne's Three Kings shrine draws pilgrims and supports monumental religious work.",
+    "A pilgrimage pennant does not exempt a commercial Rhine cargo from lawful tolls."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Floating timber rafts loaded with Mosel wine downriver means paying tolls at every abbey bend. But tying a three-crown pilgrimage pennant to the mast ensures bailiffs refrain from confiscating cargo."
+      "Content": "A boatman taking wine or timber toward Cologne must reckon with river conditions, toll stations and time spent waiting at the quay. Pilgrims heading for the Three Kings' shrine bring custom to the city, but a devotional pennant is no legal exemption for a merchant cargo. The crew needs a recognised privilege or payment, not merely a holy image on the mast."
     }
   ],
   "TextMappings": []

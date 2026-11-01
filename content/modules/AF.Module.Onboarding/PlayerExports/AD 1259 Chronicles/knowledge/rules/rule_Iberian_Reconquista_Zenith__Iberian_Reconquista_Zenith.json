@@ -7,7 +7,8 @@
     "Al-Andalus Muslim Retreat"
   ],
   "RagShortTexts": [
-    "Castile and Aragon seized Cordoba, Seville, and Valencia, driving Islamic power into mountain."
+    "Iberian conquest and settlement redistribute power, land and obligations.",
+    "Privileges vary by place and do not erase the interests of existing cultivators."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Settlers trek south from northern hills with ox-carts to reclaim fallow lands under royal fueros. Danger of Moorish raids remains, but the promise of freehold land and tax exemptions outweighs the perils."
+      "Content": "Settlers trek south from northern hills with ox-carts to reclaim fallow lands under royal fueros. Danger of Moorish raids remains, but the promise of freehold land and tax exemptions outweighs the perils. Families sow barley and beans on the new plots and register their boundaries with the concejo."
     }
   ],
   "TextMappings": []

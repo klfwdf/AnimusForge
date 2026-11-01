@@ -7,7 +7,8 @@
     "Iberian Master Swordsmith"
   ],
   "RagShortTexts": [
-    "Toledo sand quenching and Levant Wootz crucible metallurgy produced the medieval world's."
+    "Blade quality depends on material, heat treatment and workmanship.",
+    "Pattern welding, crucible steel and legends about river water are distinct explanations."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,12 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Metallurgy blends elemental mysteries of charcoal, air, and mineral veins. Toledo masters quench blades at precise cherry-red hues in cold waters, while wavy Damascus waterings represent the frozen dance of carbon crystals."
+      "Content": "A smith judges a blade through material, heat treatment and workmanship rather than the fame of a river alone. Pattern welding and crucible steel can produce different visible structures and must not be confused. Toledo's reputation supports trade, but a story about water from the Tagus is not a technical account of carbon control or proof that every blade shares one process."
     },
     {
       "Priority": 0,

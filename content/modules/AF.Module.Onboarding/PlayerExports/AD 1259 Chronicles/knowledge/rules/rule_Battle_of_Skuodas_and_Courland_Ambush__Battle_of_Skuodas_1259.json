@@ -7,14 +7,15 @@
     "Baltic Resistance Prelude"
   ],
   "RagShortTexts": [
-    "In 1259 at Skuodas, Samogitian pagan warriors routed the Livonian Order, shattering crusader."
+    "It did not by itself end the Order's power or guarantee a lasting coalition.",
+    "Baltic chieftains saw at Skuodas that mail-clad heavy cavalry could be trapped in forested marsh."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Samogitian warriors led by the war-chieftain Alminas raided Courland in 1259 and set an ambush for Livonian Order contingents returning from the region. The attack at Skuodas used dense wetlands and forest cover to hide the Samogitian fighters. More than thirty brother-knights died in the bogs, and the defeat shattered the reputation of crusader invincibility among the Baltic peoples. The ambush followed years of raids and counter-raids along the Courland border. Losing trained knights was costly, since each brother needed horses, armour, and a retinue paid from distant estates. The Order had to rebuild its command in the region before it could mount another large expedition."
+      "Content": "Samogitian forces under Alminas defeated Livonian Order troops near Skuodas in 1259, during a campaign connected with raids into Courland. The surviving accounts preserve the defeat and the loss of many Order men, including brother-knights, but troop totals and the precise sequence of the fighting are uncertain. Forest, marsh and local knowledge may have shaped the encounter; the evidence does not justify a cinematic reconstruction of every maneuver. The defeat mattered because trained members of a military order were costly to replace and because it encouraged resistance among peoples subject to crusading pressure. It did not by itself end the Order's power or guarantee a lasting coalition."
     },
     {
       "Priority": 0,
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Forest folk hid baptismal crosses beneath floorboards and poured mead upon sacred roots. The old thunder god answered our prayers; the German monks are flesh and blood, and our woods remain free."
+      "Content": "A forest household may see a victory over a returning crusading force as vindication of its ancestral gods. That is a belief voiced around a hearth, not proof that a deity directed the fighting. After Skuodas, families still need warning of the next expedition and a safe place for their stores; a single success does not end the struggle over the borderlands."
     }
   ],
   "TextMappings": []

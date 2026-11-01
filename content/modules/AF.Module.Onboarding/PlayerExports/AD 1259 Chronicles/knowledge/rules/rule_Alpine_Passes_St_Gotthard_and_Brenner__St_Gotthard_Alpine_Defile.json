@@ -7,25 +7,24 @@
     "HRE Emperor Transalpine Route"
   ],
   "RagShortTexts": [
-    "The St. Gotthard and Brenner passes served as arterial transalpine corridors for armies and."
+    "Alpine passes connect northern markets with routes into Italy.",
+    "Bridges, guides, weather and toll rights determine the practical cost of a crossing."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Alpine passes tied the German lands to Lombardy and carried both imperial and commercial traffic. The Brenner served armies and envoys heading south, while the newer St. Gotthard route, cut through the Reuss gorge, gave a faster link between Basel and Milan. Its timber walkways and the Teufelsbrücke bridge let mules and carts cross where the river had cut deep through rock. Upkeep fell to local communities and to lords who collected tolls, so every repair and gate became a matter of bargaining. Control of the passes shaped how silver, wool, and soldiers moved across the Alps."
+      "Content": "Alpine crossings link the markets and political centres north of the mountains with Italy. The Brenner and the Saint Gotthard routes differ in their approaches, height, bridges and local conditions; neither is simply an empty gap through rock. Pack animals, guides, maintenance and safe stopping places determine what can pass and at what cost. Rulers, churches and communities may hold particular rights to tolls or assistance, making control of a bridge a political as well as practical concern. Snow, damaged paths and shortages of fodder can delay a merchant or an army alike. Local privileges must be read individually rather than turned into one charter shared by every valley."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Foresters of Uri and Schwyz leveraged guardianship over these defiles to extract imperial charters. Guiding pack trains loaded with Flemish woolens and Venetian silks, they collect transit tolls at every bridgehead."
+      "Content": "Foresters of Uri and Schwyz leveraged guardianship over these defiles to extract imperial charters. Guiding pack trains loaded with Flemish woolens and Venetian silks, they collect transit tolls at every bridgehead. Notaries record each toll agreement, and artisans in the market towns below shoe the mules."
     },
     {
       "Priority": 0,

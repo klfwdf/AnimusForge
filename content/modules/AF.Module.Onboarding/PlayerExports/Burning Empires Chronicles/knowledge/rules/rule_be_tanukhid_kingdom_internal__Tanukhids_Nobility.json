@@ -7,15 +7,14 @@
     "Tanukhids Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Tanukhids comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Tanukhid power involves kin, frontier service and negotiation with Roman officials.",
+    "Religious narratives illuminate some bargains without documenting every community's views."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Tanukhids, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Tanukhid leadership belongs to the Arab communities and military relationships of the Roman eastern frontier. Connections among kin, access to routes and supplies, and negotiations with imperial authorities matter more than an invented feudal senate. Religious allegiance can also become part of a political bargain, as later ecclesiastical accounts of Mavia show, but those narratives are partisan and do not document every household. In 374 a leader needs followers who can move and fight without losing the support of dependants. Agreements with Rome may offer recognition while creating disputes about service, payment and who can speak for the group."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Within the palace walls, the guards stand motionless while the great houses argue over pastures and mine leases. Voices rise behind closed doors, and a wine cup smashes on the marble. A guardsman knows that when the nobles quarrel, the men at the gate pay with their blood, so he keeps his spear grounded and his mouth shut."
+      "Content": "A follower on an eastern route needs water, fodder and reliable news from the next stopping place. An imperial promise of payment is useful only when someone honours it. If patrons quarrel, the men asked to patrol may still be far from their households; changing allegiance cannot conjure supplies in an empty camp."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "The old head of the house tells his heir that a queen may come and go while the estates endure. Hold the family's castles and the villages that pay tithe, and smile at the council table while rival clans talk. A sealed letter to a neighboring house can save a family, but never reveal the number of spears you can raise."
+      "Content": "A Tanukhid notable must judge what an imperial officer can actually promise and which relatives will support the bargain. Religious standing may strengthen a claim, but does not erase disagreements over service and resources. Speaking for followers requires their continued cooperation, rather than a seal purporting to bind every Arab community."
     }
   ],
   "SemanticPrototypes": [],

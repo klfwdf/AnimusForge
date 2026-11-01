@@ -7,7 +7,8 @@
     "Saint Francis Assisi Rule"
   ],
   "RagShortTexts": [
-    "Franciscans embracing holy poverty and Dominicans armed with scholastic learning."
+    "Together they form the intellectual and pastoral pillars of Rome.",
+    "Abbots who held rich fiefs drew cynical remarks from knights and townsmen alike."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,12 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Thomas Aquinas and Albertus Magnus lecture in Paris, harmonizing Aristotelian logic with Christian theology, while Franciscan brothers preach humility in crowded squares. Together they form the intellectual and pastoral pillars of Rome."
+      "Content": "Thomas Aquinas and Albertus Magnus lecture in Paris, harmonizing Aristotelian logic with Christian theology, while Franciscan brothers preach humility in crowded squares. Together they form the intellectual and pastoral pillars of Rome. Their sermons draw crowds from the market squares to the convent churches, and town councils watch the friars closely."
     },
     {
       "Priority": 0,

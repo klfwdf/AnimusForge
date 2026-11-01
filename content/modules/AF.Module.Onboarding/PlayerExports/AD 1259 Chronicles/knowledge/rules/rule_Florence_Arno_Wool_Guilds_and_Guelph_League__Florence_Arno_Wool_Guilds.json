@@ -7,7 +7,8 @@
     "Florentine Gold Florin Purity"
   ],
   "RagShortTexts": [
-    "Florence dominated Tuscan finance through the Arno wool trade and the trusted gold florin."
+    "Florentine wool production links specialised labour, credit and communal politics.",
+    "Later guild-prior government and later statutes are not projected intact into 1259."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -24,18 +25,16 @@
           "notable"
         ]
       },
-      "Content": "Guild priors governed Florence by commercial balance sheets rather than by feudal patents. A Ghibelline aristocrat who defied the communal statutes faced exile, and the city could order his stone towers pulled down so that no family could keep a fortress inside the walls."
+      "Content": "A Florentine notable must work through the commune's councils, family alliances and the influence of trade. Guelph and Ghibelline labels carry real loyalties, but do not explain every dispute over office or property. The later government of guild priors is not yet in place in 1259; neither wealth nor noble ancestry gives one person uncontested command of the city."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Near the Ponte Vecchio, dyers turn the Arno deep madder red. Journeymen labor at clattering looms; civic pride and guild precision animate Florence with dynamic mercantile ambition."
+      "Content": "Florentine wool work passes through many hands: sorting, washing, spinning, weaving, dyeing and finishing. A cloth merchant's profit depends on quality, credit and timely delivery, while a worker depends on wages for one stage of that process. Surviving later statutes can illuminate the trade, but their exact clauses must not be quoted as regulations already in force in 1259."
     }
   ],
   "TextMappings": []

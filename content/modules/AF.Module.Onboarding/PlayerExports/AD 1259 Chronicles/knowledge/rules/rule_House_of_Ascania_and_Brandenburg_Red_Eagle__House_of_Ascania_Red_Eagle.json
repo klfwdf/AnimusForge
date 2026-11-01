@@ -7,7 +7,8 @@
     "Germanic Baltic Slavic Frontier March"
   ],
   "RagShortTexts": [
-    "The Ascanian margraves carried the Red Eagle, transforming Brandenburg's Slavic forests."
+    "Ascanian settlement requires land clearance, labour, tools and support before harvest.",
+    "Exemptions vary by charter; no single five-year privilege covers all new settlers."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
+          "villager",
           "wanderer"
         ]
       },
-      "Content": "Pioneer settlers arriving from Westphalia fell ancient oaks to ditch peat bogs, incentivized by Ascanian charters granting five years of exemption from feudal tithes."
+      "Content": "Settlers clearing woodland in the Brandenburg marches need tools, draught animals and enough food to survive before new fields yield. A charter may offer temporary relief from specified dues, but its terms differ from one settlement to another. A family must hear the actual grant read aloud; no universal five-year exemption feeds everyone who arrives with an axe."
     }
   ],
   "TextMappings": []

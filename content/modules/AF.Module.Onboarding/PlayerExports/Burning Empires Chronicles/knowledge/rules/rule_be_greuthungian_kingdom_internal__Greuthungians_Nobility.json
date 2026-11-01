@@ -7,15 +7,14 @@
     "Greuthungians Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Greuthungians comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Greuthungian leaders depend on followers, households and frontier alliances.",
+    "Later Hunnic pressure must not become certain foreknowledge in 374."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Greuthungians, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Greuthungian authority on the northern Black Sea frontier draws on rulers, armed followers and relationships among communities. Ammianus's later account of Ermanaric and the Hunnic advance stresses how fear and military pressure can break those connections. That narrative should not become a timetable every character knows in 374. Nor should the module's Greuthungians be equated with the institutions of the later Ostrogothic kingdom in Italy. Internal tension concerns who follows a leader, where dependants can find safety and whether neighbouring groups offer alliance or another threat. Reputation needs practical support when a family is deciding whether to remain or move."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "A young rider waits outside the chieftains' circle, his cloak still wet from the crossing. Two kin groups have argued for a week over a grazing ford, and the king's men have ordered every warrior to stay inside the camp. When the quarrel turns bloody, the rank-and-file take the arrows and the blame."
+      "Content": "A warrior hears alarming reports from the eastern tracks, but cannot tell which rumour is true. Keeping horses together and finding a defensible crossing matter more than a distant title. If the chief orders movement, the men must also bring children, dependants and supplies; an escape that saves only the fighting party can destroy its support."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "With a hand on his son's shoulder, the chieftain tells him to count his allies before his horses. Keep the great families fed and their wives content, he says. At the king's feast, speak only of the herds, never of the throne. A clan not bound by marriage will break the first time the grass runs short."
+      "Content": "A leader needs news from scouts and cooperation from households that may choose another protector. Claiming ancient precedence will not by itself keep allies in place under a new threat. He must consider grazing, routes and the terms of receiving outsiders, without pretending that later defeats or migrations have already settled every choice."
     }
   ],
   "SemanticPrototypes": [],

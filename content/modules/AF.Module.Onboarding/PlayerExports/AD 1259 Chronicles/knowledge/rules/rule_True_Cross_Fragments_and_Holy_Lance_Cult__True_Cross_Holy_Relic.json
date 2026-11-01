@@ -7,7 +7,8 @@
     "Hattin Relic Loss Memory"
   ],
   "RagShortTexts": [
-    "Fragments of the True Cross and the Holy Lance were venerated as talismanic guarantors of victory."
+    "Commanders carried them into battle, and their presence gave the lines a rallying point.",
+    "Churches across Europe kept fragments, and rival rulers contested them as proof of divine favor."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,12 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Ever since Empress Helena's excavation in Jerusalem, reliquaries have proliferated across abbeys. Canonical authorities issue parchment seals to verify authenticity, but popular devotion looks solely to miraculous healings."
+      "Content": "Ever since Empress Helena's excavation in Jerusalem, traditionally dated to about 326, reliquaries have proliferated across abbeys. Louis IX acquired fragments of the True Cross from the Latin emperor Baldwin II, and canonical authorities issue parchment seals to verify authenticity, but popular devotion looks solely to miraculous healings."
     }
   ],
   "TextMappings": []

@@ -7,7 +7,8 @@
     "Outremer Jurisprudence Anchor"
   ],
   "RagShortTexts": [
-    "The House of Ibelin led Outremer baronies, compiling the Assizes of Jerusalem to limit."
+    "Ibelin legal writing concerns fiefs, courts, obligations and the position of nobles.",
+    "A noble author's account is not a neutral constitution accepted equally by all inhabitants."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "Ibelin chancelleries matched martial prowess with scholastic erudition, turning Outremer's customary law into Western Europe's most sophisticated feudal legal code."
+      "Content": "Ibelin chancelleries matched martial prowess with scholastic erudition, turning Outremer's customary law into Western Europe's most sophisticated feudal legal code. Clerks copied court judgments into registers, and advocates argued cases by citing earlier decisions of the high court. Priests who knew canon law often sat beside the lords to settle questions of marriage and inheritance."
     }
   ],
   "TextMappings": []

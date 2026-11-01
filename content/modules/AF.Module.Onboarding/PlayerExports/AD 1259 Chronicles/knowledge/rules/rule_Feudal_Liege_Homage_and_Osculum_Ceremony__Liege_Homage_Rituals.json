@@ -7,7 +7,8 @@
     "Fief Investiture Clod Rod"
   ],
   "RagShortTexts": [
-    "Feudal homage bound lord and vassal through clasping hands, sacred oaths, and the osculum kiss."
+    "He swore to serve faithfully and to keep the lord's counsel.",
+    "The lord then raised him and gave the kiss of peace, the osculum."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,12 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Oaths sworn upon the Holy Gospels invoke divine surveillance. A traitor who breaks homage becomes an infamous felon, disinherited under earthly statutes and consigned by the Church to spiritual ruin."
+      "Content": "A clerk recording homage distinguishes the promised services, the land concerned and any obligations already owed to another lord. Witnesses and written instruments help heirs argue over what was actually granted. Breaking an oath may expose a vassal to legal or religious sanctions, but forfeiture and penance depend on circumstances, rather than a single automatic sentence."
     }
   ],
   "TextMappings": []

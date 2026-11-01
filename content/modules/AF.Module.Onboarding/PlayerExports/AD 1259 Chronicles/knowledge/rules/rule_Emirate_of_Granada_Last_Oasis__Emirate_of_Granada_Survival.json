@@ -7,7 +7,8 @@
     "Castilian Gold Tribute Vassalage"
   ],
   "RagShortTexts": [
-    "Granada survived as the final Muslim oasis through tribute to Castile, fortifying the Alhambra."
+    "The Nasrid emirs ruled through diplomatic finesse and gold that came north along the Saharan trade.",
+    "Heavy tributes weigh upon our looms and mills, paid to Castile as the price of peace."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Refugees from Seville and Cordoba engineered terraced aqueducts fed by snowmelt. Heavy tributes weigh upon our looms, but silk mills hum and the call to prayer rings true across the green Vega."
+      "Content": "Refugees from Seville and Córdoba brought irrigation and building skills to Granada, and terraced fields climb the hills above the city. Heavy tributes weigh upon our looms and mills, paid to Castile as the price of peace. Still the silk mills hum, and the call to prayer rings across the green Vega each dawn. Each family keeps grain against the year the tribute collectors come early."
     }
   ],
   "TextMappings": []

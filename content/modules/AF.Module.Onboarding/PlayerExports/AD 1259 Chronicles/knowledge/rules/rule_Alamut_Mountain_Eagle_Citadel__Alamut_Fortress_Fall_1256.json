@@ -7,14 +7,15 @@
     "Alborz Mountain Redoubt"
   ],
   "RagShortTexts": [
-    "Alamut Castle, long deemed impenetrable in the Alborz cliffs, fell to Hulagu's siege."
+    "Alamut's surrender in 1256 disrupted a Nizari stronghold and its learned community.",
+    "Juvayni's account distinguishes selected preserved works from condemned writings."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Alamut Castle stood on a rock spur in the Alborz range, reachable only by a narrow path that a few defenders could hold. The Nizari Ismaili community made it the centre of its network for generations, and its library drew visiting scholars. Defence rested on terrain, water cisterns, and stores that let a small garrison outlast a siege. The Mongol campaign of 1256 changed that calculation. Hulagu's engineers, many of them from China, hauled disassembled siege engines up the cliffs, and under that pressure the garrison surrendered and the towers were pulled down. The fall showed that patient mechanical labour could erase a natural advantage."
+      "Content": "Alamut in the Alborz mountains was an important stronghold of the Nizari Ismaili network. Its difficult approach, stores and water arrangements made terrain a major part of defence, but did not remove dependence on wider political decisions. During Hulagu's campaign of 1256 the Nizari leadership submitted and Alamut was surrendered and dismantled. Juvayni's account describes examining its collection and selecting books and instruments to preserve while condemning other works. The loss was serious, yet later stories of an entirely destroyed library or spectacular siege machinery need evidence of their own, rather than being repeated as certain details of the surrender."
     },
     {
       "Priority": 0,
@@ -24,18 +25,16 @@
           "notable"
         ]
       },
-      "Content": "Princes once paid the Nizari missionaries to keep daggers away from their throats, and every lord on a trade road measured his risk against that reach. Alamut's fall showed the protection rested on terrain, not loyalty. A baron who had bought peace with gold now had to renegotiate with whoever controlled the siege train."
+      "Content": "Alamut's fall warns a ruler against assuming that difficult ground can substitute for diplomacy, supplies and a defensible political position. Nizari dealings with neighbouring powers differed over time; stories of tribute and daggers are not evidence that every prince paid the same protection money. A prudent lord asks how a particular stronghold and alliance actually failed."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "The greatest tragedy of Alamut was the destruction of its magnificent library, home to unmatched astronomical and philosophical codices. Only a handful of Qurans were rescued before the rest served as fuel for cooking fires."
+      "Content": "The surrender of Alamut in 1256 scattered a learned community as well as ending a fortress's resistance. The historian Juvayni described examining books and instruments there and selecting material to preserve, while condemning other writings. A scholar should distinguish this partisan account from later tales that every volume became fuel for a Mongol cooking fire."
     }
   ],
   "TextMappings": []

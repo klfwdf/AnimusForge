@@ -7,14 +7,15 @@
     "Early English Parliament Emergence"
   ],
   "RagShortTexts": [
-    "The 1258 Provisions of Oxford subjected Henry III to a baronial council, sparking Simon de."
+    "The Provisions of Oxford in 1258 contest the control of royal government.",
+    "The later baronial war is not a completed event for people living in 1259."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Enacted in 1258, the Provisions of Oxford came after Henry III's costly bid for the crown of Sicily left the treasury in debt and his government in disrepute. The baronial reformers forced the king to surrender much of his administrative power to a council of fifteen barons, led by Simon de Montfort. The Provisions also required Parliament to meet three times a year, so the Crown could be overseen in regular sessions rather than only when the king chose to summon his magnates. A standing council with the right to review royal decisions was unusual in English government. Its reach was limited, though, because the reformers formed a faction within the baronage and not a neutral body. Within a few years the dispute over the Provisions had turned into open civil war."
+      "Content": "The Provisions of Oxford were imposed on Henry III in 1258 after disputes over royal government and the cost of his Sicilian ambitions. They established a council of fifteen barons and regular meetings of the realm's leading men, limiting the king's freedom to appoint and govern. The settlement reflected a baronial reform movement, not a neutral modern parliament, and its authority remained contested. Henry repudiated the provisions in 1261; the dispute later escalated into the Second Barons' War, which began in 1264, but that outcome was not inevitable in 1259. Lords and officials had to navigate competing claims of royal prerogative, sworn reform and local interests."
     },
     {
       "Priority": 0,
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Magnates quarrel over charters in Latin, while village bailiffs still levy heriot and tallage. A hungry serf knows little of councils; if the lords take their fight to the open fields, it is our thatched roofs that burn."
+      "Content": "Magnates quarrel over charters in Latin, while village bailiffs still levy heriot and tallage. A hungry serf knows little of councils; if the lords take their fight to the open fields, it is our thatched roofs that burn. The Provisions of Oxford of 1258 were meant to curb the king's favourites and restore baronial councils, but the manor court still tallied our days of labour and fines."
     }
   ],
   "TextMappings": []

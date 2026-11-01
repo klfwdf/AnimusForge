@@ -7,14 +7,15 @@
     "Prague Groschen Sound Currency"
   ],
   "RagShortTexts": [
-    "Silver strikes at Kutná Hora funded Přemyslid expansion, turning Bohemia into Europe's mint."
+    "Bohemian silver production requires ore, fuel, labour, drainage and royal rights.",
+    "Kutna Hora's later boom and Prague groschen reform are not achieved facts in 1259."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Silver strikes at Kutná Hora in central Bohemia set off a major industrial rush in the thirteenth century. King Ottokar II granted mining privileges to the district, and the later Ius Regale Montanorum code set out the crown's share of the ore and the rights of the miners who worked it. Skilled Saxon miners were settled in the district, and they sank shafts deep into the rock with waterwheel hoists to lift the ore. The mint produced large quantities of silver Prague groschen, a coin that became a common currency across the region. Tax on the bullion funded the royal treasury, and the miners' skills spread to other mining towns in the kingdom."
+      "Content": "Silver mining expanded in Bohemia during the thirteenth century, but Kutná Hora's exceptional boom belongs chiefly to the century's close. Ottokar II's reign saw royal interest in mines and grants of privileges, yet the mining code Ius Regale Montanorum and the major coinage reform belong to Wenceslas II in 1300. Prague groschen were introduced in that reform, not already a common currency in 1259. Miners needed shafts, drainage, timber, fuel and skilled labor, while rulers sought revenue and control over production. In 1259 a lord could hear reports of promising veins and compete for rights, but should not assume the later mining town, centralized mint or mature silver economy already existed. The growth of Kutná Hora was a process, not a completed transformation."
     },
     {
       "Priority": 0,
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Miners wearing tallow lamps on leather caps chisel through granite ore faces underground. Smelting furnaces billow toxic smoke, yet refined ingots pour into royal casting troughs."
+      "Content": "In 1259 a Bohemian metalworker can discuss the cost of ore, charcoal and skilled labour without describing the later great boom at Kutna Hora as already achieved. Rich claims attract a lord's attention, but extraction needs shafts, drainage and fuel. The Prague groschen and the Italian Court belong to a later royal programme, not the current minting system."
     }
   ],
   "TextMappings": []

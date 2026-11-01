@@ -7,7 +7,8 @@
     "Guelph Stronghold Bologna"
   ],
   "RagShortTexts": [
-    "Bologna shone as the world's intellectual cradle of revived Roman civil law, bristling with."
+    "Bologna's legal teaching draws students, copyists and patrons into the city.",
+    "Student privileges protect particular rights rather than granting immunity from all law."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "notable"
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "Self-governing student nation guilds held civic magistrates accountable, turning the commune into an unassailable bastion of legal jurisprudence."
+      "Content": "A student arriving in Bologna seeks protection against arrest for another person's debts and against abuses suffered while travelling to study. Masters and student associations bargain over teaching and fees. Legal privileges matter because copying a law book and renting a room already cost dearly; they do not make every scholar immune from all courts or charges."
     }
   ],
   "TextMappings": []

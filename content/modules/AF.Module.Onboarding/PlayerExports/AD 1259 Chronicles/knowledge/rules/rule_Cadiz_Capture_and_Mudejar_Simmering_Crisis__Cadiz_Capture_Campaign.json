@@ -7,7 +7,8 @@
     "Alfonso X Atlantic Outlet"
   ],
   "RagShortTexts": [
-    "Castile's push toward Cádiz and Jerez ignited covert Mudéjar coordination backed by Granada."
+    "In 1259 the Cadiz frontier exposes households to uncertain changes of power and rights.",
+    "Later conquest and revolt must not become completed experiences of the opening year."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Moorish smiths keep bellows pumping through the night, converting pruning hooks into spearpoints. Heavy Castilian tithes on olive presses have pushed common folk past breaking point."
+      "Content": "Moorish smiths keep bellows pumping through the night, converting pruning hooks into spearpoints. Heavy Castilian tithes on olive presses have pushed common folk past breaking point. Mudejar families hide grain in clay jars beneath their floors, since tax agents seize the harvest before the village can store it."
     }
   ],
   "TextMappings": []

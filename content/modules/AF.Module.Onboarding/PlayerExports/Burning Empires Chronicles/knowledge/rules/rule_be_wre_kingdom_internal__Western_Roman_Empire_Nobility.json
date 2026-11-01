@@ -7,15 +7,14 @@
     "Western Roman Empire Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Western Roman Empire comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Valentinian's western government remains within the Roman imperial system in 374.",
+    "Military supply, taxation, office and patronage shape western elite competition."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Western Roman Empire, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "In 374 Valentinian's western government remains part of the Roman imperial system. Military commands, court offices, senatorial wealth and provincial administration offer distinct sources of influence, not a single feudal ladder. Frontier operations require taxes, transport and recruits, while powerful landowners and officials dispute how burdens fall. Patronage can secure a hearing or protect a client, but judicial investigations can also expose an entire network. The western faction in the module is a division of imperial rule, not an already permanent separate nation. Its conflicts should concern actual offices, resources and access to authority rather than assume every senator keeps a private hereditary army."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Soldiers stand rigid beside the palace doors while the senators argue behind the curtains. A wine cup has smashed on the marble, and someone is shouting about mine leases. A guardsman knows that when the great houses quarrel, the men at the gate are the ones who die, so he keeps his javelin low and his face blank."
+      "Content": "A western soldier experiences an imperial policy as a march, a ration issue or another period on the frontier. If civil and military officials quarrel over transport, he still needs grain before moving. Changing the name of a commander does not repair a shield; men remember which promises reached the camp and which remained on a clerk's tablet."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "The senior patrician tells his son that emperors come and go, while estates and clients endure. Hold the family villas and the tenant farms that pay the tithe, and smile at the consistory while rival houses quarrel. A sealed letter to a neighboring house can save a family, but never reveal the number of armed retainers you keep."
+      "Content": "A wealthy notable can use estates and connections to seek influence, but must deal with officials whose demands need not match his own. An imperial audience may help one petition while creating obligations to a patron. Protecting a household's position requires navigating service and taxation, not merely hiding steel behind a banquet smile."
     }
   ],
   "SemanticPrototypes": [],

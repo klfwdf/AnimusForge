@@ -7,7 +7,8 @@
     "Hohenstaufen Steadfast Imperial Ally"
   ],
   "RagShortTexts": [
-    "The House of Wittelsbach held Bavaria and the Palatinate under the iconic blue-and-white."
+    "Wittelsbach authority in Bavaria depends on regional rights and local obligations.",
+    "Rural rents and succession vary between estates rather than following one universal custom."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Bavarian farms brew rich barley beer under customary land law. So long as dues in smoked hams and oats are delivered to ducal bailiffs, the valleys enjoy peace."
+      "Content": "A Bavarian household keeps track of rents, livestock dues and the days its members must work elsewhere. Grain used for brewing cannot also fill the bread bin, so a failed harvest changes every calculation. Custom may provide an argument against a new demand, but rights and succession vary between estates; delivering a ham does not purchase universal peace."
     }
   ],
   "TextMappings": []

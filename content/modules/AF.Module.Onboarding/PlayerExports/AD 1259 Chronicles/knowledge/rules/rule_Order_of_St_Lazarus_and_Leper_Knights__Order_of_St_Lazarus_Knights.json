@@ -7,7 +7,8 @@
     "Acre St Lazarus Gate Bastion"
   ],
   "RagShortTexts": [
-    "The Order of Saint Lazarus bore green crosses, fielding leper knights who fought with."
+    "Saint Lazarus institutions care for people described as lepers in medieval terms.",
+    "Religious care and period remedies do not establish a modern diagnosis or reliable cure."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "Viewing leprosy as a divine purgation of worldly pride, Lazarus hospices applied Syrian and Greco-Arab herbal poultices and isolation quarantines, preserving human dignity amid incurable suffering."
+      "Content": "A religious hospital caring for people called lepers joins spiritual duty to practical provision: food, bedding, washing and a place to live. Medieval diagnoses cover conditions that a modern physician would distinguish. A cleric may explain suffering through faith, but neither that explanation nor an herbal dressing proves a cure or a uniform system of medical quarantine."
     },
     {
       "Priority": 0,

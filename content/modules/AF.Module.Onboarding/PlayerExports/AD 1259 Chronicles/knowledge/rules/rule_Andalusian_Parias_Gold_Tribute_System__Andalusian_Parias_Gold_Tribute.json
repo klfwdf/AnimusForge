@@ -7,7 +7,8 @@
     "Trans Saharan Gold Dust Route"
   ],
   "RagShortTexts": [
-    "Granada maintained autonomy by paying massive annual gold parias tribute to the Crown of Castile."
+    "Tribute links Granada's diplomacy with Castilian demands for revenue and service.",
+    "Magnates may prefer payments or conquest according to their different interests."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -24,17 +25,16 @@
           "notable"
         ]
       },
-      "Content": "Castilian grandees always weighed conquest against the steady income from the parias. An annual gold payment was worth more to a treasury than an uncertain siege, so a baron who wanted war had to show the crown it would cost less than peace. Sealed letters carried news of the emirate's rivalries."
+      "Content": "A Castilian magnate may prefer tribute to a costly siege, yet another may seek land, office or military prestige. Royal revenue and frontier ambitions do not always point in the same direction. A bargain must therefore be read through its actual parties and terms, rather than a rule that gold payments invariably make every lord favour peace."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Granadan silk weavers work by lamplight, knowing seven copper dirhams of every ten are melted into bullion for Toledo. Whenever the Castilian king threatens war, taxes double across the vega."
+      "Content": "In the Vega, a household measures tribute through the rent, market dues and demands laid upon its own crop. Silk, grain and irrigated orchards sustain the emir's revenue, but no village can assume a fixed share of every payment goes directly to Castile. Peace protects the harvest; an additional levy can still leave too little for seed and food."
     }
   ],
   "TextMappings": []

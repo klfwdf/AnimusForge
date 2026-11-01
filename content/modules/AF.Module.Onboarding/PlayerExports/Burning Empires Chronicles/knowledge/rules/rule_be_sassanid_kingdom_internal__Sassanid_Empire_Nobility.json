@@ -7,15 +7,14 @@
     "Sassanid Empire Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Sassanid Empire comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Shapur II negotiates power through aristocratic, military and religious relationships.",
+    "Armenian loyalties and campaign supplies affect Sasanian internal politics."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Sassanid Empire, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Shapur II's Sasanian monarchy combines royal power with great aristocratic houses, military leaders and religious authorities. Influence comes through access to the king, land, service and regional connections, rather than a Roman senate under a different name. The frontier with Rome and struggles over Armenia make local loyalties especially important: a useful intermediary may also have reasons to change sides. Supplies for campaigns impose costs on estates and cultivators. In 374 internal politics therefore concerns how the king secures service and manages powerful supporters, not an inevitable sequence of poisonings or a uniform western European system of vassalage."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Attendants stand rigid in the marble passage while raised voices clash behind a painted door. The governor's son and his son-in-law have overturned a silver brazier, and the guards fix their eyes on the floor. When great houses quarrel over estates and water rights, it is the common retainers at the gate who pay for the quarrel. At the Sassanid post, the night watchword is \"Reed.\""
+      "Content": "A rider called for service needs a fit mount and the provisions to reach the muster. An order issued at court still depends on local officers arranging transport and supply. If rival patrons dispute responsibility, men wait while their animals consume fodder; prestige at an audience does not feed a horse on the road."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "The old magnate turns his wine cup slowly while he instructs his heir. The crown matters less than the estates, the fortified villages, and the households that owe service to them. Smile at the court and accept every toast, but keep a dagger beneath the robe until the rival house's canals and villages are yours."
+      "Content": "An aristocratic supporter of Shapur weighs royal favour against regional ties and the obligations of military service. Armenia may offer influence while exposing an ally to pressure from both empires. Keeping a useful following requires resources, so a demand that exhausts an estate can weaken the very service the king expects from it."
     }
   ],
   "SemanticPrototypes": [],

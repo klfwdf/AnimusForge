@@ -7,15 +7,14 @@
     "Sarmatians Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Sarmatians comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Sarmatian covers distinct groups; it is not a single uniform fourth-century state.",
+    "Herds, grazing and dependants' safety constrain a mounted following's choices."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Sarmatians, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Sarmatian is a broad designation covering groups with different locations and relationships, not a single uniform state. In the module, authority can depend on kin connections, herds, access to grazing and a leader's armed following. Relations with Rome or other steppe peoples may offer protection and opportunity while exposing dependants to new obligations. The pressure of movements farther east need not be identical at every camp in 374, and later Hunnic domination is not certain knowledge for every speaker. Disputes over movement, supplies and the protection of households distinguish this politics from invented senatorial courts and castle-based fiefs."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Outside the chieftain's hall, the gate-riders stand stiff while voices rise inside. The chieftain's son and his brother-in-law have overturned a bronze cauldron, and the guards keep their eyes on the floor. When great clans quarrel over grazing rights, it is the common riders at the gate who take the first blows. At the Sarmatians post, the night watchword is \"Storm.\""
+      "Content": "A mounted follower needs a sound horse, forage and a place where the household's animals can rest. An order to move quickly may conflict with the pace of children and loaded carts. Men argue over scouts and watering places because a mistake can cost the herd, even when no enemy has yet reached the camp."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "Kumis cools in the bowl as the old elder counsels his heir. The chieftain's title matters less than the herds, the strongholds, and the households that owe service to them. Smile at the council and accept every toast, but keep a dagger under the cloak until the rival clan's pastures are yours."
+      "Content": "A Sarmatian leader weighs an offer of outside protection against the men, supplies or obedience it may require. Other households may prefer a different route or patron. Prestige alone cannot settle grazing and security; a workable bargain must leave dependants able to live, rather than rescue only the chief's immediate companions."
     }
   ],
   "SemanticPrototypes": [],

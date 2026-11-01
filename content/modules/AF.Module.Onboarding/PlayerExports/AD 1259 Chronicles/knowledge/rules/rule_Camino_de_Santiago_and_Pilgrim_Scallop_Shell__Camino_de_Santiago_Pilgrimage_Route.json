@@ -7,7 +7,8 @@
     "Plenary Indulgence Sins Remission"
   ],
   "RagShortTexts": [
-    "Pilgrims walking the Camino worn scallop shell badges, seeking plenary indulgence at."
+    "The Camino connects travellers with the shrine of Saint James at Compostela.",
+    "Bridges, hospices, food and safe passage shape a poor pilgrim's actual journey."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,21 +21,19 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "A network of monastic hospices, bridges, and infirmaries sustained wayfarers across Navarre and Castile, making the Camino a conduit for troubadour song, roman-gothic architecture, and languages."
+      "Content": "A network of monastic hospices, bridges, and infirmaries sustained wayfarers across Navarre and Castile, making the Camino a conduit for troubadour song, Romanesque and Gothic architecture, and many languages. Monasteries kept lists of pilgrims, and donations from travellers paid for new bridges over mountain streams and river fords."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Blistered feet freeze traversing rocky mountain passes in November. Touching the lead shell badge brings endurance, knowing monastic hospices offer hot lentil porridge and clean straw bedding."
+      "Content": "A poor pilgrim judges the road by the next bridge, dry lodging and a place to rest a swollen foot. A shell marks the journey, but cannot feed its wearer or guarantee admission to every hospice. Villagers may sell bread and wine to travellers; after a bad harvest, their own tables are short, and charity competes with the needs of the household."
     }
   ],
   "TextMappings": []

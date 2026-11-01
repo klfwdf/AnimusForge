@@ -7,7 +7,8 @@
     "Baronial Council Oversight"
   ],
   "RagShortTexts": [
-    "The Provisions of Oxford and Westminster limited Henry III's royal authority through council rule."
+    "The Westminster reforms of 1259 address abuses affecting courts and landholders.",
+    "Reform needs enforcement and does not extend identical rights to every unfree tenant."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "For the first time, freeholders could petition shire courts against overbearing manorial bailiffs. Rents remained onerous, but bailiffs could no longer seize draft oxen without lawful process."
+      "Content": "A freeholder hearing of the Westminster reforms hopes for restraints on abuses in courts and in the handling of debts and land. A promise on parchment still needs enforcement by officers who may be powerful neighbours. The measures of 1259 do not abolish customary rent or extend identical remedies to every unfree tenant on every manor."
     }
   ],
   "TextMappings": []

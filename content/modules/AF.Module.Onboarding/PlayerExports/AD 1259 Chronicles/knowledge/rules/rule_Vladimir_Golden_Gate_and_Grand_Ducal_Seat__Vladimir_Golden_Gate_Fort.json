@@ -7,7 +7,8 @@
     "Klyazma River Forest Shield"
   ],
   "RagShortTexts": [
-    "Vladimir on the Klyazma, marked by the stone Golden Gate, held the Grand Ducal yarlyk of."
+    "Every tax roll he signed was a bargain that kept the prince's own towns from burning.",
+    "In forest homesteads, folk douse hearth fires before dark."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "In forest homesteads, folk douse hearth fires before dark. The distant jingle of harness bells sends families fleeing into deep marshes to avoid Tatar slave-catchers scouring the countryside."
+      "Content": "In forest homesteads, folk douse hearth fires before dark. Ever since Andrei Bogolyubsky made Vladimir the capital and raised the Golden Gate in 1164, the grand prince's officials have come for our grain and our labor. The distant jingle of harness bells still sends families fleeing into deep marshes to avoid Tatar slave-catchers."
     }
   ],
   "TextMappings": []

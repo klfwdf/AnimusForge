@@ -7,7 +7,8 @@
     "Anti Knight Dense Infantry Square"
   ],
   "RagShortTexts": [
-    "Flemish cloth guild militias wielded spiked goedendag clubs in dense infantry hedge formations."
+    "Flemish urban levies connect military duties with workshop and household burdens.",
+    "Discipline and mutual protection matter more than claims of an invincible cheap weapon."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "The goedendag costs modest coin but cracks iron bascinets effortlessly. A pair of apprentices can brace against a galloping knight, spearing the charger and dragging the rider into the mud."
+      "Content": "A townsman's duty in the levy takes time from his bench and money from his household. A stout staff or spear is useful only if the line keeps order and men protect one another. No cheap weapon effortlessly defeats every helmet or charging horse. Later images of Flemish victories cannot be treated as an equipment list for every town militia in 1259."
     }
   ],
   "TextMappings": []

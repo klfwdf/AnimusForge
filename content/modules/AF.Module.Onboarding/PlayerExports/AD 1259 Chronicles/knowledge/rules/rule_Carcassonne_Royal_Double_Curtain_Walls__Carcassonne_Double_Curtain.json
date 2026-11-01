@@ -7,7 +7,8 @@
     "Cathar Bastion Pacification"
   ],
   "RagShortTexts": [
-    "Carcassonne with its double circuit walls and 52 towers cemented royal Capetian control in."
+    "Carcassonne's royal defences and lower town reshape local protection, work and trade.",
+    "Building phases completed after 1259 are not assumed to be already finished."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Building those double walls emptied the quarry tithes of whole cantons. Common folk must live in the lower town; once the iron portcullis drops at dusk, crossbow sentries patrol through the dawn."
+      "Content": "Work on Carcassonne's defences brings stone carts, lime burners and labourers to the hill. In 1259 the lower town founded under Louis IX is already an important place to live and trade. People seek access to markets and protection in danger; they cannot describe later royal building campaigns as though every tower and outer work were already complete."
     }
   ],
   "TextMappings": []

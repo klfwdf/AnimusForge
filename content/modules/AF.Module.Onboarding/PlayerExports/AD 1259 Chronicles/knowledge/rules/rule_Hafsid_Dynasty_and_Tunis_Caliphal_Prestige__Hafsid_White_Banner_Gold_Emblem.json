@@ -7,7 +7,8 @@
     "Post 1258 Western Islamic Caliph Claim"
   ],
   "RagShortTexts": [
-    "The Hafsid dynasty ruled Tunis, where Muhammad al-Mustansir declared himself Caliph after."
+    "Hafsid authority at Tunis draws on religious standing and regional commerce.",
+    "Port duties and caravan connections bring revenue alongside competing local interests."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
+          "townsfolk",
           "wanderer"
         ]
       },
-      "Content": "Christian cogs and corsair galleys moor peacefully in the Goletta lagoon. Paying dock dues to Hafsid bailiffs guarantees entry to bustling ivory, olive oil, and gold-dust bazaars."
+      "Content": "Christian cogs and corsair galleys moor peacefully in the Goletta lagoon. Merchants from Pisa, Genoa, and Venice have traded at Tunis since the twelfth century, and Provençal and Catalan merchants joined them from the mid-thirteenth century. Paying dock dues to Hafsid bailiffs guarantees entry to bustling ivory, olive oil, and gold-dust bazaars."
     }
   ],
   "TextMappings": []

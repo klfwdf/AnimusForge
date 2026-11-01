@@ -7,7 +7,8 @@
     "Old Town German Mining Burgher"
   ],
   "RagShortTexts": [
-    "Prague on the Vltava River, crowned by Hradčany Castle, formed the heart of Ottokar's."
+    "Prague straddled the Vltava, and the Premyslid dynasty made the city the seat of Bohemian power.",
+    "From the halls of Hradcany, Ottokar directed armies across Bohemia, Austria and Styria."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,12 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "The Judith Bridge joins ancient Slavic customs with Western jurisprudence. Scholars study esoteric Kabbalah in the newly raised Altneuschul synagogue, while goldsmiths crowd the marketplace."
+      "Content": "Prague's bridge brings people and goods between important parts of the settlement, making tolls and repairs matters of public interest. Churchmen, merchants and Jewish residents maintain different schools and legal traditions. A scholar in 1259 should discuss actual books and communities without treating a later synagogue building or a claim of universal occult study as established fact."
     }
   ],
   "TextMappings": []

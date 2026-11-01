@@ -7,7 +7,8 @@
     "Silesian German Settlement Wave"
   ],
   "RagShortTexts": [
-    "The Piast dynasty retained the White Eagle amidst regional ducal fragmentation across Poland."
+    "The dynasty's future depended on holding these pieces together.",
+    "Mazovian dukes fought a long war against pagan Lithuanian raiders along their eastern border."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Pilgrims assemble at Saint Stanislaus's tomb in Wawel Cathedral. Shared devotion keeps the memory of unified Polish sovereignty alive across fragmented duchies."
+      "Content": "Pilgrims assemble at Saint Stanislaus's tomb in Wawel Cathedral. Stanislaus was canonized in 1253, and his shrine draws pilgrims from every duchy. Shared devotion keeps the memory of unified Polish sovereignty alive across fragmented duchies. Peasant families walking to Kraków bring bread, candles, and small coin for the shrine."
     }
   ],
   "TextMappings": []

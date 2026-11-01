@@ -7,34 +7,33 @@
     "Monstrance Eucharistic Civic Procession"
   ],
   "RagShortTexts": [
-    "The Miracle of Bolsena established Corpus Christi, celebrated with golden monstrance."
+    "The practice is real but uneven, and its eventual reach remains unknown.",
+    "Its observance has not yet become a universal calendar rule."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Pope Urban IV promulgated the Feast of Corpus Christi after the Miracle of Bolsena in 1263, when a doubting Bohemian priest saw consecrated communion hosts bleed onto the altar corporal. The feast celebrated the Real Presence of Christ in the Eucharist, and Thomas Aquinas composed its liturgy and hymns, among them the Pange Lingua. Cities soon adopted solemn processions in which the consecrated host, displayed in a golden monstrance, was carried through the streets. Guilds marched behind their banners, and the civic processions gave every urban community a public way to show its devotion and its unity."
+      "Content": "In 1259 devotion to the Eucharist is expressed through local feasts, sermons, processions and the choices of individual bishops. At Liège, the earlier visions and advocacy associated with Juliana of Cornillon have helped keep a special observance under discussion, but it is not yet a universal feast of the Latin Church. Reports about a bleeding host at Bolsena and the later papal action belong to future years, as does the familiar account of Thomas Aquinas composing a complete liturgy for a newly established feast. A priest may support a local celebration or question its expense; a town may organise a procession according to its own customs. The practice is real but uneven, and its eventual reach remains unknown."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "Corpus Christi united civic guilds and church orders. Walking behind the Blessed Sacrament in ranked hierarchy with beeswax tapers, towns displayed communal solidarity and doctrinal devotion."
+      "Content": "In 1259 a cleric may know the feast promoted at Liege through Juliana of Mont Cornillon and local episcopal support. Its observance has not yet become a universal calendar rule. Teaching about the Eucharist, arranging a service and securing approval remain local concerns; later papal legislation and elaborate civic processions must not be projected onto every parish."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Streets are strewn with fresh sweet-rushes and rose petals. When the bishop elevates the radiant golden monstrance under a silk canopy, thousands drop to their knees in awe."
+      "Content": "A villager hearing of a new Eucharistic observance asks when the parish will celebrate it and what work must stop. Candles, cloth and attendance cost households time and money, even when devotion is sincere. Customs differ between dioceses in 1259; a spectacular later procession cannot be assumed to pass every village church at the same appointed hour."
     }
   ],
   "TextMappings": []

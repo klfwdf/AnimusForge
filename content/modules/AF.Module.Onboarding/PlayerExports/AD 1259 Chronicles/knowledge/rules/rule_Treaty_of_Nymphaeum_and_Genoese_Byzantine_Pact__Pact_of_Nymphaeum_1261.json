@@ -7,25 +7,24 @@
     "Black Sea Duty Free Trade"
   ],
   "RagShortTexts": [
-    "In 1261, Nicaea allied with Genoa against Venice, granting extensive trade concessions."
+    "No Nymphaeum treaty has granted Genoa Aegean exemptions or a Galata quarter.",
+    "Officials may discuss the cost, but terms, timing and military result are undecided."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In March 1261, Michael VIII Palaiologos signed the Treaty of Nymphaeum with Genoa. Nicaea aimed to dismantle Venetian naval dominance over the Latin-held capital. In return for naval blockades and galley service, Nicaea granted Genoa total customs exemptions across the Aegean and Black Sea, along with commercial quarters in Galata. The pact left Genoa richer and more independent, and it left Byzantium dependent on a foreign fleet. Both parties understood that Venice would not accept the loss quietly, so the coming naval war was built into the agreement from the start, with Genoese galleys expected to hold the straits and Byzantine armies expected to move on the walls."
+      "Content": "Nicaean diplomacy in 1259 weighs naval assistance against customs and commercial rights an ally might demand. Genoa and Venice seek access to eastern markets, while Michael Palaiologos needs options to weaken Latin rule in Constantinople. No Nymphaeum treaty has granted Genoa Aegean exemptions or a Galata quarter. Officials may discuss the cost, but terms, timing and military result are undecided. Advisers compare toll revenue, fleet strength and dependence risk. Later concessions are not present facts."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "A desperate bargain swapping fiscal sovereignty for naval swords. While Genoese galleys aided the imperial return, the fortified warehouses of Galata would eventually swallow the empire's customs revenues."
+      "Content": "In 1259 the learned question is what naval assistance might cost an emperor in tolls, privileges and commercial leverage. Genoa and Venice have interests of their own, and an alliance would require a specific bargain. Neither the treaty of 1261 nor later arrangements at Galata are present facts; their separate dates must not be collapsed into one accomplished concession."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "Byzantine advisers weighed the hazards of welcoming Genoa, yet recapturing the imperial capital outweighed commercial caution. The emperor's advisers counted the customs revenue lost to exemptions against the value of a fleet that could isolate Venice, and they chose the fleet. Genoese naval power would neutralize Venice at the critical hour."
+      "Content": "Nicaean advisers debate whether Genoese aid could recover the capital. Some would pay with customs privileges; others fear dependence and lost revenue. No bargain has been struck, and Galata terms are undecided. A lord can estimate costs and seek safeguards, but cannot recount treaty effects as settled. The choice depends on negotiation and the risks across the straits."
     }
   ],
   "TextMappings": []

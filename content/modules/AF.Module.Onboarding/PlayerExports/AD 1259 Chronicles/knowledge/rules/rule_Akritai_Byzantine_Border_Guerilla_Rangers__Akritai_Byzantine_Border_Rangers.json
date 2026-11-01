@@ -7,7 +7,8 @@
     "Anti Turkmen Nomad Incursion Screen"
   ],
   "RagShortTexts": [
-    "The Akritai borderers held tax-free military lands, fighting Seljuk nomads across Anatolian."
+    "Anatolian border households link military service with local land and protection.",
+    "Frontier defence relies on knowledge of routes, supplies and neighbouring raiders."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
+          "villager",
           "wanderer"
         ]
       },
-      "Content": "Akritai mountain rangers blend seamlessly into limestone scrub. Waiting days beside canyon springs in reversible fleece coats, they drop rockslides upon intruding nomad horsemen."
+      "Content": "A traveller on the Anatolian frontier depends on guides who know the springs, tracks and places where horses can graze. Border households have reason to watch strangers closely: a raid can take both the year's grain and the animals needed to work the land. Their skill grows from local knowledge, rather than an ability to vanish into every landscape."
     }
   ],
   "TextMappings": []

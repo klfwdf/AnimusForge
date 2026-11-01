@@ -7,14 +7,15 @@
     "Kingdom of Jerusalem Remnants"
   ],
   "RagShortTexts": [
-    "In 1259 Crusader states clung to coastal forts, navigating between Mongol terror and Mamluk power."
+    "Every night the watch hears a rider's hooves on the causeway and thinks of Baghdad.",
+    "Outremer is no longer a land of glory."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In AD 1259, the years between the failure of the Seventh Crusade under Louis IX and the looming Eighth Crusade of 1270 left Outremer a shrinking strip of coast. The kingdom had withered into a string of fortified garrisons anchored at Acre and Tyre, while the county of Tripoli and the principality of Antioch clung to their own defences. Hulagu's Mongols had sacked Baghdad in 1258 and pushed into Syria, and the Mamluk sultanate of Cairo waited on the other side of the desert. Caught between those two powers, the Frankish barons struggled to preserve their maritime footholds. Without a large Western army, every garrison depended on its own walls, its own rations, and the uncertain goodwill of the nearest Muslim ruler."
+      "Content": "In 1259 the Latin settlements of the eastern Mediterranean are trying to recover from Louis IX failed Egyptian campaign and the losses of the 1240s and 1250s. Acre and Tyre remain important ports, while Tripoli and Antioch defend their own territories; their rulers have limited manpower and depend on shipping, local truces and fortified positions. Hulagu forces have entered Syria and the Mamluk government is preparing to resist them, creating a danger whose outcome is still unknown. Western preachers may call for another expedition, but the Eighth Crusade has not yet taken place and no one in Acre can know its course or date. For now, the barons argue over alliances, customs income, garrison pay and how to keep the coastal enclaves supplied."
     },
     {
       "Priority": 0,
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Frankish lords pray to their saints while our olive groves burn under foreign hooves. When horsemen ride through, it matters little whether they carry cross, crescent, or nine-tailed yak standards—the harvest is trampled all the same."
+      "Content": "Frankish lords pray to their saints while our olive groves burn under foreign hooves. Peasants in the Levant plant and reap for whoever holds the castle, and each new master raises the tithe. When horsemen ride through, it matters little whether they carry cross or crescent: the harvest is trampled all the same. We bury seed grain in jars beneath the floor and pray the soldiers do not dig."
     }
   ],
   "TextMappings": []

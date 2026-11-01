@@ -7,25 +7,24 @@
     "Teutonic Stone Castle Sieges"
   ],
   "RagShortTexts": [
-    "Following Durbe, Herkus Monte led the Great Prussian Uprising, besieging Teutonic redoubts."
+    "A Teutonic commander or Prussian notable in 1259 worries about remote castles through winter.",
+    "Tribute may arrive late, guides may refuse service, and rumours can alter patrol routes."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Spurred by its victory at Durbe in 1260, where Baltic allies inflicted a bloody defeat on the Teutonic Knights, the Great Prussian Uprising of 1260 to 1274 erupted across the Baltic provinces. Led by Herkus Monte, a Natangian chieftain who had been educated in Germany, the rebels captured siege artillery and adopted European field tactics, which let them press the Order's castles hard. They razed Teutonic outposts across the region. By the height of the revolt, only Königsberg and Elbing remained in Teutonic hands, and both were under siege. The uprising showed that the Order's conquest of Prussia was far from settled."
+      "Content": "A Teutonic commander or Prussian notable in 1259 worries about remote castles through winter. Tribute may arrive late, guides may refuse service, and rumours can alter patrol routes. The Order seeks recruits from German lands, but no fortress is yet starving under siege in a later revolt. Lords debate whether another campaign will secure obedience or deepen resentment. Their concern is supply and allegiance, not future victories or holdouts. No witness can yet describe the later campaigns or their final territorial limits."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Monte was a nemesis forged by the Order's own schooling. Fluent in Latin, he turned European military doctrine against his former masters, restoring pagan altars in blood sacrifices."
+      "Content": "A cleric or interpreter on the Prussian frontier knows that hostages may acquire the language and habits of their captors without surrendering every attachment to home. Herkus Monte's later career illustrates that tension. In the 1259 setting, however, the great rising of 1260 is still ahead; its leaders, victories and punishments cannot be reported as completed events."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "Teutonic garrisons inside Königsberg boiled leather horse harness to stave off hunger. Only the continuous seasonal crusades proclaimed by the Pope kept the Order from being wiped out in Prussia. Each winter brought a new call to arms, and each call cost the Order treasure and men."
+      "Content": "A Teutonic commander worries about remote castles through winter. Tribute may arrive late, guides may refuse service, and rumours alter patrols. The Order seeks recruits, but no fortress is starving under siege in a future revolt. Lords debate whether campaigning will secure obedience or deepen resentment. Their concern is present supply and allegiance, not later victories."
     }
   ],
   "TextMappings": []

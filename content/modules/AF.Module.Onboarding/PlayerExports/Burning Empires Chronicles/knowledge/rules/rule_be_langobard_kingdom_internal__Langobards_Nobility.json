@@ -7,15 +7,14 @@
     "Langobards Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Langobards comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "The module's Langobards do not inherit the later Italian kingdom's institutions in 374.",
+    "Followers and food-producing households must agree on the costs of expeditions."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Langobards, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "For the Langobards, a faction label in the module supplies a playable political grouping, not evidence for the institutions of their later Italian kingdom in 374. Early written descriptions are sparse and external. Kin connections, settlements and a leader's ability to gather armed followers provide cautious points of departure, while precise succession rules or universal land obligations remain uncertain. Internal disagreement can arise over joining an expedition, receiving newcomers or dividing its costs. A chief needs to keep food-producing households as well as warriors willing to cooperate; giving every notable five castles and a secret treaty would conceal those different interests."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "Guards stand motionless along the stone corridor while raised voices break out behind oak doors. The lord and his son-in-law have smashed wine cups against the wall, and the watch does not dare look up. When patrician magnates fight over mine leases, it is the common guardsmen who are sent to the gates first, and who pay with their heads. At the Langobards post, the night watchword is \"Ford.\""
+      "Content": "A fighter wants a workable route and enough provisions before following a chief beyond familiar ground. The household that lent an animal expects it back, and companions argue over who bears the cost if it dies. Keeping a band together requires answers to those ordinary claims, as well as a brave speech before battle."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "The patriarch turns his signet ring slowly and speaks to his heir in the low voice reserved for sealed letters. Who sits on the throne matters far less than keeping five castles and their serfs in the family's hands. Smile at the royal council and accept every toast, but keep steel hidden under the cloak until a rival's grain stores are yours."
+      "Content": "A Langobard notable weighs obligations to relatives against a leader's request for men. An expedition may strengthen one following and leave another exposed. He cannot invoke the law of a future Italian realm to settle the matter; agreement must rest on relationships and commitments that the present communities recognise."
     }
   ],
   "SemanticPrototypes": [],

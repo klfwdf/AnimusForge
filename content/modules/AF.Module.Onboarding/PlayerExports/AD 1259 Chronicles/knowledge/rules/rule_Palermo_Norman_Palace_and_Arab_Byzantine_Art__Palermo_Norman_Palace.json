@@ -7,7 +7,8 @@
     "Mediterranean Multicultural Haven"
   ],
   "RagShortTexts": [
-    "Palermo was a crossroads of Arab, Byzantine, and Norman art, centered in the Norman Palace."
+    "Palermo's courtly objects preserve earlier exchanges among Arabic, Greek and Latin traditions.",
+    "Roger II's surviving mantle records a royal textile workshop and a commission of 1133/34."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,22 +21,19 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "In royal tiraz textile workshops, Moorish weavers embroider gold blessings upon coronation mantles donned by Christian kings. Rational astronomy, medicine, and mathematics thrive in royal favor."
+      "Content": "Palermo's courtly objects preserve earlier exchanges among Arabic, Greek and Latin traditions. Roger II's surviving mantle records a royal textile workshop and a commission of 1133/34. A craftsman in 1259 may admire that inheritance, but should not assume every Norman institution still operates unchanged or that the object proves universal religious harmony."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Moorish aqueducts and qanats channel cold mountain water to every lemon terrace. So long as wheat galleys sail unhindered, harbor markets overflow with dried figs, sesame cakes, and spiced sardines."
+      "Content": "Moorish aqueducts and qanats channel cold mountain water to every lemon terrace. So long as wheat galleys sail unhindered, harbor markets overflow with dried figs, sesame cakes, and spiced sardines. Field hands tend the irrigation channels by hand and pay the water dues to the estate, and a broken ditch can ruin a season of orchards."
     }
   ],
   "TextMappings": []

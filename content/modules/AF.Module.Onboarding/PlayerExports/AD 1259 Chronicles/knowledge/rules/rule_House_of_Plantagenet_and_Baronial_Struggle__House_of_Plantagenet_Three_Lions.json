@@ -7,7 +7,8 @@
     "Magna Carta Baronial Parliament Dispute"
   ],
   "RagShortTexts": [
-    "The Plantagenet crown balanced continental Angevin ambitions with parliamentary baronial."
+    "Manor courts collect grain tithes whether the King or baronial council rules.",
+    "Reeves measure each sheaf at harvest, and villagers still owe labour on the lord's demesne."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Manor courts collect grain tithes whether the King or baronial council rules. Yet rumors spread of armed levies mustering along the Welsh marches, heralding renewed civil strife."
+      "Content": "Manor courts collect grain tithes whether the King or baronial council rules. Reeves measure each sheaf at harvest, and villagers still owe labour on the lord's demesne. Yet rumors spread of armed levies mustering along the Welsh marches, heralding renewed civil strife that could call sons from the plough."
     }
   ],
   "TextMappings": []

@@ -7,7 +7,8 @@
     "Mongol Imperial Fragmentation"
   ],
   "RagShortTexts": [
-    "Berke Khan embraced Islam and broke with Hulagu over Baghdad, fracturing the Mongol Empire."
+    "In 1259 the Mongol empire's shared order began to fracture.",
+    "He swore vengeance and mobilized vast steppe forces along the Terek River."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Tributary serfs in Rus haul sledges of grain to Sarai under the lash of tax assessors. When brother khans war, our young men are conscripted into baggage trains; we pray their wrath consumes only the high crags of the south."
+      "Content": "Tributary serfs in Rus haul sledges of grain to Sarai under the lash of tax assessors. Each household owes tribute in silver, furs, and grain, and the Mongol officials keep lists of every household. When brother khans war, our young men are sent to baggage trains; we pray their wrath consumes only the high crags of the south."
     }
   ],
   "TextMappings": []

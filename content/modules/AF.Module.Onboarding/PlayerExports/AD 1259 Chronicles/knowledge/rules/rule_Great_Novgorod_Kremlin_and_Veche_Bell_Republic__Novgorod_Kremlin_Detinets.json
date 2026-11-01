@@ -7,14 +7,15 @@
     "Volkhov River Baltic Trade"
   ],
   "RagShortTexts": [
-    "Great Novgorod preserved republican independence along the Volkhov, governed by the."
+    "Novgorod's river trade, assembly, elites and archbishop support a negotiated autonomy.",
+    "Tribute and census demands create immediate pressures in the 1250s."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Straddling the Volkhov River, Great Novgorod was an autonomous merchant republic in northern Rus. Its wealth came from furs, wax, and timber that merchants carried along the river toward the Baltic and the German trading towns. The Detinets, the fortified kremlin on the riverbank, and the cathedral of St. Sophia overlooked wharves busy with boats and sledges. Free citizens governed the city through the Veche assembly, which gathered at the ringing of the civic bell, and they elected their magistrates, the posadniks. The city hired princes from outside to lead its armies, and it paid tribute to the Mongol khans to spare its streets from the fire that had swept the rest of Rus. Its freedom rested on written charters and on citizens who were ready to gather whenever the bell rang."
+      "Content": "Novgorod stands on the Volkhov, linking a northern hinterland with routes toward the Baltic. Furs, wax and other goods support merchants, while the Detinets and Saint Sophia form important religious and political landmarks. The veche and elected offices are central to the city's arrangements, but public assembly does not mean equal power for every inhabitant: wealthy families, the archbishop and invited princes have different resources. Relations with the Mongols make tribute and the census pressing matters in the 1250s. The city's autonomy is negotiated through institutions, wealth and armed protection, rather than purchased once for permanent immunity from danger."
     },
     {
       "Priority": 0,
@@ -30,12 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Inscribed birchbark letters serve as everyday correspondence for commoners. From commercial debt ledgers to domestic domestic notes, widespread literacy distinguishes Novgorod from Western serfdoms."
+      "Content": "Inscribed birchbark letters served as everyday correspondence for ordinary townsfolk between the 11th and 15th centuries. Merchants sent instructions, debtors disputed sums, and families arranged gatherings, often in notes under twenty words. Such widespread writing shows that literacy reached well beyond the clergy. Commercial debt ledgers and domestic notes survive beside the letters."
     }
   ],
   "TextMappings": []

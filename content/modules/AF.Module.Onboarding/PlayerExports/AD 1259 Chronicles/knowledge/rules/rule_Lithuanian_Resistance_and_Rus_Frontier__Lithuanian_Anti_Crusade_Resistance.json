@@ -7,7 +7,8 @@
     "Battle on the Ice Legacy"
   ],
   "RagShortTexts": [
-    "King Mindaugas unified pagan Lithuania against the Teutons, while Alexander Nevsky guarded Rus."
+    "Concurrently, Grand Prince Alexander Nevsky of Novgorod guarded Orthodox Rus.",
+    "Every man in the line knows that a broken shield wall means the knights ride in among the wounded."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -40,11 +41,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Hunters sacrifice mead and bread at forest shrines under the night sky. Latin monks claim our souls are damned, but the old sacred groves provided timber for our grandfathers, and our soil shall not yield to Teutonic spade or cross."
+      "Content": "Hunters sacrifice mead and bread at forest shrines under the night sky. Latin monks claim our souls are damned, but the old sacred groves provided timber for our grandfathers, and our soil shall not yield to Teutonic spade or cross. Each winter the bailiff counts our hides and sheaves, and we still owe labour on the castle ditch before cutting our own fields."
     }
   ],
   "TextMappings": []

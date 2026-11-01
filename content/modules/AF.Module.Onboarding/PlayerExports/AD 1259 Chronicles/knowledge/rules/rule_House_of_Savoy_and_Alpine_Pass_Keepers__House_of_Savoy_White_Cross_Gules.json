@@ -7,7 +7,8 @@
     "English Royal Court Savoyard Counselors"
   ],
   "RagShortTexts": [
-    "The House of Savoy guarded western Alpine passes, levying lucrative transit tolls beneath."
+    "The counts of Savoy held the western Alps, where mountain passes meet the lowland trade roads.",
+    "They sold passage rights to whichever power paid most."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
+          "villager",
           "wanderer"
         ]
       },
-      "Content": "Highland sentry posts are carved directly into granite cliff faces. When blizzards blanket the passes, Savoyard guides shepherd pack trains safely along treacherous ledges."
+      "Content": "An Alpine guide earns payment by knowing a route's weather, bridges and stopping places. After a fall of snow, the safest choice may be to delay a pack train even when a merchant protests. Savoy's control of a pass makes tolls and protection political issues, while the people beside the track must supply fodder and shelter from their own limited stores."
     }
   ],
   "TextMappings": []

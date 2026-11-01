@@ -7,7 +7,8 @@
     "Languedoc Occitan Culture"
   ],
   "RagShortTexts": [
-    "Toulouse stood as the cultural heart of Occitania, recovering from Albigensian wars as."
+    "Toulouse's university was founded in the political and religious settlement of 1229.",
+    "Higher learning, local patronage and the contest over orthodoxy shape its institutions."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest"
+          "townsfolk"
         ]
       },
-      "Content": "Founded to combat Cathar theology, the University of Toulouse trained Dominican inquisitors and jurists to anchor orthodoxy."
+      "Content": "Founded under the 1229 Treaty of Paris to combat Cathar theology, the University of Toulouse trained Dominican inquisitors and jurists to anchor orthodoxy. Its scholars studied in the convent of the Jacobins, the Dominican order's own name, whose rose-red brick echoes the city's nickname, La Ville Rose."
     }
   ],
   "TextMappings": []

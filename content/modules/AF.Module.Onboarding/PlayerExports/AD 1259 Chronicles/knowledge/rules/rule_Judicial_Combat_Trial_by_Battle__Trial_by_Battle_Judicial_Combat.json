@@ -7,7 +7,8 @@
     "Sacred Ordeal Champion Oath"
   ],
   "RagShortTexts": [
-    "When human evidence fails, feudal courts sanctioned judicial duels where God would grant."
+    "Trial by battle depends on jurisdiction, status and the nature of the plea.",
+    "Rules for one form of combat do not govern every medieval litigant or champion."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Commoners face judicial combat too, but magistrates forbid us arming swords. We must fight in linen smocks with quarterstaves and leather bucklers until one yields or perishes in the dirt."
+      "Content": "A person threatened with trial by battle worries about the weapon permitted, the champion available and the consequences for the household. Those rules depend on place, status and the kind of plea. A remembered tale of a fight with clubs is not a universal rule for all commoners, and even a legal victory can leave debts, injury and fields without labour."
     }
   ],
   "TextMappings": []

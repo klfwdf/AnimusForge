@@ -7,7 +7,8 @@
     "Colonna Orsini Baronial Feuds"
   ],
   "RagShortTexts": [
-    "Rome functioned amidst colossal imperial ruins, balancing papal courts at the Lateran with."
+    "Rome was a city where classical monuments rose out of pastureland.",
+    "The ruins became strongholds, and every tower was a base for feud and extortion."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,22 +21,19 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Along the Tiber, tumbled Corinthian capitals evoke antiquity's majesty. While papal bulls shake kingdoms across the continent, within Rome's walls citizens still invoke classical republican liberties."
+      "Content": "Along the Tiber, tumbled Corinthian capitals evoke antiquity's majesty. While papal bulls shake kingdoms across the continent, within Rome's walls citizens still invoke classical republican liberties. Stonemasons reuse marble from the ruins for new churches and house-fronts."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Pilgrims trekking from beyond the Alps bring diverse foreign coin. Selling lead pilgrim ampullae near Ponte Sant'Angelo pays the rent, provided you dodge arrows when the baronial towers trade crossbow fire."
+      "Content": "Pilgrims trekking from beyond the Alps bring diverse foreign coin. Selling lead pilgrim ampullae near Ponte Sant'Angelo pays the rent, provided you dodge arrows when the baronial towers trade crossbow fire. Tenants owe labour at the baron's estate outside the walls."
     }
   ],
   "TextMappings": []

@@ -7,14 +7,15 @@
     "Palaiologos Imperial Co-Rulers"
   ],
   "RagShortTexts": [
-    "The House of Kantakouzenos held immense Anatolian landholdings, providing generals to."
+    "Marriage can build alliances, but later Palaiologan intermarriages are not settled policy.",
+    "Grants are negotiated amid competing claims."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Ranking among Byzantium's wealthiest dynastic magnates, the House of Kantakouzenos held large estates in Smyrna, Thrace, and the Anatolian interior. The family fielded private retinues and lent gold to the Nicaean crown, and its commanders often held the office of Megas Domestikos, the commander of the field army. Michael VIII relied on Kantakouzenos generals in his campaigns, and their support helped him reclaim Constantinople in 1261. Their estates were tied to the monastic houses of the Aegean, which made the family a patron of scribes and scholars. Their wealth made them a counterweight to the emperor's own treasury."
+      "Content": "A Kantakouzenos notable uses estate income, military service and court ties to bargain with the Nicaean ruler. Marriage can build alliances, but later Palaiologan intermarriages are not settled policy. Generals seek commands, magnates defend privileges, and the emperor needs resources for frontier defence and a possible return to Constantinople. Grants are negotiated amid competing claims. A lord may expect influence to grow, but cannot know who will rule the recovered capital. Such support is a court calculation, not proof of a future imperial restoration."
     },
     {
       "Priority": 0,
@@ -24,17 +25,16 @@
           "notable"
         ]
       },
-      "Content": "Intermarrying with the Palaiologoi, Kantakouzenos generals steered imperial military policy and balanced aristocratic privileges against the emperor's need for centralized revenue. Each marriage contract brought lands and fortresses into the family's hands, and the emperor's secretaries recorded every such grant in the registers."
+      "Content": "A Kantakouzenos notable uses estate income and court ties to bargain with the Nicaean ruler. Marriage can build alliances, but later Palaiologan intermarriages are not settled policy. Generals seek commands; magnates defend privileges. Grants are negotiated amid competing claims. A lord may expect influence to grow, but cannot know who will rule a recovered capital."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Their fortified estates patronized monastic scriptoriums, copying classical philosophy and patristic commentaries amid turbulent Anatolian frontier warfare."
+      "Content": "Their fortified estates patronized monastic scriptoriums, copying classical philosophy and patristic commentaries amid turbulent Anatolian frontier warfare. Scribes worked by window light in cold rooms, ruling pages and cutting quills, while bookbinders stitched gatherings and cut boards from wood. Estate stewards paid these craftsmen in grain and cloth."
     }
   ],
   "TextMappings": []

@@ -7,7 +7,8 @@
     "There is No Victor but God Motto"
   ],
   "RagShortTexts": [
-    "The Nasrid dynasty founded the Emirate of Granada, building the Alhambra under the motto."
+    "Every tribute and every alliance was a calculated move to keep the mountain kingdom alive.",
+    "Lords in Granada understood that each payment was a bargain with a stronger neighbour."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Refugee scholars, tile-makers, and botanists transformed Granada's Albayzín into an intellectual hub, embellishing Alhambra courtyards with intricate arabesques and canal gardens."
+      "Content": "Refugee scholars, tile-makers, and botanists transformed Granada's Albayzín into an intellectual hub, embellishing Alhambra courtyards with intricate arabesques and canal gardens. Muhammad I founded the emirate and began the Alhambra in 1238, so royal commissions kept many craftsmen busy. Artisans carved plaster, laid glazed tiles, and cut channels for mountain water."
     }
   ],
   "TextMappings": []

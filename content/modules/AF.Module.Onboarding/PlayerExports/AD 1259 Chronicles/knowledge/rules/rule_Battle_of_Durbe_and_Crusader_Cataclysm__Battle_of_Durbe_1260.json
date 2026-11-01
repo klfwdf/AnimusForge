@@ -7,14 +7,15 @@
     "Great Prussian Uprising Spark"
   ],
   "RagShortTexts": [
-    "The 1260 Battle of Durbe was the Teutonic Order's worst 13th-century defeat, killing 150."
+    "A Prussian or Livonian notable measures power by the garrisons and levies the Order can field.",
+    "Curonian auxiliaries may resent imposed service, while Lithuania remains a concern."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Fought on July 13, 1260, near the shores of Lake Durbe in Courland, the battle was the worst catastrophe the Teutonic Order suffered in the thirteenth century. The Order's army included Livonian and Prussian forces alongside native Curonian auxiliaries, and the auxiliaries turned during the fighting and attacked the crusaders from the rear. The Order lost around 150 brother-knights, along with Livonian Master Burkhard von Hornhausen and Prussian Marshal Heinrich Botel. The defeat weakened the Order's grip on Courland and sparked the Great Prussian Uprising that followed."
+      "Content": "In 1259 the Teutonic and Livonian orders are still extending and defending their Baltic holdings, while Prussian and Curonian communities face tribute demands, forced service and pressure to accept Christianity. The region is unsettled: local resistance, raids and competing alliances make any road or harvest uncertain. Yet the battle later called Durbe has not happened; the defeat of July 1260 and its named commanders belong to the future. A ruler can hear complaints about the Order's levies or receive reports of a border clash, but cannot cite Durbe as proof that the crusader position has collapsed. For now, both the Order and its opponents test one another's strength without knowing which coalition will prevail."
     },
     {
       "Priority": 0,
@@ -24,7 +25,7 @@
           "notable"
         ]
       },
-      "Content": "The disaster at Durbe unraveled decades of crusader conquests in days. King Mindaugas of Lithuania broke with Rome, and Herkus Monte launched the Great Prussian Uprising, trapping the remaining Teutonic garrisons inside besieged coastal brick castles."
+      "Content": "A Prussian or Livonian notable measures power by the garrisons and levies the Order can field. Curonian auxiliaries may resent imposed service, while Lithuania remains a concern. A lord may fear coercion is making enemies or seek neighbours for mutual defence. He cannot know a defeat at Durbe will trigger an uprising or name Herkus Monte as its leader. The next levy is the immediate test."
     },
     {
       "Priority": 0,
@@ -34,17 +35,16 @@
           "wanderer"
         ]
       },
-      "Content": "Panic spread through the Christian battle line as Curonian auxiliaries turned and loosed arrows at the baggage train. Men at the front found the enemy inside their own ranks. Within hours the elite knights of Prussia lay cut down in the reeds beside the lake, and the wounded were left where they fell."
+      "Content": "A Courland foot soldier carries supplies between timber forts and watches for scouts. Local auxiliaries may distrust the German knights beside them; pay and language shape the camp. Patrols report tracks or missing cattle. No soldier in 1259 can describe a rout at Lake Durbe or count its future dead. He may fear bad ground or divided loyalties, but fear is not memory."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Drums echoed from Courland to the Niemen! Pagan warriors burned monastery tithe ledgers and sacrificed captured horses to the war gods. The blood of the white-mantled masters soaked the earth that had once belonged to our fathers."
+      "Content": "A Courland household hides seed grain when patrols pass. A lost cow, requisitioned cart or labour demand matters more than distant claims of victory. Some villagers resent the Order; others rely on its market or protection. Raids make people cautious, but Durbe lies in the next year. No one can celebrate that future victory. Families weigh food, shelter and whether to flee before the next levy."
     }
   ],
   "TextMappings": []

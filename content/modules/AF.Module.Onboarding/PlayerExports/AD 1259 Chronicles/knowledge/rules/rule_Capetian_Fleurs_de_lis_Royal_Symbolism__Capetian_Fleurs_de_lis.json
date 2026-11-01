@@ -7,14 +7,15 @@
     "Saint Denis Royal Sovereignty"
   ],
   "RagShortTexts": [
-    "The azure shield with golden fleurs-de-lis and the sacred Oriflamme embodied Capetian."
+    "Royal lilies express Capetian authority through seals, banners and religious imagery.",
+    "Claims of sacred kingship do not themselves prove miraculous healing or just government."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Under Louis IX the azure shield semy of golden fleurs-de-lis, known as France Ancien, stood as the premier royal arms. The three petals were read as a sign of the Holy Trinity, and the blue field echoed the Virgin, whose devotion the French crown promoted with special fervour. Beside the lilies flew the Oriflamme, the red silk banner kept at the abbey of Saint-Denis and carried into battle only when the king had resolved to fight to the end. Unfurling it meant no quarter would be asked or given. The arms appeared on coins, seals, charters, and the gates of royal fortresses, so every subject who read a document or paid a toll saw the same mark of royal authority."
+      "Content": "Under Louis IX, the azure shield strewn with golden fleurs-de-lis served as a leading emblem of the French crown. Later writers read the three petals through Christian symbolism, while royal devotion to the Virgin helped shape the meaning attached to the blue and gold. The Oriflamme was a red banner associated with Saint-Denis and carried on royal campaigns; its display signaled a solemn commitment to war, but it did not create a universal rule that no enemy could surrender or be spared. Royal arms appeared on seals, charters, coins and fortified places, making authority visible in administration as well as ceremony."
     },
     {
       "Priority": 0,
@@ -30,12 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "The iris embodies both Marian purity and regal wisdom. Anointed with holy chrism at Reims under the sign of the lilies, Capetian kings are believed by pilgrims to cure scrofula through the royal touch."
+      "Content": "For an embroiderer or seal cutter, the royal lilies are a pattern whose arrangement must suit the commission. Clergy connect the emblem with sacred kingship and devotion, while pilgrims may believe in the king's healing touch. The artisan makes the object that carries those claims; a costly banner is neither proof of a miracle nor a guarantee of lawful government."
     }
   ],
   "TextMappings": []

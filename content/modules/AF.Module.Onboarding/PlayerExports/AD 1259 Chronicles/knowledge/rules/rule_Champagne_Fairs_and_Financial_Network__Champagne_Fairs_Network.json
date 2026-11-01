@@ -7,14 +7,15 @@
     "Medieval Bill of Exchange"
   ],
   "RagShortTexts": [
-    "The Fairs of Champagne connected northern cloth manufacturing with southern Mediterranean."
+    "The Champagne fair cycle links northern cloth with Mediterranean goods and credit.",
+    "Safe-conduct, fees and enforceable obligations support long-distance merchant exchange."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Six fairs a year turned Troyes, Provins, and Bar-sur-Aube into a rotating marketplace, each running for weeks under the protection of the Counts of Champagne. Northern Flemish broadcloth changed hands for Mediterranean spices, silks, and alum, and bales from Italy were weighed on the count's public scales before they could be sold. Merchants paid stall rents, weighing fees, and hall tolls, and in return the count's officers guaranteed safe-conduct for their persons and goods. The fairs were also where Italian bankers spread the bill of exchange, which let a merchant in Genoa settle a debt in Bruges without moving coin. That instrument, and the credit it carried across the continent, turned a regional market into the clearinghouse of 13th-century Europe."
+      "Content": "The annual Champagne fair cycle connects Lagny, Bar-sur-Aube, Provins and Troyes with merchants from northern and Mediterranean trading regions. Cloth, spices and other goods move alongside obligations recorded and settled through commercial networks. Countal protection, access to courts, weights and market facilities help make those dealings possible, while fees and tolls provide revenue. Credit reduces some need to carry coin, but depends on trust, partners and the enforcement of promises rather than a modern banking system appearing fully formed. Safe-conduct is valuable precisely because travel remains risky; a commercial privilege cannot ensure that no war or robbery ever interrupts a fairbound journey."
     },
     {
       "Priority": 0,
@@ -30,12 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Behind money-changers' benches, Sienese and Florentine bankers assay silver mark fineness. Commercial contracts recorded by licensed fair notaries hold legal validity from London to Palermo."
+      "Content": "Behind money-changers' benches, Sienese and Florentine bankers assay silver mark fineness. Six fairs rotate among Lagny, Bar-sur-Aube, Provins, and Troyes each year, and commercial contracts recorded by licensed fair notaries hold legal validity from London to Palermo. Letters of exchange let a merchant settle debts without carrying coin across the frontiers."
     }
   ],
   "TextMappings": []

@@ -7,7 +7,8 @@
     "Languedoc Inquisitors"
   ],
   "RagShortTexts": [
-    "Dominican inquisitors established systematic registers of interrogations to uproot heresy."
+    "Inquisitorial testimony is recorded through an institution with coercive authority.",
+    "Denunciation, penance and imprisonment affect households as well as accused individuals."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,22 +21,19 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "The inquest seeks spiritual rehabilitation before damnation. Notaries record every confession under oath; reconciled penitents may escape the stake by donning yellow felt crosses of penance."
+      "Content": "An inquisitorial record is made through questions, testimony and a notary's choice of words. A scholar must read it as evidence produced by a coercive institution, not as a transparent transcript of village belief. Penance and reconciliation are possible outcomes, alongside imprisonment and referral to secular power; procedure does not erase the danger of denunciation."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "When the black friars enter a village, neighbors stop speaking across orchard hedges. One grudge whispered to an informer, and a man finds himself in church cellars before sunset."
+      "Content": "When investigators summon witnesses, an old quarrel can acquire a frightening new importance. A household wants to know who has spoken, what was recorded and whether a relative may return. Fear can silence neighbours as easily as produce testimony. Neither a whispered accusation nor a notary's neat writing proves that every charge against the village is true."
     }
   ],
   "TextMappings": []

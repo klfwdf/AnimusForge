@@ -7,7 +7,8 @@
     "Baltic Pagan Colonization Crusade"
   ],
   "RagShortTexts": [
-    "The Teutonic Order forged a monastic state in Prussia and Livonia under the black cross banner."
+    "Teutonic expansion combines armed conquest, castles, settlement and revenue.",
+    "Protection for some groups can impose labour, dues and displacement on others."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -21,7 +22,7 @@
       "When": {
         "Roles": [
           "lord",
-          "priest"
+          "townsfolk"
         ]
       },
       "Content": "The Grand Master answered to the papacy and the Emperor, but in the field he ruled by letter and seal. Commanders sent accounts of grain, timber, and amber to the Order's chancery in Prussia, and the ledgers tracked every tithe. Lords in Pomerania and Masovia watched the expansion with unease, since a new castle at a river mouth could divert the trade their customs depended on."
@@ -30,11 +31,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
+          "villager",
           "wanderer"
         ]
       },
-      "Content": "Through dense pine swamps, Teutonic lances ride down pagan resistance. Communities that reject baptism see their sacred groves felled and replaced by stone bastions demanding tithes."
+      "Content": "A traveller across the Prussian frontier asks which crossing is held, who demands a toll and whether fighting has closed the road. New castles can offer trade and shelter to some people while imposing dues and labour on others. A letter may help establish a traveller's business, but there is no reason to invent one universal pass required at every crossing."
     }
   ],
   "TextMappings": []

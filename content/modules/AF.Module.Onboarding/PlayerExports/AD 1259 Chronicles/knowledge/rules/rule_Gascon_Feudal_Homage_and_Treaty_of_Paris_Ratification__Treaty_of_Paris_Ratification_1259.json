@@ -7,7 +7,8 @@
     "Plantagenet Renunciation of Normandy"
   ],
   "RagShortTexts": [
-    "In December 1259, Henry III performed liege homage to Saint Louis IX, sealing the Treaty of Paris."
+    "The Paris settlement of 1259 connects Henry III's continental rights with homage.",
+    "Peace can ease transport without abolishing Gascon rents, tolls or local disputes."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -30,11 +31,10 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "With royal seals affixed in Paris, vineyard workers along the Garonne find respite from pillaging. English wool convoys move through French fair towns without fear of border arrest."
+      "Content": "For a Garonne vineyard household, peace between kings matters when casks can reach the quay and carts can pass without seizure. The settlement of 1259 concerns Henry's continental rights and homage, rather than a promise to abolish all tolls. Tenants still owe their usual payments, and a royal seal alone cannot prevent every local quarrel or raid."
     }
   ],
   "TextMappings": []

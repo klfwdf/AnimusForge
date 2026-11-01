@@ -7,7 +7,8 @@
     "English Crown Customs Lifeline"
   ],
   "RagShortTexts": [
-    "Bordeaux anchored English Gascony, funneling lucrative claret wine fleets across the Bay of."
+    "Bordeaux's wine exports connect Gascon merchants with the English crown.",
+    "Vintage, river transport and port dues affect both household income and royal revenue."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,11 +21,11 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "merchant",
-          "artisan"
+          "notable",
+          "townsfolk"
         ]
       },
-      "Content": "English customs revenues depended directly upon Bordeaux vintage yields, binding civic burghers inextricably to the crown of England."
+      "Content": "English customs revenues depended directly upon Bordeaux vintage yields, binding civic burghers inextricably to the crown of England. Each cask shipped through the Gironde paid duty at the quay, and the wine merchants answered to royal officers. Every good harvest mattered to the crown and the city alike, since the export trade filled both the customs chests and the merchant houses."
     }
   ],
   "TextMappings": []

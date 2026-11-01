@@ -7,25 +7,24 @@
     "Tigris Ink and Blood River"
   ],
   "RagShortTexts": [
-    "Hulagu's sack of Baghdad in 1258 extinguished the Abbasid Caliphate, ending the Islamic."
+    "Baghdad's fall in 1258 disrupted homes, institutions and learned communities.",
+    "Arabic and Persian scholarship survived; later ink-black river stories require caution."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In February 1258 Hulagu Khan's army broke into Baghdad after a siege, and the sack that followed killed people in the hundreds of thousands by most estimates. Caliph al-Musta'sim was trampled to death, ending the Abbasid line that had ruled from the city since 762. The House of Wisdom, the great library of the age, was ransacked and its manuscripts thrown into the Tigris. The canal networks that fed the region's fields were damaged, and irrigation that once supported dense farming began to decline. Chroniclers later described the river running black with ink and red with blood. The disaster removed the caliph who had been the symbolic head of Sunni Islam, leaving the Mamluks and the Ilkhanate to fight over the Near East without a spiritual centre in Baghdad."
+      "Content": "In February 1258 Hulagu Khan's army broke into Baghdad after a siege, and the sack killed many inhabitants; medieval totals vary and cannot be treated as a count. Caliph al-Musta'sim was killed, ending Abbasid rule from Baghdad, which had begun in 762. The city lost people, buildings, collections and institutions, but no single library can stand for all learning in the Arabic- and Persian-speaking world. The canal network and cultivated lands also suffered damage, though the pace and extent of later decline varied across Iraq. Chroniclers told of the Tigris running black with ink and red with blood; these are vivid accounts of catastrophe, not measurements of every manuscript or death."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Five centuries of Islamic scholarship drowned in days. Surviving scholars carried scorched folios to Cairo, weeping at the extinction of classical Arabic and Persian learning."
+      "Content": "The destruction of Baghdad in 1258 is a catastrophe for scholars and the institutions supporting them. Individual books and learned people survived, so it would be false to call it the extinction of Arabic or Persian learning. Accounts of rivers running black with ink express the scale of mourning; they are not measurements of what happened to every library."
     },
     {
       "Priority": 0,

@@ -7,15 +7,14 @@
     "Eastern Roman Empire Internal Strife"
   ],
   "RagShortTexts": [
-    "The ruling elite of Eastern Roman Empire comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Valens's eastern court operates within the Roman Empire in 374.",
+    "Office, patronage, treason prosecutions and supply burdens shape eastern politics."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Eastern Roman Empire, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "In 374 the eastern imperial court of Valens belongs to the Roman Empire, not to a later medieval Byzantine order. Civil office, military command, provincial wealth and access to the emperor provide different routes to influence. Court suspicion also reaches beyond policy: prosecutions connected with divination and treason can turn a patron's fall into danger for clients. Religious disagreement adds another pressure without making every alliance purely doctrinal. The army needs recruits and supplies, while provincial officials and wealthy households contest the burden. The module's eastern faction expresses an imperial division of government, rather than an already permanent separate national state."
     },
     {
       "Priority": 0,
@@ -25,7 +24,7 @@
           "wanderer"
         ]
       },
-      "Content": "A conscript on the palace wall learns the night's watchword from a scarred sergeant, then hears the feud below. Two magnate houses have bribed the same quartermasters for the same mine leases, and their retainers now trade blows in the square. When the swords come out, guardsmen take the wounds while the patricians retreat to their villas."
+      "Content": "An eastern soldier hears orders through his officers and needs rations delivered where the unit actually serves. A patron's disgrace may replace a commander, but a new name on a dispatch does not repair boots or produce fodder. Men judge rival officials by whether their promises arrive in the storehouse before the march."
     },
     {
       "Priority": 0,
@@ -35,7 +34,7 @@
           "notable"
         ]
       },
-      "Content": "Behind a wax-sealed letter from the palace, the head of an old house gives his heir a plain order: keep the family vineyards and tax rolls out of the imperial census, and let frontier federate captains owe you favors. Smile at the tribunal and send your cousin with the gold. Vassals follow whoever guards their tithe, so a quiet pact with two rival clans is worth more than an open quarrel."
+      "Content": "A notable seeking influence at Valens's court weighs office, patronage and the risk of accusation. Provincial connections can provide money and information, yet make him vulnerable if a client is investigated. He needs military protection and workable taxation; enriching his household alone can undermine the loyalty on which his position depends."
     }
   ],
   "SemanticPrototypes": [],

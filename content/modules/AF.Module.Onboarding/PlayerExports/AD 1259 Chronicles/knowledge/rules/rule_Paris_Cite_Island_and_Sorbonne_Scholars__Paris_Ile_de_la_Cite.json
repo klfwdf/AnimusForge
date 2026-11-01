@@ -7,7 +7,8 @@
     "Capetian Heart of France"
   ],
   "RagShortTexts": [
-    "The Île de la Cité on the Seine held French royal majesty, flanked by Sorbonne scholars in."
+    "Paris links royal institutions, river commerce and a large scholarly population.",
+    "Tolls, housing, book production and markets connect urban wealth with daily household costs."
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -20,22 +21,19 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "Students from four nations—French, Picard, Norman, and English—sit on straw-covered floors debating Aristotelian dialectic. Vellum parchment dressers and illuminated book copyists drive a booming trade."
+      "Content": "Students from four nations (French, Picard, Norman, and English) sit on straw-covered floors debating Aristotelian dialectic. Vellum parchment dressers and illuminated book copyists drive a booming trade, because each lecture text must be copied slowly by hand."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "peasant",
           "villager"
         ]
       },
-      "Content": "Bridges over the Seine are crowded with two-story houses and cobblers' stalls. Carting country butter and cider into the central market at Les Halles means paying gate tolls, but Paris silver coin never depreciates."
+      "Content": "A farmer bringing butter or other produce into Paris counts gate dues, market fees and the hours spent away from the holding. A busy bridge may offer many customers and little room for a cart. Coin must still be accepted and reckoned by its local value; the size of the city does not make its silver immune from changes in money or prices."
     }
   ],
   "TextMappings": []

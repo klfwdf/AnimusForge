@@ -7,25 +7,24 @@
     "Lombard Free League Hegemony"
   ],
   "RagShortTexts": [
-    "Milan anchored Lombardy's Po Valley agriculture and commanded Europe's finest armor workshops."
+    "Milanese commerce and craft depend on Lombard agriculture, routes and demand for equipment.",
+    "Full articulated plate armour is not standard workshop equipment in 1259."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Milan sat at the heart of Lombardy, on the fertile Po plain, and it commanded the road networks linking the Alpine passes with the river valleys. Its armourers were among the best in Europe. Guild workshops drew iron from the Alps and worked it with water-powered trip-hammers, producing mail and the newer transitional plates that combined riveted rings with solid pieces. Other courts came to Milan when they needed harness in quantity. Civic politics fed the trade, because the Torriani and Visconti houses fought for control of the city and each faction armed its followers with the best mail it could buy. Canal and irrigation works across the plain kept grain and fodder moving toward the markets, so the commune could feed its citizens through a long war."
+      "Content": "Milan stood amid the productive lands and routes of Lombardy, where grain, fodder and craft production supported a wealthy commune. Its metalworkers made mail, helmets and other arms, with construction varying by workshop and patron; a complete articulated plate harness should not be projected onto every Milanese soldier in 1259. Water-powered hammers and later manufacturing traditions must likewise be tied to evidence for particular places and dates, rather than treated as uniform guild practice. Milanese politics involved competing urban factions, including the Torriani and Visconti, but the Visconti did not establish durable supremacy until later in the thirteenth century."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "scholar",
-          "priest",
-          "artisan"
+          "townsfolk"
         ]
       },
-      "Content": "In the armorers' quarter, watermills drive deafening trip-hammers. Milanese masters understand biomechanics intimately, articulating overlapping plates so seamlessly that harness feels like a second skin."
+      "Content": "A Milanese smith depends on sound iron, fuel, tools and repeated work at the hearth. In 1259 armour making centres on the equipment of the period, including mail, helmets and reinforcing pieces. The articulated full plate harness of a later age must not be placed on every workshop bench. Fit and repair matter even when a patron pays for elaborate decoration."
     },
     {
       "Priority": 0,
