@@ -114,6 +114,13 @@ public sealed partial class TownExecutionMissionBehavior
             _conversationLogic = Mission.GetMissionBehavior<MissionConversationLogic>();
             if (Request.IsFieldCamp)
             {
+                // Recheck at actual staging, including callbacks fired by Begin.
+                if (!VengeanceIntegration.CanStartFieldCampCeremony())
+                {
+                    CancelSceneAndReturn(ExecutionFailureReason.VenueUnavailable,
+                        new TextObject("{=REX_Error_FieldCamp_Unavailable}The field camp cannot host an execution right now."));
+                    return false;
+                }
                 // The camp clears the site, hides its own copy of the condemned
                 // and brings soldiers to watch before any ceremony actor exists.
                 NotifyFieldCampCeremonyStaged();

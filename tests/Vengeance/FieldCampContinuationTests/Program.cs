@@ -16,14 +16,16 @@ static class Program
         Mission.Current = host.Mission;
         Campaign.Current = new Campaign();
         Campaign.Current.Behavior.Options.Add(new ExecutionStudioPrisonerOption(new Hero()));
-        VengeanceIntegration.IsEnabled = true;
+        VengeanceIntegration.SetEnabled(true);
+        VengeanceIntegration.FieldCampMissionProbe = m => m != null;
+        VengeanceIntegration.FieldCampCeremonyAdmissionProbe = m => m?.CeremonyReady == true;
         return host;
     }
     static void Main()
     {
         var host = Setup(); var mission = host.Mission; var hero = Campaign.Current!.Behavior.Options[0].Hero;
         host.Choose(hero);
-        Check(string.Join(",", mission.Events) == "commit,cleanup,remove-controller,remove-death,begin,inject", "settle and detach before next begin");
+        Check(string.Join(",", mission.Events) == "commit,begin,cleanup,remove-controller,remove-death,inject", "authorize next request before detaching previous entry");
         Check(ExecutionSessionCoordinator.LastMission == mission, "reuse mission");
         Check(ExecutionSessionCoordinator.LastPreset == host.Preset, "reuse layout");
         host.Choose(hero); Check(mission.Events.Count == 6, "duplicate callback ignored");
@@ -49,12 +51,41 @@ static class Program
         host = Setup(); hero = Campaign.Current!.Behavior.Options[0].Hero; host.Service.Valid = false; host.Choose(hero);
         Check(host.Mission.Events.Count == 0, "invalid next request does not settle current");
         host = Setup(); hero = Campaign.Current!.Behavior.Options[0].Hero; host.Service.BeginValid = false; mission = host.Mission; host.Choose(hero);
-        Check(!mission.Events.Contains("inject"), "begin rejection never injects");
+        Check(string.Join(",", mission.Events) == "commit,begin", "begin rejection preserves executioner and controller");
+        Check(host.CanChoose, "F entry remains available after begin rejection");
+        host.Service.BeginValid = true; host.Choose(hero);
+        Check(string.Join(",", mission.Events) == "commit,begin,begin,cleanup,remove-controller,remove-death,inject", "retry succeeds without repeating campaign commit or changing mission");
         host = Setup(); hero = Campaign.Current!.Behavior.Options[0].Hero; mission = host.Mission; ExecutionSessionCoordinator.Fail = true; host.Choose(hero);
         Check(mission.Events.Contains("cancel"), "failed injection cancels new request");
         ExecutionSessionCoordinator.Fail = false;
         host = Setup(); host.Open(); var first = MBInformationManager.Last; host.Open();
         Check(ReferenceEquals(first, MBInformationManager.Last), "only one inquiry at a time");
+        host = Setup(); hero = Campaign.Current!.Behavior.Options[0].Hero; host.Mission.CeremonyReady = false; host.Choose(hero);
+        Check(host.Mission.Events.Count == 0, "busy camp cannot commit or start continuation");
+        host.Open(); Check(!host.ChoiceOpen, "busy camp cannot open inquiry");
+        host = Setup(); host.Open(); inquiry = MBInformationManager.Last!; host.Mission.CeremonyReady = false;
+        inquiry.Accept(new List<InquiryElement> { inquiry.Elements[0] });
+        Check(host.Mission.Events.Count == 0, "inquiry callback rechecks camp admission");
+        host = Setup(); hero = Campaign.Current!.Behavior.Options[0].Hero; mission = host.Mission;
+        host.Service.OnBegin = () => mission.CeremonyReady = false; host.Choose(hero);
+        Check(string.Join(",", mission.Events) == "commit,begin,cancel", "begin callback becoming busy cancels reservation before cleanup");
+        mission.CeremonyReady = true; host.Service.OnBegin = null; Check(host.CanChoose, "busy callback does not destroy retry entry");
+        host.Choose(hero); Check(mission.Events.Contains("inject"), "retry after busy activity finishes");
+        host = Setup(); hero = Campaign.Current!.Behavior.Options[0].Hero; mission = host.Mission;
+        host.Service.OnBegin = () => host.Choose(hero); host.Choose(hero);
+        Check(string.Join(",", mission.Events) == "commit,begin,cleanup,remove-controller,remove-death,inject", "begin callback cannot recursively hand off");
+        host = Setup(); hero = Campaign.Current!.Behavior.Options[0].Hero; mission = host.Mission;
+        host.Service.OnBegin = () => mission.MissionEnded = true; host.Choose(hero);
+        Check(string.Join(",", mission.Events) == "commit,begin,cancel", "mission ending during begin cancels without detaching previous owner");
+        host = Setup(); hero = Campaign.Current!.Behavior.Options[0].Hero; mission = host.Mission;
+        host.Service.OnBegin = () => throw new Exception("begin failure"); host.Choose(hero);
+        Check(!mission.Events.Contains("cleanup") && host.CanChoose, "begin exception preserves retry entry and releases transition guard");
+        host = Setup(); VengeanceIntegration.SetEnabled(false); host.Choose(null);
+        Check(host.Mission.Events.Count == 0, "disabled execution rejects continuation");
+        host = Setup(); VengeanceIntegration.FieldCampCeremonyAdmissionProbe = null; host.Choose(null);
+        Check(host.Mission.Events.Count == 0, "missing admission probe fails closed");
+        VengeanceIntegration.FieldCampCeremonyAdmissionProbe = _ => throw new Exception("owner failure");
+        host.Choose(null); Check(host.Mission.Events.Count == 0, "admission probe exception fails closed");
         Console.WriteLine($"PASS {count} field-camp continuation lifecycle assertions (production orchestration; fake engine/service)");
     }
 }
@@ -78,7 +109,8 @@ namespace TaleWorlds.Core
 }
 namespace TaleWorlds.MountAndBlade
 {
-    public class Mission { public static Mission? Current; public bool MissionEnded; public List<string> Events=new(); public void RemoveMissionBehavior(object o) { Events.Add(o is TownExecutionMissionBehavior ? "remove-controller" : "remove-death"); } }
+    public class Mission { public static Mission? Current; public bool CeremonyReady=true; public bool MissionEnded; public List<string> Events=new(); public void RemoveMissionBehavior(object o) { Events.Add(o is TownExecutionMissionBehavior ? "remove-controller" : "remove-death"); } }
+    public class Agent { public int Index; }
     public static class MBInformationManager { public static MultiSelectionInquiryData? Last; public static void ShowMultiSelectionInquiry(MultiSelectionInquiryData d,bool pauseGameActiveState) { Last=d; } }
 }
 namespace RichExecutions.Customization { public class ExecutionSitePreset {} }
@@ -94,12 +126,11 @@ namespace RichExecutions.Core
     public class Outcome { public bool DeathCommitted=true; }
     public class ExecutionService
     {
-        public Mission Mission; public bool Valid=true,BeginValid=true; public ExecutionService(Mission m) { Mission=m; }
+        public Action? OnBegin; public Mission Mission; public bool Valid=true,BeginValid=true; public ExecutionService(Mission m) { Mission=m; }
         public Validation Validate(ExecutionRequest r,ExecutionValidationStage s) => new() { IsValid=Valid };
-        public Validation Begin(ExecutionRequest r) { Mission.Events.Add("begin"); return new() { IsValid=BeginValid }; }
+        public Validation Begin(ExecutionRequest r) { Mission.Events.Add("begin"); OnBegin?.Invoke(); return new() { IsValid=BeginValid }; }
         public void Cancel(ExecutionRequest r,ExecutionFailureReason f,TaleWorlds.Localization.TextObject t) { Mission.Events.Add("cancel"); }
     }
-    public static class VengeanceIntegration { public static bool IsEnabled=true; public static bool IsFieldCampAvailable() => true; }
 }
 namespace RichExecutions.Campaign
 {
@@ -128,8 +159,10 @@ namespace RichExecutions.Scene
         class Placement { public TaleWorlds.Library.Vec3 Origin; public TaleWorlds.Library.Vec2 Forward; }
         Placement _placement=new(); public object CurrentMethod=new(); public bool CommitOk=true,CleanupOk=true;
         public TownExecutionMissionBehavior() { _service=new(Mission); }
-        bool CommitCampaignExecutionOnMissionExit() { Mission.Events.Add("commit"); _outcome=new(); return CommitOk; }
+        bool CommitCampaignExecutionOnMissionExit() { if (_outcome?.DeathCommitted == true) return true; Mission.Events.Add("commit"); if (CommitOk) _outcome=new(); return CommitOk; }
         void FinalizeSession() { Mission.Events.Add("cleanup"); _cleanupComplete=CleanupOk; }
+        public bool CanChoose => CanContinueFieldCamp;
+        public bool ChoiceOpen => _continuationChoiceOpen;
         public void Choose(Hero? h) => ContinueFieldCamp(h);
         public void Open() => ShowFieldCampContinuation();
     }

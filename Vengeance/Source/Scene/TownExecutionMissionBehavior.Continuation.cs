@@ -15,14 +15,18 @@ namespace RichExecutions.Scene;
 public sealed partial class TownExecutionMissionBehavior
 {
     private bool _continuationChoiceOpen;
+    private bool _continuationTransitionActive;
     private (ExecutionSitePreset Preset, Vec3 Origin, Vec2 Forward)? _chainedLayout;
 
-    private bool CanContinueFieldCamp => Request.IsFieldCamp &&
+    private bool CanContinueFieldCamp => !_continuationChoiceOpen && !_continuationTransitionActive &&
+        CanContinueFieldCampScene;
+
+    private bool CanContinueFieldCampScene => Request.IsFieldCamp &&
         State == ExecutionSessionState.Aftermath && _aftermathSessionReleased &&
         _playerExecutionStateRestored && _aftermathConversationsRestored &&
-        !_cleanupComplete && !_initializationFailed && !_continuationChoiceOpen &&
+        !_cleanupComplete && !_initializationFailed &&
         !_endMissionNextTick && !Mission.MissionEnded && ReferenceEquals(Mission.Current, Mission) &&
-        VengeanceIntegration.IsEnabled && VengeanceIntegration.IsFieldCampAvailable();
+        VengeanceIntegration.CanStartFieldCampCeremony();
 
     internal void PrepareChainedLayout(ExecutionSitePreset preset, Vec3 origin, Vec2 forward)
     {
@@ -88,30 +92,40 @@ public sealed partial class TownExecutionMissionBehavior
             }
         }
 
-        // Camp-only handoff: settle before destroying this session's death owner.
-        // Ordinary town executions continue to commit exclusively at mission exit.
-        if (!CommitCampaignExecutionOnMissionExit() || _outcome?.DeathCommitted != true) return;
-        var preset = _customSitePreset;
-        var placement = _placement;
-        FinalizeSession();
-        if (!_cleanupComplete) return;
-        var mission = Mission;
-        mission.RemoveMissionBehavior(this);
-        mission.RemoveMissionBehavior(_deathLogic);
-        if (nextRequest is null || preset is null || placement is null) return;
-
+        // Commit the old sentence once, but keep its F entry until the next
+        // request has passed Begin (including extension callbacks).
         var begun = false;
+        _continuationTransitionActive = true;
         try
         {
-            var validation = _service.Begin(nextRequest);
-            if (!validation.IsValid)
+            if (!CommitCampaignExecutionOnMissionExit() || _outcome?.DeathCommitted != true ||
+                !CanContinueFieldCampScene) return;
+            var preset = _customSitePreset;
+            var placement = _placement;
+            if (nextRequest is not null)
             {
-                InformationManager.DisplayMessage(new InformationMessage(validation.Message.ToString()));
-                return;
+                if (preset is null || placement is null) return;
+                var validation = _service.Begin(nextRequest);
+                if (!validation.IsValid)
+                {
+                    InformationManager.DisplayMessage(new InformationMessage(validation.Message.ToString()));
+                    return;
+                }
+                begun = true;
+                // Begin subscribers may start another activity or end the scene.
+                // Cancel only the new request; the existing entry stays usable.
+                if (!CanContinueFieldCampScene) return;
             }
-            begun = true;
+
+            var mission = Mission;
+            FinalizeSession();
+            if (!_cleanupComplete) return;
+            mission.RemoveMissionBehavior(this);
+            mission.RemoveMissionBehavior(_deathLogic);
+            if (nextRequest is null) return;
+
             ExecutionSessionCoordinator.InjectChainedSession(mission, nextRequest, _service,
-                preset, placement.Origin, placement.Forward);
+                preset!, placement!.Origin, placement.Forward);
             begun = false;
             RexLog.Info($"Field-camp continuation {Request.SessionId} -> {nextRequest.SessionId} reused the current mission.");
         }
@@ -123,8 +137,15 @@ public sealed partial class TownExecutionMissionBehavior
         }
         finally
         {
-            if (begun) _service.Cancel(nextRequest, ExecutionFailureReason.ScenePlacementFailed,
-                new TextObject("{=REX_Error_Mission_Inject}The execution scene could not be initialized safely. Nothing was spent and the prisoner lives."));
+            try
+            {
+                if (begun) _service.Cancel(nextRequest!, ExecutionFailureReason.ScenePlacementFailed,
+                    new TextObject("{=REX_Error_FieldCamp_Unavailable}The field camp cannot host an execution right now."));
+            }
+            finally
+            {
+                _continuationTransitionActive = false;
+            }
         }
     }
 }

@@ -31,6 +31,21 @@ public static class VengeanceIntegration
     public static Func<Mission?, bool>? FieldCampMissionProbe { get; set; }
     public static Action<Hero, Vec3, Vec2>? FieldCampCeremonyStaged { get; set; }
     public static Action? FieldCampCeremonyReleased { get; set; }
+    // Read the camp owner's activity state; scene identity alone is not admission.
+    internal static Func<Mission?, bool>? FieldCampCeremonyAdmissionProbe { get; set; }
+
+    internal static bool CanStartFieldCampCeremony()
+    {
+        try
+        {
+            return IsEnabled && FieldCampCeremonyAdmissionProbe?.Invoke(Mission.Current) == true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     internal static Action<Mission, RichExecutions.Scene.TownExecutionMissionBehavior>? FieldCampControllerChanged { get; set; }
 
     public static bool IsFieldCampAvailable()

@@ -39,6 +39,7 @@ public sealed partial class FieldCampMissionLogic
 	internal static void RegisterVengeanceHooks()
 	{
 		VengeanceIntegration.FieldCampMissionProbe = IsCampMission;
+		VengeanceIntegration.FieldCampCeremonyAdmissionProbe = CanStartCeremony;
 		VengeanceIntegration.FieldCampCeremonyStaged = OnCeremonyStagedHook;
 		VengeanceIntegration.FieldCampCeremonyReleased = OnCeremonyReleasedHook;
 	}
@@ -46,12 +47,20 @@ public sealed partial class FieldCampMissionLogic
 	internal static void UnregisterVengeanceHooks()
 	{
 		VengeanceIntegration.FieldCampMissionProbe = null;
+		VengeanceIntegration.FieldCampCeremonyAdmissionProbe = null;
 		VengeanceIntegration.FieldCampCeremonyStaged = null;
 		VengeanceIntegration.FieldCampCeremonyReleased = null;
 	}
 
 	private static bool IsCampMission(Mission mission) =>
 		mission != null && mission.GetMissionBehavior<FieldCampMissionLogic>() != null;
+
+	private static bool CanStartCeremony(Mission mission)
+	{
+		var camp = mission?.GetMissionBehavior<FieldCampMissionLogic>();
+		return camp != null && camp._spawned && !mission.IsMissionEnding &&
+			!camp._ceremonyActive && !camp.SlaughterBusy && camp._duelists.Count == 0;
+	}
 
 	private static void OnCeremonyStagedHook(Hero victim, Vec3 origin, Vec2 forward) => Current?.OnCeremonyStaged(victim, origin, forward);
 

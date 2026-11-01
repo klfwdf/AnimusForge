@@ -1,4 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
 <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><Nullable>enable</Nullable></PropertyGroup>
-<ItemGroup><Compile Include="../../../Vengeance/Source/Scene/TownExecutionMissionBehavior.Continuation.cs" Link="Continuation.cs" /></ItemGroup>
+<ItemGroup><Compile Include="../../../Vengeance/Source/Scene/TownExecutionMissionBehavior.Continuation.cs" Link="Continuation.cs" /><Compile Include="../../../Vengeance/Source/Core/VengeanceIntegration.cs" Link="VengeanceIntegration.cs" /></ItemGroup>
 </Project>
