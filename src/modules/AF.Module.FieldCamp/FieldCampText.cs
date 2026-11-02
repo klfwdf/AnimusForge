@@ -46,6 +46,8 @@ internal static class FieldCampText
 
 	internal static TextObject PatrolFailed() => new TextObject("{=AF_FC_PatrolFailed}The camp scene could not be opened here.");
 
+	internal static TextObject SetupDegraded() => new TextObject("{=AF_FC_SetupDegraded}Some camp facilities could not be initialized. The scene stays open until you choose to leave.");
+
 	internal static TextObject Assembled() => new TextObject("{=AF_FC_Assembled}The troops fall in by troop type.");
 
 	internal static TextObject Dismissed() => new TextObject("{=AF_FC_Dismissed}The troops are dismissed and return to camp.");

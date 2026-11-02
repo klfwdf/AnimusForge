@@ -123,6 +123,7 @@ internal static class FieldCampProps
 	/// <returns>Number of entities created.</returns>
 	internal static int Place(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale)
 	{
+		HadPlacementFailures = false;
 		_solidRequested = 0;
 		_solidWithBody = 0;
 		int placed = PlaceAll(scene, layout, campFrame, scale);
@@ -133,9 +134,11 @@ internal static class FieldCampProps
 	/// <summary>Main-thread set-up counters for the solid-prop log line (one camp at a time).</summary>
 	private static int _solidRequested;
 	private static int _solidWithBody;
+	internal static bool HadPlacementFailures { get; private set; }
 
 		private sealed class TentInterior
 		{
+			internal GameEntity Root;
 			internal MatrixFrame Frame;
 			internal float HalfWidth;
 			internal float HalfDepth;
@@ -176,47 +179,60 @@ internal static class FieldCampProps
 			int placed = 0;
 			for (int i = 0; i < layout.Props.Count; i++)
 			{
-				FieldCampLayout.Prop prop = layout.Props[i];
-				string[] pool = PoolFor(prop, out string poolKey);
-				if (prop.TentAnchor > 0)
+				try
 				{
-					continue; // committed transactionally with its tent, including candidate fallback
-				}
-				if (failed.Contains(poolKey))
-				{
-					continue;
-				}
-				if (prop.Kind == FieldCampLayout.PropKind.Wall)
-				{
-					placed += PlaceWall(scene, prop, pool, poolKey, campFrame, scale, resolved, failed, sizes);
-					continue;
-				}
-				if (prop.Kind == FieldCampLayout.PropKind.Tent)
-				{
-					furnishingPlans.TryGetValue(i + 1, out List<FieldCampLayout.Prop> plan);
-					if (!PlaceTent(scene, prop, pool, campFrame, plan, furnitureSizes, doorwayTurns, out TentInterior tentInterior))
+					FieldCampLayout.Prop prop = layout.Props[i];
+					string[] pool = PoolFor(prop, out string poolKey);
+					if (prop.TentAnchor > 0)
 					{
-						throw new InvalidOperationException("No accessible, grounded tent candidate: " + poolKey);
+						continue; // committed transactionally with its tent, including candidate fallback
 					}
-					tents.Add(i + 1, tentInterior);
-					placed += 1 + (plan?.Count ?? 0);
-					continue;
+					if (failed.Contains(poolKey))
+					{
+						continue;
+					}
+					if (prop.Kind == FieldCampLayout.PropKind.Wall)
+					{
+						placed += PlaceWall(scene, prop, pool, poolKey, campFrame, scale, resolved, failed, sizes);
+						continue;
+					}
+					if (prop.Kind == FieldCampLayout.PropKind.Tent)
+					{
+						furnishingPlans.TryGetValue(i + 1, out List<FieldCampLayout.Prop> plan);
+						if (!PlaceTent(scene, prop, pool, campFrame, plan, furnitureSizes, doorwayTurns, out TentInterior tentInterior))
+						{
+							HadPlacementFailures = true;
+							Logger.Log(LogSource, "[WARN] tent slot skipped; no accessible grounded candidate pool=" + poolKey + " slot=" + i);
+							continue;
+						}
+						tents.Add(i + 1, tentInterior);
+						placed += 1 + tentInterior.FurnitureEntities.Count;
+						continue;
+					}
+					MatrixFrame frame = FrameFor(scene, campFrame, prop.Position * scale, prop.Yaw, prop.Scale);
+					GameEntity entity = Spawn(scene, pool, poolKey, prop.Variant, frame, !WalkThrough.Contains(prop.Kind), resolved, failed);
+					if (entity != null)
+					{
+						placed++;
+					}
 				}
-				MatrixFrame frame = FrameFor(scene, campFrame, prop.Position * scale, prop.Yaw, prop.Scale);
-				GameEntity entity = Spawn(scene, pool, poolKey, prop.Variant, frame, !WalkThrough.Contains(prop.Kind), resolved, failed);
-				if (entity != null)
+				catch (Exception ex)
 				{
-					placed++;
+					HadPlacementFailures = true;
+					Logger.Log(LogSource, "[WARN] prop slot skipped slot=" + i + " error=" + ex.Message);
 				}
 			}
 			foreach (TentInterior interior in tents.Values)
 			{
 				if (!DoorIsClear(scene, interior.Frame, interior.DoorDepth))
 				{
-					throw new InvalidOperationException("Camp furniture/props blocked a tent entrance.");
+					HadPlacementFailures = true;
+					Logger.Log(LogSource, "[WARN] removing tent with an obstructed entrance; keeping the camp open");
+					for (int f = 0; f < interior.FurnitureEntities.Count; f++) interior.FurnitureEntities[f].Remove(80);
+					interior.Root.Remove(80);
+					placed -= 1 + interior.FurnitureEntities.Count;
 				}
 			}
-			FieldCampSite.InitializeGroundCache(scene, campFrame, layout, scale);
 			return placed;
 		}
 
@@ -281,16 +297,19 @@ internal static class FieldCampProps
 						{
 							continue;
 						}
-						trial = new TentInterior { Frame = door, HalfWidth = width * 0.68f, HalfDepth = depth * 0.68f,
+						trial = new TentInterior { Root = tent, Frame = door, HalfWidth = width * 0.68f, HalfDepth = depth * 0.68f,
 							RoofHeight = (box.max.z - box.min.z) * scale, DoorDepth = depth };
 						CaptureTentEntities(tent, trial.Entities);
-						bool furnished = true;
-						for (int f = 0; furnished && furnishingPlan != null && f < furnishingPlan.Count; f++)
+						for (int f = 0; furnishingPlan != null && f < furnishingPlan.Count; f++)
 						{
 							FieldCampLayout.Prop furniture = furnishingPlan[f];
-							furnished = PlaceTentFurniture(scene, furniture, PoolFor(furniture, out _), trial, furnitureSizes);
+							if (!PlaceTentFurniture(scene, furniture, PoolFor(furniture, out _), trial, furnitureSizes))
+							{
+								HadPlacementFailures = true;
+								Logger.Log(LogSource, "[WARN] optional tent furniture skipped prefab=" + pool[c] + " kind=" + furniture.Kind);
+							}
 						}
-						if (!furnished || !DoorIsClear(scene, door, depth))
+						if (!DoorIsClear(scene, door, depth))
 						{
 							continue;
 						}

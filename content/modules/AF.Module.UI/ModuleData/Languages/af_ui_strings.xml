@@ -3468,6 +3468,7 @@ Choose how to proceed:" />
   <string id="AF_FC_PatrolTooltip" text="Walk among the tents and troops. Leaving the camp scene costs about {HOURS} hours." />
   <string id="AF_FC_PatrolWounded" text="You are too badly wounded to walk the camp." />
   <string id="AF_FC_PatrolFailed" text="The camp scene could not be opened here." />
+  <string id="AF_FC_SetupDegraded" text="Some camp facilities could not be initialized. The scene stays open until you choose to leave." />
   <string id="AF_FC_Assembled" text="The troops fall in by troop type." />
   <string id="AF_FC_Dismissed" text="The troops are dismissed and return to camp." />
   <string id="AF_FC_IssueResolved_Encourage" text="You reassured the men." />

@@ -46,6 +46,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 	private float _nextMoveBlockedHintTime;
 	private bool _patrolPending;
 	private bool _patrolMissionSeen;
+	private bool _patrolPlayerReady;
 	private float _patrolPendingSince;
 	private double _patrolSettleUntilHours = -1;
 	private readonly FieldCampMapVisuals _visuals = new FieldCampMapVisuals();
@@ -89,6 +90,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 		SyncIssueData(dataStore);
 		if (dataStore.IsLoading)
 		{
+			_patrolPlayerReady = false;
 			_partyIds = _partyIds ?? new List<string>();
 			if (_state < (int)CampState.None || _state > (int)CampState.Striking)
 			{
@@ -275,6 +277,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 		_state = (int)CampState.None;
 		_resting = false;
 		_patrolPending = false;
+		_patrolPlayerReady = false;
 		_patrolSettleUntilHours = -1;
 		_partyIds.Clear();
 		_parties.Clear();
@@ -285,6 +288,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 
 	private void ResetAll()
 	{
+		_patrolPlayerReady = false;
 		_state = (int)CampState.None;
 		_partyIds = new List<string>();
 		_parties.Clear();
@@ -465,20 +469,29 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 	{
 		_patrolPending = true;
 		_patrolMissionSeen = false;
+		_patrolPlayerReady = false;
 		_patrolPendingSince = TaleWorlds.Engine.Time.ApplicationTime;
+	}
+
+	internal void MarkPatrolPlayerReady()
+	{
+		if (_patrolPending && FieldCampMissionLogic.Current != null) _patrolPlayerReady = true;
 	}
 
 	private void ConsumePatrolReturn()
 	{
+		bool playerWasReady = _patrolPlayerReady;
 		_patrolPending = false;
 		_patrolMissionSeen = false;
+		_patrolPlayerReady = false;
 		float hours = FieldCampSettings.PatrolHours;
 		if (!IsActive || _state != (int)CampState.Camped)
 		{
 			return;
 		}
-		if (hours <= 0f)
+		if (!playerWasReady || hours <= 0f)
 		{
+			if (!playerWasReady) Logger.Log(LogSource, "patrol return without initialized player; no time charged");
 			OpenCampMenu();
 			return;
 		}
