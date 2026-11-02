@@ -8,16 +8,11 @@ using TaleWorlds.MountAndBlade;
 namespace AnimusForge;
 
 /// <summary>
-/// Picks the camp site once per camp mission (never per frame): dry, walkable, fairly
-/// flat ground clear of trees and rocks, inside the mission boundary. Candidates come
-/// from the scene's own spawn paths (where vanilla field battles deploy, always on land)
-/// ordered by distance to the map-patch encounter point, with a coarse grid only when a
-/// scene has too few paths. If the full footprint cannot fit, a bounded fallback keeps the player dry
-/// and navigable; individual cached actor slots still reject water, slopes and colliders.
-/// Every candidate is probed over the camp's real rectangle (palisade extents).
-/// Cost, once: at most MaxCandidates x 25 cheap probes per scale step, then
-/// Finalists x 81 probes, each with a navmesh lookup and one downward raycast.
-/// Afterwards small rocks and bushes left inside the palisade are hidden (one entity scan).
+/// Selects a dry, level whole-camp rectangle once on the main thread. Always searches
+/// bounded spawn paths plus the scene-wide grid; a safe player point never authorizes camp props.
+/// At most 1200 seeds x two orientations x 25 terrain probes, then 32 x 81 detailed
+/// probes and existing critical-area checks. Failed selection keeps manual player control only.
+/// Collision/terrain route caches are built once after all props; no per-frame scene scan.
 /// </summary>
 internal static class FieldCampSite
 {
@@ -25,7 +20,6 @@ internal static class FieldCampSite
 	private const int MaxSpawnPaths = 32;
 	private const float PathStep = 12f;
 	private const int MaxCandidates = 600;
-	private const int Finalists = 12;
 		private const float WetMargin = 0.3f;
 		private const BodyFlags ClearanceExcludeFlags = BodyFlags.CommonCollisionExcludeFlagsForAgent & ~BodyFlags.DoNotCollideWithRaycast;
 	/// <summary>A raycast hit this far above the terrain means a tree, rock or building stands there.</summary>
@@ -67,79 +61,34 @@ internal static class FieldCampSite
 	{
 		internal Vec2 Position;
 		internal Vec2 Forward;
-		internal float Score;
-		internal int Bad;
 	}
 
-	/// <param name="fitScale">Always 1; a site that cannot fit real footprints is rejected, not compressed.</param>
+	/// <param name="fitScale">Always 1; real prop footprints are not compressed.</param>
 	internal static MatrixFrame Resolve(Mission mission, FieldCampLayout layout, out float fitScale)
 	{
 		Scene scene = mission.Scene;
+		fitScale = Scales[0];
+		GroundCaches.Remove(scene);
+		CaptureClutter(scene);
 		bool hasEncounter = TryEncounterPoint(mission, out Vec2 encounter);
 		List<Candidate> candidates = CollectCandidates(scene, hasEncounter, encounter);
-		fitScale = 1f;
-			GroundCaches.Remove(scene);
-			CaptureClutter(scene);
-			if (candidates.Count == 0) return ResolveFallback(mission, layout);
-		for (int s = 0; s < Scales.Length; s++)
-		{
-			float k = Scales[s];
-			for (int i = 0; i < candidates.Count; i++)
-			{
-				Candidate c = candidates[i];
-				c.Score = Evaluate(mission, scene, c, layout, k, grid: 5, fine: false, out c.Bad) + Proximity(c.Position, hasEncounter, encounter);
-				candidates[i] = c;
-			}
-			candidates.Sort((a, b) => a.Score.CompareTo(b.Score));
-			Candidate best = default(Candidate);
-			bool found = false;
-			for (int i = 0; i < candidates.Count && i < Finalists; i++)
-			{
-				Candidate c = candidates[i];
-				c.Score = Evaluate(mission, scene, c, layout, k, grid: 9, fine: true, out c.Bad) + Proximity(c.Position, hasEncounter, encounter);
-					if (c.Bad == 0 && (!found || c.Score < best.Score)
-						&& ValidateCriticalAreas(mission, scene, c, layout, k))
-					{
-						best = c;
-						found = true;
-					}
-			}
-			if (found)
-			{
-				fitScale = Scales[s];
-				Logger.Log(LogSource, "camp site pos=" + Format(best.Position) + " scale=" + fitScale.ToString("0.00") + " candidates=" + candidates.Count + " encounter=" + (hasEncounter ? Format(encounter) : "none"));
-				return FrameAt(scene, best.Position, best.Forward);
-			}
-		}
-			Logger.Log(LogSource, "[WARN] full camp footprint did not fit; falling back to a safe player area");
-			return ResolveFallback(mission, layout);
+		// Always include the scene-wide grid. Near-encounter spawn paths alone can all be on a hillside.
+		var grid = new List<Candidate>();
+		AddGrid(scene, grid, hasEncounter, encounter);
+		candidates.AddRange(grid);
+		var seeds = new List<FieldCampSiteSeed>(Math.Min(candidates.Count, FieldCampSitePlanner.MaxSeeds));
+		for (int i = 0; i < candidates.Count && i < FieldCampSitePlanner.MaxSeeds; i++)
+			seeds.Add(new FieldCampSiteSeed(candidates[i].Position.x, candidates[i].Position.y,
+				candidates[i].Forward.x, candidates[i].Forward.y));
+		bool chosen = FieldCampSitePlanner.TryChoose(seeds, layout.HalfX, layout.Back, layout.Front,
+			(float x, float y, bool detailed, out float height) => Probe(mission, scene, new Vec2(x, y), detailed, out height, out _),
+			seed => ValidateCriticalAreas(mission, scene, new Candidate { Position = new Vec2(seed.X, seed.Y), Forward = new Vec2(seed.ForwardX, seed.ForwardY) }, layout, 1f),
+			out FieldCampSiteSeed site, out float spread);
+		if (!chosen) throw new InvalidOperationException("No level whole-camp footprint found; refusing to spread the camp over an arbitrary player-safe hillside.");
+		Logger.Log(LogSource, "level whole-camp site pos=" + Format(new Vec2(site.X, site.Y)) + " spread=" + spread.ToString("0.00")
+			+ " footprint=" + (layout.HalfX * 2f).ToString("0") + "x" + (layout.Front - layout.Back).ToString("0") + " candidates=" + seeds.Count);
+		return FrameAt(scene, new Vec2(site.X, site.Y), new Vec2(site.ForwardX, site.ForwardY));
 	}
-
-    /// <summary>Initialization fallback: keep real prefab scale and a dry, navigable player point, not a full-layout veto.</summary>
-    internal static MatrixFrame ResolveFallback(Mission mission, FieldCampLayout layout)
-    {
-        bool hasEncounter = TryEncounterPoint(mission, out Vec2 encounter);
-        var candidates = CollectCandidates(mission.Scene, hasEncounter, encounter);
-        // Paths can all border obstacles; inspect the existing bounded grid as a second source.
-        var grid = new List<Candidate>();
-        AddGrid(mission.Scene, grid, hasEncounter, encounter);
-        candidates.AddRange(grid);
-        if (hasEncounter) candidates.Sort((a, b) => a.Position.DistanceSquared(encounter).CompareTo(b.Position.DistanceSquared(encounter)));
-        // CollectCandidates <= 600; the fallback grid <= 24*24 (+ edge rounding).
-        int count = Math.Min(candidates.Count, MaxCandidates * 2);
-        for (int i = 0; i < count; i++)
-        {
-            Candidate candidate = candidates[i];
-            if (!TryProbePlayerPosition(mission, candidate.Position, out Vec3 player)) continue;
-            MatrixFrame frame = FrameAt(mission.Scene, candidate.Position, candidate.Forward);
-            // Anchor the layout's PLAYER, not the camp centre, on this proven dry patch.
-            Vec3 offset = frame.rotation.TransformToParent(new Vec3(layout.PlayerStart.x, layout.PlayerStart.y, 0f));
-            frame.origin = player - offset;
-            Logger.Log(LogSource, "camp fallback player=" + Format(player.AsVec2) + " candidates=" + count);
-            return frame;
-        }
-        throw new InvalidOperationException("No safe player ground found; retain the camp scene for manual leave.");
-    }
 
     /// <summary>Once at player spawn; cache scan then bounded native spawn candidates, never from upkeep/Tick.</summary>
     internal static bool TryFindPlayerStart(Mission mission, Vec3 desired, out Vec3 grounded)
@@ -296,43 +245,6 @@ internal static class FieldCampSite
 				list.Add(new Candidate { Position = p, Forward = forward });
 			}
 		}
-	}
-
-	/// <summary>
-	/// Probes a grid x grid lattice over the palisade rectangle. Wet, out-of-bounds and
-	/// off-navmesh points veto the site. Obstacles veto it unless their complete small
-	/// clutter subtree is in the bounded clearing inventory; then score height spread.
-	/// </summary>
-	private static float Evaluate(Mission mission, Scene scene, Candidate c, FieldCampLayout layout, float scale, int grid, bool fine, out int bad)
-	{
-		bad = 0;
-		int blocked = 0;
-		float low = float.MaxValue;
-		float high = float.MinValue;
-		Vec2 f = c.Forward;
-		Vec2 side = new Vec2(f.y, -f.x);
-		for (int gx = 0; gx < grid; gx++)
-		{
-			float lx = (-layout.HalfX + 2f * layout.HalfX * gx / (grid - 1)) * scale;
-			for (int gy = 0; gy < grid; gy++)
-			{
-				float ly = (layout.Back + (layout.Front - layout.Back) * gy / (grid - 1)) * scale;
-				Vec2 p = c.Position + side * lx + f * ly;
-				if (!Probe(mission, scene, p, fine, out float height, out bool obstacle))
-				{
-					bad++;
-					continue;
-				}
-				if (obstacle)
-				{
-					blocked++;
-				}
-				low = Math.Min(low, height);
-				high = Math.Max(high, height);
-			}
-		}
-		float spread = high >= low ? high - low : 0f;
-		return bad * 100f + blocked * 12f + spread * 2f;
 	}
 
 	private static bool Probe(Mission mission, Scene scene, Vec2 p, bool fine, out float height, out bool obstacle)
@@ -861,12 +773,6 @@ internal static class FieldCampSite
 			}
 		}
 		return false;
-	}
-
-	/// <summary>Mild pull toward the encounter point: 100 m costs as much as 2 m of height spread.</summary>
-	private static float Proximity(Vec2 p, bool hasEncounter, Vec2 encounter)
-	{
-		return hasEncounter ? p.Distance(encounter) / 25f : 0f;
 	}
 
 	/// <summary>Camp frame: origin on the ground, camp +y (toward the parade ground) along <paramref name="forward"/>.</summary>

@@ -48,7 +48,9 @@ internal static class FieldCampText
 
 	internal static TextObject SetupDegraded() => new TextObject("{=AF_FC_SetupDegraded}Some camp facilities could not be initialized. The scene stays open until you choose to leave.");
 
-	internal static TextObject CeremonyPreparing() => new TextObject("{=AF_FC_CeremonyPreparing}Preparing your execution site: camp residents are walking clear and spectators are moving into place. Please wait for preparation to finish.");
+	internal static TextObject NoLevelSite() => new TextObject("{=AF_FC_NoLevelSite}No level area large enough for the entire camp was found in this scene. Camp facilities were not forced onto a hillside. You can leave manually without a patrol time charge.");
+
+	internal static TextObject CeremonyPreparing() => new TextObject("{=AF_FC_CeremonyPreparing}Preparing your execution site: camp residents are walking clear. Once the site is clear, deployment continues with the spectators already in place.");
 
 	internal static TextObject OptionalFurnitureSkipped(int count)
 	{

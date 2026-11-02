@@ -16,8 +16,14 @@ public sealed partial class FieldCampMissionLogic
         TryCampSetupStage("layout", () => _layout = FieldCampLayout.Build(_parties, FieldCampSettings.AgentCap, FieldCampSettings.TentCap));
         if (_layout == null)
             _layout = new FieldCampLayout { HalfX = 12f, Back = -12f, Front = 12f, PlayerFacing = Vec2.Forward };
-        if (!TryCampSetupStage("site", () => _campFrame = FieldCampSite.Resolve(Mission, _layout, out _campScale)))
-            TryCampSetupStage("fallback_site", () => _campFrame = FieldCampSite.ResolveFallback(Mission, _layout));
+        bool levelSiteReady = TryCampSetupStage("site", () => _campFrame = FieldCampSite.Resolve(Mission, _layout, out _campScale));
+        if (!levelSiteReady)
+        {
+            // Retain player control/manual leave, but never populate a hillside or identity frame as a camp.
+            TryCampSetupStage("player_only", () => { CreateCampTeam(); SpawnPlayer(); });
+            TryCampSetupStage("notice", () => AnimusForgeQuickInfo.Show(FieldCampText.NoLevelSite()));
+            return;
+        }
 
         int cleared = 0, props = 0, horses = 0;
         TryCampSetupStage("clutter", () => cleared = FieldCampSite.ClearClutter(Mission.Scene, _campFrame, _layout, _campScale));
@@ -55,14 +61,18 @@ public sealed partial class FieldCampMissionLogic
         }
     }
 
-	private void SpawnEveryone()
+	private void CreateCampTeam()
 	{
 		Hero main = Hero.MainHero;
 		uint c1 = main?.MapFaction?.Color ?? 4278190335u;
 		uint c2 = main?.MapFaction?.Color2 ?? 4278190208u;
 		_team = Mission.Teams.Add(BattleSideEnum.Attacker, c1, c2, main?.Clan?.Banner, true, false);
 		Mission.PlayerTeam = _team;
+	}
 
+	private void SpawnEveryone()
+	{
+		CreateCampTeam();
 		TryCampSetupStage("player", SpawnPlayer);
 		TryCampSetupStage("troops", SpawnTroops);
 		TryCampSetupStage("companions", SpawnCompanions);

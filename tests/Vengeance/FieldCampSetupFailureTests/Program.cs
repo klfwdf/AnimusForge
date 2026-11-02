@@ -11,8 +11,9 @@ static class Program
         Fixture.Reset(failures);
         var host = new FieldCampMissionLogic(); host.RunSetup();
         Check(host.Mission.EndCalls == 0, "never request mission exit: " + string.Join(",", failures));
-        Check(Fixture.Calls.Count(x => x == "cache") == 1, "one ground cache attempt after props");
-        Check(Fixture.Calls.IndexOf("cache") > Fixture.Calls.IndexOf("props"), "cache after final prop attempt");
+        bool siteFailed = failures.Contains("site");
+        Check(Fixture.Calls.Count(x => x == "cache") == (siteFailed ? 0 : 1), "cache exists only after a valid whole-camp site");
+        Check(siteFailed ? !Fixture.Calls.Contains("props") : Fixture.Calls.IndexOf("cache") > Fixture.Calls.IndexOf("props"), "never place props on a rejected footprint");
         return host;
     }
     static void Main()
@@ -21,16 +22,17 @@ static class Program
         Check(host.Initialized && FieldCampBehavior.Instance.PlayerReady, "normal camp remains usable and charges only after player is ready");
         Check(!Fixture.Calls.Contains("preset"), "camp initialization never loads or places an execution preset");
         Check(!host.Degraded && !Fixture.Calls.Contains("notice"), "successful camp has no false failure notice");
-        foreach (string stage in new[] { "layout", "site", "clutter", "props", "cache", "troops", "companions", "lords", "prisoners", "horses", "envoys" })
+        foreach (string stage in new[] { "layout", "clutter", "props", "cache", "troops", "companions", "lords", "prisoners", "horses", "envoys" })
         {
             host = Run(stage);
             Check(host.Initialized && FieldCampBehavior.Instance.PlayerReady, "player still spawned after " + stage + " failure");
             Check(host.Degraded && Fixture.Calls.Contains("notice"), "degradation shown for " + stage);
             Check(Fixture.Calls.Contains("prisoners"), "later actor stages survive " + stage);
-            if (stage == "site") Check(Fixture.Calls.Contains("fallback"), "failed full site tries player-ground fallback");
         }
-        host = Run("site", "fallback");
-        Check(host.Initialized, "unavailable full/fallback layout still reaches independent player spawn");
+        host = Run("site");
+        Check(!host.Initialized && !FieldCampBehavior.Instance.PlayerReady, "failed full footprint cannot become an initialized hillside camp");
+        Check(host.Mission.MainAgent != null && Fixture.Calls.Contains("notice"), "site failure retains player control and manual leave with a clear notice");
+        Check(!Fixture.Calls.Contains("troops") && !Fixture.Calls.Contains("prisoners") && !Fixture.Calls.Contains("props"), "no camp population or props after a rejected site");
         host = Run("player");
         Check(!host.Initialized && !FieldCampBehavior.Instance.PlayerReady, "no initialized player means no patrol-ready receipt");
         Check(!Fixture.Calls.Contains("horses") && !Fixture.Calls.Contains("envoys"), "no optional life owners without a player");
@@ -104,7 +106,7 @@ namespace AnimusForge
         internal void MarkPatrolPlayerReady() => PlayerReady = true;
     }
     static class Logger { internal static void Log(string source, string line) => Fixture.Logs.Add(line); }
-    static class FieldCampText { internal static object SetupDegraded() => new(); internal static object OptionalFurnitureSkipped(int count) => new(); }
+    static class FieldCampText { internal static object SetupDegraded() => new(); internal static object OptionalFurnitureSkipped(int count) => new(); internal static object NoLevelSite() => new(); }
     static class AnimusForgeQuickInfo { internal static void Show(object text) => Fixture.Step("notice"); }
     public sealed partial class FieldCampMissionLogic
     {

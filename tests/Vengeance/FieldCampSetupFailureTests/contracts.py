@@ -16,7 +16,7 @@ checks=[
 ('mission completion stays explicit', bool(re.search(r'bool MissionEnded[^}]+return false;',main))),
 ('no polling retries of incomplete initialization', '_spawned = true;' in main and 'if (!_campInitialized) return;' in main),
 ('safe ground remains mandatory for fallback player', 'TryFindPlayerStart(Mission, desired, out pos)' in main and 'TryProbePlayerPosition' in site and '|| obstacle' in site and 'CellHasClearance(mission.Scene' in site),
-('fallback preserves scale and anchors player not camp origin', 'Scales = { 1f }' in site and 'frame.origin = player - offset;' in site),
+('whole-camp flatness cannot degrade to a safe single player point', 'Scales = { 1f }' in site and 'FieldCampSitePlanner.TryChoose' in site and 'frame.origin = player - offset;' not in site),
 ('blocked gate does not close every otherwise valid cell', 'preferred player/gate corridor blocked; keeping valid ground cells' in site and 'cache.Ready = false;' not in site),
 ('tent failure is not fatal', 'No accessible, grounded tent candidate:' not in props and 'tent slot skipped;' in props),
 ('optional furniture failure does not reject a valid tent', 'if (!furnished ||' not in props and 'optional tent furniture skipped' in props),

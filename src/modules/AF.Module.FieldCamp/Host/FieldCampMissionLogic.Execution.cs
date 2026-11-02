@@ -30,6 +30,8 @@ public sealed partial class FieldCampMissionLogic
 		internal Agent Agent;
 		internal CampAgent Camp;
 		internal bool Prisoner;
+		internal bool Spectator;
+		internal bool ParkedOutside;
 		internal bool Arrived;
 		internal bool ReturningHome;
 		internal bool CountedWaiting = true;
@@ -239,7 +241,7 @@ public sealed partial class FieldCampMissionLogic
 		Vec2 facing = _ceremonyOrigin.AsVec2 - flat;
 		var move = new CeremonyMove
 		{
-			Agent = agent, Camp = entry, Prisoner = _ceremonyPrisoners.Contains(agent),
+			Agent = agent, Camp = entry, Prisoner = _ceremonyPrisoners.Contains(agent), Spectator = watcher,
 			Home = entry != null ? entry.Home : agent.Position,
 			HomeFacing = entry != null ? entry.HomeFacing : agent.LookDirection.AsVec2,
 			Goal = goal, Facing = facing.IsNonZero() ? facing.Normalized() : -_ceremonyForward,
@@ -339,6 +341,24 @@ public sealed partial class FieldCampMissionLogic
 					FailCeremonyPreparation("ceremony actor acquired by conversation");
 					return;
 				}
+				if (move.ParkedOutside && !uncleared) continue;
+				if (move.ParkedOutside)
+				{
+					// A physically re-entering actor becomes a blocker again; never waive actual clearance.
+					move.ParkedOutside = false;
+					if (!move.CountedWaiting) { _ceremonyWaiting++; move.CountedWaiting = true; }
+				}
+				if (FieldCampPreparationReadiness.CanParkOutside(move.Spectator, move.Arrived,
+					_elapsed - (_ceremonyDeadline - CeremonyPreparationTimeoutSeconds),
+					move.Agent.Position.AsVec2.DistanceSquared(_ceremonyOrigin.AsVec2), _ceremonyRadius))
+				{
+					// Keep the real actor safely outside. A late optional watcher is NOT counted as arrived/borrowed.
+					IssueCeremonyWalk(move, move.Agent.Position, move.Facing, followRoute: false);
+					move.ParkedOutside = true;
+					if (move.CountedWaiting) { _ceremonyWaiting--; move.CountedWaiting = false; }
+					Logger.Log(LogSource, "ceremony actor held outside cleared site agent=" + move.Agent.Index + " optionalSpectator=" + move.Spectator);
+					continue;
+				}
 				if (move.Route.Length > 0 && move.RouteIndex + 1 < move.Route.Length
 					&& move.Agent.Position.AsVec2.DistanceSquared(move.Route[move.RouteIndex].AsVec2) <= 0.09f)
 					IssueCeremonyWalk(move, move.Goal, move.Facing);
@@ -423,7 +443,7 @@ public sealed partial class FieldCampMissionLogic
 		for (int i = 0; i < _ceremonyWatchers.Count; i++)
 		{
 			CeremonyMove move = _ceremonyWatchers[i];
-			if (move.Arrived && move.Agent.IsActive()) crowd.Add(move.Agent);
+			if (move.Arrived && !move.ParkedOutside && move.Agent.IsActive()) crowd.Add(move.Agent);
 		}
 		_ceremonyCrowd = crowd.ToArray();
 		_ceremonyReadiness = FieldCampCeremonyReadiness.Ready;

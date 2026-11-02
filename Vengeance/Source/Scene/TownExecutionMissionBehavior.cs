@@ -1089,26 +1089,9 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
         {
             NotifyFieldCampCeremonyReleased();
             _endMissionNextTick = false;
-            if (Request.IsFieldCamp && _fieldCampPreparationUsesHook &&
-                _fieldCampPreparationStarted && !_fieldCampCeremonyStaged)
+            if (Request.IsFieldCamp && !_initialized && !_fieldCampCeremonyStaged)
             {
-                // Preparation never built a scene or hid the captive. Retire
-                // only this failed request, leaving the camp alive so its owner
-                // can walk everyone back to work after a route/timeout failure.
-                // A failing native cleanup cannot busy-retry forever on ticks.
-                if (++_fieldCampPreparationCleanupAttempts > 3) { Mission.EndMission(); return; }
-                try
-                {
-                    FinalizeSession();
-                    if (!_cleanupComplete) { _endMissionNextTick = true; return; }
-                    Mission.RemoveMissionBehavior(this);
-                    Mission.RemoveMissionBehavior(_deathLogic);
-                }
-                catch (Exception exception)
-                {
-                    _endMissionNextTick = true;
-                    RexLog.Error("Could not retire the cancelled camp preparation; cleanup will retry.", exception);
-                }
+                RetireCancelledCampPreparation();
                 return;
             }
             Mission.EndMission();
