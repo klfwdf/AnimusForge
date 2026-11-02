@@ -1,32 +1,19 @@
 {
   "Id": "rule_treaty_of_christburg_1249",
   "Keywords": [
-    "Treaty Of Christburg 1249",
-    "Treaty Of Christburg 1249 Lore",
-    "Treaty Of Christburg 1249 Chronicles",
-    "AD1259 Treaty Of Christburg 1249"
+    "Christburg settlement of 1249",
+    "property rights of baptised Prussians"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Treaty Of Christburg 1249 in 1259 Eastern ",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Treaty Of Chris",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Treaty Of Chri"
+    "A papal envoy mediated the Christburg agreement in 1249 with particular Prussian groups.",
+    "Promises of property and court access accompanied religious and military duties."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Treaty Of Christburg 1249 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Treaty Of Christburg 1249 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1249 a papal representative mediated the Christburg agreement between the Order and Pomesanians and some people of Warmia and Natangia. Baptised people received promises concerning property, inheritance and courts, alongside church marriage, religious observance and military duties. Consent, witnesses and transfer of property affected whether terms worked locally. Family land and marriage involved daily life beyond the ceremony of peace."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Treaty Of Christburg 1249 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "The Order and local leaders must convey the agreement’s scope to officers and guards. Rights without effective appeal undermine confidence; duties need guarantees against repeated demands by different collectors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men owing service ask who summons them, with whom they march and how captives seek help. Guards need to recognise protected visitors rather than seize people and goods because their speech is unfamiliar."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families ask who inherits land, witnesses marriage and hears disputes. Baptism does not replace food or labour. Conflicting claims require someone willing to hear both accounts if livelihoods are to be preserved."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

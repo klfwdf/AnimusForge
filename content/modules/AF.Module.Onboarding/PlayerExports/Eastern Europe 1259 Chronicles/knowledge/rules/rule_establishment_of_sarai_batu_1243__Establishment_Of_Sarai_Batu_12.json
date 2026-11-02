@@ -1,32 +1,19 @@
 {
   "Id": "rule_establishment_of_sarai_batu_1243",
   "Keywords": [
-    "Establishment Of Sarai Batu 12",
-    "Establishment Of Sarai Batu 12 Lore",
-    "Establishment Of Sarai Batu 12 Chronicles",
-    "AD1259 Establishment Of Sarai Batu 12"
+    "Sarai and the lower Volga court",
+    "Batu’s camp and merchants"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Establishment Of Sarai Batu 12 in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Establishment O",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Establishment "
+    "Batu’s court used the lower Volga, where Sarai’s settlement and trade developed.",
+    "Seasonal court movement required guides, gifts and provisions for waiting visitors."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Establishment Of Sarai Batu 12 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Establishment Of Sarai Batu 12 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "The lower Volga connects steppe camps, river carriage and distant merchants. Batu’s court received princes and envoys in this region while settlement at Sarai developed. Visitors encountered tents, wagons and herds alongside suppliers and carriers. Seasonal movement meant knowing a place-name did not guarantee finding the person in authority. Travellers continually needed news of the court’s location, reception arrangements and food."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Establishment Of Sarai Batu 12 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "A prince seeking recognition needs gifts, interpreters and trusted attendants. Waiting consumes provisions and animals; the reply must also be implemented at home. An audience involves more than presenting a name at a fixed palace gate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts ask where the camp now stands and where water and fodder are available. Merchants know routes while guards know access to the tents. Their observations serve different purposes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Carriers toward the court pay for boats, fodder and lodging. A busy settlement offers business while increasing demand for food. Households judge actual returns alongside travellers’ praise of rich tents."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

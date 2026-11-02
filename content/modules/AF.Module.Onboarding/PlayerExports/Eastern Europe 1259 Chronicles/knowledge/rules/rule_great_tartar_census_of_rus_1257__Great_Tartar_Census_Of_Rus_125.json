@@ -1,32 +1,19 @@
 {
   "Id": "rule_great_tartar_census_of_rus_1257",
   "Keywords": [
-    "Great Tartar Census Of Rus 125",
-    "Great Tartar Census Of Rus 125 Lore",
-    "Great Tartar Census Of Rus 125 Chronicles",
-    "AD1259 Great Tartar Census Of Rus 125"
+    "Rus household registration in 1257",
+    "tribute assessment in northeastern lands"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Great Tartar Census Of Rus 125 in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Great Tartar Ce",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Great Tartar C"
+    "Mongol household registration reached northeastern Rus in 1257 for tribute and service.",
+    "Collectors needed local assistance, while households disputed how burdens were shared."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Great Tartar Census Of Rus 125 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Great Tartar Census Of Rus 125 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1257 northeastern Rus faced household registration by Mongol officials to organise tribute and other duties. Identifying a household required people who knew residences, explained circumstances and conveyed demands. Princes and influential locals faced pressure from outside while deciding how to distribute burdens. Some witnessed writing and enumeration; others saw only collectors. Knowledge of a neighbouring village did not provide a view of implementation across every land."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Great Tartar Census Of Rus 125 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "A prince agreeing to deliveries needs an account of inhabitants and existing duties. Favouring close supporters while shifting additions onto weaker people turns registration into internal conflict. Clear handover and shares can limit repeated collection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts need shelter, mounts and provisions. Guards must distinguish authorised service from private seizure. Repeated additions along a route encourage villages ahead to conceal resources or leave."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households ask what follows a recorded name and whether relatives can help when labour is lacking. Grain, service and animals are not freely interchangeable. Recognition of previous deliveries prevents each new arrival demanding payment again."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

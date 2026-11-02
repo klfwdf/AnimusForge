@@ -1,32 +1,19 @@
 {
   "Id": "rule_first_prussian_uprising_1249",
   "Keywords": [
-    "First Prussian Uprising 1249",
-    "First Prussian Uprising 1249 Lore",
-    "First Prussian Uprising 1249 Chronicles",
-    "AD1259 First Prussian Uprising 1249"
+    "first Prussian resistance and settlement",
+    "baptised chiefs and the 1249 peace"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning First Prussian Uprising 1249 in 1259 Easte",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of First Prussian ",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across First Prussian"
+    "Prussian resistance beginning in 1242 brought prolonged conflict with the Order.",
+    "The 1249 Christburg settlement concerned particular groups and conditional rights and duties."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of First Prussian Uprising 1249 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of First Prussian Uprising 1249 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Resistance beginning in 1242 brought parts of Prussia into prolonged warfare with the Order, affecting castles, villages and supplies. At Christburg in 1249, Pomesanians and groups from Warmia and Natangia made commitments involving baptism and obedience and received arrangements concerning property, inheritance and judgement. Negotiators represented particular communities; neighbours retained grievances of their own. Some remember recovered relatives, others lost land and new duties."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after First Prussian Uprising 1249 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "The Order and local leaders need to establish consent and responsibility. Arbitrarily changing land or service after securing cooperation makes other chiefs doubt whether negotiation will protect their followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men guarding or besieging castles remember provisions, wounds and captives. Peace still requires escorts for return and exchange. One result does not make every village along a route willing to supply them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Damaged households ask whether they can return to fields, who collects dues and who recognises family property. Baptism can change access to negotiations without supplying lost animals or food."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

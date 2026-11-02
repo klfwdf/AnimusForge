@@ -1,32 +1,19 @@
 {
   "Id": "rule_mindaugas_pacifies_samogitia_1251",
   "Keywords": [
-    "Mindaugas Pacifies Samogitia 1",
-    "Mindaugas Pacifies Samogitia 1 Lore",
-    "Mindaugas Pacifies Samogitia 1 Chronicles",
-    "AD1259 Mindaugas Pacifies Samogitia 1"
+    "Voruta and the dynastic struggle",
+    "Tautvila against Mindaugas"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Mindaugas Pacifies Samogitia 1 in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Mindaugas Pacif",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Mindaugas Paci"
+    "Mindaugas resisted Tautvila and allied forces at Voruta in 1251.",
+    "The struggle involved Galicia, Samogitia and Livonia, with changing diplomatic connections."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Mindaugas Pacifies Samogitia 1 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Mindaugas Pacifies Samogitia 1 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1251 Tautvila and his allies attacked Mindaugas at Voruta without taking the position. The dynastic struggle involved support from Galicia, Samogitian chiefs and Livonian forces. Mindaugas’s dealings with the Order altered the connections available to opponents. The end of one engagement did not remove claims to land and succession; people formerly under opposing banners still had to decide how to coexist."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Mindaugas Pacifies Samogitia 1 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Opponents had distinct interests. Separate settlements, marriage and confirmation of land rights could restore cooperation. Driving out everyone who once backed a rival also removes future service and supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A defender remembers his own post, relief and sorties; an attacker recalls where he was checked. New allies require confirmation of orders and support rather than yesterday’s assumptions about who is hostile."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villages in a dynastic struggle can face demands from both sides. Families need previous deliveries recognised and reprisals restrained. Reconciliation at court brings little security unless those matters are settled locally."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

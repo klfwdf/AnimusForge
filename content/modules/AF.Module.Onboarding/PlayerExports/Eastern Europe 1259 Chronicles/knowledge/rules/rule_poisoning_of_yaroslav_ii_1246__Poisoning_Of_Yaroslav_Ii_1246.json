@@ -1,32 +1,19 @@
 {
   "Id": "rule_poisoning_of_yaroslav_ii_1246",
   "Keywords": [
-    "Poisoning Of Yaroslav Ii 1246",
-    "Poisoning Of Yaroslav Ii 1246 Lore",
-    "Poisoning Of Yaroslav Ii 1246 Chronicles",
-    "AD1259 Poisoning Of Yaroslav Ii 1246"
+    "Yaroslav’s death at court in 1246",
+    "princely audiences and poisoning rumours"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Poisoning Of Yaroslav Ii 1246 in 1259 East",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Poisoning Of Ya",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Poisoning Of Y"
+    "Yaroslav died during his journey to the Mongol imperial court in 1246.",
+    "Travellers carried reports of illness and suspected poison; his house faced succession."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Poisoning Of Yaroslav Ii 1246 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Poisoning Of Yaroslav Ii 1246 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1246 Yaroslav died while travelling to the Mongol imperial court. Reports carried back by travellers said he became ill after a reception and died soon afterwards; suspicion of poison also circulated along embassy and merchant routes. Relatives could receive news of death without establishing everything done inside the tents. Attendants had to return with news and possessions, while the family decided who would protect its lands and speak on its behalf."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Poisoning Of Yaroslav Ii 1246 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "A ruler dying far away leaves successors needing witnesses and willing followers. Rumours affect partners, but an embassy should know what it seeks to confirm rather than allowing an unestablished accusation to replace every negotiation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travellers’ experience of waiting, illness and return differs from a story heard at home. Escorts need supplies and a means to send news back instead of placing every hope on a successful reception."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Attendants’ families wait for news and may need borrowed food. Death raises questions of pay, debt and care for relatives. Recognised tokens and messengers help them act more than arguments over an alleged killer."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_eve_of_battle_of_durbe_1260",
   "Keywords": [
-    "Eve Of Battle Of Durbe 1260",
-    "Eve Of Battle Of Durbe 1260 Lore",
-    "Eve Of Battle Of Durbe 1260 Chronicles",
-    "AD1259 Eve Of Battle Of Durbe 1260"
+    "Samogitian frontier resistance",
+    "Skuodas and the Order’s pursuit"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Eve Of Battle Of Durbe 1260 in 1259 Easter",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Eve Of Battle O",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Eve Of Battle "
+    "Samogitian leaders continued resistance after Mindaugas made peace with the Order.",
+    "Courland routes and castles toward Memel shaped raids, pursuit and local alliances."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Eve Of Battle Of Durbe 1260 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Eve Of Battle Of Durbe 1260 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Mindaugas’s peace with the Livonian Order did not disarm every Samogitian leader. Raiding continued toward Courland, while positions such as Memel affected routes and neighbouring groups. Reports of fighting around Skuodas make families ask who took part, which return routes remain usable and whether local partners still offer help. The royal court, local chiefs and brethren in castles have distinct purposes. Their immediate decisions concern people, provisions and passage."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Eve Of Battle Of Durbe 1260 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "A chief seeking joint action must define rewards, losses and return dates. Royal promises abroad can affect local land, making genuine agreement more useful than assuming a document commands every community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men returning from Courland with spoils depend on speed, guides and a rear guard. Brethren pursuing from castles must leave defenders and confirm local partners’ intentions rather than judge every encounter by a banner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Border villages may supply successive armed groups. Some favour campaigning relatives; others want animals left safe. Warning, refuge and prisoner news matter sooner than a distant promise of a great victory."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

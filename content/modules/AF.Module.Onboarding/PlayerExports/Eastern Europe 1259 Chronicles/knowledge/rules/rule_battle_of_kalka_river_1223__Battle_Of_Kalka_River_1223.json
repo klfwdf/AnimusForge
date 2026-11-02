@@ -1,32 +1,19 @@
 {
   "Id": "rule_battle_of_kalka_river_1223",
   "Keywords": [
-    "Battle Of Kalka River 1223",
-    "Battle Of Kalka River 1223 Lore",
-    "Battle Of Kalka River 1223 Chronicles",
-    "AD1259 Battle Of Kalka River 1223"
+    "Kalka River defeat",
+    "Rus and Cuman coalition"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Battle Of Kalka River 1223 in 1259 Eastern",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Battle Of Kalka",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Battle Of Kalk"
+    "Rus princes and Cuman forces were defeated by the Mongols at the Kalka River in 1223.",
+    "Separate princely followings faced difficulties coordinating pursuit and mutual assistance."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Battle Of Kalka River 1223 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Battle Of Kalka River 1223 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1223 Cumans sought help from Rus princes, several of whom marched with their own followings and were defeated by Mongol forces near the Kalka River. These were separate hosts, requiring decisions about crossings, messages and support after an alliance had been agreed. Returnees brought news of dead princes and scattered companies. Families deprived of a ruler or relative suffered different losses. People farther away commonly knew only the portion carried to their town by an arriving messenger."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Battle Of Kalka River 1223 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Princely houses associate Kalka with succession, captives and commitments to allies. A joint expedition needs agreement about command and retreat, lest each following recognise only its own banner and lose contact with the others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Pursuit lengthens a column and separates men across crossings. A veteran may remember his own prince and companions without knowing why another contingent failed to arrive. That limited memory still gives younger soldiers reason to ask where support will be."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "At home, news of defeat raises questions about survivors and ransom. A returning man may lack his horse and tools while his household has lost labour. Care by relatives and borrowed grain can matter sooner than distant arguments about responsibility."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

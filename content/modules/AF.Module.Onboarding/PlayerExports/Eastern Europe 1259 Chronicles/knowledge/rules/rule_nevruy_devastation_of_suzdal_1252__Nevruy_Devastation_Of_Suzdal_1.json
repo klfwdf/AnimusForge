@@ -1,32 +1,19 @@
 {
   "Id": "rule_nevruy_devastation_of_suzdal_1252",
   "Keywords": [
-    "Nevruy Devastation Of Suzdal 1",
-    "Nevruy Devastation Of Suzdal 1 Lore",
-    "Nevruy Devastation Of Suzdal 1 Chronicles",
-    "AD1259 Nevruy Devastation Of Suzdal 1"
+    "Nevryui’s intervention in 1252",
+    "Andrey’s departure and Alexander"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Nevruy Devastation Of Suzdal 1 in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Nevruy Devastat",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Nevruy Devasta"
+    "In 1252 Mongol intervention displaced Andrey; Alexander then took authority in Vladimir.",
+    "The change of prince and passage of troops affected families and settlements differently."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Nevruy Devastation Of Suzdal 1 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Nevruy Devastation Of Suzdal 1 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1252 Mongol forces under Nevryui intervened in northeastern Rus. Andrey lost authority in Vladimir and fled; Alexander subsequently became grand prince. Courts faced changes in rank, recognition and allegiance, while settlements along military routes lost provisions, animals and shelter. Distant people speculated about dealings between brothers. Someone witnessing damage to a village might never meet those envoys, but could identify troops passing his door and neighbours who did not return."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Nevruy Devastation Of Suzdal 1 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Grand-princely standing needs external recognition and local support. A successor must address former followers, displaced relatives and damaged communities so that the same households are not pursued by both sides."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A soldier may withdraw with Andrey or remain awaiting orders. Identifying authority and a supporting position matters more than treating a change of house as permission to seize supplies. Private revenge makes return routes less safe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Military losses are not settled automatically by a new prince. Families need borrowed animals, food and witnesses to earlier requisitions. A willingness to hear them affects whether they remain locally."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

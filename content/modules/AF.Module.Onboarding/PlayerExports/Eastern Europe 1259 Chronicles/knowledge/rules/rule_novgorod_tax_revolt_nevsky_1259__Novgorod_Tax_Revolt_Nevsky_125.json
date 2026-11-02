@@ -1,32 +1,19 @@
 {
   "Id": "rule_novgorod_tax_revolt_nevsky_1259",
   "Keywords": [
-    "Novgorod Tax Revolt Nevsky 125",
-    "Novgorod Tax Revolt Nevsky 125 Lore",
-    "Novgorod Tax Revolt Nevsky 125 Chronicles",
-    "AD1259 Novgorod Tax Revolt Nevsky 125"
+    "Novgorod’s resistance to registration",
+    "Alexander and urban tribute"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Novgorod Tax Revolt Nevsky 125 in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Novgorod Tax Re",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Novgorod Tax R"
+    "In 1259 Novgorod resisted Mongol registration, with Alexander supporting its enforcement.",
+    "Influential families and ordinary households faced different burdens and political fears."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Novgorod Tax Revolt Nevsky 125 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Novgorod Tax Revolt Nevsky 125 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Resistance in Novgorod to Mongol registration and tribute exposed disagreements among prince, influential citizens and ordinary households. Reports and implementation in 1259 brought fears both of outside punishment and unfair local shares. Alexander supported acceptance of the demands. Some sought compromise to preserve the city; others feared recorded households would face growing burdens. Neither one noisy district nor one wealthy family’s consent represents every inhabitant’s experience."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Novgorod Tax Revolt Nevsky 125 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "The prince faces pressure from the khan while urban leaders must explain acceptance. If powerful people ease their own share at others’ expense, completed registration can still leave grievances that weaken trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Guards escorting officials through streets see crowds, homes and blocked passage. They need orders and waiting places, and must avoid turning argument into seizure. Decision-makers elsewhere do not witness every encounter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households may fear labour demands, lost grain or another collection. Comparing completed deliveries and supporting detained neighbours’ families meet immediate needs. Acceptance and refusal both impose costs on particular people."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

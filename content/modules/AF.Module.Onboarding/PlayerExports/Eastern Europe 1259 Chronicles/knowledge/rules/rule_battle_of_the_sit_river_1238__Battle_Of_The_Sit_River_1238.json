@@ -1,32 +1,19 @@
 {
   "Id": "rule_battle_of_the_sit_river_1238",
   "Keywords": [
-    "Battle Of The Sit River 1238",
-    "Battle Of The Sit River 1238 Lore",
-    "Battle Of The Sit River 1238 Chronicles",
-    "AD1259 Battle Of The Sit River 1238"
+    "Yuri’s death on the Sit",
+    "failed muster in northeastern Rus"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Battle Of The Sit River 1238 in 1259 Easte",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Battle Of The S",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Battle Of The "
+    "Yuri II was defeated and killed on the Sit in 1238 during the Mongol invasion.",
+    "Princely forces and threatened towns were separated, delaying news and assistance."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Battle Of The Sit River 1238 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Battle Of The Sit River 1238 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1238 Mongol forces defeated the troops gathered with Yuri II near the Sit, killing the prince. Vladimir and other towns suffered in the same invasion. People awaiting relief inside a town and men campaigning outside it faced different dangers. Some waited without news; others found a following that had lost its lord. Dynastic households arranged succession and defence while ordinary families searched for missing people and a place to remain."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Battle Of The Sit River 1238 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Yuri’s death required new recognition of lands and followers. A lord assessing relief asks whether a messenger actually saw the other force and whether provisions remain at the meeting place. Kinship alone cannot answer either question."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Soldiers associate the Sit with encountering an enemy before assembly is complete. Keeping contact, scouting and agreeing where scattered men should meet are practical tasks; a survivor need not know why every other contingent was absent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families may receive news of a fallen town and a defeated army without learning where relatives are. Shelter and food for displaced people, seed reserves and neighbourly help make another season possible."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

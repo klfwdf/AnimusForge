@@ -1,32 +1,19 @@
 {
   "Id": "rule_siege_of_torzhok_1238",
   "Keywords": [
-    "Siege Of Torzhok 1238",
-    "Siege Of Torzhok 1238 Lore",
-    "Siege Of Torzhok 1238 Chronicles",
-    "AD1259 Siege Of Torzhok 1238"
+    "Torzhok besieged in 1238",
+    "Novgorod’s southern grain route"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Siege Of Torzhok 1238 in 1259 Eastern Euro",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Siege Of Torzho",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Siege Of Torzh"
+    "Mongol forces besieged and captured Torzhok in 1238, threatening southern routes to Novgorod.",
+    "Defenders awaiting help and carriers on the roads remembered different parts of the danger."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Siege Of Torzhok 1238 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Siege Of Torzhok 1238 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Mongol forces besieged and captured Torzhok in 1238, threatening routes and food transport south of Novgorod. Defenders awaited assistance while people outside chose whether to continue deliveries or flee. Memory preserved resistance and families scattered after the fall. Novgorod escaped capture in that invasion, making reports from southern towns, roads and changing seasons especially significant to its inhabitants."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Siege Of Torzhok 1238 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "A town on a food route needs garrisons and reserves before an emergency. Agreements between city and prince must state arrival and provisions if promised relief is to give defenders a realistic expectation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A defender remembers rotations and repairs; a messenger seeking aid may know only obstacles along the road. Comparing accounts identifies support, while a missing messenger gives reason to maintain another means of contact."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Carriers fear losing cargo and animals when a road closes. Families still need borrowed grain and news after a town falls. Keeping a village able to offer shelter helps preserve conditions for renewed transport."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

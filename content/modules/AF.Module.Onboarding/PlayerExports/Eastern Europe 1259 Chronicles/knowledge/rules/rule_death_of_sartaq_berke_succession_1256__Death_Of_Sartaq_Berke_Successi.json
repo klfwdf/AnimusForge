@@ -1,32 +1,19 @@
 {
   "Id": "rule_death_of_sartaq_berke_succession_1256",
   "Keywords": [
-    "Death Of Sartaq Berke Successi",
-    "Death Of Sartaq Berke Successi Lore",
-    "Death Of Sartaq Berke Successi Chronicles",
-    "AD1259 Death Of Sartaq Berke Successi"
+    "succession after Batu",
+    "Sartaq and Berke"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Death Of Sartaq Berke Successi in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Death Of Sartaq",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Death Of Sarta"
+    "After Batu’s death and brief succession changes, Berke obtained the khanate.",
+    "Sartaq’s death prompted rumours; envoys still needed to identify the recognised authority."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Death Of Sartaq Berke Successi marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Death Of Sartaq Berke Successi with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "After Batu died, succession in the Jochid family involved Sartaq and other brief changes before Berke obtained authority. Rus princes and merchants needed to know who received envoys and whose instructions officers along the road would recognise. Camps and markets offered different explanations for deaths during the succession. A visitor could identify those receiving him without knowing private affairs inside every princely tent."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Death Of Sartaq Berke Successi lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "A prince seeking continued recognition needs a trustworthy envoy to confirm the new authority and reception arrangements. Refusing payment on a succession rumour risks intervention, while paying extra does not necessarily obtain a valid guarantee."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Embassy escorts ask who recognises their credentials, where to wait and whether supplies suffice. Earlier instructions require someone still able to perform them; one rider’s account is not automatically a court decision."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tribute waiting on the road consumes food and working animals, with travel paid by particular households. Residents may care more about another collection and recognition of previous deliveries than private succession stories."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

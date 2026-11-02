@@ -1,32 +1,19 @@
 {
   "Id": "rule_narva_river_border_skirmish_1259",
   "Keywords": [
-    "Narva River Border Skirmish 12",
-    "Narva River Border Skirmish 12 Lore",
-    "Narva River Border Skirmish 12 Chronicles",
-    "AD1259 Narva River Border Skirmish 12"
+    "Narva crossings and borderlands",
+    "passage between gulf and lake"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Narva River Border Skirmish 12 in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Narva River Bor",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Narva River Bo"
+    "The Narva waterway connects Lake Peipus with the Gulf of Finland amid competing powers.",
+    "Memory of the 1242 fighting remains relevant to crossings and disputes over passage."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Narva River Border Skirmish 12 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Narva River Border Skirmish 12 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "The Narva waterway connects the Lake Peipus region with the Gulf of Finland. Passage, fishing and dues involve competing authorities. Fighting between Novgorod and western neighbours remains within living memory, with the events of 1242 shaping reactions to soldiers and envoys. A navigable stretch does not remove transfers or shore journeys elsewhere. Travellers need local knowledge of guards, routes and people able to guarantee safety."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Narva River Border Skirmish 12 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "A frontier complaint may concern cargo, livestock or an authorised armed crossing. Identifying it helps find the responsible party. Turning every quarrel into general hostility also deprives a lord’s merchants of lodging and food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A crossing guard usually sees a vessel or company, not the intentions of a distant ruler. Checking identity, sending warnings and keeping a return route can prevent mistaken encounters provoking reprisals on both banks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Fishers and carriers need understandable dues and passage terms. Families move small boats and animals when troops approach. Witnessed losses and possible redress help exchange resume afterwards."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

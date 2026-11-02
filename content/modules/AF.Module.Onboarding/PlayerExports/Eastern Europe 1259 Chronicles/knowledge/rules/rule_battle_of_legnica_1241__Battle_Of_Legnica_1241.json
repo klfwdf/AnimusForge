@@ -1,32 +1,19 @@
 {
   "Id": "rule_battle_of_legnica_1241",
   "Keywords": [
-    "Battle Of Legnica 1241",
-    "Battle Of Legnica 1241 Lore",
-    "Battle Of Legnica 1241 Chronicles",
-    "AD1259 Battle Of Legnica 1241"
+    "Henry’s death at Legnica",
+    "Mongol victory in Silesia"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Battle Of Legnica 1241 in 1259 Eastern Eur",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Battle Of Legni",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Battle Of Legn"
+    "Henry II was defeated and killed near Legnica by Mongol forces in 1241.",
+    "Silesian houses lost a ruler, while returning fighters and refugees carried different memories."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Battle Of Legnica 1241 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Battle Of Legnica 1241 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1241 Duke Henry II of Silesia met Mongol forces near Legnica, suffered defeat and died. His household faced succession and the reassembly of followers; towns along the roads received defeated men and displaced families. Some remember a relative lost there, while others heard the duke’s name only from travellers. Distant retellings mix observation and rumour, giving listeners reason to ask a messenger’s route and departure time."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Battle Of Legnica 1241 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Henry’s death required new arrangements for lands and followers. Lords discussing Legnica consider whether neighbouring princes can defend together and who will perform promises after the man who made them is gone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A returning fighter remembers companions, mounts and a place to regroup. He may not know how every contingent scattered, but can teach recruits how he found his way home after losing sight of his banner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Bereaved households lost labour while newcomers required food and shelter. Villagers ask about harvest, working animals and missing relatives. A duke’s funeral does not provide each family with winter grain."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_daniel_resists_sartaq_1254",
   "Keywords": [
-    "Daniel Resists Sartaq 1254",
-    "Daniel Resists Sartaq 1254 Lore",
-    "Daniel Resists Sartaq 1254 Chronicles",
-    "AD1259 Daniel Resists Sartaq 1254"
+    "Danylo resists Kuremsa",
+    "southwestern Rus resistance in 1254"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Daniel Resists Sartaq 1254 in 1259 Eastern",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Daniel Resists ",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Daniel Resists"
+    "Danylo resisted a Mongol attack in Volhynia and Ponyzia in 1254.",
+    "Resistance associated with Kuremsa required local support while khanal pressure continued."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Daniel Resists Sartaq 1254 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Daniel Resists Sartaq 1254 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1254 Danylo resisted a Mongol attack in Volhynia and Ponyzia. Pressure associated with Kuremsa’s forces required fortifications, provisions and continued efforts to obtain allies. Recognition of khanal authority and defence of his own lands remained simultaneous concerns for the same ruler. Holding one position did not secure every district; victory still required men to garrison places and cultivate fields."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Daniel Resists Sartaq 1254 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "The court needs to know which towns can provide supplies and which relatives can defend their approaches. Distinguishing royal standing, local capacity and outside commitments prevents one success becoming an unsustainable undertaking."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Fighters need defences, fodder and support from neighbouring units. A man who resisted Kuremsa can describe his own watch or sortie without knowing every negotiation at the khan’s court. Orders still require authorised bearers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Frontier households can face demands from defenders and approaching forces alike. Preserved tools, seed and removable livestock give them a way to return after an alarm, beyond a single contribution to a royal success."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_fall_of_kyiv_1240",
   "Keywords": [
-    "Fall Of Kyiv 1240",
-    "Fall Of Kyiv 1240 Lore",
-    "Fall Of Kyiv 1240 Chronicles",
-    "AD1259 Fall Of Kyiv 1240"
+    "Kyiv’s fall in 1240",
+    "Dmytro and Kyiv’s survivors"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Fall Of Kyiv 1240 in 1259 Eastern Europe.",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Fall Of Kyiv 12",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Fall Of Kyiv 1"
+    "Batu’s forces captured Kyiv in 1240 after defence under Dmytro, appointed by Danylo.",
+    "The town suffered heavily, while survivors continued to live, travel and work there."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Fall Of Kyiv 1240 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Fall Of Kyiv 1240 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1240 Batu’s forces captured Kyiv, whose defence had been organised under Dmytro, appointed earlier by Danylo. Inhabitants and buildings suffered severely, families scattered, and political and commercial connections along the Dnieper were damaged. Travellers passing a few years later still encountered devastation and a small population, but passage had not vanished from everyone’s life. Those who stayed, fled or returned for trade carried different memories."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Fall Of Kyiv 1240 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Dynastic houses still invoke Kyiv’s standing, while effective protection depends on people in the town and countryside. A ruler needs judgement, food and repairs rather than assuming the old title immediately restores every former receipt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A man defending a street and one carrying messages outward remember different events. Soldiers discuss breaches, arrows and routes for wounded people. Communications and agreed support offer more than reliance on the city’s name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Returning households seek homes, fields and relatives. Borrowing grain and repairing tools matter alongside old debts. Work, provisions and trustworthy dealings with renewed travellers help life continue amid the damage."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_fall_of_pereyaslav_1239",
   "Keywords": [
-    "Fall Of Pereyaslav 1239",
-    "Fall Of Pereyaslav 1239 Lore",
-    "Fall Of Pereyaslav 1239 Chronicles",
-    "AD1259 Fall Of Pereyaslav 1239"
+    "Pereiaslav’s fall in 1239",
+    "frontier town on the Trubizh"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Fall Of Pereyaslav 1239 in 1259 Eastern Eu",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Fall Of Pereyas",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Fall Of Pereya"
+    "Mongol forces captured Pereiaslav in 1239, damaging the southern Rus frontier.",
+    "Survivors near the Trubizh needed provisions, routes and habitable shelter."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Fall Of Pereyaslav 1239 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Fall Of Pereyaslav 1239 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Mongol forces captured Pereiaslav in 1239. The Rus frontier town near the Trubizh suffered damage to princely and church institutions, changing refuge and passage for surrounding households. Some escaped from the town; others saw troops and displaced people from nearby villages. Its memory belongs to more than the court. Those remaining still needed repairs, provisions and neighbours with whom they could travel safely."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Fall Of Pereyaslav 1239 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Losing a frontier position changes routes for messengers, warnings and service. Restoring a claim requires people able to remain and approaches that can be protected before a permanent garrison is promised."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Frontier soldiers remember the direction of warnings and where to meet retainers after withdrawal. No post sees the whole region. Messages and prepared support can turn partial observations into useful information."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families look for relatives and fields still usable. Borrowed grain, repairable cooking vessels and a neighbour’s shelter begin recovery. A surviving place-name does not mean ordinary life has already returned."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

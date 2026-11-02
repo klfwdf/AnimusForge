@@ -1,32 +1,19 @@
 {
   "Id": "rule_siege_of_kozelsk_1238",
   "Keywords": [
-    "Siege Of Kozelsk 1238",
-    "Siege Of Kozelsk 1238 Lore",
-    "Siege Of Kozelsk 1238 Chronicles",
-    "AD1259 Siege Of Kozelsk 1238"
+    "Kozelsk’s resistance in 1238",
+    "prolonged defence and household losses"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Siege Of Kozelsk 1238 in 1259 Eastern Euro",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Siege Of Kozels",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Siege Of Kozel"
+    "Kozelsk resisted Mongol forces in 1238 before suffering severe destruction.",
+    "Prolonged defence needed food, repair labour and support, remembered differently by households."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Siege Of Kozelsk 1238 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Siege Of Kozelsk 1238 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1238 Kozelsk resisted Mongol forces and suffered severe destruction after prolonged defence. Neighbours associate the town with refusal to yield easily, while households remember spent food, missing relatives and escape routes. Each further day required another allocation of provisions, repairs and care. Someone praising resistance from afar might know little of how individual families were scattered."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Siege Of Kozelsk 1238 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "A position intended to gain time also needs aid, provisions and arrangements for withdrawal. Promised relief requires actual messages about its progress. A celebrated name cannot repay every family’s losses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Defenders remember rotations, exhaustion and repairs. An enemy remaining outside does not prove food will last. Choosing a messenger and a receiving point helps resistance provide a real opportunity elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Neighbours seek news of relatives inside the town or serving in a retinue. Wounded returnees need food and missing men’s fields need labour. Remembered courage and the needs of survivors belong to the same disaster."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

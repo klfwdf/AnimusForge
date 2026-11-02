@@ -1,32 +1,19 @@
 {
   "Id": "rule_siege_of_moscow_1238",
   "Keywords": [
-    "Siege Of Moscow 1238",
-    "Siege Of Moscow 1238 Lore",
-    "Siege Of Moscow 1238 Chronicles",
-    "AD1259 Siege Of Moscow 1238"
+    "Moscow attacked in 1238",
+    "timber defences and the northeastern invasion"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Siege Of Moscow 1238 in 1259 Eastern Europ",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Siege Of Moscow",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Siege Of Mosco"
+    "Mongol forces attacked Moscow during the invasion of 1238, damaging town and households.",
+    "Its timber-and-earth position depended on local labour, food and nearby routes."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Siege Of Moscow 1238 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Siege Of Moscow 1238 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "During the northeastern invasion of 1238 Mongol forces attacked Moscow, damaging its timber-and-earth defended settlement. Nearby communities, water and land routes linked it to assistance; security depended on news and relief as well as walls. Residents lost homes and relatives. Elsewhere its name might be heard among several fallen towns. Those remaining or returning needed food, shelter and usable tools before ordinary life could continue."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Siege Of Moscow 1238 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Repairing defences requires craftsmen and households able to provide food. Attracting inhabitants needs predictable protection rather than immediately removing every animal and worker on which future support depends."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Timber walls require watch and repair, and scouts must deliver warnings. Men recalling the loss ask where nearby help is and how to return if a route is cut, alongside the height of a wall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Burned dwellings need rebuilding and borrowed axes and food must be repaid. Shared childcare, repairs and cultivation assist recovery more directly than descriptions of wealth in some distant town."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

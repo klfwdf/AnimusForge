@@ -1,32 +1,19 @@
 {
   "Id": "rule_founding_of_konigsberg_1255",
   "Keywords": [
-    "Founding Of Konigsberg 1255",
-    "Founding Of Konigsberg 1255 Lore",
-    "Founding Of Konigsberg 1255 Chronicles",
-    "AD1259 Founding Of Konigsberg 1255"
+    "Königsberg castle in 1255",
+    "Sambia and Ottokar’s expedition"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Founding Of Konigsberg 1255 in 1259 Easter",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Founding Of Kon",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Founding Of Ko"
+    "The Order founded Königsberg’s castle near Twangste in Sambia in 1255.",
+    "Ottokar II joined the expedition; the position still required food, workers and access."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Founding Of Konigsberg 1255 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Founding Of Konigsberg 1255 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1255 King Ottokar II of Bohemia joined the Order’s expedition into Sambia. A castle established near Twangste was named Königsberg in his honour. Connections with the Pregel and lagoon gave it military and transport value, while a new position still needed garrisons, timber, craftsmen and provisions. Visitors remembered service; local households remembered changing rights and burdens. Cooperation beyond the gate had to be obtained locally."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Founding Of Konigsberg 1255 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "A new castle extends influence while drawing resources from existing positions. Clear terms for villages, baptised chiefs and carriers help connect the gains of an expedition with continuing supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Visiting riders can fight without remaining through winter. Garrison men ask about cargo landings, guides for patrols and night warnings. Even a celebrated fortress depends on those ordinary tasks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Cultivators and fishers face new dues and labour while gaining possible customers. Judgement over detained stock and land affects their willingness to remain. One season’s transport does not justify limitless future seizure."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

@@ -1,32 +1,19 @@
 {
   "Id": "rule_battle_on_the_ice_1242",
   "Keywords": [
-    "Battle On The Ice 1242",
-    "Battle On The Ice 1242 Lore",
-    "Battle On The Ice 1242 Chronicles",
-    "AD1259 Battle On The Ice 1242"
+    "Alexander’s victory on Lake Peipus",
+    "Livonian defeat on the frozen lake"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Battle On The Ice 1242 in 1259 Eastern Eur",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Battle On The I",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Battle On The "
+    "Alexander defeated Livonian forces near Lake Peipus in 1242.",
+    "Victory protected western routes; local watches and trading agreements remained necessary."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Battle On The Ice 1242 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Battle On The Ice 1242 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1242 Alexander’s forces defeated Livonian troops near Lake Peipus, protecting Novgorod’s western connections. Lakes, frozen surfaces and shore routes required local knowledge of crossings and support. Rus followers remember victory, opposing castle households remember deaths and prisoners, and shore residents recall troops passing their own settlements."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Battle On The Ice 1242 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Victory supports claims to military credit and peace terms, while the city needs food routes and markets. Prisoner exchange, defined frontier duties and restrained reprisals give success practical value; celebration does not feed the garrisons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men familiar with the shore know ice and shallow water change seasonally. Soldiers describe their own opponents and banner without seeing every contingent. Keeping contact and knowing when to stop pursuit are more useful than claiming a view of the whole field."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lakeside families need boats, fishing gear and food left available. Repairs and fishing continue after battle, while captives’ relatives seek messengers and ransom. A victory song does not restore a household’s lost labour."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

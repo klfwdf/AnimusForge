@@ -1,32 +1,19 @@
 {
   "Id": "rule_triennial_quriltai_of_sarai_1259",
   "Keywords": [
-    "Triennial Quriltai Of Sarai 12",
-    "Triennial Quriltai Of Sarai 12 Lore",
-    "Triennial Quriltai Of Sarai 12 Chronicles",
-    "AD1259 Triennial Quriltai Of Sarai 12"
+    "Rus princes visiting the khan",
+    "audiences and travel costs at Sarai"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Triennial Quriltai Of Sarai 12 in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Triennial Quril",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Triennial Quri"
+    "Rus princes sought recognition at Mongol courts; Danylo visited Batu in 1246.",
+    "Gifts, interpreters, escorts and waiting used resources before replies reached home."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Triennial Quriltai Of Sarai 12 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Triennial Quriltai Of Sarai 12 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Rus princes travelled to Mongol courts for recognition, summonses or disputes over rights. Danylo visited Batu in 1246, while other houses had journeys of their own. Gifts, interpreters and attendants accompanied visitors seeking the court’s location and waiting for reception. Embassies differed in season and purpose and did not meet identical officials. A reply returning home still needed explanation of authority and responsibility."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Triennial Quriltai Of Sarai 12 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Travel costs come from particular estates and households. Gifts carry hopes and risks. A prince needs people able to remember the reply and administration remaining at home during his absence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts ask about fodder, water, support and return time. Waiting still requires baggage guards and care for the sick. Merchants provide news, while reception officers determine admission."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Loading gifts removes food, animals or silver from local use. Families hope for an understandable result. Returned instructions should recognise earlier deliveries and define remaining duties rather than provoke repeated collection."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

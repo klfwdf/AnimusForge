@@ -1,32 +1,19 @@
 {
   "Id": "rule_mongke_khan_census_yarlik_1255",
   "Keywords": [
-    "Mongke Khan Census Yarlik 1255",
-    "Mongke Khan Census Yarlik 1255 Lore",
-    "Mongke Khan Census Yarlik 1255 Chronicles",
-    "AD1259 Mongke Khan Census Yarlik 1255"
+    "registration under Möngke",
+    "local execution of khanal commands"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Mongke Khan Census Yarlik 1255 in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Mongke Khan Cen",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Mongke Khan Ce"
+    "Under Möngke, registration helped organise tribute and service across Mongol domains.",
+    "Local people needed to identify valid commands, collectors and deliveries already made."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Mongke Khan Census Yarlik 1255 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Mongke Khan Census Yarlik 1255 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Under Möngke, Mongol authorities used registration of people and resources to organise tribute and service. Rus princes negotiated with visiting officials. Northeastern lands faced enumeration in 1257, while Novgorod had its own urban circumstances. Local execution required interpretation, identification of households and collection; residents might see escorting riders or a recording official. The authority of a command did not make production and existing burdens identical everywhere."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Mongke Khan Census Yarlik 1255 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "A lord distinguishes the instruction, resources actually available and additions imposed by officers. Confirmed handover preserves opportunities for appeal. Invoking khanal authority to silence every question makes later cooperation harder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "An escort carrying commands needs credentials and a designated host. Travel support and formal obligations require distinction; arbitrary fodder demands can close doors previously open to reception."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Recorded households still need food and seed. People ask about duplicate payment, help from relatives and further demands by guards. Recognition of completed deliveries matters alongside knowing a distant ruler’s name."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

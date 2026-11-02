@@ -1,32 +1,19 @@
 {
   "Id": "rule_battle_of_saule_1236",
   "Keywords": [
-    "Battle Of Saule 1236",
-    "Battle Of Saule 1236 Lore",
-    "Battle Of Saule 1236 Chronicles",
-    "AD1259 Battle Of Saule 1236"
+    "Sword Brothers at Saule",
+    "Livonian brethren joining the Order"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Battle Of Saule 1236 in 1259 Eastern Europ",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Battle Of Saule",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Battle Of Saul"
+    "The Sword Brothers were defeated at Saule in 1236 and their master Volkwin was killed.",
+    "Surviving brethren joined the Teutonic Order in 1237 while retaining local Livonian concerns."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Battle Of Saule 1236 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Battle Of Saule 1236 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1236 Samogitian forces defeated the Sword Brothers at Saule, killing their master Volkwin and many brethren. Survivors were incorporated into the Teutonic Order in 1237. Livonian positions thereafter belonged to that wider connection while still dealing with local bishops, merchants and chiefs. Bereaved castles needed replacements and supplies; neighbouring groups saw possibilities for resistance. Glory and loss meant different things on opposing sides."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Battle Of Saule 1236 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Order officers remember dead brethren and the garrisons left after visiting crusaders departed. New campaigns require knowledge of which castles can spare men, where food is available and what bishops and allies have agreed to contribute."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Fighters familiar with woodland and marsh journeys ask about guides, mounts and return routes. Saule can inspire a muster while warning against judging an unfamiliar journey solely by the strength of a mounted charge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Nearby households remember requisitions, deaths and wounded returnees. Families of the victors value success, while people deprived of animals still need replacements. A change of banner does not settle every earlier debt or grievance."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

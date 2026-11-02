@@ -1,32 +1,19 @@
 {
   "Id": "rule_coronation_of_daniel_of_galicia_1253",
   "Keywords": [
-    "Coronation Of Daniel Of Galici",
-    "Coronation Of Daniel Of Galici Lore",
-    "Coronation Of Daniel Of Galici Chronicles",
-    "AD1259 Coronation Of Daniel Of Galici"
+    "Danylo’s crown",
+    "coronation at Dorohychyn"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Coronation Of Daniel Of Galici in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Coronation Of D",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Coronation Of "
+    "Danylo accepted a crown at Dorohychyn in 1253 while seeking western support.",
+    "Royal rank coexists with the interests of Orthodox institutions, boyars and towns."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Coronation Of Daniel Of Galici marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Coronation Of Daniel Of Galici with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1253 Danylo accepted a crown brought by a papal representative at Dorohychyn. The Romanovych house gained recognition and sought western support against Mongol pressure. Ceremony did not supply troops or provisions, which still had to come from particular families, towns and partners. Orthodox dependants did not change every practice overnight; the court continued to require cooperation from local churches and boyars."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Coronation Of Daniel Of Galici lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Envoys can invoke royal rank and papal connections, but requests for aid still need routes, dates and returns. Recognition has value without establishing how much assistance another party has actually agreed to provide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "People travelling with embassies see escorts, gifts and reception. Soldiers evaluating western help ask whether troops have departed and where they can meet, rather than treating ceremonial welcome as an army already available."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Townspeople may recall bells and visitors, villagers the provisions supplied. A crown changes daily life when it brings protection and dependable judgement. Expensive gifts do not directly preserve a family’s seed."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

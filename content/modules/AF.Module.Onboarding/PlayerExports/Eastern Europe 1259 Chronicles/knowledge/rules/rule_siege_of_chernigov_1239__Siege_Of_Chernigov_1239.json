@@ -1,32 +1,19 @@
 {
   "Id": "rule_siege_of_chernigov_1239",
   "Keywords": [
-    "Siege Of Chernigov 1239",
-    "Siege Of Chernigov 1239 Lore",
-    "Siege Of Chernigov 1239 Chronicles",
-    "AD1259 Siege Of Chernigov 1239"
+    "Chernihiv attacked in 1239",
+    "losses beside the Desna"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Siege Of Chernigov 1239 in 1259 Eastern Eu",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Siege Of Cherni",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Siege Of Chern"
+    "Mongol forces devastated Chernihiv in 1239, striking a southern Rus political centre.",
+    "Households, churches and the princely house beside the Desna suffered different losses."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Siege Of Chernigov 1239 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Siege Of Chernigov 1239 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Mongol forces attacked and devastated Chernihiv in 1239. On high ground beside the Desna, princely positions, churches and the dwellings of merchants and craftsmen formed different parts of urban life. Displaced residents sought relatives and other towns, while safety on roads and waterways changed. A court’s account emphasises dynastic rights; survivors remember what they could carry and where they found shelter."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Siege Of Chernigov 1239 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Territory and family standing cannot rebuild a town alone. Restored service requires inhabitants, food and protection agreed with clergy and local leaders, giving displaced people reasons to return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Defenders and men patrolling river approaches saw different events. Comparing routes after withdrawal helps identify usable access. Losing a position does not authorise defeated men to take supplies indiscriminately nearby."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tools and cooking vessels carried away can determine later work. Merchants, clergy and boatmen may bring news of scattered relatives. Finding survivors and shelter matters sooner than arguing which monument made the town famous."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

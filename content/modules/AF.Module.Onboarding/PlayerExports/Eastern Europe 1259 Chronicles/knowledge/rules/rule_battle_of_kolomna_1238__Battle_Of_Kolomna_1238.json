@@ -1,32 +1,19 @@
 {
   "Id": "rule_battle_of_kolomna_1238",
   "Keywords": [
-    "Battle Of Kolomna 1238",
-    "Battle Of Kolomna 1238 Lore",
-    "Battle Of Kolomna 1238 Chronicles",
-    "AD1259 Battle Of Kolomna 1238"
+    "resistance at Kolomna",
+    "invasion along the Oka"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Battle Of Kolomna 1238 in 1259 Eastern Eur",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Battle Of Kolom",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Battle Of Kolo"
+    "Mongol forces overcame resistance at Kolomna in 1238 during the invasion of northeastern Rus.",
+    "Kolomna’s position near the Moskva–Oka junction mattered for movement and retreat."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Battle Of Kolomna 1238 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "soldier",
-          "wanderer"
-        ]
-      },
-      "Content": "Veterans recall the carnage of Battle Of Kolomna 1238 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "In 1238 Mongol forces advancing through northeastern Rus defeated resistance near Kolomna. The town lay close to the meeting of the Moskva and Oka, where men arriving from different directions had to find one another before access to rivers could become effective assistance. The defeat did not halt the invaders; other towns still faced attack and displacement. Princely messengers sought news of retainers, while residents along the roads recognised danger through lost livestock, retreating men and families seeking shelter."
     },
     {
       "Priority": 0,
@@ -36,8 +23,30 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Battle Of Kolomna 1238 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Assembly near a junction requires knowledge of which bank an ally holds, available boats and responsibility for messages. Kolomna gives lords reason to distinguish provisions for a garrison from those needed by men meeting the enemy outside."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Winter routes carry armies as well as scouts and can obscure an enemy’s direction. Memories of Kolomna prompt questions about regrouping and recovering companions after horses are lost, rather than assuming a river alone prevents approach."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villages receiving defeated men and displaced families also consume stores. Giving away the last working animal jeopardises sowing. Residents remember who provided a recognised guarantee as well as those who simply took provisions."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }
