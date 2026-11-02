@@ -498,7 +498,7 @@ public sealed partial class FieldCampMissionLogic
             camp._ceremonyWalkers.Add(move); camp._ceremonyMoves.Add(agent, move); camp._ceremonyMoved.Add(entry);
             camp._ceremonyWatchers.Add(move);
             entry.Returning = false; entry.Seated = false;
-            camp.StopCampNavigation(agent); agent.SetIsAIPaused(true);
+            StopCampNavigation(agent); agent.SetIsAIPaused(true);
             watchers++;
         }
         Logger.Log(LogSource, "execution spectator walks queued session=" + session + " watchers=" + watchers);

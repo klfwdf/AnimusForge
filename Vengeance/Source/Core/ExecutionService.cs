@@ -409,20 +409,9 @@ public sealed class ExecutionService
         {
             try
             {
-                if (request.IsFieldCamp)
+                using (ExecutionRelationScope.Begin(request.Victim))
                 {
-                    // The execution owner has already accepted this lethal frame.
-                    // Use ordinary scene killing so vanilla execution penalties
-                    // never run, while preserving the killer and death events.
-                    request.Victim.AddDeathMark(request.Executor, KillCharacterAction.KillCharacterActionDetail.Murdered);
-                    KillCharacterAction.ApplyByDeathMarkForced(request.Victim, false);
-                }
-                else
-                {
-                    using (ExecutionRelationScope.Begin(request.Victim))
-                    {
-                        KillCharacterAction.ApplyByExecution(request.Victim, request.Executor, false, false);
-                    }
+                    KillCharacterAction.ApplyByExecution(request.Victim, request.Executor, false, false);
                 }
             }
             catch (Exception exception)
