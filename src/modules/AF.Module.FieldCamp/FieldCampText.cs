@@ -46,6 +46,18 @@ internal static class FieldCampText
 
 	internal static TextObject PatrolFailed() => new TextObject("{=AF_FC_PatrolFailed}The camp scene could not be opened here.");
 
+	internal static TextObject NoCampSite() => new TextObject("{=AF_FC_NoCampSite}This scene has no suitable whole-camp site. No facilities were forced onto the hillside. The scene stays open; leave manually without a patrol time charge.");
+
+	internal static TextObject DeploymentClearing() => new TextObject("{=AF_FC_DeploymentClearing}Preparing your confirmed execution site. Residents must walk outside the safety boundary; optional spectators do not delay construction.");
+
+    internal static TextObject IncompleteCamp(int placed, int total)
+    {
+        var text = new TextObject("{=AF_FC_IncompleteCamp}Camp setup is incomplete: {PLACED}/{TOTAL} tents were placed. You decide when to leave; details are recorded in the FieldCamp log.");
+        text.SetTextVariable("PLACED", placed);
+        text.SetTextVariable("TOTAL", total);
+        return text;
+    }
+
 	internal static TextObject Assembled() => new TextObject("{=AF_FC_Assembled}The troops fall in by troop type.");
 
 	internal static TextObject Dismissed() => new TextObject("{=AF_FC_Dismissed}The troops are dismissed and return to camp.");

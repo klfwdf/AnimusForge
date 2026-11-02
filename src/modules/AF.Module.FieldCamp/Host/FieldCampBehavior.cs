@@ -46,6 +46,7 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 	private float _nextMoveBlockedHintTime;
 	private bool _patrolPending;
 	private bool _patrolMissionSeen;
+	private bool _patrolPlayerReady;
 	private float _patrolPendingSince;
 	private double _patrolSettleUntilHours = -1;
 	private readonly FieldCampMapVisuals _visuals = new FieldCampMapVisuals();
@@ -465,14 +466,19 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 	{
 		_patrolPending = true;
 		_patrolMissionSeen = false;
+		_patrolPlayerReady = false;
 		_patrolPendingSince = TaleWorlds.Engine.Time.ApplicationTime;
 	}
+
+	internal void MarkPatrolPlayerReady() { if (_patrolPending) _patrolPlayerReady = true; }
 
 	private void ConsumePatrolReturn()
 	{
 		_patrolPending = false;
 		_patrolMissionSeen = false;
-		float hours = FieldCampSettings.PatrolHours;
+		bool ready = _patrolPlayerReady;
+		_patrolPlayerReady = false;
+		float hours = ready ? FieldCampSettings.PatrolHours : 0f;
 		if (!IsActive || _state != (int)CampState.Camped)
 		{
 			return;

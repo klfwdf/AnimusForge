@@ -61,12 +61,9 @@ internal static class FieldCampMissionLauncher
 				new FieldCampConversationLogic(),
 				FieldCampMissionLogic.CreateCampPrisonerStateDecider(),
 				new FieldCampMissionLogic(snapshot),
-				// Hold TAB to leave (also ends the mission if the player is knocked out).
-				new BasicLeaveMissionLogic(),
 				new AgentHumanAILogic(),
 				new MissionHardBorderPlacer(),
-				new MissionBoundaryPlacer(),
-				CreateBoundaryCrossingHandler()
+				new MissionBoundaryPlacer()
 			});
 			if (mission == null)
 			{
@@ -83,14 +80,7 @@ internal static class FieldCampMissionLauncher
 		}
 	}
 
-	private static MissionBehavior CreateBoundaryCrossingHandler()
-	{
-#if BANNERLORD_1_4_OR_GREATER
-		return new MissionBoundaryCrossingHandler();
-#else
-		return new MissionBoundaryCrossingHandler(10f);
-#endif
-	}
+
 }
 
 // Keep native F on registered camp residents. Ceremony actors own their F entry,
@@ -145,7 +135,6 @@ public class FieldCampMissionViews
 				ViewCreator.CreateMissionAgentStatusUIHandler(mission),
 				ViewCreator.CreateMissionMainAgentEquipmentController(mission),
 			ViewCreator.CreateMissionMainAgentCheerBarkControllerView(mission),
-			ViewCreator.CreateMissionBoundaryCrossingView(),
 			// Hold-TAB progress ring; without it a TAB tap gives no feedback.
 			ViewCreator.CreateMissionLeaveView(),
 			new MissionBoundaryWallView(),

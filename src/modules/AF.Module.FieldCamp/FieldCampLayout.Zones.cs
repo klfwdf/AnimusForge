@@ -233,12 +233,7 @@ internal sealed partial class FieldCampLayout
 		}
 	}
 
-	/// <summary>
-	/// Execution ground behind the right tent street: a block and a gallows post on a
-	/// small fenced square, opening toward the road where soldiers gather to watch.
-	/// Laid out only when the main party holds prisoners; a player-made Vengeance site
-	/// preset, when one exists, replaces these default pieces at the same spot.
-	/// </summary>
+	// Logical gathering position only. The player creates all execution facilities in the B-key builder.
 	private void PlaceExecutionGround(string home, bool hasPrisoners)
 	{
 		HasExecutionGround = hasPrisoners;
@@ -248,16 +243,7 @@ internal sealed partial class FieldCampLayout
 		}
 		ExecutionCenter = new Vec2(FirstColX + ColPitch * 0.5f, _penY);
 		ExecutionFacing = new Vec2(-1f, 0f);
-		const float half = 4f;
-		Vec2 c = ExecutionCenter;
-		AddWall(home, c + new Vec2(-half, half), c + new Vec2(half, half));
-		AddWall(home, c + new Vec2(-half, -half), c + new Vec2(half, -half));
-		AddWall(home, c + new Vec2(half, -half), c + new Vec2(half, half));
-		Props.Add(new Prop { Kind = PropKind.ExecutionBlock, Position = c, Yaw = YawOf(ExecutionFacing) });
-		Props.Add(new Prop { Kind = PropKind.Gallows, Position = c + new Vec2(2.2f, 0f), Yaw = YawOf(ExecutionFacing) });
-		Props.Add(new Prop { Kind = PropKind.Torch, CultureId = home, Position = c + new Vec2(-half - 0.8f, half + 0.8f) });
-		Props.Add(new Prop { Kind = PropKind.Torch, CultureId = home, Position = c + new Vec2(-half - 0.8f, -half - 0.8f) });
-		Props.Add(new Prop { Kind = PropKind.Standard, CultureId = home, Position = c + new Vec2(half - 0.8f, half - 0.8f) });
+
 	}
 
 	private static bool HasPrisoners(IReadOnlyList<MobileParty> parties)

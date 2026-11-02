@@ -90,10 +90,12 @@ check('GetHeightAtPoint' not in life and 'TryGetCachedTerrainHeight' in life, 'c
 check('TryResolveGroundedPosition(Mission.Scene, desired, 1.5f' in people, 'horses require cached body clearance')
 check('ConditionalWeakTable<Scene, GroundCache>' in site and 'MaxGroundCells' in site and 'MaxPassageSteps' in site,
       'ground sampling bounded and scoped to scene cache')
-check(props.count('FieldCampSite.InitializeGroundCache(') == 1 and 'FieldCampSite.InitializeGroundCache(' not in main,
+check(main.count('FieldCampSite.InitializeGroundCache(') == 1 and 'FieldCampSite.InitializeGroundCache(' not in props and
+      main.index('FieldCampProps.Place(') < main.index('FieldCampSite.InitializeGroundCache('),
       'ground cache initialized once after props, not twice')
-check('FieldCampSite.ReleaseCaches(Mission.Scene)' in main and 'Mission.EndMission()' in main,
-      'unsafe camp setup exits and mission releases geometry cache')
+check('FieldCampSite.ReleaseCaches(Mission.Scene)' in main and 'Mission.EndMission()' not in main and
+      'RunCampSetup("whole_camp_site"' in main and 'RunCampSetup("player"' in main,
+      'unsafe camp setup preserves manual leave and mission releases geometry cache')
 check('TentAnchor' in layout and 'PlaceTentFurniture' in props and 'DoorIsClear' in props,
       'tent furniture attached to verified tent frame and entrance')
 check('TeleportToPosition' not in execution and 'TeleportFlat' not in execution,

@@ -21,6 +21,12 @@ namespace AnimusForge;
 internal static class FieldCampProps
 {
 	private const string LogSource = "FieldCamp";
+    internal static int PlacedTentCount { get; private set; }
+    internal static int RequestedTentCount { get; private set; }
+    internal static void ResetPlacementCounts()
+    {
+        PlacedTentCount = RequestedTentCount = 0;
+    }
 		private const float FencePiece = 2.9f;
 		private const BodyFlags ClearanceExcludeFlags = BodyFlags.CommonCollisionExcludeFlagsForAgent & ~BodyFlags.DoNotCollideWithRaycast;
 
@@ -123,6 +129,9 @@ internal static class FieldCampProps
 	/// <returns>Number of entities created.</returns>
 	internal static int Place(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale)
 	{
+        ResetPlacementCounts();
+        for (int i = 0; i < layout.Props.Count; i++)
+            if (layout.Props[i].Kind == FieldCampLayout.PropKind.Tent) RequestedTentCount++;
 		_solidRequested = 0;
 		_solidWithBody = 0;
 		int placed = PlaceAll(scene, layout, campFrame, scale);
@@ -174,9 +183,13 @@ internal static class FieldCampProps
 				plan.Add(item);
 			}
 			int placed = 0;
+            // Standalone props first: every tent trial sees the final nearby physical clutter.
+            for (int pass = 0; pass < 2; pass++)
 			for (int i = 0; i < layout.Props.Count; i++)
 			{
 				FieldCampLayout.Prop prop = layout.Props[i];
+                if ((prop.Kind == FieldCampLayout.PropKind.Tent) != (pass == 1)) continue;
+                if (prop.Kind == FieldCampLayout.PropKind.ExecutionBlock || prop.Kind == FieldCampLayout.PropKind.Gallows) continue;
 				string[] pool = PoolFor(prop, out string poolKey);
 				if (prop.TentAnchor > 0)
 				{
@@ -194,12 +207,14 @@ internal static class FieldCampProps
 				if (prop.Kind == FieldCampLayout.PropKind.Tent)
 				{
 					furnishingPlans.TryGetValue(i + 1, out List<FieldCampLayout.Prop> plan);
-					if (!PlaceTent(scene, prop, pool, campFrame, plan, furnitureSizes, doorwayTurns, out TentInterior tentInterior))
+					if (!PlaceTent(scene, prop, pool, campFrame, plan, furnitureSizes, doorwayTurns, tents.Values, out TentInterior tentInterior))
 					{
-						throw new InvalidOperationException("No accessible, grounded tent candidate: " + poolKey);
+						Logger.Log(LogSource, "[WARN] tent rejected after real size/ground/door trials pool=" + poolKey + " slot=" + i);
+                        continue;
 					}
 					tents.Add(i + 1, tentInterior);
-					placed += 1 + (plan?.Count ?? 0);
+                    PlacedTentCount++;
+					placed += 1 + tentInterior.FurnitureEntities.Count;
 					continue;
 				}
 				MatrixFrame frame = FrameFor(scene, campFrame, prop.Position * scale, prop.Yaw, prop.Scale);
@@ -209,14 +224,6 @@ internal static class FieldCampProps
 					placed++;
 				}
 			}
-			foreach (TentInterior interior in tents.Values)
-			{
-				if (!DoorIsClear(scene, interior.Frame, interior.DoorDepth))
-				{
-					throw new InvalidOperationException("Camp furniture/props blocked a tent entrance.");
-				}
-			}
-			FieldCampSite.InitializeGroundCache(scene, campFrame, layout, scale);
 			return placed;
 		}
 
@@ -225,99 +232,108 @@ internal static class FieldCampProps
 		/// are measured from the actual candidate, never inferred from a culture's name. A closed
 		/// candidate is rejected, not made walk-through. The doorway-local frame is shared by all furniture.
 		/// </summary>
-		private static bool PlaceTent(Scene scene, FieldCampLayout.Prop prop, string[] pool, MatrixFrame campFrame,
-			List<FieldCampLayout.Prop> furnishingPlan, Dictionary<string, BoundingBox> furnitureSizes,
-			Dictionary<string, int> doorwayTurns, out TentInterior interior)
-		{
-			interior = null;
-			float scale = prop.Scale > 0f ? prop.Scale : 1f;
-			for (int c = 0; c < pool.Length; c++)
-			{
-				if (!GameEntity.PrefabExists(pool[c]))
-				{
-					continue;
-				}
-				doorwayTurns.TryGetValue(pool[c], out int firstTurn);
-				for (int attempt = 0; attempt < 4; attempt++)
-				{
-					int turn = (firstTurn + attempt) % 4;
-					float correction = turn * MathF.PI * 0.5f;
-					MatrixFrame frame = FrameFor(scene, campFrame, prop.Position, prop.Yaw - correction, scale);
-					GameEntity tent = TrySpawn(scene, pool[c], frame, true);
-					if (tent == null)
-					{
-						continue;
-					}
-					bool accepted = false;
-					TentInterior trial = null;
-					try
-					{
-						BoundingBox box = tent.GetLocalBoundingBox();
-						if (!box.min.IsValid || !box.max.IsValid || box.max.z <= box.min.z)
-						{
-							continue;
-						}
-						float halfX = (box.max.x - box.min.x) * 0.5f * scale;
-						float halfY = (box.max.y - box.min.y) * 0.5f * scale;
-						if (!(halfX >= 1.4f && halfX <= 8f && halfY >= 1.4f && halfY <= 8f))
-						{
-							continue;
-						}
-						MatrixFrame door = MatrixFrame.Identity;
-						door.rotation = campFrame.rotation;
-						door.rotation.RotateAboutUp(prop.Yaw);
-						Vec3 center = frame.TransformToParent(new Vec3((box.min.x + box.max.x) * 0.5f, (box.min.y + box.max.y) * 0.5f, 0f));
-						center.z = frame.origin.z;
-						door.origin = center;
-						float width = turn % 2 == 0 ? halfX : halfY;
-						float depth = turn % 2 == 0 ? halfY : halfX;
-						// Keep ordinary tents inside their allotted street parcel. Reject an oversized
-						// culture candidate (including ropes) rather than overlap the main road/neighbour.
-						if (prop.Variant < 98 && (width > 3f || depth > 4f))
-						{
-							continue;
-						}
-						if (!TentGroundIsLevel(scene, door, width, depth) || !DoorIsClear(scene, door, depth))
-						{
-							continue;
-						}
-						trial = new TentInterior { Frame = door, HalfWidth = width * 0.68f, HalfDepth = depth * 0.68f,
-							RoofHeight = (box.max.z - box.min.z) * scale, DoorDepth = depth };
-						CaptureTentEntities(tent, trial.Entities);
-						bool furnished = true;
-						for (int f = 0; furnished && furnishingPlan != null && f < furnishingPlan.Count; f++)
-						{
-							FieldCampLayout.Prop furniture = furnishingPlan[f];
-							furnished = PlaceTentFurniture(scene, furniture, PoolFor(furniture, out _), trial, furnitureSizes);
-						}
-						if (!furnished || !DoorIsClear(scene, door, depth))
-						{
-							continue;
-						}
-						interior = trial;
-						doorwayTurns[pool[c]] = turn;
-						Logger.Log(LogSource, "tent interior prefab=" + pool[c] + " doorwayTurn=" + turn + " half=" + width.ToString("0.00") + "," + depth.ToString("0.00"));
-						accepted = true;
-						return true;
-					}
-					finally
-					{
-						if (!accepted)
-						{
-							if (trial != null)
-							{
-								for (int f = 0; f < trial.FurnitureEntities.Count; f++)
-								{
-									trial.FurnitureEntities[f].Remove(80);
-								}
-							}
-							tent.Remove(80);
-						}
-					}
-				}
-			}
-			return false;
-		}
+        private static bool PlaceTent(Scene scene, FieldCampLayout.Prop prop, string[] pool, MatrixFrame campFrame,
+            List<FieldCampLayout.Prop> furnishingPlan, Dictionary<string, BoundingBox> measured,
+            Dictionary<string, int> doorwayTurns, IEnumerable<TentInterior> acceptedTents, out TentInterior interior)
+        {
+            interior = null;
+            string[] fallback = Neutral[FieldCampLayout.PropKind.Tent];
+            for (int c = 0; c < pool.Length + fallback.Length; c++)
+            {
+                string prefab = c < pool.Length ? pool[c] : fallback[c-pool.Length];
+                if (!GameEntity.PrefabExists(prefab)) continue;
+                if (!measured.TryGetValue(prefab, out BoundingBox box))
+                {
+                    GameEntity probe = null;
+                    try
+                    {
+                        probe = GameEntity.Instantiate(scene, prefab, false, false);
+                        if (probe == null) continue;
+                        box = probe.GetLocalBoundingBox();
+                        measured[prefab] = box;
+                    }
+                    catch (Exception ex)
+                    { Logger.Log(LogSource, "[WARN] tent measurement failed prefab=" + prefab + " error=" + ex.Message); continue; }
+                    finally { probe?.Remove(80); }
+                }
+                if (!box.min.IsValid || !box.max.IsValid || box.max.z <= box.min.z) continue;
+                doorwayTurns.TryGetValue(prefab, out int firstTurn);
+                for (int attempt = 0; attempt < 4; attempt++)
+                {
+                    int turn = (firstTurn + attempt) % 4;
+                    float rawX = (box.max.x-box.min.x)*0.5f, rawY = (box.max.y-box.min.y)*0.5f;
+                    float width = turn % 2 == 0 ? rawX : rawY, depth = turn % 2 == 0 ? rawY : rawX;
+                    bool large = prop.Variant >= 98;
+                    if (!FieldCampPlacementRules.TryTentScale(width, depth, prop.Scale > 0f ? prop.Scale : 1f,
+                        large ? 7f : 3f, large ? 7f : 4f, out float fittedScale)) continue;
+                    width *= fittedScale; depth *= fittedScale;
+                    MatrixFrame door;
+                    try
+                    {
+                        door = FrameFor(scene, campFrame, prop.Position, prop.Yaw, 1f);
+                        if (!TryFitTentGround(scene, ref door, width, depth)) continue;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log(LogSource, "[WARN] tent support trial failed prefab=" + prefab + " error=" + ex.Message);
+                        continue;
+                    }
+                    MatrixFrame frame = door;
+                    frame.rotation.RotateAboutUp(-turn * MathF.PI * 0.5f);
+                    frame.rotation.ApplyScaleLocal(fittedScale);
+                    frame.origin = door.origin - frame.rotation.TransformToParent(new Vec3(
+                        (box.min.x+box.max.x)*0.5f, (box.min.y+box.max.y)*0.5f, box.min.z));
+                    GameEntity tent = TrySpawn(scene, prefab, frame, true);
+                    if (tent == null) continue;
+                    bool accepted = false;
+                    TentInterior trial = null;
+                    try
+                    {
+                        if (!DoorIsClear(scene, door, depth)) continue;
+                        trial = new TentInterior { Frame=door, HalfWidth=width*0.68f, HalfDepth=depth*0.68f,
+                            RoofHeight=(box.max.z-box.min.z)*fittedScale, DoorDepth=depth };
+                        CaptureTentEntities(tent, trial.Entities);
+                        int skipped = 0;
+                        for (int f=0; furnishingPlan != null && f<furnishingPlan.Count; f++)
+                        {
+                            var furnishing=furnishingPlan[f];
+                            if (!PlaceTentFurniture(scene, furnishing, PoolFor(furnishing, out _), trial, measured)) skipped++;
+                        }
+                        if (!DoorIsClear(scene, door, depth))
+                        {
+                            for (int f=0; f<trial.FurnitureEntities.Count; f++) trial.FurnitureEntities[f].Remove(80);
+                            trial.FurnitureEntities.Clear();
+                            trial.Furniture.Clear();
+                            if (!DoorIsClear(scene, door, depth)) continue;
+                        }
+                        // The new physical tent/furniture may not obstruct an earlier accepted doorway.
+                        bool blocksEntrance = false;
+                        foreach (TentInterior previous in acceptedTents)
+                        {
+                            float reach = Math.Max(width, depth) * 1.5f + previous.DoorDepth + 2f;
+                            if (previous.Frame.origin.AsVec2.DistanceSquared(door.origin.AsVec2) <= reach * reach &&
+                                !DoorIsClear(scene, previous.Frame, previous.DoorDepth))
+                            { blocksEntrance = true; break; }
+                        }
+                        if (blocksEntrance) continue;
+                        interior=trial;doorwayTurns[prefab]=turn;accepted=true;
+                        Logger.Log(LogSource, "tent placed prefab="+prefab+" scale="+fittedScale.ToString("0.00")+" doorwayTurn="+turn+" skippedFurniture="+skipped);
+                        return true;
+                    }
+                    catch (Exception ex)
+                    { Logger.Log(LogSource, "[WARN] tent placement trial failed prefab=" + prefab + " turn=" + turn + " error=" + ex.Message); }
+                    finally
+                    {
+                        if (!accepted)
+                        {
+                            if (trial != null) for (int f=0; f<trial.FurnitureEntities.Count; f++) trial.FurnitureEntities[f].Remove(80);
+                            tent.Remove(80);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
 
 		private static void CaptureTentEntities(GameEntity root, HashSet<UIntPtr> entities)
 		{
@@ -341,22 +357,31 @@ internal static class FieldCampProps
 			}
 		}
 
-		private static bool TentGroundIsLevel(Scene scene, MatrixFrame frame, float halfX, float halfY)
-		{
-			for (int x = -1; x <= 1; x++)
-			{
-				for (int y = -1; y <= 1; y++)
-				{
-					Vec3 p = frame.TransformToParent(new Vec3(x * halfX * 0.68f, y * halfY * 0.68f, 0f));
-					float height = scene.GetTerrainHeight(p.AsVec2, true);
-					if (float.IsNaN(height) || float.IsInfinity(height) || Math.Abs(height - frame.origin.z) > 0.22f)
-					{
-						return false;
-					}
-				}
-			}
-			return true;
-		}
+        private static bool TryFitTentGround(Scene scene, ref MatrixFrame door, float halfX, float halfY)
+        {
+            float x = halfX*0.68f, y=halfY*0.68f;
+            float centre=scene.GetTerrainHeight(door.origin.AsVec2,true);
+            float left=scene.GetTerrainHeight(door.TransformToParent(new Vec3(-x,0f,0f)).AsVec2,true);
+            float right=scene.GetTerrainHeight(door.TransformToParent(new Vec3(x,0f,0f)).AsVec2,true);
+            float back=scene.GetTerrainHeight(door.TransformToParent(new Vec3(0f,-y,0f)).AsVec2,true);
+            float front=scene.GetTerrainHeight(door.TransformToParent(new Vec3(0f,y,0f)).AsVec2,true);
+            float sx=(right-left)/(2f*x), sy=(front-back)/(2f*y);
+            if (!FieldCampPlacementRules.Finite(centre) || !FieldCampPlacementRules.Finite(sx) ||
+                !FieldCampPlacementRules.Finite(sy) || sx*sx+sy*sy>0.0225f) return false;
+            Vec3 side=door.rotation.s;side.z=sx;side.Normalize();
+            Vec3 forward=door.rotation.f;forward.z=sy;
+            Vec3 up=Vec3.CrossProduct(side,forward);up.Normalize();
+            forward=Vec3.CrossProduct(up,side);forward.Normalize();
+            door.rotation.s=side;door.rotation.f=forward;door.rotation.u=up;door.origin.z=centre+0.02f;
+            for (int ix=-1;ix<=1;ix++) for(int iy=-1;iy<=1;iy++)
+            {
+                Vec3 point=door.TransformToParent(new Vec3(ix*x,iy*y,0f));
+                float actual=scene.GetTerrainHeight(point.AsVec2,true);
+                if (!FieldCampPlacementRules.Finite(actual) || Math.Abs(actual-point.z)>0.20f ||
+                    scene.GetWaterLevelAtPosition(point.AsVec2,true,true)>actual-0.3f) return false;
+            }
+            return true;
+        }
 
 		private static bool DoorIsClear(Scene scene, MatrixFrame door, float depth)
 		{

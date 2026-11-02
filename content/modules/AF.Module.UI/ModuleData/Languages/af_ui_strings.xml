@@ -3480,5 +3480,8 @@ Choose how to proceed:" />
   <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Title" text="Expanded NPC personas" />
   <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Hint" text="Default: on. Generates traits, motivations, values, fears, and speech style with new or regenerated personas. Turning off generates only persona prose. Existing expanded data is kept and remains usable; event-driven full persona regeneration is controlled separately." />
   <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Group" text="9. Prompt extensions" />
+    <string id="AF_FC_NoCampSite" text="This scene has no suitable whole-camp site. No facilities were forced onto the hillside. The scene stays open; leave manually without a patrol time charge." />
+    <string id="AF_FC_IncompleteCamp" text="Camp setup is incomplete: {PLACED}/{TOTAL} tents were placed. You decide when to leave; details are recorded in the FieldCamp log." />
+    <string id="AF_FC_DeploymentClearing" text="Preparing your confirmed execution site. Residents must walk outside the safety boundary; optional spectators do not delay construction." />
 </strings>
 </base>

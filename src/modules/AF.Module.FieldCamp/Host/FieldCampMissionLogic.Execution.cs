@@ -31,6 +31,10 @@ public sealed partial class FieldCampMissionLogic
 		internal CampAgent Camp;
 		internal bool Prisoner;
 		internal bool Arrived;
+        internal bool ClearanceHeld;
+        internal bool Spectator;
+        internal Vec3[] Route = Array.Empty<Vec3>();
+        internal int RouteIndex;
 		internal bool ReturningHome;
 		internal bool CountedWaiting = true;
 		internal bool CountedUncleared;
@@ -60,6 +64,7 @@ public sealed partial class FieldCampMissionLogic
 	private bool _ceremonyActive;
 	private bool _ceremonyStaged;
 	private float _ceremonyDeadline;
+    private float _nextCeremonyProgressLog;
 	private float _ceremonyReturnDeadline = -1f;
 	private Vec3 _ceremonyOrigin;
 	private Vec2 _ceremonyForward;
@@ -100,7 +105,7 @@ public sealed partial class FieldCampMissionLogic
 	private static bool CanStartCeremony(Mission mission)
 	{
 		var camp = mission?.GetMissionBehavior<FieldCampMissionLogic>();
-		return camp != null && camp._spawned && !mission.IsMissionEnding &&
+		return camp != null && camp._campInitialized && !mission.IsMissionEnding &&
 			!camp._ceremonyActive && camp._ceremonyWalkers.Count == 0 && !camp.SlaughterBusy && camp._duelists.Count == 0;
 	}
 
@@ -136,6 +141,7 @@ public sealed partial class FieldCampMissionLogic
 		_ceremonyForward = forward.Normalized();
 		_ceremonyRadius = Math.Max(CeremonyClearRadius, radius);
 		_ceremonyDeadline = _elapsed + CeremonyPreparationTimeoutSeconds;
+        _nextCeremonyProgressLog = _elapsed + 5f;
 		_ceremonyReturnDeadline = -1f;
 		_ceremonyWalkCursor = _ceremonyClearCursor = 0;
 		_ceremonyClearPassBlocked = false;
@@ -195,11 +201,7 @@ public sealed partial class FieldCampMissionLogic
 				Vec2 flat = origin.AsVec2 + _ceremonyForward * (_ceremonyRadius + 2.5f + row * 1.5f) + right * lateral;
 				if (TryStartCeremonyWalk(candidates[i].Agent, flat, watcher: true)) watchers++;
 			}
-			if (candidates.Count > 0 && watchers == 0)
-			{
-				FailCeremonyPreparation("no reachable spectator mark");
-				return _ceremonyReadiness;
-			}
+			AnimusForgeQuickInfo.Show(FieldCampText.DeploymentClearing());
 			Logger.Log(LogSource, "execution preparation started session=" + session + " watchers=" + watchers + " registered=" + _ceremonyClearance.Count);
 		}
 		catch (Exception ex)
@@ -220,7 +222,8 @@ public sealed partial class FieldCampMissionLogic
 		if (!CanMoveForCeremony(agent) || _ceremonyMoves.ContainsKey(agent)) return false;
 		Vec3 goal = new Vec3(flat.x, flat.y, _ceremonyOrigin.z);
 		goal.z = GroundHeight(Mission.Scene, goal);
-		if (!HasCeremonyWalkPath(agent.Position, goal)) return false;
+        bool routed=FieldCampSite.TryBuildGroundedRoute(Mission.Scene, agent.Position, goal, out Vec3[] route, out bool covered);
+        if (!routed && (covered || !HasCeremonyWalkPath(agent.Position, goal))) return false;
 		int cellX = (int)Math.Floor(flat.x / 1.3f);
 		int cellY = (int)Math.Floor(flat.y / 1.3f);
 		if (_ceremonyMarks.ContainsKey(CeremonyMarkKey(cellX, cellY))) return false;
@@ -233,15 +236,16 @@ public sealed partial class FieldCampMissionLogic
 		var move = new CeremonyMove
 		{
 			Agent = agent, Camp = entry, Prisoner = _ceremonyPrisoners.Contains(agent),
-			Home = entry != null ? entry.Home : agent.Position,
+			CountedWaiting = !watcher, Spectator=watcher, Route = route,
+            Home = entry != null ? entry.Home : agent.Position,
 			HomeFacing = entry != null ? entry.HomeFacing : agent.LookDirection.AsVec2,
 			Goal = goal, Facing = facing.IsNonZero() ? facing.Normalized() : -_ceremonyForward
 		};
 		// Record ownership before touching AI so a partial failure is still returned.
 		_ceremonyWalkers.Add(move);
 		_ceremonyMoves.Add(agent, move);
-		_ceremonyWaiting++;
-		move.CountedUncleared = agent.Position.AsVec2.DistanceSquared(_ceremonyOrigin.AsVec2) < _ceremonyRadius * _ceremonyRadius;
+		if (move.CountedWaiting) _ceremonyWaiting++;
+		move.CountedUncleared = !FieldCampPlacementRules.IsPhysicallyClear(agent.Position.AsVec2.DistanceSquared(_ceremonyOrigin.AsVec2), _ceremonyRadius);
 		if (move.CountedUncleared) _ceremonyUnclearedMoves++;
 		if (watcher) _ceremonyWatchers.Add(move);
 		if (entry != null)
@@ -276,9 +280,10 @@ public sealed partial class FieldCampMissionLogic
 			!float.IsNaN(path) && !float.IsInfinity(path) && path >= 0f && path <= direct * 3f + 8f;
 	}
 
-	private void IssueCeremonyWalk(CeremonyMove move, Vec3 goal, Vec2 facing)
+	private void IssueCeremonyWalk(CeremonyMove move, Vec3 goal, Vec2 facing, bool followRoute = true)
 	{
 		Agent agent = move.Agent;
+        if (followRoute && _ceremonyActive && move.Route.Length > 0) goal=move.Route[move.RouteIndex];
 		StopCampNavigation(agent);
 		agent.Controller = AgentControllerType.AI;
 		agent.SetIsAIPaused(false);
@@ -308,7 +313,7 @@ public sealed partial class FieldCampMissionLogic
 				if (_ceremonyWalkCursor >= _ceremonyWalkers.Count) _ceremonyWalkCursor = 0;
 				CeremonyMove move = _ceremonyWalkers[_ceremonyWalkCursor++];
 				bool active = move.Agent.IsActive();
-				bool uncleared = active && move.Agent.Position.AsVec2.DistanceSquared(_ceremonyOrigin.AsVec2) < _ceremonyRadius * _ceremonyRadius;
+				bool uncleared = active && !FieldCampPlacementRules.IsPhysicallyClear(move.Agent.Position.AsVec2.DistanceSquared(_ceremonyOrigin.AsVec2), _ceremonyRadius);
 				if (move.CountedUncleared != uncleared)
 				{
 					_ceremonyUnclearedMoves += uncleared ? 1 : -1;
@@ -324,12 +329,32 @@ public sealed partial class FieldCampMissionLogic
 					FailCeremonyPreparation("ceremony actor acquired by conversation");
 					return;
 				}
-				if (move.Agent.Position.AsVec2.DistanceSquared(move.Goal.AsVec2) <= CeremonyArrivalSquared)
+                if (move.ClearanceHeld && !uncleared) continue;
+                if (move.ClearanceHeld)
+                {
+                    move.ClearanceHeld=false;
+                    if (!move.CountedWaiting) { move.CountedWaiting=true; _ceremonyWaiting++; }
+                }
+                if (move.CountedWaiting && !uncleared)
+                {
+                    // Clearing residents owe safe physical space, not an arbitrary distant animation mark.
+                    IssueCeremonyWalk(move,move.Agent.Position,move.Facing,followRoute:false);
+                    move.ClearanceHeld=true;move.CountedWaiting=false;_ceremonyWaiting--;
+                    continue;
+                }
+                if (move.RouteIndex+1 < move.Route.Length &&
+                    move.Agent.Position.AsVec2.DistanceSquared(move.Route[move.RouteIndex].AsVec2)<=CeremonyArrivalSquared &&
+                    FieldCampSite.TryValidateGroundedPassage(Mission.Scene,move.Agent.Position,move.Route[move.RouteIndex+1],0.3f))
+                {
+                    move.RouteIndex++;IssueCeremonyWalk(move,move.Goal,move.Facing);
+                }
+                if (!uncleared && (move.Route.Length==0 || move.RouteIndex+1==move.Route.Length) &&
+                    move.Agent.Position.AsVec2.DistanceSquared(move.Goal.AsVec2) <= CeremonyArrivalSquared)
 				{
 					if (!move.Arrived)
 					{
 						// Soft hold at the actual arrival position; never snap the root to its mark.
-						IssueCeremonyWalk(move, move.Agent.Position, move.Facing);
+						IssueCeremonyWalk(move, move.Agent.Position, move.Facing, followRoute:false);
 						move.Arrived = true;
 						if (move.CountedWaiting) { _ceremonyWaiting--; move.CountedWaiting = false; }
 						if (move.Camp != null)
@@ -342,7 +367,7 @@ public sealed partial class FieldCampMissionLogic
 				}
 				else
 				{
-					if (!move.CountedWaiting) { _ceremonyWaiting++; move.CountedWaiting = true; }
+					if (!move.Spectator && !move.CountedWaiting) { _ceremonyWaiting++; move.CountedWaiting = true; }
 					move.Arrived = false;
 					if (_elapsed >= move.RetryAt) IssueCeremonyWalk(move, move.Goal, move.Facing);
 				}
@@ -350,24 +375,28 @@ public sealed partial class FieldCampMissionLogic
 			// Round-robin the immutable registry, not Mission.Agents. A blocked pass
 			// cannot grant ready even if its last blocker was just told to walk away.
 			int budget = Math.Min(CeremonyTickBudget, _ceremonyClearance.Count);
+            int routeBudget=2;
 			for (int i = 0; i < budget; i++)
 			{
 				Agent agent = _ceremonyClearance[_ceremonyClearCursor++];
-				if (agent.IsActive() && agent.Position.AsVec2.DistanceSquared(_ceremonyOrigin.AsVec2) < _ceremonyRadius * _ceremonyRadius)
+				if (agent.IsActive() && !FieldCampPlacementRules.IsPhysicallyClear(agent.Position.AsVec2.DistanceSquared(_ceremonyOrigin.AsVec2), _ceremonyRadius))
 				{
 					_ceremonyClearanceVerified = false;
 					// Tracked movers have an O(1) outstanding counter; this pass
 					// only waits for residents not yet safely assigned a route.
 					if (!_ceremonyMoves.ContainsKey(agent)) _ceremonyClearPassBlocked = true;
-					if (!_ceremonyMoves.ContainsKey(agent) && CanMoveForCeremony(agent) &&
+					if (routeBudget>0 && !_ceremonyMoves.ContainsKey(agent) && CanMoveForCeremony(agent) &&
 						(!_ceremonyRouteRetryAt.TryGetValue(agent, out float retryAt) || _elapsed >= retryAt))
 					{
-						_ceremonyRouteRetryAt[agent] = _elapsed + 5f;
+						routeBudget--;
+                        _ceremonyRouteRetryAt[agent] = _elapsed + 5f;
 						Vec2 away = agent.Position.AsVec2 - _ceremonyOrigin.AsVec2;
 						away = away.IsNonZero() ? away.Normalized() : -_ceremonyForward;
-						for (int attempt = 0; attempt < 3; attempt++)
+						for (int attempt = 0; attempt < 8; attempt++)
 						{
-							Vec2 flat = _ceremonyOrigin.AsVec2 + away * (_ceremonyRadius + 2f + attempt * 1.8f);
+							float angle=attempt*MathF.PI*0.25f;
+                            var direction=new Vec2(away.x*MathF.Cos(angle)-away.y*MathF.Sin(angle),away.x*MathF.Sin(angle)+away.y*MathF.Cos(angle));
+                            Vec2 flat = _ceremonyOrigin.AsVec2 + direction * (_ceremonyRadius + 2.5f);
 							if (TryStartCeremonyWalk(agent, flat, watcher: false)) break;
 						}
 					}
@@ -381,11 +410,30 @@ public sealed partial class FieldCampMissionLogic
 					break;
 				}
 			}
+            if (_elapsed >= _nextCeremonyProgressLog)
+            {
+                _nextCeremonyProgressLog = _elapsed + 5f;
+                Logger.Log(LogSource, "execution preparation pending session=" + _ceremonySession +
+                    " mandatoryWaiting=" + _ceremonyWaiting + " uncleared=" + _ceremonyUnclearedMoves);
+            }
 			if ((_ceremonyClearanceVerified || _ceremonyClearance.Count == 0) &&
-				_ceremonyWaiting == 0 && _ceremonyUnclearedMoves == 0) CompleteCeremonyPreparation();
+				_ceremonyWaiting == 0 && _ceremonyUnclearedMoves == 0 && VerifyCeremonyClearanceNow()) CompleteCeremonyPreparation();
 		}
 		catch (Exception ex) { FailCeremonyPreparation(ex.Message); }
 	}
+
+    // Final commit check of the capped camp registry: round-robin counters can be stale after re-entry.
+    // Runs only when the readiness counters pass, never a mission-wide tick enumeration.
+    private bool VerifyCeremonyClearanceNow()
+    {
+        for (int i=0;i<_ceremonyClearance.Count;i++)
+        {
+            Agent agent=_ceremonyClearance[i];
+            if (agent.IsActive() && !FieldCampPlacementRules.IsPhysicallyClear(
+                agent.Position.AsVec2.DistanceSquared(_ceremonyOrigin.AsVec2),_ceremonyRadius)) return false;
+        }
+        return true;
+    }
 
 	private void CompleteCeremonyPreparation()
 	{
@@ -393,7 +441,14 @@ public sealed partial class FieldCampMissionLogic
 		for (int i = 0; i < _ceremonyWatchers.Count; i++)
 		{
 			CeremonyMove move = _ceremonyWatchers[i];
-			if (move.Arrived && move.Agent.IsActive()) crowd.Add(move.Agent);
+			if (move.Arrived && !move.ClearanceHeld && move.Agent.IsActive()) crowd.Add(move.Agent);
+            else if (move.Agent.IsActive())
+            {
+                // Readiness proves everyone is physically outside. Stop unfinished optional
+                // routes now so they cannot cross the newly built apparatus afterwards.
+                IssueCeremonyWalk(move, move.Agent.Position, move.Facing, followRoute: false);
+                move.ClearanceHeld = true;
+            }
 		}
 		_ceremonyCrowd = crowd.ToArray();
 		_ceremonyReadiness = FieldCampCeremonyReadiness.Ready;
