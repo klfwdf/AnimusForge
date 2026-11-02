@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -35,6 +35,7 @@ internal static class FieldCampProps
 	{
 		internal float Length;
 		internal bool AlongY;
+        internal Vec3 PivotToGroundCentre;
 	}
 
 	private static readonly Dictionary<FieldCampLayout.PropKind, string[]> Neutral = new Dictionary<FieldCampLayout.PropKind, string[]>
@@ -606,23 +607,39 @@ internal static class FieldCampProps
 			sizes[prefab] = size;
 			Logger.Log(LogSource, "fence piece " + prefab + " length=" + size.Length.ToString("0.00") + " axis=" + (size.AlongY ? "y" : "x"));
 		}
-		// Yaw turns local +y onto the run; a piece whose long side is local x needs another -90 degrees.
-		float yaw = dir.RotationInRadians - (size.AlongY ? 0f : MathF.PI * 0.5f);
-		int pieces = Math.Max(1, (int)Math.Ceiling(length / size.Length - 0.15f));
-		int placed = 0;
-		for (int i = 0; i < pieces; i++)
-		{
-			MatrixFrame frame = FrameFor(scene, campFrame, from + dir * (length * (i + 0.5f) / pieces), yaw, 0f);
-			if (i == 0)
-			{
-				// The measuring piece was created at the run start; replace it in place so its collision is rebuilt.
-				first.Remove(80);
-			}
-			if (TrySpawn(scene, prefab, frame, true) != null)
-			{
-				placed++;
-			}
-		}
+        // Build a basis from the actual endpoints instead of guessing the prefab yaw.
+        // Compensate the local origin as many fence prefabs are anchored at one end.
+        int pieces = Math.Max(1, (int)Math.Ceiling(length / size.Length));
+        first.Remove(80);
+        int placed = 0;
+        for (int i = 0; i < pieces; i++)
+        {
+            Vec2 p0 = from + dir * (length * i / pieces);
+            Vec2 p1 = from + dir * (length * (i + 1) / pieces);
+            Vec3 start = campFrame.TransformToParent(new Vec3(p0.x, p0.y, 0f));
+            Vec3 end = campFrame.TransformToParent(new Vec3(p1.x, p1.y, 0f));
+            start.z = scene.GetTerrainHeight(start.AsVec2, true);
+            end.z = scene.GetTerrainHeight(end.AsVec2, true);
+            Vec3 delta = end - start;
+            float stretch = delta.Length / size.Length;
+            Vec3 along = delta.NormalizedCopy();
+            Vec3 up = new Vec3(0f, 0f, 1f);
+            MatrixFrame frame = MatrixFrame.Identity;
+            if (size.AlongY)
+            {
+                frame.rotation.s = Vec3.CrossProduct(along, up).NormalizedCopy();
+                frame.rotation.u = Vec3.CrossProduct(frame.rotation.s, along).NormalizedCopy();
+                frame.rotation.f = along * stretch;
+            }
+            else
+            {
+                frame.rotation.f = Vec3.CrossProduct(up, along).NormalizedCopy();
+                frame.rotation.u = Vec3.CrossProduct(along, frame.rotation.f).NormalizedCopy();
+                frame.rotation.s = along * stretch;
+            }
+            frame.origin = (start + end) * 0.5f - frame.rotation.TransformToParent(size.PivotToGroundCentre);
+            if (TrySpawn(scene, prefab, frame, true) != null) placed++;
+        }
 		return placed;
 	}
 
@@ -636,7 +653,7 @@ internal static class FieldCampProps
 			float longest = Math.Max(x, y);
 			if (longest > 0.5f && longest < 20f)
 			{
-				return new PieceSize { Length = longest * 0.97f, AlongY = y > x };
+				return new PieceSize { Length = longest, AlongY = y > x, PivotToGroundCentre = new Vec3((box.min.x + box.max.x) * 0.5f, (box.min.y + box.max.y) * 0.5f, box.min.z) };
 			}
 		}
 		catch

@@ -1,3 +1,4 @@
+﻿using RichExecutions.Core;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -57,6 +58,7 @@ internal static class FieldCampSite
 			internal int Height;
 			internal float[] Heights;
 			internal bool[] Open;
+            internal bool[] BaseOpen;
 			internal bool Ready;
             internal FieldCampGroundRouter Router;
 		}
@@ -652,7 +654,8 @@ internal static class FieldCampSite
 					}
 				}
 			}
-			cache.Router = new FieldCampGroundRouter(cache.Width, cache.Height, cache.Open, cache.Heights);
+			cache.BaseOpen = (bool[])cache.Open.Clone();
+            cache.Router = new FieldCampGroundRouter(cache.Width, cache.Height, cache.Open, cache.Heights);
 			cache.Ready = open > 0;
 			Logger.Log(LogSource, "ground cache cells=" + cache.Open.Length + " open=" + open + " step=" + GroundStep);
 			if (!cache.Ready) throw new InvalidOperationException("Camp ground cache has no walkable cells.");
@@ -786,6 +789,42 @@ internal static class FieldCampSite
 			grounded.z = height + 0.04f;
 			return true;
 		}
+
+        // Geometry changes only: sample the affected region, reusing the existing router arrays.
+        // Never runs in Tick and never rescans Mission.Agents or the whole scene.
+        internal static void RefreshGroundObstacles(Scene scene, IReadOnlyList<FieldCampCeremonyArea> areas)
+        {
+            if (scene == null || areas == null || !GroundCaches.TryGetValue(scene, out GroundCache cache) ||
+                !cache.Ready || cache.BaseOpen == null) return;
+            var touched = new HashSet<int>();
+            for (int i = 0; i < areas.Count; i++)
+            {
+                FieldCampCeremonyArea area = areas[i];
+                float minX = float.MaxValue, minY = float.MaxValue, maxX = float.MinValue, maxY = float.MinValue;
+                for (int corner = 0; corner < 4; corner++)
+                {
+                    Vec3 local = cache.Frame.TransformToLocal(new Vec3(
+                        (corner & 1) == 0 ? area.Min.x - 1.5f : area.Max.x + 1.5f,
+                        (corner & 2) == 0 ? area.Min.y - 1.5f : area.Max.y + 1.5f, cache.Frame.origin.z));
+                    minX = Math.Min(minX, local.x); maxX = Math.Max(maxX, local.x);
+                    minY = Math.Min(minY, local.y); maxY = Math.Max(maxY, local.y);
+                }
+                int left = Math.Max(0, (int)Math.Floor((minX - cache.MinX) / GroundStep));
+                int right = Math.Min(cache.Width - 1, (int)Math.Ceiling((maxX - cache.MinX) / GroundStep));
+                int bottom = Math.Max(0, (int)Math.Floor((minY - cache.MinY) / GroundStep));
+                int top = Math.Min(cache.Height - 1, (int)Math.Ceiling((maxY - cache.MinY) / GroundStep));
+                for (int y = bottom; y <= top; y++)
+                    for (int x = left; x <= right; x++)
+                    {
+                        int cell = y * cache.Width + x;
+                        if (!touched.Add(cell) || !cache.BaseOpen[cell]) continue;
+                        Vec3 p = cache.Frame.TransformToParent(new Vec3(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep, 0f));
+                        p.z = cache.Heights[cell];
+                        try { cache.Open[cell] = CellHasClearance(scene, p); }
+                        catch { cache.Open[cell] = false; }
+                    }
+            }
+        }
 
         internal static bool TryBuildGroundedRoute(Scene scene, Vec3 from, Vec3 target, out Vec3[] route, out bool covered)
         {

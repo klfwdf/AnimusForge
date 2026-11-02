@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SandBox;
 using SandBox.Missions.AgentBehaviors;
@@ -22,8 +22,8 @@ public sealed partial class FieldCampMissionLogic
 
 	private static readonly string[] SitActions = { "act_sit_idle_on_floor_1", "act_sit_idle_on_floor_2", "act_sit_idle_on_floor_3" };
 	private static readonly string[] SentryActions = { "act_guard_cautious_look_around_1", "act_guard_normal_look_around_1", "act_stand_1" };
-	private static readonly string[] BenchActions = { "act_sit_1", "act_sit_2", "act_sit_3", "act_sit_4", "act_sit_and_drink_idle" };
-	private static readonly string[] EatActions = { "act_sit_eating_1", "act_sit_eating_2", "act_sit_and_drink_idle" };
+	// Props use non-usable benches; no seat-height binding exists for these agents.
+	
 	private static readonly string[] CookActions = { "act_bartender_meat", "act_citizen_cleanup_idle" };
 	private static readonly string[] SmithActions = { "act_smithing_machine_anvil_part_2" };
 	private static readonly string[] RepairActions = { "act_repair", "act_repair_upside" };
@@ -198,7 +198,7 @@ public sealed partial class FieldCampMissionLogic
 	internal bool IsSceneConversationHeld(Agent agent) => agent != null && _sceneConversationAgents.Contains(agent);
 
 	internal bool IsCampAgentBusyForConversation(Agent agent) => agent == null || IsSceneConversationHeld(agent) ||
-		_envoy?.Agent == agent || IsDuelist(agent) || SlaughterBusy || _ceremonyActive || IsCeremonyAgentHeld(agent);
+		_envoy?.Agent == agent || IsDuelist(agent) || SlaughterBusy || IsCeremonyAgentHeld(agent);
 
 	internal bool IsCampAgentSeated(Agent agent)
 	{
@@ -211,17 +211,18 @@ public sealed partial class FieldCampMissionLogic
 
 	internal bool CanStartNativeConversation(Agent agent) =>
 		agent != null && (_campAgentsByAgent.ContainsKey(agent) || _prisoners.Contains(agent)) &&
-		!_ceremonyActive && !SlaughterBusy && !IsDuelist(agent) && !IsCeremonyAgentHeld(agent);
+		!SlaughterBusy && !IsDuelist(agent) && !IsCeremonyAgentHeld(agent);
 
 	internal bool TryAcquireSceneConversation(Agent agent)
 	{
 		if (agent == null || !agent.IsActive() || !ReferenceEquals(Mission.Current, Mission) || Mission.IsMissionEnding ||
-			SlaughterBusy || IsDuelist(agent) || _ceremonyActive || IsCeremonyAgentHeld(agent)) return false;
+			SlaughterBusy || IsDuelist(agent) || IsCeremonyAgentHeld(agent)) return false;
 		if (!_campAgentsByAgent.TryGetValue(agent, out CampAgent campAgent) && !_prisoners.Contains(agent)) return false;
 		if (_sceneConversationAgents.Contains(agent)) return true;
 		try
 		{
-			if (!TryPrepareCampNavigation(agent)) return false;
+			ReleaseCeremonyReturnForConversation(agent);
+            if (!TryPrepareCampNavigation(agent)) return false;
 			if (!agent.IsUsingGameObject && agent.CurrentlyUsedGameObject == null)
 			{
 				if (campAgent != null)
@@ -246,7 +247,7 @@ public sealed partial class FieldCampMissionLogic
 	{
 		if (agent == _nativeConversationAgent && Campaign.Current?.ConversationManager?.IsConversationInProgress == true) return;
 		if (agent == null || !_sceneConversationAgents.Remove(agent) || !agent.IsActive() ||
-			!ReferenceEquals(Mission.Current, Mission) || Mission.IsMissionEnding || SlaughterBusy || IsDuelist(agent) || _ceremonyActive) return;
+			!ReferenceEquals(Mission.Current, Mission) || Mission.IsMissionEnding || SlaughterBusy || IsDuelist(agent) || IsCeremonyAgentHeld(agent)) return;
 			if (agent.IsUsingGameObject || agent.CurrentlyUsedGameObject != null) return;
 			StopCampNavigation(agent);
 			if (_envoy?.Agent == agent)
@@ -259,7 +260,7 @@ public sealed partial class FieldCampMissionLogic
 			entry.Target = entry.Home;
 			entry.TargetFacing = entry.HomeFacing;
 			entry.Returning = false;
-			entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 60f);
+			entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(12f, 28f);
 			MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
 		}
 		else if (_prisoners.Contains(agent)) ApplyPrisonerPose(agent);
@@ -287,7 +288,8 @@ public sealed partial class FieldCampMissionLogic
 		{
 			return;
 		}
-		int batch = Math.Min(UpkeepBatch, count);
+		_campRouteBudget = 2;
+        int batch = Math.Min(UpkeepBatch, count);
 		for (int n = 0; n < batch; n++)
 		{
 			_upkeepCursor = (_upkeepCursor + 1) % count;
@@ -298,36 +300,39 @@ public sealed partial class FieldCampMissionLogic
 			{
 				continue;
 			}
-			if (entry.MoveBlocked)
-			{
-				// A transient obstruction must not retire this actor for the whole mission.
-				// Retry its failed destination once per existing cooldown, with a new deadline.
-				if (_elapsed < entry.NextWanderTime) continue;
-				entry.Returning = false;
-				MoveTo(entry, entry.Target, entry.TargetFacing, run: false);
-				continue;
-			}
-			if (!entry.Seated && _elapsed >= entry.MoveDeadline)
-			{
-				// One bounded return attempt, never teleport a blocked walker home.
-				if (entry.Target.AsVec2.DistanceSquared(entry.Home.AsVec2) > ArriveDistanceSquared)
-				{
-					entry.Returning = false;
-					MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
-				}
-				else
-				{
-					agent.DisableScriptedMovement();
-					agent.ClearTargetFrame();
-					entry.Seated = true;
-					entry.MoveBlocked = true;
-					entry.NextWanderTime = _elapsed + 30f;
-				}
-				continue;
-			}
+            if (entry.MoveBlocked)
+            {
+                if (_elapsed < entry.NextWanderTime) continue;
+                if (entry.RouteQueued || _assembled)
+                    MoveTo(entry, entry.Target, entry.TargetFacing, run: entry.Run);
+                else
+                {
+                    entry.MoveBlocked = false;
+                    Refresh(entry);
+                }
+                continue;
+            }
+            if (!entry.Seated && _elapsed >= entry.MoveDeadline)
+            {
+                SettleCampAgent(entry, blocked: true);
+                continue;
+            }
+            if (!entry.Seated && _elapsed >= entry.ProgressAt)
+            {
+                if (agent.Position.AsVec2.DistanceSquared(entry.LastWalkPosition.AsVec2) < 0.04f)
+                { SettleCampAgent(entry, blocked: true); continue; }
+                entry.LastWalkPosition = agent.Position;
+                entry.ProgressAt = _elapsed + 4f;
+            }
+            if (!entry.Seated && entry.RouteIndex < entry.Route.Length &&
+                agent.Position.AsVec2.DistanceSquared(entry.Route[entry.RouteIndex].AsVec2) <= 0.36f)
+            {
+                entry.RouteIndex++;
+                IssueCampWalk(entry);
+            }
 				if (!_assembled && entry.Seated && entry.Activity == Activity.Wander && _elapsed >= entry.NextWanderTime)
 				{
-					entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 45f);
+					entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(10f, 22f);
 					if (TryNearbyStroll(entry, out Vec3 stroll)) MoveTo(entry, stroll, entry.HomeFacing, run: false);
 					continue;
 				}
@@ -349,7 +354,9 @@ public sealed partial class FieldCampMissionLogic
 				MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
 				continue;
 			}
-			// Arrived: settle once. The scripted hold stays set; it is not re-issued (that jitters).
+			// Arrived: release the movement goal before applying an idle animation.
+            StopCampNavigation(agent);
+            agent.SetIsAIPaused(true);
 			agent.LookDirection = new Vec3(entry.TargetFacing.x, entry.TargetFacing.y, 0f);
 			if (!_assembled)
 			{
@@ -366,9 +373,9 @@ public sealed partial class FieldCampMissionLogic
 	/// </summary>
 	private void Refresh(CampAgent entry)
 	{
-		entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 60f);
+		entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(12f, 28f);
 		float roll = MBRandom.RandomFloat;
-		if (entry.Activity == Activity.Sentry || roll < 0.45f)
+		if (entry.Activity == Activity.Sentry || entry.Activity == Activity.Post || roll < 0.35f)
 		{
 			entry.PoseVariant++;
 			ApplyPose(entry);
@@ -380,7 +387,7 @@ public sealed partial class FieldCampMissionLogic
 				MoveTo(entry, stroll, entry.HomeFacing, run: false);
 				return;
 			}
-		CampAgent mate = NearestIdleMate(entry, 9f);
+		CampAgent mate = NearestIdleMate(entry, 3.5f);
 		if (mate == null)
 		{
 			entry.PoseVariant++;
@@ -395,9 +402,9 @@ public sealed partial class FieldCampMissionLogic
 			entry.Agent.LookDirection = new Vec3(between.x, between.y, 0f);
 			mate.Agent.LookDirection = new Vec3(-between.x, -between.y, 0f);
 		}
-		PlayOnce(entry.Agent, entry.Work == FieldCampLayout.WorkKind.Sit || entry.Work == FieldCampLayout.WorkKind.Eat ? BenchActions : GossipActions, entry.PoseVariant);
-		PlayOnce(mate.Agent, mate.Work == FieldCampLayout.WorkKind.Sit || mate.Work == FieldCampLayout.WorkKind.Eat ? BenchActions : GossipActions, mate.PoseVariant + 1);
-		mate.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 60f);
+		PlayOnce(entry.Agent, entry.Work == FieldCampLayout.WorkKind.Sit || entry.Work == FieldCampLayout.WorkKind.Eat ? SitActions : GossipActions, entry.PoseVariant);
+		PlayOnce(mate.Agent, mate.Work == FieldCampLayout.WorkKind.Sit || mate.Work == FieldCampLayout.WorkKind.Eat ? SitActions : GossipActions, mate.PoseVariant + 1);
+		mate.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(12f, 28f);
 	}
 
 		private static bool TryPrepareCampNavigation(Agent agent)
@@ -427,16 +434,26 @@ public sealed partial class FieldCampMissionLogic
 			for (int i = 0; i < Math.Min(count, 12); i++)
 			{
 				Vec3 candidate = ToWorld(_layout.WanderSlots[(start + i) % count].Position);
-				if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) > 64f ||
+				if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) > 144f ||
 					candidate.AsVec2.DistanceSquared(entry.Agent.Position.AsVec2) < 4f ||
 					!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target) ||
-					!FieldCampSite.TryValidateGroundedPassage(Mission.Scene, entry.Agent.Position, target, 0.4f)) continue;
+					IsReservedCeremonyPosition(target)) continue;
 				return true;
 			}
-			return false;
-		}
+            // Dense layouts need nearby choices rather than only distant layout slots.
+            for (int i = 0; i < 6; i++)
+            {
+                float angle = MBRandom.RandomFloat * MathF.PI * 2f;
+                float distance = MBRandom.RandomFloatRanged(2.5f, 5f);
+                Vec3 candidate = entry.Agent.Position + new Vec3(MathF.Cos(angle) * distance, MathF.Sin(angle) * distance, 0f);
+                if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) <= 144f &&
+                    FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target) &&
+                    !IsReservedCeremonyPosition(target)) return true;
+            }
+            return false;
+        }
 
-		private CampAgent NearestIdleMate(CampAgent entry, float radius)
+        private CampAgent NearestIdleMate(CampAgent entry, float radius)
 	{
 		CampAgent best = null;
 		float bestDistance = radius * radius;
@@ -483,34 +500,85 @@ public sealed partial class FieldCampMissionLogic
 		MoveTo(entry, entry.Target, entry.TargetFacing, run: false);
 	}
 
-	private void MoveTo(CampAgent entry, Vec3 target, Vec2 facing, bool run)
-	{
-		Agent agent = entry.Agent;
-		if (agent == null || !agent.IsActive())
-		{
-			return;
-		}
-		try
-		{
-				ReleasePose(entry);
-				entry.Seated = false;
-				entry.Target = target;
-				entry.TargetFacing = facing;
-					entry.MoveDeadline = _elapsed + 25f;
-					entry.MoveBlocked = false;
-				var world = new WorldPosition(Mission.Scene, UIntPtr.Zero, target, false);
-			Agent.AIScriptedFrameFlags flags = Agent.AIScriptedFrameFlags.NoAttack;
-			if (!run)
-			{
-				flags |= Agent.AIScriptedFrameFlags.DoNotRun;
-			}
-			agent.SetScriptedPositionAndDirection(ref world, facing.RotationInRadians, false, flags);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log(LogSource, "move failed agent=" + agent.Index + " error=" + ex.Message);
-		}
-	}
+    private void MoveTo(CampAgent entry, Vec3 target, Vec2 facing, bool run)
+    {
+        Agent agent = entry.Agent;
+        if (agent == null || !agent.IsActive()) return;
+        try
+        {
+            ReleasePose(entry);
+            StopCampNavigation(agent);
+            entry.Target = target;
+            entry.TargetFacing = facing;
+            entry.Run = run;
+            entry.Route = Array.Empty<Vec3>();
+            entry.RouteIndex = 0;
+            entry.MoveBlocked = entry.RouteQueued = false;
+            if (agent.Position.AsVec2.DistanceSquared(target.AsVec2) <= ArriveDistanceSquared)
+            {
+                SettleCampAgent(entry, blocked: false);
+                return;
+            }
+            if (_campRouteBudget <= 0)
+            {
+                SettleCampAgent(entry, blocked: true);
+                entry.RouteQueued = true;
+                entry.NextWanderTime = _elapsed + 0.5f;
+                return;
+            }
+            _campRouteBudget--;
+            if (IsReservedCeremonyPosition(target) || !TryCampRoute(agent.Position, target, out Vec3[] route))
+            {
+                SettleCampAgent(entry, blocked: true);
+                return;
+            }
+            entry.Route = route;
+            entry.Seated = false;
+            entry.MoveDeadline = _elapsed + 30f;
+            IssueCampWalk(entry);
+        }
+        catch (Exception ex)
+        {
+            SettleCampAgent(entry, blocked: true);
+            Logger.Log(LogSource, "move failed agent=" + agent.Index + " error=" + ex.Message);
+        }
+    }
+
+    private bool TryCampRoute(Vec3 from, Vec3 target, out Vec3[] route)
+    {
+        if (FieldCampSite.TryBuildGroundedRoute(Mission.Scene, from, target, out route, out bool covered)) return true;
+        if (covered || !HasCeremonyWalkPath(from, target)) return false;
+        route = Array.Empty<Vec3>();
+        return true;
+    }
+
+    private void IssueCampWalk(CampAgent entry)
+    {
+        Vec3 goal = entry.RouteIndex < entry.Route.Length ? entry.Route[entry.RouteIndex] : entry.Target;
+        StopCampNavigation(entry.Agent);
+        entry.Agent.SetIsAIPaused(false);
+        entry.Agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+        entry.LastWalkPosition = entry.Agent.Position;
+        entry.ProgressAt = _elapsed + 4f;
+        var world = new WorldPosition(Mission.Scene, UIntPtr.Zero, goal, false);
+        var flags = Agent.AIScriptedFrameFlags.NoAttack;
+        if (!entry.Run) flags |= Agent.AIScriptedFrameFlags.DoNotRun;
+        entry.Agent.SetScriptedPositionAndDirection(ref world, entry.TargetFacing.RotationInRadians, false, flags);
+    }
+
+    private void SettleCampAgent(CampAgent entry, bool blocked)
+    {
+        StopCampNavigation(entry.Agent);
+        entry.Agent.SetIsAIPaused(true);
+        entry.Route = Array.Empty<Vec3>();
+        entry.RouteIndex = 0;
+        entry.Seated = true;
+        entry.Returning = false;
+        entry.MoveBlocked = blocked;
+        entry.RouteQueued = false;
+        entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(8f, 18f);
+        if (!_assembled) ApplyPose(entry);
+    }
 
 	private void ApplyPose(CampAgent entry)
 	{
@@ -534,12 +602,15 @@ public sealed partial class FieldCampMissionLogic
 
 	private static string[] PoseFor(CampAgent entry)
 	{
-		switch (entry.Work)
+        // A temporary stop after a blocked return is not the original work station.
+        if (entry.Agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) > 2.25f)
+            return StandActions;
+        switch (entry.Work)
 		{
 			case FieldCampLayout.WorkKind.Sit:
-				return entry.Activity == Activity.Wounded ? SitActions : BenchActions;
+				return SitActions;
 			case FieldCampLayout.WorkKind.Eat:
-				return EatActions;
+				return SitActions;
 			case FieldCampLayout.WorkKind.Cook:
 				return CookActions;
 			case FieldCampLayout.WorkKind.Smith:
@@ -565,7 +636,7 @@ public sealed partial class FieldCampMissionLogic
 			case Activity.Sentry:
 				return SentryActions;
 			default:
-				return null;
+				return StandActions;
 		}
 	}
 

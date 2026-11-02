@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -1742,7 +1742,7 @@ public sealed partial class TownExecutionMissionBehavior
         {
             try
             {
-                if (_victimConversationBlockApplied || TryBlockVictimConversationAfterLethalFrame())
+                if (Request.IsFieldCamp || _victimConversationBlockApplied || TryBlockVictimConversationAfterLethalFrame())
                 {
                     _conversationLogic?.DisableStartConversation(false);
                     _aftermathConversationsRestored = true;

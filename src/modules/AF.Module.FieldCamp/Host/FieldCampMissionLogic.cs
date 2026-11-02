@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.AgentOrigins;
@@ -53,6 +53,12 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal bool Returning;
 		internal float MoveDeadline;
 		internal bool MoveBlocked;
+        internal bool RouteQueued;
+        internal Vec3[] Route = Array.Empty<Vec3>();
+        internal int RouteIndex;
+        internal bool Run;
+        internal Vec3 LastWalkPosition;
+        internal float ProgressAt;
 	}
 
 	private readonly List<MobileParty> _parties;
@@ -69,6 +75,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	private float _elapsed;
 	private float _upkeepTimer;
 	private int _upkeepCursor;
+    private int _campRouteBudget = 2;
 	private int _woundedSlotsUsed;
 
 	internal static FieldCampMissionLogic Current => Mission.Current?.GetMissionBehavior<FieldCampMissionLogic>();
@@ -156,12 +163,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			MaintainCampPrisonerCombatIsolation();
 			TickCeremonyPreparation();
 			TickCeremonyReturn();
-			if (!_ceremonyActive)
-			{
-				// Camp life pauses while an execution ceremony holds the camp.
-				UpkeepBatchOfAgents();
-				TickEnvoys();
-			}
+			UpkeepBatchOfAgents();
+            if (!_ceremonyActive) TickEnvoys();
 		}
 	}
 
@@ -406,6 +409,10 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	private void Track(Agent agent, Activity activity, Vec2 local, Vec2 facing, FormationClass troopClass, FieldCampLayout.WorkKind work = FieldCampLayout.WorkKind.None)
 	{
 		Vec3 home = agent.Position;
+        // Spawn fallback can move an actor away from its original work prop.
+        if (home.AsVec2.DistanceSquared(ToWorld(local).AsVec2) > 2.25f &&
+            work != FieldCampLayout.WorkKind.Sit && work != FieldCampLayout.WorkKind.Eat &&
+            work != FieldCampLayout.WorkKind.Lie) work = FieldCampLayout.WorkKind.None;
 		var entry = new CampAgent
 		{
 			Agent = agent,

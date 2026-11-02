@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using RichExecutions.Core;
+using RichExecutions.Customization;
 using RichExecutions.Diagnostics;
 using SandBox.Conversation.MissionLogics;
 using TaleWorlds.CampaignSystem;
@@ -131,7 +132,10 @@ public sealed partial class TownExecutionMissionBehavior
             }
 
             BuildRuntimeScene();
-            _conversationLogic?.DisableStartConversation(true);
+            if (Request.IsFieldCamp)
+                VengeanceIntegration.FieldCampCeremonyGeometryChanged?.Invoke(
+                    Request.SessionId, _fieldCampPreparationAreas ?? Array.Empty<FieldCampCeremonyArea>(), true);
+            if (!Request.IsFieldCamp) _conversationLogic?.DisableStartConversation(true);
             Mission.FocusableObjectInformationProvider.AddInfoCallback(GetExecutionFocusText);
             _focusCallbackRegistered = true;
             _stateMachine.TransitionTo(ExecutionSessionState.WaitingForPlayer);
@@ -1996,6 +2000,95 @@ public sealed partial class TownExecutionMissionBehavior
         }
     }
 
+    private FieldCampCeremonyArea[]? _fieldCampPreparationAreas;
+
+    private void BuildFieldCampPreparationAreas()
+    {
+        var areas = new List<FieldCampCeremonyArea>();
+        var bounds = new Dictionary<string, BoundingBox>(StringComparer.Ordinal);
+        void Add(string key, ExecutionSiteResourceType type, Vec3 position, float yaw, float pitch, float roll, float scale)
+        {
+            var cacheKey = ((int)type).ToString() + ":" + key;
+            if (!bounds.TryGetValue(cacheKey, out var box))
+            {
+                GameEntity? probe = null;
+                try
+                {
+                    if (type == ExecutionSiteResourceType.Prefab)
+                    {
+                        if (!GameEntity.PrefabExists(key)) return;
+                        probe = BannerlordApiCompatibility.InstantiatePrefab(Mission.Scene, key, false, MatrixFrame.Identity, false);
+                    }
+                    else
+                    {
+                        var mesh = MetaMesh.GetCopy(key, false, true);
+                        if (mesh is null || !mesh.IsValid) return;
+                        probe = GameEntity.CreateEmpty(Mission.Scene, false, false, false);
+                        probe?.AddMultiMesh(mesh);
+                    }
+                    if (probe is null) return;
+                    probe.SetVisibilityExcludeParents(false);
+                    probe.SetPhysicsState(false, true);
+                    box = probe.GetLocalBoundingBox();
+                    bounds[cacheKey] = box;
+                }
+                finally { probe?.Remove(0); }
+            }
+            var frame = _placement!.CreateFrame(position);
+            frame.rotation.RotateAboutUp(yaw * MathF.PI / 180f);
+            frame.rotation.RotateAboutSide(pitch * MathF.PI / 180f);
+            frame.rotation.RotateAboutForward(roll * MathF.PI / 180f);
+            frame.rotation.ApplyScaleLocal(MathF.Max(0.1f, MathF.Min(5f, scale)));
+            var min = new Vec2(float.MaxValue, float.MaxValue);
+            var max = new Vec2(float.MinValue, float.MinValue);
+            for (var i = 0; i < 8; i++)
+            {
+                var p = frame.TransformToParent(new Vec3((i & 1) == 0 ? box.min.x : box.max.x,
+                    (i & 2) == 0 ? box.min.y : box.max.y, (i & 4) == 0 ? box.min.z : box.max.z));
+                min.x = MathF.Min(min.x, p.x); min.y = MathF.Min(min.y, p.y);
+                max.x = MathF.Max(max.x, p.x); max.y = MathF.Max(max.y, p.y);
+            }
+            if (float.IsNaN(min.x) || float.IsInfinity(min.x) || float.IsNaN(max.y) || float.IsInfinity(max.y))
+                throw new InvalidOperationException("Execution prop has invalid footprint bounds: " + key);
+            areas.Add(new FieldCampCeremonyArea(min, max));
+        }
+        // This is the same complete stage used by BuildRuntimeScene, not a crowd circle.
+        if (!UsesGroundExecutionSite()) Add(GallowsPrefab, ExecutionSiteResourceType.Prefab, _placement!.Origin, 0f, 0f, 0f, 1f);
+        if (_visualProfile is not null)
+            foreach (var prop in _visualProfile.Props)
+            {
+                if (prop.IsIgnitionEffect) continue;
+                foreach (var key in prop.PrefabCandidates)
+                {
+                    if (!GameEntity.PrefabExists(key)) continue;
+                    Add(key, ExecutionSiteResourceType.Prefab,
+                        _placement!.Offset(prop.Offset.Right, prop.Offset.Forward, prop.Offset.Up),
+                        prop.YawDegrees, prop.PitchDegrees, prop.RollDegrees, prop.UniformScale);
+                    break;
+                }
+            }
+        if (_customSitePreset is not null)
+            foreach (var piece in _customSitePreset.Pieces)
+            {
+                if (ExecutionSitePresetStore.IsObsoletePiece(piece)) continue;
+                var t = piece.Transform;
+                Add(piece.ResourceKey, piece.ResourceType, _placement!.Offset(t.X, t.Y, t.Z), t.Yaw, t.Pitch, t.Roll, t.Scale);
+            }
+        if (areas.Count == 0)
+        {
+            var p = _placement!.Origin.AsVec2;
+            areas.Add(new FieldCampCeremonyArea(p - new Vec2(2f, 2f), p + new Vec2(2f, 2f)));
+        }
+        _fieldCampPreparationRadius = 2f;
+        foreach (var area in areas)
+        {
+            _fieldCampPreparationRadius = MathF.Max(_fieldCampPreparationRadius,
+                MathF.Max(area.Min.Distance(_placement!.Origin.AsVec2), area.Max.Distance(_placement.Origin.AsVec2)) + 1f);
+        }
+        _fieldCampPreparationAreas = areas.ToArray();
+        RexLog.Info($"Session {Request.SessionId} measured {areas.Count} prop footprints; spectator marks are optional.");
+    }
+
     private bool TryPrepareFieldCampCeremony()
     {
         if (!Request.IsFieldCamp || _fieldCampPreparationReady) return true;
@@ -2021,32 +2114,12 @@ public sealed partial class TownExecutionMissionBehavior
                 _fieldCampPreparationStartElapsed = _initializationElapsed;
             }
             _nextFieldCampPreparationPollElapsed = _initializationElapsed + 0.5f;
-            // The base 9 m covers the ordinary site. Include authored pieces
-            // and actor marks so a distant crucifix/custom prop cannot crush a
-            // camp resident outside the old root-only exclusion circle.
-            if (_fieldCampPreparationRadius <= 0f)
-            {
-                _fieldCampPreparationRadius = 9f;
-                if (_customSitePreset is not null)
-                {
-                    foreach (var piece in _customSitePreset.Pieces)
-                    {
-                        var t = piece.Transform;
-                        _fieldCampPreparationRadius = MathF.Max(_fieldCampPreparationRadius,
-                            MathF.Sqrt(t.X * t.X + t.Y * t.Y) + MathF.Max(6f, 6f * MathF.Abs(t.Scale)));
-                    }
-                    foreach (var marker in _customSitePreset.Markers)
-                    {
-                        var t = marker.Transform;
-                        _fieldCampPreparationRadius = MathF.Max(_fieldCampPreparationRadius,
-                            MathF.Sqrt(t.X * t.X + t.Y * t.Y) + 2f);
-                    }
-                }
-            }
+            // Measure once at confirmation; crowd/actor marks do not enlarge the prop footprint.
+            if (_fieldCampPreparationAreas is null) BuildFieldCampPreparationAreas();
             var preparation = VengeanceIntegration.FieldCampCeremonyPreparation;
             var state = preparation is null
                 ? (_fieldCampPreparationUsesHook ? FieldCampCeremonyReadiness.Failed : FieldCampCeremonyReadiness.Ready)
-                : preparation(Request.SessionId, Request.Victim, _placement.Origin, _placement.Forward, _fieldCampPreparationRadius);
+                : preparation(Request.SessionId, Request.Victim, _placement.Origin, _placement.Forward, _fieldCampPreparationRadius, _fieldCampPreparationAreas!);
             if (state == FieldCampCeremonyReadiness.Ready)
             {
                 _fieldCampPreparationReady = true;

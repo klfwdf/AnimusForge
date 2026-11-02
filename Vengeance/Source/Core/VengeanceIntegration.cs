@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
@@ -12,6 +12,17 @@ internal enum FieldCampCeremonyReadiness
     Pending = 0,
     Ready = 1,
     Failed = 2
+}
+
+// Same-DLL preparation footprint, in world coordinates; not a public sub-MOD API.
+internal readonly struct FieldCampCeremonyArea
+{
+    internal readonly Vec2 Min;
+    internal readonly Vec2 Max;
+    internal FieldCampCeremonyArea(Vec2 min, Vec2 max) { Min = min; Max = max; }
+    internal bool Contains(Vec3 point, float margin = 0.65f) =>
+        point.x >= Min.x - margin && point.x <= Max.x + margin &&
+        point.y >= Min.y - margin && point.y <= Max.y + margin;
 }
 
 /// <summary>Owns the one-active-host rule for the standalone and embedded builds.</summary>
@@ -32,9 +43,10 @@ public static class VengeanceIntegration
     public static Func<Mission?, bool>? FieldCampMissionProbe { get; set; }
     public static Action<Hero, Vec3, Vec2>? FieldCampCeremonyStaged { get; set; }
     public static Action? FieldCampCeremonyReleased { get; set; }
-    internal static Func<Guid, Hero, Vec3, Vec2, float, FieldCampCeremonyReadiness>? FieldCampCeremonyPreparation { get; set; }
+    internal static Func<Guid, Hero, Vec3, Vec2, float, IReadOnlyList<FieldCampCeremonyArea>, FieldCampCeremonyReadiness>? FieldCampCeremonyPreparation { get; set; }
     internal static Func<Guid, IReadOnlyList<Agent>>? FieldCampCeremonyBorrowedCrowd { get; set; }
     internal static Action<Guid>? FieldCampCeremonyPreparationReleased { get; set; }
+    internal static Action<Guid, IReadOnlyList<FieldCampCeremonyArea>, bool>? FieldCampCeremonyGeometryChanged { get; set; }
     // Read the camp owner's activity state only before starting preparation.
     internal static Func<Mission?, bool>? FieldCampCeremonyAdmissionProbe { get; set; }
 
