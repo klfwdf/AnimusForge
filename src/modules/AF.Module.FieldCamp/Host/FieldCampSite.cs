@@ -8,11 +8,15 @@ using TaleWorlds.MountAndBlade;
 namespace AnimusForge;
 
 /// <summary>
-/// Selects a dry, level whole-camp rectangle once on the main thread. Always searches
-/// bounded spawn paths plus the scene-wide grid; a safe player point never authorizes camp props.
-/// At most 1200 seeds x two orientations x 25 terrain probes, then 32 x 81 detailed
-/// probes and existing critical-area checks. Failed selection keeps manual player control only.
-/// Collision/terrain route caches are built once after all props; no per-frame scene scan.
+/// Picks the camp site once per camp mission (never per frame): dry, walkable, fairly
+/// flat ground clear of trees and rocks, inside the mission boundary. Candidates come
+/// from the scene's own spawn paths (where vanilla field battles deploy, always on land)
+/// ordered by distance to the map-patch encounter point, with a coarse grid only when a
+/// scene has too few paths. A coastal patch scene therefore never puts the camp in the sea.
+/// Every candidate is probed over the camp's real rectangle (palisade extents).
+/// Cost, once: at most MaxCandidates x 25 cheap probes per scale step, then
+/// Finalists x 81 probes, each with a navmesh lookup and one downward raycast.
+/// Afterwards small rocks and bushes left inside the palisade are hidden (one entity scan).
 /// </summary>
 internal static class FieldCampSite
 {
@@ -20,6 +24,7 @@ internal static class FieldCampSite
 	private const int MaxSpawnPaths = 32;
 	private const float PathStep = 12f;
 	private const int MaxCandidates = 600;
+	private const int Finalists = 12;
 		private const float WetMargin = 0.3f;
 		private const BodyFlags ClearanceExcludeFlags = BodyFlags.CommonCollisionExcludeFlagsForAgent & ~BodyFlags.DoNotCollideWithRaycast;
 	/// <summary>A raycast hit this far above the terrain means a tree, rock or building stands there.</summary>
@@ -54,87 +59,62 @@ internal static class FieldCampSite
 			internal float[] Heights;
 			internal bool[] Open;
 			internal bool Ready;
-			internal FieldCampGroundRouter Router;
 		}
 
 	private struct Candidate
 	{
 		internal Vec2 Position;
 		internal Vec2 Forward;
+		internal float Score;
+		internal int Bad;
 	}
 
-	/// <param name="fitScale">Always 1; real prop footprints are not compressed.</param>
+	/// <param name="fitScale">Always 1; a site that cannot fit real footprints is rejected, not compressed.</param>
 	internal static MatrixFrame Resolve(Mission mission, FieldCampLayout layout, out float fitScale)
 	{
 		Scene scene = mission.Scene;
-		fitScale = Scales[0];
-		GroundCaches.Remove(scene);
-		CaptureClutter(scene);
 		bool hasEncounter = TryEncounterPoint(mission, out Vec2 encounter);
 		List<Candidate> candidates = CollectCandidates(scene, hasEncounter, encounter);
-		// Always include the scene-wide grid. Near-encounter spawn paths alone can all be on a hillside.
-		var grid = new List<Candidate>();
-		AddGrid(scene, grid, hasEncounter, encounter);
-		candidates.AddRange(grid);
-		var seeds = new List<FieldCampSiteSeed>(Math.Min(candidates.Count, FieldCampSitePlanner.MaxSeeds));
-		for (int i = 0; i < candidates.Count && i < FieldCampSitePlanner.MaxSeeds; i++)
-			seeds.Add(new FieldCampSiteSeed(candidates[i].Position.x, candidates[i].Position.y,
-				candidates[i].Forward.x, candidates[i].Forward.y));
-		bool chosen = FieldCampSitePlanner.TryChoose(seeds, layout.HalfX, layout.Back, layout.Front,
-			(float x, float y, bool detailed, out float height) => Probe(mission, scene, new Vec2(x, y), detailed, out height, out _),
-			seed => ValidateCriticalAreas(mission, scene, new Candidate { Position = new Vec2(seed.X, seed.Y), Forward = new Vec2(seed.ForwardX, seed.ForwardY) }, layout, 1f),
-			out FieldCampSiteSeed site, out float spread);
-		if (!chosen) throw new InvalidOperationException("No level whole-camp footprint found; refusing to spread the camp over an arbitrary player-safe hillside.");
-		Logger.Log(LogSource, "level whole-camp site pos=" + Format(new Vec2(site.X, site.Y)) + " spread=" + spread.ToString("0.00")
-			+ " footprint=" + (layout.HalfX * 2f).ToString("0") + "x" + (layout.Front - layout.Back).ToString("0") + " candidates=" + seeds.Count);
-		return FrameAt(scene, new Vec2(site.X, site.Y), new Vec2(site.ForwardX, site.ForwardY));
+		fitScale = 1f;
+			GroundCaches.Remove(scene);
+			CaptureClutter(scene);
+			if (candidates.Count == 0)
+			{
+				throw new InvalidOperationException("No safe field-camp site candidates.");
+			}
+		for (int s = 0; s < Scales.Length; s++)
+		{
+			float k = Scales[s];
+			for (int i = 0; i < candidates.Count; i++)
+			{
+				Candidate c = candidates[i];
+				c.Score = Evaluate(mission, scene, c, layout, k, grid: 5, fine: false, out c.Bad) + Proximity(c.Position, hasEncounter, encounter);
+				candidates[i] = c;
+			}
+			candidates.Sort((a, b) => a.Score.CompareTo(b.Score));
+			Candidate best = default(Candidate);
+			bool found = false;
+			for (int i = 0; i < candidates.Count && i < Finalists; i++)
+			{
+				Candidate c = candidates[i];
+				c.Score = Evaluate(mission, scene, c, layout, k, grid: 9, fine: true, out c.Bad) + Proximity(c.Position, hasEncounter, encounter);
+					if (c.Bad == 0 && (!found || c.Score < best.Score)
+						&& ValidateCriticalAreas(mission, scene, c, layout, k))
+					{
+						best = c;
+						found = true;
+					}
+			}
+			if (found)
+			{
+				fitScale = Scales[s];
+				Logger.Log(LogSource, "camp site pos=" + Format(best.Position) + " scale=" + fitScale.ToString("0.00") + " candidates=" + candidates.Count + " encounter=" + (hasEncounter ? Format(encounter) : "none"));
+				return FrameAt(scene, best.Position, best.Forward);
+			}
+		}
+			Logger.Log(LogSource, "[WARN] camp site rejected: no dry, navigable site with clear critical areas");
+			throw new InvalidOperationException("No safe field-camp site; refusing forced placement.");
 	}
-
-    /// <summary>Once at player spawn; cache scan then bounded native spawn candidates, never from upkeep/Tick.</summary>
-    internal static bool TryFindPlayerStart(Mission mission, Vec3 desired, out Vec3 grounded)
-    {
-        grounded = Vec3.Invalid;
-        Scene scene = mission.Scene;
-        if (GroundCaches.TryGetValue(scene, out GroundCache cache) && cache.Ready)
-        {
-            float best = float.MaxValue;
-            for (int y = 0; y < cache.Height; y++)
-                for (int x = 0; x < cache.Width; x++)
-                {
-                    if (!cache.Open[y * cache.Width + x]) continue;
-                    Vec3 p = cache.Frame.TransformToParent(new Vec3(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep, 0f));
-                    float distance = p.AsVec2.DistanceSquared(desired.AsVec2);
-                    if (distance >= best || !TryResolveGroundedPosition(scene, p, 0.45f, out Vec3 safe)) continue;
-                    best = distance;
-                    grounded = safe;
-                }
-            if (grounded.IsValid) return true;
-        }
-        if (TryProbePlayerPosition(mission, desired.AsVec2, out grounded)) return true;
-        bool hasEncounter = TryEncounterPoint(mission, out Vec2 encounter);
-        var candidates = CollectCandidates(scene, hasEncounter, encounter);
-        for (int i = 0; i < candidates.Count; i++)
-            if (TryProbePlayerPosition(mission, candidates[i].Position, out grounded)) return true;
-        return false;
-    }
-
-    private static bool TryProbePlayerPosition(Mission mission, Vec2 position, out Vec3 grounded)
-    {
-        grounded = Vec3.Invalid;
-        float centre = 0f;
-        for (int sample = 0; sample < 5; sample++)
-        {
-            Vec2 offset = sample == 0 ? Vec2.Zero : sample == 1 ? new Vec2(0.5f, 0f)
-                : sample == 2 ? new Vec2(-0.5f, 0f) : sample == 3 ? new Vec2(0f, 0.5f) : new Vec2(0f, -0.5f);
-            Vec2 p = position + offset;
-            if (!Probe(mission, mission.Scene, p, true, out float height, out bool obstacle) || obstacle) return false;
-            if (sample == 0) centre = height;
-            else if (Math.Abs(height - centre) > MaxGroundDelta) return false;
-            if (!CellHasClearance(mission.Scene, new Vec3(p.x, p.y, height))) return false;
-        }
-        grounded = new Vec3(position.x, position.y, centre + 0.04f);
-        return true;
-    }
 
 	private static bool TryEncounterPoint(Mission mission, out Vec2 point)
 	{
@@ -245,6 +225,43 @@ internal static class FieldCampSite
 				list.Add(new Candidate { Position = p, Forward = forward });
 			}
 		}
+	}
+
+	/// <summary>
+	/// Probes a grid x grid lattice over the palisade rectangle. Wet, out-of-bounds and
+	/// off-navmesh points veto the site. Obstacles veto it unless their complete small
+	/// clutter subtree is in the bounded clearing inventory; then score height spread.
+	/// </summary>
+	private static float Evaluate(Mission mission, Scene scene, Candidate c, FieldCampLayout layout, float scale, int grid, bool fine, out int bad)
+	{
+		bad = 0;
+		int blocked = 0;
+		float low = float.MaxValue;
+		float high = float.MinValue;
+		Vec2 f = c.Forward;
+		Vec2 side = new Vec2(f.y, -f.x);
+		for (int gx = 0; gx < grid; gx++)
+		{
+			float lx = (-layout.HalfX + 2f * layout.HalfX * gx / (grid - 1)) * scale;
+			for (int gy = 0; gy < grid; gy++)
+			{
+				float ly = (layout.Back + (layout.Front - layout.Back) * gy / (grid - 1)) * scale;
+				Vec2 p = c.Position + side * lx + f * ly;
+				if (!Probe(mission, scene, p, fine, out float height, out bool obstacle))
+				{
+					bad++;
+					continue;
+				}
+				if (obstacle)
+				{
+					blocked++;
+				}
+				low = Math.Min(low, height);
+				high = Math.Max(high, height);
+			}
+		}
+		float spread = high >= low ? high - low : 0f;
+		return bad * 100f + blocked * 12f + spread * 2f;
 	}
 
 	private static bool Probe(Mission mission, Scene scene, Vec2 p, bool fine, out float height, out bool obstacle)
@@ -555,25 +572,14 @@ internal static class FieldCampSite
 				}
 			}
 			cache.Ready = true;
-			// Cache pedestrian clearance once, after the final camp props. No native queries in route search.
-			var walkable = new bool[cache.Open.Length];
-			for (int y = 0; y < cache.Height; y++)
-				for (int x = 0; x < cache.Width; x++)
-				{
-					int index = y * cache.Width + x;
-					if (!cache.Open[index]) continue;
-					Vec3 sample = frame.TransformToParent(new Vec3(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep, 0f));
-					walkable[index] = TryResolveGroundedPosition(scene, sample, 0.4f, out _);
-				}
-			cache.Router = new FieldCampGroundRouter(cache.Width, cache.Height, walkable, cache.Heights);
 			Logger.Log(LogSource, "ground cache cells=" + cache.Open.Length + " open=" + open + " step=" + GroundStep);
 			Vec3 player = frame.TransformToParent(new Vec3(layout.PlayerStart.x * scale, layout.PlayerStart.y * scale, 0f));
 			Vec3 gate = frame.TransformToParent(new Vec3(0f, layout.Front * scale, 0f));
 			if (!TryResolveGroundedPosition(scene, player, 0.45f, out _)
 				|| !TryValidateGroundedPassage(scene, player, gate, 0.45f))
 			{
-				// A blocked straight gate corridor does not invalidate every other safe cell.
-				Logger.Log(LogSource, "[WARN] preferred player/gate corridor blocked; keeping valid ground cells for alternate player placement");
+				cache.Ready = false;
+				throw new InvalidOperationException("Camp player start/gate passage is blocked after prop placement.");
 			}
 		}
 
@@ -632,58 +638,6 @@ internal static class FieldCampSite
 			grounded.z = height + 0.04f;
 			return true;
 		}
-
-        /// <summary>Routes around runtime camp bodies on the already sampled grid. Covered-but-blocked
-        /// must not fall back to the baked navmesh, which does not know those tents/fences.</summary>
-        internal static bool TryBuildGroundedRoute(Scene scene, Vec3 from, Vec3 target, out Vec3[] route, out bool covered)
-        {
-            route = Array.Empty<Vec3>(); covered = false;
-            if (scene == null || !from.IsValid || !target.IsValid || !GroundCaches.TryGetValue(scene, out GroundCache cache)
-                || !cache.Ready || cache.Router == null) return false;
-            Vec3 localFrom = cache.Frame.TransformToLocal(from), localTarget = cache.Frame.TransformToLocal(target);
-            if (!WithinGroundGrid(cache, localFrom) || !WithinGroundGrid(cache, localTarget)) return false;
-            covered = true;
-            if (!TryResolveGroundedPosition(scene, target, 0.4f, out Vec3 end)) return false;
-            // Seated actors may start next to furniture; find the closest traversable neighbouring cell once.
-            int sx = (int)Math.Round((localFrom.x - cache.MinX) / GroundStep);
-            int sy = (int)Math.Round((localFrom.y - cache.MinY) / GroundStep);
-            Vec3 endLocal = cache.Frame.TransformToLocal(end);
-            int goal = (int)Math.Round((endLocal.y - cache.MinY) / GroundStep) * cache.Width
-                + (int)Math.Round((endLocal.x - cache.MinX) / GroundStep);
-            int[] corners = null;
-            for (int radius = 0; radius <= 3 && corners == null; radius++)
-                for (int dy = -radius; dy <= radius && corners == null; dy++)
-                    for (int dx = -radius; dx <= radius; dx++)
-                    {
-                        if (Math.Abs(dx) != radius && Math.Abs(dy) != radius) continue;
-                        int x = sx + dx, y = sy + dy;
-                        if (x < 0 || y < 0 || x >= cache.Width || y >= cache.Height) continue;
-                        if (!cache.Router.IsTraversable(y * cache.Width + x)) continue;
-                        Vec3 start = cache.Frame.TransformToParent(new Vec3(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep, 0f));
-                        start.z = cache.Heights[y * cache.Width + x] + 0.04f;
-                        // The actor walks the short start connector too; never jump through a solid body.
-                        if (radius > 0 && scene.RayCastForClosestEntityOrTerrain(from + new Vec3(0f, 0f, 1f), start + new Vec3(0f, 0f, 1f),
-                            out _, out _, out _, 0.3f, ClearanceExcludeFlags)) continue;
-                        if (cache.Router.TryRoute(y * cache.Width + x, goal, out int[] found)) { corners = found; break; }
-                        // A valid source in another component must not trigger 48 copies of the same search.
-                        if (cache.Router.LastSearchVisited > 0) return false;
-                    }
-            if (corners == null) return false;
-            route = new Vec3[corners.Length];
-            for (int i = 0; i < corners.Length; i++)
-            {
-                int cell = corners[i];
-                route[i] = cache.Frame.TransformToParent(new Vec3(cache.MinX + cell % cache.Width * GroundStep,
-                    cache.MinY + cell / cache.Width * GroundStep, 0f));
-                route[i].z = cache.Heights[cell] + 0.04f;
-            }
-            return true;
-        }
-
-        private static bool WithinGroundGrid(GroundCache cache, Vec3 local) => IsFinite(local.x) && IsFinite(local.y)
-            && local.x >= cache.MinX && local.y >= cache.MinY
-            && local.x <= cache.MinX + (cache.Width - 1) * GroundStep
-            && local.y <= cache.MinY + (cache.Height - 1) * GroundStep;
 
 		/// <summary>Conservative direct ground corridor, cache-only, capped at MaxPassageSteps. Not a navmesh rebuild/pathfinder.</summary>
 		internal static bool TryValidateGroundedPassage(Scene scene, Vec3 from, Vec3 to, float clearanceRadius)
@@ -773,6 +727,12 @@ internal static class FieldCampSite
 			}
 		}
 		return false;
+	}
+
+	/// <summary>Mild pull toward the encounter point: 100 m costs as much as 2 m of height spread.</summary>
+	private static float Proximity(Vec2 p, bool hasEncounter, Vec2 encounter)
+	{
+		return hasEncounter ? p.Distance(encounter) / 25f : 0f;
 	}
 
 	/// <summary>Camp frame: origin on the ground, camp +y (toward the parade ground) along <paramref name="forward"/>.</summary>

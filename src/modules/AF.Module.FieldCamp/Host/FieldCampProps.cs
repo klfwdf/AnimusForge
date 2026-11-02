@@ -123,8 +123,6 @@ internal static class FieldCampProps
 	/// <returns>Number of entities created.</returns>
 	internal static int Place(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale)
 	{
-		HadPlacementFailures = false;
-		OptionalFurnitureSkips = 0;
 		_solidRequested = 0;
 		_solidWithBody = 0;
 		int placed = PlaceAll(scene, layout, campFrame, scale);
@@ -135,12 +133,9 @@ internal static class FieldCampProps
 	/// <summary>Main-thread set-up counters for the solid-prop log line (one camp at a time).</summary>
 	private static int _solidRequested;
 	private static int _solidWithBody;
-	internal static bool HadPlacementFailures { get; private set; }
-	internal static int OptionalFurnitureSkips { get; private set; }
 
 		private sealed class TentInterior
 		{
-			internal GameEntity Root;
 			internal MatrixFrame Frame;
 			internal float HalfWidth;
 			internal float HalfDepth;
@@ -181,62 +176,47 @@ internal static class FieldCampProps
 			int placed = 0;
 			for (int i = 0; i < layout.Props.Count; i++)
 			{
-				try
+				FieldCampLayout.Prop prop = layout.Props[i];
+				string[] pool = PoolFor(prop, out string poolKey);
+				if (prop.TentAnchor > 0)
 				{
-					FieldCampLayout.Prop prop = layout.Props[i];
-					// Legacy layout identities stay inert; only the player-confirmed builder may create apparatus.
-					if (prop.Kind == FieldCampLayout.PropKind.ExecutionBlock || prop.Kind == FieldCampLayout.PropKind.Gallows) continue;
-					string[] pool = PoolFor(prop, out string poolKey);
-					if (prop.TentAnchor > 0)
-					{
-						continue; // committed transactionally with its tent, including candidate fallback
-					}
-					if (failed.Contains(poolKey))
-					{
-						continue;
-					}
-					if (prop.Kind == FieldCampLayout.PropKind.Wall)
-					{
-						placed += PlaceWall(scene, prop, pool, poolKey, campFrame, scale, resolved, failed, sizes);
-						continue;
-					}
-					if (prop.Kind == FieldCampLayout.PropKind.Tent)
-					{
-						furnishingPlans.TryGetValue(i + 1, out List<FieldCampLayout.Prop> plan);
-						if (!PlaceTent(scene, prop, pool, campFrame, plan, furnitureSizes, doorwayTurns, out TentInterior tentInterior))
-						{
-							HadPlacementFailures = true;
-							Logger.Log(LogSource, "[WARN] tent slot skipped; no accessible grounded candidate pool=" + poolKey + " slot=" + i);
-							continue;
-						}
-						tents.Add(i + 1, tentInterior);
-						placed += 1 + tentInterior.FurnitureEntities.Count;
-						continue;
-					}
-					MatrixFrame frame = FrameFor(scene, campFrame, prop.Position * scale, prop.Yaw, prop.Scale);
-					GameEntity entity = Spawn(scene, pool, poolKey, prop.Variant, frame, !WalkThrough.Contains(prop.Kind), resolved, failed);
-					if (entity != null)
-					{
-						placed++;
-					}
+					continue; // committed transactionally with its tent, including candidate fallback
 				}
-				catch (Exception ex)
+				if (failed.Contains(poolKey))
 				{
-					HadPlacementFailures = true;
-					Logger.Log(LogSource, "[WARN] prop slot skipped slot=" + i + " error=" + ex.Message);
+					continue;
+				}
+				if (prop.Kind == FieldCampLayout.PropKind.Wall)
+				{
+					placed += PlaceWall(scene, prop, pool, poolKey, campFrame, scale, resolved, failed, sizes);
+					continue;
+				}
+				if (prop.Kind == FieldCampLayout.PropKind.Tent)
+				{
+					furnishingPlans.TryGetValue(i + 1, out List<FieldCampLayout.Prop> plan);
+					if (!PlaceTent(scene, prop, pool, campFrame, plan, furnitureSizes, doorwayTurns, out TentInterior tentInterior))
+					{
+						throw new InvalidOperationException("No accessible, grounded tent candidate: " + poolKey);
+					}
+					tents.Add(i + 1, tentInterior);
+					placed += 1 + (plan?.Count ?? 0);
+					continue;
+				}
+				MatrixFrame frame = FrameFor(scene, campFrame, prop.Position * scale, prop.Yaw, prop.Scale);
+				GameEntity entity = Spawn(scene, pool, poolKey, prop.Variant, frame, !WalkThrough.Contains(prop.Kind), resolved, failed);
+				if (entity != null)
+				{
+					placed++;
 				}
 			}
 			foreach (TentInterior interior in tents.Values)
 			{
 				if (!DoorIsClear(scene, interior.Frame, interior.DoorDepth))
 				{
-					HadPlacementFailures = true;
-					Logger.Log(LogSource, "[WARN] removing tent with an obstructed entrance; keeping the camp open");
-					for (int f = 0; f < interior.FurnitureEntities.Count; f++) interior.FurnitureEntities[f].Remove(80);
-					interior.Root.Remove(80);
-					placed -= 1 + interior.FurnitureEntities.Count;
+					throw new InvalidOperationException("Camp furniture/props blocked a tent entrance.");
 				}
 			}
+			FieldCampSite.InitializeGroundCache(scene, campFrame, layout, scale);
 			return placed;
 		}
 
@@ -250,62 +230,73 @@ internal static class FieldCampProps
 			Dictionary<string, int> doorwayTurns, out TentInterior interior)
 		{
 			interior = null;
-			float requestedScale = prop.Scale > 0f ? prop.Scale : 1f;
+			float scale = prop.Scale > 0f ? prop.Scale : 1f;
 			for (int c = 0; c < pool.Length; c++)
 			{
-				if (!TryMeasurePrefab(scene, pool[c], furnitureSizes, out BoundingBox box)) continue;
-				float halfX = (box.max.x - box.min.x) * 0.5f;
-				float halfY = (box.max.y - box.min.y) * 0.5f;
-				if (!(halfX > 0.1f && halfY > 0.1f && box.max.z > box.min.z)) continue;
+				if (!GameEntity.PrefabExists(pool[c]))
+				{
+					continue;
+				}
 				doorwayTurns.TryGetValue(pool[c], out int firstTurn);
 				for (int attempt = 0; attempt < 4; attempt++)
 				{
 					int turn = (firstTurn + attempt) % 4;
-					float width = turn % 2 == 0 ? halfX : halfY;
-					float depth = turn % 2 == 0 ? halfY : halfX;
-					// Fit the real mesh AND body, not just spacing. Authored bounds may include guy ropes.
-					float maxWidth = prop.Variant >= 98 ? 4.5f : 3f;
-					float maxDepth = prop.Variant >= 98 ? 6.5f : 4f;
-					float scale = Math.Min(requestedScale, Math.Min(maxWidth / width, maxDepth / depth));
-					if (scale < 0.35f || (box.max.z - box.min.z) * scale < 1.8f) continue;
-					width *= scale;
-					depth *= scale;
-					MatrixFrame door = FrameFor(scene, campFrame, prop.Position, prop.Yaw, 1f);
-					if (!TryFitTentGround(scene, ref door, width, depth)) continue;
-					// The artist pivot/bottom need not be the centre/ground. Put the actual mesh base on the fitted plane.
-					MatrixFrame frame = door;
-					frame.rotation.RotateAboutUp(-turn * MathF.PI * 0.5f);
-					frame.rotation.ApplyScaleLocal(scale);
-					Vec3 baseCentre = new Vec3((box.min.x + box.max.x) * 0.5f, (box.min.y + box.max.y) * 0.5f, box.min.z);
-					frame.origin = door.origin - frame.rotation.TransformToParent(baseCentre);
+					float correction = turn * MathF.PI * 0.5f;
+					MatrixFrame frame = FrameFor(scene, campFrame, prop.Position, prop.Yaw - correction, scale);
 					GameEntity tent = TrySpawn(scene, pool[c], frame, true);
-					if (tent == null) continue;
+					if (tent == null)
+					{
+						continue;
+					}
 					bool accepted = false;
 					TentInterior trial = null;
 					try
 					{
-						if (!DoorIsClear(scene, door, depth)) continue;
-						trial = new TentInterior { Root = tent, Frame = door, HalfWidth = width * 0.68f, HalfDepth = depth * 0.68f,
+						BoundingBox box = tent.GetLocalBoundingBox();
+						if (!box.min.IsValid || !box.max.IsValid || box.max.z <= box.min.z)
+						{
+							continue;
+						}
+						float halfX = (box.max.x - box.min.x) * 0.5f * scale;
+						float halfY = (box.max.y - box.min.y) * 0.5f * scale;
+						if (!(halfX >= 1.4f && halfX <= 8f && halfY >= 1.4f && halfY <= 8f))
+						{
+							continue;
+						}
+						MatrixFrame door = MatrixFrame.Identity;
+						door.rotation = campFrame.rotation;
+						door.rotation.RotateAboutUp(prop.Yaw);
+						Vec3 center = frame.TransformToParent(new Vec3((box.min.x + box.max.x) * 0.5f, (box.min.y + box.max.y) * 0.5f, 0f));
+						center.z = frame.origin.z;
+						door.origin = center;
+						float width = turn % 2 == 0 ? halfX : halfY;
+						float depth = turn % 2 == 0 ? halfY : halfX;
+						// Keep ordinary tents inside their allotted street parcel. Reject an oversized
+						// culture candidate (including ropes) rather than overlap the main road/neighbour.
+						if (prop.Variant < 98 && (width > 3f || depth > 4f))
+						{
+							continue;
+						}
+						if (!TentGroundIsLevel(scene, door, width, depth) || !DoorIsClear(scene, door, depth))
+						{
+							continue;
+						}
+						trial = new TentInterior { Frame = door, HalfWidth = width * 0.68f, HalfDepth = depth * 0.68f,
 							RoofHeight = (box.max.z - box.min.z) * scale, DoorDepth = depth };
 						CaptureTentEntities(tent, trial.Entities);
-						int skippedFurniture = 0;
-						for (int f = 0; furnishingPlan != null && f < furnishingPlan.Count; f++)
+						bool furnished = true;
+						for (int f = 0; furnished && furnishingPlan != null && f < furnishingPlan.Count; f++)
 						{
 							FieldCampLayout.Prop furniture = furnishingPlan[f];
-							if (!PlaceTentFurniture(scene, furniture, PoolFor(furniture, out _), trial, furnitureSizes))
-							{
-								skippedFurniture++;
-								Logger.Log(LogSource, "[WARN] optional tent furniture skipped prefab=" + pool[c] + " kind=" + furniture.Kind);
-							}
+							furnished = PlaceTentFurniture(scene, furniture, PoolFor(furniture, out _), trial, furnitureSizes);
 						}
-						if (!DoorIsClear(scene, door, depth))
+						if (!furnished || !DoorIsClear(scene, door, depth))
 						{
 							continue;
 						}
 						interior = trial;
-						OptionalFurnitureSkips += skippedFurniture; // Only count the accepted tent, never rejected candidate trials.
 						doorwayTurns[pool[c]] = turn;
-						Logger.Log(LogSource, "tent interior prefab=" + pool[c] + " doorwayTurn=" + turn + " scale=" + scale.ToString("0.00") + " half=" + width.ToString("0.00") + "," + depth.ToString("0.00"));
+						Logger.Log(LogSource, "tent interior prefab=" + pool[c] + " doorwayTurn=" + turn + " half=" + width.ToString("0.00") + "," + depth.ToString("0.00"));
 						accepted = true;
 						return true;
 					}
@@ -350,53 +341,20 @@ internal static class FieldCampProps
 			}
 		}
 
-		// Shared by all tent/furniture trials in this initialization; measuring entities never stay in the scene.
-		private static bool TryMeasurePrefab(Scene scene, string prefab, Dictionary<string, BoundingBox> measured, out BoundingBox box)
+		private static bool TentGroundIsLevel(Scene scene, MatrixFrame frame, float halfX, float halfY)
 		{
-			if (measured.TryGetValue(prefab, out box)) return true;
-			if (!GameEntity.PrefabExists(prefab)) return false;
-			GameEntity probe = null;
-			try
-			{
-				probe = GameEntity.Instantiate(scene, prefab, false, false);
-				if (probe == null) return false;
-				box = probe.GetLocalBoundingBox();
-				if (!box.min.IsValid || !box.max.IsValid) return false;
-				measured[prefab] = box;
-				return true;
-			}
-			catch { return false; }
-			finally { probe?.Remove(80); }
-		}
-
-		/// <summary>Nine terrain samples fit an ordinary slope, instead of requiring a horizontal 22 cm slab.
-		/// Only initialization: reject water, steep grades or actual ledges; tent/furniture share this plane.</summary>
-		private static bool TryFitTentGround(Scene scene, ref MatrixFrame frame, float halfX, float halfY)
-		{
-			var heights = new float[9];
 			for (int x = -1; x <= 1; x++)
+			{
 				for (int y = -1; y <= 1; y++)
 				{
-					Vec3 p = frame.TransformToParent(new Vec3(x * halfX, y * halfY, 0f));
+					Vec3 p = frame.TransformToParent(new Vec3(x * halfX * 0.68f, y * halfY * 0.68f, 0f));
 					float height = scene.GetTerrainHeight(p.AsVec2, true);
-					if (float.IsNaN(height) || float.IsInfinity(height)
-						|| scene.GetWaterLevelAtPosition(p.AsVec2, true, true) > height - 0.3f) return false;
-					heights[(x + 1) * 3 + y + 1] = height;
+					if (float.IsNaN(height) || float.IsInfinity(height) || Math.Abs(height - frame.origin.z) > 0.22f)
+					{
+						return false;
+					}
 				}
-			float gx = (heights[7] - heights[1]) / (2f * halfX);
-			float gy = (heights[5] - heights[3]) / (2f * halfY);
-			if (gx * gx + gy * gy > 0.35f * 0.35f) return false;
-			for (int x = -1; x <= 1; x++)
-				for (int y = -1; y <= 1; y++)
-					if (Math.Abs(heights[(x + 1) * 3 + y + 1] - (heights[4] + gx * x * halfX + gy * y * halfY)) > 0.3f) return false;
-			Vec3 side = new Vec3(frame.rotation.s.x, frame.rotation.s.y, gx);
-			Vec3 forward = new Vec3(frame.rotation.f.x, frame.rotation.f.y, gy);
-			Vec3 up = Vec3.CrossProduct(side, forward).NormalizedCopy();
-			side.Normalize();
-			frame.rotation.s = side;
-			frame.rotation.f = Vec3.CrossProduct(up, side).NormalizedCopy();
-			frame.rotation.u = up;
-			frame.origin.z = heights[4] + 0.02f;
+			}
 			return true;
 		}
 

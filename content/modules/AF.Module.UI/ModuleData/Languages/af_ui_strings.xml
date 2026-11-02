@@ -3468,10 +3468,6 @@ Choose how to proceed:" />
   <string id="AF_FC_PatrolTooltip" text="Walk among the tents and troops. Leaving the camp scene costs about {HOURS} hours." />
   <string id="AF_FC_PatrolWounded" text="You are too badly wounded to walk the camp." />
   <string id="AF_FC_PatrolFailed" text="The camp scene could not be opened here." />
-  <string id="AF_FC_SetupDegraded" text="Some camp facilities could not be initialized. The scene stays open until you choose to leave." />
-  <string id="AF_FC_NoLevelSite" text="No level area large enough for the entire camp was found in this scene. Camp facilities were not forced onto a hillside. You can leave manually without a patrol time charge." />
-  <string id="AF_FC_CeremonyPreparing" text="Preparing your execution site: camp residents are walking clear. Once the site is clear, deployment continues with the spectators already in place." />
-  <string id="AF_FC_OptionalFurnitureSkipped" text="Camp is ready. {COUNT} optional tent furnishings could not fit; these skipped furnishings do not block camp use or custom-site deployment." />
   <string id="AF_FC_Assembled" text="The troops fall in by troop type." />
   <string id="AF_FC_Dismissed" text="The troops are dismissed and return to camp." />
   <string id="AF_FC_IssueResolved_Encourage" text="You reassured the men." />

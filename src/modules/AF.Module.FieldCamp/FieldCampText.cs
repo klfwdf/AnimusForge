@@ -46,19 +46,6 @@ internal static class FieldCampText
 
 	internal static TextObject PatrolFailed() => new TextObject("{=AF_FC_PatrolFailed}The camp scene could not be opened here.");
 
-	internal static TextObject SetupDegraded() => new TextObject("{=AF_FC_SetupDegraded}Some camp facilities could not be initialized. The scene stays open until you choose to leave.");
-
-	internal static TextObject NoLevelSite() => new TextObject("{=AF_FC_NoLevelSite}No level area large enough for the entire camp was found in this scene. Camp facilities were not forced onto a hillside. You can leave manually without a patrol time charge.");
-
-	internal static TextObject CeremonyPreparing() => new TextObject("{=AF_FC_CeremonyPreparing}Preparing your execution site: camp residents are walking clear. Once the site is clear, deployment continues with the spectators already in place.");
-
-	internal static TextObject OptionalFurnitureSkipped(int count)
-	{
-		var text = new TextObject("{=AF_FC_OptionalFurnitureSkipped}Camp is ready. {COUNT} optional tent furnishings could not fit; these skipped furnishings do not block camp use or custom-site deployment.");
-		text.SetTextVariable("COUNT", count);
-		return text;
-	}
-
 	internal static TextObject Assembled() => new TextObject("{=AF_FC_Assembled}The troops fall in by troop type.");
 
 	internal static TextObject Dismissed() => new TextObject("{=AF_FC_Dismissed}The troops are dismissed and return to camp.");

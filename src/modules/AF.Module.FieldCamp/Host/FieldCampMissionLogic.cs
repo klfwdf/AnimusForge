@@ -93,6 +93,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	{
 		CleanupCampPrisonerCombatIsolation();
 		CleanupSlaughter("mission_end");
+		CleanupExecution("mission_end");
 		FieldCampSite.ReleaseCaches(Mission.Scene);
 		var conversations = Campaign.Current?.ConversationManager;
 		if (conversations != null)
@@ -134,7 +135,6 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			}
 			return;
 		}
-		if (!_campInitialized) return; // Failed initialization stays open without ticking incomplete camp owners.
 		_slaughter?.Tick(dt);
 		TickDuelRelease(dt);
 		if (SlaughterBusy)
@@ -190,7 +190,48 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		}
 	}
 
-	// ---------- player / actor placement ----------
+	// ---------- set-up ----------
+
+	private void SetUpCamp()
+	{
+		try
+		{
+			_layout = FieldCampLayout.Build(_parties, FieldCampSettings.AgentCap, FieldCampSettings.TentCap);
+			_campFrame = FieldCampSite.Resolve(Mission, _layout, out _campScale);
+			int cleared = FieldCampSite.ClearClutter(Mission.Scene, _campFrame, _layout, _campScale);
+			if (TryPlaceExecutionPreset())
+			{
+				// The player's own execution-site design replaces the default block and gallows.
+				_layout.Props.RemoveAll(p => p.Kind == FieldCampLayout.PropKind.ExecutionBlock || p.Kind == FieldCampLayout.PropKind.Gallows);
+			}
+			int props = FieldCampProps.Place(Mission.Scene, _layout, _campFrame, _campScale);
+			SpawnEveryone();
+			int horses = SpawnHorses();
+			QueueEnvoys();
+			Logger.Log(LogSource, "camp mission ready agents=" + _agents.Count + " prisoners=" + _prisoners.Count + " props=" + props + "/" + _layout.Props.Count + " horses=" + horses + " cleared=" + cleared + " scale=" + _campScale.ToString("0.00") + " scene=" + (Mission.SceneName ?? ""));
+		}
+		catch (Exception ex)
+		{
+				Logger.Log(LogSource, "camp set-up failed: " + ex);
+				AnimusForgeQuickInfo.Show(FieldCampText.PatrolFailed());
+				Mission.EndMission();
+		}
+	}
+
+	private void SpawnEveryone()
+	{
+		Hero main = Hero.MainHero;
+		uint c1 = main?.MapFaction?.Color ?? 4278190335u;
+		uint c2 = main?.MapFaction?.Color2 ?? 4278190208u;
+		_team = Mission.Teams.Add(BattleSideEnum.Attacker, c1, c2, main?.Clan?.Banner, true, false);
+		Mission.PlayerTeam = _team;
+
+		SpawnPlayer();
+		SpawnTroops();
+		SpawnCompanions();
+		SpawnArmyLords();
+		SpawnPrisoners();
+	}
 
 	private void SpawnPlayer()
 	{
@@ -199,14 +240,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		{
 			return;
 		}
-		Vec3 desired = ToWorld(_layout.PlayerStart);
-		if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, desired, 0.45f, out Vec3 pos)
-			&& !FieldCampSite.TryFindPlayerStart(Mission, desired, out pos))
-		{
-			_setupDegraded = true;
-			Logger.Log(LogSource, "[WARN] player placement unavailable; camp stays open for manual leave");
-			return;
-		}
+			if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, ToWorld(_layout.PlayerStart), 0.45f, out Vec3 pos))
+				throw new InvalidOperationException("Player start has no grounded clearance.");
 			Vec2 dir = ToWorldDirection(_layout.PlayerFacing);
 		AgentBuildData data = new AgentBuildData(hero)
 			.Team(_team)

@@ -35,7 +35,6 @@ def xml_strings(path):
 launcher = read(CAMP + 'Host/FieldCampMissionLauncher.cs')
 life = read(CAMP + 'Host/FieldCampMissionLogic.Life.cs')
 main = read(CAMP + 'Host/FieldCampMissionLogic.cs')
-setup = read(CAMP + 'Host/FieldCampMissionLogic.Setup.cs')
 envoys = read(CAMP + 'Host/FieldCampMissionLogic.Envoys.cs')
 people = read(CAMP + 'Host/FieldCampMissionLogic.People.cs')
 props = read(CAMP + 'Host/FieldCampProps.cs')
@@ -91,11 +90,10 @@ check('GetHeightAtPoint' not in life and 'TryGetCachedTerrainHeight' in life, 'c
 check('TryResolveGroundedPosition(Mission.Scene, desired, 1.5f' in people, 'horses require cached body clearance')
 check('ConditionalWeakTable<Scene, GroundCache>' in site and 'MaxGroundCells' in site and 'MaxPassageSteps' in site,
       'ground sampling bounded and scoped to scene cache')
-check(setup.count('FieldCampSite.InitializeGroundCache(') == 1 and 'FieldCampSite.InitializeGroundCache(' not in props,
-      'ground cache initialized once after props even when prop placement fails')
-check('FieldCampSite.ReleaseCaches(Mission.Scene)' in main and 'Mission.EndMission()' not in main + setup
-      and 'new BasicLeaveMissionLogic(' not in launcher and 'new MissionBoundaryCrossingHandler(' not in launcher,
-      'camp setup failure knockout and boundary never auto-exit; manual cleanup retained')
+check(props.count('FieldCampSite.InitializeGroundCache(') == 1 and 'FieldCampSite.InitializeGroundCache(' not in main,
+      'ground cache initialized once after props, not twice')
+check('FieldCampSite.ReleaseCaches(Mission.Scene)' in main and 'Mission.EndMission()' in main,
+      'unsafe camp setup exits and mission releases geometry cache')
 check('TentAnchor' in layout and 'PlaceTentFurniture' in props and 'DoorIsClear' in props,
       'tent furniture attached to verified tent frame and entrance')
 check('TeleportToPosition' not in execution and 'TeleportFlat' not in execution,
