@@ -620,6 +620,8 @@ internal sealed class KnowledgeRuleIndex
 				List<VectorDoc> docs = new List<VectorDoc>();
 				Dictionary<string, int> df = new Dictionary<string, int>(StringComparer.Ordinal);
 				IReadOnlyList<LoreRule> rules = detachedRules ?? _rules();
+				// Null means the snapshot has not been published, not a completed empty library.
+				if (rules == null) return;
 				if (rules != null)
 				{
 					foreach (LoreRule rule in rules)
@@ -710,8 +712,8 @@ internal sealed class KnowledgeRuleIndex
 	}
 
 	/// <summary>
-	/// Legacy commit rule: engine unavailable → index null; otherwise commit when any embedding succeeded,
-	/// or when there were no rules / no seeds (empty index is valid); embeddings all failed → stay unbuilt
+	/// Unpublished rules stay unbuilt. Engine unavailable → index null; otherwise commit when any embedding succeeded,
+	/// or when published rules have no entries / no seeds (empty index is valid); embeddings all failed → stay unbuilt
 	/// and skip that same version for <see cref="OnnxFailureCooldown"/> (sparse fallback meanwhile).
 	/// Lock order: _onnxIndexLock → _publicationLock.
 	/// </summary>
@@ -756,9 +758,11 @@ internal sealed class KnowledgeRuleIndex
 				IReadOnlyList<LoreRule> rules = null;
 				try
 				{
-					engineAvailable = _ports.EmbeddingAvailable;
 					rules = detachedRules ?? _rules();
-					if (engineAvailable && rules != null)
+					// Do not cache a missing snapshot as a ready empty index for this version.
+					if (rules == null) return;
+					engineAvailable = _ports.EmbeddingAvailable;
+					if (engineAvailable)
 					{
 						var pending = new List<(LoreRule Rule, string Seed, bool IsEvidence)>();
 						for (int i = 0; i < rules.Count; i++)
@@ -801,11 +805,14 @@ internal sealed class KnowledgeRuleIndex
 				}
 				catch
 				{
+					// A failed snapshot/seed capture must not publish an empty completed index.
+					if (rules == null || seedCount <= 0) return;
+					// Preserve the existing cooldown when embedding failed after seed capture.
 				}
 				lock (_publicationLock)
 				{
 					if (Version != buildVersion) return;
-					bool noRules = rules == null || rules.Count == 0;
+					bool noRules = rules.Count == 0;
 					bool noSeeds = seedCount <= 0;
 					if (!engineAvailable)
 					{

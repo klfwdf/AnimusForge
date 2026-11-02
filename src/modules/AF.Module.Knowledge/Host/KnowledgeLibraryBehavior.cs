@@ -605,15 +605,17 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private static readonly LoreCandidateRetriever Retriever = new LoreCandidateRetriever(Index, Logger.Log);
 
-	/// <summary>Game thread: publish detached rules only. Cold index work belongs to the query worker.</summary>
+	/// <summary>Game thread: publish detached rules even for an empty mention set. Cold index work belongs to the query worker.</summary>
 	internal static long PreparePromptLoreRetrieval(MentionedWorldEntities mentions)
 	{
-		if (Instance == null || mentions == null || mentions.IsEmpty)
+		if (Instance == null)
 		{
-			return Index.Version;
+			return 0L;
 		}
 		try
 		{
+			// The first dialogue must prepare the library even when the router found no entities.
+			// Otherwise its worker can mistake an unpublished rule snapshot for an empty library.
 			PublishPromptRules();
 			return Index.Version;
 		}
@@ -623,7 +625,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	/// <summary>Worker: select candidates from the prepared index without reading a Hero or Campaign.</summary>
+	/// <summary>Worker: build the prepared index before selecting candidates, including for an empty mention set; never read a Hero or Campaign.</summary>
 	internal static LoreCandidateRules CollectPromptLoreCandidates(MentionedWorldEntities mentions, long preparedVersion, PromptLoreSettings settings)
 	{
 		if (Instance == null || settings == null || preparedVersion <= 0L || Index.Version != preparedVersion)
