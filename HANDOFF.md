@@ -1,3 +1,11 @@
+## 2026-11-02 刑场确认后让场等待与可选家具状态修复已覆盖
+
+**DEPLOYED / ROUTE_AND_WIRING_PASS / NATIVE_RETEST_NOT_RUN**。用户反馈降级提示及“刑场也无法部署”；产品/构建输入`51202a5e8f`，意图点`be47cb22d`。日志确认B键已接收位置，随后16名人员准备未到Ready；11秒后离营取消，不把它虚称为已记录超时。已补营地碰撞缓存路径/逐拐点步行、多方向有界让场及可见等待提示；仍先让场和观众就位、再由原builder生成，不传送NPC/自动退出或恢复预生成刑场。可选床/箱跳过单独计数与提示，不再冒充核心设施初始化失败；实际缺失仍记录，不声称家具全部放下。
+
+生产路线81、道具23、Setup101、原C#72/105/121、接线14（旧2/14）、源码65+6、不退出15、手动刑场10、双语26表PASS。双API/Bootstrap构建通过；构建进程Get-FileHash不可用曾停在门禁，进程显式加载系统Utility后原双门禁通过，原部署脚本接续exit0更新11文件，安装/9007映射/三DLL/11玩家保护文件核验PASS。游戏未启动，实际NPC绕道、Ready和刑场成功生成仍需实机；外交既有4处语言门失败保留。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-deployment-route-20261102) / [代码图](docs/architecture/af-framework-code-scope.md#field-camp-deployment-route-20261102)。证据与before/旧项目候选在`.tmp/field-camp-deployment-route-20261102/`；无安装自动回滚，未打包/push。
+
+---
+
 ## 2026-11-02 帐篷实际放置与刑场仅手动部署修复已覆盖
 
 **DEPLOYED / PROP_EXECUTION_TEST_PASS / NATIVE_RETEST_NOT_RUN**。产品/构建输入`88c3654dbc`，意图点`0e2aab63a`。用户截图反馈帐篷缺失、刑场不应提前生成；已修复把过大外包围盒/正常坡地直接删帐篷的逻辑：按地块统一适配真实模型和碰撞体，拟合地形平面，校正模型底部/轴心；保留入口、家具与水面/陡坡/台阶检查。删除进场加载最新刑场预设和默认刑台/绞架/刑场围栏路径，既有B键自定义部署/确认保留，不改Vengeance共享源码。

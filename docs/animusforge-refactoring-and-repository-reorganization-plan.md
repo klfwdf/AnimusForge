@@ -1,3 +1,41 @@
+<a id="field-camp-deployment-route-20261102"></a>
+## 2026-11-02 刑场确认后人员准备等待及降级提示修复
+
+**DEPLOYED / CACHED_ROUTE_TESTS_PASS / LIVE_DEPLOYMENT_RETEST_NOT_RUN**。用户截图提示“部分营地设施未能初始化”，随后反馈“刑场也无法部署”。工作区`F:/AnimusForge-main`、main，开始HEAD`64a718dced`，意图点`be47cb22d`，产品/构建输入`51202a5e8f`。本条仅补[手动刑场与帐篷](#field-camp-tents-manual-site-20261102)的营地owner路由/反馈，不恢复预生成，不改共享Vengeance、其他场景、存档/设置owner或原构建脚本。
+
+### 证据与确定边界
+
+- 15:42:54同场景`battle_terrain_biome_093b`日志记录9顶帐篷放置成功（不是截图可见性验收）、7床卷/8箱/1床可选放置跳过，没有本次核心stage异常。`HadPlacementFailures`却被可选家具设置，触发整营设施失败的泛化banner；本轮按已确认来源分开，不把所有设施补齐与状态修复混为一谈。日志还存在士兵/马匹安全位置跳过，本轮不放宽碰撞/水面/地形检查。
+- `Vengeance.log`：15:44:35已接受玩家确认位置和最终request，自定义root被采用；营地记录watchers=16/registered=39，但尚无preparation Ready；15:44:46离营取消SessionNotActive。未记录55/60秒超时，不能把11秒等待说成完整复现的死锁。确定的源码缺口是只靠烘焙navmesh与终点判断路线（不覆盖营地运行时帐篷/围栏）、阻挡者只沿同一外推方向重试且没有等待提示；真实哪一个原生Agent卡住旧日志不能证明。
+
+### 改动、owner与性能
+
+- 新`FieldCampGroundRouter`是营地Scene缓存所有的纯网格路由；最多98304格，三组int scratch复用generation避免逐次全数组清零；单查询最多32768展开、128拐点，四邻接不切对角/跨行，保留高差0.35m检查。没有后台游戏对象读取或新线程/依赖。
+- `FieldCampSite.InitializeGroundCache`在最终营地道具后一次性投影0.4m行人净空，建立路由缓存；`TryBuildGroundedRoute`输出有实际地面高度的拐点，covered但blocked不得回落到“不知道运行时围栏”的原生烘焙路线。角色仅用当前Agent身份步行，源连接也不跳过实体；格外目标沿用原边界/原生校验，不把覆盖外推断成已验证网格路由。
+- 仪式owner把最终Goal与当前路线拐点分开，以0.3m到点阈值逐段推进；不能在围栏另一面仅因离终点近就算到场。0.5秒仍最多检查20人物；让场最多每回调为2人重算、每人最多8个方向、每人重试冷却5秒。路线查询无scene实体扫描/反射，主体在cache上；最大32K查询预算和多向调用次数明确上限，未做真实游戏帧时性能验收。
+- 保留`_ceremonyWaiting==0`、全clearance核查、未清场人数0之后才Ready的原门，不跳过观众/瞬移/强制清场；返回Home明确不再沿去程路由，原60秒回归owner兜底保留。`CanStartCeremony`要求实际玩家初始化成功。确认后双语提示人员正在步行让场；pending计数最多每5秒走既有异步Logger队列（非Tick同步磁盘IO），每次分配路线记录Agent/拐点数供实机定位。
+- 可选家具只在最终接受帐篷后计入OptionalFurnitureSkips；被拒candidate不污染整营核心失败状态。Setup用独立CN/EN信息提示具体跳过数量；真正帐篷/props/core异常仍保留原降级提示和日志。源文件/玩家内容不静默翻译，新UI稳定key`AF_FC_CeremonyPreparing`、`AF_FC_OptionalFurnitureSkipped`、COUNT变量及原native语言注册/映射同步验证。
+
+### 验证、部署与未验
+
+- 新生产纯路由81断言PASS：实际开口绕运行时围栏、封死拒绝、不切角/跨行、悬崖/NaN拒绝、复用scratch、同点/坏输入、32K预算。道具直接链接生产测试23PASS（可选缺失计数/日志不丢），Setup生产编排101PASS（可选提示不冒充核心失败）。这是纯算法/假native边界测试，不能证明真实NPC已经走到位。
+- 路由接线旧before2/14→新14/14，原C#接续72/围观105/记忆121、源码65+审查6、不退出15、手动刑场10、双语26/0、diff-check PASS。全仓l10n_gate仍是外交`DiplomacySponsorReceiptRules.cs:17–19`既有4处失败。NuGet访问漏洞元数据失败的NU1900是本轮构建/测试警告，未变更依赖版本或豁免安全配置。
+- 原`build_single_module.ps1 -Configuration Debug -Deploy`完成两个实现和Bootstrap（0编译错误），随后进程无法解析Get-FileHash而在coup gate停止、exit1，尚未覆盖安装。只在本轮证据helper进程显式导入系统Microsoft.PowerShell.Utility，调用原`Invoke-CoupSeamGate`对已建最终DLL重跑双门，原Probe/managed registration和memory门禁PASS；不改原脚本、不跳过门禁、不重复编译。原`deploy_module.ps1`接续exit0更新11个受管文件。
+- 完整Stage9023文件，8998安装hash一致；另25按既有规则保留（2用户提示词、23较新布匿战争导出）。9007项source→Stage全部匹配，三DLL及marker产物/Stage/安装一致、双实现不同，19694源码/测试输入和11玩家保护文件未变，无部署临时候选残留。目标为`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，v1.7.0，单AnimusForge/Bootstrap-only。
+- 尚未实机重进、观察真实NPC绕营地碰撞体、最终Ready→刑场生成、TAB/ESC与旧档/真实provider/TTS/全业务回归；未启动游戏，未打包/升版/push，不能将本轮称为实机刑场已成功部署。可选家具仍可能不适配，未把所有床箱/马匹复原列为PASS。
+
+| DLL | 实际参考版本 | 最终SHA256 |
+| --- | --- | --- |
+| 1.3 | v1.3.15.110062 | `1a63cdd38147ba7e7659e36cacc56d3a34325df95619934606b99e3794f704d7` |
+| 1.4 | v1.4.6.115628 | `f6ea3cf2d6e7614616d398b7602f69ade1811f20b87ceee671de812b7bdb0f28` |
+| Bootstrap | v1.3.15.110062 | `1d8a101a05fdc459614dff38fb02c70c050aa853891e84cd0d5320821d578235` |
+
+### 文件/恢复
+
+[代码图](architecture/af-framework-code-scope.md#field-camp-deployment-route-20261102)与`code-map.json`给出一基行号/符号/修订/hash及未覆盖责任。证据`.tmp/field-camp-deployment-route-20261102/`含before、incident日志、各测试、source-build-input、protected-before、初次build-deploy失败回执、build-validation/exit、deploy-resume/exit、verification与核验脚本。`run-*.ps1`只是证据目录下隐藏后台runner，未改项目一键流程/全局设置。`previous-stage/`、`previous-artifacts/`是旧项目候选，不是安装Recovery或玩家备份。源码回退仅focused inverse`51202a5e8f`，不hard reset/覆盖其他作者；旧候选安装需原校验和对应授权，无自动回滚。
+
+---
+
 <a id="field-camp-tents-manual-site-20261102"></a>
 ## 2026-11-02 帐篷缺失与刑场提前生成修复
 

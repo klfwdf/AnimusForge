@@ -1,3 +1,26 @@
+<a id="field-camp-deployment-route-20261102"></a>
+## 玩家确认刑场后的营地让场路线 — 2026-11-02
+
+产品/构建输入`51202a5e8f`；[唯一台账与实机证据局限](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-deployment-route-20261102)。纯路由scratch由Scene缓存所有；Site投影实际碰撞净空；仪式owner仍以Agent/Session维护步行、抵达、清场与回归；Vengeance原builder及确认边界本轮未改。不把坐标升为人物身份或绕过准备门。
+
+| 一基源码范围 | 已核实符号 |
+| --- | --- |
+| `src/modules/AF.Module.FieldCamp/FieldCampGroundRouter.cs:19–25` | `internal FieldCampGroundRouter(` |
+| `src/modules/AF.Module.FieldCamp/FieldCampGroundRouter.cs:30–62` | `internal bool TryRoute(` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:588–666` | `internal static void InitializeGroundCache(` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:726–769` | `internal static bool TryBuildGroundedRoute(` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:223–266` | `private bool TryStartCeremonyWalk(` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:288–307` | `private void IssueCeremonyWalk(` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:310–418` | `private void TickCeremonyPreparation(` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:478–554` | `private void TickCeremonyReturn(` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Setup.cs:14–45` | `private void SetUpCamp(` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:248–329` | `private static bool PlaceTent(` |
+| `src/modules/AF.Module.FieldCamp/FieldCampText.cs:53–58` | `internal static TextObject OptionalFurnitureSkipped(` |
+
+CN/EN原生UI同步两个key及COUNT变量，真实FieldCampText/Setup/Prepare消费者、content-map一起验证。路线81纯生产算法、Props23/Setup101使用fake native边界；原72/105/121、路由接线14与双API/Bootstrap/原managed门禁、安装hash已验。实际路径选择/碰撞与NPC行走、Ready/成功生成、性能帧时和旧档仍未覆盖。源码hash清册在`.tmp/field-camp-deployment-route-20261102/code-map.json`；产物/安装hash在`verification.json`。日志只有11秒Pending后离营，未据此宣称已证明超时或特定NPC死锁。
+
+---
+
 <a id="field-camp-tents-manual-site-20261102"></a>
 ## 帐篷实际放置 / 手动刑场边界 — 2026-11-02
 
