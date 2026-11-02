@@ -1,3 +1,13 @@
+## 2026-11-02 营地从自动退场基线重修（当前）
+
+**DEPLOYED / OFFLINE_VERIFIED / NATIVE_NOT_RUN**。按用户“从那段开始的改动，全部重新修”，先聚焦撤销四轮后续修复至 b53736e44（相关路径等同591f9ad4d6），再提交新产品 64d6f069b0。本条替代下方不退出、帐篷与刑场路线的当前结论，不把旧00f2d17b9d无回执候选当成功部署。
+
+已重修自动退营、完整地块选址、帐篷/家具/入口、仅B键确认刑场、真实清场/可选观众与取消清理。C#428项、源码/资源93项、双语26表、双API/Bootstrap及原门禁通过；原脚本部署exit0，9007映射/三DLL/11玩家保护文件核验PASS。实机/旧档/独立Vengeance未验，隔离空间不足；保留外交既有4处语言门失败。
+
+[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-restart-20261102) / [代码范围](docs/architecture/af-framework-code-scope.md#field-camp-restart-20261102)。完整证据 .tmp/field-camp-restart-20261102/verification.json；新产品可聚焦revert回b53736e44，保留其他作者改动。未打包/push/升版本，无安装自动回滚。
+
+---
+
 ## 2026-11-02 刑场确认后让场等待与可选家具状态修复已覆盖
 
 **DEPLOYED / ROUTE_AND_WIRING_PASS / NATIVE_RETEST_NOT_RUN**。用户反馈降级提示及“刑场也无法部署”；产品/构建输入`51202a5e8f`，意图点`be47cb22d`。日志确认B键已接收位置，随后16名人员准备未到Ready；11秒后离营取消，不把它虚称为已记录超时。已补营地碰撞缓存路径/逐拐点步行、多方向有界让场及可见等待提示；仍先让场和观众就位、再由原builder生成，不传送NPC/自动退出或恢复预生成刑场。可选床/箱跳过单独计数与提示，不再冒充核心设施初始化失败；实际缺失仍记录，不声称家具全部放下。

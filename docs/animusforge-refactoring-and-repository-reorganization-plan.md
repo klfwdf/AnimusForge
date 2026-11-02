@@ -1,3 +1,41 @@
+<a id="field-camp-restart-20261102"></a>
+## 2026-11-02 从自动退营故障基线重新修复全部后续改动
+
+**DEPLOYED / OFFLINE_VERIFIED / NATIVE_NOT_RUN**。用户明确要求“从那段开始的改动，全部重新修”。实际工作区 F:/AnimusForge-main，main。先以聚焦反向提交 b53736e44210bc423bf3048e5822f94ada3863fd 撤销 8876d7ff55、88c3654dbc、51202a5e8f、00f2d17b9d 的相关营地产品/测试/资源修改，核对受影响路径与 591f9ad4d6 无差异，再重新实现；没有 hard reset、改写历史或回滚其他作者内容。新产品 64d6f069b0e27f535dd46aeb656b6aa36ac71900。
+
+本条 supersedes 下方 field-camp-no-auto-exit-20261102、field-camp-tents-manual-site-20261102、field-camp-deployment-route-20261102 的当前产品结论及 00f2d17b9d 候选。历史日志、当时安装核验和未验项照存；field-camp-level-site-readiness-20261102/deploy.log 只有入口输出，不能当作成功部署或安装回滚凭证。
+
+### 实际修改
+
+- 初始化按真实阶段隔离，选址/单顶帐篷失败不再 EndMission；移除营地原生主角失活退场及越界自动撤退 owner，保留 TAB/ESC 手动离开。玩家初始化未就绪时不扣巡营小时。
+- 全营选址始终加入场景网格及两个朝向，以整块地形高差/坡度硬限筛选，不能用单个安全玩家点铺整营。真实无合格场地时提示并保持场景可手动离开，不伪称帐篷已生成。
+- 帐篷实体及碰撞统一缩放、拟合地形、校正轴心和底部；文化候选回退中性帐篷。先摆独立道具再逐顶摆帐篷，复验已接受入口；家具失败不删合格帐篷，统计只算实际实体。
+- 进营不加载最新刑场预设、不生成默认刑台/绞架/刑场围栏，原 B 键玩家自定义确认入口保留。可选观众未到动画点不再卡就绪，所有登记人物必须真实离开占地及人体边缘；Ready 前复查，仅借已到位观众，未到位者在安全处停留。
+- 碰撞缓存寻路、逐拐点步行及准备计数重接。取消最多三次清理重试，仅退出刑场 owner，不退出营地；缓存 Mission，先移死亡逻辑最后移自身。已发生死亡的 pending commit owner 留到原离场结算，不提前提交或复活。
+- 三个新提示的 CN/EN、变量和真实消费者同步。没有新设置/存档身份、Tick IO/反射/全场扫描；选址/碰撞缓存一次初始化，0.5秒维护保留分批和路由预算。
+
+### 验证与部署
+
+链接生产源码 C#：帐篷30、选址几何/取消19、路由81、接续72、围观105、记忆/顺序121，共428项；使用纯算法/真实Library数学及fake原生边界，不是游戏实测。源码/资源契约65+6+22，共93项；双语表26张通过。原“异常应退出”断言按用户要求改为“保留手动离开且不退出”，其余既有保护断言保持。
+
+原 build_single_module.ps1 Debug 双实现、Bootstrap及双coup seam/registration smoke通过。第一次构建发现重复 TryValidateGroundedPassage 声明，删除同内容重复并重跑通过，失败证据保留。原 deploy_module.ps1 exit0 且有成功回执；未改一键流程、打包、push、升版本或启动游戏。
+
+模块v1.7.0，安装 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge。9023个Stage文件中8998个安装哈希相同，25个玩家覆盖项按原规则保留；9007个映射源/Stage相同、20772个输入未变、11个玩家保护文件哈希不变。Bootstrap单入口、三DLL/marker/门禁和无替换候选残留通过。
+
+| 产物 | 实际参考版本 | SHA256 |
+| --- | --- | --- |
+| 1.3 | v1.3.15.110062 | ed79748ff1dd159b6e00eb85cce77336e61114c0424cd64ae1571334ff80528d |
+| 1.4 | v1.4.6.115628 | 3b326804651d0546d62161cfb0da343094d7f958d4fbbe50541f3b805cc922d4 |
+| Bootstrap | v1.3.15.110062 | 58ddc568cc6072166d5e6364e9ab0801e6f822f1c4a4cee4c501fc7807f35768 |
+
+### 未验和恢复
+
+未实机验证指定地图帐篷/碰撞、NPC实际绕路、B键最终生成、实际帧时或旧档；独立 RichExecutions.csproj 约定路径缺失，真实provider及全业务回归未跑。隔离完整游戏候选约需89.46GiB，最大已见空闲77.63GiB，尚无足够外部目录。全仓语言门保留外交模块既有4处失败，本次新增资源无缺译，不宣称全仓通过。
+
+[实际代码范围](architecture/af-framework-code-scope.md#field-camp-restart-20261102)提供一基坐标与覆盖边界。完整证据 .tmp/field-camp-restart-20261102/：verification.json、code-map.json、source-build-input.json、protected-before.json及所有日志。previous-stage仅旧项目输出，不是游戏安装备份，无自动回滚。聚焦revert新产品 64d6f069b0 可回到 b53736e44 产品基线；安装回退需按明确候选重建部署，保留其他dirty。
+
+---
+
 <a id="field-camp-deployment-route-20261102"></a>
 ## 2026-11-02 刑场确认后人员准备等待及降级提示修复
 

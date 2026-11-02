@@ -1,3 +1,38 @@
+<a id="field-camp-restart-20261102"></a>
+## 营地故障基线重修 — 2026-11-02（当前）
+
+产品 64d6f069b0e27f535dd46aeb656b6aa36ac71900；[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-restart-20261102)。本范围替代下方旧修复的当前坐标，历史保留。Setup仍在真实FieldCampMissionLogic.cs，不恢复旧Setup分文件。营地owner负责生命周期、布局和登记人物准备；Vengeance负责玩家builder、刑场实体及处决提交。
+
+| 一基源码范围 | 核实符号 |
+| --- | --- |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.cs:198–207 | private bool RunCampSetup( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.cs:209–239 | private void SetUpCamp( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.cs:251–276 | private void SpawnPlayer( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLauncher.cs:27–81 | internal static bool TryOpen( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampBehavior.cs:465–471 | internal void BeginPatrol( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampBehavior.cs:475–496 | private void ConsumePatrolReturn( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:74–123 | internal static MatrixFrame Resolve( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:126–142 | internal static bool TryFindPlayerStart( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:258–295 | private static float Evaluate( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:547–615 | internal static void InitializeGroundCache( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:673–716 | internal static bool TryBuildGroundedRoute( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:158–228 | private static int PlaceAll( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:235–336 | private static bool PlaceTent( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:360–384 | private static bool TryFitTentGround( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:220–261 | private bool TryStartCeremonyWalk( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:300–423 | private void TickCeremonyPreparation( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:427–436 | private bool VerifyCeremonyClearanceNow( |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:438–456 | private void CompleteCeremonyPreparation( |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.CampRetirement.cs:9–33 | private void RetireCancelledCampExecution( |
+| src/modules/AF.Module.FieldCamp/FieldCampLayout.Zones.cs:237–247 | private void PlaceExecutionGround( |
+| src/modules/AF.Module.FieldCamp/FieldCampPlacementRules.cs:12–21 | internal static bool TryTentScale( |
+| src/modules/AF.Module.FieldCamp/FieldCampPlacementRules.cs:35–43 | internal bool Add( |
+| src/modules/AF.Module.FieldCamp/FieldCampGroundRouter.cs:30–62 | internal bool TryRoute( |
+
+23个符号SHA/修订见 .tmp/field-camp-restart-20261102/code-map.json。428项C#采用生产算法/真实Library数学和fake原生边界，93项接线/资源契约、26双语表、双API/Bootstrap及安装哈希已验。不能替代真实地图/碰撞/行走/B键、旧档、独立模块或帧时。无合格整营地块留场提示，不能强铺山坡；未真实清场不能Ready。完整未验项与恢复只记主台账。
+
+---
+
 <a id="field-camp-deployment-route-20261102"></a>
 ## 玩家确认刑场后的营地让场路线 — 2026-11-02
 
