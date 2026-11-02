@@ -214,29 +214,30 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
         FieldCampProps.ResetPlacementCounts();
 		if (!RunCampSetup("layout", () => _layout = FieldCampLayout.Build(_parties, FieldCampSettings.AgentCap, FieldCampSettings.TentCap)))
 			_layout = new FieldCampLayout { HalfX = 12f, Back = -12f, Front = 12f, PlayerFacing = Vec2.Forward };
-		bool site = RunCampSetup("whole_camp_site", () => _campFrame = FieldCampSite.Resolve(Mission, _layout, out _campScale));
+		bool approximateSite = false;
+		bool site = RunCampSetup("whole_camp_site", () => _campFrame = FieldCampSite.Resolve(Mission, _layout, out _campScale, out approximateSite));
 		bool cache = false;
 		if (site)
 		{
 			RunCampSetup("clutter", () => FieldCampSite.ClearClutter(Mission.Scene, _campFrame, _layout, _campScale));
-			RunCampSetup("props", () => FieldCampProps.Place(Mission.Scene, _layout, _campFrame, _campScale));
+			RunCampSetup("props", () => FieldCampProps.Place(Mission.Scene, _layout, _campFrame, _campScale, allowUnevenGround: approximateSite));
 			cache = RunCampSetup("ground_cache", () => FieldCampSite.InitializeGroundCache(Mission.Scene, _campFrame, _layout, _campScale));
 		}
 		RunCampSetup("team", CreateCampTeam);
 		RunCampSetup("player", SpawnPlayer);
-		_campInitialized = site && cache && Mission.MainAgent?.IsActive() == true;
-		if (_campInitialized)
-		{
-			RunCampSetup("troops", SpawnTroops);
-			RunCampSetup("companions", SpawnCompanions);
-			RunCampSetup("lords", SpawnArmyLords);
-			RunCampSetup("prisoners", SpawnPrisoners);
-			RunCampSetup("horses", () => SpawnHorses());
-			RunCampSetup("envoys", QueueEnvoys);
-			FieldCampBehavior.Instance?.MarkPatrolPlayerReady();
-		}
+        _campInitialized = Mission.MainAgent?.IsActive() == true;
+        // Each roster group still gets its own attempt when the preferred site,
+        // a tent or the optional whole-camp route cache was unavailable.
+        RunCampSetup("troops", SpawnTroops);
+        RunCampSetup("companions", SpawnCompanions);
+        RunCampSetup("lords", SpawnArmyLords);
+        RunCampSetup("prisoners", SpawnPrisoners);
+        RunCampSetup("horses", () => SpawnHorses());
+        RunCampSetup("envoys", QueueEnvoys);
+        if (_campInitialized) FieldCampBehavior.Instance?.MarkPatrolPlayerReady();
 		Logger.Log(LogSource, "camp initialization ready=" + _campInitialized + " stageFailure=" + _setupFailed + " tents=" + FieldCampProps.PlacedTentCount + "/" + FieldCampProps.RequestedTentCount
-			+ " residents=" + _agents.Count + " prisoners=" + _prisoners.Count + " scene=" + Mission.SceneName);
+			+ " residents=" + _agents.Count + " prisoners=" + _prisoners.Count
+            + " approximateSite=" + approximateSite + " groundCache=" + cache + " scene=" + Mission.SceneName);
 		if (!site) AnimusForgeQuickInfo.Show(FieldCampText.NoCampSite());
 		else if (_setupFailed || !_campInitialized || FieldCampProps.PlacedTentCount < FieldCampProps.RequestedTentCount)
 			AnimusForgeQuickInfo.Show(FieldCampText.IncompleteCamp(FieldCampProps.PlacedTentCount, FieldCampProps.RequestedTentCount));
@@ -382,7 +383,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		}
 		try
 		{
-				if (!FieldCampSite.TryFindNearbyGroundedPosition(Mission.Scene, ToWorld(local), 0.35f, 2f, out Vec3 pos))
+				if (!FieldCampSite.TryFindSpawnPosition(Mission.Scene, ToWorld(local), 0.35f, out Vec3 pos))
 				{
 					Logger.Log(LogSource, "spawn skipped blocked slot troop=" + character.StringId);
 					return null;

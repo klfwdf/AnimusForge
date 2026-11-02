@@ -12,7 +12,7 @@ namespace AnimusForge;
 /// flat ground clear of trees and rocks, inside the mission boundary. Candidates come
 /// from the scene's own spawn paths (where vanilla field battles deploy, always on land)
 /// combined with a scene-wide grid in two orientations. Whole-footprint grade/spread
-/// rank candidates; occupied tent parcels and passages enforce local support limits.
+/// rank candidates; tent parcels and passages prefer ideal sites, with a best-site fallback.
 /// Every candidate is probed over the camp's real rectangle (palisade extents).
 /// Cost, once: at most (600 + 576) x two orientations x 25 cheap probes, then
 /// Up to all coarse survivors x 81 probes if the first finalists are unusable.
@@ -33,7 +33,6 @@ internal static class FieldCampSite
 		private static readonly string[] ClutterNames = { "rock", "stone", "boulder", "bush", "shrub", "tree", "plant", "branch", "stump" };
 		private static readonly string[] StructureNames = { "wall", "gate", "house", "building", "bridge", "tower", "cliff", "terrain", "road", "navmesh", "barrier", "ruin", "floor", "stairs" };
 		// Never compress spacing without shrinking the real prefab footprints and actor bodies.
-		private static readonly float[] Scales = { 1f };
 		private const int MaxSceneEntities = 100000;
 		private const int MaxGroundCells = 98304;
 		private const float GroundStep = 0.5f;
@@ -68,6 +67,8 @@ internal static class FieldCampSite
 		internal Vec2 Forward;
 		internal float Score;
 		internal int Bad;
+        internal bool AnchorBad;
+        internal SiteRejection Rejection;
 	}
 
     private enum SiteRejection
@@ -83,78 +84,94 @@ internal static class FieldCampSite
         + ",obstacle=" + counts[(int)SiteRejection.Obstacle]
         + ",engineError=" + counts[(int)SiteRejection.EngineError];
 
-	/// <param name="fitScale">Always 1; a site that cannot fit real footprints is rejected, not compressed.</param>
-	internal static MatrixFrame Resolve(Mission mission, FieldCampLayout layout, out float fitScale)
-	{
-		Scene scene = mission.Scene;
-		bool hasEncounter = TryEncounterPoint(mission, out Vec2 encounter);
-		List<Candidate> candidates = CollectCandidates(scene, hasEncounter, encounter);
+    /// <param name="fitScale">Real prop spacing remains unchanged.</param>
+    internal static MatrixFrame Resolve(Mission mission, FieldCampLayout layout, out float fitScale)
+        => Resolve(mission, layout, out fitScale, out _);
+
+    internal static MatrixFrame Resolve(Mission mission, FieldCampLayout layout, out float fitScale, out bool approximate)
+    {
+        Scene scene = mission.Scene;
+        bool hasEncounter = TryEncounterPoint(mission, out Vec2 encounter);
+        List<Candidate> candidates = CollectCandidates(scene, hasEncounter, encounter);
         int count = candidates.Count;
         for (int i = 0; i < count; i++)
             candidates.Add(new Candidate { Position = candidates[i].Position,
                 Forward = new Vec2(-candidates[i].Forward.y, candidates[i].Forward.x) });
+        fitScale = 1f;
+        approximate = false;
+        GroundCaches.Remove(scene);
+        CaptureClutter(scene);
+        if (candidates.Count == 0)
+        {
+            scene.GetBoundingBox(out Vec3 min, out Vec3 max);
+            candidates.Add(new Candidate { Position = hasEncounter ? encounter :
+                new Vec2((min.x + max.x) * 0.5f, (min.y + max.y) * 0.5f), Forward = Vec2.Forward });
+        }
         var sampleHeights = new float[81];
         var tentMeasurements = new Dictionary<string, BoundingBox>(StringComparer.Ordinal);
-		fitScale = 1f;
-			GroundCaches.Remove(scene);
-			CaptureClutter(scene);
-			if (candidates.Count == 0)
-			{
-				throw new InvalidOperationException("No safe field-camp site candidates.");
-			}
-		for (int s = 0; s < Scales.Length; s++)
-		{
-			float k = Scales[s];
-			int coarseRejected = 0, fineRejected = 0, criticalRejected = 0, tentRejected = 0, checkedSites = 0;
-            var coarseReasons = new int[(int)SiteRejection.EngineError + 1];
-            var fineReasons = new int[coarseReasons.Length];
-			for (int i = 0; i < candidates.Count; i++)
-			{
-				Candidate c = candidates[i];
-				c.Score = Evaluate(mission, scene, c, layout, k, grid: 5, fine: false, sampleHeights, out c.Bad);
-				candidates[i] = c;
-				if (c.Bad != 0) { coarseRejected++; coarseReasons[c.Bad]++; }
-			}
-			candidates.Sort((a, b) => a.Score.CompareTo(b.Score));
-			Candidate best = default(Candidate);
-			bool found = false;
-			for (int i = 0; i < candidates.Count; i++)
-			{
-				// A flat but unusable cluster must not starve the rest of the scene.
-				if (found && checkedSites >= Finalists) break;
-				Candidate c = candidates[i];
-				if (c.Bad != 0) continue;
-				checkedSites++;
-				c.Score = Evaluate(mission, scene, c, layout, k, grid: 9, fine: true, sampleHeights, out c.Bad);
-				if (c.Bad != 0) { fineRejected++; fineReasons[c.Bad]++; continue; }
-				if (!found || c.Score < best.Score)
-					{
-						if (!ValidateCriticalAreas(mission, scene, c, layout, k)) { criticalRejected++; continue; }
-                        if (!FieldCampProps.CanSupportTents(scene, layout, FrameAt(scene, c.Position, c.Forward), tentMeasurements))
-                        { tentRejected++; continue; }
-						best = c;
-						found = true;
-					}
-			}
-			Logger.Log(LogSource, "site search candidates=" + candidates.Count + " coarseRejected=" + coarseRejected
-				+ " fineChecked=" + checkedSites + " fineRejected=" + fineRejected + " criticalRejected=" + criticalRejected
-                + " tentRejected=" + tentRejected
-                + " coarseReasons={" + RejectionSummary(coarseReasons) + "} fineReasons={" + RejectionSummary(fineReasons) + "}");
-			if (found)
-			{
-				fitScale = Scales[s];
-				Logger.Log(LogSource, "camp site pos=" + Format(best.Position) + " scale=" + fitScale.ToString("0.00") + " candidates=" + candidates.Count + " encounter=" + (hasEncounter ? Format(encounter) : "none"));
-				return FrameAt(scene, best.Position, best.Forward);
-			}
-		}
-			Logger.Log(LogSource, "[WARN] camp site rejected: no dry, navigable site with clear critical areas");
-			throw new InvalidOperationException("No safe field-camp site; refusing forced placement.");
-	}
+        var coarseReasons = new int[(int)SiteRejection.EngineError + 1];
+        var fineReasons = new int[coarseReasons.Length];
+        int coarseRejected = 0, fineRejected = 0, criticalRejected = 0, tentRejected = 0;
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            Candidate c = candidates[i];
+            c.AnchorBad = !Probe(mission, scene, c.Position, false, out _, out _);
+            c.Score = Evaluate(mission, scene, c, layout, 1f, 5, false, sampleHeights, out c.Bad, out c.Rejection);
+            if (hasEncounter) c.Score += c.Position.Distance(encounter) / 25f;
+            if (c.Bad != 0) { coarseRejected++; coarseReasons[(int)c.Rejection]++; }
+            candidates[i] = c;
+        }
+        candidates.Sort(CompareCandidates);
+        Candidate fallback = candidates[0];
+        bool hasFineFallback = false, found = false;
+        Candidate best = default(Candidate);
+        int checkedSites = 0, roughChecked = 0;
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            if (found && checkedSites >= Finalists) break;
+            Candidate c = candidates[i];
+            // Rough sites remain eligible for generation. Bound their detailed trials,
+            // while still considering every coarse-clean candidate for an ideal site.
+            if (c.Bad != 0 && roughChecked++ >= Finalists) continue;
+            checkedSites++;
+            c.Score = Evaluate(mission, scene, c, layout, 1f, 9, true, sampleHeights, out c.Bad, out c.Rejection);
+            if (hasEncounter) c.Score += c.Position.Distance(encounter) / 25f;
+            if (!hasFineFallback || CompareCandidates(c, fallback) < 0)
+            {
+                fallback = c;
+                hasFineFallback = true;
+            }
+            if (c.Bad != 0) { fineRejected++; fineReasons[(int)c.Rejection]++; continue; }
+            if (found && c.Score >= best.Score) continue;
+            if (!ValidateCriticalAreas(mission, scene, c, layout, 1f)) { criticalRejected++; continue; }
+            if (!FieldCampProps.CanSupportTents(scene, layout, FrameAt(scene, c.Position, c.Forward), tentMeasurements))
+            { tentRejected++; continue; }
+            best = c;
+            found = true;
+        }
+        Logger.Log(LogSource, "site search candidates=" + candidates.Count + " coarseRejected=" + coarseRejected
+            + " fineChecked=" + checkedSites + " fineRejected=" + fineRejected + " criticalRejected=" + criticalRejected
+            + " tentRejected=" + tentRejected + " coarseReasons={" + RejectionSummary(coarseReasons)
+            + "} fineReasons={" + RejectionSummary(fineReasons) + "}");
+        Candidate selected = found ? best : fallback;
+        approximate = !found;
+        Logger.Log(LogSource, (approximate ? "[WARN] camp site approximate; continuing generation" : "camp site selected")
+            + " pos=" + Format(selected.Position) + " badProbes=" + selected.Bad + " anchorDry=" + !selected.AnchorBad);
+        return FrameAt(scene, selected.Position, selected.Forward);
+    }
 
-    // A safe player point is exclusively an emergency spawn, never an authorization to place a camp.
+    private static int CompareCandidates(Candidate a, Candidate b)
+    {
+        int anchor = a.AnchorBad.CompareTo(b.AnchorBad);
+        if (anchor != 0) return anchor;
+        int bad = a.Bad.CompareTo(b.Bad);
+        return bad != 0 ? bad : a.Score.CompareTo(b.Score);
+    }
+
+    // Player placement remains independent of whether the whole camp site was ideal.
     internal static bool TryFindPlayerStart(Mission mission, Vec3 desired, out Vec3 grounded)
     {
-        if (TryFindNearbyGroundedPosition(mission.Scene, desired, 0.45f, 6f, out grounded)) return true;
+        if (TryFindSpawnPosition(mission.Scene, desired, 0.45f, out grounded)) return true;
         bool encounter = TryEncounterPoint(mission, out Vec2 point);
         var candidates = CollectCandidates(mission.Scene, encounter, point);
         for (int i = -1; i < candidates.Count; i++)
@@ -284,45 +301,38 @@ internal static class FieldCampSite
 	/// off-navmesh points veto the site. Obstacles veto it unless their complete small
 	/// clutter subtree is in the bounded clearing inventory; then score height spread.
 	/// </summary>
-	private static float Evaluate(Mission mission, Scene scene, Candidate c, FieldCampLayout layout, float scale, int grid, bool fine, float[] heights, out int bad)
-	{
-		bad = 0;
-		int blocked = 0;
-		float low = float.MaxValue;
-		float high = float.MinValue;
-		var profile = new FieldCampSurfaceProfile();
-		Vec2 f = c.Forward;
-		Vec2 side = new Vec2(f.y, -f.x);
-		for (int gx = 0; gx < grid; gx++)
-		{
-			float lx = (-layout.HalfX + 2f * layout.HalfX * gx / (grid - 1)) * scale;
-			for (int gy = 0; gy < grid; gy++)
-			{
-				float ly = (layout.Back + (layout.Front - layout.Back) * gy / (grid - 1)) * scale;
-				Vec2 p = c.Position + side * lx + f * ly;
-				if (!Probe(mission, scene, p, fine, out float height, out bool obstacle, out SiteRejection rejection))
-                {
-                    bad = (int)rejection;
-                    return float.MaxValue;
-				}
-				if (obstacle)
-				{
-					blocked++;
-				}
+    private static float Evaluate(Mission mission, Scene scene, Candidate c, FieldCampLayout layout, float scale, int grid, bool fine, float[] heights, out int bad, out SiteRejection firstRejection)
+    {
+        bad = 0;
+        firstRejection = SiteRejection.None;
+        int blocked = 0;
+        var profile = new FieldCampSurfaceProfile();
+        Vec2 forward = c.Forward;
+        Vec2 side = new Vec2(forward.y, -forward.x);
+        for (int gx = 0; gx < grid; gx++)
+        {
+            float lx = (-layout.HalfX + 2f * layout.HalfX * gx / (grid - 1)) * scale;
+            for (int gy = 0; gy < grid; gy++)
+            {
                 int index = gx * grid + gy;
+                heights[index] = float.NaN;
+                float ly = (layout.Back + (layout.Front - layout.Back) * gy / (grid - 1)) * scale;
+                Vec2 point = c.Position + side * lx + forward * ly;
+                if (!Probe(mission, scene, point, fine, out float height, out bool obstacle, out SiteRejection rejection))
+                {
+                    bad++;
+                    if (firstRejection == SiteRejection.None) firstRejection = rejection;
+                    continue;
+                }
+                if (obstacle) blocked++;
                 heights[index] = height;
-                // Tents follow their own ground plane. A change in elevation between
-                // separate parcels is not an unsafe tent floor or a blocked passage.
-                profile.Add(height, gx == 0 ? float.NaN : heights[index-grid],
-                    gy == 0 ? float.NaN : heights[index-1], 2f*layout.HalfX*scale/(grid-1),
-                    (layout.Front-layout.Back)*scale/(grid-1));
-				low = Math.Min(low, height);
-				high = Math.Max(high, height);
-			}
-		}
-		float spread = high >= low ? high - low : 0f;
-		return bad > 0 ? float.MaxValue : spread * 100f + profile.Grade * 10f + blocked;
-	}
+                profile.Add(height, gx == 0 ? float.NaN : heights[index - grid],
+                    gy == 0 ? float.NaN : heights[index - 1], 2f * layout.HalfX * scale / (grid - 1),
+                    (layout.Front - layout.Back) * scale / (grid - 1));
+            }
+        }
+        return bad * 100f + blocked * 12f + profile.Spread * 2f + profile.Grade * 10f;
+    }
 
     private static bool Probe(Mission mission, Scene scene, Vec2 p, bool fine, out float height, out bool obstacle)
         => Probe(mission, scene, p, fine, out height, out obstacle, out _);
@@ -674,6 +684,49 @@ internal static class FieldCampSite
                         if ((dx * dx + dy * dy) * GroundStep * GroundStep > maxDistance * maxDistance) continue;
                         if (TryResolveGroundedPosition(scene, desired + new Vec3(dx * GroundStep, dy * GroundStep, 0f), clearanceRadius, out grounded))
                             return true;
+                    }
+            return false;
+        }
+
+        // Spawn-only fallback: the cached grid is preferred. If its full-body
+        // neighborhood is too restrictive, probe actual individual positions.
+        // Bounded to 24 half-metre rings and never used by movement ticks.
+        internal static bool TryFindSpawnPosition(Scene scene, Vec3 desired, float clearanceRadius, out Vec3 grounded)
+        {
+            if (TryFindNearbyGroundedPosition(scene, desired, clearanceRadius, 12f, out grounded)) return true;
+            Mission mission = Mission.Current;
+            if (scene == null || mission == null || mission.Scene != scene || !desired.IsValid) return false;
+            for (int ring = 0; ring <= 24; ring++)
+                for (int dy = -ring; dy <= ring; dy++)
+                    for (int dx = -ring; dx <= ring; dx++)
+                    {
+                        if (ring != 0 && Math.Abs(dx) != ring && Math.Abs(dy) != ring) continue;
+                        if (dx * dx + dy * dy > 24 * 24) continue;
+                        Vec3 point = desired + new Vec3(dx * GroundStep, dy * GroundStep, 0f);
+                        try
+                        {
+                            if (!Probe(mission, scene, point.AsVec2, false, out float z, out _)) continue;
+                            point.z = z;
+                            PathFaceRecord face = PathFaceRecord.NullFaceRecord;
+                            scene.GetNavMeshFaceIndex(ref face, point, true);
+                            if (!face.IsValid()) continue;
+                            var navigation = new WorldPosition(scene, UIntPtr.Zero, point, false);
+                            float navZ = navigation.GetNavMeshZ();
+                            if (!IsFinite(navZ) || Math.Abs(navZ - z) > 0.3f || !CellHasClearance(scene, point)) continue;
+                            bool clear = true;
+                            for (int edge = 0; edge < 4 && clear; edge++)
+                            {
+                                Vec3 offset = edge < 2 ? new Vec3(edge == 0 ? clearanceRadius : -clearanceRadius, 0f, 0f)
+                                    : new Vec3(0f, edge == 2 ? clearanceRadius : -clearanceRadius, 0f);
+                                Vec3 body = point + offset;
+                                clear = Probe(mission, scene, body.AsVec2, false, out float bodyZ, out _)
+                                    && Math.Abs(bodyZ - z) <= MaxGroundDelta && CellHasClearance(scene, body);
+                            }
+                            if (!clear) continue;
+                            grounded = point + new Vec3(0f, 0f, 0.04f);
+                            return true;
+                        }
+                        catch { }
                     }
             return false;
         }

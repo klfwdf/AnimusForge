@@ -314,7 +314,7 @@ public sealed partial class FieldCampMissionLogic
 	{
 		try
 		{
-				if (!FieldCampSite.TryFindNearbyGroundedPosition(Mission.Scene, ToWorld(slot.Position), 0.35f, 2f, out Vec3 pos))
+				if (!FieldCampSite.TryFindSpawnPosition(Mission.Scene, ToWorld(slot.Position), 0.35f, out Vec3 pos))
 				{
 					Logger.Log(LogSource, "prisoner spawn skipped blocked slot troop=" + character.StringId);
 					return null;

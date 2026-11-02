@@ -127,14 +127,14 @@ internal static class FieldCampProps
 
 	/// <param name="scale">Must be 1: spacing is never compressed independently of solid prop footprints.</param>
 	/// <returns>Number of entities created.</returns>
-	internal static int Place(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale)
+	internal static int Place(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale, bool allowUnevenGround = false)
 	{
         ResetPlacementCounts();
         for (int i = 0; i < layout.Props.Count; i++)
             if (layout.Props[i].Kind == FieldCampLayout.PropKind.Tent) RequestedTentCount++;
 		_solidRequested = 0;
 		_solidWithBody = 0;
-		int placed = PlaceAll(scene, layout, campFrame, scale);
+		int placed = PlaceAll(scene, layout, campFrame, scale, allowUnevenGround);
 		Logger.Log(LogSource, "solid props with body=" + _solidWithBody + "/" + _solidRequested);
 		return placed;
 	}
@@ -155,7 +155,7 @@ internal static class FieldCampProps
 			internal readonly List<GameEntity> FurnitureEntities = new List<GameEntity>();
 		}
 
-		private static int PlaceAll(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale)
+		private static int PlaceAll(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale, bool allowUnevenGround)
 		{
 			if (Math.Abs(scale - 1f) > 0.001f)
 			{
@@ -207,7 +207,7 @@ internal static class FieldCampProps
 				if (prop.Kind == FieldCampLayout.PropKind.Tent)
 				{
 					furnishingPlans.TryGetValue(i + 1, out List<FieldCampLayout.Prop> plan);
-					if (!PlaceTent(scene, prop, pool, campFrame, plan, furnitureSizes, doorwayTurns, tents.Values, out TentInterior tentInterior))
+					if (!PlaceTent(scene, prop, pool, campFrame, plan, furnitureSizes, doorwayTurns, tents.Values, allowUnevenGround, out TentInterior tentInterior))
 					{
 						Logger.Log(LogSource, "[WARN] tent rejected after real size/ground/door trials pool=" + poolKey + " slot=" + i);
                         continue;
@@ -298,10 +298,12 @@ internal static class FieldCampProps
 		/// </summary>
         private static bool PlaceTent(Scene scene, FieldCampLayout.Prop prop, string[] pool, MatrixFrame campFrame,
             List<FieldCampLayout.Prop> furnishingPlan, Dictionary<string, BoundingBox> measured,
-            Dictionary<string, int> doorwayTurns, IEnumerable<TentInterior> acceptedTents, out TentInterior interior)
+            Dictionary<string, int> doorwayTurns, IEnumerable<TentInterior> acceptedTents, bool allowUnevenGround, out TentInterior interior)
         {
             interior = null;
             string[] fallback = Neutral[FieldCampLayout.PropKind.Tent];
+            // Prefer every normal prefab/turn before trying a rough-ground fit.
+            for (int groundPass = 0; groundPass < (allowUnevenGround ? 2 : 1); groundPass++)
             for (int c = 0; c < pool.Length + fallback.Length; c++)
             {
                 string prefab = c < pool.Length ? pool[c] : fallback[c-pool.Length];
@@ -320,7 +322,7 @@ internal static class FieldCampProps
                     try
                     {
                         door = FrameFor(scene, campFrame, prop.Position, prop.Yaw, 1f);
-                        if (!TryFitTentGround(scene, ref door, width, depth)) continue;
+                        if (!TryFitTentGround(scene, ref door, width, depth, groundPass > 0)) continue;
                     }
                     catch (Exception ex)
                     {
@@ -366,7 +368,7 @@ internal static class FieldCampProps
                         }
                         if (blocksEntrance) continue;
                         interior=trial;doorwayTurns[prefab]=turn;accepted=true;
-                        Logger.Log(LogSource, "tent placed prefab="+prefab+" scale="+fittedScale.ToString("0.00")+" doorwayTurn="+turn+" skippedFurniture="+skipped);
+                        Logger.Log(LogSource, "tent placed prefab="+prefab+" scale="+fittedScale.ToString("0.00")+" doorwayTurn="+turn+" unevenGround="+(groundPass > 0)+" skippedFurniture="+skipped);
                         return true;
                     }
                     catch (Exception ex)
@@ -406,7 +408,7 @@ internal static class FieldCampProps
 			}
 		}
 
-        private static bool TryFitTentGround(Scene scene, ref MatrixFrame door, float halfX, float halfY)
+        private static bool TryFitTentGround(Scene scene, ref MatrixFrame door, float halfX, float halfY, bool allowUnevenGround = false)
         {
             float x = halfX*0.68f, y=halfY*0.68f;
             float centre=scene.GetTerrainHeight(door.origin.AsVec2,true);
@@ -416,7 +418,7 @@ internal static class FieldCampProps
             float front=scene.GetTerrainHeight(door.TransformToParent(new Vec3(0f,y,0f)).AsVec2,true);
             float sx=(right-left)/(2f*x), sy=(front-back)/(2f*y);
             if (!FieldCampPlacementRules.Finite(centre) || !FieldCampPlacementRules.Finite(sx) ||
-                !FieldCampPlacementRules.Finite(sy) || sx*sx+sy*sy>0.0225f) return false;
+                !FieldCampPlacementRules.Finite(sy) || (!allowUnevenGround && sx*sx+sy*sy>0.0225f)) return false;
             Vec3 side=door.rotation.s;side.z=sx;side.Normalize();
             Vec3 forward=door.rotation.f;forward.z=sy;
             Vec3 up=Vec3.CrossProduct(side,forward);up.Normalize();
@@ -426,7 +428,7 @@ internal static class FieldCampProps
             {
                 Vec3 point=door.TransformToParent(new Vec3(ix*x,iy*y,0f));
                 float actual=scene.GetTerrainHeight(point.AsVec2,true);
-                if (!FieldCampPlacementRules.Finite(actual) || Math.Abs(actual-point.z)>0.20f ||
+                if (!FieldCampPlacementRules.Finite(actual) || (!allowUnevenGround && Math.Abs(actual-point.z)>0.20f) ||
                     scene.GetWaterLevelAtPosition(point.AsVec2,true,true)>actual-0.3f) return false;
             }
             return true;
