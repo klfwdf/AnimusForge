@@ -154,7 +154,13 @@ public sealed partial class FieldCampMissionLogic
         float radius, IReadOnlyList<FieldCampCeremonyArea> areas)
     {
         if (_ceremonySession == session && session != Guid.Empty)
+        {
+            // The host can consume Ready on its next half-second poll. Read
+            // the footprint again in that same call, immediately before build.
+            if (_ceremonyActive && _ceremonyReadiness == FieldCampCeremonyReadiness.Ready &&
+                !_ceremonyStaged && !_ceremonyGeometryPresent) CompleteCeremonyPreparation();
             return _ceremonyActive ? _ceremonyReadiness : FieldCampCeremonyReadiness.Failed;
+        }
         if (session == Guid.Empty || !CanStartCeremony(Mission) || !origin.IsValid || !forward.IsNonZero() ||
             float.IsNaN(radius) || float.IsInfinity(radius) || areas == null || areas.Count == 0)
             return FieldCampCeremonyReadiness.Failed;
@@ -379,6 +385,16 @@ public sealed partial class FieldCampMissionLogic
 
     private void CompleteCeremonyPreparation()
     {
+        // Recheck actual occupancy only at the build-commit boundary. A person
+        // may have crossed in while the original occupants were stepping out;
+        // only that person joins clearance, never the unrelated camp roster.
+        if (!_ceremonyGeometryPresent && CaptureLateCeremonyOccupants())
+        {
+            _ceremonyReadiness = FieldCampCeremonyReadiness.Pending;
+            _ceremonyClearCursor = 0;
+            _ceremonyClearPassBlocked = false;
+            return;
+        }
         for (int i = 0; i < _ceremonyWalkers.Count; i++)
         {
             CeremonyMove move = _ceremonyWalkers[i];
@@ -388,6 +404,29 @@ public sealed partial class FieldCampMissionLogic
         }
         _ceremonyReadiness = FieldCampCeremonyReadiness.Ready;
         Logger.Log(LogSource, "execution preparation ready session=" + _ceremonySession + "; footprint clear, no spectator gate");
+    }
+
+    private bool CaptureLateCeremonyOccupants()
+    {
+        bool occupied = false;
+        foreach (Agent agent in _ceremonyResidents.Keys)
+            occupied |= CaptureLateCeremonyOccupant(agent);
+        foreach (Agent agent in _ceremonyPrisoners)
+            occupied |= CaptureLateCeremonyOccupant(agent);
+        return occupied;
+    }
+
+    private bool CaptureLateCeremonyOccupant(Agent agent)
+    {
+        if (agent == null || !agent.IsActive() || agent == Agent.Main ||
+            _campCeremonyActors.ContainsKey(agent) || IsCeremonyClear(agent.Position)) return false;
+        if (!_ceremonyClearance.Contains(agent))
+        {
+            _ceremonyClearance.Add(agent);
+            Logger.Log(LogSource, "execution late footprint occupant session=" + _ceremonySession +
+                " agent=" + agent.Index + " position=" + agent.Position);
+        }
+        return true;
     }
 
     private void FailCeremonyPreparation(string reason)

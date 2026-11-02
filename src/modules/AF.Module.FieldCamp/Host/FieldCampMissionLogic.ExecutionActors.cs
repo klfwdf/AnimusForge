@@ -107,6 +107,13 @@ public sealed partial class FieldCampMissionLogic
     {
         if (!_campCeremonyActors.TryGetValue(agent, out CampCeremonyActor actor) || actor.Session != session || !agent.IsActive()) return false;
         actor.Target = target; actor.Facing = facing; actor.Arrived = false; actor.Failed = false; actor.Corner = 0;
+        if (agent.Position.AsVec2.DistanceSquared(target.AsVec2) <= 0.36f && Math.Abs(agent.Position.z - target.z) <= 0.65f)
+        {
+            actor.Route = Array.Empty<Vec3>();
+            HoldCampCeremonyActor(actor);
+            _campCeremonyActorWalks.Remove(actor);
+            return true;
+        }
         var route = new List<Vec3>();
         Vec3 groundGoal = approach != null && approach.Count > 0 ? approach[0] : target;
         if (agent.Position.AsVec2.DistanceSquared(groundGoal.AsVec2) > 0.36f)
@@ -135,6 +142,15 @@ public sealed partial class FieldCampMissionLogic
         actor.LastPosition = agent.Position; actor.ProgressAt = _elapsed + 6f;
     }
 
+    private void HoldCampCeremonyActor(CampCeremonyActor actor)
+    {
+        StopCampNavigation(actor.Agent);
+        actor.Agent.SetIsAIPaused(true);
+        actor.Agent.Controller = AgentControllerType.None;
+        actor.Agent.LookDirection = new Vec3(actor.Facing.x, actor.Facing.y, 0f);
+        actor.Arrived = true;
+    }
+
     private void TickCampCeremonyActorWalks()
     {
         // Only borrowed personnel, max 20 per existing half-second maintenance.
@@ -148,9 +164,7 @@ public sealed partial class FieldCampMissionLogic
             if (agent.Position.AsVec2.DistanceSquared(goal.AsVec2) <= 0.36f && Math.Abs(agent.Position.z - goal.z) <= 0.65f)
             {
                 if (++actor.Corner < actor.Route.Length) { IssueCampCeremonyActorWalk(actor); continue; }
-                StopCampNavigation(agent); agent.SetIsAIPaused(true); agent.Controller = AgentControllerType.None;
-                agent.LookDirection = new Vec3(actor.Facing.x, actor.Facing.y, 0f);
-                actor.Arrived = true; _campCeremonyActorWalks.RemoveAt(i);
+                HoldCampCeremonyActor(actor); _campCeremonyActorWalks.RemoveAt(i);
             }
             else if (_elapsed >= actor.ProgressAt)
             {

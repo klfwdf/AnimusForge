@@ -1538,6 +1538,10 @@ public sealed partial class TownExecutionMissionBehavior
 
     private void SetCeremonyAlliesFormationControl(bool enabled, string reason)
     {
+        // Borrowed camp personnel stay with their camp/ceremony owner until
+        // the entire site is released. Formation standby would erase their
+        // entry route, and after a sentence it would make them wander away.
+        if (enabled && Request.IsFieldCamp && _borrowedCampActors.Count > 0) return;
         if (_ceremonyAlliesReleasedToPlayerFormation == enabled)
         {
             return;

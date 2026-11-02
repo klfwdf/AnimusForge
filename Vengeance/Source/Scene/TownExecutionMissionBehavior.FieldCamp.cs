@@ -34,6 +34,7 @@ public sealed partial class TownExecutionMissionBehavior
     private bool _fieldCampVictimEntryStarted;
     private int _fieldCampHelperNumber;
     private float _fieldCampEntryPoll;
+    private IReadOnlyList<Vec3>? _fieldCampStairApproach;
 
     private CharacterObject GetCampRoleCharacter(string role)
     {
@@ -111,6 +112,7 @@ public sealed partial class TownExecutionMissionBehavior
         _burningSupportBaseFrames.AddRange(previous._burningSupportBaseFrames);
         _fieldCampPreparationAreas = previous._fieldCampPreparationAreas;
         _fieldCampPreparationRadius = previous._fieldCampPreparationRadius;
+        _fieldCampStairApproach = previous._fieldCampStairApproach;
         RexLog.Info($"Session {Request.SessionId} retained {_spawnedEntities.Count} existing site entities; stage teardown/rebuild skipped.");
     }
 
@@ -143,30 +145,42 @@ public sealed partial class TownExecutionMissionBehavior
     {
         if (_placement is null || _stageSurfaceHeight <= 0.35f || destination.z < _placement.Origin.z + 0.45f)
             return Array.Empty<Vec3>();
+        if (_fieldCampStairApproach is not null) return _fieldCampStairApproach;
         GameEntity? ramp = _gallowsRampEntities.FirstOrDefault();
         if (ramp is null && _gallowsEntity is not null)
             ramp = _gallowsEntity.GetEntityAndChildren().FirstOrDefault(part =>
                 (part.Name ?? string.Empty).IndexOf("stairs", StringComparison.OrdinalIgnoreCase) >= 0);
-        if (ramp is not null)
+        if (ramp is not null &&
+            TryProjectStairFootprint(ramp.GetGlobalFrame(), ramp.GetLocalBoundingBox(),
+                out var runAlongForward, out var runMinimum, out var runMaximum, out var widthCenter, out _) &&
+            TrySampleStairSurface(ramp, ramp.GetGlobalBoundingBox(), runAlongForward,
+                runMinimum, runMaximum, widthCenter, out var samples))
         {
-            var box = ramp.GetLocalBoundingBox(); var frame = ramp.GetGlobalFrame();
-            var middle = (box.min + box.max) * 0.5f;
-            bool alongY = box.max.y - box.min.y >= box.max.x - box.min.x;
-            var a = frame.TransformToParent(new Vec3(alongY ? middle.x : box.min.x, alongY ? box.min.y : middle.y, box.max.z));
-            var b = frame.TransformToParent(new Vec3(alongY ? middle.x : box.max.x, alongY ? box.max.y : middle.y, box.max.z));
-            var lower = a.z < b.z ? a : b; var upper = a.z < b.z ? b : a;
-            var away = lower.AsVec2 - upper.AsVec2;
+            // The existing static-body probes measure actual treads; a local
+            // bounding-box top has the same Z at both ends of an authored stair.
+            bool ascending = samples[samples.Count - 1].Height >= samples[0].Height;
+            var approach = new Vec3[samples.Count + 1];
+            for (int i = 0; i < samples.Count; i++)
+            {
+                var sample = samples[ascending ? i : samples.Count - 1 - i];
+                approach[i + 1] = ComposePlacementPoint(runAlongForward, sample.RunCoordinate,
+                    widthCenter, sample.Height + 0.04f);
+            }
+            var away = approach[1].AsVec2 - approach[approach.Length - 1].AsVec2;
             if (away.IsNonZero())
             {
                 away = away.Normalized();
-                var foot = lower + new Vec3(away.x * 1.6f, away.y * 1.6f, 0f);
+                var foot = approach[1] + new Vec3(away.x * 1.6f, away.y * 1.6f, 0f);
                 foot.z = Mission.Scene.GetTerrainHeight(foot.AsVec2, true);
-                return new[] { foot, lower, upper };
+                approach[0] = foot;
+                _fieldCampStairApproach = approach;
+                return approach;
             }
         }
         var entrance = _placement.Offset(0f, _frontInteractionOffset + 2f);
         entrance.z = Mission.Scene.GetTerrainHeight(entrance.AsVec2, true);
-        return new[] { entrance, _placement.Offset(0f, _stageFrontExtent - 0.5f, _stageSurfaceHeight) };
+        _fieldCampStairApproach = new[] { entrance, _placement.Offset(0f, _stageFrontExtent - 0.5f, _stageSurfaceHeight) };
+        return _fieldCampStairApproach;
     }
 
     private void BeginFieldCampActorEntry()
