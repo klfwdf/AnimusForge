@@ -1,3 +1,47 @@
+<a id="worldbook-18-dimension-review-20261102"></a>
+## 2026-11-02 AD1259／东欧1259／燃烬帝国：18维内容复核与联网补全
+
+**SOURCE_DELIVERED / TARGET_OFFLINE_PASS / NOT_DEPLOYED / LIVE_NOT_RUN**。用户要求排除随机生成 NPC，提炼权游真实内容并对照 AD1259、东欧1259、燃烬帝国，缺口联网补全。本项六包源内容已冻结交付，三目标离线验收通过；不宣称实机或全人物史实认证。
+
+2026-11-02 Codex 续接：已从 Claude 会话 `cab6b663-8b2a-4189-a53d-c6b66c249264` 核实最新要求；用户进一步将东欧1259纳入三书对照，并允许子智能体。当前覆盖六个中英源包，权游只读。续接前完整内容快照 `.tmp/worldbook-continuation-20261102/continuation-start.zip`，8229个JSON哈希清册 `start-manifest.json`；本地意图检查点 `1b738d4e0`。当前实施范围、分工及退出门见该目录 `continuation-scope.md`。本条扩展原四包范围，保留原调查证据与所有未验边界。
+
+- 工作区 `F:/AnimusForge-main`、`main`，开始 HEAD `c802fed12c8ba8b000f08492cab4bcfff6bf47cd`。六个源包为 `content/modules/AF.Module.Onboarding/PlayerExports/{AD 1259 编年史,AD 1259 Chronicles,东欧1259编年史,Eastern Europe 1259 Chronicles,燃烬帝国编年史,Burning Empires Chronicles}`；权游中英只读参照，不修改。保护既有 dirty，尤其打包脚本、项目文件与其他作者源码；不构建、Stage、打包、部署、push、写玩家存档或恢复退役战略接口。
+- 18维主表取 `docs/世界书指导.md:421-438`；后续5.1表同号异名，不混为一表。基线证据 `.tmp/worldbook-review-20261102/dimensions-baseline.json` 含18行三书对应文件/段落、实质主题、阶层视角、检索与缺口。全部引用路径已核存在；全量文件机械扫描与代表条目精读分开，不将其说成全权游逐句史实审校。
+- 基线：燃烬410卡只有242种完整 Variants 签名，19组187卡整套正文相同；187个士兵段和187个领主段分别全等。司法、饮食医药、婚丧及地下社会专题明显不足，不能以卡片数量充足判定18维覆盖。权游主题更广，但197卡含同一权力泛句、60历史卡同一记忆泛句、54贸易卡同一泛句，并有2042个变体仅用运行时不产生的职业且无 IdentityIds 救援；只取其主题组织及具体优秀段落，不复制缺陷或虚构魔法到现实历史。真实魔法与非人心智按不适用明确列示。
+- 真实消费者：`WeekZeroOpeningSummaryGenerationController.cs:499-541` 会把世界及国家开局综述投影到第0周，故开局背景显示档案是正常机制。`WeeklyEventDataImportOwner.cs:64-83` 即使覆盖导入也按 EventId 合并，修源或空表不删除既有存档的错误事件。`KingdomStrategicProfileBehavior.cs:108-117` 当前有效读取返回 false，补档案不宣称国家AI战略恢复生效。
+- 检索依据：`KnowledgeLibraryBehavior.cs:4015-4073` 真实7种角色桶；`:5426-5467` Roles/IdentityIds OR、其他条件 AND，`:5246` 完全同分保留先出现变体；`BulletinLoreSelectionPolicy.cs:54-55` 公报还依赖自然关键词字面命中。数字后缀关键词与影子变体必须实际检查，不以列表中出现角色就称可达。
+- 联网证据按实际成功回读记录。已读 World History Encyclopedia 的 Mavia 条目为378年起义，不可作374既成事实；旧台账中若干 Tertullian 阿米阿努斯地址本轮404，Perseus29.6仅导航，不能算已读原典。逐国及专题来源由各内容负责人保留在本轮证据根，资料不足明确标记，不为凑长度编造。
+- 受保护权游两书、安装Bootstrap/双实现和共享关键文件哈希见 `.tmp/worldbook-review-20261102/protected-baseline.json`。完成门按三书六包的实际内容、来源、中英消费接线、契约与有限独立精读执行，最终离线结果见下文；实机、旧档和正式双包仍未验。回滚仅聚焦本项差异，不重置共享目录。
+
+
+### Codex 续接已验切片与最终收口
+
+本地提交：`b1cc346e8c` 既有英文规则ID契约；`678f52a755` 六包固定人设；`8c09335fa5` 东欧国家档案、总纲和事件裁决；`d2849e171f` AD55国及总纲；`4d8ca3388f` 燃烬41国档案、总纲和事件裁决；`d1e0fbe1a7` 东欧20国综述；`bf40b7a8d9` 三书完整英文映射；`3fd673e340` 东欧45对军事卡；`948f02cd43` 东欧60对生活文化卡。空意图检查点为 `1b738d4e00`。共享分支间的营地提交属于另一会话，不纳入本项回滚。
+
+- 目标源登记4128项：AD2196、东欧857、燃烬1075；真实现有英文selector逐项读取和JSON契约0缺失、0失败。此项不Stage、不打包。`source-registration-final.json`与`actual-selector-contracts.json`为本轮真实证据。
+- 东欧20国中英各六段（120对段落），已冻结独立切片；军事45对90文件、文化60对120文件分别有终稿哈希与基线。文化6对有限独立精读通过，不能推广到所有婚丧或全史实认证。
+- [人类可读18维对照](worldbook-content-comparison-20261102.md)汇总修订前问题、内容变化、来源入口和真实消费者。权游只读提炼完整目录、143个代表文件和角色可达性证据位于 `got-comparison/`。
+- 原中文主题未删除。253个东欧英文占位路径撤下，原字节253/253在 `eastern-europe/withdrawn-en-originals/`匹配；411中文主题均有真实英文唯一配对。
+- 本轮全部源内容证据根 `.tmp/worldbook-continuation-20261102/`；早期Claude与owner原始联网证据根 `.tmp/worldbook-review-20261102/`。短内容、未独立核实人物心理、3个NPCCharacter-only孤立身份、年内时点和资料稀薄项保留明确边界，不用结构PASS替代语义审读。
+
+
+### 最终验收与交付
+
+源内容终稿共8256个JSON：5964个人设、2256张知识、36个其他文件；三书分别1887／440／655名固定人物、303／411／414张知识（每语言）。116国中英档案与六段国家综述、三对世界总纲已修订。中英实际selector4128项全部读取与契约PASS；六包结构PASS；三目标身份0错误；15792次七角色离线选择0错误、0影子条件、0额外非Role条件未回放、0扫描期间变化。六包当前整套Variants、跨卡关键词与规则ID无重复、无非法Role。最终清单和完整选择器/身份/结构回执在 `.tmp/worldbook-continuation-20261102/{final-file-manifest.json,final-check-suite.json,paired-content-final-check.json,identity-three-books-final.json,actual-selector-contracts.json,final-content-audit.json}`。
+
+源内容后续切片：`57c5b2ed79` AD及燃烬历史/基础/新增专题620文件；`c12e593919` 燃烬国别410卡和2综述；`b4746dc78d` 东欧39对历史；`f407542d84` 东欧90对通识；`68663f8024` AD剩余22文件的时点/角色；`517a86f7d5` 东欧77对检索；`452cb3c0d7` 东欧最后100对；`7ee79ea0ab` 撤下已归档英文占位；`5e67a4eff5` 最终关键词本卡大小写重复修复。最后修复覆盖owner旧清单中的一项哈希，最终 `final-file-manifest.json` 为准。完整产品提交清单 `delivery-commits.json`；营地提交与其他dirty不属于本项。
+
+内容验证不只结构：权游完整目录与143个代表文件精读提炼；18维修订后代表全文/哈希见 `dimensions-final-evidence.json`；新增10对专题、AD/燃烬新增总纲、东欧6对生活、燃烬6对基础、东欧6对检索均有有限全文审读。最后一组提出的2项检索事实超范围已同步收窄并留 `eastern-europe/lead77-owner/independent-review-resolution.json`。国家与专题来源正文、失败排除、适用年代和谨慎场景重构分别留在各owner目录，不能把宽时段百科或HTTP200框架当成逐条史证。
+
+**全库不是PASS**：布匿战争1422个既有身份问题与续接前签名完全相同，新增0，见 `out-of-scope-existing-identity-errors.json`。不扩修未请求的世界书。未验/未执行：实机导入、真实RAG与LLM实聊、旧档、双API/Bootstrap构建、Stage、CN/EN正式包、部署、push。退役战略读取仍false；原预置事件源置空不清旧档，Week0开局综述档案正常生成。
+
+边界：AD三个NPCCharacter-only身份保留；部分家族心理模板、77对中的共享主题角色后果、167张燃烬V0-only历史卡、资料稀薄国别与生活场景的谨慎重构均明确披露，不冒充全阶层或每条史实独立认证。国家综述各有六段但不宣称全部700–900英文词。详细内容/来源/消费者图见[18维对照报告](worldbook-content-comparison-20261102.md)。
+
+聚焦回滚：先核终稿SHA与后续作者差异，再按相应切片做inverse/revert；不可hard reset共享main。续接前原文 `continuation-start.zip`、`start-manifest.json` 包含Claude未提交成果，不能等同Git起点。253撤下英文原字节在 `eastern-europe/withdrawn-en-originals/`；已安装DLL未改。本项写入者全部停止。
+
+
+---
+
 <a id="field-camp-review-fixes-20261102"></a>
 ## 2026-11-02 营地九项补丁的三项审查问题修复
 

@@ -1,3 +1,11 @@
+## 2026-11-02 三部历史世界书对照权游补全（源内容完成，未部署）
+
+**SOURCE_DELIVERED / TARGET_OFFLINE_PASS / LIVE_NOT_RUN**。已定位Claude会话 `cab6b663-8b2a-4189-a53d-c6b66c249264`并续接最新三书目标。权游只读提炼18维；AD1259、东欧1259、燃烬帝国六个中英源包已按实际联网正文补缺、纠正时点并接真实英文消费映射。8256个JSON，固定人设5964文件、知识1128对、国家116对六段综述；源内容终稿`5e67a4eff5`，全部产品切片见本轮`delivery-commits.json`。
+
+六包结构、三目标4128对身份映射、真实英文selector及15792次角色投影PASS；全库布匿战争1422个既有问题未改，不能称全仓通过。未构建、Stage、打包、部署、push、实机/真实模型或旧档验证。人物与史料、共享角色束等边界、消费者证据和聚焦回滚见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#worldbook-18-dimension-review-20261102)与[18维对照报告](docs/worldbook-content-comparison-20261102.md)。
+
+最终证据 `.tmp/worldbook-continuation-20261102/`，前期联网正文 `.tmp/worldbook-review-20261102/`；完整续接前备份 `continuation-start.zip`。退役战略接口未复活；源事件空表不清旧档，Week0综述档案正常。回滚只针对具名切片并核终稿哈希，不重置共享main或覆盖其他作者。
+
 ## 2026-11-02 营地审查三项修复（源码，未构建部署）
 
 本地产品 `e386527d47`：修复有俘虏时决斗把全营设为敌队、堵路人物永久跳过维护、观众回营与集合/解散抢目标。仅改两个营地生产文件并新增离线源码回归检查，沿用原批次与队伍owner，没有新增UI/设置/存档身份。
