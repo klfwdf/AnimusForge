@@ -1,3 +1,11 @@
+## 2026-11-02 俘虏状态重复注入修复（本任务）
+
+SOURCE_FIXED / TARGETED_REPLAY_PASSED / DUAL_BUILD_PASSED / NOT_DEPLOYED。产品31f7b38e04，意图检查点92d42f54f6。普通英雄俘虏状态统一由共享Extras注入，人物介绍不再复制；城堡、巡查/非英雄专用说明保留。玩家自定义提示词原文与优先级未改。
+
+两种API配置各通过36项CN/EN定向回归，恢复旧重复入口的反例被检出。1.3/1.4生产编译exit0（各404警告/0错误），Bootstrap exit0（0警告/错误）。旧通用消息测试缺当前依赖，隔离补依赖后仍未跑通，不能称通过；未实机、部署、打包或push。候选bin/Debug/prisoner_status_20261102；[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#prisoner-status-ownership-20261102)；[源码范围](docs/architecture/af-framework-code-scope.md#prisoner-status-ownership-20261102)。撤销产品改动仅聚焦revert 31f7b38e04，不回退其他作者改动。
+
+---
+
 ## 2026-11-02 营地从自动退场基线重修（当前）
 
 **DEPLOYED / OFFLINE_VERIFIED / NATIVE_NOT_RUN**。按用户“从那段开始的改动，全部重新修”，先聚焦撤销四轮后续修复至 b53736e44（相关路径等同591f9ad4d6），再提交新产品 64d6f069b0。本条替代下方不退出、帐篷与刑场路线的当前结论，不把旧00f2d17b9d无回执候选当成功部署。

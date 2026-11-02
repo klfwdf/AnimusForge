@@ -1,3 +1,24 @@
+<a id="prisoner-status-ownership-20261102"></a>
+## 2026-11-02 俘虏状态单一注入职责
+
+源码修订31f7b38e04；检查点92d42f54f6。仅修改首行方法，其他行是本次核实的既有接线。
+
+| 源码（一基行号） | 符号、职责与覆盖 |
+| --- | --- |
+| src/AF.GameAdapter.Bannerlord/Prompt/SceneAgentIdentityPromptCaptureAdapter.cs:4272–4386 | BuildPrisonerContextLineForPrompt；4320–4328跳过普通英雄副本；4298–4318保留城堡优先，4330–4374保留巡查/非英雄。当前完整方法回放，未实机。 |
+| src/AF.GameAdapter.Bannerlord/Prompt/SharedPromptCaptureBannerlordAdapter.cs:1146–1300 | BuildHeroPrisonerStatusPromptLineForExternal；普通英雄俘虏标准正文。完整方法+实际CN/EN正文回放。 |
+| src/AF.GameAdapter.Bannerlord/Composition/PromptContextCaptureBannerlordAdapter.cs:122–134 | CapturePromptSections；状态capture到ActivePrisonerStatusLine；真实接线断言和双实现编译。 |
+| src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromptContextCapture.cs:125 | BuildPrisonerStatus绑定共享状态方法，源码核实。 |
+| src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs:78–119 | Compose/Append；92行唯一append，当前DTO/方法回放。 |
+| src/AF.GameAdapter.Bannerlord/Composition/PersonaEquipmentPromptCaptureAdapter.cs:324–357 | CaptureSceneNpcIntro保留专用状态快照，源码核实和生产编译。 |
+| src/modules/AF.Module.Prompt/Composition/PersonaIntroMessageComposer.cs:348–353 | ComposeSceneNpc按非空快照输出专用说明，源码核实，未改。 |
+| tests/modules/AF.Module.Prompt/PrisonerStatusOwnershipTests/run.py:1–63 | 精确方法提取、实际双语正文、源码哈希和三渠道接线检查。两API宏各36项，旧重复分支反例被检出。 |
+| tests/modules/AF.Module.Prompt/PrisonerStatusOwnershipTests/Harness.cs.txt:1–70 | 普通、特殊和单来源状态断言，使用受控游戏叶子；不代表实机引擎。 |
+
+玩家提示词/优先级及消息拼装策略未改。旧通用消息测试缺依赖，未宣称通过。[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#prisoner-status-ownership-20261102)。
+
+---
+
 <a id="field-camp-restart-20261102"></a>
 ## 营地故障基线重修 — 2026-11-02（当前）
 

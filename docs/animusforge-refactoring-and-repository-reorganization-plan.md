@@ -1,3 +1,22 @@
+<a id="prisoner-status-ownership-20261102"></a>
+## 2026-11-02 普通英雄俘虏状态单一注入职责（本任务完成）
+
+SOURCE_FIXED / TARGETED_REPLAY_PASSED / DUAL_BUILD_PASSED / NOT_DEPLOYED。工作根F:/AnimusForge-main、分支main，开始HEAD82df6b7fb8；意图检查点92d42f54f6，产品31f7b38e04。本条只结算重复注入修复，不替代其他任务状态。其他作者dirty完整保留，源码提交仅含本次产品方法及新回归。
+
+证据：已安装模组Logs/Token_Stats.txt中2026-11-02 18:31:39主请求第7条user消息，26657和26672行普通英雄俘虏说明完全相同。人物介绍BuildPrisonerContextLineForPrompt和共享Extras分别调用同一状态生成函数；状态生成共享、注入职责重叠，并非HTTP重复发送整份请求。
+
+修复：普通英雄俘虏状态只由PromptContextCaptureBannerlordAdapter→ActivePrisonerStatusLine→PromptExtrasComposer提供，人物介绍不再输出副本。保留城堡优先、巡查/非英雄专用说明及CN/EN正文；Native/Scene/Courier沿用共享上下文。不改玩家自定义提示词原文/优先级、话题路由、回复格式、性格、历史、AFEF、存档或公开API。没有全局字符串去重、Tick IO/扫描、反射或缓存新增；分支只在请求捕获执行，省去重复状态生成。
+
+定向验证：tests/modules/AF.Module.Prompt/PrisonerStatusOwnershipTests/run.py提取当前完整人物俘虏方法、标准俘虏方法及Extras DTO/Compose/Append，使用真实CN/EN正文和受控游戏对象/特殊场景叶子。1.3与1.4宏各36项通过，覆盖部队、地牢、未知关押地、单来源、自由/空Hero、城堡、巡查和非英雄。--mutate只在隔离副本恢复旧重复入口，被ordinary prisoner excluded from persona intro断言检出。final回放含输入哈希前后校验，exit0。真实三渠道入口另有源码接线断言，不冒充实机端到端。
+
+编译沿用既有参数，仅使用独立Output/Intermediate目录。1.3和1.4均exit0、各404警告/0错误；Bootstrap exit0、0警告/错误。候选bin/Debug/prisoner_status_20261102/{versions/1.3,versions/1.4,bootstrap}；脚本和完整日志.tmp/prisoner-status-20261102/{produce.ps1,implementation_1.3-compile.log,implementation_1.4-compile.log,bootstrap-compile.log}。未改一键流程，未Stage、部署、打包、push或升版本；候选基于保留其他作者dirty的当前工作区，不宣称仅包含本次提交。
+
+回归产物artifacts/tests/prisoner-status-20261102/{api13-retry,api14,final,mutation}各含run.log和receipt.json。旧run_message_assembly.py CN/EN因缺DailyMemoryLine/PromptLanguageFile/BilingualTextTable失败；只在本次隔离产物补依赖后又缺PromptRuleBlockText和旧事实投影依赖，patched-run.log保留，未扩张修改通用测试框架，此套未通过。未验：真实游戏新请求日志、三渠道端到端、旧档、发布门禁。
+
+[一基行号及职责证据](architecture/af-framework-code-scope.md#prisoner-status-ownership-20261102)。产品回滚仅聚焦revert 31f7b38e04；检查点92d42f54f6。未安装候选，不涉及游戏文件回滚。
+
+---
+
 <a id="field-camp-restart-20261102"></a>
 ## 2026-11-02 从自动退营故障基线重新修复全部后续改动
 
