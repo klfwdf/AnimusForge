@@ -932,16 +932,6 @@
     },
     {
       "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_audience_docket_base.png",
-      "target": "GUI/SpriteParts/afdui_audience_docket_base.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_audience_docket_base_clean.png",
-      "target": "GUI/SpriteParts/afdui_audience_docket_base_clean.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
       "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_audience_docket_pure_clean.png",
       "target": "GUI/SpriteParts/afdui_audience_docket_pure_clean.png"
     },
@@ -949,16 +939,6 @@
       "owner": "AnimusForge.DialogueUI",
       "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_aux_panel.png",
       "target": "GUI/SpriteParts/afdui_aux_panel.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_btn_medallion.png",
-      "target": "GUI/SpriteParts/afdui_btn_medallion.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_btn_wax_seal.png",
-      "target": "GUI/SpriteParts/afdui_btn_wax_seal.png"
     },
     {
       "owner": "AnimusForge.DialogueUI",
@@ -1002,33 +982,8 @@
     },
     {
       "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_console_base_option_01.png",
-      "target": "GUI/SpriteParts/afdui_console_base_option_01.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_console_base_option_02.png",
-      "target": "GUI/SpriteParts/afdui_console_base_option_02.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_console_base_option_02_walnut.png",
-      "target": "GUI/SpriteParts/afdui_console_base_option_02_walnut.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
       "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_console_base_option_02_walnut_original_ratio.png",
       "target": "GUI/SpriteParts/afdui_console_base_option_02_walnut_original_ratio.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_console_base_option_03.png",
-      "target": "GUI/SpriteParts/afdui_console_base_option_03.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_dual_codex_base_clean.png",
-      "target": "GUI/SpriteParts/afdui_dual_codex_base_clean.png"
     },
     {
       "owner": "AnimusForge.DialogueUI",
@@ -1069,36 +1024,6 @@
       "owner": "AnimusForge.DialogueUI",
       "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_portrait_background.png",
       "target": "GUI/SpriteParts/afdui_portrait_background.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_portrait_frame_redesign.png",
-      "target": "GUI/SpriteParts/afdui_portrait_frame_redesign.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_portrait_option_01.png",
-      "target": "GUI/SpriteParts/afdui_portrait_option_01.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_portrait_option_02.png",
-      "target": "GUI/SpriteParts/afdui_portrait_option_02.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_portrait_option_03.png",
-      "target": "GUI/SpriteParts/afdui_portrait_option_03.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_radial_wheel_base.png",
-      "target": "GUI/SpriteParts/afdui_radial_wheel_base.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_ribbon_tab.png",
-      "target": "GUI/SpriteParts/afdui_ribbon_tab.png"
     },
     {
       "owner": "AnimusForge.DialogueUI",
@@ -1157,46 +1082,6 @@
     },
     {
       "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_seal_exclude.png",
-      "target": "GUI/SpriteParts/afdui_seal_exclude.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_seal_locked.png",
-      "target": "GUI/SpriteParts/afdui_seal_locked.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_seal_participate.png",
-      "target": "GUI/SpriteParts/afdui_seal_participate.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_shout_dialog.png",
-      "target": "GUI/SpriteParts/afdui_shout_dialog.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_shout_scroll_base.png",
-      "target": "GUI/SpriteParts/afdui_shout_scroll_base.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_side_console_base.png",
-      "target": "GUI/SpriteParts/afdui_side_console_base.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_side_parchment_console_base.png",
-      "target": "GUI/SpriteParts/afdui_side_parchment_console_base.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_side_parchment_folio_clean.png",
-      "target": "GUI/SpriteParts/afdui_side_parchment_folio_clean.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
       "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_tab_hover.png",
       "target": "GUI/SpriteParts/afdui_tab_hover.png"
     },
@@ -1212,28 +1097,13 @@
     },
     {
       "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_topic_capsule.png",
-      "target": "GUI/SpriteParts/afdui_topic_capsule.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
       "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wax_seal.png",
       "target": "GUI/SpriteParts/afdui_wax_seal.png"
     },
     {
       "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wheel_chassis_clean.png",
-      "target": "GUI/SpriteParts/afdui_wheel_chassis_clean.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
       "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wheel_chassis_symmetric.png",
       "target": "GUI/SpriteParts/afdui_wheel_chassis_symmetric.png"
-    },
-    {
-      "owner": "AnimusForge.DialogueUI",
-      "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wheel_chassis_symmetric_hollow.png",
-      "target": "GUI/SpriteParts/afdui_wheel_chassis_symmetric_hollow.png"
     },
     {
       "owner": "AnimusForge.DialogueUI",
