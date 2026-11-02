@@ -4317,13 +4317,13 @@ internal static string BuildPrisonerContextLineForPrompt(NpcDataPacket npc, Hero
 
 			}
 
-			string heroPrisonerStatusLine = SharedPromptCaptureBannerlordAdapter.BuildHeroPrisonerStatusPromptLineForExternal(hero);
-
-			if (!string.IsNullOrWhiteSpace(heroPrisonerStatusLine))
+			// Shared Prompt Extras owns ordinary hero captivity for Native, Scene and Courier.
+			// Keep castle-specific context above and inspection/non-hero context below.
+			if (hero != null && hero.IsPrisoner)
 
 			{
 
-				return heroPrisonerStatusLine;
+				return "";
 
 			}
 
