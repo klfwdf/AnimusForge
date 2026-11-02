@@ -97,6 +97,9 @@ public sealed partial class TownExecutionMissionBehavior
             pair.Key.SetGlobalFrame(pair.Value);
             _fieldCampInitialFrames[pair.Key] = pair.Value;
         }
+        _executionerAgent = previous._executionerAgent;
+        _executionerStandbyPosition = previous._executionerStandbyPosition;
+        _executionerStandbyDirection = previous._executionerStandbyDirection;
         _gallowsEntity = previous._gallowsEntity;
         _gallowsDeckBoundsMin = previous._gallowsDeckBoundsMin; _gallowsDeckBoundsMax = previous._gallowsDeckBoundsMax;
         _stageSurfaceHeight = previous._stageSurfaceHeight; _stageSideExtent = previous._stageSideExtent;

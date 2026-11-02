@@ -210,7 +210,9 @@ public sealed partial class TownExecutionMissionBehavior
         _executionTeam = executionTeam;
         _victimTeam = victimTeam;
         SuspendExistingExecutionEscorts();
-        if (!TryResolveInitialExecutionerPosition(out _executionerPosition))
+        if (_retainedFieldCampSite && _executionerAgent?.IsActive() == true && _executionerStandbyPosition.IsValid)
+            _executionerPosition = _executionerStandbyPosition;
+        else if (!TryResolveInitialExecutionerPosition(out _executionerPosition))
         {
             throw new InvalidOperationException(
                 "The executioner waiting position is not safely navigable.");
@@ -391,8 +393,9 @@ public sealed partial class TownExecutionMissionBehavior
 
         var initialExecutionerPosition = _executionerPosition;
         Vec3 executionerWaitingPosition;
-        if (UsesStoningExecution() || UsesCrossbowExecution())
+        if (UsesStoningExecution() || UsesCrossbowExecution() || _retainedFieldCampSite)
         {
+            // Retained sites reset the same borrowed executioner at the same mark.
             // Stoning and crossbow executioners are born directly on their
             // authored action marks. Never run the generic waiting sampler or
             // introduce a visible second move before the sentence starts.
