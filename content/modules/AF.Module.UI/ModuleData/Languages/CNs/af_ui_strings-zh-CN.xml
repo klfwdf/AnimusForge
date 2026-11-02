@@ -468,8 +468,6 @@
   <string id="AF_MCM_Knowledge_Group" text="5. 知识检索（返回）" />
   <string id="AF_MCM_Knowledge_TopN" text="知识返回上限" />
   <string id="AF_MCM_Knowledge_TopN_Hint" text="控制每次对话最多向 AI 提供多少条相关知识。系统按重要性顺序取最靠前的同等数量名词，每个名词独立占一个知识槽；若最高分知识已被前面的名词占用，则顺延到第一条未占用知识。只有上限大于名词数时，才额外补充各名词的后续结果。默认 4。" />
-  <string id="AF_MCM_Knowledge_Device" text="重排序推理设备" />
-  <string id="AF_MCM_Knowledge_Device_Hint" text="默认 CPU。GPU（CUDA）仅支持 NVIDIA，需要安装可选 CUDA 运行组件；向量检索仍使用 CPU。缺少组件、驱动不兼容或 GPU 推理失败时自动回退 CPU。GPU 会额外占用显存，可能与游戏争用。修改后完整重启游戏生效；模型、候选和检索规则不变。" />
   <string id="AF_MCM_Knowledge_Entity" text="实体注入上限" />
   <string id="AF_MCM_Knowledge_Entity_Hint" text="控制每次对话最多向 AI 注入多少个人物、地点、家族和王国检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。" />
   <string id="AF_MCM_Knowledge_Candidates" text="清单候选显示上限" />
@@ -927,9 +925,6 @@
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Title" text="知识返回上限" />
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Hint" text="控制每次对话最多向 AI 提供多少条相关知识。系统按重要性顺序取最靠前的同等数量名词，每个名词独立占一个知识槽；若最高分知识已被前面的名词占用，则顺延到第一条未占用知识。只有上限大于名词数时，才额外补充各名词的后续结果。默认 4。" />
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Group" text="5. 知识检索（返回）" />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Title" text="重排序推理设备（重启生效）" />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Hint" text="CPU 默认；GPU 需要 NVIDIA 显卡及可选 CUDA 组件，失败自动回退 CPU。保存后完整重启游戏生效。" />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Group" text="5. 知识检索（返回）" />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Title" text="实体注入上限" />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Hint" text="控制每次对话最多向 AI 注入多少个人物、地点、家族和王国检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。" />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Group" text="5. 知识检索（返回）" />
@@ -2937,8 +2932,6 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Prompt_CustomSceneFormat_Hint" text="开启后，不再注入单人交谈身份限制，以及“回复格式/动作/内心/字数”的默认要求。请在“玩家自定义规则文案”中自行提供完整格式。默认关闭。" />
   <string id="AF_MCM_Option_ModelManual" text="*手动填写*" />
   <string id="AF_MCM_Option_ModelEmpty" text="(空)" />
-  <string id="AF_MCM_Option_DeviceCpu" text="CPU（默认）" />
-  <string id="AF_MCM_Option_DeviceGpu" text="GPU（CUDA / NVIDIA）" />
   <string id="AF_MCM_Option_DiplomacySmall" text="少" />
   <string id="AF_MCM_Option_DiplomacyMedium" text="标准" />
   <string id="AF_MCM_Option_DiplomacyLarge" text="高" />

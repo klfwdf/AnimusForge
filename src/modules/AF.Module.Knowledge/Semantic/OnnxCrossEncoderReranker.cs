@@ -542,84 +542,18 @@ public sealed class OnnxCrossEncoderReranker
 		}
 	}
 
-	private static bool IsMultilingualEmbeddingInstalled()
-	{
-		try
-		{
-			return string.Equals(AnimusForgeModelStore.ResolveEmbedding().Pooling, "mean_all", StringComparison.Ordinal);
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
-	private void EnsureInitialized()
-	{
-		if (_initialized)
-		{
-			return;
-		}
-		lock (_initLock)
-		{
-			if (_initialized)
-			{
-				return;
-			}
-			try
-			{
-				// The multilingual bekko embedding ranks well enough on its own; skip the cross-encoder so retrieval
-				// uses the embedding scores (the existing recall_fallback path) and the 266MB model is never loaded.
-				if (IsMultilingualEmbeddingInstalled())
-				{
-					_available = false;
-					_lastError = "Skipped: multilingual embedding (ONNX/bekko) is active.";
-					Logger.Log("OnnxReranker", "Initialization skipped: multilingual embedding (ONNX/bekko) is active.");
-					return;
-				}
-				AnimusForgeModelStore.ModelFiles files = AnimusForgeModelStore.ResolveReranker();
-				string text = files.ModelPath;
-				string text2 = files.TokenizerPath;
-				string text3 = files.ConfigPath;
-				if (!string.IsNullOrEmpty(text3))
-				{
-					TryReadMaxPosition(text3, out _maxLength);
-				}
-				_tokenizer = SentencePieceUnigramTokenizerLite.Load(text2);
-				if (_tokenizer == null)
-				{
-					_available = false;
-					_lastError = "Failed to parse the reranker tokenizer.";
-					return;
-				}
-                _modelPath = text;
-                _encodedBackend = RerankerDeviceRuntime.CreateBackend();
-                if (_encodedBackend == null) EnsureLocalSession();
-				_available = true;
-				_lastError = "";
-				try
-				{
-					Logger.Log("OnnxReranker", string.Format("Initialized model={0} tokenizer={1} inputType={2} maxLen={3}", System.IO.Path.GetFileName(text), System.IO.Path.GetFileName(text2), _useInt64Input ? "int64" : "int32", _maxLength));
-				}
-				catch
-				{
-				}
-			}
-			catch (Exception ex)
-			{
-				_available = false;
-				_lastError = ex.Message ?? "Initialization exception";
-				try
-				{
-					Logger.Log("OnnxReranker", "Initialization failed: " + _lastError);
-				}
-				catch
-				{
-				}
-			}
-            finally { _initialized = true; }
-		}
-	}
+    private void EnsureInitialized()
+    {
+        if (_initialized) return;
+        lock (_initLock)
+        {
+            if (_initialized) return;
+            _available = false;
+            _lastError = "Retired: retrieval uses bekko embeddings without a cross-encoder.";
+            _initialized = true;
+            Logger.Log("OnnxReranker", _lastError);
+        }
+    }
 
     private void EnsureLocalSession()
     {

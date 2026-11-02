@@ -19,7 +19,12 @@ packages/
 
 *.log
 Logs/
-AnimusForge/ONNX/
+AnimusForge/ONNX/*
+!AnimusForge/ONNX/bekko/
+AnimusForge/ONNX/bekko/*
+!AnimusForge/ONNX/bekko/model.onnx
+!AnimusForge/ONNX/bekko/tokenizer.json
+!AnimusForge/ONNX/bekko/config.json
 
 
 # Local Codex/release-prep scratch and large handoff backups.

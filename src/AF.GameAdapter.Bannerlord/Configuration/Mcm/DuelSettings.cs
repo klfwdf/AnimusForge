@@ -1158,18 +1158,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("{=AF_MCM_Knowledge_Group}5. Knowledge retrieval (returned)")]
 	public int KnowledgeDirectTopN { get; set; } = 4;
 
-    [SettingPropertyDropdown("{=AF_MCM_Knowledge_Device}Reranker inference device", Order = 3, RequireRestart = true, HintText = "{=AF_MCM_Knowledge_Device_Hint}Default CPU. GPU (CUDA) requires NVIDIA and optional CUDA runtime components; vector retrieval remains on CPU. Missing components, incompatible drivers, or GPU failure fall back to CPU. Restart the game fully after changing this value.")]
-    [SettingPropertyGroup("{=AF_MCM_Knowledge_Group}5. Knowledge retrieval (returned)")]
-    public Dropdown<string> RerankerDeviceDropdown
-    {
-        get => _rerankerDeviceDropdown;
-        set => _rerankerDeviceDropdown = BuildFixedDisplayDropdown(value, 0,
-            "{=AF_MCM_Option_DeviceCpu}CPU (default)", "{=AF_MCM_Option_DeviceGpu}GPU (CUDA / NVIDIA)");
-    }
-    private Dropdown<string> _rerankerDeviceDropdown = BuildFixedDisplayDropdown(null, 0,
-        "{=AF_MCM_Option_DeviceCpu}CPU (default)", "{=AF_MCM_Option_DeviceGpu}GPU (CUDA / NVIDIA)");
-
-
 	[SettingPropertyInteger("{=AF_MCM_Knowledge_Entity}Entity injection limit", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Knowledge_Entity_Hint}Maximum people, places, clans, and kingdoms injected into each AI request. In preprocessing importance order, each term first occupies one highest-scoring entity slot. For people with the same name, a clan explicitly specified by another term takes priority, followed by a kingdom. Their actual campaign-map distance from the current NPC then adds a small bonus of up to 0.15; the final score may exceed 1.00. If scope or position is unavailable, the original score is used. If the highest-scoring entity is already occupied by an earlier term, the first unoccupied entity is used instead. Secondary results are added only when the limit exceeds the term count: first up to 3 for the earliest term, then for subsequent terms in order. Default: 6.")]
 	[SettingPropertyGroup("{=AF_MCM_Knowledge_Group}5. Knowledge retrieval (returned)")]
 	public int WorldEntityInjectMaxCount { get; set; } = 6;

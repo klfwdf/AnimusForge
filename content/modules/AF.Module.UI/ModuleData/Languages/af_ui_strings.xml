@@ -470,8 +470,6 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_MCM_Knowledge_Group" text="5. Knowledge retrieval (returned)" />
   <string id="AF_MCM_Knowledge_TopN" text="Knowledge results limit" />
   <string id="AF_MCM_Knowledge_TopN_Hint" text="Maximum related knowledge entries supplied to AI per conversation. Terms are assigned independent slots by importance; later results fill unused slots. Default: 4." />
-  <string id="AF_MCM_Knowledge_Device" text="Reranker inference device" />
-  <string id="AF_MCM_Knowledge_Device_Hint" text="Default CPU. GPU (CUDA) requires NVIDIA and optional CUDA runtime components; vector retrieval remains on CPU. Missing components, incompatible drivers, or GPU failure fall back to CPU. Restart the game fully after changing this value." />
   <string id="AF_MCM_Knowledge_Entity" text="Entity injection limit" />
   <string id="AF_MCM_Knowledge_Entity_Hint" text="Maximum people, places, clans, and kingdoms injected into each AI request. In preprocessing importance order, each term first occupies one highest-scoring entity slot. For people with the same name, a clan explicitly specified by another term takes priority, followed by a kingdom. Their actual campaign-map distance from the current NPC then adds a small bonus of up to 0.15; the final score may exceed 1.00. If scope or position is unavailable, the original score is used. If the highest-scoring entity is already occupied by an earlier term, the first unoccupied entity is used instead. Secondary results are added only when the limit exceeds the term count: first up to 3 for the earliest term, then for subsequent terms in order. Default: 6." />
   <string id="AF_MCM_Knowledge_Candidates" text="List candidate display limit" />
@@ -916,9 +914,6 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Title" text="Knowledge Direct Top N" />
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Hint" text="Maximum related knowledge entries supplied to AI per conversation. Takes at most this many terms in importance order, with one independent knowledge slot per term. If the highest-scoring knowledge is already occupied by an earlier term, uses the first unoccupied entry instead. Only when the limit exceeds the term count are later results for those terms added. Default: 4." />
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Group" text="5. Knowledge retrieval (returned)" />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Title" text="Reranker Device Dropdown" />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Hint" text="Default CPU. GPU (CUDA) requires NVIDIA and optional CUDA runtime components; vector retrieval remains on CPU. Missing components, incompatible drivers, or GPU failure fall back to CPU. Restart the game fully after changing this value." />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Group" text="5. Knowledge retrieval (returned)" />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Title" text="World Entity Inject Maximum Count" />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Hint" text="Maximum people, places, clans, and kingdoms injected into each AI request. In preprocessing importance order, each term first occupies one highest-scoring entity slot. For people with the same name, a clan explicitly specified by another term takes priority, followed by a kingdom. Their actual campaign-map distance from the current NPC then adds a small bonus of up to 0.15; the final score may exceed 1.00. If scope or position is unavailable, the original score is used. If the highest-scoring entity is already occupied by an earlier term, the first unoccupied entity is used instead. Secondary results are added only when the limit exceeds the term count: first up to 3 for the earliest term, then for subsequent terms in order. Default: 6." />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Group" text="5. Knowledge retrieval (returned)" />
@@ -2905,8 +2900,6 @@ Choose how to proceed:" />
   <string id="AF_MCM_Prompt_CustomSceneFormat_Hint" text="Omit the default one-on-one identity restrictions and reply format, action, inner-thought, and length requirements. Provide a complete format in the player custom rules. Disabled by default." />
   <string id="AF_MCM_Option_ModelManual" text="*manual entry*" />
   <string id="AF_MCM_Option_ModelEmpty" text="(empty)" />
-  <string id="AF_MCM_Option_DeviceCpu" text="CPU (default)" />
-  <string id="AF_MCM_Option_DeviceGpu" text="GPU (CUDA / NVIDIA)" />
   <string id="AF_MCM_Option_DiplomacySmall" text="Low" />
   <string id="AF_MCM_Option_DiplomacyMedium" text="Standard" />
   <string id="AF_MCM_Option_DiplomacyLarge" text="High" />
