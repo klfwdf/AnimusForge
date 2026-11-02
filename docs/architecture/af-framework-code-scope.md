@@ -6,7 +6,7 @@
 | 源码/一基范围 | 符号与覆盖/未覆盖责任 |
 | --- | --- |
 | `tests/Vengeance/ExecutionMemoryContractTests/Fakes.cs:70–80,127` | `WorldBulletinParticipant`、`BulletinParticipants`及`CaptureWorldBulletinEvent`对齐生产observer参与者签名；fake campaign/周报边界，不证明真实事件广播 |
-| `tests/Vengeance/ExecutionMemoryContractTests/Fakes.cs:171–191` | 非处刑UI/聚会/政策投影以抛错替身隔离，禁止静默假成功 |
+| `tests/Vengeance/ExecutionMemoryContractTests/Fakes.cs:171–190` | 非处刑UI/聚会/政策投影以抛错替身隔离，禁止静默假成功 |
 | `tests/Vengeance/ExecutionMemoryContractTests/ExecutionMemoryContractTests.csproj:32–45` | 链接生产双语reader/事实投影，嵌入三组CN/EN兼容资源并复制Prompt两版到真实ModuleData reader路径 |
 | `tests/Vengeance/ExecutionMemoryContractTests/Program.cs:10,38–43` | `Check`显式输出失败名；验证游戏语言CN→EN选择及未追加退役语言占位符，保留原业务断言 |
 
