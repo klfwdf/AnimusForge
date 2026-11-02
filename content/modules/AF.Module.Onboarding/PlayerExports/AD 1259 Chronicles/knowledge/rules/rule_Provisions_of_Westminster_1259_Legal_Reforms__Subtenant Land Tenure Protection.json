@@ -1,19 +1,19 @@
 {
   "Id": "rule_Provisions_of_Westminster_1259_Legal_Reforms",
   "Keywords": [
-    "Subtenant Land Tenure Protection",
-    "Early Mortmain Statutes",
-    "Statute of Marlborough Roots"
+    "English free tenants and reform debates",
+    "Charters and suit at seigneurial courts"
   ],
   "RagShortTexts": [
-    "The 1259 Provisions of Westminster reformed local feudal courts, shielding free subtenants."
+    "English reform disputes concern lords, free tenants, court attendance and distraint.",
+    "Charters, custom, witnesses and access to litigation shape protection of rights."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Enacted on October 13, 1259, following the Provisions of Oxford, the Provisions of Westminster shifted reform to grass-roots legal administration. Spearheaded by Simon de Montfort and county knights, the statutes prohibited barons from arbitrarily compelling free subtenants to attend private manorial courts, curtailed abusive wardship seizures, and enacted early mortmain curbs against tax-free church land grants. Later codified into the Statute of Marlborough (1267), they became pillars of English Common Law."
+      "Content": "Disputes over royal government in England also raise grievances between lords and free tenants. Demands for court attendance, services or seized animals prompt questions about land charters, established custom and the court competent to hear a claim. Reformers seeking limits on exactions face similar questions on their own estates. Free tenants and dependent cultivators do not have identical standing; support for one neighbor does not establish another household’s entire case. Documents, witnesses, travel costs and cooperation from the authority hearing a dispute determine whether a claim can be pursued."
     },
     {
       "Priority": 0,
@@ -23,7 +23,18 @@
           "notable"
         ]
       },
-      "Content": "Freeholders gained actionable royal writs against overbearing magnates, which gave them a way to challenge a baron in the king's courts. The statutes also set standard court procedures across the English shires, so a lord could no longer invent rules as he went. Local lords had to work within a common framework."
+      "Content": "A reforming lord still has to explain demands on tenants: which charter or custom supports repeated attendance or seizure of livestock? Restraining the crown and preserving estate income can pull in different directions, and reformers disagree over how far change should go. Demanding observance from others while refusing tenants a hearing weakens local support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A free tenant facing extra services or distraint may seek an old charter, neighbors familiar with custom and someone able to present a claim. Attendance costs working time while animals still need care. News of reform debates does not abolish a household’s dues. Tenure, prior obligations and the proper recipient of a complaint remain important."
     }
   ],
   "TextMappings": []

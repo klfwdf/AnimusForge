@@ -20,7 +20,6 @@
       "Priority": 0,
       "When": {
         "Roles": [
-          "engineer",
           "soldier"
         ]
       },

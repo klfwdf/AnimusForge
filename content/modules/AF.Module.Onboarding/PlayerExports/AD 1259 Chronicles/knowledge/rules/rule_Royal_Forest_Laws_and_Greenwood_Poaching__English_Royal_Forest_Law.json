@@ -3,7 +3,7 @@
   "Keywords": [
     "English Royal Forest Law",
     "Vert and Venison Crown Prerogative",
-    "Red Deer Poaching Mutilation Penalty",
+    "Forest Charter Venison Fines and Pledges",
     "Verderers Foresters and Greenwood Outlaws"
   ],
   "RagShortTexts": [
@@ -15,7 +15,7 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Norman kings marked off large parts of England as royal forest, land set aside for the king's own hunting. Forest law kept two things apart: vert, the timber and undergrowth that shaded the deer, and venison, the game animals themselves. Clearing trees or keeping dogs that had not been maimed was an offence, since a dog could chase the deer out of the forest. A man caught taking a royal stag could lose his eyes or a limb, and the severity of these penalties gave the greenwood a long tradition of outlaw songs and legends."
+      "Content": "An English royal forest is a district under special law, not simply woodland: it can include grazing, villages and cultivated land. Forest law protects royal game and its habitat, but does not make all land and resources the king's property or erase established rights of grazing and collecting wood. The Charter of the Forest, issued in 1217 and reissued in 1225, restrains royal and official powers. Clause ten forbids loss of life or limb for the king's venison. A person with means pays a heavy fine; one without means is imprisoned for a year and a day, then released on finding pledges or required to leave the realm. By 1259, automatic blinding or mutilation for taking deer therefore misstates the rule. Clause nine protects free men's agistment in their own woods and passage of pigs; clause twelve permits works such as mills and ponds on their own land without harming neighbours. Rights depend on status, land and established use, not a general licence to kill deer or fell trees."
     },
     {
       "Priority": 0,
@@ -25,7 +25,7 @@
           "notable"
         ]
       },
-      "Content": "The Charter of the Forest of 1217 reined in the worst royal excesses by replacing capital punishment with heavy fines. Verderers and forest wardens still pressed arbitrary dues on freemen of the shires, so the charter did not end the burden. A lord who held land along a forest edge had to judge which officials could be trusted and which would extract money at every turn."
+      "Content": "Holding land in a royal forest requires distinguishing ownership, royal game and recognised rights of use. The Forest Charter protects particular grazing and management rights and forbids loss of life or limb for venison, but retains fines, imprisonment and pledges. Defending a dependent requires evidence of land and custom, not merely claiming that the wood is one's own. Free men's protections cannot indiscriminately be applied to every tenant. An officer's demands and injury to neighbouring land are separate disputes requiring their own evidence."
     },
     {
       "Priority": 0,
@@ -35,7 +35,7 @@
           "wanderer"
         ]
       },
-      "Content": "A family using a royal forest needs to know its recognised rights to wood, grazing and other resources, as well as restrictions on deer. The Charter of the Forest has already challenged abuses by 1259. An officer's demand can still be frightening, but tales of automatic death for every offence misstate the charter's limits and the variety of legal penalties."
+      "Content": "A household living from a royal forest must distinguish recognised rights to wood, grazing and other resources from restrictions on game. By 1259 the Forest Charter already restrains certain abuses; not every infringement means immediate death or mutilation. An officer's demands remain frightening, and neighbours can quarrel over the same pasture. Poaching stories may celebrate courage, but bringing home meat does not legalise other uses. A family needs to know how the local court hears a claim and whether witnesses will testify before judging how much protection an ancient liberty really provides."
     }
   ],
   "TextMappings": []

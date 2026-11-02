@@ -1,31 +1,11 @@
 {
-  "Id": "rule_Fall_of_Antioch_1268",
-  "Keywords": [
-    "Fall of Antioch 1268",
-    "Baibars Mamluk Siege",
-    "Crusader Principality Extinguished",
-    "Baibars Mocking Letter Bohemond"
-  ],
-  "RagShortTexts": [
-    "In 1268, Baibars seized and razed Antioch, extinguishing one of the oldest Crusader states."
-  ],
-  "SemanticPrototypes": [],
-  "Variants": [
-    {
-      "Priority": 0,
-      "When": null,
-      "Content": "In May 1268, Sultan Baibars brought ruin upon the Principality of Antioch, the oldest of the Frankish states in the East. Mamluk siege engines breached the walls, which had stood since Roman times, within days, and the army plundered the ancient Christian capital. Garrisons were put to the sword, and the ducal palaces were levelled in retribution for the Franks' alliance with the Mongols. Antioch's fall removed one of the great pillars of Outremer and showed how little the Mongol alliance had protected the northern princes. The city never recovered its old place among the crusader states."
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "Roles": [
-          "lord",
-          "priest"
-        ]
-      },
-      "Content": "Baibars's notorious mocking letter to Prince Bohemond VI, which spoke of the prince's fall with cruel irony, marked the collapse of northern Outremer beyond recovery. Its tone made clear that the sultan considered the principality's lords had forfeited any claim to mercy, and the clergy who had preached alliance with the Mongols were left to answer for the disaster."
-    }
-  ],
-  "TextMappings": []
+ "Id":"rule_Fall_of_Antioch_1268",
+ "Keywords":["Antioch's Diplomatic Choices","Bohemond and Hethum Marriage Alliance","Orontes Valley Livelihoods","Antioch Protection and Submission"],
+ "RagShortTexts":["Bohemond VI's marriage to Hethum's daughter links Antioch with Cilician Armenia.","Around1259 Mongol pressure makes protection, submission and assistance urgent questions."],
+ "SemanticPrototypes":[],
+ "Variants":[
+  {"Priority":0,"When":null,"Content":"Antioch stands between northern Syria and Cilicia. Roads and farmland around the Orontes sustain its population while making passing armies and merchants important to daily livelihoods. Prince Bohemond VI's marriage to Hethum's daughter Sibylla strengthens connections between the ruling families. Hethum has visited the Mongol court and urges Latin neighbours to accept Mongol protection. Reports from Baghdad and the east make the choice increasingly pressing. A powerful patron can reduce isolation but creates questions of obedience, assistance and relations with other neighbours. Churches, merchants and nobles maintain different connections and interests: the prince's marriage does not create unanimous consent. Property, roads and markets still need protection, and garrisons need food and manpower. While the court judges whether distant promises can bring assistance, residents watch the safety of routes and the effect of requisitions on the next harvest."},
+  {"Priority":0,"When":{"Roles":["lord","notable"]},"Content":"Antioch's Hethum marriage connection offers a channel for assistance while drawing the prince into wider Mongol diplomacy. Protection carries costs in acknowledgement of supremacy and expected service. Port commerce and northern routes also face merchant rivalries. Latin and Armenian nobles do not all share identical interests. Maintaining local provisions and garrisons preserves choices in negotiation better than relying on a distant power's reputation to silence every objection."},
+  {"Priority":0,"When":{"Roles":["villager","townsfolk"]},"Content":"Cultivators beside the Orontes and traders in Antioch hear of princely marriages and Mongol armies, while asking whether roads remain open, goods can sell and enough labour survives for the next crop. Envoys require hospitality and garrisons require grain. An agreement bringing more requisitions may not immediately improve a household's life. Neighbours follow different rites and commercial connections and interpret reports differently. An open market and relatives returning safely provide more comfort than a courtly speech."}
+ ],"TextMappings":[]
 }

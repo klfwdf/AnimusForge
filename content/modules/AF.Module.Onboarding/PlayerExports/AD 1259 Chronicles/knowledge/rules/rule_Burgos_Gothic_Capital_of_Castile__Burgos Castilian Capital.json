@@ -2,29 +2,29 @@
   "Id": "rule_Burgos_Gothic_Capital_of_Castile",
   "Keywords": [
     "Burgos Castilian Capital",
-    "Burgos Gothic Cathedral Spire",
+    "Burgos Cathedral Begun 1221",
     "El Cid Heritage Burgos",
-    "Mesta Wool Transhumance Burgos"
+    "Burgos Pasture Routes and Fields"
   ],
   "RagShortTexts": [
-    "Burgos served as Castile's historic capital and wool hub, celebrated for its soaring Gothic."
+    "Burgos links royal activity, its cathedral begun in 1221, markets and farming routes."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Burgos served as the royal seat of Castile and the cradle of the legend of El Cid, the warrior whose exploits were sung across the peninsula. Its cathedral, begun in 1221, rose in the Gothic style, and its spires can be seen across the high plains of Old Castile. The city lay on the routes that carried wool from the sheep pastures of the north and central plateau. Wool convoys organised by the Mesta, the powerful sheep-farmers' guild, passed through Burgos on their way to the northern ports. Royal officials kept a close watch on the guild's privileges, since its transhumance routes and tolls brought substantial revenue to the crown."
+      "Content": "Burgos is an important Castilian royal city linked to the memory of El Cid's homeland. Its new cathedral, begun in1221, draws craftsmen and stone while demanding prolonged expenditure. Worship, pilgrimage and royal activity bring visitors to its markets. Plateau farming and herding connect with roads toward the northern coast, carrying wool, hides and grain into urban exchange. The ground crossed by livestock is also where cultivators sow grain and defend boundaries, creating disputes over pasture, passage and local charges. Merchants calculate transport, responsibilities and safe access to ports as well as cargo prices. Lords, churches and the city possess distinct rights and revenues, requiring negotiation when the crown seeks support. Urban wealth depends on both passing goods and surrounding land continuing to feed residents."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
           "lord",
-          "merchant"
+          "notable"
         ]
       },
-      "Content": "Northern Basque ports carried Burgos wool to the cloth towns of Flanders, and each convoy paid tolls along the way. The Castilian crown took its share at the ports and the Burgos fairs, and merchant houses kept agents watching the price of wool. Lords with estates on the transhumance routes had to decide whether to resist the Mesta or share in its privileges."
+      "Content": "Burgos merchants and lords value wool and northern routes, but passage of livestock must be reconciled with cultivated land, local rights and charges. Paying at one point does not remove every obstacle ahead. Freight and responsibility for loss require agreement too. Alfonso X seeks domestic resources while competing for a distant crown, giving towns and nobles reason to ask what expenditure achieves. Markets and surrounding livelihoods must remain viable to sustain trade and royal support."
     }
   ],
   "TextMappings": []

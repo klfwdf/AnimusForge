@@ -1,30 +1,41 @@
 {
   "Id": "rule_Battle_of_Lewes_1264",
   "Keywords": [
-    "Battle of Lewes 1264",
-    "Simon de Montfort Captures King",
-    "Prince Edward Rash Pursuit",
-    "Mise of Lewes Parliament"
+    "English Baronial Reform Coalition",
+    "Montfort and Royal Government",
+    "Oxford Council of Fifteen",
+    "Reform Enforcement Disputes 1259"
   ],
   "RagShortTexts": [
-    "In 1264 at Lewes, Simon de Montfort routed royalists, capturing Henry III and Prince Edward."
+    "The1258 Oxford reforms establish a council of fifteen overseeing royal government.",
+    "In1259 reform still depends on observance by king, magnates and local society."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Lewes, fought on May 14, 1264, marked the high point of Simon de Montfort's rebellion. Montfort's reformist barons defeated the royalist army of Henry III, and the king and his brother Richard, King of the Romans, were taken prisoner. Prince Edward had pursued a force of London militia too far from the main royal line, and that over-extension left the flanks exposed. The rebels' reserve then took advantage of the gap. The battle gave Montfort control of the king's government, and he used his position to press for a more representative parliament."
+      "Content": "The dispute between England's king and barons has moved from complaints over spending to supervision of government. Henry III's foreign projects, favourites and financial demands draw magnates with different interests into a temporary reform coalition. At Oxford in1258 the king's side and the barons each select twelve men to consider reform, followed by a council of fifteen supervising ministers and important business. Parliament is to meet regularly. Montfort is a prominent reformer, not the sole master of everyone supporting change: kinship, land and power still divide the magnates. Reform debates also raise questions about obligations between lords and free tenants. Towns and shire knights judge reform through actual collection, appointments and justice. Oaths and meetings create new means of negotiation, but possession of the seal and the ability to secure local officials' compliance determine how far agreements extend beyond the council chamber."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
           "lord",
-          "citizen"
+          "notable"
         ]
       },
-      "Content": "The Mise of Lewes gave Montfort the power to govern England in the king's name, and it led to the summons of the 1265 parliament, where representatives of the commons sat alongside the lords. Burgesses and knights of the shire had to ride to Westminster at their own expense, and each town's clerk entered the names of its representatives in the record."
+      "Content": "Supporting Montfort or another reform leader does not give every house the same intentions for government. The council of fifteen supervises ministers while providing influence to men dissatisfied with royal favourites. Magnates must also face tenants' and shire knights' expectations. Restraining the king while preserving abusive local demands can divide the coalition. Control of seals, appointments and collection reveals practical power more clearly than oaths pronounced at a feast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ]
+      },
+      "Content": "When king and barons discuss reform, townspeople and villagers look for changes in services, charges and officials. Fifteen councillors do not give every household direct access to a hearing. Shire knights and influential townsmen can transmit grievances while retaining interests of their own. More attention to documents and witnesses may make a difference; a dispute that merely changes who collects money leaves ordinary families still trying to preserve the harvest."
     }
   ],
   "TextMappings": []

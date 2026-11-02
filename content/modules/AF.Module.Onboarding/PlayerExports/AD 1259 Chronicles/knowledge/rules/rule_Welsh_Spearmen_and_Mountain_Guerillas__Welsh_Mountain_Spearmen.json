@@ -14,17 +14,16 @@
     {
       "Priority": 0,
       "When": null,
-      "Content": "The Welsh clans of Snowdonia and the upland commotes defended their hills with a style of warfare that suited the mist and the bog. Their skirmishers carried long ash spears and light throwing darts, and they fought without heavy armor so they could move quickly over peat and rock. They lured the Anglo-Norman cavalry into boggy ground where horses floundered, then struck from the flanks and rear while the armored knights were pinned. The campaigns of the thirteenth century saw the Welsh princes of Gwynedd exploit this terrain against the Marcher lords, and the tactics kept English armies from fully occupying the mountain heartlands. Clan loyalty bound the spearmen to their chieftains and to the defense of ancestral land."
+      "Content": "Steep slopes, wet ground and narrow tracks in the Welsh uplands shaped deployment as well as the movement of food and animals. Lords in Gwynedd and neighboring districts depended on local followers, with familiar routes aiding scouting, ambush and withdrawal. Men carrying spears or javelins still needed awareness of comrades, cover and exits. Rain and mist could conceal movement while hindering orders. Households supplying food and labor also tended fields and herds; prolonged campaigns required provisions, negotiation and protection to retain followers, not knowledge of terrain alone."
     },
     {
       "Priority": 0,
       "When": {
         "Roles": [
-          "lord",
-          "priest"
+          "lord"
         ]
       },
-      "Content": "Prince Llywelyn ap Gruffudd drew on clan loyalty to check the incursions of the Marcher lords. The spearmen were bound by old Welsh custom to defend their hills, and their pride in those hills made them hard to bribe or to break. A Marcher lord who rode into the mountains without local guides was taking a risk that his retainers would not forget."
+      "Content": "Llywelyn ap Gruffudd is using the title Prince of Wales, while recognition by the English king remains disputed. Support from upland followers helps him oppose the Marcher lords, but maintaining them requires livestock, grain and actual local service. Longer summonses take labour away from household cultivation and herding. Sustaining support requires coordination with local powers and followers' needs, giving the princely title a continuing practical strength."
     },
     {
       "Priority": 0,
@@ -34,7 +33,7 @@
           "wanderer"
         ]
       },
-      "Content": "Heavy warhorses founder in the Welsh bogs up to their hocks. Horn signals echo off the granite crags, and then the spearmen break out of the bracken and thrust under the armpits of the knights before vanishing back into the fog. Keep your spear low in the mist, never ride ahead of your file on the peat, and listen for the horn before you move."
+      "Content": "Wet ground, slopes and narrow tracks hinder cavalry deployment but also make carrying one's own food difficult. Welsh fighters with spears and javelins use familiar terrain while watching companions and exits. Mist conceals men but can also separate friends. An ambush that consumes all the supplies leaves the same difficult route to travel home. Guides and reconnaissance matter as much as the spear in a fighter's hand."
     }
   ],
   "TextMappings": []
