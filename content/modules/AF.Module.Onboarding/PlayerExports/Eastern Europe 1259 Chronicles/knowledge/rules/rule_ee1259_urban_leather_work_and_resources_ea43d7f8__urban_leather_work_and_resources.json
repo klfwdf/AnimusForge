@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_urban_leather_work_and_resources_ea43d7f8",
+  "Keywords": [
+    "urban leather work and resources",
+    "Urban hide working and shoemaking"
+  ],
+  "RagShortTexts": [
+    "Leather work needs hides, water and skilled labor.",
+    "Military and civilian orders compete for materials and time."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Urban leather work turns hides into prepared material, then cut and sewn shoes or straps. Uses need different thicknesses, while repairs consume time. Raw hides do not become finished military goods overnight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Split shoes and worn straps hinder marching. Cleaned repairs and fitting matter; ill-sized new shoes turn apparently good supply into injured feet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Orders distinguish prepared leather, finished goods and repairs. Staged inspection catches fitting and stitching faults; unpaid military work displaces civilian needs and discourages further orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Hide workers need water and tools, shoemakers suitable thread. Household repairs and military straps arrive together; haste can waste valuable prepared leather."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

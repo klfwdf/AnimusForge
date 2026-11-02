@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_semigallian_communities_and_leaders_c1b58fc6",
+  "Keywords": [
+    "semigallian communities and leaders",
+    "Semigallian chiefs strongpoints and aid"
+  ],
+  "RagShortTexts": [
+    "Semigallian power is organized around posts and harvests.",
+    "Common resistance still needs separate chiefs’ consent."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Semigallian chiefs organize around posts, settlement harvests and neighbors, with Tērvete an important connection. Aid adds mouths as well as fighters. Groups retain households and exits and need manageable duties within a coalition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Joint defence assigns roads and report recipients. A partner leaving to guard home is not necessarily abandoning every agreement; reasons and gaps need clarification."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Leaders assess deliverable people, food and duration beyond agreement at a feast. Protection reaching weaker settlements prevents one-sided demands from breaking cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Near and distant households judge aid differently. Care for children, herds and seed supports fighters even when such work receives little recognition."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

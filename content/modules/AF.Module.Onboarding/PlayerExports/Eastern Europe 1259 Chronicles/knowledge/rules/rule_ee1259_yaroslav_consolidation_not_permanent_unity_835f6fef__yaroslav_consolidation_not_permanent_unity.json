@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_yaroslav_consolidation_not_permanent_unity_835f6fef",
+  "Keywords": [
+    "yaroslav consolidation not permanent unity",
+    "Yaroslav’s 1245 victory and local cooperation"
+  ],
+  "RagShortTexts": [
+    "Danylo and Vasylko won at Yaroslav in 1245.",
+    "Victory strengthened control without ending elite differences."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Danylo and Vasylko’s victory at Yaroslav in 1245 strengthened Galician control. Garrisons, collection and appointments still need partners and local support. Dynastic and noble interests remain, making lasting protection and revenue harder than celebration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Victors expect shares and recovery. Immediate further service strains horses and trust; captives, casualties and roads require attention to preserve success."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The victory increases authority but appointments must account for suppliers and partners. Concentrating rewards while shifting garrison costs undermines continuing support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families hope for fields, trade and acknowledged debts. Repeated taking under a new authority can leave them unable to see any benefit from victory."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_torzhok_defense_and_relief_36fd280e",
+  "Keywords": [
+    "torzhok defense and relief",
+    "Torzhok siege and relief messages"
+  ],
+  "RagShortTexts": [
+    "Torzhok faced Mongol siege in 1238.",
+    "Defenders needed walls, provisions and contact with possible relief."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Torzhok resisted Mongol siege in 1238. Its defence depended on north–south roads as well as walls. While awaiting help, defenders rationed provisions, repaired damage and tried to send requests beyond the siege lines; closed roads obscured the whereabouts of relief."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Torzhok reminds defenders that delayed relief reports are not troops at the gate. Watch duty and repairs exhaust people, while sending messengers out removes experienced hands from the walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Relieving a town such as Torzhok requires assembly points, guides and carts. Promised numbers do not rescue it; cooperation from suppliers along the road determines timely arrival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Memories of Torzhok make households value water and stores. Shelter for fleeing relatives stretches food; refusing them damages kin ties. Survival within walls concerns more than the garrison."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

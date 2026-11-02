@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_parchment_and_ink_preparation_ef1e7a35",
+  "Keywords": [
+    "parchment and ink preparation",
+    "Parchment scraping and iron gall ink"
+  ],
+  "RagShortTexts": [
+    "Parchment requires dehairing, stretching, scraping and smoothing.",
+    "Writing, ink and binding add to a book’s cost."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Parchment is dehaired, stretched, scraped and smoothed before ruling and writing. Skins, ink and scribal labor determine the book’s price. Holes or mistakes require writing around them, repair or replacement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Traveling documents need protection against water and abrasion. If damaged writing obscures an order, its bearer must seek clarification rather than guess essential names or amounts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A charter costs more than its skin: literate witnesses and custody matter. Clear names, boundaries and a known place of keeping let the document support a disputed agreement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Scribes economize on costly skins, but deep scraping weakens a sheet. Workshops need light, ink and binding arrangements; haste can waste an entire written skin."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

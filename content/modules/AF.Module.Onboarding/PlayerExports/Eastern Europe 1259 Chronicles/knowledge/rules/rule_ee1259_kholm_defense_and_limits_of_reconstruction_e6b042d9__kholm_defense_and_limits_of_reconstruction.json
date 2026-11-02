@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_kholm_defense_and_limits_of_reconstruction_e6b042d9",
+  "Keywords": [
+    "kholm defense and limits of reconstruction",
+    "Kholm princely construction and supplies"
+  ],
+  "RagShortTexts": [
+    "Kholm is an important center developed by Danylo.",
+    "Defence, residence and supplies jointly support the court."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kholm combines court, residence and defence as a center developed by Danylo. Position and works strengthen leverage, but food, repairs and cooperation remain necessary. Concentrated people and wealth create daily water, storage and carriage needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kholm guards stores and approaches as well as elevated ground. Construction and watches need separate hands and actual relief before defenders leave their posts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Investment at Kholm must match provision. Defensible works also need feeding; envoys, food reserves and local support preserve practical options under pressure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A center attracts workers and sellers but demands building labor and lodging. Payment for materials and space for families influence continued residence."
+    }
+  ],
+  "TextMappings": []
+}

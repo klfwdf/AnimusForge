@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_ottokar_crusade_in_1255_67d52074",
+  "Keywords": [
+    "ottokar crusade in 1255",
+    "Ottokar’s Sambian campaign of 1255"
+  ],
+  "RagShortTexts": [
+    "Ottokar II joined the Sambian expedition of 1255.",
+    "The campaign is associated with Königsberg’s foundation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ottokar II participated in the Sambian expedition of 1255, linking prestige and religious aims with Königsberg’s foundation. Visiting forces had return plans; continued holding depended on those remaining, food and renewed agreements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A campaign like that of 1255 consumes horses on arrival and return. Remaining guards still patrol and receive supplies after visitors leave; celebration does not replace the next watch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Prestigious assistance improves leverage but needs duration and provisioning agreed. Counting visitors as permanent troops creates gaps at the new post."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Expeditions bring demand and requisitions. Harvests do not recover on departure; payment and returned tools prevent one season’s hosting from damaging later livelihood."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

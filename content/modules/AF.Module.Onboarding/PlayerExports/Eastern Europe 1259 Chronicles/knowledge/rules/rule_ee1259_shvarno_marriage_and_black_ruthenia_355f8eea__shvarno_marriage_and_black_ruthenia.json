@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_shvarno_marriage_and_black_ruthenia_355f8eea",
+  "Keywords": [
+    "shvarno marriage and black ruthenia",
+    "Shvarno marriage and Black Ruthenian claims"
+  ],
+  "RagShortTexts": [
+    "Shvarno married a daughter of Mindaugas.",
+    "Marriage ties coexist with competing claims in Black Ruthenia."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Shvarno’s marriage to Mindaugas’ daughter gives the families kinship and channels for mediation. Black Ruthenian towns and offices remain contested. Hospitality, promises and local recognition make the relationship effective; kinship alone does not command every garrison."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Marriage envoys carry gifts, not automatic garrison rights. Escorts establish residence and provisioning responsibilities before a friendly visit becomes a dispute over a strongpoint."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Marriage eases disputes while creating expectations. Black Ruthenian settlements need identifiable consent; kin titles cannot replace agreement by towns and holders of power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Envoys bring trade but consume lodging and food. Households judge marriage by reduced raids and demands and need collectors who acknowledge prior payments."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

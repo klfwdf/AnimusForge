@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_schra_versions_and_local_negotiation_d8da388c",
+  "Keywords": [
+    "schra versions and local negotiation",
+    "Trading court rules and civic negotiation"
+  ],
+  "RagShortTexts": [
+    "Trading-court rules govern foreign merchants internally.",
+    "The court still negotiates with Novgorodian authorities."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Foreign merchants use court rules such as the schra for shared storage, living and member discipline. Trade and disputes with townspeople still require negotiation. Both internal order and local recognition sustain secure business."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Trading-court guards control warehouse access and releases. They protect people and cargo during disputes; internal discipline does not authorize them to judge conflicts outside the court."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Settlement requires representatives able to bind the court and the parties. Internal rules need locally acceptable outcomes; closures damage revenue on both sides."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Shared quarters expose neighboring cargo to fire and debt trouble. Storage and handover rules reduce loss, while credit with local buyers is built transaction by transaction."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

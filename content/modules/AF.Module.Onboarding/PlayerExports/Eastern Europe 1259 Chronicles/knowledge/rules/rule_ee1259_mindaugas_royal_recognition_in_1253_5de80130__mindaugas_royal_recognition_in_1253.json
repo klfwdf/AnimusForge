@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_mindaugas_royal_recognition_in_1253_5de80130",
+  "Keywords": [
+    "mindaugas royal recognition in 1253",
+    "Mindaugas’ crown of 1253 and recognition"
+  ],
+  "RagShortTexts": [
+    "Mindaugas was baptized in 1251 and crowned in 1253.",
+    "Royal recognition still needs kin and local chiefs’ support."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After baptism, Mindaugas was crowned in 1253 with recognition through papal and Livonian relations. Kin and local chiefs still require cooperation, and Samogitian groups retain their aims. Titles become resources through protection and credible shares."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Coronation does not give every local force identical commands. Partners with prior feuds need particularly clear positions, leaders and duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A crown strengthens diplomacy and raises ecclesiastical expectations. Land and service agreements need actual holders’ participation to produce timely contributions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households judge royal change by safety, demands and church relations. Ceremonial gifts and hosting cost resources; benefits must become visible locally."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

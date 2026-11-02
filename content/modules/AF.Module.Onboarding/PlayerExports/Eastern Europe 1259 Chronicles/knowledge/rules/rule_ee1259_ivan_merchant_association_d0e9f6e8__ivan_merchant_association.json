@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_ivan_merchant_association_d0e9f6e8",
+  "Keywords": [
+    "ivan merchant association",
+    "Ivan merchants weighing and church ties"
+  ],
+  "RagShortTexts": [
+    "Novgorod merchant associations link churches and weighing.",
+    "Membership and shared resources influence trading credit."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Novgorod’s Ivan merchant association links church ties, weighing and common affairs. Members draw on contacts and shared resources, but must still deliver sound goods. Disputes involve buyers and other urban authorities; standing depends on regular performance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts identify owners and receivers; an association’s name does not weigh cargo. A lost parcel may involve several partners, making witnessed handover valuable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "An association can coordinate weighing and purchases, but officials must identify participating members. Assuming every member guarantees a debt damages subsequent cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Merchants weigh and inspect goods and seek buyers, using church and fellow-trader contacts as witnesses. Reputation does not remove losses for bad goods; debts travel through familiar networks."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_winter_food_fuel_and_care_e108169d",
+  "Keywords": [
+    "winter food fuel and care",
+    "Winter seed fuel and care burdens"
+  ],
+  "RagShortTexts": [
+    "Seed, meals and dues compete for household stores.",
+    "Care of the sick needs fuel, labor and shelter."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Winter survival combines grain, preserved food, fuel and shelter. Stores must cover seed and dues as well as meals. Sick people need attendants, warm food and protection from cold; mead is a drink, not a substitute for care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "An injured soldier needs attendants and carrying, not simply another ration entry. Wet clothing and cold complicate recovery; nursing reduces guard strength."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Leaving seed and food for vulnerable people protects another harvest. Assigning casualties to already depleted households deepens shortages despite full collection accounts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Illness removes labor while adding fuel and care work. Borrowing, eating less or selling tools carries costs; neighbors’ help can determine winter survival."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_furs_clothing_and_status_4f7e0f82",
+  "Keywords": [
+    "furs clothing and status",
+    "Costly furs standing and upkeep"
+  ],
+  "RagShortTexts": [
+    "Fine fur clothing displays wealth and standing.",
+    "Acquisition, storage and repair add to clothing costs."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fur caps and coats combine warmth, wealth and ceremony. Species, condition and workmanship affect value. Keeping, repairing and giving furs express relationships; status also depends on person and occasion, not a cap alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Furs warm travelers but add weight and trouble when wet. A guard needs free movement and weapon handling rather than cumbersome display."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A fur gift signals patronage and creates expectations. Inspection and sound keeping ensure costly garments arrive as honor rather than spoiled goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households balance selling fur for food against keeping warmth. Altering old garments costs work, and not everyone has another coat while one is repaired."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_crusading_indulgences_and_obligations_71c5b6d5",
+  "Keywords": [
+    "crusading indulgences and obligations",
+    "Crusading promises confession and duties"
+  ],
+  "RagShortTexts": [
+    "Crusading indulgences depend on authorization and fulfillment.",
+    "Confession and undertaken duties are not replaced by plunder."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Church offers spiritual benefits for authorized crusading, linked to preaching, confession and fulfillment. A temporary expedition differs from joining an order. Family arrangements, equipment and travel still need funding."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A recruit still needs commanders, assembly arrangements and equipment. Different hopes of penance or spoils can clash and undermine discipline."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord’s expedition requires government during absence and finance. Commitments beyond estate resources turn pious standing into debts borne by those remaining."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families keep fields and care for dependants during an expedition. Spiritual promises do not grind household grain; assistance must account for absence and uncertain return."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

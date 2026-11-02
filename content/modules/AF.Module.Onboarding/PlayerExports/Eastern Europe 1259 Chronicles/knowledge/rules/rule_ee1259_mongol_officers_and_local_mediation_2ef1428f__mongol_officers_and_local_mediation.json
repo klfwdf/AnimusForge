@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_mongol_officers_and_local_mediation_2ef1428f",
+  "Keywords": [
+    "mongol officers and local mediation",
+    "Mongol supervision and local intermediaries"
+  ],
+  "RagShortTexts": [
+    "Mongol collection can involve officers and local princes.",
+    "Authority and delivery duties need identifiable holders."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Khanly supervision involves officers, envoys and local princes assigning counting, orders and collection. Townspeople identify documents, instructions and receivers. Local intermediaries explain demands and face pressure from both sides over shortages or resistance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Collection escorts identify messengers and receivers and witness transfers. Adding demands risks conflict and leaves guards accountable for the destination of goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A prince implementing collection gains bargaining access but attracts resentment. Explained demands, responsibilities and receipts reduce opportunities for agents to take extra."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households need acknowledgment before goods leave their hands. Witnesses cost working time but may prevent collection of the same obligation again."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

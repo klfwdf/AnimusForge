@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_earlier_tribute_circuits_3a48cee7",
+  "Keywords": [
+    "earlier tribute circuits",
+    "Tribute circuits and local dues"
+  ],
+  "RagShortTexts": [
+    "Poliudie names ancestral Rus tribute circuits.",
+    "Hosting a collecting retinue consumes local grain and livestock."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Poliudie names the tribute circuits of ancestral Rus princes and their retinues. Gifts and hospitality linked ruler and locality. Current demands require knowing claimant, grounds and delivery point: princely dues and khanly demands can reach the same household."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A collecting escort guards goods and animals and controls its own consumption. Every extra night burdens hosts; goods collected but not delivered create disputes at accounting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Invoking ancestral tribute is easier than defining present authority. Clear demands and witnesses preserve revenue better than several retinues collecting the same obligation repeatedly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households distinguish local dues from khanly demands and need witnesses to prior payment. Repeated hospitality consumes seed stores and spreads disputes over shortfalls among neighbors."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_baptism_names_and_spiritual_kinship_1112d564",
+  "Keywords": [
+    "baptism names and spiritual kinship",
+    "Baptismal names and godparent ties"
+  ],
+  "RagShortTexts": [
+    "Baptism creates religious identity and ties to godparents.",
+    "Baptismal and everyday names can coexist."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At baptism a priest receives the child into the Church through prayer and naming. Godparents witness and undertake religious care. Everyday and baptismal names may coexist; marriage arrangements also require attention to spiritual kinship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Companions may use a household name but give a baptismal name to a priest. Godparenthood entails care, not a drinking oath entitling someone to military aid."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Powerful households gain connections through godparents, but spiritual kinship also constrains marriage. Checking relationships before exchanging gifts prevents disputes after a match is arranged."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Baptizing a child requires a priest and godparents whom relatives trust to provide care. Familiar names persist; the child needs identifiable people, not simply an impressive sponsor."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

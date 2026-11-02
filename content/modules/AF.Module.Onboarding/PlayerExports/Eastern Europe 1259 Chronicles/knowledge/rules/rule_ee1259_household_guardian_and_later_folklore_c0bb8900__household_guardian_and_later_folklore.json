@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_household_guardian_and_later_folklore_c0bb8900",
+  "Keywords": [
+    "household guardian and later folklore",
+    "Household guardian stories and ancestors"
+  ],
+  "RagShortTexts": [
+    "Household guardian tales connect ancestors with family safety.",
+    "Families and clergy differ in their views of such stories."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Elders tell stories of household guardians and ancestors to teach care for hearth, food and family. Belief and habit differ, and clergy may object. One household’s tale does not govern every neighbor; roofs and fires still need tending."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lodgers ask about household customs before moving cherished objects. Stories of protection do not replace checks of doors and hearths during a watch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mediation separates belief disputes from damage to property. Ridicule does not repair a house, and compensation requires identifiable acts and parties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Family tales teach children the value of food and fire, though neighbors differ. Leaks, damp wood and sickness still require ordinary household work."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

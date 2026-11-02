@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_regional_silver_weights_and_currency_12533a66",
+  "Keywords": [
+    "regional silver weights and currency",
+    "Grivna ingots weight and fineness"
+  ],
+  "RagShortTexts": [
+    "Larger payments can use weighed silver and local ingots.",
+    "Weight, fineness and form require checking."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Grivna and other weighed silver serve larger payments. Parties inspect weight, fineness and regional forms. Acceptance settles the obligation; division, reweighing and change add work, while smaller daily exchanges need separate arrangements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Soldiers receiving silver need its accounting weight and local acceptance. Witnessed weighing prevents disputes only discovered when buying food elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Collectors specify the scale for the transaction and check fineness. Named receivers and accounts reduce conflicting claims of short payment after silver changes hands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Weighing delays bargains but limits disputes over quality and shortage. A household holding an ingot still needs someone willing to accept or divide it for food."
+    }
+  ],
+  "TextMappings": []
+}

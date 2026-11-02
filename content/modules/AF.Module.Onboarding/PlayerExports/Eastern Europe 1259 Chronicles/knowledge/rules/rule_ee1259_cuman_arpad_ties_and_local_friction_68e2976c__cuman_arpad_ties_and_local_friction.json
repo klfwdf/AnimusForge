@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_cuman_arpad_ties_and_local_friction_68e2976c",
+  "Keywords": [
+    "cuman arpad ties and local friction",
+    "Cuman Hungarian marriage pasture and service"
+  ],
+  "RagShortTexts": [
+    "Cumans have marriage and service ties with Hungary’s royalty.",
+    "Pasture and local jurisdiction can still cause disputes."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cuman-Hungarian royal marriage and service ties offer protection and military partnership but involve pasture, settlers and local authority. Agreements need acceptance from herders and landholders; kin prestige cannot settle access to water or disputes alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Cuman riders need forage and places for dependants. Joint signals and assembly require agreement; royal marriage does not train unfamiliar contingents to act together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Royal cavalry alliances need workable livelihoods and neighboring land claims resolved. Promised service without pasture arrangements turns costs into local conflict."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Herd routes can meet cultivated fields, requiring mediation over damage. Households judge royal cooperation by compensation and dependable local safety."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

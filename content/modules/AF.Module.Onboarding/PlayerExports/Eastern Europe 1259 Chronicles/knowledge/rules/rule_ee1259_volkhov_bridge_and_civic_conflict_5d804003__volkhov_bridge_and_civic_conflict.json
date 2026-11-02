@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_volkhov_bridge_and_civic_conflict_5d804003",
+  "Keywords": [
+    "volkhov bridge and civic conflict",
+    "Volkhov bridge and urban contention"
+  ],
+  "RagShortTexts": [
+    "The Volkhov bridge joins Novgorod’s two banks.",
+    "Gatherings on the bridge affect movement and urban order."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Volkhov bridge joins trade and daily life on Novgorod’s banks and concentrates people in a narrow place. During civic or princely disputes, gatherings obstruct movement and make the crossing a question of urban authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Bridge guards preserve exits: crowding can turn argument fatal. Blocking every approach also traps food carriers and people trying to help."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Influence depends on districts and participants, not merely possession of a bridgehead. Restored trade reduces anger; spreading conflict harms revenues and credit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Bridge closures interrupt goods and family visits. Some residents avoid crowds while others follow acquaintances; loud urban contention does not express every household’s opinion."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

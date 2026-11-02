@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_mongol_withdrawal_and_religious_memory_4cab671e",
+  "Keywords": [
+    "mongol withdrawal and religious memory",
+    "Novgorod’s deliverance and sacred memory"
+  ],
+  "RagShortTexts": [
+    "Novgorod’s escape from invasion is remembered as divine protection.",
+    "Commemoration and practical defence have distinct functions."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "People thank God and recount a cross story when remembering that Mongol forces did not enter Novgorod. Prayer forms shared memory. Defenders still monitor roads, seasons and reports; gratitude does not fill stores or replace watches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Soldiers can pray without neglecting relief of watches. Reports of changed roads provide time to shelter dependants and must continue despite confidence in sacred protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Commemoration unites a city, but defence needs people and food. Treating bad news as impiety silences the reports residents need for safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households give thanks while remembering refugees and scarcity. Offerings compete with food, and piety can include care for distressed relatives and neighbors."
+    }
+  ],
+  "TextMappings": []
+}

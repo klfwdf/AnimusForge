@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_fishing_under_ice_2aecc418",
+  "Keywords": [
+    "fishing under ice",
+    "Under-ice netting and hauling fish"
+  ],
+  "RagShortTexts": [
+    "Under-ice fishing depends on ice conditions, tools and cooperation.",
+    "The catch still needs carrying, division or preservation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Winter netting requires workable ice, openings and retrieval of the net. Snow, currents and thin ice alter danger, while fish and gear affect returns. Landed fish still require carriage, division or preservation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "An escort on ice avoids crowding and accounts for tools and wet clothing. An expected catch is not a guaranteed ration; an empty net still leaves mouths to feed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Organizers need fishing rights, gear and agreed shares. Demanding a fixed catch regardless of ice risks losing skilled fishers rather than merely missing a meal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Fishing, hauling and preparing the catch require different workers. Sale and winter stores compete for the same fish; unreliable ice routes delay delivery to market."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

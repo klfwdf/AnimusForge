@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_volga_bulgar_metal_craftsmanship_3d4facd0",
+  "Keywords": [
+    "volga bulgar metal craftsmanship",
+    "Volga Bulgar precious metal workshops"
+  ],
+  "RagShortTexts": [
+    "Volga Bulgar craftsmen make precious metal ornaments.",
+    "Materials, skill and patrons’ means shape production."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Volga Bulgar metalwork depends on traded materials, skilled hands and paying buyers. Fine work and joining take time; ornaments can be repaired or remade. Price includes craftsmanship, waste and delivery as well as weight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ornaments require identified ownership during escort. Fine damage may be repairable; crushing an object into metal destroys the labor embodied in it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "An ornament displays standing, but materials and finished work need separate accounting. Haste or nonpayment damages credit and future gift schedules."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Fine wire and joins require steady work; lost material consumes earnings. Repairing old ornaments also serves buyers unable to provide new precious metal."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_cabbage_preservation_and_supply_5fdbb6ea",
+  "Keywords": [
+    "cabbage preservation and supply",
+    "Pickled cabbage brine and storage"
+  ],
+  "RagShortTexts": [
+    "Salting or fermenting vegetables extends keeping.",
+    "Salt, vessels and storage temperature affect losses."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Preparing vegetables with salt and storing them in vessels preserves part of the harvest for leaner seasons. Broken pots, scarce salt and poor keeping waste food; preserved vegetables accompany grain and other provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Army vegetables require heavy, breakable vessels and care after opening. They cannot replace staple rations; cooks also need water and room to clean utensils."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Purchasing preserved vegetables includes salt, vessels and carriage. Counting spoiled pots as full rations inflates stores beyond the food actually available."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households need salt and suitable pots before preserving vegetables. Spoilage loses both produce and work; opening winter stores requires balancing current meals against continued keeping."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

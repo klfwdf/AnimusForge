@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_portages_and_watershed_costs_1b91cda8",
+  "Keywords": [
+    "portages and watershed costs",
+    "Watershed portage and changing boats"
+  ],
+  "RagShortTexts": [
+    "Transport between watersheds needs an overland link.",
+    "Workers, animals, tracks and permission affect transfer."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Watershed links require hauling, carrying or changing vessels. Water cargo becomes a land load, with tracks, seasons and permissions affecting labor. Dragging the whole boat may cost more than unloading; receivers and lodging must be found beyond."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Portage escorts divide between boats and goods and keep the receiving party in contact. Heavy loads demand protection around handover points, not one river alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Portage income needs maintained tracks, workers and recognized passage. Unexpected demands divert traders; a charge should provide an actual onward connection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Porters and animals need food, rest and maintained gear. Payment tied only to final sale leaves workers carrying the cost of muddy tracks or delayed boats."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

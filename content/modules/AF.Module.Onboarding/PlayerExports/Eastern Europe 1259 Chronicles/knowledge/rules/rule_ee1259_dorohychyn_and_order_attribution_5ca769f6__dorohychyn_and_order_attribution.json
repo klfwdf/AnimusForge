@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_dorohychyn_and_order_attribution_5ca769f6",
+  "Keywords": [
+    "dorohychyn and order attribution",
+    "Dorohychyn contested in 1238"
+  ],
+  "RagShortTexts": [
+    "Danylo acted militarily at Dorohychyn in 1238.",
+    "A local success still requires roads and garrison support."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Danylo’s action at Dorohychyn in 1238 sought local control amid ties to religious military and neighboring powers. Roads, takeover and provisions still needed arranging; continuing protection made success a durable claim."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "After taking a post such as Dorohychyn, troops secure equipment and entrances. Concentrating on spoils leaves control vulnerable to renewed outside support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Local victory increases bargaining weight without ending neighboring claims. Residence costs, collection and civic recognition continue after success is reported."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Residents want less conflict but fear renewed demands. Property, debts and occupied lodging require identifiable claimants; a changed banner does not compensate every loss."
+    }
+  ],
+  "TextMappings": []
+}

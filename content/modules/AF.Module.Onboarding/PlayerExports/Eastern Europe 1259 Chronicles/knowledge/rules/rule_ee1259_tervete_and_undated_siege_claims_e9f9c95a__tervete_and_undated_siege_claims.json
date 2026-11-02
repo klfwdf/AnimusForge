@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_tervete_and_undated_siege_claims_e9f9c95a",
+  "Keywords": [
+    "tervete and undated siege claims",
+    "Tērvete local defence and harvests"
+  ],
+  "RagShortTexts": [
+    "Tērvete is linked to Semigallian local power.",
+    "Defence requires stores, labor and partners."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tērvete’s defence draws on its strongpoint, nearby harvests and cooperating chiefs. Concentration adds defenders but also food and shelter needs. Repairs, warnings and contact with neighbors require advance preparation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Tērvete needs repairers, watchers and carriers as well as fighters. Promised aid cannot fill a daily shortage unless it reaches the approaches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Aid requests specify food and hosting capacity. A shared enemy does not create unlimited supplies; protecting nearby harvests supports endurance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Nearby families supply the post and seek shelter. Dependants arriving with them need food and room; unequal allocation creates anger before fighting begins."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

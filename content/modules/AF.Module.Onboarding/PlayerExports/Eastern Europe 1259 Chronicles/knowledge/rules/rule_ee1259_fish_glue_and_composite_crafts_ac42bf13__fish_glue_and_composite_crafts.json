@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_fish_glue_and_composite_crafts_ac42bf13",
+  "Keywords": [
+    "fish glue and composite crafts",
+    "Fish glue drying and composite joints"
+  ],
+  "RagShortTexts": [
+    "Animal glue joins components in composite objects.",
+    "Materials, drying and damp affect the joint."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Animal glues, including fish glue, join components. Preparation, clean surfaces and drying affect strength. A repairer distinguishes failed glue from broken parts; damp and haste increase the risk of renewed separation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A glued repair needs time before loading. Hasty use ruins the work; stored glue and a skilled repairer are both needed with a traveling force."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Glue buyers need craftsmen who judge suitability. Overstocking without proper keeping wastes money; scheduled repair time saves more material than repeated demands for speed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Glue work consumes vessels, fuel and attention. A failed batch wastes materials; repairers inspect load and damp exposure before rejoining or replacing parts."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

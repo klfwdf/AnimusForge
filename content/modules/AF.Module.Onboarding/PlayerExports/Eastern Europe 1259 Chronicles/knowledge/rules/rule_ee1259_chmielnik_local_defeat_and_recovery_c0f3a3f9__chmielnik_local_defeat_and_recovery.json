@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_chmielnik_local_defeat_and_recovery_c0f3a3f9",
+  "Keywords": [
+    "chmielnik local defeat and recovery",
+    "Chmielnik’s defeat in 1241 and rebuilding"
+  ],
+  "RagShortTexts": [
+    "Chmielnik’s defeat in 1241 belongs to the invasion of Lesser Poland.",
+    "Loss and displacement require continuing recovery."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Chmielnik’s defeat in 1241 burdened Lesser Poland’s forces and households with loss, missing people and damaged livelihoods. Recovery needs food, roads and local cooperation as well as another levy. Memory shapes responses to fresh warnings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Chmielnik’s memory raises fears of delayed assembly and lost support. Accurate reports and withdrawal contacts preserve a force better than inflating every warning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Reconstitution depends on surviving households and horses. Protecting producers and existing posts makes a later assembly more than a nominal levy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Missing relatives and lost animals leave prolonged deficits. A family facing another demand may still lack the resources lost in the earlier invasion."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

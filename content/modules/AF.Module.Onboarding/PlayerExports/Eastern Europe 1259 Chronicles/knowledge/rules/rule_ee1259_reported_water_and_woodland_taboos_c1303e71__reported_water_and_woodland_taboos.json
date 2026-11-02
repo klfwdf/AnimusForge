@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_reported_water_and_woodland_taboos_c1303e71",
+  "Keywords": [
+    "reported water and woodland taboos",
+    "Reported water and woodland taboos"
+  ],
+  "RagShortTexts": [
+    "People tell water and woodland stories about danger.",
+    "A teller distinguishes personal experience from hearsay."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Villagers tell strange stories of water and woods: some fear taboos, others use tales to warn children. Versions differ. Deep water, unfamiliar forest and night travel pose tangible risks, prompting questions about place and witnesses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Night guards check sounds together rather than pursue alone. Belief differs within a unit; ridiculing frightened companions can damage discipline more than a tale."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Taboos affect willingness to guide or work. Understanding a particular concern and alternatives preserves cooperation better than dismissing an entire village."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Stories warn children away from dangerous water, though neighbors differ. A missing person still needs boats, ropes and searchers familiar with the place."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

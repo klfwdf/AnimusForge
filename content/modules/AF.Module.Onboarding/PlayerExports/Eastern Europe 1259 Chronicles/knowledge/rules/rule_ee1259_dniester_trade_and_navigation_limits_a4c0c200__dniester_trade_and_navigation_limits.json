@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_dniester_trade_and_navigation_limits_a4c0c200",
+  "Keywords": [
+    "dniester trade and navigation limits",
+    "Dniester shallows and staged freight"
+  ],
+  "RagShortTexts": [
+    "The Dniester links Carpathian areas toward the Black Sea.",
+    "Shallows, transfers and local control affect freight."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Dniester leads toward the Black Sea through reaches shaped by shallows, transfers and local control. One usable stretch does not secure the next. Loads, seasons and receivers determine whether landed grain becomes available food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Grain guards coordinate mooring and transfer with boatmen. The advance must not abandon deeper-loaded boats; receivers and patrols compete for people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Freight planners identify custody at each stage. Staged reserves cope with delays better than expecting every vessel to arrive together by one route."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Boatmen and porters need food during shallow-water delays. Payment only on delivery can leave those with least capital financing spoilage and waiting."
+    }
+  ],
+  "TextMappings": []
+}

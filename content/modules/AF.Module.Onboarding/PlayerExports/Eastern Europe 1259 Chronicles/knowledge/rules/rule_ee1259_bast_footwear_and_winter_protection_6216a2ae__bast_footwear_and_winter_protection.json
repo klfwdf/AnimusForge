@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_bast_footwear_and_winter_protection_6216a2ae",
+  "Keywords": [
+    "bast footwear and winter protection",
+    "Bast shoes foot wrapping and replacement"
+  ],
+  "RagShortTexts": [
+    "Bast shoes are woven from accessible plant fibers.",
+    "Wear, wet and warmth require continued care."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bark or bast can be woven into footwear, but accessible material does not guarantee durability. Walkers need foot wraps and replacements and must deal with wet feet. Rough ground, loads and cold determine wear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Worn footwear leads to straggling, making foot inspection important at stops. Spare bast shoes cannot make unsafe ice or bog ground passable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Foot levies need replacement footwear as well as headcounts. Materials and pauses preserve labor; forcing injured feet onward creates more carrying work."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Gathering and weaving bast take time despite familiar materials. Spare shoes compete with other seasonal work, and dry foot wraps remain necessary in wet cold."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_northern_ivory_and_long_routes_5d745a91",
+  "Keywords": [
+    "northern ivory and long routes",
+    "Northern ivory intermediaries and carriage"
+  ],
+  "RagShortTexts": [
+    "Walrus ivory reaches distant buyers through successive exchanges.",
+    "Hunting, carriage and intermediaries affect its price."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Northern ivory and furs pass through hunters, buyers and carriers. Value must cover hunting, carriage and storage losses. A high final price need not reach the hunter, who may not know the eventual use."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ivory escorts guard against breakage and missing parcels. Handover records of pieces and damage prevent blame for a crack that predates their journey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Taxing distant goods requires owners and values. Excess demands divert trade; market prices without carriage costs exaggerate taxable returns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Hunters need food and tools before the next buyer arrives. Traders inspect ivory and damage; rarity alone does not supply a paying customer."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

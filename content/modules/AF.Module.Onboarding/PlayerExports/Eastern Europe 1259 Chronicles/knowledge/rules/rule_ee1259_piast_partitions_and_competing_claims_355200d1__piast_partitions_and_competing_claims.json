@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_piast_partitions_and_competing_claims_355200d1",
+  "Keywords": [
+    "piast partitions and competing claims",
+    "Piast appanages and succession claims"
+  ],
+  "RagShortTexts": [
+    "Piast partitions create several centers of power.",
+    "Succession depends on kinship, recognition and effective strength."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Piast relatives hold lands and followers in different duchies. Succession combines kin precedence, local recognition and control of castles. Revenues and guards sustain allotted rights; marriages and compromises reduce conflict while creating further claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Related princes may issue opposing orders. Garrison holders need credible provision and backing; changing a banner is easier than restoring supplies after neighboring support is lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Partition concerns revenues, retainers and marriage promises as well as boundaries. Concessions can prevent war but need authority over local disputes and arrears defined."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households fear rival rent demands on the same land. Witnesses and agreements help; traders must learn which guarantor a changed checkpoint recognizes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

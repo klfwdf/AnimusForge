@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_registration_civic_resistance_and_compromise_65d4e21f",
+  "Keywords": [
+    "registration civic resistance and compromise",
+    "Novgorod’s 1259 registration dispute"
+  ],
+  "RagShortTexts": [
+    "Novgorod disputes khanly registration in 1259.",
+    "Alexander presses for the registration to proceed."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Novgorod disputes khanly registration amid concerns over autonomy, unequal burdens and princely authority. Alexander presses it forward, but urban opinion differs. Inclusion and subsequent collection make counting important to households and elites alike."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Registration guards manage access and crowds. Treating every objection as mutiny can turn a negotiable process into street violence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Implementers face both khanly demands and urban inequality. Identified counters and receivers reduce resentment caused by intermediaries adding their own demands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Residents fear increased obligations and shifted shortfalls. Comparing entries with neighbors costs time but provides witnesses to what was reported."
+    }
+  ],
+  "TextMappings": []
+}

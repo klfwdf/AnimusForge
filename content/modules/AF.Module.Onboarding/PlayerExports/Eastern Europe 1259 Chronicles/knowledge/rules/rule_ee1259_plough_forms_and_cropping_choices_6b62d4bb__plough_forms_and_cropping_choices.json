@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_plough_forms_and_cropping_choices_6b62d4bb",
+  "Keywords": [
+    "plough forms and cropping choices",
+    "Sokha light plough soils and draft power"
+  ],
+  "RagShortTexts": [
+    "A light plough’s usefulness depends on soil and draft animals.",
+    "Maintained tools and seed reserves sustain the next crop."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A sokha-type light implement suits particular ground; soil, roots and draft power change the work. Households repair tools and reserve seed. More cultivated land also requires sowing, harvesting and storage labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Campaigning removes workers and draft power during limited seasons. An injured requisitioned animal reduces both transport and its household’s cultivated ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Equal labor days impose unequal losses across draft resources. Preserving seed and tools sustains future rents better than short-term extraction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Broken tools need woodwork and iron repairs; borrowed animals create obligations. Harvest must cover seed, dues and these costs before household meals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

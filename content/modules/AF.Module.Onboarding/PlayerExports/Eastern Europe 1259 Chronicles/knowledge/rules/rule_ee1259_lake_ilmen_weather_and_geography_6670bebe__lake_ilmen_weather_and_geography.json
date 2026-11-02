@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_lake_ilmen_weather_and_geography_6670bebe",
+  "Keywords": [
+    "lake ilmen weather and geography",
+    "Ilmen waves and the Volkhov outlet"
+  ],
+  "RagShortTexts": [
+    "Lake Ilmen waves affect loading and landing.",
+    "The Volkhov flows out of Lake Ilmen."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wind over open Lake Ilmen complicates travel. Loads, shores and weather govern departure and shelter. The Volkhov flows from the lake, but reaching its outlet does not make every onward reach suitable for a fully loaded vessel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lake escorts cannot halt as on a road. Crowd movement and shifted loads worsen danger in wind; balance and the hull may matter more than clinging to each parcel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lake grain schedules need weather allowances. Staged deliveries and reserves reduce shortages without forcing boatmen into dangerous departures."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sheltered stops delay goods and anxious households. Contracts need responsibility for spoilage and delay rather than assigning all weather loss to boatmen."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

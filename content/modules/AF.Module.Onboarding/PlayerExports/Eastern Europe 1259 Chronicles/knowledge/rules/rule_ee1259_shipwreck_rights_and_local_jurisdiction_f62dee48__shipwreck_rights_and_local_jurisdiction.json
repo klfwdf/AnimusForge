@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_shipwreck_rights_and_local_jurisdiction_f62dee48",
+  "Keywords": [
+    "shipwreck rights and local jurisdiction",
+    "Wrecked cargo salvage and competing rights"
+  ],
+  "RagShortTexts": [
+    "Wrecked cargo involves owners, salvors and shore claimants.",
+    "Rescue costs and compensation require specific negotiation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A wreck creates rescue, salvage and ownership disputes together. Owners, shore holders and helpers make claims. Guarding recovered goods and witnessing recovery help distinguish ownership and reasonable carriage costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wreck guards protect people and count recovered goods. Private taking compromises rescuers and the shore’s reputation with future traders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Protecting merchants builds port credit while salvors need payment. Defined custody and adjudication reduce conflict better than unrestricted claims of custom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Shore helpers risk themselves and working time while owners may have lost a vessel. Witnessed damage and custody help both sides negotiate compensation."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

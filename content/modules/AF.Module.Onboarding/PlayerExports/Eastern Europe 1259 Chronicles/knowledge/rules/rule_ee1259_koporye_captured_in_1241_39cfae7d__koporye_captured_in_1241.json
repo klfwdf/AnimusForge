@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_koporye_captured_in_1241_39cfae7d",
+  "Keywords": [
+    "koporye captured in 1241",
+    "Koporye recovered in 1241"
+  ],
+  "RagShortTexts": [
+    "Alexander took the Koporye strongpoint in 1241.",
+    "Its control affects Votian territory and nearby supplies."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alexander took Koporye in 1241, changing Livonian frontier activity and control in Votian lands. Holding it also requires roads, food and local cooperation. Capture and sustained residence impose connected but different burdens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Koporye’s capture highlights access and outside support. After success, troops need stores and repairs; pursuit can distract from the work needed to hold a newly taken post."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Winning neighboring cooperation takes more than a changed banner. Defined garrison duration and provisioning prevent the same households carrying every burden."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Neighbors judge changes by transit and dues. Displaced households recovering animals and fields cannot instantly provide extra surplus to a replacement garrison."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

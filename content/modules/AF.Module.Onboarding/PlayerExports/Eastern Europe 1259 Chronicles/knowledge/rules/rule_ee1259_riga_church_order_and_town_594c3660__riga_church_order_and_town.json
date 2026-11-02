@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_riga_church_order_and_town_594c3660",
+  "Keywords": [
+    "riga church order and town",
+    "Riga church Order and town jurisdiction"
+  ],
+  "RagShortTexts": [
+    "Riga’s church, Order and town maintain distinct claims.",
+    "Land, revenue and justice disputes require negotiation."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Riga’s church, Order and town depend on one another while contesting land, revenues and justice. Ecclesiastical authority, military command and merchant rules differ. Parties and location matter; market closure or force can damage shared income."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Riga guards identify whose gate and command they serve. A cargo dispute is not automatically military business; force can enlarge a compensable quarrel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Representatives must bind their own parties and deliver compensation. Accepting one judgment does not surrender all land or revenue rights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Townspeople need venues for debt and damage claims. Jurisdictional delay strands goods; protection means keeping weighing, docks and deliveries working."
+    }
+  ],
+  "TextMappings": []
+}

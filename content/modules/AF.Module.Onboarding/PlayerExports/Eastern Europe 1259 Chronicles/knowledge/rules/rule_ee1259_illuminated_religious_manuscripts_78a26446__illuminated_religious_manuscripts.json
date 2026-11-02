@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_illuminated_religious_manuscripts_78a26446",
+  "Keywords": [
+    "illuminated religious manuscripts",
+    "Sacred book gold pigments and patrons"
+  ],
+  "RagShortTexts": [
+    "Decorated books require scribes, pigments and patronage.",
+    "Gold decoration and binding add time and expense."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A decorated sacred book needs planned spaces for script and pictures, then writing, painting, gold work and binding. Worship and a patron’s standing are linked. Costly materials make mistakes and transport damage painful; several craftspeople contribute to one volume."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "When escorting a sacred book, sound packing and dry storage matter more than displaying gold. Crushing the spine or soaking its chest damages text needed for worship as well as wealth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A sacred-book commission displays piety and standing. Promised gold still needs scribes and liturgical planning; premature presentation dates turn patronage into debt or broken promises."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Painters, scribes and binders depend on one another’s work. Limited gold can mean less decoration, but replacing a ruined leaf also discards the labor already invested in it."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

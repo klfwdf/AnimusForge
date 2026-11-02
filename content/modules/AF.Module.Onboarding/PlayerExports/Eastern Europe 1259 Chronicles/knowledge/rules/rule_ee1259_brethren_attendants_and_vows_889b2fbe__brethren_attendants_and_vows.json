@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_brethren_attendants_and_vows_889b2fbe",
+  "Keywords": [
+    "brethren attendants and vows",
+    "Knight brethren and lay attendants"
+  ],
+  "RagShortTexts": [
+    "Order brethren differ in status from employees and attendants.",
+    "Vows do not remove food, equipment and care requirements."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "An Order house contains knight brethren, other brethren, employees and lay attendants with different duties. Vows bind professed members; hired and temporary followers have other arrangements. Kitchens, stables and workshops sustain armed service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A spear-bearing attendant needs defined stable, equipment or fighting duties and a food provider. Proximity to a knight does not confer the same status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Householders distinguish professed duties from paid work in discipline and reward. Unpaid labor or depleted stables harms effective strength despite martial appearances."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Cooks and repairers sustain the house without necessarily sharing its vows. Their work needs food and payment; families cannot live on promised spiritual merit."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

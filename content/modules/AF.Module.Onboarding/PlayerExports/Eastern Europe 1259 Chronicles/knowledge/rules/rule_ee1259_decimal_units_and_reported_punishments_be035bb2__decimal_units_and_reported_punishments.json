@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_decimal_units_and_reported_punishments_be035bb2",
+  "Keywords": [
+    "decimal units and reported punishments",
+    "Mongol decimal grouping and military accountability"
+  ],
+  "RagShortTexts": [
+    "Mongol forces use decimal groupings.",
+    "Discipline depends on identifiable command and shared duties."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mongol decimal groupings assign command and shared duties. Severe punishment promotes caution, but food, horse care and returning reports still need people. Organization does not remove fear, fatigue or individual judgment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Soldiers know their group and its command and seek verified contact after dispersal. Concealed injuries or lost horses mislead companions about usable strength."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Unit assignments aid accountability, but lost contact, shortage and disobedience differ. Calling every failure cowardice turns reports into flattery and impairs planning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Supporting households tend supplies and casualties. They need identifiable receivers within military units so severe demands do not collect the same goods twice."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

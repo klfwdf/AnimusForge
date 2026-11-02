@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_charters_settlement_and_obligations_949d514f",
+  "Keywords": [
+    "charters settlement and obligations",
+    "Town charters and masonry work"
+  ],
+  "RagShortTexts": [
+    "Charters arrange land, justice and local duties.",
+    "Masonry also requires materials, craftsmen and carriage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Privileges such as Chełmno arrangements attract settlers with defined land, justice and duties. Construction separately needs masonry, timber, craftsmen and carriage. Rights and building each require implementation by people who also maintain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Construction guards protect materials and carts while unfinished work creates weak points. Calling carriers into battle also halts repairs and expected completion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Building plans define material suppliers, pay and resident labor. Endless additional duties discredit settlement privileges; limits help retain settlers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Craftspeople and carriers depend on timely materials and unloading. Settlers still need farm labor; prolonged building service can make granted land impossible to cultivate."
+    }
+  ],
+  "TextMappings": []
+}

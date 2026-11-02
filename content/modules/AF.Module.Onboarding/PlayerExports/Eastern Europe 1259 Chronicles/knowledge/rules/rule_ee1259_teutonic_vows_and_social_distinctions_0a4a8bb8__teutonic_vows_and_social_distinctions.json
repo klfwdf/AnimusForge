@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_teutonic_vows_and_social_distinctions_0a4a8bb8",
+  "Keywords": [
+    "teutonic vows and social distinctions",
+    "Order vows of poverty chastity and obedience"
+  ],
+  "RagShortTexts": [
+    "Professed brethren follow vows and communal discipline.",
+    "Personal poverty can coexist with the Order’s property."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Professed brethren bind themselves to poverty, chastity and obedience under communal arrangements. Houses still manage land, provisions and equipment. Visitors and employees have different status; shared belief requires daily organization to sustain service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A brother accounts for issued equipment and distinguishes damage from private taking. Reporting sick horses or shortages enables repair rather than undermining obedience."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Estate revenues must reach the house. Vows cannot deliver carts; discipline distinguishes neglect, accident and shortage to avoid producing concealed problems."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Paid workers need food and wages without sharing lifelong vows. Estates and workshops depend on them; neglecting costs interrupts the house’s daily supplies."
+    }
+  ],
+  "TextMappings": []
+}

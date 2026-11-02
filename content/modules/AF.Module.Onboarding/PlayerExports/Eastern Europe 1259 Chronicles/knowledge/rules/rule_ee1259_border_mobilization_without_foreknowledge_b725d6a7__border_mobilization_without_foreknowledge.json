@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_border_mobilization_without_foreknowledge_b725d6a7",
+  "Keywords": [
+    "border mobilization without foreknowledge",
+    "Order and Samogitian mobilization in 1259"
+  ],
+  "RagShortTexts": [
+    "Order and Samogitian forces need provisions in 1259.",
+    "Partners’ willingness affects the forces assembled."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Order and Samogitian mobilization combines manpower, provisions and willing partners. Promised aid needs actual numbers, residence and supply. A local group may accept one operation without accepting every additional demand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Early or late arrivals strain hosts. Waiting troops must preserve supplies and agree signals and positions with unfamiliar partners rather than trust a shared enemy alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Planning distinguishes committed participants from friendly labels. Disagreement over one objective need not end every form of cooperation; bounded terms preserve support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households feeding assemblies count remaining seed and fuel. If promised protection brings only extra demands, residents may evade deliveries."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

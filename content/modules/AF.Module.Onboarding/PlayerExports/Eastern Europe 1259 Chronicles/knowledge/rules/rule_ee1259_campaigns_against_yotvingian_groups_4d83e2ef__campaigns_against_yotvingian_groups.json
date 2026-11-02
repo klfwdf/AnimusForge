@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_campaigns_against_yotvingian_groups_4d83e2ef",
+  "Keywords": [
+    "campaigns against yotvingian groups",
+    "Danylo Polish campaigns and Yotvingian resistance"
+  ],
+  "RagShortTexts": [
+    "Danylo and Polish princes campaigned in Yotvingian lands.",
+    "Frontier security, tribute and alliances shaped the campaigns."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Danylo and Polish princes campaigned among Yotvingian groups for security, tribute and recognition. Local groups resist, negotiate or withdraw; receiving tribute once does not put every woodland settlement under equal control."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Yotvingian woodland campaigning requires attention to side tracks and return routes. Tribute and captives slow the column; rear protection competes with the advance for manpower."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Polish partners need agreed aims and shares. A local leader’s promise does not bind every neighboring group, so continued tribute collection requires identifiable parties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Frontier households fear raids and campaigning armies consuming stores. Return to fields, recovered animals and reopened exchange matter more immediately than distant declarations of pacification."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

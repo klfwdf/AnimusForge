@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_smolensk_and_lithuanian_frontier_claims_62e08fcc",
+  "Keywords": [
+    "smolensk and lithuanian frontier claims",
+    "Smolensk western crossing watches"
+  ],
+  "RagShortTexts": [
+    "Lithuanian pressure affects Smolensk’s western approaches.",
+    "Crossing watches and local assembly compete for manpower."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Smolensk links Dnieper traffic and western roads. Lithuanian pressure makes crossings, trade and village reports important. Raiding parties and rumors mingle, so assembly requires locations, directions and usable routes while preserving exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Crossing guards report what they see rather than invent an army total. Pursuit thins landing watches; known returns and neighboring signals prevent isolation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Western defence needs ferries, watches and food together. Excess levy damages harvest revenue; functioning trade also brings information that blanket closure would interrupt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roadside families shelter people and animals at the cost of work. Alarming news can depress town prices, making reliable reports important to their livelihood."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

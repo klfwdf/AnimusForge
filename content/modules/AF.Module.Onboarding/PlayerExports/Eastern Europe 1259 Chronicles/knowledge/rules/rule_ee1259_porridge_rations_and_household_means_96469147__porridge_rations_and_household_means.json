@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_porridge_rations_and_household_means_96469147",
+  "Keywords": [
+    "porridge rations and household means",
+    "Kasha grain water fuel and shares"
+  ],
+  "RagShortTexts": [
+    "Porridge uses locally available grain.",
+    "Water, fuel and cookware determine its preparation and distribution."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kasha uses available grain, with thickness and additions shaped by stores and means. Cooking needs vessels, fuel, water and tending; a bag of grain in camp is not yet a hot meal for everyone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Cooking requires water and fire parties as others guard. Hasty departure wastes uncooked grain; the rear needs time to receive its meal too."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ration accounts need cookware and cooks as well as stored grain. Feast additions without a regular source are a poor basis for daily supply planning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households balance porridge against seed and dues and fuel for each pot. Thinner food reaches more bowls without creating additional grain."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

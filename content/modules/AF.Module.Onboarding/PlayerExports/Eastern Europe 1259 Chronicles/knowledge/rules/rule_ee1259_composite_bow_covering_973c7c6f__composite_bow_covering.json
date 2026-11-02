@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_composite_bow_covering_973c7c6f",
+  "Keywords": [
+    "composite bow covering",
+    "Horn sinew bow glue and damp"
+  ],
+  "RagShortTexts": [
+    "Wood, horn, sinew and glue share the load in a composite bow.",
+    "Damp and damaged glue layers impair the bow."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A horn-and-sinew composite bow combines materials whose glue joints and coverings need care. Archers inspect strings and joins and avoid prolonged damp or careless heating. A damaged bow requires skilled repair, not simply a replacement string."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "On wet marches an archer protects the bow and spare strings, then checks joins. Pulling through unusual noises or separation may destroy a repairable bow; pursuit cannot replace maintenance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Supporting archers requires string material, suitable arrows and skilled repairers. Money cannot instantly replace damage; weather and repair locations limit the number of usable bows on campaign."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Bow materials need joining, shaping and time to set. Rushed work wastes horn, sinew and glue; buyers denying drying and adjustment time bear breakage and replacement costs."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

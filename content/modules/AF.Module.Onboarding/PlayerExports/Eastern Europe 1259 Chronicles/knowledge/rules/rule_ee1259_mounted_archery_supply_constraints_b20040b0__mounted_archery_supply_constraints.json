@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_mounted_archery_supply_constraints_b20040b0",
+  "Keywords": [
+    "mounted archery supply constraints",
+    "Mounted archery bowstrings arrows and horses"
+  ],
+  "RagShortTexts": [
+    "Mounted archery depends on bows, practice and horses.",
+    "Damp, fatigue and scarce arrows limit continued action."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mongol mounted archery combines riding, shooting and unit movement. Glue joints, strings, arrows and horses need care. Distance and contact with companions matter; fatigue, damp and exhausted arrows force changes and replenishment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "An archer watches mount and formation as well as target. Replenishment requires contact with support; riding fastest may outrun one’s own arrows and remounts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mounted archers cost arrows, strings, forage and training. Forced pursuit reduces next-day usable strength below nominal numbers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Arrow makers and bow repairers need materials and time, while supporting households tend spare horses. Neglected contributors mean shortages of arrows and remounts."
+    }
+  ],
+  "TextMappings": []
+}

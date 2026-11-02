@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_tar_use_and_unsupported_cures_36768c25",
+  "Keywords": [
+    "tar use and unsupported cures",
+    "Birch tar maintenance and healing claims"
+  ],
+  "RagShortTexts": [
+    "Tar is used to maintain objects and leather.",
+    "Skin complaints still need inspection and care."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Heated birch bark yields tar for some leather and object maintenance. Production needs materials, vessels and fuel. Healing claims also circulate, but sufferers watch reactions and seek care for persistent pain or sores rather than trust smell as proof of benefit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Leather care is not skin treatment. If an application worsens pain, a traveler stops and seeks help rather than turn a minor complaint into inability to march."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Maintenance supplies and patient care need separate planning. Cheap tar cannot replace attendants; rewarding extravagant cures wastes patients’ time and working capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tar makers tend heat and vessels. A rumor of healing differs from experience; sick relatives still need food, cleanliness and rest."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

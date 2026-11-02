@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_crossbows_and_winding_devices_ff6dc4d5",
+  "Keywords": [
+    "crossbows and winding devices",
+    "Crossbow strings spanning and reloading"
+  ],
+  "RagShortTexts": [
+    "Spanning and loading a crossbow require time and working space.",
+    "Damaged strings impair tension and safe use."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A crossbow separates spanning from aiming, but the user must span, load and inspect its particular mechanism. Strings and bolts require careful storage. Reloading leaves little freedom to hold a shield, so position and protection by companions affect its usefulness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "After shooting, a crossbowman needs room to span and a clear line past companions. Frayed strings or ill-fitting bolts make hurried loading hazardous; cover is valuable during the pause."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Crossbow service costs strings, shafts and practice, with loading room on the walls. Recruiting users does not make every stored bow compatible with every bundle of bolts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Bolt and string makers need suitable materials, and buyers inspect rather than merely count bundles. Damp storage increases upkeep; neglected items may disable weapons when the town needs them."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

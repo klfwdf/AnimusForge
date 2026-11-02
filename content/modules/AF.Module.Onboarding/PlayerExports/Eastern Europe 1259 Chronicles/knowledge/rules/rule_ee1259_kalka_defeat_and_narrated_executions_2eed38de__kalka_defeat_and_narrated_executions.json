@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_kalka_defeat_and_narrated_executions_2eed38de",
+  "Keywords": [
+    "kalka defeat and narrated executions",
+    "Kalka’s 1223 defeat and captive memory"
+  ],
+  "RagShortTexts": [
+    "Rus and Cuman forces were defeated at Kalka in 1223.",
+    "People recount brutal treatment of captives after the battle."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus and Cuman forces were defeated at Kalka in 1223. People fear failures of coordination and withdrawal when recalling it. Tellers describe brutal treatment of captive princes, including deaths beneath boards, making kin wary of surrender promises and captive arrangements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kalka’s memory makes soldiers value contact and retreat. When surrounded, they ask who can negotiate and guarantee return before laying down arms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Coalition chiefs need agreed command and movement. Captive talks require people able to bind guards; dignified oaths alone cannot protect relatives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families mourn and fear renewed separation. Finding captives and raising ransom needs reliable news and intermediaries; frightening stories cannot bring relatives home."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}
