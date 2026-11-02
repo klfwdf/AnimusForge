@@ -13,16 +13,14 @@ namespace AnimusForge;
 /// - Duels started in the camp stay in place (DuelBehavior routes them here) and both
 ///   duelists are moved into the fenced ring first; camp life leaves them alone until
 ///   the duel's own logic gives them back.
-/// - With prisoners, an execution ground is laid out; the player's own Vengeance site
-///   preset for beheading (if any) replaces the default block and gallows at that spot.
-///   Frequency: everything here runs once per duel / once per camp mission.
+/// - Camp layout reserves no apparatus. The player chooses and confirms the execution site
+///   through the existing B-key builder; camp entry never selects a saved preset.
+///   Frequency: duel work runs once per duel; no automatic execution prop work.
 /// </summary>
 public sealed partial class FieldCampMissionLogic
 {
-	private const string ExecutionPresetMethod = "beheading";
 
 	private readonly HashSet<Agent> _duelists = new HashSet<Agent>();
-	private readonly List<GameEntity> _executionPieces = new List<GameEntity>();
 	private float _duelReleaseCheck;
 
 	/// <summary>
@@ -171,78 +169,6 @@ public sealed partial class FieldCampMissionLogic
 
 	// ---------- execution ground ----------
 
-	/// <summary>
-	/// Spawns the pieces of the player's newest saved beheading site preset at the
-	/// execution ground (preset local x = right, y = forward, as in Vengeance). Returns
-	/// false when there is no usable user preset, so the default block and gallows stay.
-	/// </summary>
-	private bool TryPlaceExecutionPreset()
-	{
-		if (!_layout.HasExecutionGround)
-		{
-			return false;
-		}
-		RichExecutions.Customization.ExecutionSitePreset preset = null;
-		try
-		{
-			IReadOnlyList<RichExecutions.Customization.ExecutionSitePresetLoadResult> all = RichExecutions.Customization.ExecutionSitePresetStore.LoadAll(ExecutionPresetMethod);
-			for (int i = all.Count - 1; i >= 0 && preset == null; i--)
-			{
-				if (all[i].IsValid && !all[i].Path.StartsWith("<built-in>", StringComparison.Ordinal))
-				{
-					preset = all[i].Preset;
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log(LogSource, "[WARN] execution preset load failed: " + ex.Message);
-			return false;
-		}
-		if (preset == null)
-		{
-			return false;
-		}
-		Vec2 forward = ToWorldDirection(_layout.ExecutionFacing);
-		Vec2 right = new Vec2(forward.y, -forward.x);
-		Vec3 origin = ToWorld(_layout.ExecutionCenter);
-		int placed = 0;
-		foreach (RichExecutions.Customization.ExecutionSitePiece piece in preset.Pieces)
-		{
-			if (piece == null || piece.ResourceType != RichExecutions.Customization.ExecutionSiteResourceType.Prefab || string.IsNullOrWhiteSpace(piece.ResourceKey)
-				|| RichExecutions.Customization.ExecutionSitePresetStore.IsObsoletePiece(piece) || !GameEntity.PrefabExists(piece.ResourceKey))
-			{
-				continue;
-			}
-			RichExecutions.Customization.ExecutionPresetTransform tr = piece.Transform;
-			Vec2 flat = origin.AsVec2 + right * tr.X + forward * tr.Y;
-			Vec3 pos = new Vec3(flat.x, flat.y, FieldCampProps.LowestTerrain(Mission.Scene, flat, 0.4f) + tr.Z);
-			MatrixFrame frame = new MatrixFrame(Mat3.CreateMat3WithForward(new Vec3(forward.x, forward.y, 0f)), pos);
-			const float deg = MathF.PI / 180f;
-			frame.rotation.RotateAboutUp(tr.Yaw * deg);
-			frame.rotation.RotateAboutSide(tr.Pitch * deg);
-			frame.rotation.RotateAboutForward(tr.Roll * deg);
-			if (Math.Abs(tr.Scale - 1f) > 0.001f)
-			{
-				frame.rotation.ApplyScaleLocal(Math.Max(0.1f, Math.Min(5f, tr.Scale)));
-			}
-			try
-			{
-				GameEntity entity = GameEntity.Instantiate(Mission.Scene, piece.ResourceKey, frame, false);
-				if (entity != null)
-				{
-					_executionPieces.Add(entity);
-					placed++;
-				}
-			}
-			catch
-			{
-			}
-		}
-		Logger.Log(LogSource, "execution preset '" + preset.Name + "' placed pieces=" + placed);
-		return placed > 0;
-	}
-
 	/// <summary>Where a prisoner kneels for an execution order (camp local).</summary>
 	internal bool TryGetExecutionSpot(out Vec3 world, out Vec2 facing)
 	{
@@ -257,18 +183,4 @@ public sealed partial class FieldCampMissionLogic
 		return true;
 	}
 
-	private void CleanupExecution(string reason)
-	{
-		for (int i = 0; i < _executionPieces.Count; i++)
-		{
-			try
-			{
-				_executionPieces[i]?.Remove(81);
-			}
-			catch
-			{
-			}
-		}
-		_executionPieces.Clear();
-	}
 }

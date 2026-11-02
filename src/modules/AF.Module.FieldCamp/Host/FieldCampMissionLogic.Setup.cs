@@ -21,11 +21,7 @@ public sealed partial class FieldCampMissionLogic
 
         int cleared = 0, props = 0, horses = 0;
         TryCampSetupStage("clutter", () => cleared = FieldCampSite.ClearClutter(Mission.Scene, _campFrame, _layout, _campScale));
-        TryCampSetupStage("execution_preset", () =>
-        {
-            if (TryPlaceExecutionPreset())
-                _layout.Props.RemoveAll(p => p.Kind == FieldCampLayout.PropKind.ExecutionBlock || p.Kind == FieldCampLayout.PropKind.Gallows);
-        });
+        // Execution apparatus belongs to the player-confirmed B-key deployment, never camp entry.
         TryCampSetupStage("props", () => props = FieldCampProps.Place(Mission.Scene, _layout, _campFrame, _campScale));
         if (FieldCampProps.HadPlacementFailures) _setupDegraded = true;
         // Always initialize once after the final props, even if a prop/preset failed part-way through.

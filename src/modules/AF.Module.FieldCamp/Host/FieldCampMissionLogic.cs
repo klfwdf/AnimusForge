@@ -93,7 +93,6 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	{
 		CleanupCampPrisonerCombatIsolation();
 		CleanupSlaughter("mission_end");
-		CleanupExecution("mission_end");
 		FieldCampSite.ReleaseCaches(Mission.Scene);
 		var conversations = Campaign.Current?.ConversationManager;
 		if (conversations != null)

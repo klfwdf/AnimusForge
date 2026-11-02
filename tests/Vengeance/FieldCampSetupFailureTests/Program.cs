@@ -19,8 +19,9 @@ static class Program
     {
         var host = Run();
         Check(host.Initialized && FieldCampBehavior.Instance.PlayerReady, "normal camp remains usable and charges only after player is ready");
+        Check(!Fixture.Calls.Contains("preset"), "camp initialization never loads or places an execution preset");
         Check(!host.Degraded && !Fixture.Calls.Contains("notice"), "successful camp has no false failure notice");
-        foreach (string stage in new[] { "layout", "site", "clutter", "preset", "props", "cache", "troops", "companions", "lords", "prisoners", "horses", "envoys" })
+        foreach (string stage in new[] { "layout", "site", "clutter", "props", "cache", "troops", "companions", "lords", "prisoners", "horses", "envoys" })
         {
             host = Run(stage);
             Check(host.Initialized && FieldCampBehavior.Instance.PlayerReady, "player still spawned after " + stage + " failure");
