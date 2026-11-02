@@ -11,8 +11,8 @@ namespace AnimusForge;
 /// Picks the camp site once per camp mission (never per frame): dry, walkable, fairly
 /// flat ground clear of trees and rocks, inside the mission boundary. Candidates come
 /// from the scene's own spawn paths (where vanilla field battles deploy, always on land)
-/// combined with a scene-wide grid in two orientations. Hard whole-footprint grade/spread
-/// limits reject hillsides; distance to the encounter never overrides these limits.
+/// combined with a scene-wide grid in two orientations. Whole-footprint grade/spread
+/// rank candidates; occupied tent parcels and passages enforce local support limits.
 /// Every candidate is probed over the camp's real rectangle (palisade extents).
 /// Cost, once: at most (600 + 576) x two orientations x 25 cheap probes, then
 /// Up to all coarse survivors x 81 probes if the first finalists are unusable.
@@ -70,6 +70,19 @@ internal static class FieldCampSite
 		internal int Bad;
 	}
 
+    private enum SiteRejection
+    {
+        None, Boundary, Terrain, Water, Navigation, Obstacle, EngineError
+    }
+
+    private static string RejectionSummary(int[] counts) =>
+        "boundary=" + counts[(int)SiteRejection.Boundary]
+        + ",terrain=" + counts[(int)SiteRejection.Terrain]
+        + ",water=" + counts[(int)SiteRejection.Water]
+        + ",navigation=" + counts[(int)SiteRejection.Navigation]
+        + ",obstacle=" + counts[(int)SiteRejection.Obstacle]
+        + ",engineError=" + counts[(int)SiteRejection.EngineError];
+
 	/// <param name="fitScale">Always 1; a site that cannot fit real footprints is rejected, not compressed.</param>
 	internal static MatrixFrame Resolve(Mission mission, FieldCampLayout layout, out float fitScale)
 	{
@@ -81,6 +94,7 @@ internal static class FieldCampSite
             candidates.Add(new Candidate { Position = candidates[i].Position,
                 Forward = new Vec2(-candidates[i].Forward.y, candidates[i].Forward.x) });
         var sampleHeights = new float[81];
+        var tentMeasurements = new Dictionary<string, BoundingBox>(StringComparer.Ordinal);
 		fitScale = 1f;
 			GroundCaches.Remove(scene);
 			CaptureClutter(scene);
@@ -91,13 +105,15 @@ internal static class FieldCampSite
 		for (int s = 0; s < Scales.Length; s++)
 		{
 			float k = Scales[s];
-			int coarseRejected = 0, fineRejected = 0, criticalRejected = 0, checkedSites = 0;
+			int coarseRejected = 0, fineRejected = 0, criticalRejected = 0, tentRejected = 0, checkedSites = 0;
+            var coarseReasons = new int[(int)SiteRejection.EngineError + 1];
+            var fineReasons = new int[coarseReasons.Length];
 			for (int i = 0; i < candidates.Count; i++)
 			{
 				Candidate c = candidates[i];
 				c.Score = Evaluate(mission, scene, c, layout, k, grid: 5, fine: false, sampleHeights, out c.Bad);
 				candidates[i] = c;
-				if (c.Bad != 0) coarseRejected++;
+				if (c.Bad != 0) { coarseRejected++; coarseReasons[c.Bad]++; }
 			}
 			candidates.Sort((a, b) => a.Score.CompareTo(b.Score));
 			Candidate best = default(Candidate);
@@ -110,16 +126,20 @@ internal static class FieldCampSite
 				if (c.Bad != 0) continue;
 				checkedSites++;
 				c.Score = Evaluate(mission, scene, c, layout, k, grid: 9, fine: true, sampleHeights, out c.Bad);
-				if (c.Bad != 0) { fineRejected++; continue; }
+				if (c.Bad != 0) { fineRejected++; fineReasons[c.Bad]++; continue; }
 				if (!found || c.Score < best.Score)
 					{
 						if (!ValidateCriticalAreas(mission, scene, c, layout, k)) { criticalRejected++; continue; }
+                        if (!FieldCampProps.CanSupportTents(scene, layout, FrameAt(scene, c.Position, c.Forward), tentMeasurements))
+                        { tentRejected++; continue; }
 						best = c;
 						found = true;
 					}
 			}
 			Logger.Log(LogSource, "site search candidates=" + candidates.Count + " coarseRejected=" + coarseRejected
-				+ " fineChecked=" + checkedSites + " fineRejected=" + fineRejected + " criticalRejected=" + criticalRejected);
+				+ " fineChecked=" + checkedSites + " fineRejected=" + fineRejected + " criticalRejected=" + criticalRejected
+                + " tentRejected=" + tentRejected
+                + " coarseReasons={" + RejectionSummary(coarseReasons) + "} fineReasons={" + RejectionSummary(fineReasons) + "}");
 			if (found)
 			{
 				fitScale = Scales[s];
@@ -280,9 +300,9 @@ internal static class FieldCampSite
 			{
 				float ly = (layout.Back + (layout.Front - layout.Back) * gy / (grid - 1)) * scale;
 				Vec2 p = c.Position + side * lx + f * ly;
-				if (!Probe(mission, scene, p, fine, out float height, out bool obstacle))
-				{
-					bad++;
+				if (!Probe(mission, scene, p, fine, out float height, out bool obstacle, out SiteRejection rejection))
+                {
+                    bad = (int)rejection;
                     return float.MaxValue;
 				}
 				if (obstacle)
@@ -291,10 +311,11 @@ internal static class FieldCampSite
 				}
                 int index = gx * grid + gy;
                 heights[index] = height;
-                if (!profile.Add(height, gx == 0 ? float.NaN : heights[index-grid],
+                // Tents follow their own ground plane. A change in elevation between
+                // separate parcels is not an unsafe tent floor or a blocked passage.
+                profile.Add(height, gx == 0 ? float.NaN : heights[index-grid],
                     gy == 0 ? float.NaN : heights[index-1], 2f*layout.HalfX*scale/(grid-1),
-                    (layout.Front-layout.Back)*scale/(grid-1)))
-                { bad++; return float.MaxValue; }
+                    (layout.Front-layout.Back)*scale/(grid-1));
 				low = Math.Min(low, height);
 				high = Math.Max(high, height);
 			}
@@ -303,54 +324,65 @@ internal static class FieldCampSite
 		return bad > 0 ? float.MaxValue : spread * 100f + profile.Grade * 10f + blocked;
 	}
 
-	private static bool Probe(Mission mission, Scene scene, Vec2 p, bool fine, out float height, out bool obstacle)
-	{
-		height = 0f;
-		obstacle = false;
-		try
-		{
-			if (!mission.IsPositionInsideBoundaries(p))
-			{
-				return false;
-			}
-			height = scene.GetTerrainHeight(p, true);
-			if (!IsFinite(height) || scene.GetWaterLevelAtPosition(p, true, true) > height - WetMargin)
-			{
-				return false;
-			}
-			if (!fine)
-			{
-				return true;
-			}
-			PathFaceRecord record = PathFaceRecord.NullFaceRecord;
-				Vec3 terrainPoint = new Vec3(p.x, p.y, height);
-				scene.GetNavMeshFaceIndex(ref record, terrainPoint, true);
-				var navigation = new WorldPosition(scene, UIntPtr.Zero, terrainPoint, false);
-				float navHeight = navigation.GetNavMeshZ();
-				if (!record.IsValid() || !IsFinite(navHeight) || Math.Abs(navHeight - height) > 0.3f)
-			{
-				return false;
-			}
-			Vec3 top = new Vec3(p.x, p.y, height + 40f);
-			Vec3 bottom = new Vec3(p.x, p.y, height - 1f);
-				if (scene.RayCastForClosestEntityOrTerrain(top, bottom, out float _, out Vec3 hit, out WeakGameEntity hitEntity, 0.3f, ClearanceExcludeFlags)
-					&& hit.z > height + ObstacleHeight)
-				{
-					obstacle = true;
-					// Only an entity whose complete small clutter subtree can be removed is tolerated.
-					if (!ClutterCaches.TryGetValue(scene, out ClutterCache clutter) || !clutter.Complete
-						|| !hitEntity.IsValid || !clutter.Removable.Contains(hitEntity.Pointer))
-					{
-						return false;
-					}
-				}
-				return true;
-		}
-		catch
-		{
-			return false;
-		}
-	}
+    private static bool Probe(Mission mission, Scene scene, Vec2 p, bool fine, out float height, out bool obstacle)
+        => Probe(mission, scene, p, fine, out height, out obstacle, out _);
+
+    private static bool Probe(Mission mission, Scene scene, Vec2 p, bool fine, out float height, out bool obstacle, out SiteRejection rejection)
+    {
+        height = 0f;
+        obstacle = false;
+        rejection = SiteRejection.None;
+        try
+        {
+            if (!mission.IsPositionInsideBoundaries(p))
+            {
+                rejection = SiteRejection.Boundary;
+                return false;
+            }
+            height = scene.GetTerrainHeight(p, true);
+            if (!IsFinite(height))
+            {
+                rejection = SiteRejection.Terrain;
+                return false;
+            }
+            if (scene.GetWaterLevelAtPosition(p, true, true) > height - WetMargin)
+            {
+                rejection = SiteRejection.Water;
+                return false;
+            }
+            if (!fine) return true;
+            PathFaceRecord record = PathFaceRecord.NullFaceRecord;
+            Vec3 terrainPoint = new Vec3(p.x, p.y, height);
+            scene.GetNavMeshFaceIndex(ref record, terrainPoint, true);
+            var navigation = new WorldPosition(scene, UIntPtr.Zero, terrainPoint, false);
+            float navHeight = navigation.GetNavMeshZ();
+            if (!record.IsValid() || !IsFinite(navHeight) || Math.Abs(navHeight - height) > 0.3f)
+            {
+                rejection = SiteRejection.Navigation;
+                return false;
+            }
+            Vec3 top = new Vec3(p.x, p.y, height + 40f);
+            Vec3 bottom = new Vec3(p.x, p.y, height - 1f);
+            if (scene.RayCastForClosestEntityOrTerrain(top, bottom, out float _, out Vec3 hit, out WeakGameEntity hitEntity, 0.3f, ClearanceExcludeFlags)
+                && hit.z > height + ObstacleHeight)
+            {
+                obstacle = true;
+                // Only an entity whose complete small clutter subtree can be removed is tolerated.
+                if (!ClutterCaches.TryGetValue(scene, out ClutterCache clutter) || !clutter.Complete
+                    || !hitEntity.IsValid || !clutter.Removable.Contains(hitEntity.Pointer))
+                {
+                    rejection = SiteRejection.Obstacle;
+                    return false;
+                }
+            }
+            return true;
+        }
+        catch
+        {
+            rejection = SiteRejection.EngineError;
+            return false;
+        }
+    }
 
 	/// <summary>
 	/// Hides small scene rocks, bushes and stray trees standing inside the palisade and

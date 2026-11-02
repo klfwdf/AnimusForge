@@ -227,6 +227,70 @@ internal static class FieldCampProps
 			return placed;
 		}
 
+        // Called only while choosing a site. Measurements (including unavailable
+        // prefabs) are cached across candidates; no props survive these size probes.
+        internal static bool CanSupportTents(Scene scene, FieldCampLayout layout,
+            MatrixFrame campFrame, Dictionary<string, BoundingBox> measured)
+        {
+            string[] fallback = Neutral[FieldCampLayout.PropKind.Tent];
+            for (int i = 0; i < layout.Props.Count; i++)
+            {
+                FieldCampLayout.Prop prop = layout.Props[i];
+                if (prop.Kind != FieldCampLayout.PropKind.Tent) continue;
+                string[] pool = PoolFor(prop, out _);
+                bool supported = false;
+                for (int c = 0; c < pool.Length + fallback.Length && !supported; c++)
+                {
+                    string prefab = c < pool.Length ? pool[c] : fallback[c - pool.Length];
+                    if (!TryMeasureTent(scene, prefab, measured, out BoundingBox box)) continue;
+                    float rawX = (box.max.x - box.min.x) * 0.5f;
+                    float rawY = (box.max.y - box.min.y) * 0.5f;
+                    // Opposite turns have identical support footprints.
+                    for (int turn = 0; turn < 2 && !supported; turn++)
+                    {
+                        float width = turn == 0 ? rawX : rawY;
+                        float depth = turn == 0 ? rawY : rawX;
+                        bool large = prop.Variant >= 98;
+                        if (!FieldCampPlacementRules.TryTentScale(width, depth,
+                            prop.Scale > 0f ? prop.Scale : 1f, large ? 7f : 3f,
+                            large ? 7f : 4f, out float fittedScale)) continue;
+                        MatrixFrame door = FrameFor(scene, campFrame, prop.Position, prop.Yaw, 1f);
+                        supported = TryFitTentGround(scene, ref door, width * fittedScale, depth * fittedScale);
+                    }
+                }
+                if (!supported) return false;
+            }
+            return true;
+        }
+
+        private static bool TryMeasureTent(Scene scene, string prefab,
+            Dictionary<string, BoundingBox> measured, out BoundingBox box)
+        {
+            if (!measured.TryGetValue(prefab, out box))
+            {
+                GameEntity probe = null;
+                try
+                {
+                    if (GameEntity.PrefabExists(prefab))
+                    {
+                        probe = GameEntity.Instantiate(scene, prefab, false, false);
+                        if (probe != null) box = probe.GetLocalBoundingBox();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    box = default(BoundingBox);
+                    Logger.Log(LogSource, "[WARN] tent measurement failed prefab=" + prefab + " error=" + ex.Message);
+                }
+                finally
+                {
+                    probe?.Remove(80);
+                    measured[prefab] = box;
+                }
+            }
+            return box.min.IsValid && box.max.IsValid && box.max.z > box.min.z;
+        }
+
 		/// <summary>
 		/// Four bounded orientation trials per available prefab, at initialization only. Bounding boxes
 		/// are measured from the actual candidate, never inferred from a culture's name. A closed
@@ -241,22 +305,7 @@ internal static class FieldCampProps
             for (int c = 0; c < pool.Length + fallback.Length; c++)
             {
                 string prefab = c < pool.Length ? pool[c] : fallback[c-pool.Length];
-                if (!GameEntity.PrefabExists(prefab)) continue;
-                if (!measured.TryGetValue(prefab, out BoundingBox box))
-                {
-                    GameEntity probe = null;
-                    try
-                    {
-                        probe = GameEntity.Instantiate(scene, prefab, false, false);
-                        if (probe == null) continue;
-                        box = probe.GetLocalBoundingBox();
-                        measured[prefab] = box;
-                    }
-                    catch (Exception ex)
-                    { Logger.Log(LogSource, "[WARN] tent measurement failed prefab=" + prefab + " error=" + ex.Message); continue; }
-                    finally { probe?.Remove(80); }
-                }
-                if (!box.min.IsValid || !box.max.IsValid || box.max.z <= box.min.z) continue;
+                if (!TryMeasureTent(scene, prefab, measured, out BoundingBox box)) continue;
                 doorwayTurns.TryGetValue(prefab, out int firstTurn);
                 for (int attempt = 0; attempt < 4; attempt++)
                 {
