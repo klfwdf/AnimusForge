@@ -257,6 +257,15 @@ function Get-AnimusForgeSharedTextResourceHashes {
     return $resources
 }
 
+function Test-AnimusForgePlayerPackageOmission {
+    param([Parameter(Mandatory = $true)][string]$RelativePath)
+    $relative = $RelativePath.Replace('\', '/').TrimStart('/')
+    if ($relative -match '(?i)\.pdb$') { return $true }
+    # Keep both Lite worldbooks in source/Stage; omit them from player releases.
+    # Unicode escapes keep this rule readable by Windows PowerShell 5.1 too.
+    return $relative -match '^(?i:PlayerExports)/(?:Calradia Chronicles \(Lite Edition\)|\u4f4e\u914d\u7248\u5361\u62c9\u8fea\u4e9a\u7f16\u5e74\u53f2[^/]*)(?:/|$)'
+}
+
 function Get-AnimusForgePackageProjection {
     param(
         [Parameter(Mandatory = $true)][string]$ProjectRoot,
@@ -299,9 +308,8 @@ function Get-AnimusForgePackageProjection {
     $projection = [Collections.Generic.List[object]]::new()
     $failures = [Collections.Generic.List[string]]::new()
     foreach ($file in Get-ChildItem -LiteralPath $stage -Recurse -File -Force | Sort-Object FullName) {
-        # Keep debug symbols in local builds/Stage, never in player archives.
-        if ($file.Extension -ieq '.pdb') { continue }
         $relative = $file.FullName.Substring($stage.Length).TrimStart('\', '/').Replace('\', '/')
+        if (Test-AnimusForgePlayerPackageOmission -RelativePath $relative) { continue }
         $source = $file.FullName
         $bytes = $null
         if ($relative -ceq 'SubModule.xml') {

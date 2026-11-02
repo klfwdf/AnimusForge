@@ -613,8 +613,8 @@ function Assert-ZipLayout {
     $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
     try {
         $names = @($archive.Entries | ForEach-Object { $_.FullName })
-        if ($names | Where-Object { $_ -match "(?i)\.pdb$" } | Select-Object -First 1) {
-            throw "Player packages must not contain PDB debug symbols; retain them in local build artifacts."
+        if ($names | Where-Object { Test-AnimusForgePlayerPackageOmission -RelativePath ($_ -replace '^AnimusForge/', '') } | Select-Object -First 1) {
+            throw "Player packages must not contain PDB debug symbols or the Calradia Chronicles Lite worldbook; retain them in source/local Stage."
         }
         $outsideRoot = $names | Where-Object { -not $_.StartsWith("AnimusForge/", [System.StringComparison]::Ordinal) }
         if ($outsideRoot) {
@@ -742,7 +742,10 @@ function Assert-ZipMatchesCleanStage {
     )
 
     $stageFull = (Get-FullPathSafe -Path $StageModuleDir).TrimEnd('\', '/')
-    $stageFiles = @(Get-ChildItem -LiteralPath $stageFull -Recurse -File -Force | Where-Object { $_.Extension -ine '.pdb' })
+    $stageFiles = @(Get-ChildItem -LiteralPath $stageFull -Recurse -File -Force | Where-Object {
+        $relative = $_.FullName.Substring($stageFull.Length).TrimStart('\', '/') -replace '\\', '/'
+        -not (Test-AnimusForgePlayerPackageOmission -RelativePath $relative)
+    })
     $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
     try {
         if ($archive.Entries.Count -ne $stageFiles.Count) {
