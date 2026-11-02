@@ -1,3 +1,39 @@
+<a id="field-camp-tents-manual-site-20261102"></a>
+## 2026-11-02 帐篷缺失与刑场提前生成修复
+
+**DEPLOYED / PRODUCTION_PROP_TEST_PASS / NATIVE_RETEST_NOT_RUN**。用户截图要求“帐篷没生成，刑场不要提前生成，要让玩家自定义部署”。工作区`F:/AnimusForge-main`、main；开始HEAD`fa42eeb8fe`，意图点`0e2aab63a`，产品/构建输入`88c3654dbc86dfed36cb5d2ffc87e6b720a6e95f`。只更新营地道具/初始化/刑场默认布局和相应测试；保留[不自动退出修复](#field-camp-no-auto-exit-20261102)与原B键部署入口，未改其他场景、伤害、共享Vengeance、配置或存档身份。
+
+### 实际证据与改变
+
+- 15:11:30实机营地日志`battle_terrain_biome_093b`：指挥帐篷slot0等多处`tent slot skipped`，只有少数`village_tent_c`成功；首选营地回退后player=True、degraded=True，但无完整帐篷。截图显示营地道具与预生成刑场并存，已保留为`incident.png`，相关日志为`incident.log`。
+- 生产`PlaceTent`把正常坡地当水平板处理（9点高度相对中心必须≤0.22m），并对普通帐篷包含绳索的外包围盒做宽3m/深4m硬拒绝；因此上一轮“跳过失败帐篷、不退出”只避免退场，没有完成真正生成。本轮先用直接链接生产`FieldCampProps.cs`的执行测试复现宽外包围盒导致帐篷消失，然后实施修复。
+- 每个prefab在初始化只测量一次包围盒，测量实体始终移除；按普通/指挥帐篷地块分别统一适配实体mesh+physics，不只是压缩位置。真实地块半宽/深仍受上限、最小scale和1.8m高度约束；四种朝向试验继续检查实际入口，不把关闭帐篷改成穿透。计入日志实际scale；调用实体生成时就传最终frame，避免物理生成后再移动。
+- 9个有界地面样本拟合坡面并校验坡度/残差：普通连续坡面不再触发旧22cm全删；水面、非有限高度、陡坡、台阶仍拒绝。帐篷真实模型base centre与artist pivot经过修正，实体和家具共用该地面frame；非居中轴心、负模型底面不再导致漂移/埋地。无新增Tick查询/扫描/反射，所有测量、坡面拟合和最多4次朝向试验只在初始化运行。
+- 删除`TryPlaceExecutionPreset`、`ExecutionPresetMethod`、`_executionPieces`及专用清理：不再加载并自动摆“最新保存的斩首预设”。`PlaceExecutionGround`只保留显式普通俘虏命令所需逻辑集合位置，不再放墙/刑台/绞架/火把/旗帜。道具消费者对旧ExecutionBlock/Gallows枚举记录保持惰性，稳定enum身份不改。玩家原B键builder选择预设、位置、编辑及确认流程原样保留，只有确认后的Vengeance owner创建实际刑场。
+- 真实消费者证据：`TryBeginFieldCampDeployment`仍创建CustomPreset provisional request；`TownExecutionMissionBehavior`未确认时仅创建/轮询builder；`ExecutionSiteBuilderController`构造只加载资源/俘虏，WaitingForBuilder由B键打开面板，不在构造生成模型。三个文件本轮只读，未触及独立RichExecutions源码义务或默认交互入口。
+
+### 实际验证
+
+- `FieldCampPropsPlacementTests`：生产`FieldCampProps.cs`直接链接，真实TaleWorlds.Library数学+fake Scene/GameEntity/资源查询；旧版本先因宽bounds删除帐篷而FAIL，修复后21断言PASS。覆盖实体存在/碰撞、真实尺寸适配、指挥帐篷较大、连续坡面实际倾斜、工作量有限、偏移轴心/底面贴地、多slot与测量一次、悬崖/NaN/水/陡坡/堵门拒绝、家具共用frame、旋转坡地和反向入口四转、旧刑场prop记录不生成。它不测真实引擎的prefab包围盒/射线/物理外观。
+- `FieldCampPropsPlacementTests/contracts.py`旧2/10、新10/10；这是静态不自动生成刑场及原手动消费者接线证据。`FieldCampSetupFailureTests`97项PASS，删除的自动preset阶段6项断言已用“初始化从不调用preset”1项替代（原102→97）；业务已批准退役，不削弱仍存在的阶段失败行为。原C#接续72/围观105/记忆121、源码65+审查6、不退出15、双语26/0全部重跑PASS，diff-check通过。
+- 全仓l10n_gate仍在外交`DiplomacySponsorReceiptRules.cs:17–19`原有4处失败，不改无关业务/豁免门，不称全仓语言门通过。本轮无新玩家运行文案，既有双语警示保留。
+- 原统一`build_single_module.ps1 -Configuration Debug -Deploy`（1.4参考`.tmp/build_check/1.4`）双API各0错误/387警告、Bootstrap及双coup seam/registration smoke通过。初次进程在Stage阶段中断，无安装成功回执；核实输入/保护文件、artifact票据与无新安装受管文件/残留candidate后保存`interrupted-stage/`，用原`deploy_module.ps1`接续，不重复编译或改脚本。接续exit 0、更新9受管文件。模块仍v1.7.0，单AnimusForge/Bootstrap-only，无升版/打包/push。
+- 完整Stage9023文件：8998与安装hash一致，另25按现有保护保留（2用户提示词、23较新布匿战争导出）；9007内容source→Stage全部一致，三DLL及marker产物/Stage/安装一致，双实现不同，19690源码输入和11玩家文件hash未变，无部署临时候选残留。目标`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。
+
+| DLL | 实际参考版本 | 最终SHA256 |
+| --- | --- | --- |
+| 1.3 | v1.3.15.110062 | `050a112ae06944a201dad1621f9a55f5e4cef02d24d674a6912e0fd3b1a47a66` |
+| 1.4 | v1.4.6.115628 | `11c40b24f8a184576cd3793094e9bac6328f7e47d4244c7f019bb5478e2885f5` |
+| Bootstrap | v1.3.15.110062 | `c11b2dcd2358f96f1594610f36e24546f4000a3e3b3d15750378ddcb762fbaa1` |
+
+### 未验与恢复边界
+
+原始地图重新进营地的帐篷外观/入口/家具/碰撞、真实B键预览→玩家确认→刑场生成，以及旧档、TTS/provider、独立Vengeance、全业务回归仍NOT_RUN；未启动游戏，不能把fake Scene/Library测试说成实机通过，也不能把保留安全拒绝说成任意极端地形一定生成。仍不自动退出营地。
+
+[代码图](architecture/af-framework-code-scope.md#field-camp-tents-manual-site-20261102)和本轮`code-map.json`保留一基行号/符号/修订/hash、只读消费者及未覆盖责任。完整证据目录`.tmp/field-camp-tents-manual-site-20261102/`含before、截图/日志、tests、source-build-input、protected-before、build-deploy、interruption-inspection、deploy-resume/exit及verification。`previous-stage/`、`previous-artifacts/`是前版项目候选（不自动退出版），不是安装Recovery/玩家备份。回滚源码仅focused inverse`88c3654dbc`，会恢复本轮明确废止的自动刑场/帐篷拒绝，必须说明；不hard reset/覆盖别人dirty。重新安装旧候选需原校验及相应授权，无部署自动回滚。
+
+---
+
 <a id="field-camp-no-auto-exit-20261102"></a>
 ## 2026-11-02 营地进入即退回的回归修复
 

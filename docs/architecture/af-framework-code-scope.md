@@ -1,3 +1,27 @@
+<a id="field-camp-tents-manual-site-20261102"></a>
+## 帐篷实际放置 / 手动刑场边界 — 2026-11-02
+
+产品/构建输入`88c3654dbc`；[唯一台账、事故与验收局限](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-tents-manual-site-20261102)。Props拥有真实prefab测量、实体scale/地形frame/家具；Setup只初始化营地不摆刑场；Zones只保留逻辑集合点；Grounds不再读取或放玩家最新预设。原B键builder拥有用户选择/确认后的刑场，本轮共享Vengeance源码只读。
+
+| 一基源码范围 | 已核实符号 | 修改/未修改 |
+| --- | --- | --- |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:152–239` | `private static int PlaceAll(` | 本轮修改 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:246–325` | `private static bool PlaceTent(` | 本轮修改 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:350–366` | `private static bool TryMeasurePrefab(` | 本轮修改 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:370–397` | `private static bool TryFitTentGround(` | 本轮修改 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:399–416` | `private static bool DoorIsClear(` | 本轮修改 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Setup.cs:14–43` | `private void SetUpCamp(` | 本轮修改 |
+| `src/modules/AF.Module.FieldCamp/FieldCampLayout.Zones.cs:240–245` | `private void PlaceExecutionGround(` | 本轮修改 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Grounds.cs:173–184` | `internal bool TryGetExecutionSpot(` | 本轮修改 |
+| `Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs:567–601` | `internal bool TryBeginFieldCampDeployment(` | 本轮只读，原有手动部署消费者 |
+| `Vengeance/Source/Scene/TownExecutionMissionBehavior.cs:1067–1081` | `private void EnsureCustomSiteBuilderCreated(` | 本轮只读，原有手动部署消费者 |
+| `Vengeance/Source/Customization/ExecutionSiteBuilderController.Core.cs:83–93` | `internal ExecutionSiteBuilderController(` | 本轮只读，原有手动部署消费者 |
+| `Vengeance/Source/Customization/ExecutionSiteBuilderController.Core.cs:187–250` | `internal void Tick(` | 本轮只读，原有手动部署消费者 |
+
+`TryPlaceExecutionPreset`、`ExecutionPresetMethod`、`_executionPieces`及其清理消费者已删除；旧ExecutionBlock/Gallows枚举身份保留但营地道具消费者跳过，不影响已确认builder内部的真正刑场。生产道具执行21项与Setup97项使用fake native查询/人物边界；Library数学为实际DLL。手动部署接线10项、原72/105/121及双API/Bootstrap/安装hash已验。原生prefab/实际射线/物理、截图复验、玩家B键预览/确认仍未覆盖。源码hash/符号清册在`.tmp/field-camp-tents-manual-site-20261102/code-map.json`；产物/安装hash在`verification.json`，不重复把全表写入HANDOFF。
+
+---
+
 <a id="field-camp-no-auto-exit-20261102"></a>
 ## 营地不自动退出修复 — 2026-11-02
 

@@ -1,3 +1,11 @@
+## 2026-11-02 帐篷实际放置与刑场仅手动部署修复已覆盖
+
+**DEPLOYED / PROP_EXECUTION_TEST_PASS / NATIVE_RETEST_NOT_RUN**。产品/构建输入`88c3654dbc`，意图点`0e2aab63a`。用户截图反馈帐篷缺失、刑场不应提前生成；已修复把过大外包围盒/正常坡地直接删帐篷的逻辑：按地块统一适配真实模型和碰撞体，拟合地形平面，校正模型底部/轴心；保留入口、家具与水面/陡坡/台阶检查。删除进场加载最新刑场预设和默认刑台/绞架/刑场围栏路径，既有B键自定义部署/确认保留，不改Vengeance共享源码。
+
+生产道具链接测试21项（先复现旧代码删除帐篷）、手动刑场接线10项（旧2/10→新10/10）、初始化故障97项、原C#72/105/121、源码65+6、不退出15、双语26表PASS。双API/Bootstrap/managed门禁通过，原脚本接续部署成功更新9文件，安装/9007内容映射/三DLL/11玩家保护文件核验PASS。前轮不自动退出修复保留；初始化故障测试减少的5项是删除自动刑场preset阶段故障用例并新增禁止调用断言，不是删掉仍存在的业务断言。实机帐篷外观/碰撞和B键部署仍未验，外交原有4处语言门失败不变。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-tents-manual-site-20261102) / [代码图](docs/architecture/af-framework-code-scope.md#field-camp-tents-manual-site-20261102)。证据、截图、before及旧项目候选在`.tmp/field-camp-tents-manual-site-20261102/`，无安装自动回滚；未启动游戏/打包/push。
+
+---
+
 ## 2026-11-02 营地不自动退出修复已覆盖
 
 **DEPLOYED / FAILURE_INJECTION_PASS / LIVE_NOT_RUN**。产品/构建输入`8876d7ff55`，意图点`591f9ad4d`。前次补丁把布置异常升级为EndMission，造成进营地即退出；现已移除这条退场链路并分阶段隔离失败。完整营地放不下时寻找安全玩家落点，帐篷/家具局部失败不拖垮全营；移除营地昏迷自动结束及越界倒计时退出owner，保留TAB/ESC主动离开、边界墙和手动清理。玩家未初始化不扣巡营时间；CN/EN降级提示已接线。
