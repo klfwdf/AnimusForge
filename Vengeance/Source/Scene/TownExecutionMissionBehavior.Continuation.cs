@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using RichExecutions.Campaign;
 using RichExecutions.Core;
@@ -41,7 +41,8 @@ public sealed partial class TownExecutionMissionBehavior
         if (behavior is null) return;
         // Enumerate only when the player asks, never on the mission tick.
         var elements = behavior.GetDeploymentPrisonerOptions(null)
-            .Where(option => option.Hero != Request.Victim && !option.Hero.IsDead)
+            .Where(option => option.Hero != Request.Victim && !option.Hero.IsDead &&
+                (VengeanceIntegration.FieldCampPrisonerPresent?.Invoke(option.Hero) ?? true))
             .Select(option => new InquiryElement(option.Hero, option.Hero.Name.ToString(), null)).ToList();
         var leaveElement = new InquiryElement(null,
             new TextObject("{=REX_Continue_Leave}Leave the execution site.").ToString(), null);
@@ -139,14 +140,19 @@ public sealed partial class TownExecutionMissionBehavior
             }
 
             var mission = Mission;
-            FinalizeSession();
-            if (!_cleanupComplete) return;
+            if (nextRequest is null)
+            {
+                FinalizeSession();
+                if (!_cleanupComplete) return;
+                mission.RemoveMissionBehavior(this);
+                mission.RemoveMissionBehavior(_deathLogic);
+                return;
+            }
+            DetachFieldCampSiteForContinuation();
             mission.RemoveMissionBehavior(this);
             mission.RemoveMissionBehavior(_deathLogic);
-            if (nextRequest is null) return;
-
             ExecutionSessionCoordinator.InjectChainedSession(mission, nextRequest, _service,
-                preset!, placement!.Origin, placement.Forward);
+                preset!, placement!.Origin, placement.Forward, this);
             begun = false;
             RexLog.Info($"Field-camp continuation {Request.SessionId} -> {nextRequest.SessionId} reused the current mission.");
         }

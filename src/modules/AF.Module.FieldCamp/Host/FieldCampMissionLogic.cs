@@ -101,7 +101,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 
 	protected override void OnEndMission()
 	{
-		CleanupCampPrisonerCombatIsolation();
+		ReleaseCampCeremonyActors();
+        CleanupCampPrisonerCombatIsolation();
 		CleanupSlaughter("mission_end");
 		FieldCampSite.ReleaseCaches(Mission.Scene);
 		var conversations = Campaign.Current?.ConversationManager;
@@ -163,6 +164,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			MaintainCampPrisonerCombatIsolation();
 			TickCeremonyPreparation();
 			TickCeremonyReturn();
+            TickCampCeremonyActorWalks();
 			UpkeepBatchOfAgents();
             if (!_ceremonyActive) TickEnvoys();
 		}

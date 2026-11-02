@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -198,7 +198,7 @@ public sealed partial class TownExecutionMissionBehavior
 
     private void SpawnCustomSiteLoosePieces()
     {
-        if (!UsesConfirmedCustomSite || _customSitePreset is null || _placement is null)
+        if (_retainedFieldCampSite || !UsesConfirmedCustomSite || _customSitePreset is null || _placement is null)
         {
             return;
         }
@@ -539,7 +539,8 @@ public sealed partial class TownExecutionMissionBehavior
                 clothingColor1Override: snapshot.ClothingColor1,
                 clothingColor2Override: snapshot.ClothingColor2,
                 fixedEquipment: true,
-                originOverride: new BasicBattleAgentOrigin(character));
+                originOverride: new BasicBattleAgentOrigin(character),
+                campRole: "display");
             corpse.Controller = AgentControllerType.None;
             corpse.SetIsAIPaused(true);
             corpse.SetMortalityState(Agent.MortalityState.Invulnerable);

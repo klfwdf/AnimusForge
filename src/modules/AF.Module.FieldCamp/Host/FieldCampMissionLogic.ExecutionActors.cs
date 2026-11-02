@@ -1,0 +1,201 @@
+﻿using System;
+using System.Collections.Generic;
+using RichExecutions.Core;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Core;
+using TaleWorlds.Engine;
+using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
+
+namespace AnimusForge;
+
+public sealed partial class FieldCampMissionLogic
+{
+    private sealed class CampCeremonyActor
+    {
+        internal Agent Agent;
+        internal CampAgent Camp;
+        internal bool Prisoner;
+        internal Guid Session;
+        internal string Role;
+        internal Team Team;
+        internal Formation Formation;
+        internal Agent.MortalityState Mortality;
+        internal AgentFlag Flags;
+        internal MissionWeapon[] Weapons;
+        internal Vec3 Home;
+        internal Vec2 HomeFacing;
+        internal Vec3 Target;
+        internal Vec2 Facing;
+        internal Vec3[] Route = Array.Empty<Vec3>();
+        internal int Corner;
+        internal bool Arrived = true;
+        internal bool Failed;
+        internal Vec3 LastPosition;
+        internal float ProgressAt;
+        internal float Deadline;
+    }
+
+    private readonly Dictionary<string, CampCeremonyActor> _campCeremonyRoles = new Dictionary<string, CampCeremonyActor>(StringComparer.Ordinal);
+    private readonly Dictionary<Agent, CampCeremonyActor> _campCeremonyActors = new Dictionary<Agent, CampCeremonyActor>();
+    private readonly List<CampCeremonyActor> _campCeremonyActorWalks = new List<CampCeremonyActor>();
+
+    private static Agent AcquireCampCeremonyActorHook(Guid session, string role, Hero victim) => Current?.AcquireCampCeremonyActor(session, role, victim);
+    private static bool OwnsCampVictimOriginHook(Agent agent) => Current is FieldCampMissionLogic camp &&
+        camp._campCeremonyActors.TryGetValue(agent, out CampCeremonyActor actor) && actor.Prisoner && agent.Origin is PrisonerAgentOrigin;
+    private static bool CampPrisonerPresentHook(Hero hero) => Current is FieldCampMissionLogic camp &&
+        camp._prisoners.Exists(agent => agent != null && agent.IsActive() && agent.Character == hero?.CharacterObject);
+    private static bool WalkCampActorHook(Guid session, Agent agent, Vec3 target, Vec2 facing, IReadOnlyList<Vec3> approach) =>
+        Current?.WalkCampCeremonyActor(session, agent, target, facing, approach) == true;
+    private static FieldCampCeremonyReadiness CampActorReadinessHook(Guid session) =>
+        Current?.CampActorsReady(session) ?? FieldCampCeremonyReadiness.Failed;
+    private static void ReleaseCampActorsHook() => Current?.ReleaseCampCeremonyActors();
+
+    private Agent AcquireCampCeremonyActor(Guid session, string role, Hero victim)
+    {
+        if (_campCeremonyRoles.TryGetValue(role, out CampCeremonyActor previous))
+        {
+            if (previous.Agent.IsActive() && (!previous.Prisoner || previous.Agent.Character == victim?.CharacterObject))
+            { previous.Session = session; previous.Failed = false; return previous.Agent; }
+            _campCeremonyActors.Remove(previous.Agent);
+            _campCeremonyRoles.Remove(role);
+        }
+        Agent chosen = null;
+        CampAgent entry = null;
+        bool prisoner = string.Equals(role, "victim", StringComparison.Ordinal);
+        if (prisoner)
+        {
+            for (int i = 0; i < _prisoners.Count; i++)
+                if (_prisoners[i].IsActive() && _prisoners[i].Character == victim?.CharacterObject)
+                { chosen = _prisoners[i]; break; }
+        }
+        else
+        {
+            float best = float.MaxValue;
+            for (int i = 0; i < _agents.Count; i++)
+            {
+                CampAgent candidate = _agents[i]; Agent agent = candidate.Agent;
+                if (agent == null || !agent.IsActive() || agent.Character?.IsHero != false ||
+                    _campCeremonyActors.ContainsKey(agent) || IsSceneConversationHeld(agent) || IsDuelist(agent) ||
+                    candidate.Activity == Activity.Wounded || candidate.Activity == Activity.Sentry || candidate.Activity == Activity.Post) continue;
+                float score = agent.Position.AsVec2.DistanceSquared(_ceremonyOrigin.AsVec2);
+                if (role.StartsWith("shooter", StringComparison.Ordinal) && candidate.TroopClass != FormationClass.Ranged) score += 10000f;
+                if (score >= best) continue;
+                best = score; chosen = agent; entry = candidate;
+            }
+        }
+        if (chosen == null || IsSceneConversationHeld(chosen)) return null;
+        if (_ceremonyMoves.TryGetValue(chosen, out CeremonyMove clearance)) RemoveCeremonyMove(clearance);
+        var actor = new CampCeremonyActor
+        {
+            Agent = chosen, Camp = entry, Prisoner = prisoner, Session = session, Role = role,
+            Team = chosen.Team, Formation = chosen.Formation, Mortality = chosen.CurrentMortalityState, Flags = chosen.GetAgentFlags(),
+            Home = entry != null ? entry.Home : chosen.Position,
+            HomeFacing = entry != null ? entry.HomeFacing : chosen.LookDirection.AsVec2,
+            Weapons = new MissionWeapon[(int)EquipmentIndex.NumAllWeaponSlots]
+        };
+        for (int i = (int)EquipmentIndex.WeaponItemBeginSlot; i < actor.Weapons.Length; i++) actor.Weapons[i] = chosen.Equipment[(EquipmentIndex)i];
+        StopCampNavigation(chosen);
+        chosen.SetActionChannel(0, in ActionIndexCache.act_none, true);
+        chosen.SetIsAIPaused(true);
+        _campCeremonyRoles.Add(role, actor); _campCeremonyActors.Add(chosen, actor);
+        Logger.Log(LogSource, "borrowed existing camp actor role=" + role + " agent=" + chosen.Index + " session=" + session);
+        return chosen;
+    }
+
+    private bool WalkCampCeremonyActor(Guid session, Agent agent, Vec3 target, Vec2 facing, IReadOnlyList<Vec3> approach)
+    {
+        if (!_campCeremonyActors.TryGetValue(agent, out CampCeremonyActor actor) || actor.Session != session || !agent.IsActive()) return false;
+        actor.Target = target; actor.Facing = facing; actor.Arrived = false; actor.Failed = false; actor.Corner = 0;
+        var route = new List<Vec3>();
+        Vec3 groundGoal = approach != null && approach.Count > 0 ? approach[0] : target;
+        if (agent.Position.AsVec2.DistanceSquared(groundGoal.AsVec2) > 0.36f)
+        {
+            if (!TryCampRoute(agent.Position, groundGoal, out Vec3[] groundRoute)) { actor.Failed = true; return false; }
+            route.AddRange(groundRoute);
+            route.Add(groundGoal);
+        }
+        if (approach != null) for (int i = 1; i < approach.Count; i++) route.Add(approach[i]);
+        route.Add(target); actor.Route = route.ToArray();
+        actor.Deadline = _elapsed + 90f;
+        if (!_campCeremonyActorWalks.Contains(actor)) _campCeremonyActorWalks.Add(actor);
+        IssueCampCeremonyActorWalk(actor);
+        return true;
+    }
+
+    private void IssueCampCeremonyActorWalk(CampCeremonyActor actor)
+    {
+        Agent agent = actor.Agent; Vec3 goal = actor.Route[actor.Corner];
+        StopCampNavigation(agent); agent.Controller = AgentControllerType.AI;
+        agent.SetIsAIPaused(false); agent.SetMaximumSpeedLimit(-1f, false);
+        agent.SetActionChannel(0, in ActionIndexCache.act_none, true);
+        var world = new WorldPosition(Mission.Scene, UIntPtr.Zero, goal, false);
+        agent.SetScriptedPositionAndDirection(ref world, actor.Facing.RotationInRadians, false,
+            Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
+        actor.LastPosition = agent.Position; actor.ProgressAt = _elapsed + 6f;
+    }
+
+    private void TickCampCeremonyActorWalks()
+    {
+        // Only borrowed personnel, max 20 per existing half-second maintenance.
+        int budget = Math.Min(20, _campCeremonyActorWalks.Count);
+        for (int i = budget - 1; i >= 0; i--)
+        {
+            CampCeremonyActor actor = _campCeremonyActorWalks[i]; Agent agent = actor.Agent;
+            if (!agent.IsActive() || _elapsed >= actor.Deadline)
+            { actor.Failed = true; StopCampNavigation(agent); _campCeremonyActorWalks.RemoveAt(i); continue; }
+            Vec3 goal = actor.Route[actor.Corner];
+            if (agent.Position.AsVec2.DistanceSquared(goal.AsVec2) <= 0.36f && Math.Abs(agent.Position.z - goal.z) <= 0.65f)
+            {
+                if (++actor.Corner < actor.Route.Length) { IssueCampCeremonyActorWalk(actor); continue; }
+                StopCampNavigation(agent); agent.SetIsAIPaused(true); agent.Controller = AgentControllerType.None;
+                agent.LookDirection = new Vec3(actor.Facing.x, actor.Facing.y, 0f);
+                actor.Arrived = true; _campCeremonyActorWalks.RemoveAt(i);
+            }
+            else if (_elapsed >= actor.ProgressAt)
+            {
+                if (agent.Position.AsVec2.DistanceSquared(actor.LastPosition.AsVec2) < 0.04f)
+                { StopCampNavigation(agent); actor.Failed = true; _campCeremonyActorWalks.RemoveAt(i); }
+                else { actor.LastPosition = agent.Position; actor.ProgressAt = _elapsed + 6f; }
+            }
+        }
+    }
+
+    private FieldCampCeremonyReadiness CampActorsReady(Guid session)
+    {
+        bool waiting = false;
+        foreach (CampCeremonyActor actor in _campCeremonyRoles.Values)
+        {
+            if (actor.Session != session) continue;
+            if (actor.Failed || !actor.Agent.IsActive()) return FieldCampCeremonyReadiness.Failed;
+            if (!actor.Arrived) waiting = true;
+        }
+        return waiting ? FieldCampCeremonyReadiness.Pending : FieldCampCeremonyReadiness.Ready;
+    }
+
+    private void ReleaseCampCeremonyActors()
+    {
+        _campCeremonyActorWalks.Clear();
+        foreach (CampCeremonyActor actor in _campCeremonyRoles.Values)
+        {
+            Agent agent = actor.Agent;
+            if (!agent.IsActive() || VengeanceIntegration.IsExecutedVictim(agent)) continue;
+            StopCampNavigation(agent); agent.SetIsAIPaused(false); agent.Controller = AgentControllerType.AI;
+            agent.SetTeam(actor.Team, false); agent.Formation = actor.Formation;
+            agent.SetMortalityState(actor.Mortality); agent.SetAgentFlags(actor.Flags);
+            for (int i = (int)EquipmentIndex.WeaponItemBeginSlot; i < actor.Weapons.Length; i++)
+            {
+                var slot = (EquipmentIndex)i; agent.RemoveEquippedWeapon(slot); MissionWeapon weapon = actor.Weapons[i];
+                if (!weapon.IsEmpty) agent.EquipWeaponWithNewEntity(slot, ref weapon);
+            }
+            agent.UpdateWeapons(); ApplyCampActionSet(agent);
+            if (Mission.IsMissionEnding) continue;
+            var move = new CeremonyMove { Agent = agent, Camp = actor.Camp, Prisoner = actor.Prisoner,
+                Home = actor.Home, HomeFacing = actor.HomeFacing, Goal = actor.Home, Facing = actor.HomeFacing };
+            if (!_ceremonyMoves.ContainsKey(agent)) { _ceremonyWalkers.Add(move); _ceremonyMoves.Add(agent, move); }
+            if (actor.Camp != null && !_ceremonyMoved.Contains(actor.Camp)) _ceremonyMoved.Add(actor.Camp);
+        }
+        _campCeremonyActors.Clear(); _campCeremonyRoles.Clear();
+        if (!_ceremonyActive && _ceremonyWalkers.Count > 0) _ceremonyReturnDeadline = _elapsed + CeremonyReturnGiveUpSeconds;
+    }
+}

@@ -47,6 +47,14 @@ public static class VengeanceIntegration
     internal static Func<Guid, IReadOnlyList<Agent>>? FieldCampCeremonyBorrowedCrowd { get; set; }
     internal static Action<Guid>? FieldCampCeremonyPreparationReleased { get; set; }
     internal static Action<Guid, IReadOnlyList<FieldCampCeremonyArea>, bool>? FieldCampCeremonyGeometryChanged { get; set; }
+    internal static Func<Guid, string, Hero?, Agent?>? FieldCampAcquireActor { get; set; }
+    internal static Func<Agent, bool>? FieldCampOwnsVictimOrigin { get; set; }
+    internal static Func<Guid, Agent, Vec3, Vec2, IReadOnlyList<Vec3>, bool>? FieldCampWalkActor { get; set; }
+    internal static Func<Guid, FieldCampCeremonyReadiness>? FieldCampActorReadiness { get; set; }
+    internal static Action? FieldCampReleaseActors { get; set; }
+    internal static Func<Hero, bool>? FieldCampPrisonerPresent { get; set; }
+    internal static Action<Guid>? FieldCampArrangeSpectators { get; set; }
+
     // Read the camp owner's activity state only before starting preparation.
     internal static Func<Mission?, bool>? FieldCampCeremonyAdmissionProbe { get; set; }
 

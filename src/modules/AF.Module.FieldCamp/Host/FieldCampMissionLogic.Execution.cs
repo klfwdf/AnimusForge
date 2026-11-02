@@ -79,6 +79,13 @@ public sealed partial class FieldCampMissionLogic
 		VengeanceIntegration.FieldCampCeremonyBorrowedCrowd = BorrowCeremonyCrowdHook;
 		VengeanceIntegration.FieldCampCeremonyPreparationReleased = ReleaseCeremonyHook;
         VengeanceIntegration.FieldCampCeremonyGeometryChanged = OnCeremonyGeometryChangedHook;
+        VengeanceIntegration.FieldCampAcquireActor = AcquireCampCeremonyActorHook;
+        VengeanceIntegration.FieldCampOwnsVictimOrigin = OwnsCampVictimOriginHook;
+        VengeanceIntegration.FieldCampWalkActor = WalkCampActorHook;
+        VengeanceIntegration.FieldCampActorReadiness = CampActorReadinessHook;
+        VengeanceIntegration.FieldCampReleaseActors = ReleaseCampActorsHook;
+        VengeanceIntegration.FieldCampPrisonerPresent = CampPrisonerPresentHook;
+        VengeanceIntegration.FieldCampArrangeSpectators = ArrangeCampSpectatorsHook;
 		VengeanceIntegration.FieldCampCeremonyStaged = OnCeremonyStagedHook;
 		VengeanceIntegration.FieldCampCeremonyReleased = OnCeremonyReleasedHook;
 	}
@@ -91,7 +98,15 @@ public sealed partial class FieldCampMissionLogic
 		VengeanceIntegration.FieldCampCeremonyPreparation = null;
 		VengeanceIntegration.FieldCampCeremonyBorrowedCrowd = null;
 		VengeanceIntegration.FieldCampCeremonyPreparationReleased = null;
+        ReleaseCampActorsHook();
         VengeanceIntegration.FieldCampCeremonyGeometryChanged = null;
+        VengeanceIntegration.FieldCampAcquireActor = null;
+        VengeanceIntegration.FieldCampOwnsVictimOrigin = null;
+        VengeanceIntegration.FieldCampWalkActor = null;
+        VengeanceIntegration.FieldCampActorReadiness = null;
+        VengeanceIntegration.FieldCampReleaseActors = null;
+        VengeanceIntegration.FieldCampPrisonerPresent = null;
+        VengeanceIntegration.FieldCampArrangeSpectators = null;
 		VengeanceIntegration.FieldCampCeremonyStaged = null;
 		VengeanceIntegration.FieldCampCeremonyReleased = null;
 	}
@@ -173,19 +188,19 @@ public sealed partial class FieldCampMissionLogic
             {
                 CampAgent entry = _agents[i];
                 Agent agent = entry.Agent;
-                if (agent == null || !agent.IsActive() || agent == Agent.Main) continue;
+                if (agent == null || !agent.IsActive() || agent == Agent.Main || _campCeremonyActors.ContainsKey(agent)) continue;
                 _ceremonyResidents[agent] = entry;
                 _ceremonyClearance.Add(agent);
             }
             for (int i = 0; i < _prisoners.Count; i++)
             {
                 Agent agent = _prisoners[i];
-                if (agent == null || !agent.IsActive() || agent.Character == victim?.CharacterObject) continue;
+                if (agent == null || !agent.IsActive() || _campCeremonyActors.ContainsKey(agent)) continue;
                 _ceremonyClearance.Add(agent);
                 _ceremonyPrisoners.Add(agent);
             }
             // No spectators are moved here: only actual occupied prop footprints delay construction.
-            if (VerifyCeremonyClearanceNow()) CompleteCeremonyPreparation();
+            if (_ceremonyGeometryPresent || VerifyCeremonyClearanceNow()) CompleteCeremonyPreparation();
             else { AnimusForgeQuickInfo.Show(FieldCampText.DeploymentClearing()); TickCeremonyPreparation(); }
             Logger.Log(LogSource, "execution footprint preparation session=" + session + " registered=" + _ceremonyClearance.Count);
         }
@@ -193,11 +208,12 @@ public sealed partial class FieldCampMissionLogic
         return _ceremonyReadiness;
     }
 
-    internal bool IsCeremonyAgentHeld(Agent agent) => agent != null && _ceremonyActive &&
-        _ceremonyMoves.TryGetValue(agent, out CeremonyMove move) && (move.Spectator || !move.ClearanceHeld);
+    internal bool IsCeremonyAgentHeld(Agent agent) => agent != null &&
+        (_campCeremonyActors.ContainsKey(agent) || (_ceremonyActive &&
+        _ceremonyMoves.TryGetValue(agent, out CeremonyMove move) && (move.Spectator || !move.ClearanceHeld)));
 
     private bool CanMoveForCeremony(Agent agent) => agent != null && agent.IsActive() && agent != Agent.Main &&
-        agent.Controller == AgentControllerType.AI && !IsDuelist(agent) && !IsSceneConversationHeld(agent);
+        agent.Controller == AgentControllerType.AI && !_campCeremonyActors.ContainsKey(agent) && !IsDuelist(agent) && !IsSceneConversationHeld(agent);
 
     private bool TryStartCeremonyWalk(Agent agent, Vec2 flat, bool watcher)
     {
@@ -381,7 +397,7 @@ public sealed partial class FieldCampMissionLogic
     {
         if (!_ceremonyActive || _ceremonyStaged || _ceremonyReadiness != FieldCampCeremonyReadiness.Ready) return;
         _ceremonyStaged = true;
-        HideCampCopyOfCondemned(victim);
+        // The existing pen Agent is borrowed and walks in; never fade/spawn a second copy.
     }
 
     private static void OnCeremonyGeometryChangedHook(Guid session, IReadOnlyList<FieldCampCeremonyArea> areas, bool created)
@@ -391,7 +407,8 @@ public sealed partial class FieldCampMissionLogic
         FieldCampSite.RefreshGroundObstacles(camp.Mission.Scene, areas);
         if (camp._ceremonySession != session) return;
         camp._ceremonyGeometryPresent = created;
-        if (!created || !camp._ceremonyActive) return;
+        if (!created) { camp.ReleaseCampCeremonyActors(); return; }
+        if (!camp._ceremonyActive) return;
         // Existing daily paths were calculated before the props existed. Stop them once;
         // normal upkeep chooses new paths against the updated obstacle cache.
         for (int i = 0; i < camp._agents.Count; i++)
@@ -400,6 +417,12 @@ public sealed partial class FieldCampMissionLogic
             if (!entry.Agent.IsActive() || entry.Seated || camp.IsSceneConversationHeld(entry.Agent) || camp._ceremonyMoved.Contains(entry)) continue;
             camp.SettleCampAgent(entry, blocked: true);
         }
+    }
+
+    private static void ArrangeCampSpectatorsHook(Guid session)
+    {
+        var camp = Current;
+        if (camp == null || camp._ceremonySession != session || !camp._ceremonyActive) return;
         int watchers = 0;
         for (int i = 0; i < camp._agents.Count && watchers < MaxCeremonyWatchers; i++)
         {

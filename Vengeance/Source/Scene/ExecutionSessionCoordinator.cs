@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using RichExecutions.Core;
 using RichExecutions.Customization;
@@ -198,7 +198,8 @@ internal static class ExecutionSessionCoordinator
         ExecutionService service,
         ExecutionSitePreset preset,
         Vec3 origin,
-        Vec2 forward)
+        Vec2 forward,
+        TownExecutionMissionBehavior? retainedSite = null)
     {
         RexLog.Info(
             $"Injecting chained field-camp session {request.SessionId} into mission scene " +
@@ -213,6 +214,7 @@ internal static class ExecutionSessionCoordinator
             RichExecutionApi.SceneActs,
             deathLogic);
         controller.PrepareChainedLayout(preset, origin, forward);
+        if (retainedSite is not null) controller.AdoptRetainedFieldCampSite(retainedSite);
         AddExecutionMissionBehaviorsAtomically(mission, deathLogic, controller, downstreamDecider);
         try
         {

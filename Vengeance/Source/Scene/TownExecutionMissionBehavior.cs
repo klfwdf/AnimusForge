@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -850,7 +850,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
 
     internal ExecutionService DeploymentService => _service;
     public bool CanPlayerUseExecutionPoint =>
-        _initialized &&
+        _initialized && !_fieldCampActorsEntering &&
         ((State == ExecutionSessionState.WaitingForPlayer && !_lethalAttempted) ||
          (State is ExecutionSessionState.Execution or ExecutionSessionState.CrowdReaction &&
           _strategy is IMultiStageExecutionStrategy multiStage &&
@@ -1160,6 +1160,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
             return;
         }
 
+        if (Request.IsFieldCamp && !TickFieldCampActorEntry(dt)) return;
         RetryPendingEntityRemovals();
         TickImpaledCorpseDisplays(dt);
         MaintainGuardStandbyStates(dt);

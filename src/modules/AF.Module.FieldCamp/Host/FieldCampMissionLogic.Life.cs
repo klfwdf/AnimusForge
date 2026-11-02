@@ -296,7 +296,8 @@ public sealed partial class FieldCampMissionLogic
 			CampAgent entry = _agents[_upkeepCursor];
 			Agent agent = entry.Agent;
 			if (agent == null || !agent.IsActive() || IsDuelist(agent) || IsEnvoy(entry) || IsSceneConversationHeld(agent)
-					|| (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(entry)))
+					|| _campCeremonyActors.ContainsKey(agent)
+                    || (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(entry)))
 			{
 				continue;
 			}
@@ -463,7 +464,8 @@ public sealed partial class FieldCampMissionLogic
 			CampAgent other = _agents[i];
 			if (other == entry || !other.Seated || other.Agent == null || !other.Agent.IsActive()
 				|| IsSceneConversationHeld(other.Agent) || IsEnvoy(other) || IsDuelist(other.Agent)
-					|| (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(other))
+					|| _campCeremonyActors.ContainsKey(other.Agent)
+                    || (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(other))
 					|| other.Activity == Activity.Sentry || other.Activity == Activity.Wounded || other.Activity == Activity.Post)
 			{
 				continue;

@@ -131,10 +131,13 @@ public sealed partial class TownExecutionMissionBehavior
                 NotifyFieldCampCeremonyStaged();
             }
 
-            BuildRuntimeScene();
-            if (Request.IsFieldCamp)
+            _buildingFieldCampScene = Request.IsFieldCamp;
+            try { BuildRuntimeScene(); }
+            finally { _buildingFieldCampScene = false; }
+            if (Request.IsFieldCamp && !_retainedFieldCampSite)
                 VengeanceIntegration.FieldCampCeremonyGeometryChanged?.Invoke(
                     Request.SessionId, _fieldCampPreparationAreas ?? Array.Empty<FieldCampCeremonyArea>(), true);
+            if (Request.IsFieldCamp) BeginFieldCampActorEntry();
             if (!Request.IsFieldCamp) _conversationLogic?.DisableStartConversation(true);
             Mission.FocusableObjectInformationProvider.AddInfoCallback(GetExecutionFocusText);
             _focusCallbackRegistered = true;
@@ -233,7 +236,7 @@ public sealed partial class TownExecutionMissionBehavior
                 $"Session {Request.SessionId} could not establish the stoning prisoner's barrage protection; " +
                 "the scene remains open and posture maintenance will keep retrying.");
         }
-        var executionerCharacter = SelectExecutionerTroopForCurrentSite() ??
+        var executionerCharacter = (Request.IsFieldCamp ? GetCampRoleCharacter("executioner") : SelectExecutionerTroopForCurrentSite()) ??
                                    throw new InvalidOperationException(
                                        "The venue culture has no eligible executioner troop.");
         _executionerAgent = SpawnCharacter(
@@ -244,7 +247,8 @@ public sealed partial class TownExecutionMissionBehavior
             noWeapons: true,
             invulnerable: true,
             teamOverride: _executionTeam,
-            joinPlayerFormation: true);
+            joinPlayerFormation: true,
+                campRole: "executioner");
         if (!EnsureGeneratedAllyOnPlayerTeam(_executionerAgent, "executioner") ||
             _executionerAgent.Team != _executionTeam ||
             _victimTeam is null ||
@@ -524,7 +528,8 @@ public sealed partial class TownExecutionMissionBehavior
                 clothingColor1Override: GetVictimClothingColor1(),
                 clothingColor2Override: GetVictimClothingColor2(),
                 fixedEquipment: true,
-                originOverride: new BasicBattleAgentOrigin(sourceCharacter));
+                originOverride: new BasicBattleAgentOrigin(sourceCharacter),
+                campRole: "victim");
             if (!HasUsableVictimVisuals(candidate, "original hero character"))
             {
                 RetireProvisionalVictimAgent(candidate, "its native visuals were unavailable");
@@ -608,6 +613,7 @@ public sealed partial class TownExecutionMissionBehavior
 
     private void RetireProvisionalVictimAgent(Agent agent, string reason)
     {
+        if (Request.IsFieldCamp && _borrowedCampActors.Contains(agent)) return;
         try
         {
             if (agent.IsActive())
@@ -848,7 +854,7 @@ public sealed partial class TownExecutionMissionBehavior
         }
         for (var index = 0; index < guardCount; index++)
         {
-            var guardCharacter = SelectMeleeGuardTroopForCurrentSite(index);
+            var guardCharacter = Request.IsFieldCamp ? GetCampRoleCharacter("guard:" + index) : SelectMeleeGuardTroopForCurrentSite(index);
             if (guardCharacter is null)
             {
                 throw new InvalidOperationException(
@@ -919,7 +925,8 @@ public sealed partial class TownExecutionMissionBehavior
                 invulnerable: true,
                 equipmentOverride: guardEquipment,
                 teamOverride: _executionTeam,
-                joinPlayerFormation: true);
+                joinPlayerFormation: true,
+                campRole: "guard:" + index);
             if (!EnsureGeneratedAllyOnPlayerTeam(guard, $"ceremony guard {index + 1}/{guardCount}"))
             {
                 throw new InvalidOperationException(
@@ -1032,7 +1039,7 @@ public sealed partial class TownExecutionMissionBehavior
 
         for (var slot = 0; slot < CrossbowVolleyRightOffsetCandidates.Length; slot++)
         {
-            var character = SelectRangedGuardTroopForCurrentSite(slot) ??
+            var character = (Request.IsFieldCamp ? GetCampRoleCharacter("shooter:" + slot) : SelectRangedGuardTroopForCurrentSite(slot)) ??
                             throw new InvalidOperationException(
                                 $"The venue culture has no eligible regular crossbow-volley troop for slot {slot}.");
             var position = Vec3.Invalid;
@@ -1075,7 +1082,8 @@ public sealed partial class TownExecutionMissionBehavior
                 noWeapons: true,
                 invulnerable: true,
                 teamOverride: _executionTeam,
-                joinPlayerFormation: true);
+                joinPlayerFormation: true,
+                campRole: "shooter:" + slot);
             if (!EnsureGeneratedAllyOnPlayerTeam(
                     shooter,
                     $"crossbow volley shooter {slot + 1}/{CrossbowVolleyRightOffsetCandidates.Length}") ||

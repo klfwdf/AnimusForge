@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using RichExecutions.Core;
 using RichExecutions.Diagnostics;
@@ -959,7 +959,8 @@ internal sealed class ExecutionVictimDeathMissionLogic : MissionLogic, IAgentSta
             return false;
         }
 
-        if (victim.Origin is not BasicBattleAgentOrigin)
+        if (victim.Origin is not BasicBattleAgentOrigin &&
+            !(_request.IsFieldCamp && VengeanceIntegration.FieldCampOwnsVictimOrigin?.Invoke(victim) == true))
         {
             failure = $"victim origin is {victim.Origin?.GetType().Name ?? "null"}, not BasicBattleAgentOrigin";
             return false;
