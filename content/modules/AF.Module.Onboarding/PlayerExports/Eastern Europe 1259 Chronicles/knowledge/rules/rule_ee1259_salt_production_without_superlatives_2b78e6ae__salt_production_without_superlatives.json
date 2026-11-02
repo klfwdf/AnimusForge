@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_salt_production_without_superlatives_2b78e6ae",
+  "Keywords": [
+    "Brine boiling and salt at Wieliczka",
+    "Fuel for salt workers near Krakow"
+  ],
+  "RagShortTexts": [
+    "Wieliczka has a tradition of brine boiling requiring work in extraction, heating and carriage.",
+    "Salt preserves food at a cost in fuel, containers and carriage that affects household stores."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Salt production near Krakow at Wieliczka uses brine extraction, boiling and carriage. Water must be raised, fires tended and equipment repaired. Salt preserves meat and fish and supports exchange, while workers need fuel and provisions. Work at and below wells needs skills and support beyond simply adding laborers. Local wells seek brine that is raised for boiling. Access to fuel and repairable vessels directly affects the work spent on each batch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Salt workers' suppliers handle fuel, damp loads and vessels with different needs. Households compare salt purchases with food and livestock costs and cannot necessarily preserve every food by salting. Equipment repairs occupy craftsmen otherwise serving villages, adding to the labor behind salt's value."
+    }
+  ],
+  "TextMappings": []
+}

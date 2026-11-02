@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_prussian_refugees_and_local_choices_072f1cd7",
+  "Keywords": [
+    "Land and reception for Prussian refugees",
+    "Kin food and shelter for displaced Prussians"
+  ],
+  "RagShortTexts": [
+    "Conquest and war displace some Prussians with differing kin, faith and security needs.",
+    "Receiving refugees needs food, shelter and land, affecting local duties and neighbors."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Prussians displaced by conquest, war or religious pressure seek kin, local protection or another destination. Hosts consider fields, pursuit and neighbors' capacity alongside food and shelter. Leaders may gain people and support through settlement, but need clear service, dues and security arrangements; shared identity cannot create unlimited resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Hosts first feed displaced kin, tend children and ask who is still traveling. New arrivals can work but need tools, seed and time to support themselves. Where neighbors also lack food, families arrange labor or further help so temporary generosity does not leave everyone unprepared for cold weather."
+    }
+  ],
+  "TextMappings": []
+}

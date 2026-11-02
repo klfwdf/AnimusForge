@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_kernave_hillfort_landscape_9150bab9",
+  "Keywords": [
+    "Kernave's hillforts and settlements",
+    "Households in the Neris valley"
+  ],
+  "RagShortTexts": [
+    "Kernave's hillforts link to valley settlements whose production supports the heights.",
+    "The Neris valley offers routes and land, with slope carriage and seasons affecting access."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kernave's hillforts overlook the Neris valley, with surrounding settlements providing food, craftwork and news. Heights aid observation but require carriage and access work from below. Leaders rely on kin and local cooperation, while cultivation, livestock and neighboring relationships affect manpower. The forts' strength is tied to valley households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Kernave valley families take workers from their own tasks to carry supplies uphill, with weather making footing and loads harder. Exchange brings needed tools while sudden demands interrupt farming. Residents judge leaders by road security, dispute handling and whether borrowed animals return."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

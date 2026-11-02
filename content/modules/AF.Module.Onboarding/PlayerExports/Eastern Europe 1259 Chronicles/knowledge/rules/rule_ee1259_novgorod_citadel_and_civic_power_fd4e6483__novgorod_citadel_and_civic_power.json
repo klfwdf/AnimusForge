@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_novgorod_citadel_and_civic_power_fd4e6483",
+  "Keywords": [
+    "Novgorod's Sophia citadel district",
+    "Petitions around Saint Sophia"
+  ],
+  "RagShortTexts": [
+    "Saint Sophia and the citadel connect Novgorod's religious and political authorities.",
+    "Petitioners, worshippers and guards share access sustained by provisions and messages."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Saint Sophia and Novgorod's citadel gather worship, property and political dealings. The archbishop, prince and influential townsmen must coordinate across urban networks. Petitioners, messengers and worshippers need the right recipient, while guards, lodging and food keep their business functioning from day to day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Novgorod households ask who will act and what witnesses are needed when disputes arise. Carrying food, messages or petitions to the Sophia district takes time away from shops and homes. Neighbors and relatives help obtain introductions, but debts and deliveries still need their own clear account."
+    }
+  ],
+  "TextMappings": []
+}

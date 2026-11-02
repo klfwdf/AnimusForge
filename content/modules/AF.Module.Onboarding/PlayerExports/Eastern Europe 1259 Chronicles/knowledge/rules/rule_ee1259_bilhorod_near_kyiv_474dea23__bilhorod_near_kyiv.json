@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_bilhorod_near_kyiv_474dea23",
+  "Keywords": [
+    "Bilhorod's old site west of Kyiv",
+    "Routes and return near the Irpin"
+  ],
+  "RagShortTexts": [
+    "Bilhorod near Kyiv has princely and church associations beside Irpin routes.",
+    "Using the old site after warfare requires shelter, provisions and renewed local ties."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bilhorod west of Kyiv carries princely and church associations near Irpin waterways and roads. After warfare, people seek relatives, land and habitable ground, valuing knowledge of old routes. The name preserves former standing, while current residents determine what shelter and provisions are actually available."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families returning near Bilhorod identify house sites, boundaries and scattered kin. Help rebuilding may be exchanged for food, labor or lodging. Travelers cannot rely on an old fort's name for meals; those resettling must also prepare for sowing and cold weather."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

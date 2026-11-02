@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_kolomna_confluence_and_rebuilding_5b45fa6f",
+  "Keywords": [
+    "Kolomna at the Oka confluence",
+    "Rebuilding after loss at Kolomna"
+  ],
+  "RagShortTexts": [
+    "Kolomna stands where the Moskva meets the Oka, linking transport with defense.",
+    "Fighting and destruction in 1238 left losses requiring boats, craftsmen and residents to recover."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kolomna's confluence gathers Moskva and Oka traffic shaped by direction and water level. The fighting of 1238 left losses of kin, shelter and equipment that persist in daily life. Guards and transport both need manpower. Restored crossings and markets bring supplies and renew local revenue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Kolomna residents repair boats and homes and reclaim fields without expecting outsiders to provide everything. Traders and people seeking scattered acquaintances arrive together. Careful cargo counts and repairing old transport stretch resources; another call for road guards requires new arrangements at home."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

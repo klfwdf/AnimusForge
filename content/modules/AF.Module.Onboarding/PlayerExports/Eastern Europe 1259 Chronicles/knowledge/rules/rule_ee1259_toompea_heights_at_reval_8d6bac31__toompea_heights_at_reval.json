@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_toompea_heights_at_reval_8d6bac31",
+  "Keywords": [
+    "Reval's slopes and watch posts",
+    "Communication above and below Toompea"
+  ],
+  "RagShortTexts": [
+    "Slopes between Toompea and the lower town carry guards, travelers and residents.",
+    "Observation from the heights does not replace harbor news and road support."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Toompea's guards at Reval can observe their surroundings but still need precise news from the harbor and lower town. Ships' identities, unloading times and reception for road travelers require inquiry. Congested slopes delay food and envoys together, making communication an everyday part of the watch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Those delivering to Toompea need the right recipient or face another uphill journey. Rain and snow slow carts and porters despite impatient visitors. Residents use familiar messengers to reduce trips; lodging debts or lost cargo still require separate settlement below."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

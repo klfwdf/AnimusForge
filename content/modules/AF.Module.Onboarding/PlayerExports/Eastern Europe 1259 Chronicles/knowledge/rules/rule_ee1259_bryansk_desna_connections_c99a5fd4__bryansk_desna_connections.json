@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_bryansk_desna_connections_c99a5fd4",
+  "Keywords": [
+    "Bryansk's Desna woodland routes",
+    "Timber work and river traffic at Bryansk"
+  ],
+  "RagShortTexts": [
+    "Bryansk links settlements through the Desna and forest roads, carrying timber and food.",
+    "Forest routes need guides and repairs; princely power also depends on local supplies."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bryansk's forest roads and the Desna connect scattered settlements carrying timber, food and people. Woods conceal movement but separate messengers and wagons. A local leader assembling followers needs route knowledge, shelter and supplies. One strongpoint cannot watch every branch of the network."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Timber and food carriage around Bryansk consume human and animal effort, especially in mud. Taking a guide away removes help at home. Shared loads save transport if households agree on watches, recovery of broken carts and returning in time for fieldwork."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

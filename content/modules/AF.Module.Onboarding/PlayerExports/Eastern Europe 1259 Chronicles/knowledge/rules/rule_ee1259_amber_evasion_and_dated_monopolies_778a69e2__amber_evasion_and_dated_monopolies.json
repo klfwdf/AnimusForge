@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_amber_evasion_and_dated_monopolies_778a69e2",
+  "Keywords": [
+    "Concealed amber and coastal dues",
+    "Selling Baltic gatherers' amber"
+  ],
+  "RagShortTexts": [
+    "Gatherers, traders and coastal authorities compete over amber under differing local claims.",
+    "Concealed goods prompt searches and disputes, making trusted buyers and counts valuable."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Baltic amber brings exchange and rival claims among gatherers, buyers and coastal powers. Demands differ across territories, while concealment can lead to seizure and disputes. Merchants need affordable charges and reliable supplies; gatherers need quantities and payment clear enough to judge the value of a journey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Amber gatherers balance shore conditions with fields and family. Known buyers and witnesses reduce disputes over prices and quantities. A suggestion to hide cargo and detour raises costs in lodging, possible loss and damaged future trade, all borne by the household."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_memel_coastal_supply_3c910b3d",
+  "Keywords": [
+    "Memel's coastal strongpoint",
+    "Coastal provisioning at Memel"
+  ],
+  "RagShortTexts": [
+    "Memel links the Dane mouth, sea routes and Curonian approaches through continuing supplies.",
+    "Weather, berths and local relations affect deliveries, while defenses need timber and skills."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Memel's coastal position offers supply and outside assistance dependent on ships, weather and berths. The fort needs carpenters, food and repairs, while local relations shape guides and land support. Additional arrivals increase the provisioning burden, making coordination between sea delivery and shore storage essential."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Memel workers guide ships, unload and feed crews when arrivals come, yet must survive gaps between them. Fort and boat repairs compete for timber, craftsmen and carts. Nearby households value exchange while counting the animal strength and working time consumed by each journey."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

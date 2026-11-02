@@ -1,0 +1,30 @@
+{
+  "Id": "rule_ee1259_lithuanian_woodland_warfare_evidence_72308e89",
+  "Keywords": [
+    "Lithuanian movement on forest routes",
+    "Woodland guides and return paths"
+  ],
+  "RagShortTexts": [
+    "Lithuanian forces use local knowledge and light loads, while woods limit sight and messages.",
+    "Scouting, food and support enable movement without removing cold, hunger or fatigue."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lithuanian parties benefit from guides who know branches, water and stopping places. Light loads aid movement but limit food and spare equipment. Woods conceal and separate; slow messages can cause missed support. Leaders need recall and casualty arrangements alongside an advantage in local speed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A fighter on forest tracks needs his guide and return route instead of following a sound at a fork. Wet clothing, hunger and tired mounts erode mobility. Regrouping requires identifying missing men and distinguishing observation from rumor; retaining companions sustains the next stage better than isolated plunder."
+    }
+  ],
+  "TextMappings": []
+}

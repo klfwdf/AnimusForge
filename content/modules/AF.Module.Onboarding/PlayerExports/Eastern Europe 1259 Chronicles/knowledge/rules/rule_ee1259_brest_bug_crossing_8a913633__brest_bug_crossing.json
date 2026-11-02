@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_brest_bug_crossing_8a913633",
+  "Keywords": [
+    "Exchange at Berestia on the Bug",
+    "Cargo transfers on the Bug routes"
+  ],
+  "RagShortTexts": [
+    "Berestia connects districts through Bug routes, linking exchange with local authority.",
+    "Changing boats or carts needs contacts and witnesses; local conflict adds travel costs."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Berestia lies where the Bug and Mukhavets routes meet, drawing merchants, envoys and neighboring powers. Transfers need clear ownership, unloading places and protection. Residents gain from carriage and exchange while bearing requisitions and frontier disputes. Authority gains practical value by keeping passage dependable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Small Berestia traders remember trusted carriers and storage places because each transfer risks confusion. Roadblocks and disputed charges delay household salt and tools as well as merchandise. Shared carriage saves animals if shares and responsibility for losses are agreed first."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

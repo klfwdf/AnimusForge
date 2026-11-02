@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_icons_devotion_and_religious_meaning_e80f04fc",
+  "Keywords": [
+    "Prayer and remembrance before Rus icons",
+    "Lamps and household gifts for icons"
+  ],
+  "RagShortTexts": [
+    "Rus icons support prayer, remembrance and devotion connecting church and households.",
+    "Images, lamps and worship need materials and work alongside practical care."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Icons in Rus churches and homes accompany prayer to Christ, the Virgin and saints, including concern for travelers, the sick and the dead. Artisans, clergy and donors maintain images, lighting and ritual. Hopes for protection coexist with families providing food, finding care and arranging journeys."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families bring relatives' names to prayer and contribute what lighting, food or gifts they can afford. Damaged images need skilled repair, often beyond a poor household's means. Neighbors meeting at church also share news and help sick families with water and meals."
+    }
+  ],
+  "TextMappings": []
+}

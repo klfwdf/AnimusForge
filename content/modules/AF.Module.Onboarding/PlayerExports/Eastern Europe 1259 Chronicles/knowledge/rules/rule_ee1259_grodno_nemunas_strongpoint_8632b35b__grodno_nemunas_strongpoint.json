@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_grodno_nemunas_strongpoint_8632b35b",
+  "Keywords": [
+    "Grodno's Nemunas claims",
+    "Settlements and crossings at Grodno"
+  ],
+  "RagShortTexts": [
+    "Grodno links Nemunas settlements and lords amid Black Ruthenian claims over routes and supplies.",
+    "The strongpoint needs cooperation from leaders, boatmen and farmers under conditional alliances."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Grodno's Nemunas routes matter to neighboring princes and Lithuanian powers, supported by food and crossings from riverside settlements. Kinship negotiations can arrange rights, but local cooperation determines their effect. Incoming followers need guides and meals; excessive demands undermine ferries, markets and future supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Grodno residents ask which recipient and agreement remain valid as envoys change. Relatives crossing the river need introductions, and boatmen need payment and return arrangements. Households maintaining fields, nets and homes struggle with repeated urgent claims from competing arrivals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

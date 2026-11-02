@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_torun_and_vistula_traffic_0567c950",
+  "Keywords": [
+    "Torun's Vistula trade and the Order",
+    "Witnesses to deliveries at Torun"
+  ],
+  "RagShortTexts": [
+    "Torun's town and Order post connect to Vistula traffic requiring reception ashore.",
+    "Merchants, artisans and guards share transport labor and need clear delivery responsibilities."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Torun connects Vistula cargo with the Order's provisions and urban buyers, each having recipients and stores. Merchants need acknowledged delivery ashore. Revenue encourages security, while collections and military demands occupy sailing time. Preserving continued exchange matters to both the post and town."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Torun carriers, repairers and food sellers need someone to acknowledge delivery. Familiar witnesses and clear agreements reduce disputes. Urgent garrison demands may require an advance of goods, while households still buy food and pay workers; repeated delay makes another supply harder."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

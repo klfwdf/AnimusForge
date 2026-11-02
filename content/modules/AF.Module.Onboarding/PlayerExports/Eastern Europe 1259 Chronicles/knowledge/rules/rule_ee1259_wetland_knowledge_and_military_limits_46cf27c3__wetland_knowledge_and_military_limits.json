@@ -1,0 +1,30 @@
+{
+  "Id": "rule_ee1259_wetland_knowledge_and_military_limits_46cf27c3",
+  "Keywords": [
+    "Wetland approaches and support for ambushes",
+    "Food and cold in Baltic woodland fighting"
+  ],
+  "RagShortTexts": [
+    "Wetland knowledge helps choose narrow hidden approaches while limiting sight and communication.",
+    "An ambush needs support, exits and food alongside local knowledge."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Narrow Baltic wetland routes restrict deployment and let knowledgeable parties choose positions. Trees and reeds also block friendly sight and messages. Waiting requires food, relief and endurance of damp and cold. Exit routes and casualty carriage matter alongside concealment when judging a position."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A wetland watcher needs relief and meeting points, since cold waiting exhausts men. Changed water can damage an exit. Fighters need companions and provisions as well as news of an approaching enemy, with dry clothes, fire and care available on return."
+    }
+  ],
+  "TextMappings": []
+}

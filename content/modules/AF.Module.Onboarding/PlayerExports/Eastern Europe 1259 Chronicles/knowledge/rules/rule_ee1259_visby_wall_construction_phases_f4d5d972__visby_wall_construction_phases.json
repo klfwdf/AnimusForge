@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_visby_wall_construction_phases_f4d5d972",
+  "Keywords": [
+    "Visby harbor and wall work",
+    "Sharing building costs on Gotland"
+  ],
+  "RagShortTexts": [
+    "Visby's merchants link Gotland with Baltic ports; defenses demand funds, materials and labor.",
+    "Townsmen and rural islanders have different interests in carriage, charges and building costs."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Visby connects Gotland's traders with Baltic ports. Cargo brings revenue while demanding investment in storage, landing places and defense. Wall work consumes stone, lime and skills otherwise used in houses or ships. Town merchants and island food suppliers negotiate charges and labor as well as protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Visby sellers plan around winds, unloading, buyers and ship repairs. Defense work employs drivers and masons but may delay ordinary house repairs. Rural food suppliers seek a quick exchange for needed goods and feel extra charges and waiting keenly; prosperity is not shared equally by every household."
+    }
+  ],
+  "TextMappings": []
+}

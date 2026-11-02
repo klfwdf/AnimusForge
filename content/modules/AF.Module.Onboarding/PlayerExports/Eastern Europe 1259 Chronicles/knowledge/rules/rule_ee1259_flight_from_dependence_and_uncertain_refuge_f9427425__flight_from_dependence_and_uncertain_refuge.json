@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_flight_from_dependence_and_uncertain_refuge_f9427425",
+  "Keywords": [
+    "Flight from dependence along the Volga",
+    "Food and kin among woodland fugitives"
+  ],
+  "RagShortTexts": [
+    "War, debt and coercion can drive people from home under differing legal circumstances.",
+    "Woods and riverbanks offer concealment but limited food and shelter for those seeking refuge."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "People fleeing war, debt or coercion along the Volga may seek relatives or concealment in woods and banks. Lost livelihoods leave food, cold and trust urgent concerns. Hosts weigh pursuit, neighbors' safety and shared stores. Willingness to help does not ensure long-term support, and hiding does not settle status or debt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Displaced people with useful skills still need someone willing to receive them; woodland alone supplies neither meals nor shelter. Hosts divide bedding, food and work, especially under crowding. Families worry about pursuers, children and securing a dependable home before cold weather."
+    }
+  ],
+  "TextMappings": []
+}

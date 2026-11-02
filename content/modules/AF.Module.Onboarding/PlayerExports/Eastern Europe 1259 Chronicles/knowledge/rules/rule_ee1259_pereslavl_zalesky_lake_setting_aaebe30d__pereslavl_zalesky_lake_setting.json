@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_pereslavl_zalesky_lake_setting_aaebe30d",
+  "Keywords": [
+    "Lakeside livelihoods at Pereslavl",
+    "Fishing and urban demand at Lake Pleshcheyevo"
+  ],
+  "RagShortTexts": [
+    "Pereslavl beside Lake Pleshcheyevo links fisheries and farming with princely demand.",
+    "Wind and seasons affect lakeside carriage, while fishing and storage require equipment."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pereslavl's lakeside setting connects fishing and cultivation with urban hospitality. Water carries goods but wind and ice can close a short route; food still needs carrying and preservation ashore. Princely attendants and guests increase demand supported by fishing and farming households and their tools."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lakeside fishers mend nets and boats and watch the weather; sellers need buyers before food spoils. Short-handed families cannot fish, cultivate and carry everything at once. Urban deliveries earn income but must leave household food, and delayed return of requisitioned gear affects subsequent catches."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

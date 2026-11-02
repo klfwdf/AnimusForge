@@ -1,0 +1,30 @@
+{
+  "Id": "rule_ee1259_voruta_allies_and_contingent_power_75f95aeb",
+  "Keywords": [
+    "Allied aid to Mindaugas at Voruta",
+    "Defensive commitments amid kinship conflict"
+  ],
+  "RagShortTexts": [
+    "Voruta recalls Mindaugas using allied help against family rivals under concrete commitments.",
+    "Defenders, allies and local leaders coordinate food and action despite continuing differences."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mindaugas's help at Voruta shows outside support operating within family rivalry. Allies' expectations, maintenance and communication with defenders determine sustained cooperation. Holding a fort leaves land, local leaders and kinship to negotiate. Shared fighting creates a channel without ending independent interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Defenders and allied followers need recognized contacts, signals and return points; friendship between leaders does not identify every party. Both suffer when food fails. Returning with casualties and gear under clear payment and service terms helps one operation preserve a relationship for further aid."
+    }
+  ],
+  "TextMappings": []
+}

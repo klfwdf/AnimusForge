@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_riga_port_and_competing_authorities_e720e530",
+  "Keywords": [
+    "Riga harbor and divided jurisdictions",
+    "Cargo disputes at the Daugava mouth"
+  ],
+  "RagShortTexts": [
+    "Riga links inland Daugava routes and the sea under differing church, Order and civic rights.",
+    "Unloading, charges and cargo disputes need recognized authorities; delays add merchants' costs."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Riga connects seagoing ships and inland carriage through the Daugava mouth, while archbishop, Order and townsmen pursue distinct interests. Cargo needs unloading, storage and inspection under a recognizable jurisdiction. Shipping and safe routes bring revenue; excessive demands or disputed rights can delay or divert merchants and weaken town trade."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Riga's porters, boatmen and small sellers depend on moving cargo. Waiting consumes lodging and food; hurried unloading damages goods. Familiar witnesses help when charges are questioned. Residents want a safe harbor whose guards and collectors leave enough movement for them to earn their daily food."
+    }
+  ],
+  "TextMappings": []
+}

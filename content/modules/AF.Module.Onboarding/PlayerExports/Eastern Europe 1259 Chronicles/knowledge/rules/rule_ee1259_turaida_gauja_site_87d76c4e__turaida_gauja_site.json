@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_turaida_gauja_site_87d76c4e",
+  "Keywords": [
+    "Turaida's episcopal fort on the Gauja",
+    "Carrying goods on Turaida's slopes"
+  ],
+  "RagShortTexts": [
+    "Turaida's episcopal fort occupies heights by the Gauja, supplied by nearby communities.",
+    "Paths link heights and valley transport, sharing materials among building, guests and guards."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Turaida's episcopal fort depends on the Gauja valley for food, timber and news. Church authority, neighboring lords and local people carry differing obligations and expectations. Building requires skills and supply. The slopes make approaches visible but heavy carriage costly, adding to the expense of guests and guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Turaida households provide food, timber and building help alongside farming. Heavy uphill loads strain carts and animals, making prompt unloading important. Local people exchanging with newcomers may also interpret words and customs; knowing the district is valuable work in its own right."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

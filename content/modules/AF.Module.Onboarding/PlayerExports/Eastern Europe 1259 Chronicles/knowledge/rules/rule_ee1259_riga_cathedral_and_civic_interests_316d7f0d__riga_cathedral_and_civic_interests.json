@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_riga_cathedral_and_civic_interests_316d7f0d",
+  "Keywords": [
+    "Riga cathedral and civic negotiation",
+    "Church hospitality and Riga's sellers"
+  ],
+  "RagShortTexts": [
+    "Riga's cathedral and church households influence civic affairs alongside townsmen and the Order.",
+    "Worshippers, documents and disputes create hospitality needs alongside commercial income."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Riga cathedral gathers worship, church authority, petitions and documents. Townsmen pursue commerce while the Order has land and garrison claims, making jurisdiction important in passage and property disputes. Church hospitality and writing need suppliers and craftsmen. Urban cooperation turns standing into workable decisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Suppliers of food, writing materials and repairs to Riga's church need the correct household for receipt and payment. Ceremonies bring customers but can extend credit for meals. Familiar clergy and witnesses help disputes, though each debt and delivery still needs a clear account."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

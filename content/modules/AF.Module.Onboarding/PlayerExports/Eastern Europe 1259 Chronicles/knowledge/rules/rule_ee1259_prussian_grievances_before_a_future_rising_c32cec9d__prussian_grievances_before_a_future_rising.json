@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_prussian_grievances_before_a_future_rising_c32cec9d",
+  "Keywords": [
+    "Prussian communities under conquest",
+    "Disputes over demands in Prussian settlements"
+  ],
+  "RagShortTexts": [
+    "Prussian groups respond differently to conquest, collections and conversion demands.",
+    "Land, kinship and converts' rights shape choices about security and livelihood."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Prussian communities facing the Order's expansion, demands and missions differ: some seek cooperation, others resist or prioritize family safety. Leaders have differing land and kinship ties, and shared speech does not ensure common action. Clear obligations may gain a hearing, while repeated demands, broken promises and casualties deepen grievances."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Prussian households notice missing relatives, grain collected and whether fields remain usable. Baptism or migration changes relationships without ending family concern. A call to assemble raises questions about duration and dependents, with trusted kin more valuable for news than every newcomer's promises."
+    }
+  ],
+  "TextMappings": []
+}

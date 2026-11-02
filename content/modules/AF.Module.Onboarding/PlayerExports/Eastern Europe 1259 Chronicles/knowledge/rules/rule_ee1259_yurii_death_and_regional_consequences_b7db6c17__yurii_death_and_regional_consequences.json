@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_yurii_death_and_regional_consequences_b7db6c17",
+  "Keywords": [
+    "Yurii's defeat on the Sit and succession",
+    "Households after the loss of Rus leaders"
+  ],
+  "RagShortTexts": [
+    "Yurii II died in defeat on the Sit in 1238, leaving princes and followers to regroup.",
+    "A leader's death unsettles service, revenue and kinship arrangements while production continues."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Yurii II's death at the Sit in 1238 deprived northeastern Rus of a major prince and left followers and kin seeking support. Succession rearranges revenues, service and local recognition. New musters need clear command and maintenance, including provision for those left behind, to address the memory of lost leadership."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families of those lost at the Sit handle belongings, debts and missing income, seeking news from survivors. A new leader may still demand service from households already short of workers. Help with fields and animals lets remembrance coexist with preparations for another season."
+    }
+  ],
+  "TextMappings": []
+}

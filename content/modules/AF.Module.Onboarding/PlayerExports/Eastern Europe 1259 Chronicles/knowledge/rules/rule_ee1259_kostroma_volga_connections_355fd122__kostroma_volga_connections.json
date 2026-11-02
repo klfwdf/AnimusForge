@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_kostroma_volga_connections_355fd122",
+  "Keywords": [
+    "Kostroma's Volga forest produce",
+    "Winter stores and exchange at Kostroma"
+  ],
+  "RagShortTexts": [
+    "Kostroma links forest settlements through the Volga basin, exchanging food and timber.",
+    "Moving forest produce needs animals and crews alongside farming and winter preparations."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kostroma connects Volga traffic with forest settlements, allowing exchange to supplement local production. Timber work, crops and animals support households and travelers. Gathering loads, transferring them and carrying messages take time across wooded country. Local leaders need practicable obligations rather than simply demands for earlier arrivals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Kostroma households retain fuel and animal feed when selling timber or grain. Travel requires substitutes for livestock care and repairs at home. Shared carriage saves transport and may bring back salt and tools, but purchases delayed into uncertain ice conditions cost more."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

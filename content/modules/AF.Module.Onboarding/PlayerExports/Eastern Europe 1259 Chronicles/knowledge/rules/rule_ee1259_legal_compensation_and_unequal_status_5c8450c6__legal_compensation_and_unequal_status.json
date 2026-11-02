@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_legal_compensation_and_unequal_status_5c8450c6",
+  "Keywords": [
+    "Status and compensation in Rus law",
+    "Witnesses and property liability in Rus disputes"
+  ],
+  "RagShortTexts": [
+    "Rus law distinguishes status and liability, with fines, compensation and property claims differing.",
+    "Witnesses, oaths and events shape disputes whose payments burden households and kin."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus disputes over injury, theft and property depend on status, loss and liability. Princely fines differ from compensation to an injured party, while relatives may pursue or help fund claims. Witnesses, oaths and provenance matter. People who know events and transfers help explain a case better than simply naming a payment. Kin may seek vengeance, while judgment and payments offer another course. Freedom or dependence affects who can act for a person and how loss is recognized."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ordinary claimants lose work and spend on travel and witnesses. Funding a payment may require selling animals or borrowing from kin, affecting the next season. Dependents, free households and nobles face differing circumstances, prompting questions about status and assistance before pursuing a claim."
+    }
+  ],
+  "TextMappings": []
+}

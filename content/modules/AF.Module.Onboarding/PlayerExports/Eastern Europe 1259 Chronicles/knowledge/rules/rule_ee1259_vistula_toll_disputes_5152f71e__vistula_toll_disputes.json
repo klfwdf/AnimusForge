@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_vistula_toll_disputes_5152f71e",
+  "Keywords": [
+    "Vistula tolls and crossing disputes",
+    "Negotiating Pomerelian river traffic"
+  ],
+  "RagShortTexts": [
+    "Swietopelk and the Order have contested navigation and dues on the Vistula.",
+    "Crossing revenue needs continuing traffic; excessive demands delay cargo and local trade."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Earlier disputes between Swietopelk and the Order make Vistula navigation, crossings and dues sensitive. Control brings revenue and duties of escort, landing access and dispute handling. Merchants compare delay with diversion. Continued shipping sustains future income and supplies, giving negotiations material value beyond prestige."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Vistula boatmen need recognized delivery arrangements; disputed charges lengthen a journey and consume provisions while buyers miss markets. Riverside families want carriage work without being treated as enemy helpers. Guides familiar with both authorities' practices can be particularly valuable."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

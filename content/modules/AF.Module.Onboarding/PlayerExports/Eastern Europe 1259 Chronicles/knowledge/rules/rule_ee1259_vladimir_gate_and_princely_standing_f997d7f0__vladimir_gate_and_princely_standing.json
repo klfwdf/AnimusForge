@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_vladimir_gate_and_princely_standing_f997d7f0",
+  "Keywords": [
+    "Vladimir's Golden Gate and princely standing",
+    "Envoys and petitioners at Vladimir"
+  ],
+  "RagShortTexts": [
+    "Vladimir's gate marks princely standing also sustained by kinship recognition and revenue.",
+    "Envoys, clergy and nobles bring separate requests requiring trustworthy communication."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vladimir's gate evokes princely authority, exercised through dealings with kin, church and nobles. Memory of 1238 accompanies rebuilding. Protection, dispute settlement and provisions give prestige substance. Envoys bring external demands that also burden urban hospitality and resource gathering."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Petitioners at Vladimir need the right official, witnesses and an account of their case. Urban relatives provide lodging at a cost in food and time. Delayed reception requires substitutes for fields, shops and animals, making pursuit of judgment a household expense."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

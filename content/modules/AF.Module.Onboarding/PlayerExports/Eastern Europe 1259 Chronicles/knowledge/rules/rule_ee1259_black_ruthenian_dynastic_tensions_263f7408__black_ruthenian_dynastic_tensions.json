@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_black_ruthenian_dynastic_tensions_263f7408",
+  "Keywords": [
+    "Marriage ties and claims in Black Ruthenia",
+    "Lithuanian ties under Mongol military demands"
+  ],
+  "RagShortTexts": [
+    "Romanovych and Mindaugas family ties coexist with competing claims in Black Ruthenia.",
+    "Mongol demands for Rus service against Lithuania strain kinship and local resources."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Claims in Black Ruthenia bind the Romanovych and Mindaugas families through marriages, grants and assistance that can ease or renew rivalry. Mongol demands for Rus forces against Lithuania make kinship and overlordship hard to reconcile. Negotiations distinguish territory, personnel and duration as pressure forces commitments to be reconsidered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Black Ruthenian families may have relatives on both sides while troop movements disrupt visits, trade and marriages. Arriving followers need provisions whose payer older promises may not identify. Residents need the authority and destination of collections clarified and envoys to return with workable answers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_sarai_court_and_lower_volga_trade_14997b27",
+  "Keywords": [
+    "Sarai's court and Volga traffic",
+    "Provisioning envoys on the lower Volga"
+  ],
+  "RagShortTexts": [
+    "Sarai connects Jochid authority, Volga routes and tribute, drawing envoys and merchants together.",
+    "Tents, lodging and carriage need supplies among the court's diverse communities."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The court around Sarai links Volga transport, tribute and envoys, with tents and settled accommodation housing diverse visitors. Access requires reception, waiting and gift arrangements, while cargo needs boats, animals and storage. Berke follows Islam, but surrounding communities differ in belief, making hosts and customs important to each encounter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Carriers, food sellers and animal handlers around Sarai may wait for negotiations before learning departure plans. Envoys have differing food and ceremonial needs. Crowds create business but compete for water, grazing, lodging and transport. Small households cannot indefinitely advance supplies when payment is delayed."
+    }
+  ],
+  "TextMappings": []
+}

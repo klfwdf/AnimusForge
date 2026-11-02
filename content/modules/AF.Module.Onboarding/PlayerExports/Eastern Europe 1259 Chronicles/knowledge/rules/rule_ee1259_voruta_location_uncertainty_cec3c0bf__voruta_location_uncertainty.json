@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_voruta_location_uncertainty_cec3c0bf",
+  "Keywords": [
+    "Voruta's defense and family rivalry",
+    "Allied help remembered at Voruta"
+  ],
+  "RagShortTexts": [
+    "Mindaugas defended Voruta against family rivals with help from outside partners.",
+    "Defense and aid require cooperation; kinship does not end disputes over land and power."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Voruta recalls Mindaugas resisting family rivals with partners' help. Kinship offers communication as well as competition, and outside support needs coordination with local defenders. Holding a fort requires supplies, news and men willing to remain together; success leaves continuing promises and allocations to negotiate with local leaders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lithuanian households hearing of Voruta recognize the food and shelter needed by helpers and defenders. Family rivalry can divide allegiance while those at home farm, store food and carry news. After allies depart, residents need borrowed goods returned and clear responsibility for subsequent demands."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

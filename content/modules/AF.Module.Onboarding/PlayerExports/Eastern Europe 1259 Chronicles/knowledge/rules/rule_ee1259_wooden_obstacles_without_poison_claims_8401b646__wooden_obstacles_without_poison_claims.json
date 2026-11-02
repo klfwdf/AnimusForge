@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_wooden_obstacles_without_poison_claims_8401b646",
+  "Keywords": [
+    "Timber barriers and friendly exits",
+    "Labor for branching wooden obstacles"
+  ],
+  "RagShortTexts": [
+    "Stakes and branching timber hinder mounted approaches but need guards, upkeep and clear passages.",
+    "Obstacles also hinder supplies and residents, demanding materials, carriage and withdrawal space."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Baltic woodland supplies branches and stakes for barriers, whose stability and bypasses need checking. Guards watch openings that food carriers and messengers also need to recognize. More barriers take more work to clear or change. An unplanned withdrawal can leave friendly carts trapped by their own timber."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Workers cutting, dragging and setting timber also have roofs and fuel to maintain. Blocking a mill or field route adds a daily detour for households. Residents need access and removal arrangements, including clearance after fighting so animals and carts are not left suffering damage."
+    }
+  ],
+  "TextMappings": []
+}

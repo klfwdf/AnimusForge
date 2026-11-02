@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_suzdal_kamenka_landscape_d9e3f659",
+  "Keywords": [
+    "Suzdal's Kamenka setting",
+    "Church land and households at Suzdal"
+  ],
+  "RagShortTexts": [
+    "Suzdal links church, princely households and fields along the Kamenka.",
+    "Church building and household repairs share materials and labor during recovery."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Suzdal's Kamenka and nearby fields sustain princes, church communities and households with differing claims on land and labor. Churches gather worship and negotiation but need maintained property and hospitality. War survivors value trusted kin and predictable demands while dividing the same workers between cultivation and repairs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Suzdal residents supplying church work also raise questions of boundaries, rents and debts. Major repairs can leave ordinary roofs waiting, urgently in rain. Neighbors exchange labor to spread the burden, needing agreed return help as well as goodwill for the coming winter."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

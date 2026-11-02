@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_river_raiders_and_civic_responsibility_2bfa7116",
+  "Keywords": [
+    "River raiding and merchant escorts",
+    "Recognizing armed boats at river settlements"
+  ],
+  "RagShortTexts": [
+    "Armed river travelers may escort or rob, requiring attention to identity and conduct.",
+    "Narrow channels and landings expose traffic, making watches and reliable contacts important."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Armed river parties include escorts, followers and men who prey on unloading crews, without automatic backing from a city or lord. Narrow channels, shallows and landings reduce maneuver. News and shore support matter. Owners need guards and known companions to avoid retaliation for someone else's plunder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Riverside families seek recognition of armed arrivals before trading or moving animals. Stolen food and nets threaten livelihoods, while claims require witnesses. Merchants paying fairly gain future hospitality and guidance; tolerated looting can destroy those relationships after one visit."
+    }
+  ],
+  "TextMappings": []
+}

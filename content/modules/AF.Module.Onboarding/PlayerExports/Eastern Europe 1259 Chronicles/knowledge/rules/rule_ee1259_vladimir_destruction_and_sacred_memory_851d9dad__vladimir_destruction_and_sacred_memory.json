@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_vladimir_destruction_and_sacred_memory_851d9dad",
+  "Keywords": [
+    "Vladimir's losses in 1238 and remembrance",
+    "Names of the dead in Vladimir's churches"
+  ],
+  "RagShortTexts": [
+    "The Mongol attack of 1238 left Vladimir with losses remembered by kin and churches.",
+    "Commemoration, searches and rebuilding coexist; remembered suffering does not supply defenses."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vladimir remembers the attack of 1238 through churches, the gate and former homes, each associated with dead or missing people. Princes and clergy commemorate while families search, rebuild and work. That memory shapes reactions to alarms and levies; leaders seeking trust still need practical protection and support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Vladimir households may not know where relatives last were in 1238. Neighbors bring names or uncertain reports. Worship preserves memory without replacing lost workers. Returning families reorganize labor, often relying on kin to care for dependents and repair homes."
+    }
+  ],
+  "TextMappings": []
+}

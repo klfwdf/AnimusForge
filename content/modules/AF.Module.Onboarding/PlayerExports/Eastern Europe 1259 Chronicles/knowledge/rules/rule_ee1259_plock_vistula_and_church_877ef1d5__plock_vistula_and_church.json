@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_plock_vistula_and_church_877ef1d5",
+  "Keywords": [
+    "Plock's high bank and church",
+    "Vistula provisions at Plock"
+  ],
+  "RagShortTexts": [
+    "Plock's high bank gathers princely and church affairs linked to Vistula supplies.",
+    "Unloading and uphill carriage need labor and animals shared with local hospitality and work."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Plock's high bank gives princely and church authority a prominent setting beside Vistula exchange. Landed goods need uphill carriage, recipients and settlement of losses. Prestige attracts envoys and petitions while increasing hospitality and guard costs. Princely family dealings remain tied to secure production and traffic below."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Plock carriers account for weather, slopes and animal strength despite pressure to add loads. Church visitors and noble followers create work in food and repairs while raising household expenses. Timely payment allows workers to buy what they need for further carriage and winter."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

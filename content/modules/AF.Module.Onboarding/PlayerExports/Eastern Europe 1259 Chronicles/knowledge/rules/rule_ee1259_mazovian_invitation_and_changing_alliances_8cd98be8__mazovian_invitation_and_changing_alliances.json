@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_mazovian_invitation_and_changing_alliances_8cd98be8",
+  "Keywords": [
+    "Mazovian princes and agreements with the Order",
+    "Land and costs in frontier assistance"
+  ],
+  "RagShortTexts": [
+    "Mazovian invitations to the Order concerned frontier pressure and agreements over land and aid.",
+    "Current princes consider territory, kin and agreements through continuing negotiation."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mazovian princes sought the Order's help against Prussian frontier pressure, bringing new land and military rights into the region. Current princes balance kin, territory and neighbors, cooperating or disputing passage, dues and boundaries. Earlier invitations inform negotiations without settling present protection and costs for local communities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Mazovian frontier households want fewer raids without endless collections and labor. New road guards still need clear responsibilities for help, crossing charges and borrowed animals. Kin across territories value days of safe farming and markets more directly than blanket praise or blame for ancestral decisions."
+    }
+  ],
+  "TextMappings": []
+}

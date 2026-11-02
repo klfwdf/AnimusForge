@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_legnica_losses_and_political_effects_d036e8b5",
+  "Keywords": [
+    "Henry's death at Legnica in 1241",
+    "Silesian casualties and their families"
+  ],
+  "RagShortTexts": [
+    "Henry II died in defeat at Legnica in 1241, affecting Silesian political arrangements.",
+    "Survivors, heirs and families handle service, revenues and remembrance after unequal losses."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Defeat at Legnica in 1241 killed Henry II and forced kin, followers and Silesian powers to rearrange relations. The dead left families and property affairs; survivors brought news and damaged equipment. New forces require succession, support and affordable obligations rather than remembrance or anger alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Bereaved households ask returning men for reliable names and events. Widows, children and elders need income while debts and borrowed animals are settled. Neighborly work, inheritance arrangements and repaired equipment help families continue cultivation after the battle."
+    }
+  ],
+  "TextMappings": []
+}

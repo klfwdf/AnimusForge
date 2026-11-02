@@ -1,0 +1,30 @@
+{
+  "Id": "rule_ee1259_charge_concentration_and_terrain_ef0d9178",
+  "Keywords": [
+    "Cavalry frontage and flank support",
+    "Regrouping a concentrated mounted force"
+  ],
+  "RagShortTexts": [
+    "Concentrating cavalry needs usable ground and support; narrow routes separate front and rear.",
+    "An opening still needs flank security and a return route; stamina and messages limit repetition."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Concentrated riders can pressure a chosen point if leaders, regrouping places and flank duties are clear. Woods, ditches and soft ground narrow a force and delay followers. Courage relies on horse stamina, footing and support. Without a return route, an initial advance can strand experienced men beyond their companions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A following rider watches turns and leaves room to check his horse when those ahead halt. After contact, finding a regrouping position is safer than isolated pursuit. Attendants bring back broken lances, injured mounts and reports, all requiring attention before another departure."
+    }
+  ],
+  "TextMappings": []
+}

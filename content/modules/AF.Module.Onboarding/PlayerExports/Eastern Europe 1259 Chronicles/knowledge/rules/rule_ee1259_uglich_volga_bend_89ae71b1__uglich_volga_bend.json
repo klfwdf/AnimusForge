@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_uglich_volga_bend_89ae71b1",
+  "Keywords": [
+    "Landings at Uglich's river bend",
+    "Ferries and neighbors at Uglich"
+  ],
+  "RagShortTexts": [
+    "Uglich draws on Volga traffic and fields; landings require local knowledge.",
+    "Unloading, boat repairs and ferries share crews whose plans change with water levels."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Uglich's bend offers river travelers a recognizable landmark among settlements sustained by fields, transport and exchange. Boats need landings, unloading and repair space shared under local authority. Changing Volga levels and ice can make a familiar berth unusable, so travelers need boatmen's advice as well as a town's name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Uglich households combine ferrying and grain carriage with fields and animals. A boat owner asks about weight, destination and payment for the return, since a passenger may displace his own delivery. Bad water or wind can justify postponement; a lost day's trade costs less than a lost boat."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

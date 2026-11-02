@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_church_exemptions_and_dated_grants_35a62ab8",
+  "Keywords": [
+    "Rus church property and exemptions",
+    "Documents and witnesses in church collections"
+  ],
+  "RagShortTexts": [
+    "Duties on Rus church lands depend on rights and recognition of exemption claims.",
+    "Clergy and collectors need recognized documents to settle competing demands."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus church communities hold land, donations and local standing, with exemptions dependent on princely or higher recognition. Clergy need documents and witnesses identifying the people, property and duties concerned. Recognition does not end every dispute; new demands still require explanation to prevent repeated claims on one household."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households on church land need to know what is exempt and what remains due. Clergy and witnesses familiar with people and boundaries help explain a claim. Seeking judgment costs time and lodging, making clarity before harvest preferable to waiting on competing authorities."
+    }
+  ],
+  "TextMappings": []
+}
