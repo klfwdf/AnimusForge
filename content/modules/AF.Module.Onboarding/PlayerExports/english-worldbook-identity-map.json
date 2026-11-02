@@ -31710,105 +31710,105 @@
           "en_id": "be_antean_kingdom_military",
           "en_file": "knowledge/rules/rule_be_antean_kingdom_military__Anteans_Military.json"
         },
-        "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v10__沙漠骆驼战阵.json": {
+        "knowledge/rules/rule_边疆捕鸟与狩猎食物.json": {
           "zh_id": "be_arab_lakhmid_camel_cavalry_v10",
           "en_id": "be_arab_lakhmid_camel_cavalry_v10",
-          "en_file": "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v10__Lakhmid_Camelry.json"
+          "en_file": "knowledge/rules/rule_fowling_and_hunting_frontier_food.json"
         },
-        "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v1__沙漠骆驼战阵.json": {
+        "knowledge/rules/rule_边疆马与骆驼.json": {
           "zh_id": "be_arab_lakhmid_camel_cavalry_v1",
           "en_id": "be_arab_lakhmid_camel_cavalry_v1",
-          "en_file": "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v1__Lakhmid_Camelry.json"
+          "en_file": "knowledge/rules/rule_frontier_horses_and_camels.json"
         },
-        "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v2__沙漠骆驼战阵.json": {
+        "knowledge/rules/rule_边疆乳食与牧群.json": {
           "zh_id": "be_arab_lakhmid_camel_cavalry_v2",
           "en_id": "be_arab_lakhmid_camel_cavalry_v2",
-          "en_file": "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v2__Lakhmid_Camelry.json"
+          "en_file": "knowledge/rules/rule_frontier_milk_and_herds.json"
         },
-        "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v3__沙漠骆驼战阵.json": {
+        "knowledge/rules/rule_帐幕与移动家户.json": {
           "zh_id": "be_arab_lakhmid_camel_cavalry_v3",
           "en_id": "be_arab_lakhmid_camel_cavalry_v3",
-          "en_file": "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v3__Lakhmid_Camelry.json"
+          "en_file": "knowledge/rules/rule_tents_and_mobile_households.json"
         },
-        "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v4__沙漠骆驼战阵.json": {
+        "knowledge/rules/rule_阿拉伯首领向尤利安献冠.json": {
           "zh_id": "be_arab_lakhmid_camel_cavalry_v4",
           "en_id": "be_arab_lakhmid_camel_cavalry_v4",
-          "en_file": "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v4__Lakhmid_Camelry.json"
+          "en_file": "knowledge/rules/rule_arab_chiefs_offer_julian_a_crown.json"
         },
-        "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v5__沙漠骆驼战阵.json": {
+        "knowledge/rules/rule_阿拉伯辅助兵合作范围.json": {
           "zh_id": "be_arab_lakhmid_camel_cavalry_v5",
           "en_id": "be_arab_lakhmid_camel_cavalry_v5",
-          "en_file": "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v5__Lakhmid_Camelry.json"
+          "en_file": "knowledge/rules/rule_scope_of_arab_auxiliary_service.json"
         },
-        "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v6__沙漠骆驼战阵.json": {
+        "knowledge/rules/rule_波斯撤军中的边疆袭扰.json": {
           "zh_id": "be_arab_lakhmid_camel_cavalry_v6",
           "en_id": "be_arab_lakhmid_camel_cavalry_v6",
-          "en_file": "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v6__Lakhmid_Camelry.json"
+          "en_file": "knowledge/rules/rule_frontier_attacks_during_the_persian_retreat.json"
         },
-        "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v7__沙漠骆驼战阵.json": {
+        "knowledge/rules/rule_萨拉森称呼下的不同来客.json": {
           "zh_id": "be_arab_lakhmid_camel_cavalry_v7",
           "en_id": "be_arab_lakhmid_camel_cavalry_v7",
-          "en_file": "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v7__Lakhmid_Camelry.json"
+          "en_file": "knowledge/rules/rule_different_visitors_under_the_saracen_name.json"
         },
-        "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v8__沙漠骆驼战阵.json": {
+        "knowledge/rules/rule_旱地行军携物.json": {
           "zh_id": "be_arab_lakhmid_camel_cavalry_v8",
           "en_id": "be_arab_lakhmid_camel_cavalry_v8",
-          "en_file": "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v8__Lakhmid_Camelry.json"
+          "en_file": "knowledge/rules/rule_loads_on_an_arid_march.json"
         },
-        "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v9__沙漠骆驼战阵.json": {
+        "knowledge/rules/rule_边疆帐幕婚约叙述.json": {
           "zh_id": "be_arab_lakhmid_camel_cavalry_v9",
           "en_id": "be_arab_lakhmid_camel_cavalry_v9",
-          "en_file": "knowledge/rules/rule_be_arab_lakhmid_camel_cavalry_v9__Lakhmid_Camelry.json"
+          "en_file": "knowledge/rules/rule_accounts_of_tent_marriage_agreements.json"
         },
-        "knowledge/rules/rule_be_arab_queen_mavia_revolt_v10__马维娅女王起义.json": {
+        "knowledge/rules/rule_边疆冲突消息的先后.json": {
           "zh_id": "be_arab_queen_mavia_revolt_v10",
           "en_id": "be_arab_queen_mavia_revolt_v10",
-          "en_file": "knowledge/rules/rule_be_arab_queen_mavia_revolt_v10__Queen_Mavia.json"
+          "en_file": "knowledge/rules/rule_sequence_of_frontier_conflict_reports.json"
         },
-        "knowledge/rules/rule_be_arab_queen_mavia_revolt_v1__马维娅女王起义.json": {
+        "knowledge/rules/rule_马维娅与联盟议事.json": {
           "zh_id": "be_arab_queen_mavia_revolt_v1",
           "en_id": "be_arab_queen_mavia_revolt_v1",
-          "en_file": "knowledge/rules/rule_be_arab_queen_mavia_revolt_v1__Queen_Mavia.json"
+          "en_file": "knowledge/rules/rule_mavia_and_coalition_agreement.json"
         },
-        "knowledge/rules/rule_be_arab_queen_mavia_revolt_v2__马维娅女王起义.json": {
+        "knowledge/rules/rule_塔努赫边疆通道.json": {
           "zh_id": "be_arab_queen_mavia_revolt_v2",
           "en_id": "be_arab_queen_mavia_revolt_v2",
-          "en_file": "knowledge/rules/rule_be_arab_queen_mavia_revolt_v2__Queen_Mavia.json"
+          "en_file": "knowledge/rules/rule_tanukhid_frontier_connections.json"
         },
-        "knowledge/rules/rule_be_arab_queen_mavia_revolt_v3__马维娅女王起义.json": {
+        "knowledge/rules/rule_献礼场合的见证.json": {
           "zh_id": "be_arab_queen_mavia_revolt_v3",
           "en_id": "be_arab_queen_mavia_revolt_v3",
-          "en_file": "knowledge/rules/rule_be_arab_queen_mavia_revolt_v3__Queen_Mavia.json"
+          "en_file": "knowledge/rules/rule_witnessing_a_frontier_gift.json"
         },
-        "knowledge/rules/rule_be_arab_queen_mavia_revolt_v4__马维娅女王起义.json": {
+        "knowledge/rules/rule_叙利亚信众的往来.json": {
           "zh_id": "be_arab_queen_mavia_revolt_v4",
           "en_id": "be_arab_queen_mavia_revolt_v4",
-          "en_file": "knowledge/rules/rule_be_arab_queen_mavia_revolt_v4__Queen_Mavia.json"
+          "en_file": "knowledge/rules/rule_contact_among_syrian_believers.json"
         },
-        "knowledge/rules/rule_be_arab_queen_mavia_revolt_v5__马维娅女王起义.json": {
+        "knowledge/rules/rule_女性领袖与家户支持.json": {
           "zh_id": "be_arab_queen_mavia_revolt_v5",
           "en_id": "be_arab_queen_mavia_revolt_v5",
-          "en_file": "knowledge/rules/rule_be_arab_queen_mavia_revolt_v5__Queen_Mavia.json"
+          "en_file": "knowledge/rules/rule_women_leaders_and_household_support.json"
         },
-        "knowledge/rules/rule_be_arab_queen_mavia_revolt_v6__马维娅女王起义.json": {
+        "knowledge/rules/rule_边疆病旅者求宿.json": {
           "zh_id": "be_arab_queen_mavia_revolt_v6",
           "en_id": "be_arab_queen_mavia_revolt_v6",
-          "en_file": "knowledge/rules/rule_be_arab_queen_mavia_revolt_v6__Queen_Mavia.json"
+          "en_file": "knowledge/rules/rule_sick_frontier_travelers_seek_lodging.json"
         },
-        "knowledge/rules/rule_be_arab_queen_mavia_revolt_v7__马维娅女王起义.json": {
+        "knowledge/rules/rule_敦煌求援者的等待.json": {
           "zh_id": "be_arab_queen_mavia_revolt_v7",
           "en_id": "be_arab_queen_mavia_revolt_v7",
-          "en_file": "knowledge/rules/rule_be_arab_queen_mavia_revolt_v7__Queen_Mavia.json"
+          "en_file": "knowledge/rules/rule_a_dunhuang_petitioner_waits.json"
         },
-        "knowledge/rules/rule_be_arab_queen_mavia_revolt_v8__马维娅女王起义.json": {
+        "knowledge/rules/rule_移动家户中的养育.json": {
           "zh_id": "be_arab_queen_mavia_revolt_v8",
           "en_id": "be_arab_queen_mavia_revolt_v8",
-          "en_file": "knowledge/rules/rule_be_arab_queen_mavia_revolt_v8__Queen_Mavia.json"
+          "en_file": "knowledge/rules/rule_child_rearing_in_mobile_households.json"
         },
-        "knowledge/rules/rule_be_arab_queen_mavia_revolt_v9__马维娅女王起义.json": {
+        "knowledge/rules/rule_辅助兵称呼与亲族身份.json": {
           "zh_id": "be_arab_queen_mavia_revolt_v9",
           "en_id": "be_arab_queen_mavia_revolt_v9",
-          "en_file": "knowledge/rules/rule_be_arab_queen_mavia_revolt_v9__Queen_Mavia.json"
+          "en_file": "knowledge/rules/rule_auxiliary_labels_and_kin_identity.json"
         },
         "knowledge/rules/rule_be_armenian_kingdom_economy__亚美尼亚商路.json": {
           "zh_id": "be_armenian_kingdom_economy",
@@ -31860,40 +31860,40 @@
           "en_id": "be_arran_kingdom_military",
           "en_file": "knowledge/rules/rule_be_arran_kingdom_military__Arran_Military.json"
         },
-        "knowledge/rules/rule_be_battle_amida_siege_record_v1__阿米达血腥围城.json": {
+        "knowledge/rules/rule_阿米达格鲁姆巴特斯王子.json": {
           "zh_id": "be_battle_amida_siege_record_v1",
           "en_id": "be_battle_amida_siege_record_v1",
-          "en_file": "knowledge/rules/rule_be_battle_amida_siege_record_v1__Siege_of_Amida.json"
+          "en_file": "knowledge/rules/rule_grumbates_son_at_amida.json"
         },
-        "knowledge/rules/rule_be_battle_amida_siege_record_v2__阿米达血腥围城.json": {
+        "knowledge/rules/rule_阿米达拔箭医者.json": {
           "zh_id": "be_battle_amida_siege_record_v2",
           "en_id": "be_battle_amida_siege_record_v2",
-          "en_file": "knowledge/rules/rule_be_battle_amida_siege_record_v2__Siege_of_Amida.json"
+          "en_file": "knowledge/rules/rule_amida_arrow_extraction.json"
         },
-        "knowledge/rules/rule_be_battle_amida_siege_record_v3__阿米达血腥围城.json": {
+        "knowledge/rules/rule_阿米达尸体与疫病.json": {
           "zh_id": "be_battle_amida_siege_record_v3",
           "en_id": "be_battle_amida_siege_record_v3",
-          "en_file": "knowledge/rules/rule_be_battle_amida_siege_record_v3__Siege_of_Amida.json"
+          "en_file": "knowledge/rules/rule_amida_corpses_and_sickness.json"
         },
-        "knowledge/rules/rule_be_battle_amida_siege_record_v4__阿米达血腥围城.json": {
+        "knowledge/rules/rule_阿米达磨工密道.json": {
           "zh_id": "be_battle_amida_siege_record_v4",
           "en_id": "be_battle_amida_siege_record_v4",
-          "en_file": "knowledge/rules/rule_be_battle_amida_siege_record_v4__Siege_of_Amida.json"
+          "en_file": "knowledge/rules/rule_amida_miller_passage.json"
         },
-        "knowledge/rules/rule_be_battle_amida_siege_record_v5__阿米达血腥围城.json": {
+        "knowledge/rules/rule_阿米达攻城塔焚毁.json": {
           "zh_id": "be_battle_amida_siege_record_v5",
           "en_id": "be_battle_amida_siege_record_v5",
-          "en_file": "knowledge/rules/rule_be_battle_amida_siege_record_v5__Siege_of_Amida.json"
+          "en_file": "knowledge/rules/rule_amida_siege_towers_burned.json"
         },
-        "knowledge/rules/rule_be_battle_amida_siege_record_v6__阿米达血腥围城.json": {
+        "knowledge/rules/rule_阿米达土垒坍塌.json": {
           "zh_id": "be_battle_amida_siege_record_v6",
           "en_id": "be_battle_amida_siege_record_v6",
-          "en_file": "knowledge/rules/rule_be_battle_amida_siege_record_v6__Siege_of_Amida.json"
+          "en_file": "knowledge/rules/rule_amida_siege_mound_collapse.json"
         },
-        "knowledge/rules/rule_be_battle_amida_siege_record_v7__阿米达血腥围城.json": {
+        "knowledge/rules/rule_阿米达逃生见闻.json": {
           "zh_id": "be_battle_amida_siege_record_v7",
           "en_id": "be_battle_amida_siege_record_v7",
-          "en_file": "knowledge/rules/rule_be_battle_amida_siege_record_v7__Siege_of_Amida.json"
+          "en_file": "knowledge/rules/rule_escape_from_amida.json"
         },
         "knowledge/rules/rule_be_bosporan_kingdom_economy__博斯普鲁斯王国商路.json": {
           "zh_id": "be_bosporan_kingdom_economy",
@@ -31970,205 +31970,205 @@
           "en_id": "be_caledonian_kingdom_military",
           "en_file": "knowledge/rules/rule_be_caledonian_kingdom_military__Picts_Military.json"
         },
-        "knowledge/rules/rule_be_caucasus_darial_pass_defense_v10__达里尔峡谷铁门.json": {
+        "knowledge/rules/rule_山口守备与来往许可.json": {
           "zh_id": "be_caucasus_darial_pass_defense_v10",
           "en_id": "be_caucasus_darial_pass_defense_v10",
-          "en_file": "knowledge/rules/rule_be_caucasus_darial_pass_defense_v10__Darial_Gorge.json"
+          "en_file": "knowledge/rules/rule_pass_guards_and_negotiated_passage.json"
         },
-        "knowledge/rules/rule_be_caucasus_darial_pass_defense_v1__达里尔峡谷铁门.json": {
+        "knowledge/rules/rule_阿拉古斯狭路.json": {
           "zh_id": "be_caucasus_darial_pass_defense_v1",
           "en_id": "be_caucasus_darial_pass_defense_v1",
-          "en_file": "knowledge/rules/rule_be_caucasus_darial_pass_defense_v1__Darial_Gorge.json"
+          "en_file": "knowledge/rules/rule_aragus_narrow_approach.json"
         },
-        "knowledge/rules/rule_be_caucasus_darial_pass_defense_v2__达里尔峡谷铁门.json": {
+        "knowledge/rules/rule_山口单列通行.json": {
           "zh_id": "be_caucasus_darial_pass_defense_v2",
           "en_id": "be_caucasus_darial_pass_defense_v2",
-          "en_file": "knowledge/rules/rule_be_caucasus_darial_pass_defense_v2__Darial_Gorge.json"
+          "en_file": "knowledge/rules/rule_single_file_passage_in_the_caucasus.json"
         },
-        "knowledge/rules/rule_be_caucasus_darial_pass_defense_v3__达里尔峡谷铁门.json": {
+        "knowledge/rules/rule_阿尔巴尼亚岩道与沼地.json": {
           "zh_id": "be_caucasus_darial_pass_defense_v3",
           "en_id": "be_caucasus_darial_pass_defense_v3",
-          "en_file": "knowledge/rules/rule_be_caucasus_darial_pass_defense_v3__Darial_Gorge.json"
+          "en_file": "knowledge/rules/rule_albanian_rock_road_and_marsh.json"
         },
-        "knowledge/rules/rule_be_caucasus_darial_pass_defense_v4__达里尔峡谷铁门.json": {
+        "knowledge/rules/rule_库拉河岩上据点.json": {
           "zh_id": "be_caucasus_darial_pass_defense_v4",
           "en_id": "be_caucasus_darial_pass_defense_v4",
-          "en_file": "knowledge/rules/rule_be_caucasus_darial_pass_defense_v4__Darial_Gorge.json"
+          "en_file": "knowledge/rules/rule_rocky_strongpoints_on_the_cyrus.json"
         },
-        "knowledge/rules/rule_be_caucasus_darial_pass_defense_v5__达里尔峡谷铁门.json": {
+        "knowledge/rules/rule_庞培进入伊比利亚.json": {
           "zh_id": "be_caucasus_darial_pass_defense_v5",
           "en_id": "be_caucasus_darial_pass_defense_v5",
-          "en_file": "knowledge/rules/rule_be_caucasus_darial_pass_defense_v5__Darial_Gorge.json"
+          "en_file": "knowledge/rules/rule_pompey_enters_iberia.json"
         },
-        "knowledge/rules/rule_be_caucasus_darial_pass_defense_v6__达里尔峡谷铁门.json": {
+        "knowledge/rules/rule_高加索河名与使者.json": {
           "zh_id": "be_caucasus_darial_pass_defense_v6",
           "en_id": "be_caucasus_darial_pass_defense_v6",
-          "en_file": "knowledge/rules/rule_be_caucasus_darial_pass_defense_v6__Darial_Gorge.json"
+          "en_file": "knowledge/rules/rule_caucasian_river_names_and_messengers.json"
         },
-        "knowledge/rules/rule_be_caucasus_darial_pass_defense_v7__达里尔峡谷铁门.json": {
+        "knowledge/rules/rule_阿兰牧群与山地联系.json": {
           "zh_id": "be_caucasus_darial_pass_defense_v7",
           "en_id": "be_caucasus_darial_pass_defense_v7",
-          "en_file": "knowledge/rules/rule_be_caucasus_darial_pass_defense_v7__Darial_Gorge.json"
+          "en_file": "knowledge/rules/rule_alan_herds_and_mountain_contacts.json"
         },
-        "knowledge/rules/rule_be_caucasus_darial_pass_defense_v8__达里尔峡谷铁门.json": {
+        "knowledge/rules/rule_高加索阿尔巴尼人与阿兰人.json": {
           "zh_id": "be_caucasus_darial_pass_defense_v8",
           "en_id": "be_caucasus_darial_pass_defense_v8",
-          "en_file": "knowledge/rules/rule_be_caucasus_darial_pass_defense_v8__Darial_Gorge.json"
+          "en_file": "knowledge/rules/rule_caucasian_albanians_and_alans.json"
         },
-        "knowledge/rules/rule_be_caucasus_darial_pass_defense_v9__达里尔峡谷铁门.json": {
+        "knowledge/rules/rule_岩道辎重与退路.json": {
           "zh_id": "be_caucasus_darial_pass_defense_v9",
           "en_id": "be_caucasus_darial_pass_defense_v9",
-          "en_file": "knowledge/rules/rule_be_caucasus_darial_pass_defense_v9__Darial_Gorge.json"
+          "en_file": "knowledge/rules/rule_baggage_and_retreat_through_rock_roads.json"
         },
-        "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v10__长城阿卡尼斥候.json": {
+        "knowledge/rules/rule_阿里亚尼报酬与泄密.json": {
           "zh_id": "be_celtic_hadrian_arcani_treason_v10",
           "en_id": "be_celtic_hadrian_arcani_treason_v10",
-          "en_file": "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v10__Arcani_Scouts.json"
+          "en_file": "knowledge/rules/rule_areani_rewards_and_disclosure.json"
         },
-        "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v1__长城阿卡尼斥候.json": {
+        "knowledge/rules/rule_阿里亚尼侦察失信.json": {
           "zh_id": "be_celtic_hadrian_arcani_treason_v1",
           "en_id": "be_celtic_hadrian_arcani_treason_v1",
-          "en_file": "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v1__Arcani_Scouts.json"
+          "en_file": "knowledge/rules/rule_areani_intelligence_failure.json"
         },
-        "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v2__长城阿卡尼斥候.json": {
+        "knowledge/rules/rule_不列颠海防长官败报.json": {
           "zh_id": "be_celtic_hadrian_arcani_treason_v2",
           "en_id": "be_celtic_hadrian_arcani_treason_v2",
-          "en_file": "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v2__Arcani_Scouts.json"
+          "en_file": "knowledge/rules/rule_british_coastal_commanders_death_report.json"
         },
-        "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v3__长城阿卡尼斥候.json": {
+        "knowledge/rules/rule_富洛法乌德斯被俘.json": {
           "zh_id": "be_celtic_hadrian_arcani_treason_v3",
           "en_id": "be_celtic_hadrian_arcani_treason_v3",
-          "en_file": "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v3__Arcani_Scouts.json"
+          "en_file": "knowledge/rules/rule_fullofaudes_captured.json"
         },
-        "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v4__长城阿卡尼斥候.json": {
+        "knowledge/rules/rule_布洛涅渡海集结.json": {
           "zh_id": "be_celtic_hadrian_arcani_treason_v4",
           "en_id": "be_celtic_hadrian_arcani_treason_v4",
-          "en_file": "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v4__Arcani_Scouts.json"
+          "en_file": "knowledge/rules/rule_assembly_for_the_boulogne_crossing.json"
         },
-        "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v5__长城阿卡尼斥候.json": {
+        "knowledge/rules/rule_伦敦迎接狄奥多西.json": {
           "zh_id": "be_celtic_hadrian_arcani_treason_v5",
           "en_id": "be_celtic_hadrian_arcani_treason_v5",
-          "en_file": "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v5__Arcani_Scouts.json"
+          "en_file": "knowledge/rules/rule_london_receives_theodosius.json"
         },
-        "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v6__长城阿卡尼斥候.json": {
+        "knowledge/rules/rule_不列颠归队赦令.json": {
           "zh_id": "be_celtic_hadrian_arcani_treason_v6",
           "en_id": "be_celtic_hadrian_arcani_treason_v6",
-          "en_file": "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v6__Arcani_Scouts.json"
+          "en_file": "knowledge/rules/rule_british_return_to_service_clemency.json"
         },
-        "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v7__长城阿卡尼斥候.json": {
+        "knowledge/rules/rule_不列颠恢复地方官署.json": {
           "zh_id": "be_celtic_hadrian_arcani_treason_v7",
           "en_id": "be_celtic_hadrian_arcani_treason_v7",
-          "en_file": "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v7__Arcani_Scouts.json"
+          "en_file": "knowledge/rules/rule_restoring_british_civil_offices.json"
         },
-        "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v8__长城阿卡尼斥候.json": {
+        "knowledge/rules/rule_归还不列颠被掠财物.json": {
           "zh_id": "be_celtic_hadrian_arcani_treason_v8",
           "en_id": "be_celtic_hadrian_arcani_treason_v8",
-          "en_file": "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v8__Arcani_Scouts.json"
+          "en_file": "knowledge/rules/rule_restitution_of_british_plunder.json"
         },
-        "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v9__长城阿卡尼斥候.json": {
+        "knowledge/rules/rule_阿里亚尼报告的行程.json": {
           "zh_id": "be_celtic_hadrian_arcani_treason_v9",
           "en_id": "be_celtic_hadrian_arcani_treason_v9",
-          "en_file": "knowledge/rules/rule_be_celtic_hadrian_arcani_treason_v9__Arcani_Scouts.json"
+          "en_file": "knowledge/rules/rule_journeys_behind_areani_reports.json"
         },
-        "knowledge/rules/rule_be_celtic_pictish_brochs_v10__皮克特双层石塔.json": {
+        "knowledge/rules/rule_北方石塔与罗马货物.json": {
           "zh_id": "be_celtic_pictish_brochs_v10",
           "en_id": "be_celtic_pictish_brochs_v10",
-          "en_file": "knowledge/rules/rule_be_celtic_pictish_brochs_v10__Pictish_Brochs.json"
+          "en_file": "knowledge/rules/rule_northern_brochs_and_roman_goods.json"
         },
-        "knowledge/rules/rule_be_celtic_pictish_brochs_v1__皮克特双层石塔.json": {
+        "knowledge/rules/rule_穆萨石塔厚壁入口.json": {
           "zh_id": "be_celtic_pictish_brochs_v1",
           "en_id": "be_celtic_pictish_brochs_v1",
-          "en_file": "knowledge/rules/rule_be_celtic_pictish_brochs_v1__Pictish_Brochs.json"
+          "en_file": "knowledge/rules/rule_mousa_thick_walled_entrance.json"
         },
-        "knowledge/rules/rule_be_celtic_pictish_brochs_v2__皮克特双层石塔.json": {
+        "knowledge/rules/rule_石塔墙内储室.json": {
           "zh_id": "be_celtic_pictish_brochs_v2",
           "en_id": "be_celtic_pictish_brochs_v2",
-          "en_file": "knowledge/rules/rule_be_celtic_pictish_brochs_v2__Pictish_Brochs.json"
+          "en_file": "knowledge/rules/rule_broch_chambers_within_the_wall.json"
         },
-        "knowledge/rules/rule_be_celtic_pictish_brochs_v3__皮克特双层石塔.json": {
+        "knowledge/rules/rule_穆萨墙内楼梯.json": {
           "zh_id": "be_celtic_pictish_brochs_v3",
           "en_id": "be_celtic_pictish_brochs_v3",
-          "en_file": "knowledge/rules/rule_be_celtic_pictish_brochs_v3__Pictish_Brochs.json"
+          "en_file": "knowledge/rules/rule_mousa_staircase_inside_the_wall.json"
         },
-        "knowledge/rules/rule_be_celtic_pictish_brochs_v4__皮克特双层石塔.json": {
+        "knowledge/rules/rule_穆萨海峡两岸石塔.json": {
           "zh_id": "be_celtic_pictish_brochs_v4",
           "en_id": "be_celtic_pictish_brochs_v4",
-          "en_file": "knowledge/rules/rule_be_celtic_pictish_brochs_v4__Pictish_Brochs.json"
+          "en_file": "knowledge/rules/rule_brochs_across_mousa_sound.json"
         },
-        "knowledge/rules/rule_be_celtic_pictish_brochs_v5__皮克特双层石塔.json": {
+        "knowledge/rules/rule_米德豪岬角壕沟.json": {
           "zh_id": "be_celtic_pictish_brochs_v5",
           "en_id": "be_celtic_pictish_brochs_v5",
-          "en_file": "knowledge/rules/rule_be_celtic_pictish_brochs_v5__Pictish_Brochs.json"
+          "en_file": "knowledge/rules/rule_midhowe_promontory_defenses.json"
         },
-        "knowledge/rules/rule_be_celtic_pictish_brochs_v6__皮克特双层石塔.json": {
+        "knowledge/rules/rule_米德豪泉水蓄池.json": {
           "zh_id": "be_celtic_pictish_brochs_v6",
           "en_id": "be_celtic_pictish_brochs_v6",
-          "en_file": "knowledge/rules/rule_be_celtic_pictish_brochs_v6__Pictish_Brochs.json"
+          "en_file": "knowledge/rules/rule_midhowe_spring_fed_cistern.json"
         },
-        "knowledge/rules/rule_be_celtic_pictish_brochs_v7__皮克特双层石塔.json": {
+        "knowledge/rules/rule_石板分隔的塔内作业.json": {
           "zh_id": "be_celtic_pictish_brochs_v7",
           "en_id": "be_celtic_pictish_brochs_v7",
-          "en_file": "knowledge/rules/rule_be_celtic_pictish_brochs_v7__Pictish_Brochs.json"
+          "en_file": "knowledge/rules/rule_flagstone_partitions_in_a_broch.json"
         },
-        "knowledge/rules/rule_be_celtic_pictish_brochs_v8__皮克特双层石塔.json": {
+        "knowledge/rules/rule_石塔外的铁工作坊.json": {
           "zh_id": "be_celtic_pictish_brochs_v8",
           "en_id": "be_celtic_pictish_brochs_v8",
-          "en_file": "knowledge/rules/rule_be_celtic_pictish_brochs_v8__Pictish_Brochs.json"
+          "en_file": "knowledge/rules/rule_ironworking_outside_the_broch.json"
         },
-        "knowledge/rules/rule_be_celtic_pictish_brochs_v9__皮克特双层石塔.json": {
+        "knowledge/rules/rule_格内斯塔旁居住群.json": {
           "zh_id": "be_celtic_pictish_brochs_v9",
           "en_id": "be_celtic_pictish_brochs_v9",
-          "en_file": "knowledge/rules/rule_be_celtic_pictish_brochs_v9__Pictish_Brochs.json"
+          "en_file": "knowledge/rules/rule_houses_beside_gurness_broch.json"
         },
-        "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v10__爱尔兰皮舟突袭.json": {
+        "knowledge/rules/rule_海岸警报的见闻差别.json": {
           "zh_id": "be_celtic_scotti_raiding_curraghs_v10",
           "en_id": "be_celtic_scotti_raiding_curraghs_v10",
-          "en_file": "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v10__Scotti_Curraghs.json"
+          "en_file": "knowledge/rules/rule_coastal_warnings_and_eyewitnesses.json"
         },
-        "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v1__爱尔兰皮舟突袭.json": {
+        "knowledge/rules/rule_不列颠皮舟木骨.json": {
           "zh_id": "be_celtic_scotti_raiding_curraghs_v1",
           "en_id": "be_celtic_scotti_raiding_curraghs_v1",
-          "en_file": "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v1__Scotti_Curraghs.json"
+          "en_file": "knowledge/rules/rule_british_skin_boats_wooden_frames.json"
         },
-        "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v2__爱尔兰皮舟突袭.json": {
+        "knowledge/rules/rule_轻舟夜间车运.json": {
           "zh_id": "be_celtic_scotti_raiding_curraghs_v2",
           "en_id": "be_celtic_scotti_raiding_curraghs_v2",
-          "en_file": "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v2__Scotti_Curraghs.json"
+          "en_file": "knowledge/rules/rule_light_boats_carried_by_wagon.json"
         },
-        "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v3__爱尔兰皮舟突袭.json": {
+        "knowledge/rules/rule_皮舟渡河与桥头堡.json": {
           "zh_id": "be_celtic_scotti_raiding_curraghs_v3",
           "en_id": "be_celtic_scotti_raiding_curraghs_v3",
-          "en_file": "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v3__Scotti_Curraghs.json"
+          "en_file": "knowledge/rules/rule_skin_boats_and_a_bridgehead.json"
         },
-        "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v4__爱尔兰皮舟突袭.json": {
+        "knowledge/rules/rule_西科里斯补给通路.json": {
           "zh_id": "be_celtic_scotti_raiding_curraghs_v4",
           "en_id": "be_celtic_scotti_raiding_curraghs_v4",
-          "en_file": "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v4__Scotti_Curraghs.json"
+          "en_file": "knowledge/rules/rule_supply_restored_on_the_sicoris.json"
         },
-        "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v5__爱尔兰皮舟突袭.json": {
+        "knowledge/rules/rule_斯科特袭扰与不列颠道路.json": {
           "zh_id": "be_celtic_scotti_raiding_curraghs_v5",
           "en_id": "be_celtic_scotti_raiding_curraghs_v5",
-          "en_file": "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v5__Scotti_Curraghs.json"
+          "en_file": "knowledge/rules/rule_scotti_raids_and_british_roads.json"
         },
-        "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v6__爱尔兰皮舟突袭.json": {
+        "knowledge/rules/rule_狄奥多西归还被掠物.json": {
           "zh_id": "be_celtic_scotti_raiding_curraghs_v6",
           "en_id": "be_celtic_scotti_raiding_curraghs_v6",
-          "en_file": "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v6__Scotti_Curraghs.json"
+          "en_file": "knowledge/rules/rule_theodosius_returns_recovered_plunder.json"
         },
-        "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v7__爱尔兰皮舟突袭.json": {
+        "knowledge/rules/rule_不列颠分队与伏击.json": {
           "zh_id": "be_celtic_scotti_raiding_curraghs_v7",
           "en_id": "be_celtic_scotti_raiding_curraghs_v7",
-          "en_file": "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v7__Scotti_Curraghs.json"
+          "en_file": "knowledge/rules/rule_dispersed_patrols_in_britain.json"
         },
-        "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v8__爱尔兰皮舟突袭.json": {
+        "knowledge/rules/rule_不列颠归队与赦免.json": {
           "zh_id": "be_celtic_scotti_raiding_curraghs_v8",
           "en_id": "be_celtic_scotti_raiding_curraghs_v8",
-          "en_file": "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v8__Scotti_Curraghs.json"
+          "en_file": "knowledge/rules/rule_return_to_service_in_britain.json"
         },
-        "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v9__爱尔兰皮舟突袭.json": {
+        "knowledge/rules/rule_不列颠修复城堡.json": {
           "zh_id": "be_celtic_scotti_raiding_curraghs_v9",
           "en_id": "be_celtic_scotti_raiding_curraghs_v9",
-          "en_file": "knowledge/rules/rule_be_celtic_scotti_raiding_curraghs_v9__Scotti_Curraghs.json"
+          "en_file": "knowledge/rules/rule_restoring_british_forts.json"
         },
         "knowledge/rules/rule_be_danish_kingdom_economy__丹麦人商路.json": {
           "zh_id": "be_danish_kingdom_economy",
@@ -32320,155 +32320,155 @@
           "en_id": "be_germanic_francisca_throwing_axe",
           "en_file": "knowledge/rules/rule_be_germanic_francisca_throwing_axe__Francisca_Axe.json"
         },
-        "knowledge/rules/rule_be_gothic_athanaric_wall_v10__阿塔纳里克土垒.json": {
+        "knowledge/rules/rule_哥特停战后的市场需求.json": {
           "zh_id": "be_gothic_athanaric_wall_v10",
           "en_id": "be_gothic_athanaric_wall_v10",
-          "en_file": "knowledge/rules/rule_be_gothic_athanaric_wall_v10__Athanaric's_Wall.json"
+          "en_file": "knowledge/rules/rule_market_needs_after_gothic_peace.json"
         },
-        "knowledge/rules/rule_be_gothic_athanaric_wall_v1__阿塔纳里克土垒.json": {
+        "knowledge/rules/rule_瓦伦斯多瑙河浮桥.json": {
           "zh_id": "be_gothic_athanaric_wall_v1",
           "en_id": "be_gothic_athanaric_wall_v1",
-          "en_file": "knowledge/rules/rule_be_gothic_athanaric_wall_v1__Athanaric's_Wall.json"
+          "en_file": "knowledge/rules/rule_valenss_danube_pontoon_bridge.json"
         },
-        "knowledge/rules/rule_be_gothic_athanaric_wall_v2__阿塔纳里克土垒.json": {
+        "knowledge/rules/rule_洪水打断哥特远征.json": {
           "zh_id": "be_gothic_athanaric_wall_v2",
           "en_id": "be_gothic_athanaric_wall_v2",
-          "en_file": "knowledge/rules/rule_be_gothic_athanaric_wall_v2__Athanaric's_Wall.json"
+          "en_file": "knowledge/rules/rule_flood_interrupts_a_gothic_campaign.json"
         },
-        "knowledge/rules/rule_be_gothic_athanaric_wall_v3__阿塔纳里克土垒.json": {
+        "knowledge/rules/rule_哥特贸易中断的短缺.json": {
           "zh_id": "be_gothic_athanaric_wall_v3",
           "en_id": "be_gothic_athanaric_wall_v3",
-          "en_file": "knowledge/rules/rule_be_gothic_athanaric_wall_v3__Athanaric's_Wall.json"
+          "en_file": "knowledge/rules/rule_gothic_shortages_after_trade_stops.json"
         },
-        "knowledge/rules/rule_be_gothic_athanaric_wall_v4__阿塔纳里克土垒.json": {
+        "knowledge/rules/rule_维克托与阿林泰乌斯使团.json": {
           "zh_id": "be_gothic_athanaric_wall_v4",
           "en_id": "be_gothic_athanaric_wall_v4",
-          "en_file": "knowledge/rules/rule_be_gothic_athanaric_wall_v4__Athanaric's_Wall.json"
+          "en_file": "knowledge/rules/rule_victor_and_arintheus_negotiate.json"
         },
-        "knowledge/rules/rule_be_gothic_athanaric_wall_v5__阿塔纳里克土垒.json": {
+        "knowledge/rules/rule_阿塔纳里克不踏罗马土地的誓言.json": {
           "zh_id": "be_gothic_athanaric_wall_v5",
           "en_id": "be_gothic_athanaric_wall_v5",
-          "en_file": "knowledge/rules/rule_be_gothic_athanaric_wall_v5__Athanaric's_Wall.json"
+          "en_file": "knowledge/rules/rule_athanarics_oath_against_roman_soil.json"
         },
-        "knowledge/rules/rule_be_gothic_athanaric_wall_v6__阿塔纳里克土垒.json": {
+        "knowledge/rules/rule_多瑙河中船上缔和.json": {
           "zh_id": "be_gothic_athanaric_wall_v6",
           "en_id": "be_gothic_athanaric_wall_v6",
-          "en_file": "knowledge/rules/rule_be_gothic_athanaric_wall_v6__Athanaric's_Wall.json"
+          "en_file": "knowledge/rules/rule_peace_concluded_aboard_boats.json"
         },
-        "knowledge/rules/rule_be_gothic_athanaric_wall_v7__阿塔纳里克土垒.json": {
+        "knowledge/rules/rule_哥特和平中的人质.json": {
           "zh_id": "be_gothic_athanaric_wall_v7",
           "en_id": "be_gothic_athanaric_wall_v7",
-          "en_file": "knowledge/rules/rule_be_gothic_athanaric_wall_v7__Athanaric's_Wall.json"
+          "en_file": "knowledge/rules/rule_hostages_in_gothic_peace.json"
         },
-        "knowledge/rules/rule_be_gothic_athanaric_wall_v8__阿塔纳里克土垒.json": {
+        "knowledge/rules/rule_阿塔纳里克的领导称谓.json": {
           "zh_id": "be_gothic_athanaric_wall_v8",
           "en_id": "be_gothic_athanaric_wall_v8",
-          "en_file": "knowledge/rules/rule_be_gothic_athanaric_wall_v8__Athanaric's_Wall.json"
+          "en_file": "knowledge/rules/rule_athanarics_leadership_title.json"
         },
-        "knowledge/rules/rule_be_gothic_athanaric_wall_v9__阿塔纳里克土垒.json": {
+        "knowledge/rules/rule_哥特边境冬营.json": {
           "zh_id": "be_gothic_athanaric_wall_v9",
           "en_id": "be_gothic_athanaric_wall_v9",
-          "en_file": "knowledge/rules/rule_be_gothic_athanaric_wall_v9__Athanaric's_Wall.json"
+          "en_file": "knowledge/rules/rule_winter_quarters_on_the_gothic_frontier.json"
         },
-        "knowledge/rules/rule_be_gothic_ulfilas_bible_v10__乌尔菲拉圣经.json": {
+        "knowledge/rules/rule_书写身份与同名误认.json": {
           "zh_id": "be_gothic_ulfilas_bible_v10",
           "en_id": "be_gothic_ulfilas_bible_v10",
-          "en_file": "knowledge/rules/rule_be_gothic_ulfilas_bible_v10__Ulfilas_Bible.json"
+          "en_file": "knowledge/rules/rule_written_identity_and_namesakes.json"
         },
-        "knowledge/rules/rule_be_gothic_ulfilas_bible_v1__乌尔菲拉圣经.json": {
+        "knowledge/rules/rule_乌尔菲拉斯哥特文字.json": {
           "zh_id": "be_gothic_ulfilas_bible_v1",
           "en_id": "be_gothic_ulfilas_bible_v1",
-          "en_file": "knowledge/rules/rule_be_gothic_ulfilas_bible_v1__Ulfilas_Bible.json"
+          "en_file": "knowledge/rules/rule_ulfilas_gothic_letters.json"
         },
-        "knowledge/rules/rule_be_gothic_ulfilas_bible_v2__乌尔菲拉圣经.json": {
+        "knowledge/rules/rule_哥特语听经与读经.json": {
           "zh_id": "be_gothic_ulfilas_bible_v2",
           "en_id": "be_gothic_ulfilas_bible_v2",
-          "en_file": "knowledge/rules/rule_be_gothic_ulfilas_bible_v2__Ulfilas_Bible.json"
+          "en_file": "knowledge/rules/rule_hearing_and_reading_gothic_scripture.json"
         },
-        "knowledge/rules/rule_be_gothic_ulfilas_bible_v3__乌尔菲拉圣经.json": {
+        "knowledge/rules/rule_乌尔菲拉斯跨首领传教.json": {
           "zh_id": "be_gothic_ulfilas_bible_v3",
           "en_id": "be_gothic_ulfilas_bible_v3",
-          "en_file": "knowledge/rules/rule_be_gothic_ulfilas_bible_v3__Ulfilas_Bible.json"
+          "en_file": "knowledge/rules/rule_ulfilas_teaches_across_chiefly_followings.json"
         },
-        "knowledge/rules/rule_be_gothic_ulfilas_bible_v4__乌尔菲拉圣经.json": {
+        "knowledge/rules/rule_祖传礼俗与哥特信徒.json": {
           "zh_id": "be_gothic_ulfilas_bible_v4",
           "en_id": "be_gothic_ulfilas_bible_v4",
-          "en_file": "knowledge/rules/rule_be_gothic_ulfilas_bible_v4__Ulfilas_Bible.json"
+          "en_file": "knowledge/rules/rule_ancestral_rites_and_gothic_christians.json"
         },
-        "knowledge/rules/rule_be_gothic_ulfilas_bible_v5__乌尔菲拉圣经.json": {
+        "knowledge/rules/rule_哥特字母与译者.json": {
           "zh_id": "be_gothic_ulfilas_bible_v5",
           "en_id": "be_gothic_ulfilas_bible_v5",
-          "en_file": "knowledge/rules/rule_be_gothic_ulfilas_bible_v5__Ulfilas_Bible.json"
+          "en_file": "knowledge/rules/rule_gothic_letters_and_translators.json"
         },
-        "knowledge/rules/rule_be_gothic_ulfilas_bible_v6__乌尔菲拉圣经.json": {
+        "knowledge/rules/rule_主教书信与教派称呼.json": {
           "zh_id": "be_gothic_ulfilas_bible_v6",
           "en_id": "be_gothic_ulfilas_bible_v6",
-          "en_file": "knowledge/rules/rule_be_gothic_ulfilas_bible_v6__Ulfilas_Bible.json"
+          "en_file": "knowledge/rules/rule_bishops_letters_and_doctrinal_names.json"
         },
-        "knowledge/rules/rule_be_gothic_ulfilas_bible_v7__乌尔菲拉圣经.json": {
+        "knowledge/rules/rule_洗礼接纳的地方差异.json": {
           "zh_id": "be_gothic_ulfilas_bible_v7",
           "en_id": "be_gothic_ulfilas_bible_v7",
-          "en_file": "knowledge/rules/rule_be_gothic_ulfilas_bible_v7__Ulfilas_Bible.json"
+          "en_file": "knowledge/rules/rule_regional_differences_in_baptismal_reception.json"
         },
-        "knowledge/rules/rule_be_gothic_ulfilas_bible_v8__乌尔菲拉圣经.json": {
+        "knowledge/rules/rule_教会争论中的共同词语.json": {
           "zh_id": "be_gothic_ulfilas_bible_v8",
           "en_id": "be_gothic_ulfilas_bible_v8",
-          "en_file": "knowledge/rules/rule_be_gothic_ulfilas_bible_v8__Ulfilas_Bible.json"
+          "en_file": "knowledge/rules/rule_shared_words_in_church_disputes.json"
         },
-        "knowledge/rules/rule_be_gothic_ulfilas_bible_v9__乌尔菲拉圣经.json": {
+        "knowledge/rules/rule_哥特家庭与宗教分歧.json": {
           "zh_id": "be_gothic_ulfilas_bible_v9",
           "en_id": "be_gothic_ulfilas_bible_v9",
-          "en_file": "knowledge/rules/rule_be_gothic_ulfilas_bible_v9__Ulfilas_Bible.json"
+          "en_file": "knowledge/rules/rule_gothic_households_and_religious_difference.json"
         },
-        "knowledge/rules/rule_be_gothic_wagon_laager_defense_v10__大车车垒防阵.json": {
+        "knowledge/rules/rule_收回俘虏与家户重聚.json": {
           "zh_id": "be_gothic_wagon_laager_defense_v10",
           "en_id": "be_gothic_wagon_laager_defense_v10",
-          "en_file": "knowledge/rules/rule_be_gothic_wagon_laager_defense_v10__Wagon-Laager.json"
+          "en_file": "knowledge/rules/rule_recovered_captives_and_household_reunion.json"
         },
-        "knowledge/rules/rule_be_gothic_wagon_laager_defense_v1__大车车垒防阵.json": {
+        "knowledge/rules/rule_阿兰家庭大车.json": {
           "zh_id": "be_gothic_wagon_laager_defense_v1",
           "en_id": "be_gothic_wagon_laager_defense_v1",
-          "en_file": "knowledge/rules/rule_be_gothic_wagon_laager_defense_v1__Wagon-Laager.json"
+          "en_file": "knowledge/rules/rule_alan_household_wagons.json"
         },
-        "knowledge/rules/rule_be_gothic_wagon_laager_defense_v2__大车车垒防阵.json": {
+        "knowledge/rules/rule_车队营地与牲畜.json": {
           "zh_id": "be_gothic_wagon_laager_defense_v2",
           "en_id": "be_gothic_wagon_laager_defense_v2",
-          "en_file": "knowledge/rules/rule_be_gothic_wagon_laager_defense_v2__Wagon-Laager.json"
+          "en_file": "knowledge/rules/rule_wagon_camps_and_animals.json"
         },
-        "knowledge/rules/rule_be_gothic_wagon_laager_defense_v3__大车车垒防阵.json": {
+        "knowledge/rules/rule_草原转场的日常负重.json": {
           "zh_id": "be_gothic_wagon_laager_defense_v3",
           "en_id": "be_gothic_wagon_laager_defense_v3",
-          "en_file": "knowledge/rules/rule_be_gothic_wagon_laager_defense_v3__Wagon-Laager.json"
+          "en_file": "knowledge/rules/rule_everyday_loads_during_migration.json"
         },
-        "knowledge/rules/rule_be_gothic_wagon_laager_defense_v4__大车车垒防阵.json": {
+        "knowledge/rules/rule_多瑙河船桥与车队.json": {
           "zh_id": "be_gothic_wagon_laager_defense_v4",
           "en_id": "be_gothic_wagon_laager_defense_v4",
-          "en_file": "knowledge/rules/rule_be_gothic_wagon_laager_defense_v4__Wagon-Laager.json"
+          "en_file": "knowledge/rules/rule_wagons_at_a_danube_boat_bridge.json"
         },
-        "knowledge/rules/rule_be_gothic_wagon_laager_defense_v5__大车车垒防阵.json": {
+        "knowledge/rules/rule_哥特冬营与贸易缺口.json": {
           "zh_id": "be_gothic_wagon_laager_defense_v5",
           "en_id": "be_gothic_wagon_laager_defense_v5",
-          "en_file": "knowledge/rules/rule_be_gothic_wagon_laager_defense_v5__Wagon-Laager.json"
+          "en_file": "knowledge/rules/rule_gothic_winter_and_disrupted_trade.json"
         },
-        "knowledge/rules/rule_be_gothic_wagon_laager_defense_v6__大车车垒防阵.json": {
+        "knowledge/rules/rule_山口单列车流.json": {
           "zh_id": "be_gothic_wagon_laager_defense_v6",
           "en_id": "be_gothic_wagon_laager_defense_v6",
-          "en_file": "knowledge/rules/rule_be_gothic_wagon_laager_defense_v6__Wagon-Laager.json"
+          "en_file": "knowledge/rules/rule_single_file_movement_toward_a_pass.json"
         },
-        "knowledge/rules/rule_be_gothic_wagon_laager_defense_v7__大车车垒防阵.json": {
+        "knowledge/rules/rule_营地缺水与修士取水.json": {
           "zh_id": "be_gothic_wagon_laager_defense_v7",
           "en_id": "be_gothic_wagon_laager_defense_v7",
-          "en_file": "knowledge/rules/rule_be_gothic_wagon_laager_defense_v7__Wagon-Laager.json"
+          "en_file": "knowledge/rules/rule_water_carriage_for_a_camp.json"
         },
-        "knowledge/rules/rule_be_gothic_wagon_laager_defense_v8__大车车垒防阵.json": {
+        "knowledge/rules/rule_营中食物与耐储准备.json": {
           "zh_id": "be_gothic_wagon_laager_defense_v8",
           "en_id": "be_gothic_wagon_laager_defense_v8",
-          "en_file": "knowledge/rules/rule_be_gothic_wagon_laager_defense_v8__Wagon-Laager.json"
+          "en_file": "knowledge/rules/rule_durable_food_for_a_moving_camp.json"
         },
-        "knowledge/rules/rule_be_gothic_wagon_laager_defense_v9__大车车垒防阵.json": {
+        "knowledge/rules/rule_罗马逃生者的同行限制.json": {
           "zh_id": "be_gothic_wagon_laager_defense_v9",
           "en_id": "be_gothic_wagon_laager_defense_v9",
-          "en_file": "knowledge/rules/rule_be_gothic_wagon_laager_defense_v9__Wagon-Laager.json"
+          "en_file": "knowledge/rules/rule_companions_constrain_a_roman_escape.json"
         },
         "knowledge/rules/rule_be_greuthungian_kingdom_economy__东哥特人商路.json": {
           "zh_id": "be_greuthungian_kingdom_economy",
@@ -32770,355 +32770,355 @@
           "en_id": "be_quadian_kingdom_military",
           "en_file": "knowledge/rules/rule_be_quadian_kingdom_military__Quadians_Military.json"
         },
-        "knowledge/rules/rule_be_religion_desert_monasticism_v10__埃及沙漠隐修.json": {
+        "knowledge/rules/rule_沙漠圣者故事的听众.json": {
           "zh_id": "be_religion_desert_monasticism_v10",
           "en_id": "be_religion_desert_monasticism_v10",
-          "en_file": "knowledge/rules/rule_be_religion_desert_monasticism_v10__Desert_Fathers.json"
+          "en_file": "knowledge/rules/rule_listeners_to_desert_saints_stories.json"
         },
-        "knowledge/rules/rule_be_religion_desert_monasticism_v1__埃及沙漠隐修.json": {
+        "knowledge/rules/rule_卡帕多西亚病旅接待设施.json": {
           "zh_id": "be_religion_desert_monasticism_v1",
           "en_id": "be_religion_desert_monasticism_v1",
-          "en_file": "knowledge/rules/rule_be_religion_desert_monasticism_v1__Desert_Fathers.json"
+          "en_file": "knowledge/rules/rule_cappadocian_sick_traveler_facilities.json"
         },
-        "knowledge/rules/rule_be_religion_desert_monasticism_v2__埃及沙漠隐修.json": {
+        "knowledge/rules/rule_隐修者的住处与手工.json": {
           "zh_id": "be_religion_desert_monasticism_v2",
           "en_id": "be_religion_desert_monasticism_v2",
-          "en_file": "knowledge/rules/rule_be_religion_desert_monasticism_v2__Desert_Fathers.json"
+          "en_file": "knowledge/rules/rule_ascetic_shelter_and_crafts.json"
         },
-        "knowledge/rules/rule_be_religion_desert_monasticism_v3__埃及沙漠隐修.json": {
+        "knowledge/rules/rule_共同修行访客与劳作安排.json": {
           "zh_id": "be_religion_desert_monasticism_v3",
           "en_id": "be_religion_desert_monasticism_v3",
-          "en_file": "knowledge/rules/rule_be_religion_desert_monasticism_v3__Desert_Fathers.json"
+          "en_file": "knowledge/rules/rule_communal_visitors_and_work_arrangements.json"
         },
-        "knowledge/rules/rule_be_religion_desert_monasticism_v4__埃及沙漠隐修.json": {
+        "knowledge/rules/rule_接待设施的从业劳动.json": {
           "zh_id": "be_religion_desert_monasticism_v4",
           "en_id": "be_religion_desert_monasticism_v4",
-          "en_file": "knowledge/rules/rule_be_religion_desert_monasticism_v4__Desert_Fathers.json"
+          "en_file": "knowledge/rules/rule_labor_in_reception_facilities.json"
         },
-        "knowledge/rules/rule_be_religion_desert_monasticism_v5__埃及沙漠隐修.json": {
+        "knowledge/rules/rule_修行共同体的访客接触.json": {
           "zh_id": "be_religion_desert_monasticism_v5",
           "en_id": "be_religion_desert_monasticism_v5",
-          "en_file": "knowledge/rules/rule_be_religion_desert_monasticism_v5__Desert_Fathers.json"
+          "en_file": "knowledge/rules/rule_visitors_in_an_ascetic_community.json"
         },
-        "knowledge/rules/rule_be_religion_desert_monasticism_v6__埃及沙漠隐修.json": {
+        "knowledge/rules/rule_修行工作与紧急救助.json": {
           "zh_id": "be_religion_desert_monasticism_v6",
           "en_id": "be_religion_desert_monasticism_v6",
-          "en_file": "knowledge/rules/rule_be_religion_desert_monasticism_v6__Desert_Fathers.json"
+          "en_file": "knowledge/rules/rule_ascetic_work_and_urgent_assistance.json"
         },
-        "knowledge/rules/rule_be_religion_desert_monasticism_v7__埃及沙漠隐修.json": {
+        "knowledge/rules/rule_修行者的衣鞋节制.json": {
           "zh_id": "be_religion_desert_monasticism_v7",
           "en_id": "be_religion_desert_monasticism_v7",
-          "en_file": "knowledge/rules/rule_be_religion_desert_monasticism_v7__Desert_Fathers.json"
+          "en_file": "knowledge/rules/rule_clothes_and_shoes_in_ascetic_discipline.json"
         },
-        "knowledge/rules/rule_be_religion_desert_monasticism_v8__埃及沙漠隐修.json": {
+        "knowledge/rules/rule_帮助体弱者修建住处.json": {
           "zh_id": "be_religion_desert_monasticism_v8",
           "en_id": "be_religion_desert_monasticism_v8",
-          "en_file": "knowledge/rules/rule_be_religion_desert_monasticism_v8__Desert_Fathers.json"
+          "en_file": "knowledge/rules/rule_building_shelter_for_weaker_people.json"
         },
-        "knowledge/rules/rule_be_religion_desert_monasticism_v9__埃及沙漠隐修.json": {
+        "knowledge/rules/rule_共同生活中的取水互助.json": {
           "zh_id": "be_religion_desert_monasticism_v9",
           "en_id": "be_religion_desert_monasticism_v9",
-          "en_file": "knowledge/rules/rule_be_religion_desert_monasticism_v9__Desert_Fathers.json"
+          "en_file": "knowledge/rules/rule_water_carrying_assistance_in_communal_life.json"
         },
-        "knowledge/rules/rule_be_religion_manichaeism_spread_v10__摩尼教光明二元论.json": {
+        "knowledge/rules/rule_跨语言商人宗教联系.json": {
           "zh_id": "be_religion_manichaeism_spread_v10",
           "en_id": "be_religion_manichaeism_spread_v10",
-          "en_file": "knowledge/rules/rule_be_religion_manichaeism_spread_v10__Manichaeism.json"
+          "en_file": "knowledge/rules/rule_religious_contact_across_merchant_languages.json"
         },
-        "knowledge/rules/rule_be_religion_manichaeism_spread_v1__摩尼教光明二元论.json": {
+        "knowledge/rules/rule_摩尼教选民与听者.json": {
           "zh_id": "be_religion_manichaeism_spread_v1",
           "en_id": "be_religion_manichaeism_spread_v1",
-          "en_file": "knowledge/rules/rule_be_religion_manichaeism_spread_v1__Manichaeism.json"
+          "en_file": "knowledge/rules/rule_manichaean_elect_and_hearers.json"
         },
-        "knowledge/rules/rule_be_religion_manichaeism_spread_v2__摩尼教光明二元论.json": {
+        "knowledge/rules/rule_摩尼教食物与光的信念.json": {
           "zh_id": "be_religion_manichaeism_spread_v2",
           "en_id": "be_religion_manichaeism_spread_v2",
-          "en_file": "knowledge/rules/rule_be_religion_manichaeism_spread_v2__Manichaeism.json"
+          "en_file": "knowledge/rules/rule_manichaean_food_and_beliefs_about_light.json"
         },
-        "knowledge/rules/rule_be_religion_manichaeism_spread_v3__摩尼教光明二元论.json": {
+        "knowledge/rules/rule_摩尼教口手胸三封印.json": {
           "zh_id": "be_religion_manichaeism_spread_v3",
           "en_id": "be_religion_manichaeism_spread_v3",
-          "en_file": "knowledge/rules/rule_be_religion_manichaeism_spread_v3__Manichaeism.json"
+          "en_file": "knowledge/rules/rule_manichaean_seals_of_mouth_hands_and_breast.json"
         },
-        "knowledge/rules/rule_be_religion_manichaeism_spread_v4__摩尼教光明二元论.json": {
+        "knowledge/rules/rule_摩尼教听者供养.json": {
           "zh_id": "be_religion_manichaeism_spread_v4",
           "en_id": "be_religion_manichaeism_spread_v4",
-          "en_file": "knowledge/rules/rule_be_religion_manichaeism_spread_v4__Manichaeism.json"
+          "en_file": "knowledge/rules/rule_hearers_supporting_manichaean_ascetics.json"
         },
-        "knowledge/rules/rule_be_religion_manichaeism_spread_v5__摩尼教光明二元论.json": {
+        "knowledge/rules/rule_摩尼教斋戒与日月.json": {
           "zh_id": "be_religion_manichaeism_spread_v5",
           "en_id": "be_religion_manichaeism_spread_v5",
-          "en_file": "knowledge/rules/rule_be_religion_manichaeism_spread_v5__Manichaeism.json"
+          "en_file": "knowledge/rules/rule_manichaean_fasting_and_celestial_observance.json"
         },
-        "knowledge/rules/rule_be_religion_manichaeism_spread_v6__摩尼教光明二元论.json": {
+        "knowledge/rules/rule_摩尼教纪念座与空椅.json": {
           "zh_id": "be_religion_manichaeism_spread_v6",
           "en_id": "be_religion_manichaeism_spread_v6",
-          "en_file": "knowledge/rules/rule_be_religion_manichaeism_spread_v6__Manichaeism.json"
+          "en_file": "knowledge/rules/rule_manichaean_commemorative_seat.json"
         },
-        "knowledge/rules/rule_be_religion_manichaeism_spread_v7__摩尼教光明二元论.json": {
+        "knowledge/rules/rule_摩尼教书籍与讲授.json": {
           "zh_id": "be_religion_manichaeism_spread_v7",
           "en_id": "be_religion_manichaeism_spread_v7",
-          "en_file": "knowledge/rules/rule_be_religion_manichaeism_spread_v7__Manichaeism.json"
+          "en_file": "knowledge/rules/rule_manichaean_books_and_teaching.json"
         },
-        "knowledge/rules/rule_be_religion_manichaeism_spread_v8__摩尼教光明二元论.json": {
+        "knowledge/rules/rule_摩尼教与基督徒的论辩.json": {
           "zh_id": "be_religion_manichaeism_spread_v8",
           "en_id": "be_religion_manichaeism_spread_v8",
-          "en_file": "knowledge/rules/rule_be_religion_manichaeism_spread_v8__Manichaeism.json"
+          "en_file": "knowledge/rules/rule_manichaean_and_christian_argument.json"
         },
-        "knowledge/rules/rule_be_religion_manichaeism_spread_v9__摩尼教光明二元论.json": {
+        "knowledge/rules/rule_宗教归属变化与教会接纳.json": {
           "zh_id": "be_religion_manichaeism_spread_v9",
           "en_id": "be_religion_manichaeism_spread_v9",
-          "en_file": "knowledge/rules/rule_be_religion_manichaeism_spread_v9__Manichaeism.json"
+          "en_file": "knowledge/rules/rule_religious_affiliation_and_church_reception.json"
         },
-        "knowledge/rules/rule_be_roman_annona_militaris_v10__军需实物税.json": {
+        "knowledge/rules/rule_病旅照护的运输与护送.json": {
           "zh_id": "be_roman_annona_militaris_v10",
           "en_id": "be_roman_annona_militaris_v10",
-          "en_file": "knowledge/rules/rule_be_roman_annona_militaris_v10__Annona_Militaris.json"
+          "en_file": "knowledge/rules/rule_transport_and_escort_for_sick_travelers.json"
         },
-        "knowledge/rules/rule_be_roman_annona_militaris_v1__军需实物税.json": {
+        "knowledge/rules/rule_尤利安二十日军粮.json": {
           "zh_id": "be_roman_annona_militaris_v1",
           "en_id": "be_roman_annona_militaris_v1",
-          "en_file": "knowledge/rules/rule_be_roman_annona_militaris_v1__Annona_Militaris.json"
+          "en_file": "knowledge/rules/rule_julian_twenty_day_provisions.json"
         },
-        "knowledge/rules/rule_be_roman_annona_militaris_v2__军需实物税.json": {
+        "knowledge/rules/rule_卡吕卡德努斯河粮船.json": {
           "zh_id": "be_roman_annona_militaris_v2",
           "en_id": "be_roman_annona_militaris_v2",
-          "en_file": "knowledge/rules/rule_be_roman_annona_militaris_v2__Annona_Militaris.json"
+          "en_file": "knowledge/rules/rule_lauriacum_grain_ships.json"
         },
-        "knowledge/rules/rule_be_roman_annona_militaris_v3__军需实物税.json": {
+        "knowledge/rules/rule_饥荒军粮转售.json": {
           "zh_id": "be_roman_annona_militaris_v3",
           "en_id": "be_roman_annona_militaris_v3",
-          "en_file": "knowledge/rules/rule_be_roman_annona_militaris_v3__Annona_Militaris.json"
+          "en_file": "knowledge/rules/rule_hymetius_grain_sale.json"
         },
-        "knowledge/rules/rule_be_roman_annona_militaris_v4__军需实物税.json": {
+        "knowledge/rules/rule_高卢饥军与民间储粮.json": {
           "zh_id": "be_roman_annona_militaris_v4",
           "en_id": "be_roman_annona_militaris_v4",
-          "en_file": "knowledge/rules/rule_be_roman_annona_militaris_v4__Annona_Militaris.json"
+          "en_file": "knowledge/rules/rule_hungry_troops_and_gallic_stores.json"
         },
-        "knowledge/rules/rule_be_roman_annona_militaris_v5__军需实物税.json": {
+        "knowledge/rules/rule_高卢减税与旧欠.json": {
           "zh_id": "be_roman_annona_militaris_v5",
           "en_id": "be_roman_annona_militaris_v5",
-          "en_file": "knowledge/rules/rule_be_roman_annona_militaris_v5__Annona_Militaris.json"
+          "en_file": "knowledge/rules/rule_gallic_tax_relief_and_arrears.json"
         },
-        "knowledge/rules/rule_be_roman_annona_militaris_v6__军需实物税.json": {
+        "knowledge/rules/rule_军粮谷物加工与携带.json": {
           "zh_id": "be_roman_annona_militaris_v6",
           "en_id": "be_roman_annona_militaris_v6",
-          "en_file": "knowledge/rules/rule_be_roman_annona_militaris_v6__Annona_Militaris.json"
+          "en_file": "knowledge/rules/rule_processing_and_carrying_army_grain.json"
         },
-        "knowledge/rules/rule_be_roman_annona_militaris_v7__军需实物税.json": {
+        "knowledge/rules/rule_非洲公仓补库差价.json": {
           "zh_id": "be_roman_annona_militaris_v7",
           "en_id": "be_roman_annona_militaris_v7",
-          "en_file": "knowledge/rules/rule_be_roman_annona_militaris_v7__Annona_Militaris.json"
+          "en_file": "knowledge/rules/rule_replacing_african_public_grain.json"
         },
-        "knowledge/rules/rule_be_roman_annona_militaris_v8__军需实物税.json": {
+        "knowledge/rules/rule_塞琉西亚粮运与驻军.json": {
           "zh_id": "be_roman_annona_militaris_v8",
           "en_id": "be_roman_annona_militaris_v8",
-          "en_file": "knowledge/rules/rule_be_roman_annona_militaris_v8__Annona_Militaris.json"
+          "en_file": "knowledge/rules/rule_seleucia_troops_and_grain_shipping.json"
         },
-        "knowledge/rules/rule_be_roman_annona_militaris_v9__军需实物税.json": {
+        "knowledge/rules/rule_加图的油盐份额.json": {
           "zh_id": "be_roman_annona_militaris_v9",
           "en_id": "be_roman_annona_militaris_v9",
-          "en_file": "knowledge/rules/rule_be_roman_annona_militaris_v9__Annona_Militaris.json"
+          "en_file": "knowledge/rules/rule_oil_and_salt_in_catos_allowances.json"
         },
-        "knowledge/rules/rule_be_roman_coloni_serfdom_v10__依附农奴制.json": {
+        "knowledge/rules/rule_租佃与奴隶的身份差别.json": {
           "zh_id": "be_roman_coloni_serfdom_v10",
           "en_id": "be_roman_coloni_serfdom_v10",
-          "en_file": "knowledge/rules/rule_be_roman_coloni_serfdom_v10__Coloni_System.json"
+          "en_file": "knowledge/rules/rule_tenancy_and_slave_status.json"
         },
-        "knowledge/rules/rule_be_roman_coloni_serfdom_v1__依附农奴制.json": {
+        "knowledge/rules/rule_加图庄园的季节口粮.json": {
           "zh_id": "be_roman_coloni_serfdom_v1",
           "en_id": "be_roman_coloni_serfdom_v1",
-          "en_file": "knowledge/rules/rule_be_roman_coloni_serfdom_v1__Coloni_System.json"
+          "en_file": "knowledge/rules/rule_seasonal_rations_on_catos_estate.json"
         },
-        "knowledge/rules/rule_be_roman_coloni_serfdom_v2__依附农奴制.json": {
+        "knowledge/rules/rule_加图锁链劳工的面包.json": {
           "zh_id": "be_roman_coloni_serfdom_v2",
           "en_id": "be_roman_coloni_serfdom_v2",
-          "en_file": "knowledge/rules/rule_be_roman_coloni_serfdom_v2__Coloni_System.json"
+          "en_file": "knowledge/rules/rule_bread_for_chained_laborers_in_cato.json"
         },
-        "knowledge/rules/rule_be_roman_coloni_serfdom_v3__依附农奴制.json": {
+        "knowledge/rules/rule_落果橄榄与庄园食物.json": {
           "zh_id": "be_roman_coloni_serfdom_v3",
           "en_id": "be_roman_coloni_serfdom_v3",
-          "en_file": "knowledge/rules/rule_be_roman_coloni_serfdom_v3__Coloni_System.json"
+          "en_file": "knowledge/rules/rule_fallen_olives_and_estate_food.json"
         },
-        "knowledge/rules/rule_be_roman_coloni_serfdom_v4__依附农奴制.json": {
+        "knowledge/rules/rule_旧衣回收与庄园配给.json": {
           "zh_id": "be_roman_coloni_serfdom_v4",
           "en_id": "be_roman_coloni_serfdom_v4",
-          "en_file": "knowledge/rules/rule_be_roman_coloni_serfdom_v4__Coloni_System.json"
+          "en_file": "knowledge/rules/rule_clothing_recovery_on_an_estate.json"
         },
-        "knowledge/rules/rule_be_roman_coloni_serfdom_v5__依附农奴制.json": {
+        "knowledge/rules/rule_庄园酸酒与节期额外份.json": {
           "zh_id": "be_roman_coloni_serfdom_v5",
           "en_id": "be_roman_coloni_serfdom_v5",
-          "en_file": "knowledge/rules/rule_be_roman_coloni_serfdom_v5__Coloni_System.json"
+          "en_file": "knowledge/rules/rule_estate_wine_and_festival_allowances.json"
         },
-        "knowledge/rules/rule_be_roman_coloni_serfdom_v6__依附农奴制.json": {
+        "knowledge/rules/rule_罗马家内取水劈柴.json": {
           "zh_id": "be_roman_coloni_serfdom_v6",
           "en_id": "be_roman_coloni_serfdom_v6",
-          "en_file": "knowledge/rules/rule_be_roman_coloni_serfdom_v6__Coloni_System.json"
+          "en_file": "knowledge/rules/rule_water_and_firewood_in_a_roman_household.json"
         },
-        "knowledge/rules/rule_be_roman_coloni_serfdom_v7__依附农奴制.json": {
+        "knowledge/rules/rule_罗马宴前浸泡腌肉.json": {
           "zh_id": "be_roman_coloni_serfdom_v7",
           "en_id": "be_roman_coloni_serfdom_v7",
-          "en_file": "knowledge/rules/rule_be_roman_coloni_serfdom_v7__Coloni_System.json"
+          "en_file": "knowledge/rules/rule_soaking_salted_meat_before_a_feast.json"
         },
-        "knowledge/rules/rule_be_roman_coloni_serfdom_v8__依附农奴制.json": {
+        "knowledge/rules/rule_斯巴达克斯投向海盗的定金.json": {
           "zh_id": "be_roman_coloni_serfdom_v8",
           "en_id": "be_roman_coloni_serfdom_v8",
-          "en_file": "knowledge/rules/rule_be_roman_coloni_serfdom_v8__Coloni_System.json"
+          "en_file": "knowledge/rules/rule_spartacus_and_the_pirates_advance.json"
         },
-        "knowledge/rules/rule_be_roman_coloni_serfdom_v9__依附农奴制.json": {
+        "knowledge/rules/rule_斯巴达克斯军中的去向争执.json": {
           "zh_id": "be_roman_coloni_serfdom_v9",
           "en_id": "be_roman_coloni_serfdom_v9",
-          "en_file": "knowledge/rules/rule_be_roman_coloni_serfdom_v9__Coloni_System.json"
+          "en_file": "knowledge/rules/rule_disputes_over_spartacuss_route.json"
         },
-        "knowledge/rules/rule_be_roman_cursus_publicus_v10__官道驿传系统.json": {
+        "knowledge/rules/rule_边情报告的报酬冲突.json": {
           "zh_id": "be_roman_cursus_publicus_v10",
           "en_id": "be_roman_cursus_publicus_v10",
-          "en_file": "knowledge/rules/rule_be_roman_cursus_publicus_v10__Cursus_Publicus.json"
+          "en_file": "knowledge/rules/rule_rewards_and_frontier_intelligence.json"
         },
-        "knowledge/rules/rule_be_roman_cursus_publicus_v1__官道驿传系统.json": {
+        "knowledge/rules/rule_尤利安公传许可.json": {
           "zh_id": "be_roman_cursus_publicus_v1",
           "en_id": "be_roman_cursus_publicus_v1",
-          "en_file": "knowledge/rules/rule_be_roman_cursus_publicus_v1__Cursus_Publicus.json"
+          "en_file": "knowledge/rules/rule_julian_travel_authorization.json"
         },
-        "knowledge/rules/rule_be_roman_cursus_publicus_v2__官道驿传系统.json": {
+        "knowledge/rules/rule_菲拉格里乌斯密令.json": {
           "zh_id": "be_roman_cursus_publicus_v2",
           "en_id": "be_roman_cursus_publicus_v2",
-          "en_file": "knowledge/rules/rule_be_roman_cursus_publicus_v2__Cursus_Publicus.json"
+          "en_file": "knowledge/rules/rule_philagrius_sealed_instructions.json"
         },
-        "knowledge/rules/rule_be_roman_cursus_publicus_v3__官道驿传系统.json": {
+        "knowledge/rules/rule_意大利使团延误.json": {
           "zh_id": "be_roman_cursus_publicus_v3",
           "en_id": "be_roman_cursus_publicus_v3",
-          "en_file": "knowledge/rules/rule_be_roman_cursus_publicus_v3__Cursus_Publicus.json"
+          "en_file": "knowledge/rules/rule_envoys_detained_in_italy.json"
         },
-        "knowledge/rules/rule_be_roman_cursus_publicus_v4__官道驿传系统.json": {
+        "knowledge/rules/rule_瓦多马里乌斯秘书搜检.json": {
           "zh_id": "be_roman_cursus_publicus_v4",
           "en_id": "be_roman_cursus_publicus_v4",
-          "en_file": "knowledge/rules/rule_be_roman_cursus_publicus_v4__Cursus_Publicus.json"
+          "en_file": "knowledge/rules/rule_vadomarius_secretary_intercepted.json"
         },
-        "knowledge/rules/rule_be_roman_cursus_publicus_v5__官道驿传系统.json": {
+        "knowledge/rules/rule_尤利安使节寻找皇帝.json": {
           "zh_id": "be_roman_cursus_publicus_v5",
           "en_id": "be_roman_cursus_publicus_v5",
-          "en_file": "knowledge/rules/rule_be_roman_cursus_publicus_v5__Cursus_Publicus.json"
+          "en_file": "knowledge/rules/rule_envoys_seek_constantiuss_court.json"
         },
-        "knowledge/rules/rule_be_roman_cursus_publicus_v6__官道驿传系统.json": {
+        "knowledge/rules/rule_瓦多马里乌斯的两套称呼.json": {
           "zh_id": "be_roman_cursus_publicus_v6",
           "en_id": "be_roman_cursus_publicus_v6",
-          "en_file": "knowledge/rules/rule_be_roman_cursus_publicus_v6__Cursus_Publicus.json"
+          "en_file": "knowledge/rules/rule_vadomariuss_conflicting_salutations.json"
         },
-        "knowledge/rules/rule_be_roman_cursus_publicus_v7__官道驿传系统.json": {
+        "knowledge/rules/rule_罗马密令的开启条件.json": {
           "zh_id": "be_roman_cursus_publicus_v7",
           "en_id": "be_roman_cursus_publicus_v7",
-          "en_file": "knowledge/rules/rule_be_roman_cursus_publicus_v7__Cursus_Publicus.json"
+          "en_file": "knowledge/rules/rule_conditions_for_opening_a_roman_instruction.json"
         },
-        "knowledge/rules/rule_be_roman_cursus_publicus_v8__官道驿传系统.json": {
+        "knowledge/rules/rule_巴西尔写信代替会见.json": {
           "zh_id": "be_roman_cursus_publicus_v8",
           "en_id": "be_roman_cursus_publicus_v8",
-          "en_file": "knowledge/rules/rule_be_roman_cursus_publicus_v8__Cursus_Publicus.json"
+          "en_file": "knowledge/rules/rule_basil_writes_instead_of_appearing.json"
         },
-        "knowledge/rules/rule_be_roman_cursus_publicus_v9__官道驿传系统.json": {
+        "knowledge/rules/rule_粟特信札的日期与背书.json": {
           "zh_id": "be_roman_cursus_publicus_v9",
           "en_id": "be_roman_cursus_publicus_v9",
-          "en_file": "knowledge/rules/rule_be_roman_cursus_publicus_v9__Cursus_Publicus.json"
+          "en_file": "knowledge/rules/rule_dates_and_addresses_on_sogdian_letters.json"
         },
-        "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v10__国营兵工厂.json": {
+        "knowledge/rules/rule_旧布回收与衣物管理.json": {
           "zh_id": "be_roman_fabricae_state_arsenals_v10",
           "en_id": "be_roman_fabricae_state_arsenals_v10",
-          "en_file": "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v10__State_Fabricae.json"
+          "en_file": "knowledge/rules/rule_reusing_cloth_in_clothing_supply.json"
         },
-        "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v1__国营兵工厂.json": {
+        "knowledge/rules/rule_兵工作坊督官同名误捕.json": {
           "zh_id": "be_roman_fabricae_state_arsenals_v1",
           "en_id": "be_roman_fabricae_state_arsenals_v1",
-          "en_file": "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v1__State_Fabricae.json"
+          "en_file": "knowledge/rules/rule_arms_supervisors_mistaken_names.json"
         },
-        "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v2__国营兵工厂.json": {
+        "knowledge/rules/rule_罗马弩炮绞索.json": {
           "zh_id": "be_roman_fabricae_state_arsenals_v2",
           "en_id": "be_roman_fabricae_state_arsenals_v2",
-          "en_file": "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v2__State_Fabricae.json"
+          "en_file": "knowledge/rules/rule_roman_artillery_torsion_cords.json"
         },
-        "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v3__国营兵工厂.json": {
+        "knowledge/rules/rule_野驴投石机的反冲.json": {
           "zh_id": "be_roman_fabricae_state_arsenals_v3",
           "en_id": "be_roman_fabricae_state_arsenals_v3",
-          "en_file": "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v3__State_Fabricae.json"
+          "en_file": "knowledge/rules/rule_onager_recoil.json"
         },
-        "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v4__国营兵工厂.json": {
+        "knowledge/rules/rule_攻城槌的悬挂与掩护.json": {
           "zh_id": "be_roman_fabricae_state_arsenals_v4",
           "en_id": "be_roman_fabricae_state_arsenals_v4",
-          "en_file": "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v4__State_Fabricae.json"
+          "en_file": "knowledge/rules/rule_suspending_and_sheltering_a_ram.json"
         },
-        "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v5__国营兵工厂.json": {
+        "knowledge/rules/rule_阿米达缴获攻具.json": {
           "zh_id": "be_roman_fabricae_state_arsenals_v5",
           "en_id": "be_roman_fabricae_state_arsenals_v5",
-          "en_file": "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v5__State_Fabricae.json"
+          "en_file": "knowledge/rules/rule_captured_engines_at_amida.json"
         },
-        "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v6__国营兵工厂.json": {
+        "knowledge/rules/rule_围城弹药与轮换.json": {
           "zh_id": "be_roman_fabricae_state_arsenals_v6",
           "en_id": "be_roman_fabricae_state_arsenals_v6",
-          "en_file": "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v6__State_Fabricae.json"
+          "en_file": "knowledge/rules/rule_siege_ammunition_and_reliefs.json"
         },
-        "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v7__国营兵工厂.json": {
+        "knowledge/rules/rule_提尔紫袍与政治指控.json": {
           "zh_id": "be_roman_fabricae_state_arsenals_v7",
           "en_id": "be_roman_fabricae_state_arsenals_v7",
-          "en_file": "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v7__State_Fabricae.json"
+          "en_file": "knowledge/rules/rule_a_royal_robe_found_at_tyre.json"
         },
-        "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v8__国营兵工厂.json": {
+        "knowledge/rules/rule_木车与皮舟陆运.json": {
           "zh_id": "be_roman_fabricae_state_arsenals_v8",
           "en_id": "be_roman_fabricae_state_arsenals_v8",
-          "en_file": "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v8__State_Fabricae.json"
+          "en_file": "knowledge/rules/rule_wagons_carrying_skin_boats.json"
         },
-        "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v9__国营兵工厂.json": {
+        "knowledge/rules/rule_北方铁作与修理空间.json": {
           "zh_id": "be_roman_fabricae_state_arsenals_v9",
           "en_id": "be_roman_fabricae_state_arsenals_v9",
-          "en_file": "knowledge/rules/rule_be_roman_fabricae_state_arsenals_v9__State_Fabricae.json"
+          "en_file": "knowledge/rules/rule_northern_ironworking_spaces.json"
         },
-        "knowledge/rules/rule_be_roman_notitia_dignitatum_v10__百官公报.json": {
+        "knowledge/rules/rule_命名职务与实际持有人.json": {
           "zh_id": "be_roman_notitia_dignitatum_v10",
           "en_id": "be_roman_notitia_dignitatum_v10",
-          "en_file": "knowledge/rules/rule_be_roman_notitia_dignitatum_v10__Notitia_Dignitatum.json"
+          "en_file": "knowledge/rules/rule_named_offices_and_their_holders.json"
         },
-        "knowledge/rules/rule_be_roman_notitia_dignitatum_v1__百官公报.json": {
+        "knowledge/rules/rule_罗马军械监督职掌.json": {
           "zh_id": "be_roman_notitia_dignitatum_v1",
           "en_id": "be_roman_notitia_dignitatum_v1",
-          "en_file": "knowledge/rules/rule_be_roman_notitia_dignitatum_v1__Notitia_Dignitatum.json"
+          "en_file": "knowledge/rules/rule_roman_arms_supervisors.json"
         },
-        "knowledge/rules/rule_be_roman_notitia_dignitatum_v2__百官公报.json": {
+        "knowledge/rules/rule_埃利亚斯省长与教会申诉.json": {
           "zh_id": "be_roman_notitia_dignitatum_v2",
           "en_id": "be_roman_notitia_dignitatum_v2",
-          "en_file": "knowledge/rules/rule_be_roman_notitia_dignitatum_v2__Notitia_Dignitatum.json"
+          "en_file": "knowledge/rules/rule_governor_elias_and_a_church_petition.json"
         },
-        "knowledge/rules/rule_be_roman_notitia_dignitatum_v3__百官公报.json": {
+        "knowledge/rules/rule_罗马军事指挥与使团分工.json": {
           "zh_id": "be_roman_notitia_dignitatum_v3",
           "en_id": "be_roman_notitia_dignitatum_v3",
-          "en_file": "knowledge/rules/rule_be_roman_notitia_dignitatum_v3__Notitia_Dignitatum.json"
+          "en_file": "knowledge/rules/rule_roman_command_and_negotiating_envoys.json"
         },
-        "knowledge/rules/rule_be_roman_notitia_dignitatum_v4__百官公报.json": {
+        "knowledge/rules/rule_书记菲拉格里乌斯的委任.json": {
           "zh_id": "be_roman_notitia_dignitatum_v4",
           "en_id": "be_roman_notitia_dignitatum_v4",
-          "en_file": "knowledge/rules/rule_be_roman_notitia_dignitatum_v4__Notitia_Dignitatum.json"
+          "en_file": "knowledge/rules/rule_secretary_philagriuss_commission.json"
         },
-        "knowledge/rules/rule_be_roman_notitia_dignitatum_v5__百官公报.json": {
+        "knowledge/rules/rule_罗马案卷中的评事官.json": {
           "zh_id": "be_roman_notitia_dignitatum_v5",
           "en_id": "be_roman_notitia_dignitatum_v5",
-          "en_file": "knowledge/rules/rule_be_roman_notitia_dignitatum_v5__Notitia_Dignitatum.json"
+          "en_file": "knowledge/rules/rule_an_assessor_in_roman_proceedings.json"
         },
-        "knowledge/rules/rule_be_roman_notitia_dignitatum_v6__百官公报.json": {
+        "knowledge/rules/rule_元老院受交案件.json": {
           "zh_id": "be_roman_notitia_dignitatum_v6",
           "en_id": "be_roman_notitia_dignitatum_v6",
-          "en_file": "knowledge/rules/rule_be_roman_notitia_dignitatum_v6__Notitia_Dignitatum.json"
+          "en_file": "knowledge/rules/rule_cases_referred_to_the_roman_senate.json"
         },
-        "knowledge/rules/rule_be_roman_notitia_dignitatum_v7__百官公报.json": {
+        "knowledge/rules/rule_尤普拉克修斯当面进言.json": {
           "zh_id": "be_roman_notitia_dignitatum_v7",
           "en_id": "be_roman_notitia_dignitatum_v7",
-          "en_file": "knowledge/rules/rule_be_roman_notitia_dignitatum_v7__Notitia_Dignitatum.json"
+          "en_file": "knowledge/rules/rule_eupraxius_contradicts_the_emperor.json"
         },
-        "knowledge/rules/rule_be_roman_notitia_dignitatum_v8__百官公报.json": {
+        "knowledge/rules/rule_皇帝出行与接报地点.json": {
           "zh_id": "be_roman_notitia_dignitatum_v8",
           "en_id": "be_roman_notitia_dignitatum_v8",
-          "en_file": "knowledge/rules/rule_be_roman_notitia_dignitatum_v8__Notitia_Dignitatum.json"
+          "en_file": "knowledge/rules/rule_imperial_travel_and_receiving_reports.json"
         },
-        "knowledge/rules/rule_be_roman_notitia_dignitatum_v9__百官公报.json": {
+        "knowledge/rules/rule_粮务官与公仓责任.json": {
           "zh_id": "be_roman_notitia_dignitatum_v9",
           "en_id": "be_roman_notitia_dignitatum_v9",
-          "en_file": "knowledge/rules/rule_be_roman_notitia_dignitatum_v9__Notitia_Dignitatum.json"
+          "en_file": "knowledge/rules/rule_provisioning_officers_and_public_stores.json"
         },
         "knowledge/rules/rule_be_sabir_kingdom_economy__萨比尔人商路.json": {
           "zh_id": "be_sabir_kingdom_economy",
@@ -33400,105 +33400,105 @@
           "en_id": "be_thervingian_kingdom_military",
           "en_file": "knowledge/rules/rule_be_thervingian_kingdom_military__Thervingians_Military.json"
         },
-        "knowledge/rules/rule_be_trade_amber_road_baltic_v10__波罗的海琥珀路.json": {
+        "knowledge/rules/rule_琥珀护符的信念.json": {
           "zh_id": "be_trade_amber_road_baltic_v10",
           "en_id": "be_trade_amber_road_baltic_v10",
-          "en_file": "knowledge/rules/rule_be_trade_amber_road_baltic_v10__Amber_Road.json"
+          "en_file": "knowledge/rules/rule_beliefs_about_amber_amulets.json"
         },
-        "knowledge/rules/rule_be_trade_amber_road_baltic_v1__波罗的海琥珀路.json": {
+        "knowledge/rules/rule_普林尼的琥珀海岸记载.json": {
           "zh_id": "be_trade_amber_road_baltic_v1",
           "en_id": "be_trade_amber_road_baltic_v1",
-          "en_file": "knowledge/rules/rule_be_trade_amber_road_baltic_v1__Amber_Road.json"
+          "en_file": "knowledge/rules/rule_pliny_on_amber_coasts.json"
         },
-        "knowledge/rules/rule_be_trade_amber_road_baltic_v2__波罗的海琥珀路.json": {
+        "knowledge/rules/rule_琥珀树脂的争论.json": {
           "zh_id": "be_trade_amber_road_baltic_v2",
           "en_id": "be_trade_amber_road_baltic_v2",
-          "en_file": "knowledge/rules/rule_be_trade_amber_road_baltic_v2__Amber_Road.json"
+          "en_file": "knowledge/rules/rule_debating_amber_as_tree_resin.json"
         },
-        "knowledge/rules/rule_be_trade_amber_road_baltic_v3__波罗的海琥珀路.json": {
+        "knowledge/rules/rule_琥珀中的昆虫.json": {
           "zh_id": "be_trade_amber_road_baltic_v3",
           "en_id": "be_trade_amber_road_baltic_v3",
-          "en_file": "knowledge/rules/rule_be_trade_amber_road_baltic_v3__Amber_Road.json"
+          "en_file": "knowledge/rules/rule_insects_enclosed_in_amber.json"
         },
-        "knowledge/rules/rule_be_trade_amber_road_baltic_v4__波罗的海琥珀路.json": {
+        "knowledge/rules/rule_摩擦琥珀吸引轻物.json": {
           "zh_id": "be_trade_amber_road_baltic_v4",
           "en_id": "be_trade_amber_road_baltic_v4",
-          "en_file": "knowledge/rules/rule_be_trade_amber_road_baltic_v4__Amber_Road.json"
+          "en_file": "knowledge/rules/rule_amber_attracting_light_objects.json"
         },
-        "knowledge/rules/rule_be_trade_amber_road_baltic_v5__波罗的海琥珀路.json": {
+        "knowledge/rules/rule_琥珀色泽与买价.json": {
           "zh_id": "be_trade_amber_road_baltic_v5",
           "en_id": "be_trade_amber_road_baltic_v5",
-          "en_file": "knowledge/rules/rule_be_trade_amber_road_baltic_v5__Amber_Road.json"
+          "en_file": "knowledge/rules/rule_amber_colors_and_price.json"
         },
-        "knowledge/rules/rule_be_trade_amber_road_baltic_v6__波罗的海琥珀路.json": {
+        "knowledge/rules/rule_琥珀首饰与奢侈批评.json": {
           "zh_id": "be_trade_amber_road_baltic_v6",
           "en_id": "be_trade_amber_road_baltic_v6",
-          "en_file": "knowledge/rules/rule_be_trade_amber_road_baltic_v6__Amber_Road.json"
+          "en_file": "knowledge/rules/rule_amber_ornaments_and_luxury_criticism.json"
         },
-        "knowledge/rules/rule_be_trade_amber_road_baltic_v7__波罗的海琥珀路.json": {
+        "knowledge/rules/rule_琥珀传说与厄里达诺斯河.json": {
           "zh_id": "be_trade_amber_road_baltic_v7",
           "en_id": "be_trade_amber_road_baltic_v7",
-          "en_file": "knowledge/rules/rule_be_trade_amber_road_baltic_v7__Amber_Road.json"
+          "en_file": "knowledge/rules/rule_amber_legends_and_the_eridanus.json"
         },
-        "knowledge/rules/rule_be_trade_amber_road_baltic_v8__波罗的海琥珀路.json": {
+        "knowledge/rules/rule_琥珀燃烧与熏香说.json": {
           "zh_id": "be_trade_amber_road_baltic_v8",
           "en_id": "be_trade_amber_road_baltic_v8",
-          "en_file": "knowledge/rules/rule_be_trade_amber_road_baltic_v8__Amber_Road.json"
+          "en_file": "knowledge/rules/rule_amber_burning_and_incense_claims.json"
         },
-        "knowledge/rules/rule_be_trade_amber_road_baltic_v9__波罗的海琥珀路.json": {
+        "knowledge/rules/rule_罗马琥珀远行采购.json": {
           "zh_id": "be_trade_amber_road_baltic_v9",
           "en_id": "be_trade_amber_road_baltic_v9",
-          "en_file": "knowledge/rules/rule_be_trade_amber_road_baltic_v9__Amber_Road.json"
+          "en_file": "knowledge/rules/rule_roman_long_distance_amber_procurement.json"
         },
-        "knowledge/rules/rule_be_trade_silk_road_sogdian_v10__粟特丝路驼队.json": {
+        "knowledge/rules/rule_粟特商人称谓与社群首领.json": {
           "zh_id": "be_trade_silk_road_sogdian_v10",
           "en_id": "be_trade_silk_road_sogdian_v10",
-          "en_file": "knowledge/rules/rule_be_trade_silk_road_sogdian_v10__Sogdian_Merchants.json"
+          "en_file": "knowledge/rules/rule_sogdian_merchant_titles_and_leaders.json"
         },
-        "knowledge/rules/rule_be_trade_silk_road_sogdian_v1__粟特丝路驼队.json": {
+        "knowledge/rules/rule_金城致撒马尔罕商信.json": {
           "zh_id": "be_trade_silk_road_sogdian_v1",
           "en_id": "be_trade_silk_road_sogdian_v1",
-          "en_file": "knowledge/rules/rule_be_trade_silk_road_sogdian_v1__Sogdian_Merchants.json"
+          "en_file": "knowledge/rules/rule_jincheng_letter_to_samarkand.json"
         },
-        "knowledge/rules/rule_be_trade_silk_road_sogdian_v2__粟特丝路驼队.json": {
+        "knowledge/rules/rule_粟特书信中的洛阳消息.json": {
           "zh_id": "be_trade_silk_road_sogdian_v2",
           "en_id": "be_trade_silk_road_sogdian_v2",
-          "en_file": "knowledge/rules/rule_be_trade_silk_road_sogdian_v2__Sogdian_Merchants.json"
+          "en_file": "knowledge/rules/rule_luoyang_news_in_a_sogdian_letter.json"
         },
-        "knowledge/rules/rule_be_trade_silk_road_sogdian_v3__粟特丝路驼队.json": {
+        "knowledge/rules/rule_麝香五份交接.json": {
           "zh_id": "be_trade_silk_road_sogdian_v3",
           "en_id": "be_trade_silk_road_sogdian_v3",
-          "en_file": "knowledge/rules/rule_be_trade_silk_road_sogdian_v3__Sogdian_Merchants.json"
+          "en_file": "knowledge/rules/rule_five_shares_of_musk.json"
         },
-        "knowledge/rules/rule_be_trade_silk_road_sogdian_v4__粟特丝路驼队.json": {
+        "knowledge/rules/rule_粟特称银短额.json": {
           "zh_id": "be_trade_silk_road_sogdian_v4",
           "en_id": "be_trade_silk_road_sogdian_v4",
-          "en_file": "knowledge/rules/rule_be_trade_silk_road_sogdian_v4__Sogdian_Merchants.json"
+          "en_file": "knowledge/rules/rule_sogdian_short_weight_silver.json"
         },
-        "knowledge/rules/rule_be_trade_silk_road_sogdian_v5__粟特丝路驼队.json": {
+        "knowledge/rules/rule_古藏待运胡椒与白货.json": {
           "zh_id": "be_trade_silk_road_sogdian_v5",
           "en_id": "be_trade_silk_road_sogdian_v5",
-          "en_file": "knowledge/rules/rule_be_trade_silk_road_sogdian_v5__Sogdian_Merchants.json"
+          "en_file": "knowledge/rules/rule_pepper_and_white_goods_at_guzang.json"
         },
-        "knowledge/rules/rule_be_trade_silk_road_sogdian_v6__粟特丝路驼队.json": {
+        "knowledge/rules/rule_古藏停行商队.json": {
           "zh_id": "be_trade_silk_road_sogdian_v6",
           "en_id": "be_trade_silk_road_sogdian_v6",
-          "en_file": "knowledge/rules/rule_be_trade_silk_road_sogdian_v6__Sogdian_Merchants.json"
+          "en_file": "knowledge/rules/rule_no_caravan_from_guzang.json"
         },
-        "knowledge/rules/rule_be_trade_silk_road_sogdian_v7__粟特丝路驼队.json": {
+        "knowledge/rules/rule_米夫奈向母亲求援.json": {
           "zh_id": "be_trade_silk_road_sogdian_v7",
           "en_id": "be_trade_silk_road_sogdian_v7",
-          "en_file": "knowledge/rules/rule_be_trade_silk_road_sogdian_v7__Sogdian_Merchants.json"
+          "en_file": "knowledge/rules/rule_miwnay_appeals_to_her_mother.json"
         },
-        "knowledge/rules/rule_be_trade_silk_road_sogdian_v8__粟特丝路驼队.json": {
+        "knowledge/rules/rule_敦煌母女与债务依附.json": {
           "zh_id": "be_trade_silk_road_sogdian_v8",
           "en_id": "be_trade_silk_road_sogdian_v8",
-          "en_file": "knowledge/rules/rule_be_trade_silk_road_sogdian_v8__Sogdian_Merchants.json"
+          "en_file": "knowledge/rules/rule_dunhuang_mother_and_daughter_in_debt.json"
         },
-        "knowledge/rules/rule_be_trade_silk_road_sogdian_v9__粟特丝路驼队.json": {
+        "knowledge/rules/rule_粟特商人长期无回信.json": {
           "zh_id": "be_trade_silk_road_sogdian_v9",
           "en_id": "be_trade_silk_road_sogdian_v9",
-          "en_file": "knowledge/rules/rule_be_trade_silk_road_sogdian_v9__Sogdian_Merchants.json"
+          "en_file": "knowledge/rules/rule_sogdian_letters_without_replies.json"
         },
         "knowledge/rules/rule_be_vandal_kingdom_economy__汪达尔人商路.json": {
           "zh_id": "be_vandal_kingdom_economy",
