@@ -1,21 +1,18 @@
 {
   "Id": "be_tanukhid_kingdom_economy",
   "Keywords": [
-    "Tanukhids Fiscal Levies",
-    "Tanukhids Mavia Artisan Forges",
-    "Tanukhids Agrarian Manors",
-    "Tanukhids Trade Corridors"
+    "Tanukhids Trade",
+    "Palmyra pasture and caravan returns"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Tanukhids in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Syrian Desert & South Aleppo, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Palmyra food, pasture and wells sustain Tanukhid kin.",
+    "Water shortage obstructs goods and animals together."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Tanukhids was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Syrian Desert & South Aleppo, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Palmyra food, pasture, wells and caravan exchange sustain kin. Service rewards and escort income matter, but water shortage stops cargo and animals together."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Water skins sag on the baggage camels, and the requisitioned grain has spoiled in the desert heat. A tentmate counts the copper coins he was paid in place of silver and keeps his thoughts to himself. He hopes the next raid on the caravan road will leave a few drachmas on a fallen rider before the sand swallows the column."
+      "Content": "Palmyra food, pasture and wells sustain Tanukhid kin. Traveling followers need real food from this production; valuables still require a buyer and exchange. Water shortage obstructs goods and animals together."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The steward of the Mavia estates reckons the month's accounts by lamplight: three forges at the oasis turned out two hundred horseshoes and eighty spearheads. Casks of cured olive oil sold at the desert fair will pay for the mail of the household knights. He sends the figures to the queen's treasurer by a fast rider, since the tithe rolls must balance before the autumn caravans arrive."
+      "Content": "Water shortage obstructs goods and animals together. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Palmyra food, pasture and wells sustain Tanukhid kin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Palmyra food, pasture and wells sustain Tanukhid kin. Households need meals and the means to keep producing after delivering goods. Water shortage obstructs goods and animals together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Water shortage obstructs goods and animals together. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Palmyra food, pasture and wells sustain Tanukhid kin."
     }
   ],
   "SemanticPrototypes": [],

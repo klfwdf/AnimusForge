@@ -1,21 +1,18 @@
 {
   "Id": "be_ere_kingdom_economy",
   "Keywords": [
-    "Eastern Roman Empire Fiscal Levies",
-    "Eastern Roman Empire Valens Artisan Forges",
-    "Eastern Roman Empire Agrarian Manors",
-    "Eastern Roman Empire Trade Corridors"
+    "Eastern Roman Empire Trade",
+    "Egyptian grain and eastern army towns"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Eastern Roman Empire in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Constantinople & Antioch, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Egyptian grain and Syrian and Anatolian produce supply eastern armies and cities.",
+    "Tax grain still needs delivery through roads, shipping and stores."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Eastern Roman Empire was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Constantinople & Antioch, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Egyptian grain and Syrian and Anatolian produce move by road and sea to cities and armies. Collection must also be delivered; delayed shipping affects rations and urban prices."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Beneath the walls of the imperial city, weary soldiers unload grain from wagons that never seem to arrive on time. The paymaster issues gold solidi of uneven weight, and the soldiers haggle with taverns for wine that costs three times what it did last month. Each cavalryman sleeps beside his horse, ready to ride before dawn if the provincial couriers bring new orders."
+      "Content": "Egyptian grain and Syrian and Anatolian produce supply eastern armies and cities. Traveling followers need real food from this production; valuables still require a buyer and exchange. Tax grain still needs delivery through roads, shipping and stores."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The prefect's agents report that the grain tax from the Thracian estates was paid only in part, and the annona clerks want your household to supply extra fodder for the imperial post horses. Respond through a trusted notary and offer a reduced levy on your wine in return for their silence about the shortfall. Palace secretaries may read every letter you send, so write with care."
+      "Content": "Tax grain still needs delivery through roads, shipping and stores. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Egyptian grain and Syrian and Anatolian produce supply eastern armies and cities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Egyptian grain and Syrian and Anatolian produce supply eastern armies and cities. Households need meals and the means to keep producing after delivering goods. Tax grain still needs delivery through roads, shipping and stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tax grain still needs delivery through roads, shipping and stores. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Egyptian grain and Syrian and Anatolian produce supply eastern armies and cities."
     }
   ],
   "SemanticPrototypes": [],

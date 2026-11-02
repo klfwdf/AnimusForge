@@ -2,20 +2,17 @@
   "Id": "be_jazyg_kingdom_internal",
   "Keywords": [
     "Jazyges Nobility",
-    "Jazyges Zizais Clan Lineages",
-    "Jazyges Court Factions",
-    "Jazyges Internal Strife"
+    "Jazygian mounted families and farming households"
   ],
   "RagShortTexts": [
-    "The ruling elite of Jazyges comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Zizais coordinates mounted families and farming households.",
+    "Roman rewards, grievances and market needs divide priorities."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Jazyges, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Zizais coordinates mounted families and farming households. Roman service rewards, grievances and market needs pull groups differently."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Marsh clans argue over a fishing weir while the warriors stand between them with spears lowered. A dispute over one weir spreads into a feud over the whole reed bed, and the first to draw blood pays for it. The young rider sees his cousin fall and wonders who will remember his name."
+      "Content": "Zizais coordinates mounted families and farming households. Followers retain family ties; decisions about guards and distant service affect common participation. Roman rewards, grievances and market needs divide priorities."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Keep the oaths you swore at the marsh gatherings, the old chieftain tells his son. A chieftain who favors one clan will lose the others, and the weirs must be shared fairly to keep the peace. Marry your daughters into the families that hold the reed beds, and count every debt before it is called in."
+      "Content": "Roman rewards, grievances and market needs divide priorities. Coordination allocates actual supply and protection duties, not merely titles. Zizais coordinates mounted families and farming households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Zizais coordinates mounted families and farming households. Households compare burdens with neighbors; unmatched protection weakens cooperation. Roman rewards, grievances and market needs divide priorities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman rewards, grievances and market needs divide priorities. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Zizais coordinates mounted families and farming households."
     }
   ],
   "SemanticPrototypes": [],

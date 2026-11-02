@@ -1,21 +1,18 @@
 {
   "Id": "be_wre_kingdom_economy",
   "Keywords": [
-    "Western Roman Empire Fiscal Levies",
-    "Western Roman Empire Valentinianus I Artisan Forges",
-    "Western Roman Empire Agrarian Manors",
-    "Western Roman Empire Trade Corridors"
+    "Western Roman Empire Trade",
+    "African shipping and Gallic estates"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Western Roman Empire in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Mediolanum & Trier, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Italian and African shipping, Gallic estates and workshops support western Rome.",
+    "Collected goods still need stores and transport to reach armies."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Western Roman Empire was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Mediolanum & Trier, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Italian and African shipping, Gallic estates and urban workshops support government and war. Collected goods still need stores, vessels, animals and roads; delays strain rations and prices."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Dust from the military road coats our boots as the supply column halts at a river ford. Rations of sour bread were issued again, and the pay chest is light, so the paymaster offers salt in place of coin. A legionary tucks his share into his belt and watches the hills for raiders while his comrades eat."
+      "Content": "Italian and African shipping, Gallic estates and workshops support western Rome. Traveling followers need real food from this production; valuables still require a buyer and exchange. Collected goods still need stores and transport to reach armies."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The imperial procurator reviews the grain returns from the Mediolanum granaries and the bronze coinage sent north to the frontier. Olive oil casks sold at the autumn fair will pay for the mail of the palace guards. He forwards the figures to the treasury in Trier, since the customs officers at each toll bridge have begun to skim the revenue."
+      "Content": "Collected goods still need stores and transport to reach armies. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Italian and African shipping, Gallic estates and workshops support western Rome."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Italian and African shipping, Gallic estates and workshops support western Rome. Households need meals and the means to keep producing after delivering goods. Collected goods still need stores and transport to reach armies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Collected goods still need stores and transport to reach armies. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Italian and African shipping, Gallic estates and workshops support western Rome."
     }
   ],
   "SemanticPrototypes": [],

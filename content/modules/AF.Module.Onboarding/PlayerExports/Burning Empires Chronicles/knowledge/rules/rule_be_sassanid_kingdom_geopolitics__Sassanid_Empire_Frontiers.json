@@ -1,21 +1,18 @@
 {
   "Id": "be_sassanid_kingdom_geopolitics",
   "Keywords": [
-    "Sassanid Empire Frontier Marches",
-    "Sassanid Empire Shapur II Border Defense",
-    "Sassanid Empire Strategic Passes",
-    "Sassanid Empire Geopolitical Rivals"
+    "Sassanid Empire Frontiers",
+    "Ctesiphon Nisibis and eastern passes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Sassanid Empire maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Mesopotamian rivers, Nisibis roads and plateau passes link Persian theaters.",
+    "Long transport needs supply handovers along the way."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Sassanid Empire spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Ctesiphon, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Rivers, western Nisibis roads and eastern passes connect theaters. Long transport needs repeated handovers rather than one grain convoy serving every direction."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A sentry on the frontier wall squints into the haze over the Tigris plain. Smoke columns rose beyond the border twice last night, and scouts now ride the caravan tracks three times a week. Every post keeps a loaded bow and a saddled horse, and the watch changes at midnight because no one trusts the dark. At the Sassanid post, the night watchword is \"Stone.\""
+      "Content": "Mesopotamian rivers, Nisibis roads and plateau passes link Persian theaters. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Long transport needs supply handovers along the way."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The satrap's order, sealed in royal wax, reaches the border fort after dark. The treasury has cut the garrison's subsidy again, while raiders probe the passes each month. Without coin to hire auxiliary horsemen, the commander must borrow from local lords and pledge them the toll on the river crossing, and every debt gives a rival house a claim on the pass."
+      "Content": "Long transport needs supply handovers along the way. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Mesopotamian rivers, Nisibis roads and plateau passes link Persian theaters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Mesopotamian rivers, Nisibis roads and plateau passes link Persian theaters. Closed routes may separate families from goods, imposing costs on those remaining at home. Long transport needs supply handovers along the way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Long transport needs supply handovers along the way. Cargo passes different carriers, making distant route changes become local shortages through delay. Mesopotamian rivers, Nisibis roads and plateau passes link Persian theaters."
     }
   ],
   "SemanticPrototypes": [],

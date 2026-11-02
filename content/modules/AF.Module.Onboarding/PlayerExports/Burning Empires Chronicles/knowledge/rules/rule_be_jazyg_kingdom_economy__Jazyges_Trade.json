@@ -1,21 +1,18 @@
 {
   "Id": "be_jazyg_kingdom_economy",
   "Keywords": [
-    "Jazyges Fiscal Levies",
-    "Jazyges Zizais Artisan Forges",
-    "Jazyges Agrarian Manors",
-    "Jazyges Trade Corridors"
+    "Jazyges Trade",
+    "Trissum horses and river markets"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Jazyges in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Danube-Tisza Marshes, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Trissum herds and Danube market exchange support one another.",
+    "War increases the importance of ransom, grain and iron exchange."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Jazyges was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Danube-Tisza Marshes, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Trissum herds and Danube markets support one another. Riders need grain, iron and markets; war makes ransom and animal exchange more important."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Reed boats glide through the marsh, carrying salt and fish toward the Danube markets. A guard in the bow watches the water for raiders while the rowers pull hard against the current. The pay is poor, but a good load brings a share of the silver traded at the river town."
+      "Content": "Trissum herds and Danube market exchange support one another. Traveling followers need real food from this production; valuables still require a buyer and exchange. War increases the importance of ransom, grain and iron exchange."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Salt pans and fishing weirs are counted as the autumn rains come. Goods floated down the Danube fetch silver from Roman merchants, and he keeps a tithe for his own household. Every boat that reaches the market is one the rival clans cannot seize from him before the spring floods."
+      "Content": "War increases the importance of ransom, grain and iron exchange. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Trissum herds and Danube market exchange support one another."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Trissum herds and Danube market exchange support one another. Households need meals and the means to keep producing after delivering goods. War increases the importance of ransom, grain and iron exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "War increases the importance of ransom, grain and iron exchange. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Trissum herds and Danube market exchange support one another."
     }
   ],
   "SemanticPrototypes": [],

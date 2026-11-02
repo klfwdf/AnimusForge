@@ -1,21 +1,18 @@
 {
   "Id": "be_geatish_kingdom_geopolitics",
   "Keywords": [
-    "Geats Frontier Marches",
-    "Geats Gissur Border Defense",
-    "Geats Strategic Passes",
-    "Geats Geopolitical Rivals"
+    "Geats Frontiers",
+    "Geatish inland to landing routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Geats maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Southern Geatish woods and fields connect to landings by road.",
+    "Sea access still needs inland food connections."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Geats spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Southern Scandinavia, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Southern woods and farms connect to sea paths. Land and water transport must join, so access to a shore is not enough without food."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A watchman on the border fort wall counts signal fires along the ridge, where smoke rose again last night. Cavalry sweeps have tripled this month, and the captain has ballistae loaded at every embrasure. Men sleep in their boots with cloaks ready, since a surprise raid is the only thing their officers warn them to fear."
+      "Content": "Southern Geatish woods and fields connect to landings by road. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Sea access still needs inland food connections."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Frowning over a letter from the crown, the marcher lord finds it empty of silver. Subsidies have been cut again, while raiding bands probe ever closer to the passes. Without coin to hire auxiliaries, he must rely on the garrisons already in place, and he knows which neighboring chieftain would trade a truce for grain. He drafts the offer himself and seals it with his own ring."
+      "Content": "Sea access still needs inland food connections. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Southern Geatish woods and fields connect to landings by road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Southern Geatish woods and fields connect to landings by road. Closed routes may separate families from goods, imposing costs on those remaining at home. Sea access still needs inland food connections."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sea access still needs inland food connections. Cargo passes different carriers, making distant route changes become local shortages through delay. Southern Geatish woods and fields connect to landings by road."
     }
   ],
   "SemanticPrototypes": [],

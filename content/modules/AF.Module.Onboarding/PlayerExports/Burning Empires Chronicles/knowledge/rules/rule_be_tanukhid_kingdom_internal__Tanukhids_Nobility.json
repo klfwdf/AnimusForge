@@ -2,19 +2,17 @@
   "Id": "be_tanukhid_kingdom_internal",
   "Keywords": [
     "Tanukhids Nobility",
-    "Tanukhids Mavia Clan Lineages",
-    "Tanukhids Court Factions",
-    "Tanukhids Internal Strife"
+    "Tanukhid kin and camp distribution"
   ],
   "RagShortTexts": [
-    "Tanukhid power involves kin, frontier service and negotiation with Roman officials.",
-    "Religious narratives illuminate some bargains without documenting every community's views."
+    "Mavia coordinates kin and chiefs, with her spouse sharing protection duties.",
+    "Merchants, herders and followers assess war costs differently."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Tanukhid leadership belongs to the Arab communities and military relationships of the Roman eastern frontier. Connections among kin, access to routes and supplies, and negotiations with imperial authorities matter more than an invented feudal senate. Religious allegiance can also become part of a political bargain, as later ecclesiastical accounts of Mavia show, but those narratives are partisan and do not document every household. In 374 a leader needs followers who can move and fight without losing the support of dependants. Agreements with Rome may offer recognition while creating disputes about service, payment and who can speak for the group."
+      "Content": "Mavia joins kin and chiefs; she and her spouse share protection and distribution duties. Merchants, herders and followers assess war costs differently."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A follower on an eastern route needs water, fodder and reliable news from the next stopping place. An imperial promise of payment is useful only when someone honours it. If patrons quarrel, the men asked to patrol may still be far from their households; changing allegiance cannot conjure supplies in an empty camp."
+      "Content": "Mavia coordinates kin and chiefs, with her spouse sharing protection duties. Followers retain family ties; decisions about guards and distant service affect common participation. Merchants, herders and followers assess war costs differently."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A Tanukhid notable must judge what an imperial officer can actually promise and which relatives will support the bargain. Religious standing may strengthen a claim, but does not erase disagreements over service and resources. Speaking for followers requires their continued cooperation, rather than a seal purporting to bind every Arab community."
+      "Content": "Merchants, herders and followers assess war costs differently. Coordination allocates actual supply and protection duties, not merely titles. Mavia coordinates kin and chiefs, with her spouse sharing protection duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Mavia coordinates kin and chiefs, with her spouse sharing protection duties. Households compare burdens with neighbors; unmatched protection weakens cooperation. Merchants, herders and followers assess war costs differently."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Merchants, herders and followers assess war costs differently. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Mavia coordinates kin and chiefs, with her spouse sharing protection duties."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,19 +2,17 @@
   "Id": "be_sclavenian_kingdom_internal",
   "Keywords": [
     "Sclavenians Nobility",
-    "Sclavenians Perbund Clan Lineages",
-    "Sclavenians Court Factions",
-    "Sclavenians Internal Strife"
+    "Sclavenian village surplus and mutual aid"
   ],
   "RagShortTexts": [
-    "The Sclavenian faction is a scenario convention, not a documented unified state in 374.",
-    "Later Slavic courts and administrative institutions are not projected into this setting."
+    "Perbund needs local chiefs to share warnings.",
+    "Unequal food and manpower make aid require defined provisions."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The module's Sclavenian faction is a scenario convention. The better documented use of Sclaveni belongs to later sources, so a detailed unified court or a fixed national constitution must not be invented for 374. A cautious portrayal can centre on households, settlements, local leaders and the need to obtain food and security among neighbouring peoples. Decisions about moving, sharing stores or joining an armed party may divide communities whose cooperation a leader needs. That gives the faction political life without claiming that a later medieval Slavic kingdom, nobility or administrative apparatus already governs all its members."
+      "Content": "Perbund needs shared warnings among chiefs. Villages have different grain and manpower, making aid without supply terms a cause of resentment."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A household member taking a watch wants to know which path brings help and where the children can shelter. Leaving to accompany an armed party means fewer hands for daily work. An offer of protection must be weighed against that cost; a heroic speech does not harvest a field or repair a leaking roof."
+      "Content": "Perbund needs local chiefs to share warnings. Followers retain family ties; decisions about guards and distant service affect common participation. Unequal food and manpower make aid require defined provisions."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A local notable gains authority by arranging cooperation, hearing disputes and securing useful neighbours. He cannot simply issue orders as if every settlement belonged to a later centralised kingdom. Supplies offered to one ally may be needed at home, and confidence is lost if the agreement leaves contributing households without food."
+      "Content": "Unequal food and manpower make aid require defined provisions. Coordination allocates actual supply and protection duties, not merely titles. Perbund needs local chiefs to share warnings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Perbund needs local chiefs to share warnings. Households compare burdens with neighbors; unmatched protection weakens cooperation. Unequal food and manpower make aid require defined provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Unequal food and manpower make aid require defined provisions. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Perbund needs local chiefs to share warnings."
     }
   ],
   "SemanticPrototypes": [],

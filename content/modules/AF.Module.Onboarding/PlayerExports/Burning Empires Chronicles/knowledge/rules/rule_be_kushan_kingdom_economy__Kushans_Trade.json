@@ -1,21 +1,18 @@
 {
   "Id": "be_kushan_kingdom_economy",
   "Keywords": [
-    "Kushans Fiscal Levies",
-    "Kushans Kipunada Artisan Forges",
-    "Kushans Agrarian Manors",
-    "Kushans Trade Corridors"
+    "Kushans Trade",
+    "Karnasa coin credit and caravans"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Kushans in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Gandhara & Kabul Valley, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Karnasa connects valley crops, crafts and caravans.",
+    "Excess merchant seizure harms Kushan revenue and coin credit."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Kushans was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Gandhara & Kabul Valley, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Karnasa and valleys toward Kabul and Gandhara connect crops, crafts and caravans. Coin credit helps exchange, while excessive merchant seizure harms income."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Caravan guards walk beside the camels as they descend from the mountain passes into the Kabul valley. The loads carry silk, spice, and precious stones, and each guard is paid by the bale. Every stop brings the threat of thieves on the road, and the sergeant counts his men at each watering place."
+      "Content": "Karnasa connects valley crops, crafts and caravans. Traveling followers need real food from this production; valuables still require a buyer and exchange. Excess merchant seizure harms Kushan revenue and coin credit."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The steward of the valley estate records the caravans that pass through Gandhara, and each merchant pays a toll in silk or silver. The crown takes its share first, then the local lords take theirs, and the best goods are kept for the court. He keeps a secret ledger of the merchants who favor his rivals."
+      "Content": "Excess merchant seizure harms Kushan revenue and coin credit. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Karnasa connects valley crops, crafts and caravans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Karnasa connects valley crops, crafts and caravans. Households need meals and the means to keep producing after delivering goods. Excess merchant seizure harms Kushan revenue and coin credit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Excess merchant seizure harms Kushan revenue and coin credit. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Karnasa connects valley crops, crafts and caravans."
     }
   ],
   "SemanticPrototypes": [],

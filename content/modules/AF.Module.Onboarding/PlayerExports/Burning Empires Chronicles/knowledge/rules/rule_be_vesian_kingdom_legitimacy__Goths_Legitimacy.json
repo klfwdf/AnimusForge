@@ -2,20 +2,17 @@
   "Id": "be_vesian_kingdom_legitimacy",
   "Keywords": [
     "Goths Legitimacy",
-    "Goths Fritigern Sovereign Authority",
-    "Goths Ruling Seat",
-    "Goths Feudal Oaths"
+    "Fritigern’s food and service terms"
   ],
   "RagShortTexts": [
-    "In 374 AD, Goths governed from Lower Danube Floodplains, under the paramount rule of Fritigern.",
-    "The polity asserted sovereign legitimacy anchored in Goths dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Protection, diplomacy and fair shares support Fritigern.",
+    "Followers need defined food suppliers and levy limits."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Goths anchored itself within Lower Danube Floodplains, confronting the accelerating tremors of Late Antiquity. Governed by Fritigern, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Goths heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Protection, negotiation and fair returns sustain recognition. Roman aid matters, but followers need to know who supplies food and limits levies."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Fritigern's war banners rise over the camp, and the quartermasters begin handing out armor. Every man must put on iron mail and march at first light, with no excuses from the wagon line. Those wounded in the fighting are paid in gold or land grants, though the paperwork can take years to clear."
+      "Content": "Protection, diplomacy and fair shares support Fritigern. Military recognition also rests on rewards and relief; a title needs willing action. Followers need defined food suppliers and levy limits."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "In the hall of the great households, the lords read each royal decree and then decide how much of it to obey. The crown's authority is acknowledged in public, yet clan liberties and tax revenues stay under their own seals. Every pledge of loyalty is weighed against the privileges they already hold."
+      "Content": "Followers need defined food suppliers and levy limits. Nominal rights require local execution, with consent and supply both shaping authority. Protection, diplomacy and fair shares support Fritigern."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protection, diplomacy and fair shares support Fritigern. Households judge rule through protected families, land and responses to appeals. Followers need defined food suppliers and levy limits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Followers need defined food suppliers and levy limits. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protection, diplomacy and fair shares support Fritigern."
     }
   ],
   "SemanticPrototypes": [],

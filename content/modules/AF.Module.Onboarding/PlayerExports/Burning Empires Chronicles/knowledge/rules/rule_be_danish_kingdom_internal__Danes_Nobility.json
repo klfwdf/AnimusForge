@@ -2,20 +2,17 @@
   "Id": "be_danish_kingdom_internal",
   "Keywords": [
     "Danes Nobility",
-    "Danes Dan Clan Lineages",
-    "Danes Court Factions",
-    "Danes Internal Strife"
+    "Danish vessel contributions and shares"
   ],
   "RagShortTexts": [
-    "The ruling elite of Danes comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Dan relies on local chiefs, vessel owners and followers.",
+    "Voyage share disputes spread through kin connections."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Danes, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Dan needs chiefs, owners and followers. Joint voyages pool different households’ ships, food and people, while distribution disputes spread through kin."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Hearth guards sit on the benches of the hall as the jarls argue over who will hold the harbor fort after the old chief dies. A cup is thrown and someone calls for a weapon, but the steward steps between them and the hall grows still. The guards at the door know that a quarrel left unsettled at the feast will be fought out in the courtyard by morning."
+      "Content": "Dan relies on local chiefs, vessel owners and followers. Followers retain family ties; decisions about guards and distant service affect common participation. Voyage share disputes spread through kin connections."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Your rival has begun to win over the sea chiefs who command the longships, and the king's agent is due to visit the hall before the autumn Thing. Send gifts of silver arm rings to the sea chiefs and offer them a larger share of the harbor tolls in return for their oaths. Let the offer pass by word of mouth alone, since any letter sealed with your ring can be read by the agent's men."
+      "Content": "Voyage share disputes spread through kin connections. Coordination allocates actual supply and protection duties, not merely titles. Dan relies on local chiefs, vessel owners and followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Dan relies on local chiefs, vessel owners and followers. Households compare burdens with neighbors; unmatched protection weakens cooperation. Voyage share disputes spread through kin connections."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Voyage share disputes spread through kin connections. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Dan relies on local chiefs, vessel owners and followers."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,20 +2,17 @@
   "Id": "be_greuthungian_kingdom_legitimacy",
   "Keywords": [
     "Greuthungians Legitimacy",
-    "Greuthungians Ermanaric Sovereign Authority",
-    "Greuthungians Ruling Seat",
-    "Greuthungians Feudal Oaths"
+    "Ermanaric’s deterrence and protection"
   ],
   "RagShortTexts": [
-    "In 374 AD, Greuthungians governed from Lower Dnieper Steppes, under the paramount rule of Ermanaric.",
-    "The polity asserted sovereign legitimacy anchored in Greuthungians dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Success, tribute and protection sustain Ermanaric’s standing.",
+    "Punishment without protection encourages alternative partners."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Greuthungians anchored itself within Lower Dnieper Steppes, confronting the accelerating tremors of Late Antiquity. Governed by Ermanaric, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Greuthungians heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Experience, tribute and deterrence create royal standing. Without protection, punishment encourages alternative partners; delivered aid weighs more than nominal submission."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "The herald rides through the camp and calls the warriors to Ermanaric's banner. Each rider who answers will receive a share of the spoils, and the men repeat those words to one another around the fire. Yet some remember an earlier summons where the promised silver never arrived, so they keep their old saddles ready."
+      "Content": "Success, tribute and protection sustain Ermanaric’s standing. Military recognition also rests on rewards and relief; a title needs willing action. Punishment without protection encourages alternative partners."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "In a circle of felt tents, the great clans debate whether the king's authority still binds them. The decree is recited, but each chieftain keeps his own grazing rights, and most oaths last only as long as the king protects them. One elder warns that a king who spends all the herds will soon have no army to command."
+      "Content": "Punishment without protection encourages alternative partners. Nominal rights require local execution, with consent and supply both shaping authority. Success, tribute and protection sustain Ermanaric’s standing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Success, tribute and protection sustain Ermanaric’s standing. Households judge rule through protected families, land and responses to appeals. Punishment without protection encourages alternative partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Punishment without protection encourages alternative partners. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Success, tribute and protection sustain Ermanaric’s standing."
     }
   ],
   "SemanticPrototypes": [],

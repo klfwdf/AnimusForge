@@ -2,20 +2,17 @@
   "Id": "be_antean_kingdom_internal",
   "Keywords": [
     "Anteans Nobility",
-    "Anteans Bozh Clan Lineages",
-    "Anteans Court Factions",
-    "Anteans Internal Strife"
+    "Bozh’s village mutual aid"
   ],
   "RagShortTexts": [
-    "The ruling elite of Anteans comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Bozh connects settlements and local leaders.",
+    "Unequal grain stores make equal levies impose different burdens."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Anteans, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Bozh connects settlements and local leaders. Warnings require messengers and guards, and equal levies impose different costs on villages with different stores."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Men-at-arms stand in the cold corridor outside the lord's chamber, and they hear the sharp crack of a cup striking the wall. The steward will not say what the quarrel was about, though the whole household knows it concerns the cousin's claim to the river holdings. Guards who speak of it are sent to the frontier fort for a season."
+      "Content": "Bozh connects settlements and local leaders. Followers retain family ties; decisions about guards and distant service affect common participation. Unequal grain stores make equal levies impose different burdens."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Your uncle wants the river estate that was promised to you at your father's death, and his supporters among the old families are gathering at the hunting lodge. Send a steward to the elder chiefs with a gift of horses and an offer to share the bridge tolls. Keep the offer verbal, because any written claim will be seized if the uncle's men search your chests."
+      "Content": "Unequal grain stores make equal levies impose different burdens. Coordination allocates actual supply and protection duties, not merely titles. Bozh connects settlements and local leaders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Bozh connects settlements and local leaders. Households compare burdens with neighbors; unmatched protection weakens cooperation. Unequal grain stores make equal levies impose different burdens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Unequal grain stores make equal levies impose different burdens. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Bozh connects settlements and local leaders."
     }
   ],
   "SemanticPrototypes": [],

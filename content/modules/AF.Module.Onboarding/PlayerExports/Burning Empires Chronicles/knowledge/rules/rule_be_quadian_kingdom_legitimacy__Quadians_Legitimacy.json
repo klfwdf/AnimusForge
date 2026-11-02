@@ -2,20 +2,17 @@
   "Id": "be_quadian_kingdom_legitimacy",
   "Keywords": [
     "Quadians Legitimacy",
-    "Quadians Viduarius Sovereign Authority",
-    "Quadians Ruling Seat",
-    "Quadians Feudal Oaths"
+    "Meeting guarantees after Gabinius’ murder"
   ],
   "RagShortTexts": [
-    "In 374 AD, Quadians governed from South Bohemian Forests, under the paramount rule of Quadian Kings.",
-    "The polity asserted sovereign legitimacy anchored in Quadians dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Marcellianus killed Gabinius after a banquet, violating hospitality.",
+    "Quadian meetings therefore emphasize enforceable guarantees."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Quadians anchored itself within South Bohemian Forests, confronting the accelerating tremors of Late Antiquity. Governed by Quadian Kings, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Quadians heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Gabinius was killed after a banquet by Marcellianus. Violated hospitality makes guarantees central to meetings; oaths need a form participants can trust."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "By the hearth, veterans of the household sit with their backs to the wall, checking their straps. When the king's banner moves, every man buckles on iron and rides out. Blood shed in the field is repaid with gold and land grants, and no veteran forgets whose coin kept his children fed. At the Quadians post, the night watchword is \"Ridge.\""
+      "Content": "Marcellianus killed Gabinius after a banquet, violating hospitality. Military recognition also rests on rewards and relief; a title needs willing action. Quadian meetings therefore emphasize enforceable guarantees."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Lords and clerks read each royal decree twice before they seal their assent. Public oaths are sworn in the great hall, yet clan liberties and the tax revenues from their estates remain untouchable. Every sealed letter between the families repeats one condition: loyalty holds only while the crown leaves noble privileges alone."
+      "Content": "Quadian meetings therefore emphasize enforceable guarantees. Nominal rights require local execution, with consent and supply both shaping authority. Marcellianus killed Gabinius after a banquet, violating hospitality."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Marcellianus killed Gabinius after a banquet, violating hospitality. Households judge rule through protected families, land and responses to appeals. Quadian meetings therefore emphasize enforceable guarantees."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Quadian meetings therefore emphasize enforceable guarantees. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Marcellianus killed Gabinius after a banquet, violating hospitality."
     }
   ],
   "SemanticPrototypes": [],

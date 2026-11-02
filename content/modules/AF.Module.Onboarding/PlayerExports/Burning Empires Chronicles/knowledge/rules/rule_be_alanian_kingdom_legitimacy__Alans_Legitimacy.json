@@ -2,20 +2,17 @@
   "Id": "be_alanian_kingdom_legitimacy",
   "Keywords": [
     "Alans Legitimacy",
-    "Alans Beler Sovereign Authority",
-    "Alans Ruling Seat",
-    "Alans Feudal Oaths"
+    "Beler’s protective standing"
   ],
   "RagShortTexts": [
-    "In 374 AD, Alans governed from North Caucasus Steppe Pastures, under the paramount rule of Alan Chieftains.",
-    "The polity asserted sovereign legitimacy anchored in Alans dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Beler gains recognition through protection and credible rewards.",
+    "Safe wagons and winter pasture affect an Alan chief’s standing."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Alans anchored itself within North Caucasus Steppe Pastures, confronting the accelerating tremors of Late Antiquity. Governed by Alan Chieftains, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Alans heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Beler’s standing depends on protecting people and horses and delivering rewards. Courage wins followers, but lost household wagons and winter pasture diminish protection promises."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Old campaigners sit around the fire sharpening their swords and talking about the last muster. They all agree that when the Alan war banners move forward, a man must put on his iron scale coat without asking why. Blood spilled in the field is repaid with silver and a plot of land, and the veterans are proud of that promise, even when the pay arrives late."
+      "Content": "Beler gains recognition through protection and credible rewards. Military recognition also rests on rewards and relief; a title needs willing action. Safe wagons and winter pasture affect an Alan chief’s standing."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The chancellor and the old clan heads agree that royal decrees will be obeyed only where they leave clan privileges intact. Summon the eastern estate lords to a private council and confirm their tax exemptions in return for their oaths of service. Keep the exemptions out of the written decree, since the royal court would call them a violation of the crown's rights."
+      "Content": "Safe wagons and winter pasture affect an Alan chief’s standing. Nominal rights require local execution, with consent and supply both shaping authority. Beler gains recognition through protection and credible rewards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Beler gains recognition through protection and credible rewards. Households judge rule through protected families, land and responses to appeals. Safe wagons and winter pasture affect an Alan chief’s standing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Safe wagons and winter pasture affect an Alan chief’s standing. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Beler gains recognition through protection and credible rewards."
     }
   ],
   "SemanticPrototypes": [],

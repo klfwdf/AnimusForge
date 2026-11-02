@@ -1,21 +1,18 @@
 {
   "Id": "be_angle_kingdom_economy",
   "Keywords": [
-    "Angles Fiscal Levies",
-    "Angles Wihtlaeg Artisan Forges",
-    "Angles Agrarian Manors",
-    "Angles Trade Corridors"
+    "Angles Trade",
+    "Angulus fishing and winter stores"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Angles in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Southern Jutland (Angeln), merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Angulus households combine fields, herds and fishing.",
+    "Ship requisition and delayed return reduce farm labor and winter stores."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Angles was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Southern Jutland (Angeln), cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Angulus households combine fields, livestock, fishing and coastal exchange. Vessels carry goods and people; requisition or delayed return reduces farm labor and winter stores."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Wet fen paths in the Angeln marshes swallow the wagon wheels, and the cooks argue over whether the salt pork is still safe to boil. Spearmen carry their share of the grain on their backs and count the days until the next issue. Few men in the ranks own silver, so most buy a replacement strap or whetstone on credit against the promise of loot."
+      "Content": "Angulus households combine fields, herds and fishing. Traveling followers need real food from this production; valuables still require a buyer and exchange. Ship requisition and delayed return reduce farm labor and winter stores."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Our bailiff in Anglia writes in hard ink: the tenth sheaf from the coastal farms is short, and the herring barrels spoiled before they reached the Jutland quay. Ask the sea merchants whether they will advance silver against next year's crop. Discretion matters more than price, since a rival lord who learns our granaries are empty will press his claims."
+      "Content": "Ship requisition and delayed return reduce farm labor and winter stores. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Angulus households combine fields, herds and fishing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Angulus households combine fields, herds and fishing. Households need meals and the means to keep producing after delivering goods. Ship requisition and delayed return reduce farm labor and winter stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ship requisition and delayed return reduce farm labor and winter stores. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Angulus households combine fields, herds and fishing."
     }
   ],
   "SemanticPrototypes": [],

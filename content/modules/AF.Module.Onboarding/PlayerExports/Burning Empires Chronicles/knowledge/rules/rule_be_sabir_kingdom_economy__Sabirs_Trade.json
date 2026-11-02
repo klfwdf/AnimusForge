@@ -1,21 +1,18 @@
 {
   "Id": "be_sabir_kingdom_economy",
   "Keywords": [
-    "Sabirs Fiscal Levies",
-    "Sabirs Kutilzis Artisan Forges",
-    "Sabirs Agrarian Manors",
-    "Sabirs Trade Corridors"
+    "Sabirs Trade",
+    "Norossus herds and grain exchange"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Sabirs in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Western Steppe Corridors, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Norossus households depend on horses, pasture and grain-iron exchange.",
+    "Concentrated herds exhaust shared grazing faster."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Sabirs was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Western Steppe Corridors, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Norossus households depend on horses, grazing and exchange, obtaining grain and iron from partners. Concentrated herds exhaust shared pasture faster."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Carts jolt over the dry steppe ruts, and the drivers tie their loads down against the wind. The rations are millet cakes and dried mutton, hard as bark after the long march. Pay comes in salt or copper when the paymaster can reach the wagons, and each rider keeps watch on the fallen for anything worth taking. At the Sabirs post, the night watchword is \"Falcon.\""
+      "Content": "Norossus households depend on horses, pasture and grain-iron exchange. Traveling followers need real food from this production; valuables still require a buyer and exchange. Concentrated herds exhaust shared grazing faster."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Beneath a felt awning, horse hides and bundles of wool are totaled and scratched onto a wax tablet. A tenth of the herds and the harvest goes to the khan's stores, and the forge produced one hundred bridles and forty spearheads last month. He seals the tally for the caravan agent, who will set the price of iron at the next fair."
+      "Content": "Concentrated herds exhaust shared grazing faster. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Norossus households depend on horses, pasture and grain-iron exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Norossus households depend on horses, pasture and grain-iron exchange. Households need meals and the means to keep producing after delivering goods. Concentrated herds exhaust shared grazing faster."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Concentrated herds exhaust shared grazing faster. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Norossus households depend on horses, pasture and grain-iron exchange."
     }
   ],
   "SemanticPrototypes": [],

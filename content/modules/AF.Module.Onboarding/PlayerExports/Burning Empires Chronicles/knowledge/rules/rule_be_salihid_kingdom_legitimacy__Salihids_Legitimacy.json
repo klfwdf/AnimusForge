@@ -2,20 +2,17 @@
   "Id": "be_salihid_kingdom_legitimacy",
   "Keywords": [
     "Salihids Legitimacy",
-    "Salihids Zokomos the Mighty Sovereign Authority",
-    "Salihids Ruling Seat",
-    "Salihids Feudal Oaths"
+    "Zokomos’ kin and Roman rewards"
   ],
   "RagShortTexts": [
-    "In 374 AD, Salihids governed from Jordanian Desert & Petra Environs, under the paramount rule of Salihid Phylarchs.",
-    "The polity asserted sovereign legitimacy anchored in Salihids dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Protection, kin recognition and rewards support Zokomos.",
+    "Roman titles cannot replace followers’ actual returns."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Salihids anchored itself within Jordanian Desert & Petra Environs, confronting the accelerating tremors of Late Antiquity. Governed by Salihid Phylarchs, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Salihids heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Protection, kin recognition and credible rewards sustain leadership. Roman cooperation must offer followers returns rather than an outside title alone."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Riders of the phylarch's guard oil their lances by the fire before the standard is raised. When the Salihid Phylarchs' banner moves, every man mounts and rides out with a shield on his arm. Blood spent in battle is repaid with water rights and grants of pasture, and the riders know a grant is only as good as the phylarch's word. At the Salihids post, the night watchword is \"Wolf.\""
+      "Content": "Protection, kin recognition and rewards support Zokomos. Military recognition also rests on rewards and relief; a title needs willing action. Roman titles cannot replace followers’ actual returns."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The tribal sheikhs measure the phylarch's orders against their wells before they comply. Oaths are sworn in the council tent, yet the clans keep their wells, their tolls, and their privileges. Each sealed letter between them repeats one condition: the phylarch's authority holds only while tribal rights are respected."
+      "Content": "Roman titles cannot replace followers’ actual returns. Nominal rights require local execution, with consent and supply both shaping authority. Protection, kin recognition and rewards support Zokomos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protection, kin recognition and rewards support Zokomos. Households judge rule through protected families, land and responses to appeals. Roman titles cannot replace followers’ actual returns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman titles cannot replace followers’ actual returns. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protection, kin recognition and rewards support Zokomos."
     }
   ],
   "SemanticPrototypes": [],

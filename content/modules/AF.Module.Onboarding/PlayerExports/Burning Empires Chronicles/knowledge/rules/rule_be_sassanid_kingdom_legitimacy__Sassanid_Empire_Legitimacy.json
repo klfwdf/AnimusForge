@@ -2,20 +2,17 @@
   "Id": "be_sassanid_kingdom_legitimacy",
   "Keywords": [
     "Sassanid Empire Legitimacy",
-    "Sassanid Empire Shapur II Sovereign Authority",
-    "Sassanid Empire Ruling Seat",
-    "Sassanid Empire Feudal Oaths"
+    "Shapur II’s titles and religious patronage"
   ],
   "RagShortTexts": [
-    "In 374 AD, Sassanid Empire governed from Ctesiphon, under the paramount rule of Shapur II.",
-    "The polity asserted sovereign legitimacy anchored in Sassanid Empire dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Royal titles, Iranian traditions and victory support Shapur II.",
+    "Religious patronage does not erase noble and local differences."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Sassanid Empire anchored itself within Ctesiphon, confronting the accelerating tremors of Late Antiquity. Governed by Shapur II, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Sassanid Empire heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Royal titles, Iranian traditions and victory sustain prestige. Religious patronage supports authority while nobles and communities retain distinct interests."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Scale armor is polished by the fire in the royal guard's quarters before the banner rises. When Shapur II's standard moves, every man mounts and rides out with a lance and shield. Blood spent in battle is repaid with estates and grants of land, and the soldiers know a grant is only as good as the king's favor. At the Sassanid post, the night watchword is \"Ash.\""
+      "Content": "Royal titles, Iranian traditions and victory support Shapur II. Military recognition also rests on rewards and relief; a title needs willing action. Religious patronage does not erase noble and local differences."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Magnates read the king's edicts twice, counting what each one costs their estates. Oaths are sworn in the audience hall, yet the families keep their estates, their tolls, and their privileges. Each sealed letter between them repeats one condition: royal authority holds only while noble rights are respected."
+      "Content": "Religious patronage does not erase noble and local differences. Nominal rights require local execution, with consent and supply both shaping authority. Royal titles, Iranian traditions and victory support Shapur II."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Royal titles, Iranian traditions and victory support Shapur II. Households judge rule through protected families, land and responses to appeals. Religious patronage does not erase noble and local differences."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Religious patronage does not erase noble and local differences. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Royal titles, Iranian traditions and victory support Shapur II."
     }
   ],
   "SemanticPrototypes": [],

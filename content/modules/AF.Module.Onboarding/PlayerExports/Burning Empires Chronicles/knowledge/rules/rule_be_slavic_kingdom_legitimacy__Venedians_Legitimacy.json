@@ -2,20 +2,17 @@
   "Id": "be_slavic_kingdom_legitimacy",
   "Keywords": [
     "Venedians Legitimacy",
-    "Venedians Lekh Sovereign Authority",
-    "Venedians Ruling Seat",
-    "Venedians Feudal Oaths"
+    "Lekh’s fields and passage protection"
   ],
   "RagShortTexts": [
-    "In 374 AD, Venedians governed from Vistula Gulf & Baltic Coast, under the paramount rule of Venedi Clan Elders.",
-    "The polity asserted sovereign legitimacy anchored in Venedians dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Protecting fields, crossings and passage supports Lekh.",
+    "Related names do not make neighbors accept one jurisdiction."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Venedians anchored itself within Vistula Gulf & Baltic Coast, confronting the accelerating tremors of Late Antiquity. Governed by Venedi Clan Elders, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Venedians heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Protecting fields, crossings and passage supports recognition. Related neighbors also contest land; jurisdiction requires cooperation rather than names alone."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Rain drips from the tent flaps as the household veterans talk in low voices. When the Venedi Clan Elders raise their banners, every man buckles on iron armor and marches at first light. Pay for blood spilled in the field comes in gold or land grants, though the wounded often wait months for either, and the sergeants know it."
+      "Content": "Protecting fields, crossings and passage supports Lekh. Military recognition also rests on rewards and relief; a title needs willing action. Related names do not make neighbors accept one jurisdiction."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "In the chancery, the magnates weigh each royal decree before they acknowledge it. Clan liberties and tax revenues stay beyond the crown's reach, and every oath they swear depends on keeping those privileges intact. Secret letters between houses decide which elder's banner they will follow when the time comes."
+      "Content": "Related names do not make neighbors accept one jurisdiction. Nominal rights require local execution, with consent and supply both shaping authority. Protecting fields, crossings and passage supports Lekh."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protecting fields, crossings and passage supports Lekh. Households judge rule through protected families, land and responses to appeals. Related names do not make neighbors accept one jurisdiction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Related names do not make neighbors accept one jurisdiction. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protecting fields, crossings and passage supports Lekh."
     }
   ],
   "SemanticPrototypes": [],

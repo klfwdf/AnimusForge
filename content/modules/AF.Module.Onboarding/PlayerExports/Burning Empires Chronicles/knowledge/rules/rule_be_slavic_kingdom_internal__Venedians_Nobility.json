@@ -2,19 +2,17 @@
   "Id": "be_slavic_kingdom_internal",
   "Keywords": [
     "Venedians Nobility",
-    "Venedians Lekh Clan Lineages",
-    "Venedians Court Factions",
-    "Venedians Internal Strife"
+    "Venedian owners farmers and followers"
   ],
   "RagShortTexts": [
-    "Ancient Venedi references do not establish a unified Venedians state in 374.",
-    "River access, exchange and the burden of protection shape this scenario's local disputes."
+    "Lekh coordinates chiefs, boat owners, farmers and followers.",
+    "Exchange returns and levies impose different risks."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Venedians is the module's label for a playable group, not proof that ancient references to Venedi describe one coherent state in 374. Names used by outside writers do not supply a complete account of local identity or government. The faction's disputes can concern river travel, exchange, relations with neighbouring peoples and how settlements support armed protection. A leader who obtains useful contacts may still face opposition over the cost. This approach preserves the scenario while avoiding fabricated senatorial houses, five hereditary castles or a later national monarchy imposed upon poorly documented communities."
+      "Content": "Lekh joins chiefs and households. Boat owners, cultivators and fighters bear different risks and disagree over gains and levies."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A guard beside a river landing needs warning from the next settlement and a clear signal before letting strangers approach. Families depend on the same route for trade, so closing it also costs food and work. The armed men must explain a precaution to the people supplying them, rather than treat every question as disloyalty."
+      "Content": "Lekh coordinates chiefs, boat owners, farmers and followers. Followers retain family ties; decisions about guards and distant service affect common participation. Exchange returns and levies impose different risks."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A Venedi notable may gain standing by arranging passage or exchange with a neighbour, but cannot promise goods he does not control. The families bearing the burden will remember a broken pledge. His position rests on recognised relationships in this scenario, not on a supposedly documented hereditary office for all ancient Venedi."
+      "Content": "Exchange returns and levies impose different risks. Coordination allocates actual supply and protection duties, not merely titles. Lekh coordinates chiefs, boat owners, farmers and followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Lekh coordinates chiefs, boat owners, farmers and followers. Households compare burdens with neighbors; unmatched protection weakens cooperation. Exchange returns and levies impose different risks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Exchange returns and levies impose different risks. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Lekh coordinates chiefs, boat owners, farmers and followers."
     }
   ],
   "SemanticPrototypes": [],

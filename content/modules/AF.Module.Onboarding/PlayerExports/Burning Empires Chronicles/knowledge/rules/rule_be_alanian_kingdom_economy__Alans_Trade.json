@@ -1,21 +1,18 @@
 {
   "Id": "be_alanian_kingdom_economy",
   "Keywords": [
-    "Alans Fiscal Levies",
-    "Alans Beler Artisan Forges",
-    "Alans Agrarian Manors",
-    "Alans Trade Corridors"
+    "Alans Trade",
+    "Alan herd exchange"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Alans in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near North Caucasus Steppe Pastures, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Alan herds and household wagons move together.",
+    "Alan camps obtain grain, iron and leather through exchange."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Alans was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around North Caucasus Steppe Pastures, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Alan households move with herds. Lost mounts, breeding females and household wagons affect the next season; silver buys goods but cannot instantly restore tired horses or breeding stock. Exchange brings grain, iron and leatherwork into camp."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Carters on the Alan supply road sink to their axles in mud each morning, hauling grain sacks the quartermaster has weighed twice. Soldiers chew stale bread from requisitioned wheat and wait for pay in copper or salt, not promissory tokens. A pair of decent boots costs a month of wages, so the rank and file trade spare arrowheads for cloak pins."
+      "Content": "Alan herds and household wagons move together. Traveling followers need real food from this production; valuables still require a buyer and exchange. Alan camps obtain grain, iron and leather through exchange."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The Alan estate bailiff sends a sealed letter to the capital: the tenth of the harvest from our vineyards is short by a third, and grain sold at the river fair fetched less than the toll clerks demanded. Hold the caravans at the ford until the sums are reconciled, lest rival lords learn how thin our treasury has become."
+      "Content": "Alan camps obtain grain, iron and leather through exchange. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Alan herds and household wagons move together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Alan herds and household wagons move together. Households need meals and the means to keep producing after delivering goods. Alan camps obtain grain, iron and leather through exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Alan camps obtain grain, iron and leather through exchange. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Alan herds and household wagons move together."
     }
   ],
   "SemanticPrototypes": [],

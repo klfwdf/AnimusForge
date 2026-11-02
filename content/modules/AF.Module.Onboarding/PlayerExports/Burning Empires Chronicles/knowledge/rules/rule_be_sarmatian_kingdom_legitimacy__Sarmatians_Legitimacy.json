@@ -2,20 +2,17 @@
   "Id": "be_sarmatian_kingdom_legitimacy",
   "Keywords": [
     "Sarmatians Legitimacy",
-    "Sarmatians Kasagos Sovereign Authority",
-    "Sarmatians Ruling Seat",
-    "Sarmatians Feudal Oaths"
+    "Kasagos’ household protection"
   ],
   "RagShortTexts": [
-    "In 374 AD, Sarmatians governed from Don-Danube Steppes, under the paramount rule of Sarmatian Kings.",
-    "The polity asserted sovereign legitimacy anchored in Sarmatians dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Household protection and distributions support Kasagos.",
+    "Continued pasture and grain access affect recognition."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Sarmatians anchored itself within Don-Danube Steppes, confronting the accelerating tremors of Late Antiquity. Governed by Sarmatian Kings, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Sarmatians heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Standing depends on household protection and returns. Fighters seek respect while families judge continuing pasture and grain access."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Lances are oiled beside the hearth while the chieftain's riders wait for the standard. When the Sarmatian Kings' banner moves, every man mounts and rides out with a shield on his arm. Blood spent in battle is repaid with pasture and grants of land, and the riders know a grant is only as good as the king's word. At the Sarmatians post, the night watchword is \"Ridge.\""
+      "Content": "Household protection and distributions support Kasagos. Military recognition also rests on rewards and relief; a title needs willing action. Continued pasture and grain access affect recognition."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The clan heads turn over the king's summons slowly before they answer it. Oaths are sworn at the council fire, yet the families keep their herds, their fords, and their privileges. Each sealed letter between them repeats one condition: the king's authority holds only while the clans' rights are respected."
+      "Content": "Continued pasture and grain access affect recognition. Nominal rights require local execution, with consent and supply both shaping authority. Household protection and distributions support Kasagos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Household protection and distributions support Kasagos. Households judge rule through protected families, land and responses to appeals. Continued pasture and grain access affect recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Continued pasture and grain access affect recognition. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Household protection and distributions support Kasagos."
     }
   ],
   "SemanticPrototypes": [],

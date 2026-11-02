@@ -2,20 +2,17 @@
   "Id": "be_salihid_kingdom_internal",
   "Keywords": [
     "Salihids Nobility",
-    "Salihids Zokomos the Mighty Clan Lineages",
-    "Salihids Court Factions",
-    "Salihids Internal Strife"
+    "Salihid herders cultivators and well guards"
   ],
   "RagShortTexts": [
-    "The ruling elite of Salihids comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Zokomos coordinates kin and oasis users.",
+    "Herders, cultivators and well guards bear different war costs."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Salihids, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Zokomos joins kin and oasis users. Herders and cultivators bear campaigns differently, including who remains to guard wells."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Guards at the tent flap stand rigid as raised voices clash inside. The phylarch's brother and nephew have overturned a bronze tray, and the watch keeps its eyes on the sand. When great tribes quarrel over grazing and wells, it is the common riders at the gate who take the first blows. At the Salihids post, the night watchword is \"Ford.\""
+      "Content": "Zokomos coordinates kin and oasis users. Followers retain family ties; decisions about guards and distant service affect common participation. Herders, cultivators and well guards bear different war costs."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The old sheikh murmurs to his heir across a pot of spiced coffee. The phylarch's title matters less than the wells, the caravan roads, and the households that owe service to them. Smile at the council and accept every toast, but keep a dagger under the robe until the rival tribe's water rights are yours."
+      "Content": "Herders, cultivators and well guards bear different war costs. Coordination allocates actual supply and protection duties, not merely titles. Zokomos coordinates kin and oasis users."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Zokomos coordinates kin and oasis users. Households compare burdens with neighbors; unmatched protection weakens cooperation. Herders, cultivators and well guards bear different war costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Herders, cultivators and well guards bear different war costs. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Zokomos coordinates kin and oasis users."
     }
   ],
   "SemanticPrototypes": [],

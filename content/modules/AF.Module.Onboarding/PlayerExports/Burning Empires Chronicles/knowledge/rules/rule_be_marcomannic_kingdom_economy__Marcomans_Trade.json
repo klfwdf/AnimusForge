@@ -1,21 +1,18 @@
 {
   "Id": "be_marcomannic_kingdom_economy",
   "Keywords": [
-    "Marcomans Fiscal Levies",
-    "Marcomans Vannius Artisan Forges",
-    "Marcomans Agrarian Manors",
-    "Marcomans Trade Corridors"
+    "Marcomans Trade",
+    "Bohemian farming and border markets"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Marcomans in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Bohemian Basin, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Casurgis grain, herds, woodland and southern exchange sustain households.",
+    "Peace allows stores and repairs; long service removes farm and herd labor."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Marcomans was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Bohemian Basin, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Casurgis grain, herds, woodland and southern exchange sustain households. Peace allows stores and tool repair, while prolonged service removes harvest and animal care."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Two carters curse over a split axle on the Bohemian track, the grain sacks already soaked through. The rations are rye, hard as granite, and the cook boils it into gruel for the third time this week. Soldiers take their pay in salt or copper when the paymaster has it, and every man keeps one eye on the enemy dead for coins. At the Marcomans post, the night watchword is \"Falcon.\""
+      "Content": "Casurgis grain, herds, woodland and southern exchange sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Peace allows stores and repairs; long service removes farm and herd labor."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The reeve of the river estate counts barrels of wax and bales of pelts before the market closes. Three smithies turned out spearheads for the autumn levy, and a tenth of the harvest has gone into the lord's granary. He sends a sealed tally to the regional market officer, because the price of iron there decides how many mail shirts the household can afford."
+      "Content": "Peace allows stores and repairs; long service removes farm and herd labor. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Casurgis grain, herds, woodland and southern exchange sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Casurgis grain, herds, woodland and southern exchange sustain households. Households need meals and the means to keep producing after delivering goods. Peace allows stores and repairs; long service removes farm and herd labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Peace allows stores and repairs; long service removes farm and herd labor. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Casurgis grain, herds, woodland and southern exchange sustain households."
     }
   ],
   "SemanticPrototypes": [],

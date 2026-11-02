@@ -2,19 +2,17 @@
   "Id": "be_sassanid_kingdom_internal",
   "Keywords": [
     "Sassanid Empire Nobility",
-    "Sassanid Empire Shapur II Clan Lineages",
-    "Sassanid Empire Court Factions",
-    "Sassanid Empire Internal Strife"
+    "Sasanian nobles priests and regional rulers"
   ],
   "RagShortTexts": [
-    "Shapur II negotiates power through aristocratic, military and religious relationships.",
-    "Armenian loyalties and campaign supplies affect Sasanian internal politics."
+    "Shapur II works with nobles, priests and regional rulers controlling resources.",
+    "Orders must become locally supplied food, horses and followers."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Shapur II's Sasanian monarchy combines royal power with great aristocratic houses, military leaders and religious authorities. Influence comes through access to the king, land, service and regional connections, rather than a Roman senate under a different name. The frontier with Rome and struggles over Armenia make local loyalties especially important: a useful intermediary may also have reasons to change sides. Supplies for campaigns impose costs on estates and cultivators. In 374 internal politics therefore concerns how the king secures service and manages powerful supporters, not an inevitable sequence of poisonings or a uniform western European system of vassalage."
+      "Content": "Shapur II works with nobles, priests and regional rulers controlling people and resources. Military demands must become locally supplied food, horses and followers."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A rider called for service needs a fit mount and the provisions to reach the muster. An order issued at court still depends on local officers arranging transport and supply. If rival patrons dispute responsibility, men wait while their animals consume fodder; prestige at an audience does not feed a horse on the road."
+      "Content": "Shapur II works with nobles, priests and regional rulers controlling resources. Followers retain family ties; decisions about guards and distant service affect common participation. Orders must become locally supplied food, horses and followers."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "An aristocratic supporter of Shapur weighs royal favour against regional ties and the obligations of military service. Armenia may offer influence while exposing an ally to pressure from both empires. Keeping a useful following requires resources, so a demand that exhausts an estate can weaken the very service the king expects from it."
+      "Content": "Orders must become locally supplied food, horses and followers. Coordination allocates actual supply and protection duties, not merely titles. Shapur II works with nobles, priests and regional rulers controlling resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Shapur II works with nobles, priests and regional rulers controlling resources. Households compare burdens with neighbors; unmatched protection weakens cooperation. Orders must become locally supplied food, horses and followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Orders must become locally supplied food, horses and followers. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Shapur II works with nobles, priests and regional rulers controlling resources."
     }
   ],
   "SemanticPrototypes": [],

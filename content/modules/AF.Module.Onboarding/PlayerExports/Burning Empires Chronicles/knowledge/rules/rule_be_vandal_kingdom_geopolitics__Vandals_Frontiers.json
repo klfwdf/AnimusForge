@@ -1,21 +1,18 @@
 {
   "Id": "be_vandal_kingdom_geopolitics",
   "Keywords": [
-    "Vandals Frontier Marches",
-    "Vandals Godigisel Border Defense",
-    "Vandals Strategic Passes",
-    "Vandals Geopolitical Rivals"
+    "Vandals Frontiers",
+    "Vandal rivers and pass supply carts"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Vandals maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Vandal rivers, passes and settlement routes carry grain carts.",
+    "Narrow roads defend but also congest dependants and animals."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Vandals spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Silesia & Upper Danube, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Rivers, passes and settlement routes direct forces and carts. Narrow roads aid defence but can block household and animal movement."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "On the palisade above the Silesian plain, the watch counts campfires in the valley below. Enemy horsemen have raided the outer farms three times this month, and every embrasure now holds a loaded ballista. A sentry who dozes at his post will be the first body the raiders find at dawn, and his comrades will bury him without ceremony."
+      "Content": "Vandal rivers, passes and settlement routes carry grain carts. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Narrow roads defend but also congest dependants and animals."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "At the border fort, the Vandal warden unseals a dispatch from the chancery and finds the subsidy cut once more. Without silver to hire auxiliary companies, he must trade land rights with neighboring petty lords to keep the passes guarded. Each season the raiders probe closer, so every sealed report he sends now ends with a plea for funds before the snows block the roads."
+      "Content": "Narrow roads defend but also congest dependants and animals. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Vandal rivers, passes and settlement routes carry grain carts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Vandal rivers, passes and settlement routes carry grain carts. Closed routes may separate families from goods, imposing costs on those remaining at home. Narrow roads defend but also congest dependants and animals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Narrow roads defend but also congest dependants and animals. Cargo passes different carriers, making distant route changes become local shortages through delay. Vandal rivers, passes and settlement routes carry grain carts."
     }
   ],
   "SemanticPrototypes": [],

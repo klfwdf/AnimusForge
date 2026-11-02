@@ -2,20 +2,17 @@
   "Id": "be_armenian_kingdom_internal",
   "Keywords": [
     "Armenia Nobility",
-    "Armenia Varazdat Clan Lineages",
-    "Armenia Court Factions",
-    "Armenia Internal Strife"
+    "Nakharars court and church"
   ],
   "RagShortTexts": [
-    "The ruling elite of Armenia comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Armenian court, nakharar houses and church retain separate resources.",
+    "Noble rivalry affects willingness to bring followers."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Armenia, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Court, nakharar houses and church have separate supporters and resources. Military cooperation does not erase local noble power; rivalry affects willingness to bring followers."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Stone-hall guards keep watch while the family argues over who inherits the grain estates. A servant carrying the wine jug hears the lord's brother promise a sum the household cannot pay. The guards keep their voices low and their hands near their shields, aware that a noble quarrel can turn into a feud between villages."
+      "Content": "Armenian court, nakharar houses and church retain separate resources. Followers retain family ties; decisions about guards and distant service affect common participation. Noble rivalry affects willingness to bring followers."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The Arsacid court has summoned the great houses to the capital, and your rival has already sent gifts to the king's chamberlain. Send your most trusted cousin to the eastern estates to gather the village headmen's oaths, carrying a sealed letter only as far as the first fortress. Name your rival in no document, since royal clerks copy every word they can reach."
+      "Content": "Noble rivalry affects willingness to bring followers. Coordination allocates actual supply and protection duties, not merely titles. Armenian court, nakharar houses and church retain separate resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Armenian court, nakharar houses and church retain separate resources. Households compare burdens with neighbors; unmatched protection weakens cooperation. Noble rivalry affects willingness to bring followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Noble rivalry affects willingness to bring followers. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Armenian court, nakharar houses and church retain separate resources."
     }
   ],
   "SemanticPrototypes": [],

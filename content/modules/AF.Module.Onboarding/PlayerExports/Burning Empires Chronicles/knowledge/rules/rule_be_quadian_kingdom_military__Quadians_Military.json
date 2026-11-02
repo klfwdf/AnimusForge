@@ -1,21 +1,18 @@
 {
   "Id": "be_quadian_kingdom_military",
   "Keywords": [
-    "Quadians Military Doctrine",
-    "Quadians Viduarius Elite Hosts",
-    "Quadians Battle Phalanxes",
-    "Quadians Defensive Manuals"
+    "Quadians Military",
+    "Quadian crossing guards and mountain withdrawal"
   ],
   "RagShortTexts": [
-    "The standing military of Quadians in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Crossings and mountain retreat both need people.",
+    "Dependants and herds move slower than riders and need early warnings."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Quadians rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Quadians against overwhelming regional adversaries."
+      "Content": "Crossing guards and mountain retreat both need people. Expeditions need a return before counterattack; slower dependants and herds require early messages for dispersed movement."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Shields lock into a wall as the horns sound, and the front rank braces for the charge. Each man takes the shock of warhorses on his shoulder while spears thrust through the gaps behind him. Breaking formation means the sergeant's sword, so every soldier keeps his place in the file. At the Quadians post, the night watchword is \"Salt.\""
+      "Content": "Crossings and mountain retreat both need people. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Dependants and herds move slower than riders and need early warnings."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The field marshal weighs the day from a hilltop redoubt, counting wagons against distance. Victory needs the supply carts to reach the center and the center to hold. Once the infantry stands firm, the flank horsemen ride wide to close the trap, and the enemy's broken ranks become the army's spoil."
+      "Content": "Dependants and herds move slower than riders and need early warnings. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Crossings and mountain retreat both need people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Crossings and mountain retreat both need people. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Dependants and herds move slower than riders and need early warnings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Dependants and herds move slower than riders and need early warnings. Repair, carrying and care also use people, while daily supply continues after troops pass. Crossings and mountain retreat both need people."
     }
   ],
   "SemanticPrototypes": [],

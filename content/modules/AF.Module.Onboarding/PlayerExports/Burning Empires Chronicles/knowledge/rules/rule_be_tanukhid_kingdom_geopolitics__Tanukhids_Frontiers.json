@@ -1,21 +1,18 @@
 {
   "Id": "be_tanukhid_kingdom_geopolitics",
   "Keywords": [
-    "Tanukhids Frontier Marches",
-    "Tanukhids Mavia Border Defense",
-    "Tanukhids Strategic Passes",
-    "Tanukhids Geopolitical Rivals"
+    "Tanukhids Frontiers",
+    "Tanukhid Syrian well routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Tanukhids maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Tanukhid oases and Syrian well routes have limited stopping capacity.",
+    "Riders and dependants compete for the same water."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Tanukhids spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Syrian Desert & South Aleppo, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Oases and Syrian well routes have limited resting capacity. Concentrated riders and dependants can compete for the same supply."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Watchmen at the desert fort strain their eyes toward the dust haze on the southern horizon. Riders came in twice this week with reports of hostile horsemen probing the wells. Every sentry keeps his bow strung and his water ration tied to his belt, because a man who leaves his post at night may not be found until the vultures have picked him clean."
+      "Content": "Tanukhid oases and Syrian well routes have limited stopping capacity. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Riders and dependants compete for the same water."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The frontier commander seals a dispatch to the queen's chancery: the well subsidy has been halved again, while raiding bands grow bolder each season. Without silver to hire auxiliary horsemen from the tribes, he must trade grazing rights for their service. Every promise he makes to a tribal chief is a debt he may never repay."
+      "Content": "Riders and dependants compete for the same water. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Tanukhid oases and Syrian well routes have limited stopping capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Tanukhid oases and Syrian well routes have limited stopping capacity. Closed routes may separate families from goods, imposing costs on those remaining at home. Riders and dependants compete for the same water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Riders and dependants compete for the same water. Cargo passes different carriers, making distant route changes become local shortages through delay. Tanukhid oases and Syrian well routes have limited stopping capacity."
     }
   ],
   "SemanticPrototypes": [],

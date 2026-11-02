@@ -1,21 +1,18 @@
 {
   "Id": "be_langobard_kingdom_geopolitics",
   "Keywords": [
-    "Langobards Frontier Marches",
-    "Langobards Agelmund Border Defense",
-    "Langobards Strategic Passes",
-    "Langobards Geopolitical Rivals"
+    "Langobards Frontiers",
+    "Lombard Elbe woodland routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Langobards maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Lombard woods and rivers lead toward the Elbe.",
+    "Smaller tracks still need food and permitted resting places."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Langobards spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Lower Elbe Valley, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Woods and rivers lead toward the Elbe. Guides know smaller tracks but still need food and permitted resting places."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Night on the frontier tower is long, and the sentry keeps his hand on the bell rope. Signal fires flickered through the pines again last night, and hostile horsemen now sweep the valley tracks three times as often as last spring. Every embrasure holds a loaded ballista, and the men sleep in mail with their boots laced, waiting for the next blaze to answer. Watchword: \"Dawn.\""
+      "Content": "Lombard woods and rivers lead toward the Elbe. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Smaller tracks still need food and permitted resting places."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Frontier wardens break a fresh wax seal and read the treasury's notice with dread. The subsidy has been cut again, and raiding vanguards probe the passes closer each month. Without silver to hire auxiliary bands, the wardens must borrow from local magnates in exchange for land, and each loan gives a rival house a stake in whether the pass holds."
+      "Content": "Smaller tracks still need food and permitted resting places. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Lombard woods and rivers lead toward the Elbe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Lombard woods and rivers lead toward the Elbe. Closed routes may separate families from goods, imposing costs on those remaining at home. Smaller tracks still need food and permitted resting places."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Smaller tracks still need food and permitted resting places. Cargo passes different carriers, making distant route changes become local shortages through delay. Lombard woods and rivers lead toward the Elbe."
     }
   ],
   "SemanticPrototypes": [],

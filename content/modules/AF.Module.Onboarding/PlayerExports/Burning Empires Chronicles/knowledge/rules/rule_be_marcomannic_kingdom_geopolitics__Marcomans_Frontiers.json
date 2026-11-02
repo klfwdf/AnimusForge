@@ -1,21 +1,18 @@
 {
   "Id": "be_marcomannic_kingdom_geopolitics",
   "Keywords": [
-    "Marcomans Frontier Marches",
-    "Marcomans Vannius Border Defense",
-    "Marcomans Strategic Passes",
-    "Marcomans Geopolitical Rivals"
+    "Marcomans Frontiers",
+    "Casurgis southward mountain routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Marcomans maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Bohemian basin, woods and southern passes lead toward the Danube.",
+    "Crossings aid travel while narrow roads congest carts and families."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Marcomans spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Bohemian Basin, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Bohemian basin, woods and southern passes lead toward the Danube. Crossings aid travel, but narrow roads hinder simultaneous movement of carts and families."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries on the timber watchtower above the Bohemian plain stare into the fog. Smoke columns rose beyond the ridge twice last night, and cavalry scouts have doubled their rides along the forest tracks. Every embrasure has a loaded catapult, and the men sleep in mail with their boots laced. At the Marcomans post, the night watchword is \"Stone.\""
+      "Content": "Bohemian basin, woods and southern passes lead toward the Danube. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Crossings aid travel while narrow roads congest carts and families."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The frontier reeve breaks a seal on the dispatch and reads it twice. The subsidy has been reduced again, while raiders probe the passes closer each month. Without coin to hire auxiliary bands, he must pledge land to local chiefs, and every such pledge gives a rival house a stake in whether the pass holds."
+      "Content": "Crossings aid travel while narrow roads congest carts and families. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Bohemian basin, woods and southern passes lead toward the Danube."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Bohemian basin, woods and southern passes lead toward the Danube. Closed routes may separate families from goods, imposing costs on those remaining at home. Crossings aid travel while narrow roads congest carts and families."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Crossings aid travel while narrow roads congest carts and families. Cargo passes different carriers, making distant route changes become local shortages through delay. Bohemian basin, woods and southern passes lead toward the Danube."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,19 +2,17 @@
   "Id": "be_hibernian_kingdom_internal",
   "Keywords": [
     "Hibernians Nobility",
-    "Hibernians Niall Clan Lineages",
-    "Hibernians Court Factions",
-    "Hibernians Internal Strife"
+    "Hibernian kin marriage and fosterage"
   ],
   "RagShortTexts": [
-    "The Hibernian faction is a module grouping, not proof of a united kingdom in 374.",
-    "Kin, cattle and reciprocal support shape local leadership; later law is not projected back."
+    "Niall joins kin and local chiefs.",
+    "Marriage, fosterage and gifts do not transfer every feud to all partners."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The module groups Hibernian communities into a faction, but fourth-century Ireland should not be treated as a single documented feudal monarchy. Local kin connections, cattle, land and armed followings provide a more cautious basis for political disputes than invented senatorial estates. Written evidence for this period is limited, and later Irish legal texts cannot be transferred intact into 374. Contacts across the sea can bring goods, captives and claims to prestige, while also exposing households to retaliation and absence of labour. A leader's standing depends on sustaining people and reciprocal obligations, not merely occupying a magnificent palace."
+      "Content": "Niall’s following joins kin and local chiefs. Marriage, fosterage and gifts form connections without making every district inherit another leader’s feud."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A man called to a sea expedition thinks about the boat, the weather and who will watch the animals while he is gone. A chief's promises must cover the return as well as departure. Plunder may enrich one following, but a wreck or retaliation leaves losses for the people who supplied the voyage and never boarded it."
+      "Content": "Niall joins kin and local chiefs. Followers retain family ties; decisions about guards and distant service affect common participation. Marriage, fosterage and gifts do not transfer every feud to all partners."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A Hibernian leader builds support through kin and useful allies, yet obligations can pull in different directions. Lending men to a voyage may favour a partner while weakening protection at home. Later law books offer no ready answer to every dispute in 374; he needs an arrangement the households concerned will actually honour."
+      "Content": "Marriage, fosterage and gifts do not transfer every feud to all partners. Coordination allocates actual supply and protection duties, not merely titles. Niall joins kin and local chiefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Niall joins kin and local chiefs. Households compare burdens with neighbors; unmatched protection weakens cooperation. Marriage, fosterage and gifts do not transfer every feud to all partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Marriage, fosterage and gifts do not transfer every feud to all partners. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Niall joins kin and local chiefs."
     }
   ],
   "SemanticPrototypes": [],

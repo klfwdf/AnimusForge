@@ -1,21 +1,18 @@
 {
   "Id": "be_xionite_kingdom_economy",
   "Keywords": [
-    "Xionites Fiscal Levies",
-    "Xionites Kidara Artisan Forges",
-    "Xionites Agrarian Manors",
-    "Xionites Trade Corridors"
+    "Xionites Trade",
+    "Bukhara irrigation and Bactrian exchange"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Xionites in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Bactria & Oxus River, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Bukhara oasis grain, herds and Bactrian exchange support the court.",
+    "Excess collection damages trade and irrigation labor."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Xionites was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Bactria & Oxus River, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Bukhara oasis grain, herds, coin credit and Bactrian exchange sustain the court. Excess collection harms merchants and irrigation labor."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Caravan drivers on the Oxus road chew their scarves against the wind and count the bales again. The camel train is short two beasts, and the grain allotment has been cut by a third. A horseman paid in bent copper and Bactrian salt hopes the next raid on a trading column will give him something worth carrying home."
+      "Content": "Bukhara oasis grain, herds and Bactrian exchange support the court. Traveling followers need real food from this production; valuables still require a buyer and exchange. Excess collection damages trade and irrigation labor."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The Xionite treasurer's clerk checks the tally of felt, silk, and iron sent from the Bactrian workshops this quarter. Three forges on the river turned out one hundred and sixty horseshoes and seventy spearheads, and the sale of cured hides at the border market pays for the mail of the royal guard. He files the duty receipts beside the toll records for the eastern caravan routes."
+      "Content": "Excess collection damages trade and irrigation labor. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Bukhara oasis grain, herds and Bactrian exchange support the court."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Bukhara oasis grain, herds and Bactrian exchange support the court. Households need meals and the means to keep producing after delivering goods. Excess collection damages trade and irrigation labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Excess collection damages trade and irrigation labor. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Bukhara oasis grain, herds and Bactrian exchange support the court."
     }
   ],
   "SemanticPrototypes": [],

@@ -1,21 +1,18 @@
 {
   "Id": "be_hunnic_kingdom_geopolitics",
   "Keywords": [
-    "Huns Frontier Marches",
-    "Huns Balamber Border Defense",
-    "Huns Strategic Passes",
-    "Huns Geopolitical Rivals"
+    "Huns Frontiers",
+    "Atil crossings and seasonal pasture"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Huns maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Atil, crossings and seasonal pasture connect Hunnic riders.",
+    "Scarce water concentrates different groups in competition."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Huns spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Pontic Steppe Mobile Orda, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Atil, crossings and seasonal pasture connect riders. Open ground permits movement, but scarce water concentrates groups in competition."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Each dawn a scout rides out and marks the trails of rival steppe riders. A column of wagons crossing the river might be a raid, a migration, or a wedding train, so the scout reports only what he has seen. He keeps his bow strung and his horse fresh, because the camp must move before the enemy arrives."
+      "Content": "Atil, crossings and seasonal pasture connect Hunnic riders. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Scarce water concentrates different groups in competition."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Word comes that a neighboring confederation is gathering horses at the steppe's edge. Balamber's envoys offer grain and gold for a truce, while the chieftains argue over whether to strike first. Each clan keeps its own grazing claims, and the king knows that an uneasy peace costs less than a war he cannot feed."
+      "Content": "Scarce water concentrates different groups in competition. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Atil, crossings and seasonal pasture connect Hunnic riders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Atil, crossings and seasonal pasture connect Hunnic riders. Closed routes may separate families from goods, imposing costs on those remaining at home. Scarce water concentrates different groups in competition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Scarce water concentrates different groups in competition. Cargo passes different carriers, making distant route changes become local shortages through delay. Atil, crossings and seasonal pasture connect Hunnic riders."
     }
   ],
   "SemanticPrototypes": [],

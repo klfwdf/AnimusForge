@@ -1,21 +1,18 @@
 {
   "Id": "be_hunnic_kingdom_economy",
   "Keywords": [
-    "Huns Fiscal Levies",
-    "Huns Balamber Artisan Forges",
-    "Huns Agrarian Manors",
-    "Huns Trade Corridors"
+    "Huns Trade",
+    "Volga–Don herd exchange"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Huns in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Pontic Steppe Mobile Orda, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Volga–Don herds and exchange sustain Hunnic camps.",
+    "More followers also require more water and grazing."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Huns was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Pontic Steppe Mobile Orda, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Volga–Don herds, pasture and exchange sustain camps, with grain and iron still obtained from settlers and merchants. More followers also mean more grazing and water demand."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Herdsmen drive the horses out to grass before dawn, and the rider in charge checks each mare against the tally stick. Trade with the Roman towns on the Black Sea brings iron and cloth, and the warriors hope the next caravan carries more than salt. A horse lost on the road is a debt that must be paid with a year of labor."
+      "Content": "Volga–Don herds and exchange sustain Hunnic camps. Traveling followers need real food from this production; valuables still require a buyer and exchange. More followers also require more water and grazing."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Beside his tent, the chieftain weighs hides, horses, and captives against the goods promised by Roman merchants. Each shipment is taxed before it reaches the camp, and the best animals go into his own herds. Every trader who cheats the tribe becomes a rival the chieftain will remember."
+      "Content": "More followers also require more water and grazing. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Volga–Don herds and exchange sustain Hunnic camps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Volga–Don herds and exchange sustain Hunnic camps. Households need meals and the means to keep producing after delivering goods. More followers also require more water and grazing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "More followers also require more water and grazing. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Volga–Don herds and exchange sustain Hunnic camps."
     }
   ],
   "SemanticPrototypes": [],

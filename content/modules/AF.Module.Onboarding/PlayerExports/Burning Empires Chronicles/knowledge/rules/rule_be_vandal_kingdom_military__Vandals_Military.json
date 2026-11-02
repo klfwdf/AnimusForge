@@ -1,21 +1,18 @@
 {
   "Id": "be_vandal_kingdom_military",
   "Keywords": [
-    "Vandals Military Doctrine",
-    "Vandals Godigisel Elite Hosts",
-    "Vandals Battle Phalanxes",
-    "Vandals Defensive Manuals"
+    "Vandals Military",
+    "Vandal infantry cavalry and rear columns against Gepids"
   ],
   "RagShortTexts": [
-    "The standing military of Vandals in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Gepid war needs routes for infantry, riders, grain and families.",
+    "Distant service needs return dates, home guards and exits."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Vandals rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Vandals against overwhelming regional adversaries."
+      "Content": "Gepid war requires routes for infantry, riders, food and dependants. Distant fighting needs return dates and exits; one promise cannot provision everyone."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "The line closes at the sound of the bronze horn, each shield pressed against the next. Heavy horsemen smash into the front files, and the men behind thrust their spears through every gap. A spearman who flees the line is killed by his own file, because the formation has no room for deserters."
+      "Content": "Gepid war needs routes for infantry, riders, grain and families. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Distant service needs return dates, home guards and exits."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "On the hill above the battle, the commanders study the formation from a lookout post. Victory depends on wagons reaching the wings with grain and on the battle line keeping its shape under pressure. Once the center breaks, the flanking cavalry can seal the field, and the nobles who paid for the levy will divide the plunder by rank."
+      "Content": "Distant service needs return dates, home guards and exits. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Gepid war needs routes for infantry, riders, grain and families."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gepid war needs routes for infantry, riders, grain and families. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Distant service needs return dates, home guards and exits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Distant service needs return dates, home guards and exits. Repair, carrying and care also use people, while daily supply continues after troops pass. Gepid war needs routes for infantry, riders, grain and families."
     }
   ],
   "SemanticPrototypes": [],

@@ -1,21 +1,18 @@
 {
   "Id": "be_slavic_kingdom_economy",
   "Keywords": [
-    "Venedians Fiscal Levies",
-    "Venedians Lekh Artisan Forges",
-    "Venedians Agrarian Manors",
-    "Venedians Trade Corridors"
+    "Venedians Trade",
+    "Oium river carriage and transport credit"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Venedians in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Vistula Gulf & Baltic Coast, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Oium food, herds, woodland and river exchange sustain households.",
+    "Distant goods need vessels, escorts and intermediaries."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Venedians was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Vistula Gulf & Baltic Coast, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Oium grain, herds, woodland and river exchange sustain households. Distant goods require vessels and intermediaries rather than being freely available chiefly wealth."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Ration day at the Venedian camp brings rye that has gone hard as granite, and a spearman paid in salt or copper calls himself lucky. He keeps one eye on the tree line and hopes the next skirmish will leave a few silver coins on a fallen rider. His boots are still wet from the river crossing, and the biscuit crumbles in his fingers."
+      "Content": "Oium food, herds, woodland and river exchange sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Distant goods need vessels, escorts and intermediaries."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Before the spring fair opens, the Venedian bailiff checks the tithe rolls against the forge logs. Three forges turned out two hundred horseshoes and eighty spearheads last month, and the surplus olive oil fetched good coin. Those sales pay for the mail of the household knights, so the bailiff writes to the Vistula merchants before rival lords can outbid him."
+      "Content": "Distant goods need vessels, escorts and intermediaries. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Oium food, herds, woodland and river exchange sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Oium food, herds, woodland and river exchange sustain households. Households need meals and the means to keep producing after delivering goods. Distant goods need vessels, escorts and intermediaries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Distant goods need vessels, escorts and intermediaries. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Oium food, herds, woodland and river exchange sustain households."
     }
   ],
   "SemanticPrototypes": [],

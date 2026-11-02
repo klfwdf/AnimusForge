@@ -1,21 +1,18 @@
 {
   "Id": "be_sabir_kingdom_geopolitics",
   "Keywords": [
-    "Sabirs Frontier Marches",
-    "Sabirs Kutilzis Border Defense",
-    "Sabirs Strategic Passes",
-    "Sabirs Geopolitical Rivals"
+    "Sabirs Frontiers",
+    "Sabir pastoral water routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Sabirs maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Water, crossings and permitted camps direct Sabir movement.",
+    "Riders and household herds pass roads at different speeds."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Sabirs spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Western Steppe Corridors, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Water, crossings and permitted camps determine movement. Riders travel quickly but dependants and herds need more time to pass."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A sentry lies flat on the ridge above the caravan road and watches the dust for hours. Smoke columns rose on two horizons last night, and scouts now ride the grazing grounds three times a week. Every post has a loaded bow and a tethered horse, and the watch changes at midnight because no one trusts the dark. At the Sabirs post, the night watchword is \"Stone.\""
+      "Content": "Water, crossings and permitted camps direct Sabir movement. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Riders and household herds pass roads at different speeds."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A courier arrives at the frontier fort with a dispatch sealed in red wax. The khan has cut the border subsidy again, while raiders probe the passes each month. Without silver to hire auxiliary riders, the warden must borrow from local clans and pledge them the caravan tolls, and every debt gives a neighboring clan a claim on the pass."
+      "Content": "Riders and household herds pass roads at different speeds. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Water, crossings and permitted camps direct Sabir movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Water, crossings and permitted camps direct Sabir movement. Closed routes may separate families from goods, imposing costs on those remaining at home. Riders and household herds pass roads at different speeds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Riders and household herds pass roads at different speeds. Cargo passes different carriers, making distant route changes become local shortages through delay. Water, crossings and permitted camps direct Sabir movement."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,20 +2,17 @@
   "Id": "be_kushan_kingdom_internal",
   "Keywords": [
     "Kushans Nobility",
-    "Kushans Kipunada Clan Lineages",
-    "Kushans Court Factions",
-    "Kushans Internal Strife"
+    "Kushan estates trade and religious patronage"
   ],
   "RagShortTexts": [
-    "The ruling elite of Kushans comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Kipunada balances landholders, traders and religious communities.",
+    "Protection and levies affect the choice of local patron."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Kushans, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Kipunada balances landholders, traders and religious communities. Patronage draws support, while levies can drive groups to another protector."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A quarrel between two noble houses turns into a brawl in the caravanserai, and the guards are ordered to separate the men. A young soldier is struck by a thrown stone while holding the gate. His captain carries the body to the barracks, and the nobles who started the fight leave for their estates in the morning."
+      "Content": "Kipunada balances landholders, traders and religious communities. Followers retain family ties; decisions about guards and distant service affect common participation. Protection and levies affect the choice of local patron."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The lord counsels his heir to keep the trade routes open and the tithes paid on time. Marry your daughters to the families that hold the passes, he says, and never trust a rival who offers gold without a witness. At court, speak carefully of the Kushano-Sasanian rulers, because the king's ear is always listening."
+      "Content": "Protection and levies affect the choice of local patron. Coordination allocates actual supply and protection duties, not merely titles. Kipunada balances landholders, traders and religious communities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kipunada balances landholders, traders and religious communities. Households compare burdens with neighbors; unmatched protection weakens cooperation. Protection and levies affect the choice of local patron."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Protection and levies affect the choice of local patron. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Kipunada balances landholders, traders and religious communities."
     }
   ],
   "SemanticPrototypes": [],

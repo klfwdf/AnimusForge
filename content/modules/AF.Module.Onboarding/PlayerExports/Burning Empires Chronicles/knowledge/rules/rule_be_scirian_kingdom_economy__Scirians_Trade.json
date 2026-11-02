@@ -1,21 +1,18 @@
 {
   "Id": "be_scirian_kingdom_economy",
   "Keywords": [
-    "Scirians Fiscal Levies",
-    "Scirians Roderic Artisan Forges",
-    "Scirians Agrarian Manors",
-    "Scirians Trade Corridors"
+    "Scirians Trade",
+    "Carsidava valley grain and herds"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Scirians in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near NE Carpathian Foothills, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Carsidava lives from valley food, herds and neighboring exchange.",
+    "Supporting many followers for long weakens settlement reserves."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Scirians was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around NE Carpathian Foothills, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Carsidava households depend on valley fields, animals and neighboring exchange. Grain cushions sudden conflict, but prolonged support for many followers weakens settlements."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Cart wheels sink to the hub on the foothill track, and the mules balk at the slope. The requisitioned rye has gone hard as granite, so the cooks boil it down to a thin porridge. Pay in salt or copper arrives whenever the paymaster reaches the column, and each man eyes the enemy dead for silver. At the Scirians post, the night watchword is \"Vigil.\""
+      "Content": "Carsidava lives from valley food, herds and neighboring exchange. Traveling followers need real food from this production; valuables still require a buyer and exchange. Supporting many followers for long weakens settlement reserves."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "At the manor, the bailiff bends over the ledger with a quill and totals the week's output. Three forge furnaces produced two hundred horseshoes and eighty spearheads last month, and the lord's tenth is already entered in red ink. Casks of olive oil sold at the spring fair will secure armor funds for the knights, so the bailiff seals the sheet and sends it up the valley before the frost."
+      "Content": "Supporting many followers for long weakens settlement reserves. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Carsidava lives from valley food, herds and neighboring exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Carsidava lives from valley food, herds and neighboring exchange. Households need meals and the means to keep producing after delivering goods. Supporting many followers for long weakens settlement reserves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Supporting many followers for long weakens settlement reserves. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Carsidava lives from valley food, herds and neighboring exchange."
     }
   ],
   "SemanticPrototypes": [],

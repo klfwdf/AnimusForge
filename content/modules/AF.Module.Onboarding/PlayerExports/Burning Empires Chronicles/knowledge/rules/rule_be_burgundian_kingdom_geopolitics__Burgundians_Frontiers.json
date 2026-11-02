@@ -1,21 +1,18 @@
 {
   "Id": "be_burgundian_kingdom_geopolitics",
   "Keywords": [
-    "Burgundians Frontier Marches",
-    "Burgundians Gebicca Border Defense",
-    "Burgundians Strategic Passes",
-    "Burgundians Geopolitical Rivals"
+    "Burgundians Frontiers",
+    "Burgundian westward woodland routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Burgundians maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Ascaucalis woodland routes and crossings connect western partners.",
+    "Lombard war threatens passage and return."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Burgundians spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Oder & Upper Main River, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Woodland roads and crossings connect settlements with western partners. Lombard war strains passage and return; Roman markets and envoys offer another connection."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries on the Oder bridge count the rafts drifting downstream, and they report any boat that does not answer the password. Whenever a patrol returns, the captain marks the position of each raider sighting on the wax map. The guard at the palisade gate keeps a spear across his knees all night, watching the dark bank where the reeds grow thickest."
+      "Content": "Ascaucalis woodland routes and crossings connect western partners. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Lombard war threatens passage and return."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Raiders from the east have crossed the upper Main twice this summer, and the river villages are short of spears. Propose to neighboring counts a shared watch on the bridges for a fixed share of the toll. Keep the offer confidential until the other lords agree, since an open pact will draw the king's suspicion."
+      "Content": "Lombard war threatens passage and return. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Ascaucalis woodland routes and crossings connect western partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Ascaucalis woodland routes and crossings connect western partners. Closed routes may separate families from goods, imposing costs on those remaining at home. Lombard war threatens passage and return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lombard war threatens passage and return. Cargo passes different carriers, making distant route changes become local shortages through delay. Ascaucalis woodland routes and crossings connect western partners."
     }
   ],
   "SemanticPrototypes": [],

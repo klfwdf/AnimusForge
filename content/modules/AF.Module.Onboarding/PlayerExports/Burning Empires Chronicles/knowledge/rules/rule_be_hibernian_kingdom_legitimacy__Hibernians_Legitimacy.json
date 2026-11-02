@@ -2,20 +2,17 @@
   "Id": "be_hibernian_kingdom_legitimacy",
   "Keywords": [
     "Hibernians Legitimacy",
-    "Hibernians Niall Sovereign Authority",
-    "Hibernians Ruling Seat",
-    "Hibernians Feudal Oaths"
+    "Niall’s high-kingship recognition"
   ],
   "RagShortTexts": [
-    "In 374 AD, Hibernians governed from Hill of Tara & Gaelic Tuaths, under the paramount rule of High Kings & Ri Chieftains.",
-    "The polity asserted sovereign legitimacy anchored in Hibernians dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Niall’s high kingship depends on protection, shares and recognition.",
+    "Hostages and ransom directly affect kin safety."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Hibernians anchored itself within Hill of Tara & Gaelic Tuaths, confronting the accelerating tremors of Late Antiquity. Governed by High Kings & Ri Chieftains, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Hibernians heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "High kingship needs protection, distribution and recognition. Hostages and ransom affect family safety; broken promises make households reconsider cooperation."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "On the hill, the warriors raise their cups and swear to the high king before the assembled chieftains. The oath is repeated word for word, and every spearman hopes the king will keep the herds safe. The veterans remember a king who fell in battle and the feud that followed, so they watch the chieftains closely."
+      "Content": "Niall’s high kingship depends on protection, shares and recognition. Military recognition also rests on rewards and relief; a title needs willing action. Hostages and ransom directly affect kin safety."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A high king is accepted only when the Ri chieftains acclaim him on the hill, and the ritual binds each tuath to his law. Lords at the inauguration weigh the king's gifts against their own claims to land and cattle. A king who cannot feed his followers will find that acclamation withdrawn at the next assembly."
+      "Content": "Hostages and ransom directly affect kin safety. Nominal rights require local execution, with consent and supply both shaping authority. Niall’s high kingship depends on protection, shares and recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Niall’s high kingship depends on protection, shares and recognition. Households judge rule through protected families, land and responses to appeals. Hostages and ransom directly affect kin safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Hostages and ransom directly affect kin safety. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Niall’s high kingship depends on protection, shares and recognition."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,20 +2,17 @@
   "Id": "be_vandal_kingdom_legitimacy",
   "Keywords": [
     "Vandals Legitimacy",
-    "Vandals Godigisel Sovereign Authority",
-    "Vandals Ruling Seat",
-    "Vandals Feudal Oaths"
+    "Godigisel’s land protection and shares"
   ],
   "RagShortTexts": [
-    "In 374 AD, Vandals governed from Silesia & Upper Danube, under the paramount rule of Hasding & Siling Chieftains.",
-    "The polity asserted sovereign legitimacy anchored in Vandals dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Land, shares and people’s safety support Godigisel’s recognition.",
+    "Forced prolonged departure undermines trust."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Vandals anchored itself within Silesia & Upper Danube, confronting the accelerating tremors of Late Antiquity. Governed by Hasding & Siling Chieftains, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Vandals heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Recognition rests on land protection, distributions and people. Forcing every family away makes followers question whose livelihoods fund royal prestige."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Word reaches the barracks that the Hasding & Siling Chieftains will march again. Every man must pull on iron armor, fasten his helmet strap, and fall in at the standard without complaint. Blood shed on the campaign is repaid in gold or land grants, though the wounded often wait months before a clerk hands them a sealed grant."
+      "Content": "Land, shares and people’s safety support Godigisel’s recognition. Military recognition also rests on rewards and relief; a title needs willing action. Forced prolonged departure undermines trust."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Behind the chamber doors, the magnates examine each royal decree before they agree to obey it. They acknowledge the chieftains' authority in public, yet clan liberties and tax revenues remain under their own seals. Every oath of allegiance is weighed against the privileges already in their hands, and quiet envoys carry the real terms to rival houses."
+      "Content": "Forced prolonged departure undermines trust. Nominal rights require local execution, with consent and supply both shaping authority. Land, shares and people’s safety support Godigisel’s recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Land, shares and people’s safety support Godigisel’s recognition. Households judge rule through protected families, land and responses to appeals. Forced prolonged departure undermines trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Forced prolonged departure undermines trust. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Land, shares and people’s safety support Godigisel’s recognition."
     }
   ],
   "SemanticPrototypes": [],

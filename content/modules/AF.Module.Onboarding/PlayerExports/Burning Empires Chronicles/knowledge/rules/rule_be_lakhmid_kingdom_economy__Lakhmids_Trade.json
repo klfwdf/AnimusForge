@@ -1,21 +1,18 @@
 {
   "Id": "be_lakhmid_kingdom_economy",
   "Keywords": [
-    "Lakhmids Fiscal Levies",
-    "Lakhmids Imru al-Qays II Artisan Forges",
-    "Lakhmids Agrarian Manors",
-    "Lakhmids Trade Corridors"
+    "Lakhmids Trade",
+    "Hira irrigation markets and escorts"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Lakhmids in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Al-Hirah (White Palaces), merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Hira links Euphrates irrigation, river markets and desert herds.",
+    "Grain, animals, escorts and Persian support provide Lakhmid revenue."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Lakhmids was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Al-Hirah (White Palaces), cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Hira joins Euphrates irrigation, river markets and desert kin. Grain, herds, escort and Persian support provide income; closed markets also deny herders grain and iron."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Camel drivers lead their strings through the market at Al-Hirah, the bells on their harnesses ringing over the crowd. A guard walks beside the loads with a club at his belt, watching the crowd for thieves. His pay is a few silver coins and a share of the tolls, and he hopes the caravans keep arriving through the desert."
+      "Content": "Hira links Euphrates irrigation, river markets and desert herds. Traveling followers need real food from this production; valuables still require a buyer and exchange. Grain, animals, escorts and Persian support provide Lakhmid revenue."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Keeping the palace accounts at Al-Hirah, the steward measures the tolls on silk, spice, and dates owed to the king. The caravans from the desert pay in kind, and the best goods are reserved for the court. He records each merchant who delays payment, because the Nasrid kings will ask for those names."
+      "Content": "Grain, animals, escorts and Persian support provide Lakhmid revenue. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Hira links Euphrates irrigation, river markets and desert herds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hira links Euphrates irrigation, river markets and desert herds. Households need meals and the means to keep producing after delivering goods. Grain, animals, escorts and Persian support provide Lakhmid revenue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Grain, animals, escorts and Persian support provide Lakhmid revenue. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Hira links Euphrates irrigation, river markets and desert herds."
     }
   ],
   "SemanticPrototypes": [],

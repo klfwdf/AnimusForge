@@ -1,21 +1,18 @@
 {
   "Id": "be_sclavenian_kingdom_economy",
   "Keywords": [
-    "Sclavenians Fiscal Levies",
-    "Sclavenians Perbund Artisan Forges",
-    "Sclavenians Agrarian Manors",
-    "Sclavenians Trade Corridors"
+    "Sclavenians Trade",
+    "Navarum harvest and woodland river exchange"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Sclavenians in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Upper Vistula Marshlands, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Navarum farming, herds, woodland and river exchange supply daily needs.",
+    "Harvest feeds households and fighters away from home."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Sclavenians was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Upper Vistula Marshlands, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Navarum farming, herds, woodland goods and river exchange supply daily needs. Harvest feeds families and forces away from home."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Carts sink to their axles on the sodden road, and the carters curse the mud. The requisitioned rye has gone hard as granite. A soldier paid in salt or copper counts himself lucky, and he hopes the next battle will leave silver on the enemy dead he can strip."
+      "Content": "Navarum farming, herds, woodland and river exchange supply daily needs. Traveling followers need real food from this production; valuables still require a buyer and exchange. Harvest feeds households and fighters away from home."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "By tallow candle, the steward reckons the month's output: three forge furnaces produced two hundred horseshoes and eighty spearheads. Casks of olive oil sold at the spring fair will pay for the armor our knights need. Fair prices matter more than pride, so the steward writes to the merchants before the fair opens."
+      "Content": "Harvest feeds households and fighters away from home. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Navarum farming, herds, woodland and river exchange supply daily needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Navarum farming, herds, woodland and river exchange supply daily needs. Households need meals and the means to keep producing after delivering goods. Harvest feeds households and fighters away from home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Harvest feeds households and fighters away from home. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Navarum farming, herds, woodland and river exchange supply daily needs."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,20 +2,17 @@
   "Id": "be_sclavenian_kingdom_legitimacy",
   "Keywords": [
     "Sclavenians Legitimacy",
-    "Sclavenians Perbund Sovereign Authority",
-    "Sclavenians Ruling Seat",
-    "Sclavenians Feudal Oaths"
+    "Perbund’s relief and captive exchange"
   ],
   "RagShortTexts": [
-    "In 374 AD, Sclavenians governed from Upper Vistula Marshlands, under the paramount rule of Sclavenian Elders.",
-    "The polity asserted sovereign legitimacy anchored in Sclavenians dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Settlement protection and shared risk support Perbund.",
+    "Relief and returned captives sustain trust more than titles."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Sclavenians anchored itself within Upper Vistula Marshlands, confronting the accelerating tremors of Late Antiquity. Governed by Sclavenian Elders, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Sclavenians heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Recognition comes from protection and shared risk. A title cannot levy hungry households indefinitely; relief and returned captives sustain trust."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans of the Sclavenian host talk low beside the campfires, repeating the same warning each time a rider arrives from the capital. When the Sclavenian Elders raise their war banners, every man buckles on iron armor and marches without argument. Blood shed in the field is repaid in gold or land grants, though the wounded often wait a long time for either."
+      "Content": "Settlement protection and shared risk support Perbund. Military recognition also rests on rewards and relief; a title needs willing action. Relief and returned captives sustain trust more than titles."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "In the chancery rooms, the magnates and chancellors read each royal decree twice before they answer. They acknowledge the Elders in public, yet clan liberties and tax revenues remain beyond the crown's reach. Every alliance they sign is a wager on whether the throne will protect the privileges they already hold, and a secret letter to a neighboring house is the usual way to hedge that bet."
+      "Content": "Relief and returned captives sustain trust more than titles. Nominal rights require local execution, with consent and supply both shaping authority. Settlement protection and shared risk support Perbund."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Settlement protection and shared risk support Perbund. Households judge rule through protected families, land and responses to appeals. Relief and returned captives sustain trust more than titles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Relief and returned captives sustain trust more than titles. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Settlement protection and shared risk support Perbund."
     }
   ],
   "SemanticPrototypes": [],

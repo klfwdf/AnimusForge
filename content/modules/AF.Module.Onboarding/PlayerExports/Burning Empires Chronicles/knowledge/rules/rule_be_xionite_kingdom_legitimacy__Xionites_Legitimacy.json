@@ -2,20 +2,17 @@
   "Id": "be_xionite_kingdom_legitimacy",
   "Keywords": [
     "Xionites Legitimacy",
-    "Xionites Kidara Sovereign Authority",
-    "Xionites Ruling Seat",
-    "Xionites Feudal Oaths"
+    "Kidara’s titles coin names and recognition"
   ],
   "RagShortTexts": [
-    "In 374 AD, Xionites governed from Bactria & Oxus River, under the paramount rule of Grumbat & Kidara Kings.",
-    "The polity asserted sovereign legitimacy anchored in Xionites dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Titles, coin names and protection support Kidara.",
+    "Coin acceptance, land and jurisdiction affect different groups’ recognition."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Xionites anchored itself within Bactria & Oxus River, confronting the accelerating tremors of Late Antiquity. Governed by Grumbat & Kidara Kings, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Xionites heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Titles, coin names and protection create prestige. Acceptance of coins affects merchant credit, while chiefs judge preserved land and jurisdiction."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Riders passing through the caravanserai bring word that the Grumbat & Kidara Kings have called the levy. When their war banners unroll, every man must pull on iron armor and ride to the standard at once. Pay for blood spilled on campaign arrives as gold or grants of pasture, though the wounded often wait a long time for either."
+      "Content": "Titles, coin names and protection support Kidara. Military recognition also rests on rewards and relief; a title needs willing action. Coin acceptance, land and jurisdiction affect different groups’ recognition."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Among the clan tents, the lords examine each royal order before deciding whether to obey it. They bow to Grumbat & Kidara in public, yet the tribute of their herds and the tax revenues of their valleys stay under their own seals. Every oath of allegiance is weighed against the privileges already held, and a quiet envoy carries the real terms to rival khans."
+      "Content": "Coin acceptance, land and jurisdiction affect different groups’ recognition. Nominal rights require local execution, with consent and supply both shaping authority. Titles, coin names and protection support Kidara."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Titles, coin names and protection support Kidara. Households judge rule through protected families, land and responses to appeals. Coin acceptance, land and jurisdiction affect different groups’ recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Coin acceptance, land and jurisdiction affect different groups’ recognition. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Titles, coin names and protection support Kidara."
     }
   ],
   "SemanticPrototypes": [],

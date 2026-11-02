@@ -1,21 +1,18 @@
 {
   "Id": "be_alemannic_kingdom_geopolitics",
   "Keywords": [
-    "Alemans Frontier Marches",
-    "Alemans Makrian Border Defense",
-    "Alemans Strategic Passes",
-    "Alemans Geopolitical Rivals"
+    "Alemans Frontiers",
+    "Segodunum woodland routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Alemans maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Segodunum connects the upper Rhine and woods toward the Danube.",
+    "Few crossings make neighboring war a cause of detours."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Alemans spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Black Forest & Main Valley, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Upper Rhine routes, former Roman borderland and woods toward the Danube give Segodunum connections and obstacles. Few crossings matter disproportionately, and neighboring war forces merchants into detours."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Pickets along the forest edge listen for the snap of branches in the dark and strike flint to signal the fort beyond the river. Whenever a patrol returns with a wounded man, the healer boils water and asks which raider band crossed the ford. Every sentry knows the palisade gates will hold only as long as the men inside stay awake."
+      "Content": "Segodunum connects the upper Rhine and woods toward the Danube. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Few crossings make neighboring war a cause of detours."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Our border margrave writes that raiders from the eastern steppe strike Main Valley villages before harvest, and the treasury cannot pay for auxiliary bands. Approach neighboring counts through a trusted intermediary and propose a shared patrol route along the forest road. A public alliance will invite the king to demand a larger levy from your estates."
+      "Content": "Few crossings make neighboring war a cause of detours. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Segodunum connects the upper Rhine and woods toward the Danube."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Segodunum connects the upper Rhine and woods toward the Danube. Closed routes may separate families from goods, imposing costs on those remaining at home. Few crossings make neighboring war a cause of detours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Few crossings make neighboring war a cause of detours. Cargo passes different carriers, making distant route changes become local shortages through delay. Segodunum connects the upper Rhine and woods toward the Danube."
     }
   ],
   "SemanticPrototypes": [],

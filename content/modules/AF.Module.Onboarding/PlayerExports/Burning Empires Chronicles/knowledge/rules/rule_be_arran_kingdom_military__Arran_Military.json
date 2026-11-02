@@ -1,21 +1,18 @@
 {
   "Id": "be_arran_kingdom_military",
   "Keywords": [
-    "Arran Military Doctrine",
-    "Arran Vachagan II Elite Hosts",
-    "Arran Battle Phalanxes",
-    "Arran Defensive Manuals"
+    "Arran Military",
+    "Albanian pass garrisons"
   ],
   "RagShortTexts": [
-    "The standing military of Arran in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Valley grain supports Albanian pass guards.",
+    "Maskut war strains warnings and evacuation routes."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Arran rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Arran against overwhelming regional adversaries."
+      "Content": "Valley assembly must feed pass guards. Maskut war strains warnings and exits; too many forces in one narrow road restrict supply and retreat."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Spearmen hold the line at the river ford, feet braced against the current as the enemy horsemen splash toward them. The officer shouts the order to close the gaps, and every man tightens his grip on his spear and keeps his shield high. The men in the rear know that if the front line breaks, they will be the next to die in the water."
+      "Content": "Valley grain supports Albanian pass guards. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Maskut war strains warnings and evacuation routes."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The commanders have set the attack for dawn, with the infantry crossing the ford and the cavalry circling the enemy's flank through the marsh. The supply wagons must reach the camp before the rain turns the road to mud. Send the battle order to the captains by sealed courier, and keep the flanking route away from the river clans, who may already be in the enemy's pay."
+      "Content": "Maskut war strains warnings and evacuation routes. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Valley grain supports Albanian pass guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Valley grain supports Albanian pass guards. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Maskut war strains warnings and evacuation routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Maskut war strains warnings and evacuation routes. Repair, carrying and care also use people, while daily supply continues after troops pass. Valley grain supports Albanian pass guards."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,20 +2,17 @@
   "Id": "be_marcomannic_kingdom_legitimacy",
   "Keywords": [
     "Marcomans Legitimacy",
-    "Marcomans Vannius Sovereign Authority",
-    "Marcomans Ruling Seat",
-    "Marcomans Feudal Oaths"
+    "Vannius’ local recognition"
   ],
   "RagShortTexts": [
-    "In 374 AD, Marcomans governed from Bohemian Basin, under the paramount rule of Marcomannic Council.",
-    "The polity asserted sovereign legitimacy anchored in Marcomans dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Protection and local recognition sustain Vannius.",
+    "Roman gifts and bounded service can bring new duties."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Marcomans anchored itself within Bohemian Basin, confronting the accelerating tremors of Late Antiquity. Governed by Marcomannic Council, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Marcomans heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Protection and local recognition support each other. Roman markets, gifts or bounded service add standing, but partners compare security against duties."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Around the fire, the household's old warriors check their straps and buckles before the council's banners rise. When the war standard moves, every man straps on iron armor and marches. Blood spilled in the field is paid in gold and land grants, and a veteran who does not come home leaves a widow with nothing. At the Marcomans post, the night watchword is \"Ash.\""
+      "Content": "Protection and local recognition sustain Vannius. Military recognition also rests on rewards and relief; a title needs willing action. Roman gifts and bounded service can bring new duties."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Councillors weigh each decree before they agree to it in the hall. They will acknowledge the council's decrees in public, yet clan liberties and the tax revenues from their lands stay beyond the crown's reach. Each sealed letter between the great houses repeats one condition: loyalty lasts only while the council protects noble privileges."
+      "Content": "Roman gifts and bounded service can bring new duties. Nominal rights require local execution, with consent and supply both shaping authority. Protection and local recognition sustain Vannius."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protection and local recognition sustain Vannius. Households judge rule through protected families, land and responses to appeals. Roman gifts and bounded service can bring new duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman gifts and bounded service can bring new duties. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protection and local recognition sustain Vannius."
     }
   ],
   "SemanticPrototypes": [],

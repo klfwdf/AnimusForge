@@ -1,21 +1,18 @@
 {
   "Id": "be_lakhmid_kingdom_geopolitics",
   "Keywords": [
-    "Lakhmids Frontier Marches",
-    "Lakhmids Imru al-Qays II Border Defense",
-    "Lakhmids Strategic Passes",
-    "Lakhmids Geopolitical Rivals"
+    "Lakhmids Frontiers",
+    "Euphrates to desert well routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Lakhmids maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Hira’s wells connect with river supply.",
+    "Water has local users; escorts need the next drinkable stop."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Lakhmids spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Al-Hirah (White Palaces), the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Wells and river supply together determine travel. Water has local users; escorts need knowledge of the next drinkable stop, not direction alone."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A sentinel on the walls of Al-Hirah scans the desert edge for dust clouds. Rumors say rival tribes are gathering at the wells, and the captain orders the gates barred at dusk. Men take turns sleeping on the wall, because a surprise raid across the sand is the only thing the captain fears."
+      "Content": "Hira’s wells connect with river supply. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Water has local users; escorts need the next drinkable stop."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The Nasrid king's envoy brings a letter from the eastern court, and the lord reads it with care. The subsidies have been cut again, and the desert tribes keep probing the wells. Without coin to hire mounted archers, he must hold the wells with local levies and promise relief from tolls to the tribes who stay loyal."
+      "Content": "Water has local users; escorts need the next drinkable stop. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Hira’s wells connect with river supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hira’s wells connect with river supply. Closed routes may separate families from goods, imposing costs on those remaining at home. Water has local users; escorts need the next drinkable stop."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Water has local users; escorts need the next drinkable stop. Cargo passes different carriers, making distant route changes become local shortages through delay. Hira’s wells connect with river supply."
     }
   ],
   "SemanticPrototypes": [],

@@ -1,21 +1,18 @@
 {
   "Id": "be_geatish_kingdom_economy",
   "Keywords": [
-    "Geats Fiscal Levies",
-    "Geats Gissur Artisan Forges",
-    "Geats Agrarian Manors",
-    "Geats Trade Corridors"
+    "Geats Trade",
+    "Hrefnesholt timber and grain"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Geats in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Southern Scandinavia, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Hrefnesholt trades grain, herds, timber and iron along the coast.",
+    "Closed landings also trap inland goods."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Geats was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Southern Scandinavia, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Hrefnesholt fields, herds, timber and iron connect to coastal exchange. Inland grain and repair materials support sailing; blocked landings also trap inland goods."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Oxen strain in the mud as teamsters shove the wagons free. The quartermaster hands out rations of hard rye, and pay in salt or copper is common. Men hope to take silver from fallen enemies once the fighting ends, since the road to the coast turns to slurry each spring and the wagons rarely arrive on time."
+      "Content": "Hrefnesholt trades grain, herds, timber and iron along the coast. Traveling followers need real food from this production; valuables still require a buyer and exchange. Closed landings also trap inland goods."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Ledgers in hand, the coastal bailiff tallies the estate's output. Three smithies made two hundred horseshoes and eighty spearheads last month, and the surplus sold at the spring fair in Southern Scandinavia will buy the knights' armor. Tenants are late with their tithe, so he weighs wool and hides against the harbor dues, hoping the lord's ships will not sit idle."
+      "Content": "Closed landings also trap inland goods. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Hrefnesholt trades grain, herds, timber and iron along the coast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hrefnesholt trades grain, herds, timber and iron along the coast. Households need meals and the means to keep producing after delivering goods. Closed landings also trap inland goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Closed landings also trap inland goods. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Hrefnesholt trades grain, herds, timber and iron along the coast."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,19 +2,17 @@
   "Id": "be_wre_kingdom_internal",
   "Keywords": [
     "Western Roman Empire Nobility",
-    "Western Roman Empire Valentinianus I Clan Lineages",
-    "Western Roman Empire Court Factions",
-    "Western Roman Empire Internal Strife"
+    "Western officers officials and local burdens"
   ],
   "RagShortTexts": [
-    "Valentinian's western government remains within the Roman imperial system in 374.",
-    "Military supply, taxation, office and patronage shape western elite competition."
+    "Western emperor, officers, officials and urban elites have different duties.",
+    "Local levy capacity must be balanced with army supply demands."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 Valentinian's western government remains part of the Roman imperial system. Military commands, court offices, senatorial wealth and provincial administration offer distinct sources of influence, not a single feudal ladder. Frontier operations require taxes, transport and recruits, while powerful landowners and officials dispute how burdens fall. Patronage can secure a hearing or protect a client, but judicial investigations can also expose an entire network. The western faction in the module is a division of imperial rule, not an already permanent separate nation. Its conflicts should concern actual offices, resources and access to authority rather than assume every senator keeps a private hereditary army."
+      "Content": "Emperor, officers, officials, urban elites and landholders have different duties. Armies demand delivery while districts question household capacity."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A western soldier experiences an imperial policy as a march, a ration issue or another period on the frontier. If civil and military officials quarrel over transport, he still needs grain before moving. Changing the name of a commander does not repair a shield; men remember which promises reached the camp and which remained on a clerk's tablet."
+      "Content": "Western emperor, officers, officials and urban elites have different duties. Followers retain family ties; decisions about guards and distant service affect common participation. Local levy capacity must be balanced with army supply demands."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A wealthy notable can use estates and connections to seek influence, but must deal with officials whose demands need not match his own. An imperial audience may help one petition while creating obligations to a patron. Protecting a household's position requires navigating service and taxation, not merely hiding steel behind a banquet smile."
+      "Content": "Local levy capacity must be balanced with army supply demands. Coordination allocates actual supply and protection duties, not merely titles. Western emperor, officers, officials and urban elites have different duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Western emperor, officers, officials and urban elites have different duties. Households compare burdens with neighbors; unmatched protection weakens cooperation. Local levy capacity must be balanced with army supply demands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Local levy capacity must be balanced with army supply demands. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Western emperor, officers, officials and urban elites have different duties."
     }
   ],
   "SemanticPrototypes": [],

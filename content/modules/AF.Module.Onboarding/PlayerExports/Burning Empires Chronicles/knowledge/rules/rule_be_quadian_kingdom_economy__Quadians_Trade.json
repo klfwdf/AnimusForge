@@ -1,21 +1,18 @@
 {
   "Id": "be_quadian_kingdom_economy",
   "Keywords": [
-    "Quadians Fiscal Levies",
-    "Quadians Viduarius Artisan Forges",
-    "Quadians Agrarian Manors",
-    "Quadians Trade Corridors"
+    "Quadians Trade",
+    "Laugaritium harvest and river markets"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Quadians in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near South Bohemian Forests, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Laugaritium households depend on harvests, livestock and river markets.",
+    "Long campaigns consume retaliation prizes; reopened markets provide food."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Quadians was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around South Bohemian Forests, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Laugaritium and northern Danube households depend on harvests, animals, markets and exchange. Long assembly consumes retaliation prizes; reopened markets provision farmers and fighters."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Snow turns the riverbank to slush as the drovers haul grain sacks up the slope, slipping at every step. The rye ration has frozen hard as granite, so the cooks thaw it in iron pots before dawn. Pay comes in salt or copper when the quartermaster can spare it, and each man eyes the fallen enemy for anything that glints. At the Quadians post, the night watchword is \"Vigil.\""
+      "Content": "Laugaritium households depend on harvests, livestock and river markets. Traveling followers need real food from this production; valuables still require a buyer and exchange. Long campaigns consume retaliation prizes; reopened markets provide food."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Honey jars and fleece bales fill the storehouse, and the steward copies each figure into a neat ledger by candlelight. A tenth of the yield goes into the lord's granary, and three forges turned out two hundred horseshoes and eighty spearheads last month. Casks of wine sold at the spring fair will pay for the knights' mail, so the figures stay in the lord's own hand."
+      "Content": "Long campaigns consume retaliation prizes; reopened markets provide food. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Laugaritium households depend on harvests, livestock and river markets."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Laugaritium households depend on harvests, livestock and river markets. Households need meals and the means to keep producing after delivering goods. Long campaigns consume retaliation prizes; reopened markets provide food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Long campaigns consume retaliation prizes; reopened markets provide food. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Laugaritium households depend on harvests, livestock and river markets."
     }
   ],
   "SemanticPrototypes": [],

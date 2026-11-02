@@ -1,21 +1,18 @@
 {
   "Id": "be_kushan_kingdom_military",
   "Keywords": [
-    "Kushans Military Doctrine",
-    "Kushans Kipunada Elite Hosts",
-    "Kushans Battle Phalanxes",
-    "Kushans Defensive Manuals"
+    "Kushans Military",
+    "Kushan two-front route defence"
   ],
   "RagShortTexts": [
-    "The standing military of Kushans in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Kushan valley cavalry, escorts and settlement guards need different supply.",
+    "Persian and Kidara wars divide available forces."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Kushans rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Kushans against overwhelming regional adversaries."
+      "Content": "Valley cavalry, escorts and settlement guards need different supply. War with both Persia and Kidara prevents equal forces on every road."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Horsemen form a line on the valley floor, lances lowered and shields raised. The front rank holds against the enemy charge while the archers loose volleys over their heads. A horse that falls in the mud means death for its rider, so each man checks his girth and his grip before the drums sound."
+      "Content": "Kushan valley cavalry, escorts and settlement guards need different supply. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Persian and Kidara wars divide available forces."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A fortified tower gives the view down the valley, and messengers carry orders to the flanking squadrons. Victory depends on keeping the baggage train out of the river crossings and holding the center until the heavy cavalry can strike. Each lord's levy is judged by its discipline, and those who retreat early will lose their place at the next muster."
+      "Content": "Persian and Kidara wars divide available forces. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Kushan valley cavalry, escorts and settlement guards need different supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kushan valley cavalry, escorts and settlement guards need different supply. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Persian and Kidara wars divide available forces."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Persian and Kidara wars divide available forces. Repair, carrying and care also use people, while daily supply continues after troops pass. Kushan valley cavalry, escorts and settlement guards need different supply."
     }
   ],
   "SemanticPrototypes": [],

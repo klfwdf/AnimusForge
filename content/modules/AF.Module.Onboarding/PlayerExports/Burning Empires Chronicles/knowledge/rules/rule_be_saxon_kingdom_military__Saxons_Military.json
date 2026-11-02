@@ -1,21 +1,18 @@
 {
   "Id": "be_saxon_kingdom_military",
   "Keywords": [
-    "Saxons Military Doctrine",
-    "Saxons Freawine Elite Hosts",
-    "Saxons Battle Phalanxes",
-    "Saxons Defensive Manuals"
+    "Saxons Military",
+    "Saxon voyages and Angle-facing land defence"
   ],
   "RagShortTexts": [
-    "The standing military of Saxons in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Wind, water, repair and crews constrain Saxon sailing.",
+    "The Angle land frontier also needs guards left behind."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Saxons rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Saxons against overwhelming regional adversaries."
+      "Content": "Wind, water, repair and crews constrain sailing, while the Angle frontier also needs guards. Prizes cannot ensure a return without food and water."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Mist lies thick on the marsh when the shield wall grinds forward on the signal. The front rank locks its shields with the men beside it as the horsemen charge in. Spearmen behind thrust through the gaps, and any warrior who breaks his line is struck down by the man at his back. At the Saxons post, the night watchword is \"Hearth.\""
+      "Content": "Wind, water, repair and crews constrain Saxon sailing. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. The Angle land frontier also needs guards left behind."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "In a timber command hall above the estuary, the commanders trace the plan over a hide map. Victory depends on the supply wagons reaching the line in time and on the center holding firm. Once the wall stands, the flank riders circle wide and close the trap on the enemy's fleeing ranks."
+      "Content": "The Angle land frontier also needs guards left behind. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Wind, water, repair and crews constrain Saxon sailing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Wind, water, repair and crews constrain Saxon sailing. Fighters come from households; prolonged loss of labor or animals weakens the next levy. The Angle land frontier also needs guards left behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "The Angle land frontier also needs guards left behind. Repair, carrying and care also use people, while daily supply continues after troops pass. Wind, water, repair and crews constrain Saxon sailing."
     }
   ],
   "SemanticPrototypes": [],

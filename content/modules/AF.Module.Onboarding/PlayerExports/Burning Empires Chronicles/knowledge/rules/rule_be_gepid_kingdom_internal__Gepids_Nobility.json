@@ -2,20 +2,17 @@
   "Id": "be_gepid_kingdom_internal",
   "Keywords": [
     "Gepids Nobility",
-    "Gepids Cibidus Clan Lineages",
-    "Gepids Court Factions",
-    "Gepids Internal Strife"
+    "Gepid settlement mutual aid"
   ],
   "RagShortTexts": [
-    "The ruling elite of Gepids comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Cibidus coordinates local chiefs with separate interests.",
+    "Promised aid depends on followers’ capacity."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Gepids, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Cibidus coordinates local chiefs and settlements; related Gothic neighbors need not recognize the same authority. Promised aid depends on followers’ capacity."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Two lords argue at the foot of the hall stairs, and the guards are ordered to stand still. The quarrel is over a bridge toll, and it spills into the courtyard, where a spearman takes a blow meant for a noble's cousin. Afterward the sergeant lists the injured by name, but no one asks why the feud began."
+      "Content": "Cibidus coordinates local chiefs with separate interests. Followers retain family ties; decisions about guards and distant service affect common participation. Promised aid depends on followers’ capacity."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Your grandfather sealed the bridge treaty in blood, the old lord tells his son, so you must defend it with careful words. Keep your household close and your daughters in friendly houses. Smile at the king's messengers, but be ready to send your sons to the ford when a rival clan claims the next crossing."
+      "Content": "Promised aid depends on followers’ capacity. Coordination allocates actual supply and protection duties, not merely titles. Cibidus coordinates local chiefs with separate interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Cibidus coordinates local chiefs with separate interests. Households compare burdens with neighbors; unmatched protection weakens cooperation. Promised aid depends on followers’ capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Promised aid depends on followers’ capacity. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Cibidus coordinates local chiefs with separate interests."
     }
   ],
   "SemanticPrototypes": [],

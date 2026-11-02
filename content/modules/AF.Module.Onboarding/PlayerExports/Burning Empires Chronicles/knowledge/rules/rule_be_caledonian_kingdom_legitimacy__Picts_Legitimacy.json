@@ -2,20 +2,17 @@
   "Id": "be_caledonian_kingdom_legitimacy",
   "Keywords": [
     "Picts Legitimacy",
-    "Picts Gartnait Sovereign Authority",
-    "Picts Ruling Seat",
-    "Picts Feudal Oaths"
+    "Gartnait’s protection and gifts"
   ],
   "RagShortTexts": [
-    "In 374 AD, Picts governed from Highland Brochs & Hillforts, under the paramount rule of Pictish Chieftains.",
-    "The polity asserted sovereign legitimacy anchored in Picts dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Gartnait relies on recognition, gifts and protection.",
+    "Household losses in raids bring demands for an account."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Picts anchored itself within Highland Brochs & Hillforts, confronting the accelerating tremors of Late Antiquity. Governed by Pictish Chieftains, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Picts heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "High kingship depends on recognition, gifts and protection. Roman wealth can increase standing, but lost households bring demands for an account."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Warriors sit around the fire in the glen and tell stories of the Pictish chiefs who led them to victory in the hills. When the chief raises his spear, every man must take up his shield and follow the banner into the valley. Their reward is the cattle and the grazing rights that the chief promises to share after the raid."
+      "Content": "Gartnait relies on recognition, gifts and protection. Military recognition also rests on rewards and relief; a title needs willing action. Household losses in raids bring demands for an account."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The chiefs of the glens say they will recognize the high chief's authority only after he confirms their grazing rights in writing. Meet the chiefs at the standing stones and promise them the rights in exchange for their oaths of loyalty. Leave the matter unwritten until the assembly, because a document in the chief's hand could be used to claim the rights for himself."
+      "Content": "Household losses in raids bring demands for an account. Nominal rights require local execution, with consent and supply both shaping authority. Gartnait relies on recognition, gifts and protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gartnait relies on recognition, gifts and protection. Households judge rule through protected families, land and responses to appeals. Household losses in raids bring demands for an account."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Household losses in raids bring demands for an account. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Gartnait relies on recognition, gifts and protection."
     }
   ],
   "SemanticPrototypes": [],

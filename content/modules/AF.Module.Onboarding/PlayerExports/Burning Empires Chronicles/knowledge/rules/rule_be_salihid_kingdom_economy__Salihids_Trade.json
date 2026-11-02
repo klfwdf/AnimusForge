@@ -1,21 +1,18 @@
 {
   "Id": "be_salihid_kingdom_economy",
   "Keywords": [
-    "Salihids Fiscal Levies",
-    "Salihids Zokomos the Mighty Artisan Forges",
-    "Salihids Agrarian Manors",
-    "Salihids Trade Corridors"
+    "Salihids Trade",
+    "Dumatha wells and caravan livelihoods"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Salihids in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Jordanian Desert & Petra Environs, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Dumatha wells and crops feed herders, travelers and guards.",
+    "Escort income depends on continued access to wells."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Salihids was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Jordanian Desert & Petra Environs, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Dumatha wells and crops sustain herders, travelers and guards. Camels and horses carry goods while consuming water and grass; escort and exchange depend on open routes."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Camels groan under their loads on the rocky descent, and the caravan men keep one hand on each bale. The rations are flat bread and dried dates, and they harden overnight in the desert air. Pay comes in salt or copper when the paymaster finds the purse, so each man counts his share twice and watches the fallen for anything worth taking. At the Salihids post, the night watchword is \"Iron.\""
+      "Content": "Dumatha wells and crops feed herders, travelers and guards. Traveling followers need real food from this production; valuables still require a buyer and exchange. Escort income depends on continued access to wells."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Sacks of frankincense and bundles of cloth are counted off by oil lamp, each entry marked on a clay tablet. A tenth of the caravan tolls goes to the phylarch's storehouse, and the smiths turned out one hundred bridles and forty blades last month. He seals the account for the caravan master, who will set the price of iron before the next fair."
+      "Content": "Escort income depends on continued access to wells. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Dumatha wells and crops feed herders, travelers and guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Dumatha wells and crops feed herders, travelers and guards. Households need meals and the means to keep producing after delivering goods. Escort income depends on continued access to wells."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Escort income depends on continued access to wells. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Dumatha wells and crops feed herders, travelers and guards."
     }
   ],
   "SemanticPrototypes": [],

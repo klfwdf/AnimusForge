@@ -2,20 +2,17 @@
   "Id": "be_caledonian_kingdom_internal",
   "Keywords": [
     "Picts Nobility",
-    "Picts Gartnait Clan Lineages",
-    "Picts Court Factions",
-    "Picts Internal Strife"
+    "Pictish regional chiefs"
   ],
   "RagShortTexts": [
-    "The ruling elite of Picts comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Gartnait joins regional chiefs bearing different costs.",
+    "Maritime partners remain responsible for their crews and households."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Picts, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Gartnait connects regional chiefs with different capacities for campaigns, grazing and home defence. Maritime partners cooperate while protecting their own crews and families."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "At the fire of the great house, guardsmen stand with their backs to the timber wall and listen to the clan chiefs argue about the cattle raids. The old warrior at the end of the bench says nothing and keeps his hand on his knife. Men on the gate know that a clan feud can begin with a single sheep stolen from the wrong pasture."
+      "Content": "Gartnait joins regional chiefs bearing different costs. Followers retain family ties; decisions about guards and distant service affect common participation. Maritime partners remain responsible for their crews and households."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The chief of the western glens has refused to send his tribute of hides to the feast, and his son now claims the grazing rights along the river. Invite the glen chiefs to a feast at the hilltop fort and offer each a share of the new grazing rights. Make the proposal verbally, since any written pledge will be read aloud at the clan gathering and may start a blood feud."
+      "Content": "Maritime partners remain responsible for their crews and households. Coordination allocates actual supply and protection duties, not merely titles. Gartnait joins regional chiefs bearing different costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gartnait joins regional chiefs bearing different costs. Households compare burdens with neighbors; unmatched protection weakens cooperation. Maritime partners remain responsible for their crews and households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Maritime partners remain responsible for their crews and households. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Gartnait joins regional chiefs bearing different costs."
     }
   ],
   "SemanticPrototypes": [],

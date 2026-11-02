@@ -2,20 +2,17 @@
   "Id": "be_jazyg_kingdom_legitimacy",
   "Keywords": [
     "Jazyges Legitimacy",
-    "Jazyges Zizais Sovereign Authority",
-    "Jazyges Ruling Seat",
-    "Jazyges Feudal Oaths"
+    "Zizais’ pasture and hostage guarantees"
   ],
   "RagShortTexts": [
-    "In 374 AD, Jazyges governed from Danube-Tisza Marshes, under the paramount rule of Jazygian Chieftains.",
-    "The polity asserted sovereign legitimacy anchored in Jazyges dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Protection, recognition and negotiation sustain Zizais.",
+    "Households judge oaths through pasture and hostage safety."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Jazyges anchored itself within Danube-Tisza Marshes, confronting the accelerating tremors of Late Antiquity. Governed by Jazygian Chieftains, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Jazyges heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Leadership depends on protection, recognition and negotiation. Dignity affects acceptable oaths while households judge pasture and hostage safety."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Beside the campfire, the men recall the oath they swore to the chieftains at the spring meeting. Their loyalty is tied to horses and cattle, and each man hopes his clan will hold its ground. The veterans speak of earlier chieftains who fell in feuds, and they keep their knives sharp in case the oath is broken."
+      "Content": "Protection, recognition and negotiation sustain Zizais. Military recognition also rests on rewards and relief; a title needs willing action. Households judge oaths through pasture and hostage safety."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Among the reed rafters of the marsh hall, the chiefs meet and weigh the authority of each other's oaths. Clan privileges over reed beds and salt pans are written into old agreements, and no chieftain wants to surrender his share. A proposal to unite the clans under one lord draws sharp objections from families who fear losing their weirs."
+      "Content": "Households judge oaths through pasture and hostage safety. Nominal rights require local execution, with consent and supply both shaping authority. Protection, recognition and negotiation sustain Zizais."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protection, recognition and negotiation sustain Zizais. Households judge rule through protected families, land and responses to appeals. Households judge oaths through pasture and hostage safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households judge oaths through pasture and hostage safety. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protection, recognition and negotiation sustain Zizais."
     }
   ],
   "SemanticPrototypes": [],

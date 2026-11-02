@@ -1,21 +1,18 @@
 {
   "Id": "be_alemannic_kingdom_economy",
   "Keywords": [
-    "Alemans Fiscal Levies",
-    "Alemans Makrian Artisan Forges",
-    "Alemans Agrarian Manors",
-    "Alemans Trade Corridors"
+    "Alemans Trade",
+    "Upper Rhine border markets"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Alemans in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Black Forest & Main Valley, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Upper Rhine farming and herding connect through crossings with Roman markets.",
+    "Closed borders harm Alamannic exchange and chiefly gifts."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Alemans was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Black Forest & Main Valley, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Farming and livestock east of the upper Rhine connect through crossings with Roman coins, objects and markets. Closed borders hurt both elite gifts and household exchange; harvest and herds outlast one haul of prizes."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Auxiliaries along the Main Valley road shovel frozen ruts out of the wheel tracks while supply wagons creak past. Their cured meat has gone green, and the watch officer counts the copper coins left in each tent before roll call. Helmet linings are patched with wool scraps, and a spearman who loses his mail shirt in a river crossing will serve the rest of the campaign in a leather jerkin."
+      "Content": "Upper Rhine farming and herding connect through crossings with Roman markets. Traveling followers need real food from this production; valuables still require a buyer and exchange. Closed borders harm Alamannic exchange and chiefly gifts."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Word from the Black Forest ironworks says the levy for the autumn campaign is delayed by two weeks. A lord who wants his knights mounted must sell surplus timber to merchants bound for the river markets, and must do it quietly, because rival barons watch every cart that leaves the gate."
+      "Content": "Closed borders harm Alamannic exchange and chiefly gifts. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Upper Rhine farming and herding connect through crossings with Roman markets."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Upper Rhine farming and herding connect through crossings with Roman markets. Households need meals and the means to keep producing after delivering goods. Closed borders harm Alamannic exchange and chiefly gifts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Closed borders harm Alamannic exchange and chiefly gifts. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Upper Rhine farming and herding connect through crossings with Roman markets."
     }
   ],
   "SemanticPrototypes": [],

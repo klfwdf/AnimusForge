@@ -2,19 +2,17 @@
   "Id": "be_thervingian_kingdom_internal",
   "Keywords": [
     "Thervingians Nobility",
-    "Thervingians Athanaric Clan Lineages",
-    "Thervingians Court Factions",
-    "Thervingians Internal Strife"
+    "Thervingian belief kin and service"
   ],
   "RagShortTexts": [
-    "Thervingian authority combines followings, religious commitments and Roman relations.",
-    "The crossing of 376 and battle of 378 remain future events in the 374 setting."
+    "Athanaric joins followers through judgment and chiefly cooperation.",
+    "Religion, kin and service demands need not align."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Thervingian leadership north of the lower Danube draws on rulers, armed followings and communities with differing interests in Rome. Athanaric's position and religious policy show that authority and belief can be closely connected, while other leaders may seek another route to security. The later crossing of 376 and the battle of 378 are not certain knowledge in 374. Nor does the module's western Gothic label import the institutions of the later Visigothic kingdoms. Internal politics concerns who can obtain support, supply and protection, and whether an agreement with imperial power benefits enough households to endure under pressure."
+      "Content": "Athanaric joins followers through judgment and cooperation. Religion, kin and service do not always align, while chiefs assess their own safety."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A warrior watching the Danube needs scouts, provisions and a clear account of which bank is safe. Rumour about another leader's dealings with Rome may unsettle his companions. Before following any order to move, men ask how their families and carts will cross; a plan for the fighters alone leaves the following divided."
+      "Content": "Athanaric joins followers through judgment and chiefly cooperation. Followers retain family ties; decisions about guards and distant service affect common participation. Religion, kin and service demands need not align."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A Thervingian leader may regard Roman contact as opportunity or dependence, while religious commitments affect whom people trust. Neither view makes every household obedient. He must explain the costs of staying, moving or negotiating without invoking later disasters as proof that one choice in 374 is already ordained."
+      "Content": "Religion, kin and service demands need not align. Coordination allocates actual supply and protection duties, not merely titles. Athanaric joins followers through judgment and chiefly cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Athanaric joins followers through judgment and chiefly cooperation. Households compare burdens with neighbors; unmatched protection weakens cooperation. Religion, kin and service demands need not align."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Religion, kin and service demands need not align. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Athanaric joins followers through judgment and chiefly cooperation."
     }
   ],
   "SemanticPrototypes": [],

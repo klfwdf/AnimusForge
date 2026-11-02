@@ -1,21 +1,18 @@
 {
   "Id": "be_frankish_kingdom_military",
   "Keywords": [
-    "Franks Military Doctrine",
-    "Franks Genobaud Elite Hosts",
-    "Franks Battle Phalanxes",
-    "Franks Defensive Manuals"
+    "Franks Military",
+    "Frankish warband crossing supplies"
   ],
   "RagShortTexts": [
-    "The standing military of Franks in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Frankish warbands require food, crossings and guides.",
+    "Pursuit of Alamanni across rivers may provoke another power."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Franks rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Franks against overwhelming regional adversaries."
+      "Content": "Warbands need food, crossings and guides. Followers cannot leave farms indefinitely, and pursuit of Alamanni across rivers may bring a response from another side."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Shoulder to shoulder, the spearmen in the front rank brace against shield rims as the drums roll. The charge of warhorses must be absorbed by locked ranks while the rear files thrust through any gap. A man who loosens his grip for a moment is trampled. The sergeant bellows the watchword before the first arrows fall, and the line holds or breaks on the courage of the man beside you."
+      "Content": "Frankish warbands require food, crossings and guides. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Pursuit of Alamanni across rivers may provoke another power."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Staff officers crowd the command redoubt, messengers waiting at the door. Victory depends on keeping the baggage train moving over wet roads and on holding the infantry center until the shock reserve is released. Once the enemy line gives way, the cavalry wings will strike its flanks. Every commander knows that a defeat is entered in the ledger of whose men were sacrificed."
+      "Content": "Pursuit of Alamanni across rivers may provoke another power. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Frankish warbands require food, crossings and guides."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Frankish warbands require food, crossings and guides. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Pursuit of Alamanni across rivers may provoke another power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Pursuit of Alamanni across rivers may provoke another power. Repair, carrying and care also use people, while daily supply continues after troops pass. Frankish warbands require food, crossings and guides."
     }
   ],
   "SemanticPrototypes": [],

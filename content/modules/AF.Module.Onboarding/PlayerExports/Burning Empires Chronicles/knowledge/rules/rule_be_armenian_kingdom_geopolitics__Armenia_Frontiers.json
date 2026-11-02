@@ -1,21 +1,18 @@
 {
   "Id": "be_armenian_kingdom_geopolitics",
   "Keywords": [
-    "Armenia Frontier Marches",
-    "Armenia Varazdat Border Defense",
-    "Armenia Strategic Passes",
-    "Armenia Geopolitical Rivals"
+    "Armenia Frontiers",
+    "Araxes highland passes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Armenia maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Araxes valleys and highland passes lead toward Rome and Persia.",
+    "Snow and provisioned sites affect merchant and reinforcement routes."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Armenia spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Vagharshapat & Artashat, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "The Araxes valley and highland passes lead toward Rome and Persia. Season, snow and provisioned sites determine routes for caravans and aid."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A watchman on the high pass lights a torch at dusk and waits for the answering flame from the next ridge. Patrols descend into the gorges to check for hidden bands of raiders, and the garrison doctor asks each returning man whether his wounds came from arrows or from the cold. The fort's gate stays chained until the signal tower confirms that the road is clear."
+      "Content": "Araxes valleys and highland passes lead toward Rome and Persia. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Snow and provisioned sites affect merchant and reinforcement routes."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The marzban's courier arrived with news that Persian troop movements have been seen along the western passes, and our frontier forts remain short of grain. Quietly propose to the Iberian and Albanian lords an exchange of hostages for a mutual defense of the mountain roads. Keep the terms out of the royal chancery until the envoys confirm that the other side will honor the arrangement."
+      "Content": "Snow and provisioned sites affect merchant and reinforcement routes. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Araxes valleys and highland passes lead toward Rome and Persia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Araxes valleys and highland passes lead toward Rome and Persia. Closed routes may separate families from goods, imposing costs on those remaining at home. Snow and provisioned sites affect merchant and reinforcement routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Snow and provisioned sites affect merchant and reinforcement routes. Cargo passes different carriers, making distant route changes become local shortages through delay. Araxes valleys and highland passes lead toward Rome and Persia."
     }
   ],
   "SemanticPrototypes": [],

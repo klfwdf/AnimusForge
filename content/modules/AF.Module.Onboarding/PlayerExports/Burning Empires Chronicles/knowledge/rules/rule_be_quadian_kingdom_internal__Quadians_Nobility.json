@@ -2,20 +2,17 @@
   "Id": "be_quadian_kingdom_internal",
   "Keywords": [
     "Quadians Nobility",
-    "Quadians Viduarius Clan Lineages",
-    "Quadians Court Factions",
-    "Quadians Internal Strife"
+    "Quadian retaliation and household losses"
   ],
   "RagShortTexts": [
-    "The ruling elite of Quadians comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Viduarius balances angry followers and households protecting food and herds.",
+    "Jazygian cooperation needs defined supply and captive duties."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Quadians, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Viduarius joins angry followers and households seeking grain and herds. Jazygian cooperation also needs distinct supply and captive responsibilities."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Doorkeepers stand rigid in the stone passage while raised voices rise behind a heavy door. The lord's son and his son-in-law have smashed a silver cup against the wall, and no guard dares to look up. When great houses quarrel over mine leases, it is the common guardsmen who hold the gates and pay for the quarrel. At the Quadians post, the night watchword is \"Storm.\""
+      "Content": "Viduarius balances angry followers and households protecting food and herds. Followers retain family ties; decisions about guards and distant service affect common participation. Jazygian cooperation needs defined supply and captive duties."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The old lord leans over the family table and speaks to his heir in a low voice. Kings come and go, but five castles and their serfs stay in the house for generations. Smile at the royal council and accept each toast, but keep a dagger hidden until the rival house's grain stores are yours."
+      "Content": "Jazygian cooperation needs defined supply and captive duties. Coordination allocates actual supply and protection duties, not merely titles. Viduarius balances angry followers and households protecting food and herds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Viduarius balances angry followers and households protecting food and herds. Households compare burdens with neighbors; unmatched protection weakens cooperation. Jazygian cooperation needs defined supply and captive duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Jazygian cooperation needs defined supply and captive duties. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Viduarius balances angry followers and households protecting food and herds."
     }
   ],
   "SemanticPrototypes": [],

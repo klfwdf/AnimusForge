@@ -2,19 +2,17 @@
   "Id": "be_langobard_kingdom_internal",
   "Keywords": [
     "Langobards Nobility",
-    "Langobards Agelmund Clan Lineages",
-    "Langobards Court Factions",
-    "Langobards Internal Strife"
+    "Lombard kin oaths and household fields"
   ],
   "RagShortTexts": [
-    "The module's Langobards do not inherit the later Italian kingdom's institutions in 374.",
-    "Followers and food-producing households must agree on the costs of expeditions."
+    "Agelmund joins kin chiefs and followers.",
+    "Shared oaths do not erase family claims over fields, herds and rewards."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "For the Langobards, a faction label in the module supplies a playable political grouping, not evidence for the institutions of their later Italian kingdom in 374. Early written descriptions are sparse and external. Kin connections, settlements and a leader's ability to gather armed followers provide cautious points of departure, while precise succession rules or universal land obligations remain uncertain. Internal disagreement can arise over joining an expedition, receiving newcomers or dividing its costs. A chief needs to keep food-producing households as well as warriors willing to cooperate; giving every notable five castles and a secret treaty would conceal those different interests."
+      "Content": "Agelmund joins kin chiefs and followers. Oaths mobilize people without erasing family claims over fields, herds and rewards."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A fighter wants a workable route and enough provisions before following a chief beyond familiar ground. The household that lent an animal expects it back, and companions argue over who bears the cost if it dies. Keeping a band together requires answers to those ordinary claims, as well as a brave speech before battle."
+      "Content": "Agelmund joins kin chiefs and followers. Followers retain family ties; decisions about guards and distant service affect common participation. Shared oaths do not erase family claims over fields, herds and rewards."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A Langobard notable weighs obligations to relatives against a leader's request for men. An expedition may strengthen one following and leave another exposed. He cannot invoke the law of a future Italian realm to settle the matter; agreement must rest on relationships and commitments that the present communities recognise."
+      "Content": "Shared oaths do not erase family claims over fields, herds and rewards. Coordination allocates actual supply and protection duties, not merely titles. Agelmund joins kin chiefs and followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Agelmund joins kin chiefs and followers. Households compare burdens with neighbors; unmatched protection weakens cooperation. Shared oaths do not erase family claims over fields, herds and rewards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Shared oaths do not erase family claims over fields, herds and rewards. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Agelmund joins kin chiefs and followers."
     }
   ],
   "SemanticPrototypes": [],

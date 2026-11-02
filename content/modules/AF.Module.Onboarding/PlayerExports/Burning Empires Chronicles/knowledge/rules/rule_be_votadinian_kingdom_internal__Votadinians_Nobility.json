@@ -2,19 +2,17 @@
   "Id": "be_votadinian_kingdom_internal",
   "Keywords": [
     "Votadinians Nobility",
-    "Votadinians Padern Clan Lineages",
-    "Votadinians Court Factions",
-    "Votadinians Internal Strife"
+    "Votadinian hill and coastal households"
   ],
   "RagShortTexts": [
-    "Votadinian communities maintained contacts beyond Rome's provincial frontier.",
-    "Traprain finds do not alone establish a specific treaty or royal constitution in 374."
+    "Padern joins hill chiefs and coastal households.",
+    "Roman friendship still needs local garrison and food commitments."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The module's Votadinian faction draws on communities around south-eastern Scotland, beyond the Roman provincial frontier. Sites such as Traprain Law show long-lived centres and contact with the Roman world, but finds do not by themselves prove a permanent treaty, a precise royal succession or a feudal court in 374. Local leadership can be described through settlements, kin, exchange and the capacity to provide protection. Neighbours may disagree over how closely to deal with Roman authorities and how to distribute the costs of guarding routes. Later Gododdin traditions and early fifth-century silver deposits must not be treated as eyewitness records of this opening year."
+      "Content": "Padern joins hill chiefs and coastal households. Roman friendship offers support while districts retain views on garrisons, food and passage."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A man watching an upland approach needs to recognise familiar drovers and notice strangers before they reach the settlement. Trade with the south may bring valued goods, but guarding it takes time from animals and fields. A dispute between leaders matters when it closes a route or leaves a household without the help it expected."
+      "Content": "Padern joins hill chiefs and coastal households. Followers retain family ties; decisions about guards and distant service affect common participation. Roman friendship still needs local garrison and food commitments."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A Votadinian notable gains influence from people and connections he can sustain, not from a later heroic genealogy alone. Roman objects may display access to exchange, yet say little about a particular agreement's terms. He must balance outside opportunities with the protection and supplies his own neighbours expect him to arrange."
+      "Content": "Roman friendship still needs local garrison and food commitments. Coordination allocates actual supply and protection duties, not merely titles. Padern joins hill chiefs and coastal households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Padern joins hill chiefs and coastal households. Households compare burdens with neighbors; unmatched protection weakens cooperation. Roman friendship still needs local garrison and food commitments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman friendship still needs local garrison and food commitments. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Padern joins hill chiefs and coastal households."
     }
   ],
   "SemanticPrototypes": [],

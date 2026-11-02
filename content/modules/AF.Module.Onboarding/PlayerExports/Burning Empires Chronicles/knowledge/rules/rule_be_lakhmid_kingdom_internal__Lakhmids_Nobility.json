@@ -2,20 +2,17 @@
   "Id": "be_lakhmid_kingdom_internal",
   "Keywords": [
     "Lakhmids Nobility",
-    "Lakhmids Imru al-Qays II Clan Lineages",
-    "Lakhmids Court Factions",
-    "Lakhmids Internal Strife"
+    "Lakhmid towns and desert kin"
   ],
   "RagShortTexts": [
-    "The ruling elite of Lakhmids comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Imru al-Qays II coordinates towns, kin and Persian patrons.",
+    "Service promises need defined rewards and provisions."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Lakhmids, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Imru al-Qays II links towns, kin and Persian patrons. Groups exchange and compete for returns, so service needs rewards and provisions."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Two tribal chiefs quarrel over a well in the market square, and guards ring the crowd with their shields. The feud began over grazing rights, and blood is spilled before the magistrates arrive. A common spearman takes a cut meant for a chief's nephew, and nobody records his name."
+      "Content": "Imru al-Qays II coordinates towns, kin and Persian patrons. Followers retain family ties; decisions about guards and distant service affect common participation. Service promises need defined rewards and provisions."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Mend your wells and palm groves before the summer heat, the chief tells his heir. The king is only as strong as the tribes who swear to him, so never let a rival marry into your house. At court, bow to the Nasrid kings, but send your own man to watch the desert roads."
+      "Content": "Service promises need defined rewards and provisions. Coordination allocates actual supply and protection duties, not merely titles. Imru al-Qays II coordinates towns, kin and Persian patrons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Imru al-Qays II coordinates towns, kin and Persian patrons. Households compare burdens with neighbors; unmatched protection weakens cooperation. Service promises need defined rewards and provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Service promises need defined rewards and provisions. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Imru al-Qays II coordinates towns, kin and Persian patrons."
     }
   ],
   "SemanticPrototypes": [],

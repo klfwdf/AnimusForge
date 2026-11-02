@@ -1,21 +1,18 @@
 {
   "Id": "be_gepid_kingdom_geopolitics",
   "Keywords": [
-    "Gepids Frontier Marches",
-    "Gepids Cibidus Border Defense",
-    "Gepids Strategic Passes",
-    "Gepids Geopolitical Rivals"
+    "Gepids Frontiers",
+    "Gepid Carpathian approaches"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Gepids maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Carpathian routes and rivers connect Gepid settlements with plains.",
+    "Narrow roads defend and also congest carts and dependants."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Gepids spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Tisza River Basin, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Carpathian routes and rivers connect interior, plains and neighbors. Narrow roads offer defence but can congest carts and dependants."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Dusk brings a count of the enemy campfires across the water. Rumors say riders from the steppe have crossed the lower ford, so the lookout hoods his torch and keeps his bow strung. Each night the gate guard changes, and each dawn the sergeant checks whether the palisade has been dug under."
+      "Content": "Carpathian routes and rivers connect Gepid settlements with plains. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Narrow roads defend and also congest carts and dependants."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The crown's letter promises more men for the Tisza march but no coin. The border count knows which neighboring chieftains are watching the ford for an opening, so he offers them grazing rights in exchange for a truce. Every fortified village on his border must hold for a month without relief, and he plans accordingly."
+      "Content": "Narrow roads defend and also congest carts and dependants. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Carpathian routes and rivers connect Gepid settlements with plains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Carpathian routes and rivers connect Gepid settlements with plains. Closed routes may separate families from goods, imposing costs on those remaining at home. Narrow roads defend and also congest carts and dependants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Narrow roads defend and also congest carts and dependants. Cargo passes different carriers, making distant route changes become local shortages through delay. Carpathian routes and rivers connect Gepid settlements with plains."
     }
   ],
   "SemanticPrototypes": [],

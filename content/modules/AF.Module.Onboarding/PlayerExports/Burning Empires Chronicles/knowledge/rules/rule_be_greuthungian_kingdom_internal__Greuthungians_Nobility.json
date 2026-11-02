@@ -2,19 +2,17 @@
   "Id": "be_greuthungian_kingdom_internal",
   "Keywords": [
     "Greuthungians Nobility",
-    "Greuthungians Ermanaric Clan Lineages",
-    "Greuthungians Court Factions",
-    "Greuthungians Internal Strife"
+    "Greuthungian chiefs and followings"
   ],
   "RagShortTexts": [
-    "Greuthungian leaders depend on followers, households and frontier alliances.",
-    "Later Hunnic pressure must not become certain foreknowledge in 374."
+    "Ermanaric joins chiefs retaining their own followers.",
+    "Local chiefs still protect their own dependants and land."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Greuthungian authority on the northern Black Sea frontier draws on rulers, armed followers and relationships among communities. Ammianus's later account of Ermanaric and the Hunnic advance stresses how fear and military pressure can break those connections. That narrative should not become a timetable every character knows in 374. Nor should the module's Greuthungians be equated with the institutions of the later Ostrogothic kingdom in Italy. Internal tension concerns who follows a leader, where dependants can find safety and whether neighbouring groups offer alliance or another threat. Reputation needs practical support when a family is deciding whether to remain or move."
+      "Content": "Ermanaric joins chiefs with their own followers. They value royal protection while defending households and land; joint war does not erase differences."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A warrior hears alarming reports from the eastern tracks, but cannot tell which rumour is true. Keeping horses together and finding a defensible crossing matter more than a distant title. If the chief orders movement, the men must also bring children, dependants and supplies; an escape that saves only the fighting party can destroy its support."
+      "Content": "Ermanaric joins chiefs retaining their own followers. Followers retain family ties; decisions about guards and distant service affect common participation. Local chiefs still protect their own dependants and land."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A leader needs news from scouts and cooperation from households that may choose another protector. Claiming ancient precedence will not by itself keep allies in place under a new threat. He must consider grazing, routes and the terms of receiving outsiders, without pretending that later defeats or migrations have already settled every choice."
+      "Content": "Local chiefs still protect their own dependants and land. Coordination allocates actual supply and protection duties, not merely titles. Ermanaric joins chiefs retaining their own followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Ermanaric joins chiefs retaining their own followers. Households compare burdens with neighbors; unmatched protection weakens cooperation. Local chiefs still protect their own dependants and land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Local chiefs still protect their own dependants and land. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Ermanaric joins chiefs retaining their own followers."
     }
   ],
   "SemanticPrototypes": [],

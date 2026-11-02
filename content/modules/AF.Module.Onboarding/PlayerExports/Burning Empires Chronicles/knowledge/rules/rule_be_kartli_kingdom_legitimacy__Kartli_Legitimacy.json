@@ -2,20 +2,17 @@
   "Id": "be_kartli_kingdom_legitimacy",
   "Keywords": [
     "Kartli Legitimacy",
-    "Kartli Mihrdat Sovereign Authority",
-    "Kartli Ruling Seat",
-    "Kartli Feudal Oaths"
+    "Mihrdat’s dynasty and church recognition"
   ],
   "RagShortTexts": [
-    "In 374 AD, Kartli governed from Mtskheta Royal Seat, under the paramount rule of Kings of Iberia.",
-    "The polity asserted sovereign legitimacy anchored in Kartli dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Dynasty, Christian links and local recognition support Kartlian kingship.",
+    "Foreign recognition does not ensure every pass chief implements its terms."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Kartli anchored itself within Mtskheta Royal Seat, confronting the accelerating tremors of Late Antiquity. Governed by Kings of Iberia, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Kartli heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Dynasty, Christian links and local recognition support kingship. External acknowledgment increases standing without guaranteeing every pass chief accepts its conditions."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Outside the walls of Mtskheta, the veterans repeat the king's summons: when the royal banners march, each man must buckle on his mail. Blood spilled in the field will be repaid with coin and land. The recruits believe the promise because the king's grandfather kept his word, but they also remember the years when the grants were late."
+      "Content": "Dynasty, Christian links and local recognition support Kartlian kingship. Military recognition also rests on rewards and relief; a title needs willing action. Foreign recognition does not ensure every pass chief implements its terms."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The lords of the Kartli houses meet in a stone hall and compare each royal decree with their own charters. The king's authority is recognized in the valleys, but the families keep their tithes and their rights to the mountain pastures. A counselor argues for stronger ties to the Kings of Iberia; another warns that a new levy will drive the mountain villages to rebellion."
+      "Content": "Foreign recognition does not ensure every pass chief implements its terms. Nominal rights require local execution, with consent and supply both shaping authority. Dynasty, Christian links and local recognition support Kartlian kingship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Dynasty, Christian links and local recognition support Kartlian kingship. Households judge rule through protected families, land and responses to appeals. Foreign recognition does not ensure every pass chief implements its terms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Foreign recognition does not ensure every pass chief implements its terms. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Dynasty, Christian links and local recognition support Kartlian kingship."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,20 +2,17 @@
   "Id": "be_alemannic_kingdom_legitimacy",
   "Keywords": [
     "Alemans Legitimacy",
-    "Alemans Makrian Sovereign Authority",
-    "Alemans Ruling Seat",
-    "Alemans Feudal Oaths"
+    "Makrian’s oaths"
   ],
   "RagShortTexts": [
-    "In 374 AD, Alemans governed from Black Forest & Main Valley, under the paramount rule of Macrian.",
-    "The polity asserted sovereign legitimacy anchored in Alemans dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Makrian relies on success, oaths and participating chiefs.",
+    "Roman agreements require local chiefs willing to implement them."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Alemans anchored itself within Black Forest & Main Valley, confronting the accelerating tremors of Late Antiquity. Governed by Macrian, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Alemans heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Makrian gains recognition through martial success, oaths and participation. Roman agreements preserve markets only when local chiefs also implement them."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans from the Main Valley gather by the cookfires and speak of the duke's oath as if it were a scripture. When the war horns sound, every man must buckle his mail and march, and the widows of the fallen are promised land grants from the crown. The younger soldiers listen closely, because they know that loyalty to the banner is the only thing that keeps the household guard paid."
+      "Content": "Makrian relies on success, oaths and participating chiefs. Military recognition also rests on rewards and relief; a title needs willing action. Roman agreements require local chiefs willing to implement them."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The duke's chamberlain has asked you to confirm the feudal oaths of the Black Forest counts before the spring assembly. Confirm the oaths only after you have secured the support of the two counts who control the river crossings. Your letters to the other nobles should carry the crown's seal, since a plain note can be disowned by any noble who later wishes to deny the promise."
+      "Content": "Roman agreements require local chiefs willing to implement them. Nominal rights require local execution, with consent and supply both shaping authority. Makrian relies on success, oaths and participating chiefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Makrian relies on success, oaths and participating chiefs. Households judge rule through protected families, land and responses to appeals. Roman agreements require local chiefs willing to implement them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman agreements require local chiefs willing to implement them. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Makrian relies on success, oaths and participating chiefs."
     }
   ],
   "SemanticPrototypes": [],

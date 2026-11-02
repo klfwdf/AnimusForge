@@ -1,21 +1,18 @@
 {
   "Id": "be_ere_kingdom_military",
   "Keywords": [
-    "Eastern Roman Empire Military Doctrine",
-    "Eastern Roman Empire Valens Elite Hosts",
-    "Eastern Roman Empire Battle Phalanxes",
-    "Eastern Roman Empire Defensive Manuals"
+    "Eastern Roman Empire Military",
+    "Eastern Roman field and frontier forces"
   ],
   "RagShortTexts": [
-    "The standing military of Eastern Roman Empire in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Eastern field armies, frontier guards, forts and transports support one another.",
+    "Tanukhid and Jazygian wars cannot empty every other frontier."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Eastern Roman Empire rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Eastern Roman Empire against overwhelming regional adversaries."
+      "Content": "Field armies, frontier guards, forts and transports support each other. Infantry, cavalry and siege forces need different supplies; Tanukhid and Jazygian wars cannot empty every other frontier."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "With shields locked, the front rank waits for the drums to roll. It must absorb the charge of enemy horsemen while the rear files thrust through gaps in the line. Mud under their boots, a dented helm, a password shouted by the centurion. Break formation and the cavalry will catch you on the open flank, and once the line tears there is no second chance."
+      "Content": "Eastern field armies, frontier guards, forts and transports support one another. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Tanukhid and Jazygian wars cannot empty every other frontier."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Commanders study the tactical map inside the redoubt. Victory depends on keeping supply wagons moving along the valley road and on keeping the infantry center steady until the armored reserve is released. When the enemy line wavers, flank cavalry sweeps behind it. Each provincial commander keeps a private ledger of promised grain and horses, and he will remember whose men bore the cost of defeat."
+      "Content": "Tanukhid and Jazygian wars cannot empty every other frontier. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Eastern field armies, frontier guards, forts and transports support one another."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Eastern field armies, frontier guards, forts and transports support one another. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Tanukhid and Jazygian wars cannot empty every other frontier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tanukhid and Jazygian wars cannot empty every other frontier. Repair, carrying and care also use people, while daily supply continues after troops pass. Eastern field armies, frontier guards, forts and transports support one another."
     }
   ],
   "SemanticPrototypes": [],

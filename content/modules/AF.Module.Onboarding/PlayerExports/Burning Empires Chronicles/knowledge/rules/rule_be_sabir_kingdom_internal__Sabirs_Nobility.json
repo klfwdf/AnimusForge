@@ -2,20 +2,17 @@
   "Id": "be_sabir_kingdom_internal",
   "Keywords": [
     "Sabirs Nobility",
-    "Sabirs Kutilzis Clan Lineages",
-    "Sabirs Court Factions",
-    "Sabirs Internal Strife"
+    "Sabir riders and camp-guarding kin"
   ],
   "RagShortTexts": [
-    "The ruling elite of Sabirs comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Kutilzis coordinates kin retaining households and reward claims.",
+    "Joint fighting still needs people guarding camps."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Sabirs, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Kutilzis joins mounted groups and kin chiefs retaining their own households and reward claims. Joint action also needs people left to guard camps."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Riders at the tent door stand still as raised voices break out inside. The khan's brother and nephew have overturned a copper tray, and the guards keep their eyes on the ground. When great clans quarrel over pasture rights, it is the common riders at the gate who take the first blows. At the Sabirs post, the night watchword is \"Reed.\""
+      "Content": "Kutilzis coordinates kin retaining households and reward claims. Followers retain family ties; decisions about guards and distant service affect common participation. Joint fighting still needs people guarding camps."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The old elder counsels his heir over a bowl of kumis, his voice kept low. The khan's title matters less than the herds, the strongholds, and the households that owe service to them. Smile at the gathering and accept every toast, but keep a dagger under the cloak until the rival clan's pastures are yours."
+      "Content": "Joint fighting still needs people guarding camps. Coordination allocates actual supply and protection duties, not merely titles. Kutilzis coordinates kin retaining households and reward claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kutilzis coordinates kin retaining households and reward claims. Households compare burdens with neighbors; unmatched protection weakens cooperation. Joint fighting still needs people guarding camps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Joint fighting still needs people guarding camps. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Kutilzis coordinates kin retaining households and reward claims."
     }
   ],
   "SemanticPrototypes": [],

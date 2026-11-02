@@ -1,21 +1,18 @@
 {
   "Id": "be_arran_kingdom_economy",
   "Keywords": [
-    "Arran Fiscal Levies",
-    "Arran Vachagan II Artisan Forges",
-    "Arran Agrarian Manors",
-    "Arran Trade Corridors"
+    "Arran Trade",
+    "Kura valley and upland produce"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Arran in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Partav (Barda), merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Gabala, Kura fields and upland herding provide different products.",
+    "Unequal garrison transport burdens cause local resentment."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Arran was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Partav (Barda), cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Gabala, Kura farming and upland herding produce different resources. Grain and pass exchange complement one another; unequal transport levies cause local resentment."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sentries wade through shallow streams at dusk, wringing the wet wool of their cloaks while the commissary tallies sacks of millet. Pay arrives late and in mixed coins, so the men bargain for flints and bowstrings in the camp market. A soldier who snaps his shield strap in combat will spend a week begging a replacement from comrades."
+      "Content": "Gabala, Kura fields and upland herding provide different products. Traveling followers need real food from this production; valuables still require a buyer and exchange. Unequal garrison transport burdens cause local resentment."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Your tax collector reports that the tenth of the wheat crop reached the granary late, and a wine shipment from the coast was taxed twice by harbor officers. Offer the merchant houses a freight discount in return for discretion. Their letters travel with the same couriers that carry your dispatches, so every promise must be written in cipher."
+      "Content": "Unequal garrison transport burdens cause local resentment. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Gabala, Kura fields and upland herding provide different products."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gabala, Kura fields and upland herding provide different products. Households need meals and the means to keep producing after delivering goods. Unequal garrison transport burdens cause local resentment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Unequal garrison transport burdens cause local resentment. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Gabala, Kura fields and upland herding provide different products."
     }
   ],
   "SemanticPrototypes": [],

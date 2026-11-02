@@ -1,21 +1,18 @@
 {
   "Id": "be_gepid_kingdom_economy",
   "Keywords": [
-    "Gepids Fiscal Levies",
-    "Gepids Cibidus Artisan Forges",
-    "Gepids Agrarian Manors",
-    "Gepids Trade Corridors"
+    "Gepids Trade",
+    "Galtis fields and pass exchange"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Gepids in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Tisza River Basin, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Galtis fields, livestock and pass exchange sustain settlements.",
+    "Long campaigns damage harvest and later service capacity."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Gepids was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Tisza River Basin, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Galtis grain land, livestock and pass exchange sustain settlements. War removes cultivators, reducing harvest and shortening service."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Sweat and river mud soak the sacks a Gepid spearman hauls up the Tisza bank. Grain and salt reach the army only when the water is high enough for barges, and his pay in copper often arrives late. He hopes the next raid will bring silver from the merchants who cross the ford, though he has seen such hopes end in empty carts."
+      "Content": "Galtis fields, livestock and pass exchange sustain settlements. Traveling followers need real food from this production; valuables still require a buyer and exchange. Long campaigns damage harvest and later service capacity."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "By the ferry landing, the lord's steward measures tolls each evening. Salt, timber, and smoked fish bring in more than the grain fields, so he keeps two boatmen loyal with cheap wine. He sends the king's share downstream in sealed chests and keeps a smaller chest for his own household, because the marsh villages always pay late."
+      "Content": "Long campaigns damage harvest and later service capacity. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Galtis fields, livestock and pass exchange sustain settlements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Galtis fields, livestock and pass exchange sustain settlements. Households need meals and the means to keep producing after delivering goods. Long campaigns damage harvest and later service capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Long campaigns damage harvest and later service capacity. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Galtis fields, livestock and pass exchange sustain settlements."
     }
   ],
   "SemanticPrototypes": [],

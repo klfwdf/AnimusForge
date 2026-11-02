@@ -2,20 +2,17 @@
   "Id": "be_sabir_kingdom_legitimacy",
   "Keywords": [
     "Sabirs Legitimacy",
-    "Sabirs Kutilzis Sovereign Authority",
-    "Sabirs Ruling Seat",
-    "Sabirs Feudal Oaths"
+    "Kutilzis’ shares and protection"
   ],
   "RagShortTexts": [
-    "In 374 AD, Sabirs governed from Western Steppe Corridors, under the paramount rule of Sabir Khans.",
-    "The polity asserted sovereign legitimacy anchored in Sabirs dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Herd protection, shares and room to move support Kutilzis.",
+    "A powerful neighbor’s gifts can demand service beyond local capacity."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Sabirs anchored itself within Western Steppe Corridors, confronting the accelerating tremors of Late Antiquity. Governed by Sabir Khans, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Sabirs heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Herd protection, credible distributions and room to move sustain recognition. A powerful neighbor’s gifts may bring service beyond local capacity."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Beside the fire, the khan's bodyguard oil their bows before the standard goes up. When the Sabir Khans' banner moves, every man mounts and rides out with a lance and a shield. Blood spent in battle is repaid with pasture and grants of land, and the riders know a grant is only as good as the khan's word. At the Sabirs post, the night watchword is \"Ash.\""
+      "Content": "Herd protection, shares and room to move support Kutilzis. Military recognition also rests on rewards and relief; a title needs willing action. A powerful neighbor’s gifts can demand service beyond local capacity."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The clan elders measure each of the khan's commands before they agree to carry it out. Oaths are sworn at the assembly, yet the families keep their herds, their tolls, and their privileges. Each sealed letter between them repeats one condition: the khan's authority holds only while the clans' rights are respected."
+      "Content": "A powerful neighbor’s gifts can demand service beyond local capacity. Nominal rights require local execution, with consent and supply both shaping authority. Herd protection, shares and room to move support Kutilzis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Herd protection, shares and room to move support Kutilzis. Households judge rule through protected families, land and responses to appeals. A powerful neighbor’s gifts can demand service beyond local capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A powerful neighbor’s gifts can demand service beyond local capacity. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Herd protection, shares and room to move support Kutilzis."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,20 +2,17 @@
   "Id": "be_vandal_kingdom_internal",
   "Keywords": [
     "Vandals Nobility",
-    "Vandals Godigisel Clan Lineages",
-    "Vandals Court Factions",
-    "Vandals Internal Strife"
+    "Hasding and Siling followings"
   ],
   "RagShortTexts": [
-    "The ruling elite of Vandals comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Godigisel coordinates different chiefs and followings.",
+    "Hasding and Siling names do not make all interests identical."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Vandals, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Godigisel coordinates chiefs and groups. Hasding and Siling names do not make interests identical; union also needs delivered rewards."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Inside the hall, two magnates are shouting over mine leases, and a silver goblet has just struck the floor. Guardsmen at the door stare at the far wall. If the feud spills into the courtyard, the common men with spears will die first, while the quarrelling houses sit safely behind their tables."
+      "Content": "Godigisel coordinates different chiefs and followings. Followers retain family ties; decisions about guards and distant service affect common participation. Hasding and Siling names do not make all interests identical."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The elder of the house calls his heir to the study and sets a wax tablet between them. Thrones pass away, he says, but the castles and serf villages must be kept whole. Greet rival barons with courtesy, count your armed men quietly, and send no letter naming a faction until you know which way the wind will blow."
+      "Content": "Hasding and Siling names do not make all interests identical. Coordination allocates actual supply and protection duties, not merely titles. Godigisel coordinates different chiefs and followings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Godigisel coordinates different chiefs and followings. Households compare burdens with neighbors; unmatched protection weakens cooperation. Hasding and Siling names do not make all interests identical."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Hasding and Siling names do not make all interests identical. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Godigisel coordinates different chiefs and followings."
     }
   ],
   "SemanticPrototypes": [],

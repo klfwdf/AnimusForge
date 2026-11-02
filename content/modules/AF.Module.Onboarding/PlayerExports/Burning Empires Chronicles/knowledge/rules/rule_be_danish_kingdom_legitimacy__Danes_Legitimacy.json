@@ -2,20 +2,17 @@
   "Id": "be_danish_kingdom_legitimacy",
   "Keywords": [
     "Danes Legitimacy",
-    "Danes Dan Sovereign Authority",
-    "Danes Ruling Seat",
-    "Danes Feudal Oaths"
+    "Dan’s safe return"
   ],
   "RagShortTexts": [
-    "In 374 AD, Danes governed from Jutland & Zealand Isles, under the paramount rule of Danish Island Chieftains.",
-    "The polity asserted sovereign legitimacy anchored in Danes dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Safe return and royal gifts support recognition of Dan.",
+    "Favoring royal kin makes other owners question cooperation."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Danes anchored itself within Jutland & Zealand Isles, confronting the accelerating tremors of Late Antiquity. Governed by Danish Island Chieftains, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Danes heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Gifts and safe return sustain recognition. Favoring royal kin makes other partners question another shared voyage."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Shieldmen in the island hall drink to their chieftain before the tide turns, and the oldest among them recounts the last sea raid. When the war horns of the island sound, every man must sail with the fleet and fight beneath the chieftain's banner. The warriors trust the promise of silver and land, though they know the chieftain's word lasts only until the next harvest."
+      "Content": "Safe return and royal gifts support recognition of Dan. Military recognition also rests on rewards and relief; a title needs willing action. Favoring royal kin makes other owners question cooperation."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The jarls of the outer islands have asked whether the chieftain's grant of the harbor tolls will be honored at the autumn Thing. Speak to the jarls in person and confirm the toll grant in exchange for their oaths to your house. Do not write the grant down until the Thing has met, because an unrecorded oath is easier to deny if a rival chieftain disputes it."
+      "Content": "Favoring royal kin makes other owners question cooperation. Nominal rights require local execution, with consent and supply both shaping authority. Safe return and royal gifts support recognition of Dan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Safe return and royal gifts support recognition of Dan. Households judge rule through protected families, land and responses to appeals. Favoring royal kin makes other owners question cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Favoring royal kin makes other owners question cooperation. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Safe return and royal gifts support recognition of Dan."
     }
   ],
   "SemanticPrototypes": [],

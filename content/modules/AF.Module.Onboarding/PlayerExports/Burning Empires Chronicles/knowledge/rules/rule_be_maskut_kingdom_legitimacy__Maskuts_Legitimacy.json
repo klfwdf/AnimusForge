@@ -2,20 +2,17 @@
   "Id": "be_maskut_kingdom_legitimacy",
   "Keywords": [
     "Maskuts Legitimacy",
-    "Maskuts Sanatruk Sovereign Authority",
-    "Maskuts Ruling Seat",
-    "Maskuts Feudal Oaths"
+    "Sanatruk’s pasture protection"
   ],
   "RagShortTexts": [
-    "In 374 AD, Maskuts governed from Caspian Dagestan Steppes, under the paramount rule of Maskut Kings.",
-    "The polity asserted sovereign legitimacy anchored in Maskuts dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Pasture protection and delivered rewards support Sanatruk.",
+    "Nominal southern relations cannot replace local kin recognition."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Maskuts anchored itself within Caspian Dagestan Steppes, confronting the accelerating tremors of Late Antiquity. Governed by Maskut Kings, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Maskuts heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Recognition depends on pasture protection and delivered rewards. A southern court’s nominal relationship cannot replace local kin support."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "By the fire, the ruler's household riders mend their scale armor before the standard is raised. When the ruler's banner moves, every man buckles on iron and rides out. Blood spent in battle is repaid in land grants, and the veterans know a grant is only as good as the next ruler's word. At the Maskuts post, the night watchword is \"Wolf.\""
+      "Content": "Pasture protection and delivered rewards support Sanatruk. Military recognition also rests on rewards and relief; a title needs willing action. Nominal southern relations cannot replace local kin recognition."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Great houses weigh each ruling against their own rights before they obey it. Public oaths are sworn in the hall, yet the families keep their privileges and their tax revenues. Each sealed letter between them repeats one condition: the ruler's authority holds only while noble rights are respected."
+      "Content": "Nominal southern relations cannot replace local kin recognition. Nominal rights require local execution, with consent and supply both shaping authority. Pasture protection and delivered rewards support Sanatruk."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Pasture protection and delivered rewards support Sanatruk. Households judge rule through protected families, land and responses to appeals. Nominal southern relations cannot replace local kin recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Nominal southern relations cannot replace local kin recognition. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Pasture protection and delivered rewards support Sanatruk."
     }
   ],
   "SemanticPrototypes": [],

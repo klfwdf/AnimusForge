@@ -1,21 +1,18 @@
 {
   "Id": "be_sarmatian_kingdom_economy",
   "Keywords": [
-    "Sarmatians Fiscal Levies",
-    "Sarmatians Kasagos Artisan Forges",
-    "Sarmatians Agrarian Manors",
-    "Sarmatians Trade Corridors"
+    "Sarmatians Trade",
+    "Gelonus grain herds and metal exchange"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Sarmatians in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Don-Danube Steppes, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Gelonus food, herds and forest-steppe exchange sustain Sarmatian households.",
+    "Drought and poor harvest weaken people, mounts and fighting power."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Sarmatians was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Don-Danube Steppes, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Gelonus households rely on herds, grain and forest-steppe exchange. Mounts and armour cost resources; drought and poor harvest weaken riders and animals together."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Wagons creak through the wet reeds of the Don-Danube steppe, their wheels sinking in the black earth. The rye ration has gone sour in the sacks, and the cooks spread it thin over the fires. Pay comes in salt or copper when the quartermaster can reach the wagons, and each rider keeps one eye on the fallen for anything worth carrying home. At the Sarmatians post, the night watchword is \"Vigil.\""
+      "Content": "Gelonus food, herds and forest-steppe exchange sustain Sarmatian households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Drought and poor harvest weaken people, mounts and fighting power."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "By lamplight in the wagon yard, hides, horse tack, and bundles of felt are counted off one by one. A tenth of the herds goes to the chieftain's stores, and the smiths turned out one hundred bridles and forty spearheads last month. He seals the count for the river merchant, who sets the price of iron at the next trading fair."
+      "Content": "Drought and poor harvest weaken people, mounts and fighting power. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Gelonus food, herds and forest-steppe exchange sustain Sarmatian households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gelonus food, herds and forest-steppe exchange sustain Sarmatian households. Households need meals and the means to keep producing after delivering goods. Drought and poor harvest weaken people, mounts and fighting power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Drought and poor harvest weaken people, mounts and fighting power. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Gelonus food, herds and forest-steppe exchange sustain Sarmatian households."
     }
   ],
   "SemanticPrototypes": [],

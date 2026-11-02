@@ -1,21 +1,18 @@
 {
   "Id": "be_bosporan_kingdom_military",
   "Keywords": [
-    "Bosporan Kingdom Military Doctrine",
-    "Bosporan Kingdom Sauromates V Elite Hosts",
-    "Bosporan Kingdom Battle Phalanxes",
-    "Bosporan Kingdom Defensive Manuals"
+    "Bosporan Kingdom Military",
+    "Bosporan port and grain guards"
   ],
   "RagShortTexts": [
-    "The standing military of Bosporan Kingdom in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Walls, docks, stores and local warnings depend on one another.",
+    "Ships, ports and grain carts need separate guards."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Bosporan Kingdom rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Bosporan Kingdom against overwhelming regional adversaries."
+      "Content": "Walls, docks, stores and local warnings depend on one another. Sailing escorts still need guards at home; Alan and Greuthungian wars divide land and maritime resources."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Heavy spearmen at the Kerch gate stand in close order, shields locked and the front rank bracing for the horsemen's charge. The sergeant walks the line checking each man's grip, because one gap will let the riders into the city. When the horns sound for the counterattack, the reserves must advance without breaking step."
+      "Content": "Walls, docks, stores and local warnings depend on one another. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Ships, ports and grain carts need separate guards."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Orders for the eastern forts place heavy infantry at the gate and light cavalry in the hills. Harbor grain must reach the garrison before steppe raiders cut the road. Send the order by sealed courier to the commanders, and keep it out of the harbor house, where merchants may sell the details to the enemy."
+      "Content": "Ships, ports and grain carts need separate guards. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Walls, docks, stores and local warnings depend on one another."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Walls, docks, stores and local warnings depend on one another. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Ships, ports and grain carts need separate guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ships, ports and grain carts need separate guards. Repair, carrying and care also use people, while daily supply continues after troops pass. Walls, docks, stores and local warnings depend on one another."
     }
   ],
   "SemanticPrototypes": [],

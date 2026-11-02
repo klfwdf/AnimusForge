@@ -1,21 +1,18 @@
 {
   "Id": "be_thervingian_kingdom_economy",
   "Keywords": [
-    "Thervingians Fiscal Levies",
-    "Thervingians Athanaric Artisan Forges",
-    "Thervingians Agrarian Manors",
-    "Thervingians Trade Corridors"
+    "Thervingians Trade",
+    "Apulum fields and Danube exchange"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Thervingians in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Dniester Forest Strongholds, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Apulum fields, herds and Danube exchange sustain followers.",
+    "Roman markets and local stores both support Thervingian livelihoods."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Thervingians was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Dniester Forest Strongholds, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Apulum fields, herds and Danube exchange feed followers. Roman markets and local stores both matter; long assembly reduces household surplus."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "The forest road sucks at every wheel, and the carters swear as the requisitioned rye turns hard as stone in the wagons. A warrior paid in salt or copper keeps a sharp eye on the treeline and hopes to strip silver from fallen raiders. He knows the next skirmish will decide whether his wages arrive on time."
+      "Content": "Apulum fields, herds and Danube exchange sustain followers. Traveling followers need real food from this production; valuables still require a buyer and exchange. Roman markets and local stores both support Thervingian livelihoods."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Athanaric's bookkeeper totals the quarterly tally by candlelight: forge output reached two hundred horseshoes and eighty spearheads, and the sale of cured hides at the river market covers the armor for our knights. Each merchant's bond is entered beside the tithe lists, because the forest strongholds cannot survive a missed payment."
+      "Content": "Roman markets and local stores both support Thervingian livelihoods. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Apulum fields, herds and Danube exchange sustain followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Apulum fields, herds and Danube exchange sustain followers. Households need meals and the means to keep producing after delivering goods. Roman markets and local stores both support Thervingian livelihoods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman markets and local stores both support Thervingian livelihoods. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Apulum fields, herds and Danube exchange sustain followers."
     }
   ],
   "SemanticPrototypes": [],

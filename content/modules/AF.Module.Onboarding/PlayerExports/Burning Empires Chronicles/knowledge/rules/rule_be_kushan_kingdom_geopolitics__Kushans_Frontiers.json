@@ -1,21 +1,18 @@
 {
   "Id": "be_kushan_kingdom_geopolitics",
   "Keywords": [
-    "Kushans Frontier Marches",
-    "Kushans Kipunada Border Defense",
-    "Kushans Strategic Passes",
-    "Kushans Geopolitical Rivals"
+    "Kushans Frontiers",
+    "Kushan seasonal valley passes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Kushans maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Kushan valley roads lead toward Kabul and Gandhara.",
+    "Seasonal passes affect goods, grain and cavalry passage."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Kushans spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Gandhara & Kabul Valley, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Seasonal passes and valley roads direct goods, grain and cavalry. Holding one narrow route does not feed every district beyond it."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Above the valley, the sentry watches the mountain road for dust clouds from the west. Rumors of Sasanian riders have spread through the villages, and the captain orders the gates closed at night. The men keep their bows strung and their helmets on, because the valley has been raided before."
+      "Content": "Kushan valley roads lead toward Kabul and Gandhara. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Seasonal passes affect goods, grain and cavalry passage."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The governor reads the dispatch from the Kushano-Sasanian court and sees that the subsidies have been cut once more. Without silver to pay the border garrisons, he must rely on local lords who may side with the western rulers. He drafts a careful letter to offer tribute in exchange for the passes."
+      "Content": "Seasonal passes affect goods, grain and cavalry passage. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Kushan valley roads lead toward Kabul and Gandhara."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kushan valley roads lead toward Kabul and Gandhara. Closed routes may separate families from goods, imposing costs on those remaining at home. Seasonal passes affect goods, grain and cavalry passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Seasonal passes affect goods, grain and cavalry passage. Cargo passes different carriers, making distant route changes become local shortages through delay. Kushan valley roads lead toward Kabul and Gandhara."
     }
   ],
   "SemanticPrototypes": [],

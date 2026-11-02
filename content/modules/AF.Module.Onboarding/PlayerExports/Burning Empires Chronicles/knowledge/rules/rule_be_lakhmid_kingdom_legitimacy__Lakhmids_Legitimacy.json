@@ -2,20 +2,17 @@
   "Id": "be_lakhmid_kingdom_legitimacy",
   "Keywords": [
     "Lakhmids Legitimacy",
-    "Lakhmids Imru al-Qays II Sovereign Authority",
-    "Lakhmids Ruling Seat",
-    "Lakhmids Feudal Oaths"
+    "Imru al-Qays’ kin and Persian backing"
   ],
   "RagShortTexts": [
-    "In 374 AD, Lakhmids governed from Al-Hirah (White Palaces), under the paramount rule of Nasrid Kings of Al-Hirah.",
-    "The polity asserted sovereign legitimacy anchored in Lakhmids dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Protection, kin and powerful support sustain recognition at Hira.",
+    "Merchant arbitration and paid rewards affect continued service."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Lakhmids anchored itself within Al-Hirah (White Palaces), confronting the accelerating tremors of Late Antiquity. Governed by Nasrid Kings of Al-Hirah, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Lakhmids heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Recognition comes from protection, kin and powerful support. Resolving merchant disputes and paying rewards affect continued service."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Between the wagons, the veterans recite the king's call to arms: when the royal banners march, each man must buckle on his mail. Blood spilled in the field will be repaid with silver and land. The recruits trust the promise, yet they remember the years when the grants were late and the wells went dry."
+      "Content": "Protection, kin and powerful support sustain recognition at Hira. Military recognition also rests on rewards and relief; a title needs willing action. Merchant arbitration and paid rewards affect continued service."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The tribal lords gather in the palace hall and test each royal decree against their own charters. The Nasrid kings' authority is honored in the cities, but the chiefs keep their tithes and rights to the grazing lands. A counselor argues for a closer alliance with the eastern court; another warns that a new tax will drive a tribe to the eastern court."
+      "Content": "Merchant arbitration and paid rewards affect continued service. Nominal rights require local execution, with consent and supply both shaping authority. Protection, kin and powerful support sustain recognition at Hira."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protection, kin and powerful support sustain recognition at Hira. Households judge rule through protected families, land and responses to appeals. Merchant arbitration and paid rewards affect continued service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Merchant arbitration and paid rewards affect continued service. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protection, kin and powerful support sustain recognition at Hira."
     }
   ],
   "SemanticPrototypes": [],

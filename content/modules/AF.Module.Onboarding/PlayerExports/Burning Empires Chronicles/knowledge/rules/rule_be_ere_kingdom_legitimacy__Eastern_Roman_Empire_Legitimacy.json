@@ -2,20 +2,17 @@
   "Id": "be_ere_kingdom_legitimacy",
   "Keywords": [
     "Eastern Roman Empire Legitimacy",
-    "Eastern Roman Empire Valens Sovereign Authority",
-    "Eastern Roman Empire Ruling Seat",
-    "Eastern Roman Empire Feudal Oaths"
+    "Valens’ shared Roman legitimacy"
   ],
   "RagShortTexts": [
-    "In 374 AD, Eastern Roman Empire governed from Constantinople & Antioch, under the paramount rule of Valens.",
-    "The polity asserted sovereign legitimacy anchored in Eastern Roman Empire dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Valens shares Roman imperial legitimacy with the western court.",
+    "Appointments and laws still need military and local implementation."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Eastern Roman Empire anchored itself within Constantinople & Antioch, confronting the accelerating tremors of Late Antiquity. Governed by Valens, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Eastern Roman Empire heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Valens shares Roman imperial legitimacy with the western court. Appointments and laws uphold authority; troops expect pay, districts protection and churches a voice in bishops and belief."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Around a smoky fire in the eastern camp, a sergeant repeats the order from Constantinople: the banners of Valens will march, and every man must strap on mail before the drums sound. Blood spilled in the field must be paid in gold coin and a plot of land. The recruits nod, but they have seen the paymaster's chest, and they know which veterans were left waiting for their grants."
+      "Content": "Valens shares Roman imperial legitimacy with the western court. Military recognition also rests on rewards and relief; a title needs willing action. Appointments and laws still need military and local implementation."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Curtained halls hold magnates and chancellors, who weigh each imperial decree against their own charters. Royal orders are read aloud and then ignored in the provinces, where clan liberties and tax exemptions remain intact. A chancellor offers a bargain: fund the eastern garrison and the crown will confirm your estates. Each alliance lasts only while the noble's prerogatives stand."
+      "Content": "Appointments and laws still need military and local implementation. Nominal rights require local execution, with consent and supply both shaping authority. Valens shares Roman imperial legitimacy with the western court."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Valens shares Roman imperial legitimacy with the western court. Households judge rule through protected families, land and responses to appeals. Appointments and laws still need military and local implementation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Appointments and laws still need military and local implementation. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Valens shares Roman imperial legitimacy with the western court."
     }
   ],
   "SemanticPrototypes": [],

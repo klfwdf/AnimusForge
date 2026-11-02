@@ -2,20 +2,17 @@
   "Id": "be_scirian_kingdom_internal",
   "Keywords": [
     "Scirians Nobility",
-    "Scirians Roderic Clan Lineages",
-    "Scirians Court Factions",
-    "Scirians Internal Strife"
+    "Scirian small followings and mutual aid"
   ],
   "RagShortTexts": [
-    "The ruling elite of Scirians comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Roderic’s limited following may seek separate protectors.",
+    "Cooperation needs defined safety, supply and service duration."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Scirians, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Roderic has a limited following whose households may seek separate protection. Cooperation needs safety, food and a service end point."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Lantern light trembles along the stone corridors of the Scirian keep. Guardsmen keep their spears grounded and their eyes forward, because a quarrel between magnates over mine leases can leave a dead sentry by morning. Rumors travel faster than orders, and the men on the wall know they will be blamed first if swords come out."
+      "Content": "Roderic’s limited following may seek separate protectors. Followers retain family ties; decisions about guards and distant service affect common participation. Cooperation needs defined safety, supply and service duration."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Our house holds five castles and the serfs who work their fields, and the patriarch reminds his heir that thrones change hands while estates endure. Courtly smiles cost nothing, so practice them daily. Keep the hidden blade under your cloak, and sign no letter binding the family to a faction before the vassals have been counted."
+      "Content": "Cooperation needs defined safety, supply and service duration. Coordination allocates actual supply and protection duties, not merely titles. Roderic’s limited following may seek separate protectors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Roderic’s limited following may seek separate protectors. Households compare burdens with neighbors; unmatched protection weakens cooperation. Cooperation needs defined safety, supply and service duration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Cooperation needs defined safety, supply and service duration. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Roderic’s limited following may seek separate protectors."
     }
   ],
   "SemanticPrototypes": [],

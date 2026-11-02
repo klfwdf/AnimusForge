@@ -2,20 +2,17 @@
   "Id": "be_alanian_kingdom_internal",
   "Keywords": [
     "Alans Nobility",
-    "Alans Beler Clan Lineages",
-    "Alans Court Factions",
-    "Alans Internal Strife"
+    "Alan wagon guards and home duties"
   ],
   "RagShortTexts": [
-    "The ruling elite of Alans comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Alan chiefs retain separate followers and pasture arrangements.",
+    "Joint campaigns require shared wagon and home guards."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Alans, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Alan chiefs maintain separate followings and pasture arrangements. Joint campaigning does not put every household under one camp. Consent over grazing, wagon protection and service reduces fragmentation."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "In the barracks hall, a squad of guardsmen waits outside a locked door, pretending not to hear the shouting within. They were told only that the nobles have quarrelled over a silver mine, and that the sergeant who speaks first will answer for it. Each man keeps his spear upright and his eyes on the floor, because the cost of a wrong glance is usually a long night in the cellar."
+      "Content": "Alan chiefs retain separate followers and pasture arrangements. Followers retain family ties; decisions about guards and distant service affect common participation. Joint campaigns require shared wagon and home guards."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Your cousin the magnate has begun to gather armed retainers near the mine road, and the council seat he covets is still held by the old marshal. Keep your own household quiet and invite the marshal's sons to a hunt, where a private word may settle the mine dispute. Send no letter that names the magnate, since every courier passes through the chancery before reaching its destination."
+      "Content": "Joint campaigns require shared wagon and home guards. Coordination allocates actual supply and protection duties, not merely titles. Alan chiefs retain separate followers and pasture arrangements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Alan chiefs retain separate followers and pasture arrangements. Households compare burdens with neighbors; unmatched protection weakens cooperation. Joint campaigns require shared wagon and home guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Joint campaigns require shared wagon and home guards. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Alan chiefs retain separate followers and pasture arrangements."
     }
   ],
   "SemanticPrototypes": [],

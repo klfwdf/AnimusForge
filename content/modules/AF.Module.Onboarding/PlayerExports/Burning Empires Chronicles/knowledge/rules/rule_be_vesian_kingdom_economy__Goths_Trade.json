@@ -1,21 +1,18 @@
 {
   "Id": "be_vesian_kingdom_economy",
   "Keywords": [
-    "Goths Fiscal Levies",
-    "Goths Fritigern Artisan Forges",
-    "Goths Agrarian Manors",
-    "Goths Trade Corridors"
+    "Goths Trade",
+    "Troesmis ferries and camp food"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Goths in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Lower Danube Floodplains, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Troesmis food, boats and markets sustain Gothic camps.",
+    "More dependants require more grain, cookware and transport."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Goths was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Lower Danube Floodplains, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Troesmis food, boats and markets sustain camps. More dependants increase grain, cooking and transport needs together; service rewards matter when they buy real food."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Mud claims the axles of the supply wagons at the river ford, and the men heave them out one wheel at a time. The requisitioned rations are rock hard, and this month's pay came in salt and copper. A warrior keeps his eyes on the far bank and hopes the next skirmish will yield silver from a fallen rider's belt."
+      "Content": "Troesmis food, boats and markets sustain Gothic camps. Traveling followers need real food from this production; valuables still require a buyer and exchange. More dependants require more grain, cookware and transport."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The bailiff balances the books by lamplight: the smithies sent off ninety horseshoes and forty spearheads, and the hide merchants at the river fair paid in advance. Those sales cover the mail for the household knights. He reminds the chamberlain that a late payment would leave the cavalry idle through the autumn."
+      "Content": "More dependants require more grain, cookware and transport. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Troesmis food, boats and markets sustain Gothic camps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Troesmis food, boats and markets sustain Gothic camps. Households need meals and the means to keep producing after delivering goods. More dependants require more grain, cookware and transport."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "More dependants require more grain, cookware and transport. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Troesmis food, boats and markets sustain Gothic camps."
     }
   ],
   "SemanticPrototypes": [],

@@ -1,21 +1,18 @@
 {
   "Id": "be_hunnic_kingdom_military",
   "Keywords": [
-    "Huns Military Doctrine",
-    "Huns Balamber Elite Hosts",
-    "Huns Battle Phalanxes",
-    "Huns Defensive Manuals"
+    "Huns Military",
+    "Hunnic mounted archery and horse recovery"
   ],
   "RagShortTexts": [
-    "The standing military of Huns in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Hunnic mounted archery needs horses, remounts and rest.",
+    "Prolonged sieges still need food and special equipment."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Huns rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Huns against overwhelming regional adversaries."
+      "Content": "Mounted archery needs horses, remounts and rest. Pursuit wears mounts out; sieges require grain and equipment, so mobility never removes supply needs."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A mounted archer loads his composite bow while his horse wheels beneath him. The screen feigns a retreat, drawing enemy riders into a volley of arrows, and then turns to meet them. A horse that stumbles means death for its rider, so every man trains until animal and bow move as one."
+      "Content": "Hunnic mounted archery needs horses, remounts and rest. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Prolonged sieges still need food and special equipment."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Signal riders run along the ridge to coordinate the mounted bowmen. Victory depends on wearing down the enemy's heavy horsemen before the main column closes. Each clan's riders are judged by how quickly they answer the call, and slow riders lose their share of the spoils."
+      "Content": "Prolonged sieges still need food and special equipment. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Hunnic mounted archery needs horses, remounts and rest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hunnic mounted archery needs horses, remounts and rest. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Prolonged sieges still need food and special equipment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Prolonged sieges still need food and special equipment. Repair, carrying and care also use people, while daily supply continues after troops pass. Hunnic mounted archery needs horses, remounts and rest."
     }
   ],
   "SemanticPrototypes": [],

@@ -1,21 +1,18 @@
 {
   "Id": "be_gepid_kingdom_military",
   "Keywords": [
-    "Gepids Military Doctrine",
-    "Gepids Cibidus Elite Hosts",
-    "Gepids Battle Phalanxes",
-    "Gepids Defensive Manuals"
+    "Gepids Military",
+    "Gepid defence against Vandals"
   ],
   "RagShortTexts": [
-    "The standing military of Gepids in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Vandal war requires crossings, passes and protected grain.",
+    "Concentrating forces reduces warnings elsewhere."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Gepids rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Gepids against overwhelming regional adversaries."
+      "Content": "Vandal war requires crossings, passes and grain routes. Concentration reduces warnings elsewhere, and mounted and foot followers both depend on settlement supplies."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Shield rims clatter as the Gepid line closes the gap in the ford. The first rank absorbs the riders' initial charge, and the rear files thrust spears through the holes between shoulders. The sergeant shouts the countersign before the drums stop, and any man who steps back is cut down by his own side."
+      "Content": "Vandal war requires crossings, passes and protected grain. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Concentrating forces reduces warnings elsewhere."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "From a hill above the river, the commander sends runners to the flank cavalry. Victory depends on keeping the baggage wagons out of the marsh and holding the center until the armored reserve is released. The lords of each contingent watch closely who pulls back early, because those names will be remembered when the spoils are divided."
+      "Content": "Concentrating forces reduces warnings elsewhere. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Vandal war requires crossings, passes and protected grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Vandal war requires crossings, passes and protected grain. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Concentrating forces reduces warnings elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Concentrating forces reduces warnings elsewhere. Repair, carrying and care also use people, while daily supply continues after troops pass. Vandal war requires crossings, passes and protected grain."
     }
   ],
   "SemanticPrototypes": [],

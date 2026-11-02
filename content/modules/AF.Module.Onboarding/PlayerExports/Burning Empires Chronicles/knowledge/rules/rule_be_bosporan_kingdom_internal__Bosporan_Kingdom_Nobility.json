@@ -2,19 +2,17 @@
   "Id": "be_bosporan_kingdom_internal",
   "Keywords": [
     "Bosporan Kingdom Nobility",
-    "Bosporan Kingdom Sauromates V Clan Lineages",
-    "Bosporan Kingdom Court Factions",
-    "Bosporan Kingdom Internal Strife"
+    "Bosporan towns and hinterland"
   ],
   "RagShortTexts": [
-    "Bosporan leaders bargain over harbours, supplies and armed protection.",
-    "Evidence for a uniform fourth-century Bosporan feudal court is lacking."
+    "Bosporan court, urban elites and food suppliers have different interests.",
+    "Trade credit requires safe delivery of goods and people."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Bosporan power rests on the towns and routes around the strait joining the Black Sea to the Maeotis. Harbour access, grain, fish and dealings with neighbouring peoples give local leaders different interests. A ruler needs armed support without driving away the traders and cultivators who sustain that support. Fourth-century evidence is fragmentary, so the module's court should not be presented as a fully documented medieval feudal hierarchy. Its internal disputes can concern access to a landing place, the cost of a guard and which household bears a loss after a raid, rather than identical senatorial conspiracies borrowed from Rome."
+      "Content": "Court, Greek urban elites, grain suppliers and mounted partners have different interests. Credit requires confidence that cargo and people can arrive safely."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A guard at a Bosporan landing watches the water and the approaches from inland. Merchants want cargo moved before bad weather, while his party needs food and a clear promise of pay. An argument between patrons becomes dangerous when it leaves a gate undermanned or a boat waiting offshore with provisions aboard."
+      "Content": "Bosporan court, urban elites and food suppliers have different interests. Followers retain family ties; decisions about guards and distant service affect common participation. Trade credit requires safe delivery of goods and people."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A local notable wants the harbour open, but also wants a voice in who collects its dues and supplies its watch. A rival's agreement with an inland chief can change that balance. Prestige depends on sustaining useful connections, not on claiming that every disputed shore is a hereditary fief under one uniform law."
+      "Content": "Trade credit requires safe delivery of goods and people. Coordination allocates actual supply and protection duties, not merely titles. Bosporan court, urban elites and food suppliers have different interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Bosporan court, urban elites and food suppliers have different interests. Households compare burdens with neighbors; unmatched protection weakens cooperation. Trade credit requires safe delivery of goods and people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Trade credit requires safe delivery of goods and people. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Bosporan court, urban elites and food suppliers have different interests."
     }
   ],
   "SemanticPrototypes": [],

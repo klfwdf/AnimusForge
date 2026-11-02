@@ -1,21 +1,18 @@
 {
   "Id": "be_lazica_kingdom_geopolitics",
   "Keywords": [
-    "Lazica Frontier Marches",
-    "Lazica Opsites Border Defense",
-    "Lazica Strategic Passes",
-    "Lazica Geopolitical Rivals"
+    "Lazica Frontiers",
+    "Lazican river ports and passes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Lazica maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Lazican ports, Rioni transport and passes connect routes.",
+    "Cargo often changes between vessels, rivers and pack animals."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Lazica spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Archaeopolis (Nokalakevi), the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Black Sea ports, Rioni transport and passes connect routes. Weather and roads affect different legs, often requiring cargo to change carriers and animals."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Mist rises off the Tekhuri gorge and carries the smell of wet stone. A sentry on the palisade counts the fires on the far bank and sends word down the line when they multiply. Hostile horse scouts have tripled their sweeps along the passes, and every embrasure holds a loaded ballista waiting for dawn. At the Lazica post, the night watchword is \"Thorn.\""
+      "Content": "Lazican ports, Rioni transport and passes connect routes. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Cargo often changes between vessels, rivers and pack animals."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Castellans of the passes open a dispatch from the capital with a grim face. The treasury has cut subsidies again, and raiding vanguards probe the passes ever closer. Without silver to hire auxiliary bands, the castellans must borrow from local magnates and pledge them a share of the river tolls, and every loan hands a rival house a stake in whether this pass holds."
+      "Content": "Cargo often changes between vessels, rivers and pack animals. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Lazican ports, Rioni transport and passes connect routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Lazican ports, Rioni transport and passes connect routes. Closed routes may separate families from goods, imposing costs on those remaining at home. Cargo often changes between vessels, rivers and pack animals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Cargo often changes between vessels, rivers and pack animals. Cargo passes different carriers, making distant route changes become local shortages through delay. Lazican ports, Rioni transport and passes connect routes."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,20 +2,17 @@
   "Id": "be_antean_kingdom_legitimacy",
   "Keywords": [
     "Anteans Legitimacy",
-    "Anteans Bozh Sovereign Authority",
-    "Anteans Ruling Seat",
-    "Anteans Feudal Oaths"
+    "Antean village protection"
   ],
   "RagShortTexts": [
-    "In 374 AD, Anteans governed from Middle Dnieper & Dniester Forest, under the paramount rule of King Boz.",
-    "The polity asserted sovereign legitimacy anchored in Anteans dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Bozh gains recognition through village protection and kin coordination.",
+    "Returned families and preserved harvest make protection visible."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Anteans anchored itself within Middle Dnieper & Dniester Forest, confronting the accelerating tremors of Late Antiquity. Governed by King Boz, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Anteans heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Recognition comes from protecting villages and coordinating kin. A royal name cannot replace relief; returned captives and preserved harvests make protection visible."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Men sworn to King Boz's household gather around the watchfire, retelling the old songs about his victories on the river. The sergeant reminds them that when the war banners are raised, every spear must be ready and every shield must bear the royal sign. The pay they received after the last campaign was fair, and that memory keeps the ranks quiet during the long wait."
+      "Content": "Bozh gains recognition through village protection and kin coordination. Military recognition also rests on rewards and relief; a title needs willing action. Returned families and preserved harvest make protection visible."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The king's steward asks your house to confirm the tributes owed by the river chiefs before the spring assembly. Speak with the chiefs privately and promise to reduce the tribute by one tenth if they swear to the king on the feast day. Keep the reduction off the written tally, since the king's accountants will report any shortfall to the council."
+      "Content": "Returned families and preserved harvest make protection visible. Nominal rights require local execution, with consent and supply both shaping authority. Bozh gains recognition through village protection and kin coordination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Bozh gains recognition through village protection and kin coordination. Households judge rule through protected families, land and responses to appeals. Returned families and preserved harvest make protection visible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Returned families and preserved harvest make protection visible. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Bozh gains recognition through village protection and kin coordination."
     }
   ],
   "SemanticPrototypes": [],

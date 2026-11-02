@@ -2,20 +2,17 @@
   "Id": "be_angle_kingdom_internal",
   "Keywords": [
     "Angles Nobility",
-    "Angles Wihtlaeg Clan Lineages",
-    "Angles Court Factions",
-    "Angles Internal Strife"
+    "Angle shipowners and cultivators"
   ],
   "RagShortTexts": [
-    "The ruling elite of Angles comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Wihtlaeg relies on kin chiefs and sailing partners.",
+    "Crews, owners and cultivators bear different voyage costs."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Angles, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Wihtlaeg relies on kin chiefs and sailing partners. Crews, owners and cultivators bear different risks, requiring agreed numbers, shares and return dates."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "The hearth guards in the great hall stand straight beside the banners as the lords argue over seating and succession. Once the argument turns to the hall's taxes, the men in the back rows look away and count the torches. Whoever is chosen as the watch that night must stay awake until the fires burn down, because a sword drawn in the hall will be blamed on the nearest guard."
+      "Content": "Wihtlaeg relies on kin chiefs and sailing partners. Followers retain family ties; decisions about guards and distant service affect common participation. Crews, owners and cultivators bear different voyage costs."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Your rival's eldest son has begun courting the coastal chiefs who hold the ferries, and the king's reeve wants your candidate named before midsummer. Offer the ferry chiefs a lower toll for their votes, and keep the bargain between yourself and two trusted kinsmen. The reeve reads every written pledge before the assembly, so let the promise rest on oaths sworn in person."
+      "Content": "Crews, owners and cultivators bear different voyage costs. Coordination allocates actual supply and protection duties, not merely titles. Wihtlaeg relies on kin chiefs and sailing partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Wihtlaeg relies on kin chiefs and sailing partners. Households compare burdens with neighbors; unmatched protection weakens cooperation. Crews, owners and cultivators bear different voyage costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Crews, owners and cultivators bear different voyage costs. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Wihtlaeg relies on kin chiefs and sailing partners."
     }
   ],
   "SemanticPrototypes": [],

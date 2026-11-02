@@ -2,20 +2,17 @@
   "Id": "be_alemannic_kingdom_internal",
   "Keywords": [
     "Alemans Nobility",
-    "Alemans Makrian Clan Lineages",
-    "Alemans Court Factions",
-    "Alemans Internal Strife"
+    "Alamannic chiefly coalition"
   ],
   "RagShortTexts": [
-    "The ruling elite of Alemans comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Alamanni comprise several chiefly groups.",
+    "Makrian’s common summons requires local cooperation."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Alemans, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Alamannic groups follow several chiefs. Makrian coordinates action while others retain families, followers and interests. Markets reward some groups while campaigning builds others’ reputation."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Guards at the ducal hall keep their backs to the wall and their helmets off, listening for the raised voices that mean a summons will come soon. Whispers in the lower corridors say a count was seen leaving by the kitchen gate before dawn. A man who repeats such rumors aloud is likely to lose his post and his pay by the end of the week."
+      "Content": "Alamanni comprise several chiefly groups. Followers retain family ties; decisions about guards and distant service affect common participation. Makrian’s common summons requires local cooperation."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The count who holds the eastern valley has refused to attend the summer assembly, and his brother now presses for control of the river tolls. Invite the neighboring lords to a private feast before the assembly and offer each a share of the new toll revenue. Say nothing in writing that could be read by the duke's stewards, because a single lost letter can end a household."
+      "Content": "Makrian’s common summons requires local cooperation. Coordination allocates actual supply and protection duties, not merely titles. Alamanni comprise several chiefly groups."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Alamanni comprise several chiefly groups. Households compare burdens with neighbors; unmatched protection weakens cooperation. Makrian’s common summons requires local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Makrian’s common summons requires local cooperation. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Alamanni comprise several chiefly groups."
     }
   ],
   "SemanticPrototypes": [],

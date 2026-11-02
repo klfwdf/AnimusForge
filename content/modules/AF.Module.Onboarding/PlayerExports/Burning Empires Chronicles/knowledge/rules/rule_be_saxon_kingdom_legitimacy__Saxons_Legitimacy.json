@@ -2,20 +2,17 @@
   "Id": "be_saxon_kingdom_legitimacy",
   "Keywords": [
     "Saxons Legitimacy",
-    "Saxons Freawine Sovereign Authority",
-    "Saxons Ruling Seat",
-    "Saxons Feudal Oaths"
+    "Freawine’s safe return and shares"
   ],
   "RagShortTexts": [
-    "In 374 AD, Saxons governed from North Sea Coastal Marshes, under the paramount rule of Saxon Chieftains.",
-    "The polity asserted sovereign legitimacy anchored in Saxons dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Coastal protection, promised shares and safe return support Freawine.",
+    "Rewards only for fighters discourage owners and farmers."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Saxons anchored itself within North Sea Coastal Marshes, confronting the accelerating tremors of Late Antiquity. Governed by Saxon Chieftains, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Saxons heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Coast protection, promised shares and returned crews sustain standing. Rewards only for fighters leave owners and farmers reluctant to join again."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Warriors of the hearth-band sharpen their blades beside the fire before the war-standard is raised. When the Saxon Chieftains' banner moves, every man pulls on his mail and marches out with shield and spear. Blood spent in battle is repaid with land and gold rings, and a warrior who falls leaves his kin to the chieftain's mercy. At the Saxons post, the night watchword is \"Wolf.\""
+      "Content": "Coastal protection, promised shares and safe return support Freawine. Military recognition also rests on rewards and relief; a title needs willing action. Rewards only for fighters discourage owners and farmers."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Every ruling from the chieftain is weighed by the kindreds before it is obeyed. Oaths are sworn at the moot, yet the families keep their land, their tolls, and their privileges. Each message between them repeats one condition: the chieftain's authority holds only while the kindreds' rights are respected."
+      "Content": "Rewards only for fighters discourage owners and farmers. Nominal rights require local execution, with consent and supply both shaping authority. Coastal protection, promised shares and safe return support Freawine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Coastal protection, promised shares and safe return support Freawine. Households judge rule through protected families, land and responses to appeals. Rewards only for fighters discourage owners and farmers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Rewards only for fighters discourage owners and farmers. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Coastal protection, promised shares and safe return support Freawine."
     }
   ],
   "SemanticPrototypes": [],

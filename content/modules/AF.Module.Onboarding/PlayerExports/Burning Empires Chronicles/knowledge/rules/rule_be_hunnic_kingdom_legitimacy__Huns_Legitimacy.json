@@ -2,20 +2,17 @@
   "Id": "be_hunnic_kingdom_legitimacy",
   "Keywords": [
     "Huns Legitimacy",
-    "Huns Balamber Sovereign Authority",
-    "Huns Ruling Seat",
-    "Huns Feudal Oaths"
+    "Balamber’s victories and gifts"
   ],
   "RagShortTexts": [
-    "In 374 AD, Huns governed from Pontic Steppe Mobile Orda, under the paramount rule of Balamber.",
-    "The polity asserted sovereign legitimacy anchored in Huns dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Victory, gifts and protection support Balamber’s recognition.",
+    "New followers care whether households and livelihoods survive."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Huns anchored itself within Pontic Steppe Mobile Orda, confronting the accelerating tremors of Late Antiquity. Governed by Balamber, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Huns heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Victory, gifts and protection win recognition. Intimidation brings submission, but followers need to retain households and livelihoods."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Warriors gather around the fire and repeat the oath they swore to Balamber at the spring gathering. Their horses were promised spoils from the Roman frontier, and they remember which chiefs kept those promises. A rider who swears loyalty earns the lead, but one who breaks it is left behind in the next raid."
+      "Content": "Victory, gifts and protection support Balamber’s recognition. Military recognition also rests on rewards and relief; a title needs willing action. New followers care whether households and livelihoods survive."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The chieftains' council meets in a ring of tents, and each man presses his claim to the king's favor. Balamber's authority rests on the tribute he distributes, and every chieftain tallies what he received against what he gave. A king who lets the herds dwindle will find his council voting against him."
+      "Content": "New followers care whether households and livelihoods survive. Nominal rights require local execution, with consent and supply both shaping authority. Victory, gifts and protection support Balamber’s recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Victory, gifts and protection support Balamber’s recognition. Households judge rule through protected families, land and responses to appeals. New followers care whether households and livelihoods survive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "New followers care whether households and livelihoods survive. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Victory, gifts and protection support Balamber’s recognition."
     }
   ],
   "SemanticPrototypes": [],

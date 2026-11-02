@@ -1,21 +1,18 @@
 {
   "Id": "be_sassanid_kingdom_economy",
   "Keywords": [
-    "Sassanid Empire Fiscal Levies",
-    "Sassanid Empire Shapur II Artisan Forges",
-    "Sassanid Empire Agrarian Manors",
-    "Sassanid Empire Trade Corridors"
+    "Sassanid Empire Trade",
+    "Mesopotamian irrigation and Sasanian grain transport"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Sassanid Empire in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Ctesiphon, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Ctesiphon and Mesopotamian irrigation supply Sasanian tax grain.",
+    "Canals, labor and transport sustain continued revenue."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Sassanid Empire was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Ctesiphon, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Ctesiphon and Mesopotamian irrigation supply court and armies, with estates, gifts and routes linking the plateau. Canals, labor and transport sustain income; excess collection damages continued provision."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Mules strain against their traces on the Mesopotamian canal road, and the drovers kick the mud from their boots. The rations are coarse barley bread, gone stale in the sacks, and the cooks grind it with water into a paste. Pay comes in silver drachms when the paymaster reaches the camp, and each man watches the fallen for anything the enemy left behind. Watchword: \"Falcon.\""
+      "Content": "Ctesiphon and Mesopotamian irrigation supply Sasanian tax grain. Traveling followers need real food from this production; valuables still require a buyer and exchange. Canals, labor and transport sustain continued revenue."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "In the Ctesiphon warehouse, bales of silk and sacks of pepper are counted by lamplight and entered in a ledger. A tenth of the harvest goes to the royal granary, and the arsenals turned out one hundred mail shirts and forty spearheads last month. He seals the tally for the market officer, who will fix the price of iron for the next season's levy."
+      "Content": "Canals, labor and transport sustain continued revenue. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Ctesiphon and Mesopotamian irrigation supply Sasanian tax grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Ctesiphon and Mesopotamian irrigation supply Sasanian tax grain. Households need meals and the means to keep producing after delivering goods. Canals, labor and transport sustain continued revenue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Canals, labor and transport sustain continued revenue. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Ctesiphon and Mesopotamian irrigation supply Sasanian tax grain."
     }
   ],
   "SemanticPrototypes": [],

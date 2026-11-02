@@ -2,20 +2,17 @@
   "Id": "be_frankish_kingdom_internal",
   "Keywords": [
     "Franks Nobility",
-    "Franks Genobaud Clan Lineages",
-    "Franks Court Factions",
-    "Franks Internal Strife"
+    "Frankish warbands and Roman office"
   ],
   "RagShortTexts": [
-    "The ruling elite of Franks comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Franks have different chiefs and warbands.",
+    "Individual Roman service does not place everyone in one command."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Franks, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Franks have different chiefs and warbands, with some serving in Rome. An office raises one family’s standing without placing every chief in one command."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A retainer stands guard outside the hall while his lord and son-in-law hurl wine cups behind closed oak doors. The quarrel is over a mine lease that two patrician families claimed in the same week. When the feud spills into the town square, it is the common guardsmen who are beaten or killed, and nobody at the high table asks for their names."
+      "Content": "Franks have different chiefs and warbands. Followers retain family ties; decisions about guards and distant service affect common participation. Individual Roman service does not place everyone in one command."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Tapping his signet ring, the patriarch counsels his heir. The throne matters less than keeping our five castles and the serfs who work them, he says. At court, smile and praise the king's chosen ministers, but never lend your sword to a rival faction. Store grain for lean years and wed your daughters where a river crossing can be claimed by treaty."
+      "Content": "Individual Roman service does not place everyone in one command. Coordination allocates actual supply and protection duties, not merely titles. Franks have different chiefs and warbands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Franks have different chiefs and warbands. Households compare burdens with neighbors; unmatched protection weakens cooperation. Individual Roman service does not place everyone in one command."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Individual Roman service does not place everyone in one command. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Franks have different chiefs and warbands."
     }
   ],
   "SemanticPrototypes": [],

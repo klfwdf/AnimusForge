@@ -1,21 +1,18 @@
 {
   "Id": "be_alanian_kingdom_geopolitics",
   "Keywords": [
-    "Alans Frontier Marches",
-    "Alans Beler Border Defense",
-    "Alans Strategic Passes",
-    "Alans Geopolitical Rivals"
+    "Alans Frontiers",
+    "Don and Kuban pasture routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Alans maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Don, Kuban and northern Caucasian routes link Alan pasture.",
+    "Crossings and grazing limit the routes available to Alan camps."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Alans spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward North Caucasus Steppe Pastures, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Don and Kuban rivers and northern Caucasian approaches funnel open pasture into fewer crossings. When grazing fails, neighboring permission determines where camps can move. Links from Uspe toward Black Sea markets also matter to grain."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A sentry on the ridge-top watchtower counts the campfires glowing across the pass and reports them to the sergeant at dawn. Ballistae are loaded and wedged into every embrasure, and the sentries sleep in their boots. A signal fire that goes unanswered means a cavalry sweep has already crossed the river, and the men on the wall know the fort will not be relieved in time."
+      "Content": "Don, Kuban and northern Caucasian routes link Alan pasture. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Crossings and grazing limit the routes available to Alan camps."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The frontier commander sends a sealed warning from the pass forts: raiders now probe the river fords every week, and promised grain has not reached the garrison towns. Offer nearby rival lords a grain truce in exchange for mutual warning signals along the ridge. Keep the proposal off the dispatch rolls, because the king's council will refuse any deal that looks like surrender."
+      "Content": "Crossings and grazing limit the routes available to Alan camps. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Don, Kuban and northern Caucasian routes link Alan pasture."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Don, Kuban and northern Caucasian routes link Alan pasture. Closed routes may separate families from goods, imposing costs on those remaining at home. Crossings and grazing limit the routes available to Alan camps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Crossings and grazing limit the routes available to Alan camps. Cargo passes different carriers, making distant route changes become local shortages through delay. Don, Kuban and northern Caucasian routes link Alan pasture."
     }
   ],
   "SemanticPrototypes": [],

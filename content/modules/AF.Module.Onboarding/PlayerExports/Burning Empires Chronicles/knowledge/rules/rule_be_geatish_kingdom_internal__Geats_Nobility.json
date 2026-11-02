@@ -2,20 +2,17 @@
   "Id": "be_geatish_kingdom_internal",
   "Keywords": [
     "Geats Nobility",
-    "Geats Gissur Clan Lineages",
-    "Geats Court Factions",
-    "Geats Internal Strife"
+    "Geatish ship and grain contributors"
   ],
   "RagShortTexts": [
-    "The ruling elite of Geats comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Gissur coordinates chiefs, farmers and sailing partners.",
+    "Ship and grain suppliers differ, making rewards affect cooperation."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Geats, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Gissur negotiates with chiefs, farmers and sailors. Households supplying vessels may differ from those supplying grain; rewards affect their next cooperation."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Two rival clans quarrel over which of them must send men to the next levy, and each blames the other for the shortfall. A young spearman learns to keep his head low, because when the noble houses fight, it is the foot soldiers who are sent to hold the bridge and take the first blows."
+      "Content": "Gissur coordinates chiefs, farmers and sailing partners. Followers retain family ties; decisions about guards and distant service affect common participation. Ship and grain suppliers differ, making rewards affect cooperation."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Weigh every oath before you swear it, my father told me, and I now tell you the same. Keep the five halls and the farmers who work them rather than fight for the throne. At the king's feast, praise the chosen ministers, but keep your sword out of rival quarrels. Stock the granaries before winter, and treat every marriage as a loan the next generation must repay."
+      "Content": "Ship and grain suppliers differ, making rewards affect cooperation. Coordination allocates actual supply and protection duties, not merely titles. Gissur coordinates chiefs, farmers and sailing partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gissur coordinates chiefs, farmers and sailing partners. Households compare burdens with neighbors; unmatched protection weakens cooperation. Ship and grain suppliers differ, making rewards affect cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ship and grain suppliers differ, making rewards affect cooperation. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Gissur coordinates chiefs, farmers and sailing partners."
     }
   ],
   "SemanticPrototypes": [],

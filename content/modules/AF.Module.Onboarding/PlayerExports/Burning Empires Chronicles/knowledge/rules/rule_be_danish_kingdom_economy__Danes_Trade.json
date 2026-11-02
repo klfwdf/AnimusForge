@@ -1,21 +1,18 @@
 {
   "Id": "be_danish_kingdom_economy",
   "Keywords": [
-    "Danes Fiscal Levies",
-    "Danes Dan Artisan Forges",
-    "Danes Agrarian Manors",
-    "Danes Trade Corridors"
+    "Danes Trade",
+    "Danish fish and repair timber"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Danes in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Jutland & Zealand Isles, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Danpsted farming, herds, fish and timber sustain crews.",
+    "Ship requisition affects fishing and grain transport together."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Danes was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Jutland & Zealand Isles, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Danpsted fields, herds, fish and timber sustain crews. Vessels carry cargo and fighters, so requisition affects fishing and grain; long voyages endanger harvest labor."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Shieldmen on the Jutland shore haul the longboat up the beach while the cook counts the last sacks of dried fish. Their stiff boots squelch through marsh water, and the paymaster hands out bronze rings that some merchants refuse. Every spearman hopes the next raid will fill his purse, though most come home with nothing but a broken oar."
+      "Content": "Danpsted farming, herds, fish and timber sustain crews. Traveling followers need real food from this production; valuables still require a buyer and exchange. Ship requisition affects fishing and grain transport together."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Your reeve writes that the barley tithe from the island farms reached the hall short, and amber traders have asked for longer credit. Lend them silver through a trusted intermediary so your name stays off the bond. Rival chieftains count every ship entering the harbor, and a visible debt invites them to press for a share of your holdings."
+      "Content": "Ship requisition affects fishing and grain transport together. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Danpsted farming, herds, fish and timber sustain crews."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Danpsted farming, herds, fish and timber sustain crews. Households need meals and the means to keep producing after delivering goods. Ship requisition affects fishing and grain transport together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ship requisition affects fishing and grain transport together. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Danpsted farming, herds, fish and timber sustain crews."
     }
   ],
   "SemanticPrototypes": [],

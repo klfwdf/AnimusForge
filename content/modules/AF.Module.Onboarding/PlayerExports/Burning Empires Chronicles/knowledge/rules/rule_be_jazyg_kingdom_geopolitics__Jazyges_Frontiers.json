@@ -1,21 +1,18 @@
 {
   "Id": "be_jazyg_kingdom_geopolitics",
   "Keywords": [
-    "Jazyges Frontier Marches",
-    "Jazyges Zizais Border Defense",
-    "Jazyges Strategic Passes",
-    "Jazyges Geopolitical Rivals"
+    "Jazyges Frontiers",
+    "Plains and tributaries east of the Danube"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Jazyges maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Plains and tributaries east of the Danube link pasture toward Rome.",
+    "Floods or occupied crossings force riders and families to detour."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Jazyges spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Danube-Tisza Marshes, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Plains, tributaries and crossings east of the Danube link pasture with Rome. Floods or occupied crossings force riders and dependants to detour."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A watch fire burns on the Danube bank, where the sentry scans the far shore for Roman patrols. Rumors say the frontier commanders have doubled the guard, so riders must avoid the mounted patrols on the road. A careless crossing could bring the legions down on the whole clan."
+      "Content": "Plains and tributaries east of the Danube link pasture toward Rome. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Floods or occupied crossings force riders and families to detour."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A letter goes to the Roman frontier commander, offering to keep the marsh routes quiet in exchange for grain and access to the markets. The Roman officers watch the river closely, and a single raid could turn a peace into a campaign. He keeps his warbands ready in case the offer is refused."
+      "Content": "Floods or occupied crossings force riders and families to detour. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Plains and tributaries east of the Danube link pasture toward Rome."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Plains and tributaries east of the Danube link pasture toward Rome. Closed routes may separate families from goods, imposing costs on those remaining at home. Floods or occupied crossings force riders and families to detour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Floods or occupied crossings force riders and families to detour. Cargo passes different carriers, making distant route changes become local shortages through delay. Plains and tributaries east of the Danube link pasture toward Rome."
     }
   ],
   "SemanticPrototypes": [],

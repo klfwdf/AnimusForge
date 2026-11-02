@@ -2,19 +2,17 @@
   "Id": "be_ere_kingdom_internal",
   "Keywords": [
     "Eastern Roman Empire Nobility",
-    "Eastern Roman Empire Valens Clan Lineages",
-    "Eastern Roman Empire Court Factions",
-    "Eastern Roman Empire Internal Strife"
+    "Eastern appointments levies and churches"
   ],
   "RagShortTexts": [
-    "Valens's eastern court operates within the Roman Empire in 374.",
-    "Office, patronage, treason prosecutions and supply burdens shape eastern politics."
+    "Eastern emperor, officials, urban elites and churches have different duties.",
+    "Appointments, grain and doctrine affect local cooperation."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 the eastern imperial court of Valens belongs to the Roman Empire, not to a later medieval Byzantine order. Civil office, military command, provincial wealth and access to the emperor provide different routes to influence. Court suspicion also reaches beyond policy: prosecutions connected with divination and treason can turn a patron's fall into danger for clients. Religious disagreement adds another pressure without making every alliance purely doctrinal. The army needs recruits and supplies, while provincial officials and wealthy households contest the burden. The module's eastern faction expresses an imperial division of government, rather than an already permanent separate national state."
+      "Content": "Emperor, civil officials, officers, urban elites and churches have different interests. Appointments, grain and doctrine can overlap, with local cooperation determining implementation."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "An eastern soldier hears orders through his officers and needs rations delivered where the unit actually serves. A patron's disgrace may replace a commander, but a new name on a dispatch does not repair boots or produce fodder. Men judge rival officials by whether their promises arrive in the storehouse before the march."
+      "Content": "Eastern emperor, officials, urban elites and churches have different duties. Followers retain family ties; decisions about guards and distant service affect common participation. Appointments, grain and doctrine affect local cooperation."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A notable seeking influence at Valens's court weighs office, patronage and the risk of accusation. Provincial connections can provide money and information, yet make him vulnerable if a client is investigated. He needs military protection and workable taxation; enriching his household alone can undermine the loyalty on which his position depends."
+      "Content": "Appointments, grain and doctrine affect local cooperation. Coordination allocates actual supply and protection duties, not merely titles. Eastern emperor, officials, urban elites and churches have different duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Eastern emperor, officials, urban elites and churches have different duties. Households compare burdens with neighbors; unmatched protection weakens cooperation. Appointments, grain and doctrine affect local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Appointments, grain and doctrine affect local cooperation. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Eastern emperor, officials, urban elites and churches have different duties."
     }
   ],
   "SemanticPrototypes": [],

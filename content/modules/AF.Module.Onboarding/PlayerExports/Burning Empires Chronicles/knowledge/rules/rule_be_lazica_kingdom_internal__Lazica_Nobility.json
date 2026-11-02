@@ -2,20 +2,17 @@
   "Id": "be_lazica_kingdom_internal",
   "Keywords": [
     "Lazica Nobility",
-    "Lazica Opsites Clan Lineages",
-    "Lazica Court Factions",
-    "Lazica Internal Strife"
+    "Lazican ports and valley chiefs"
   ],
   "RagShortTexts": [
-    "The ruling elite of Lazica comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Opsites coordinates ports and valley chiefs.",
+    "Continuous trade and garrison transport create different local demands."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Lazica, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Opsites coordinates ports and valley chiefs. Merchants need continuous movement and farmers watch garrison burdens; Roman relations also need local participation."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A torch gutters in the stairwell as the guard captain counts his men. Behind the heavy door, the old lord's son-in-law and the lord himself are shouting over a dispute, and the watch keeps its eyes on the floor. When patrician magnates fight over mine leases, it is the common guardsmen who are sent to the gates first, and who pay for it with their lives. Watchword: \"Storm.\""
+      "Content": "Opsites coordinates ports and valley chiefs. Followers retain family ties; decisions about guards and distant service affect common participation. Continuous trade and garrison transport create different local demands."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The chancellor lays the family accounts out for the heir behind a locked door: five castles, a few hundred serfs, and a loan falling due at the spring fair. Whoever wears the crown matters less than keeping these estates intact. Smile at court and drink every toast, but keep the steel under your cloak until the rival house's grain is yours."
+      "Content": "Continuous trade and garrison transport create different local demands. Coordination allocates actual supply and protection duties, not merely titles. Opsites coordinates ports and valley chiefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Opsites coordinates ports and valley chiefs. Households compare burdens with neighbors; unmatched protection weakens cooperation. Continuous trade and garrison transport create different local demands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Continuous trade and garrison transport create different local demands. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Opsites coordinates ports and valley chiefs."
     }
   ],
   "SemanticPrototypes": [],

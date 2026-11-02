@@ -2,20 +2,17 @@
   "Id": "be_scirian_kingdom_legitimacy",
   "Keywords": [
     "Scirians Legitimacy",
-    "Scirians Roderic Sovereign Authority",
-    "Scirians Ruling Seat",
-    "Scirians Feudal Oaths"
+    "Roderic’s protection of people and land"
   ],
   "RagShortTexts": [
-    "In 374 AD, Scirians governed from NE Carpathian Foothills, under the paramount rule of Scirian Chieftains.",
-    "The polity asserted sovereign legitimacy anchored in Scirians dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Roderic gains recognition by preserving people and land.",
+    "Powerful patrons may require food, troops and hostages."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Scirians anchored itself within NE Carpathian Foothills, confronting the accelerating tremors of Late Antiquity. Governed by Scirian Chieftains, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Scirians heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Authority matters while people and land remain viable. A powerful protector brings security along with troops, food and hostage demands."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Around the campfires of the Scirian camp, the sergeants tell newcomers the same thing: when the chieftain's banners move, every man buckles on iron armor and marches. Pay for blood spilled in the field arrives as gold coin or a plot of land, though the wounded often wait months for either. Nobody sleeps well until the password has passed through every tent."
+      "Content": "Roderic gains recognition by preserving people and land. Military recognition also rests on rewards and relief; a title needs willing action. Powerful patrons may require food, troops and hostages."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Behind the chancery's closed doors, the magnates weigh each royal decree. They bow to the words, but they will not surrender clan liberties or the tax revenues that feed their households. Their allegiance lasts exactly as long as the crown defends the noble prerogatives they have already secured."
+      "Content": "Powerful patrons may require food, troops and hostages. Nominal rights require local execution, with consent and supply both shaping authority. Roderic gains recognition by preserving people and land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Roderic gains recognition by preserving people and land. Households judge rule through protected families, land and responses to appeals. Powerful patrons may require food, troops and hostages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Powerful patrons may require food, troops and hostages. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Roderic gains recognition by preserving people and land."
     }
   ],
   "SemanticPrototypes": [],

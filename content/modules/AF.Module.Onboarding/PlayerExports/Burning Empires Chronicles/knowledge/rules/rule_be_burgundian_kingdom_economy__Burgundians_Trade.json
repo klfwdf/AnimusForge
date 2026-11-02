@@ -1,21 +1,18 @@
 {
   "Id": "be_burgundian_kingdom_economy",
   "Keywords": [
-    "Burgundians Fiscal Levies",
-    "Burgundians Gebicca Artisan Forges",
-    "Burgundians Agrarian Manors",
-    "Burgundians Trade Corridors"
+    "Burgundians Trade",
+    "Ascaucalis farming and woodland goods"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Burgundians in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Oder & Upper Main River, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Ascaucalis farming, herds, woodland and exchange sustain households.",
+    "Long service removes cultivators and herd carers."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Burgundians was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Oder & Upper Main River, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Farming, animals, woodland goods and exchange around Ascaucalis sustain households. Levies remove cultivators and herders; prizes cannot indefinitely replace grain losses."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Foot soldiers march along the river road under a fine rain, hauling carts loaded with cured hides and iron ingots for the armorers. Their hard biscuit has gone damp, and the quartermaster's ledger shows half the spears are missing. Before the watchword passes down the line, each man checks his bootlaces and his coin pouch."
+      "Content": "Ascaucalis farming, herds, woodland and exchange sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Long service removes cultivators and herd carers."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The Burgundian reeve reports that tithes from the river villages are late, while the iron forges demand advance payment for the autumn order. Consider a loan secured against the next pelt harvest, but share the terms only with the two lords sworn to your house. A rival who hears of your debts will test your borders before winter."
+      "Content": "Long service removes cultivators and herd carers. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Ascaucalis farming, herds, woodland and exchange sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Ascaucalis farming, herds, woodland and exchange sustain households. Households need meals and the means to keep producing after delivering goods. Long service removes cultivators and herd carers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Long service removes cultivators and herd carers. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Ascaucalis farming, herds, woodland and exchange sustain households."
     }
   ],
   "SemanticPrototypes": [],

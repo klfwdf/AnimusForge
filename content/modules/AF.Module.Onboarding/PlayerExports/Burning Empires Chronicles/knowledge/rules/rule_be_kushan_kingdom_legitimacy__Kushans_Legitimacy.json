@@ -2,20 +2,17 @@
   "Id": "be_kushan_kingdom_legitimacy",
   "Keywords": [
     "Kushans Legitimacy",
-    "Kushans Kipunada Sovereign Authority",
-    "Kushans Ruling Seat",
-    "Kushans Feudal Oaths"
+    "Kipunada’s titles and coinage"
   ],
   "RagShortTexts": [
-    "In 374 AD, Kushans governed from Gandhara & Kabul Valley, under the paramount rule of Kushano-Sasanian Rulers.",
-    "The polity asserted sovereign legitimacy anchored in Kushans dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Titles, coin names and local recognition support Kipunada.",
+    "Traders judge coin acceptance; elites judge land and jurisdiction."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Kushans anchored itself within Gandhara & Kabul Valley, confronting the accelerating tremors of Late Antiquity. Governed by Kushano-Sasanian Rulers, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Kushans heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Royal titles, coin names and local recognition support the court. Traders ask whether coins are accepted, elites whether property and jurisdiction remain protected."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Around the fire, veterans repeat the summons from the Kushano-Sasanian court: when the court's banners move, each man must buckle on iron armor. Blood spilled in the field must be repaid in gold and land. The recruits believe the promise, but they remember a campaign when the grants were delayed until the harvest was gone."
+      "Content": "Titles, coin names and local recognition support Kipunada. Military recognition also rests on rewards and relief; a title needs willing action. Traders judge coin acceptance; elites judge land and jurisdiction."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The valley lords gather in a fortified hall to test each royal decree against their own privileges. The rulers' authority is honored in the cities, but the lords keep their tithes and trade privileges in the mountain villages. A counselor urges a closer alliance with the court; another warns that every new tax will cost the crown a valley."
+      "Content": "Traders judge coin acceptance; elites judge land and jurisdiction. Nominal rights require local execution, with consent and supply both shaping authority. Titles, coin names and local recognition support Kipunada."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Titles, coin names and local recognition support Kipunada. Households judge rule through protected families, land and responses to appeals. Traders judge coin acceptance; elites judge land and jurisdiction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Traders judge coin acceptance; elites judge land and jurisdiction. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Titles, coin names and local recognition support Kipunada."
     }
   ],
   "SemanticPrototypes": [],

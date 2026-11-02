@@ -2,20 +2,17 @@
   "Id": "be_arran_kingdom_internal",
   "Keywords": [
     "Arran Nobility",
-    "Arran Vachagan II Clan Lineages",
-    "Arran Court Factions",
-    "Arran Internal Strife"
+    "Albanian community service burdens"
   ],
   "RagShortTexts": [
-    "The ruling elite of Arran comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Vachagan II joins communities of different languages and beliefs.",
+    "Mountain chiefs and valley elites differ over service."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Arran, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Vachagan II joins communities of different languages and beliefs. Mountain chiefs, valley elites and court differ over service; cooperation rests on practical patronage."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Guards in the hall stand at attention while the lords trade insults over the seating plan for the feast. A pair of cups clatters to the floor, and the steward quickly signals the musicians to play louder. The men on the door know that the next blow in this family quarrel could land on them if the lord's temper rises."
+      "Content": "Vachagan II joins communities of different languages and beliefs. Followers retain family ties; decisions about guards and distant service affect common participation. Mountain chiefs and valley elites differ over service."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Your nephew has begun to court the river chiefs who control the ferry crossings, and the prince's envoy will visit the palace in three weeks. Send gifts of horses and cloth to the ferry chiefs before the envoy arrives, and make your own claim to the crossings through a trusted cousin. Put nothing about the crossings in writing, since the envoy will carry every letter back to the palace."
+      "Content": "Mountain chiefs and valley elites differ over service. Coordination allocates actual supply and protection duties, not merely titles. Vachagan II joins communities of different languages and beliefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Vachagan II joins communities of different languages and beliefs. Households compare burdens with neighbors; unmatched protection weakens cooperation. Mountain chiefs and valley elites differ over service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Mountain chiefs and valley elites differ over service. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Vachagan II joins communities of different languages and beliefs."
     }
   ],
   "SemanticPrototypes": [],

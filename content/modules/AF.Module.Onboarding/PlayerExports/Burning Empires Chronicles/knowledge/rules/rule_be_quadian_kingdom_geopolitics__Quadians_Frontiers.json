@@ -1,21 +1,18 @@
 {
   "Id": "be_quadian_kingdom_geopolitics",
   "Keywords": [
-    "Quadians Frontier Marches",
-    "Quadians Viduarius Border Defense",
-    "Quadians Strategic Passes",
-    "Quadians Geopolitical Rivals"
+    "Quadians Frontiers",
+    "Disputed works on the Quadian bank"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Quadians maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Danube crossings join Quadian settlements and rear mountain roads.",
+    "Disputed Roman building heightens land and passage fears."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Quadians spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward South Bohemian Forests, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Danube crossings join settlements to rear mountain roads. Roman building on disputed land heightens passage and property fears, with fields especially exposed at harvest."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Snow piles against the palisade of the border fort, and the sentries stamp their feet to stay awake. Smoke rose from two distant ridges last night, and horse scouts have doubled their rides on the forest tracks. Every embrasure holds a loaded ballista, and no man sleeps in his mail without his boots laced. At the Quadians post, the night watchword is \"Thorn.\""
+      "Content": "Danube crossings join Quadian settlements and rear mountain roads. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Disputed Roman building heightens land and passage fears."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The captain of the marches reads a dispatch from the royal council with a set jaw. The subsidy has been cut again, while raiders probe the passes closer each season. Without silver to hire auxiliary bands, he must borrow from local lords and pledge them the toll from the river crossing, and every loan gives a rival house a stake in whether the pass holds."
+      "Content": "Disputed Roman building heightens land and passage fears. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Danube crossings join Quadian settlements and rear mountain roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Danube crossings join Quadian settlements and rear mountain roads. Closed routes may separate families from goods, imposing costs on those remaining at home. Disputed Roman building heightens land and passage fears."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Disputed Roman building heightens land and passage fears. Cargo passes different carriers, making distant route changes become local shortages through delay. Danube crossings join Quadian settlements and rear mountain roads."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,20 +2,17 @@
   "Id": "be_gepid_kingdom_legitimacy",
   "Keywords": [
     "Gepids Legitimacy",
-    "Gepids Cibidus Sovereign Authority",
-    "Gepids Ruling Seat",
-    "Gepids Feudal Oaths"
+    "Cibidus’ land protection and shares"
   ],
   "RagShortTexts": [
-    "In 374 AD, Gepids governed from Tisza River Basin, under the paramount rule of Gepid Kings.",
-    "The polity asserted sovereign legitimacy anchored in Gepids dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Land protection and fair shares support Gepid leadership.",
+    "Powerful patrons can demand service and food in return."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Gepids anchored itself within Tisza River Basin, confronting the accelerating tremors of Late Antiquity. Governed by Gepid Kings, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Gepids heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Land protection and fair returns support recognition. A powerful patron offers security while potentially demanding service and food."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A veteran rubs the old scar on his forearm by the fire and repeats what the herald promised: a land grant for every man who fights at the Tisza. The recruits have heard the same vow before. Some remember when the gold was delayed, and others remember which officers kept it."
+      "Content": "Land protection and fair shares support Gepid leadership. Military recognition also rests on rewards and relief; a title needs willing action. Powerful patrons can demand service and food in return."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Across the king's council table, the lords lay out their charters, tallies, and claims to the river lands. The decree is read aloud, but the tithe on the marsh villages stays with the local houses. A counselor argues that the crown must buy loyalty with land, while a rival warns that every gift of land becomes a future claim."
+      "Content": "Powerful patrons can demand service and food in return. Nominal rights require local execution, with consent and supply both shaping authority. Land protection and fair shares support Gepid leadership."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Land protection and fair shares support Gepid leadership. Households judge rule through protected families, land and responses to appeals. Powerful patrons can demand service and food in return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Powerful patrons can demand service and food in return. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Land protection and fair shares support Gepid leadership."
     }
   ],
   "SemanticPrototypes": [],

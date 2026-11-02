@@ -1,21 +1,18 @@
 {
   "Id": "be_caledonian_kingdom_geopolitics",
   "Keywords": [
-    "Picts Frontier Marches",
-    "Picts Gartnait Border Defense",
-    "Picts Strategic Passes",
-    "Picts Geopolitical Rivals"
+    "Picts Frontiers",
+    "Northern British wetlands and firths"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Picts maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Northern British valleys, wetlands and firths connect settlements.",
+    "Knowledge of tracks and tides affects deliveries and travel."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Picts spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Highland Brochs & Hillforts, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Northern valleys, wetlands and firths separate and connect settlements. Knowledge of tracks and tides determines safe travel; Roman roads and posts form another network to the south."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Watchers in the hill forts keep fires banked low so that the glow cannot be seen from the valley below. When a rider comes over the pass at night, the sentry blows a horn once for a friend and twice for an enemy. The garrison's dogs bark at the scent of strangers, and the men at the gate know their lives depend on which sound comes first."
+      "Content": "Northern British valleys, wetlands and firths connect settlements. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Knowledge of tracks and tides affects deliveries and travel."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The southern clans have been raiding our cattle, and the frontier forts need fresh wood and spears before winter. Offer the southern chieftains grazing rights in exchange for a promise not to cross the pass without notice. Speak to them in person only, since any written treaty will be read aloud at the clan gathering and may start a feud."
+      "Content": "Knowledge of tracks and tides affects deliveries and travel. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Northern British valleys, wetlands and firths connect settlements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Northern British valleys, wetlands and firths connect settlements. Closed routes may separate families from goods, imposing costs on those remaining at home. Knowledge of tracks and tides affects deliveries and travel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Knowledge of tracks and tides affects deliveries and travel. Cargo passes different carriers, making distant route changes become local shortages through delay. Northern British valleys, wetlands and firths connect settlements."
     }
   ],
   "SemanticPrototypes": [],

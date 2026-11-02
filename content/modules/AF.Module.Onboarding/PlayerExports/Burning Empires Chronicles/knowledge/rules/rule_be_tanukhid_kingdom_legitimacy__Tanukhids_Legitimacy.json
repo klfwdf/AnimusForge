@@ -2,20 +2,17 @@
   "Id": "be_tanukhid_kingdom_legitimacy",
   "Keywords": [
     "Tanukhids Legitimacy",
-    "Tanukhids Mavia Sovereign Authority",
-    "Tanukhids Ruling Seat",
-    "Tanukhids Feudal Oaths"
+    "Mavia’s kin religion and service negotiations"
   ],
   "RagShortTexts": [
-    "In 374 AD, Tanukhids governed from Syrian Desert & South Aleppo, under the paramount rule of Queen Mavia.",
-    "The polity asserted sovereign legitimacy anchored in Tanukhids dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Mavia relies on kin recognition, protection and diplomacy.",
+    "Religion, service and reward terms affect treaty implementation."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Tanukhids anchored itself within Syrian Desert & South Aleppo, confronting the accelerating tremors of Late Antiquity. Governed by Queen Mavia, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Tanukhids heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Her standing rests on kin recognition, protection and diplomacy. Religion, service and rewards affect willingness to honor agreements."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "On the desert road, the veterans pass the word that when Queen Mavia's banners are lifted, every man must strap on iron armor. Pay for blood spilled in her service is promised in gold coin and land, though the wounded often wait long years. A soldier learns not to trust the herald's promises until the wages are in his palm."
+      "Content": "Mavia relies on kin recognition, protection and diplomacy. Military recognition also rests on rewards and relief; a title needs willing action. Religion, service and reward terms affect treaty implementation."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "In the council hall, the magnates study each royal decree with a skeptic's eye. They bow to the queen's authority in public, but they keep clan liberties and tax revenues in their own hands. Every oath of allegiance is weighed against the privileges the nobles already hold, and a quiet letter to a rival house waits ready if the throne falters."
+      "Content": "Religion, service and reward terms affect treaty implementation. Nominal rights require local execution, with consent and supply both shaping authority. Mavia relies on kin recognition, protection and diplomacy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Mavia relies on kin recognition, protection and diplomacy. Households judge rule through protected families, land and responses to appeals. Religion, service and reward terms affect treaty implementation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Religion, service and reward terms affect treaty implementation. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Mavia relies on kin recognition, protection and diplomacy."
     }
   ],
   "SemanticPrototypes": [],

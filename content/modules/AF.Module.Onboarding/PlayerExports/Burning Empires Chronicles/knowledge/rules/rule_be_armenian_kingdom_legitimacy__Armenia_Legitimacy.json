@@ -2,20 +2,17 @@
   "Id": "be_armenian_kingdom_legitimacy",
   "Keywords": [
     "Armenia Legitimacy",
-    "Armenia Varazdat Sovereign Authority",
-    "Armenia Ruling Seat",
-    "Armenia Feudal Oaths"
+    "Varazdat’s dynastic recognition"
   ],
   "RagShortTexts": [
-    "In 374 AD, Armenia governed from Vagharshapat & Artashat, under the paramount rule of King Pap (Arsacid Dynasty).",
-    "The polity asserted sovereign legitimacy anchored in Armenia dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Varazdat relies on Arsacid standing and noble and church recognition.",
+    "Foreign recognition can attach garrison and service conditions."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Armenia anchored itself within Vagharshapat & Artashat, confronting the accelerating tremors of Late Antiquity. Governed by King Pap (Arsacid Dynasty), the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Armenia heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Varazdat’s Arsacid position also needs aristocratic and church recognition. Foreign acknowledgment can strengthen him while attaching garrison and service conditions."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans of the royal guard speak of King Pap's campaigns while they polish their helmets in the armory. When the Arsacid banners advance, every man knows he must wear his armor and stand under the standard, and their pay in silver and land is spoken of as a sacred debt. The younger men listen and promise each other that they will not desert in the first battle."
+      "Content": "Varazdat relies on Arsacid standing and noble and church recognition. Military recognition also rests on rewards and relief; a title needs willing action. Foreign recognition can attach garrison and service conditions."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The chancery has confirmed the decrees on land grants, yet the great houses still dispute the tax terms. Summon the highland heads to a quiet gathering and promise their hereditary rights in exchange for oaths. Leave the royal seal off the pledge, since the chancellor would read it as a challenge to the crown."
+      "Content": "Foreign recognition can attach garrison and service conditions. Nominal rights require local execution, with consent and supply both shaping authority. Varazdat relies on Arsacid standing and noble and church recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Varazdat relies on Arsacid standing and noble and church recognition. Households judge rule through protected families, land and responses to appeals. Foreign recognition can attach garrison and service conditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Foreign recognition can attach garrison and service conditions. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Varazdat relies on Arsacid standing and noble and church recognition."
     }
   ],
   "SemanticPrototypes": [],

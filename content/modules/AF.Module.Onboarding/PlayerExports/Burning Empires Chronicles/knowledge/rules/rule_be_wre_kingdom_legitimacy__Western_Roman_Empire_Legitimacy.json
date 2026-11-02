@@ -2,20 +2,17 @@
   "Id": "be_wre_kingdom_legitimacy",
   "Keywords": [
     "Western Roman Empire Legitimacy",
-    "Western Roman Empire Valentinianus I Sovereign Authority",
-    "Western Roman Empire Ruling Seat",
-    "Western Roman Empire Feudal Oaths"
+    "Valentinian’s appointments discipline and shared rule"
   ],
   "RagShortTexts": [
-    "In 374 AD, Western Roman Empire governed from Mediolanum & Trier, under the paramount rule of Valentinian I.",
-    "The polity asserted sovereign legitimacy anchored in Western Roman Empire dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Valentinian relies on Roman legitimacy, discipline and appointments.",
+    "Western and eastern courts share rule; execution needs troops and local cooperation."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Western Roman Empire anchored itself within Mediolanum & Trier, confronting the accelerating tremors of Late Antiquity. Governed by Valentinian I, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Western Roman Empire heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Valentinian sustains authority through imperial legitimacy, discipline and appointments, sharing rule with the eastern court. Formal office still requires military and local cooperation."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Legionaries speak in low voices about the standards carried at Mediolanum and Trier. When Valentinian I's banners are raised, every soldier must buckle on his mail and fall in at the eagle. Blood spent on the campaign is repaid in gold or land grants, though the wounded wait a long time before the clerks write their names."
+      "Content": "Valentinian relies on Roman legitimacy, discipline and appointments. Military recognition also rests on rewards and relief; a title needs willing action. Western and eastern courts share rule; execution needs troops and local cooperation."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "In the palace offices, the magnates read each imperial rescript twice before they agree to obey. The emperor's authority is acknowledged in public, yet municipal liberties and tax revenues remain under local control. Every oath of loyalty is weighed against the privileges the great houses already hold, and quiet envoys carry the true terms between cities."
+      "Content": "Western and eastern courts share rule; execution needs troops and local cooperation. Nominal rights require local execution, with consent and supply both shaping authority. Valentinian relies on Roman legitimacy, discipline and appointments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Valentinian relies on Roman legitimacy, discipline and appointments. Households judge rule through protected families, land and responses to appeals. Western and eastern courts share rule; execution needs troops and local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Western and eastern courts share rule; execution needs troops and local cooperation. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Valentinian relies on Roman legitimacy, discipline and appointments."
     }
   ],
   "SemanticPrototypes": [],

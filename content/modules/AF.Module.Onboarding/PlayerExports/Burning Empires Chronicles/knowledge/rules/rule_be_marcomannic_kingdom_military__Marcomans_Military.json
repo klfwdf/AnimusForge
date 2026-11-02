@@ -1,21 +1,18 @@
 {
   "Id": "be_marcomannic_kingdom_military",
   "Keywords": [
-    "Marcomans Military Doctrine",
-    "Marcomans Vannius Elite Hosts",
-    "Marcomans Battle Phalanxes",
-    "Marcomans Defensive Manuals"
+    "Marcomans Military",
+    "Marcomannic woodland and river watches"
   ],
   "RagShortTexts": [
-    "The standing military of Marcomans in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Woodland and river warnings preserve Marcomannic neutrality options.",
+    "Prolonged assembly exhausts household grain."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Marcomans rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Marcomans against overwhelming regional adversaries."
+      "Content": "Present neutrality leaves room for warnings along woods and rivers while households farm. Prolonged assembly can exhaust grain before courage."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Horn calls cut through the morning fog. The front rank locks its shoulders into the shields beside it to take the charge of warhorses, and spears thrust through the gaps from behind. A man who turns his back will meet the sergeant's blade before he meets the enemy. At the Marcomans post, the night watchword is \"Ember.\""
+      "Content": "Woodland and river warnings preserve Marcomannic neutrality options. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Prolonged assembly exhausts household grain."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "In the command tent on the hill, commanders weigh whether the supply carts will reach the line in time. The plan holds only if the center does not break. When the infantry stands firm, flank horsemen ride wide to close the trap, and the fleeing enemy ranks become spoil."
+      "Content": "Prolonged assembly exhausts household grain. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Woodland and river warnings preserve Marcomannic neutrality options."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Woodland and river warnings preserve Marcomannic neutrality options. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Prolonged assembly exhausts household grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Prolonged assembly exhausts household grain. Repair, carrying and care also use people, while daily supply continues after troops pass. Woodland and river warnings preserve Marcomannic neutrality options."
     }
   ],
   "SemanticPrototypes": [],

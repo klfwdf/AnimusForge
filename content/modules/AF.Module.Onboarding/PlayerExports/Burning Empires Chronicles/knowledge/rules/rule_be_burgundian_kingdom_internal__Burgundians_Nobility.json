@@ -2,19 +2,17 @@
   "Id": "be_burgundian_kingdom_internal",
   "Keywords": [
     "Burgundians Nobility",
-    "Burgundians Gebicca Clan Lineages",
-    "Burgundians Court Factions",
-    "Burgundians Internal Strife"
+    "Burgundian kin cooperation"
   ],
   "RagShortTexts": [
-    "Ammianus distinguishes Burgundian royal and chief-priestly offices.",
-    "Military and harvest failure could endanger a Burgundian ruler's standing."
+    "Gebicca coordinates kin chiefs retaining local responsibilities.",
+    "Groups set separate terms on passage, rewards and neighbors."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Among the Burgundians, authority cannot be reduced to a Roman palace full of senators. Ammianus distinguishes the royal office called hendinos from the chief priest called sinistus: failure in war or harvest could threaten the former, while the latter held a more enduring position. His Roman account is an outside description, not a complete constitution. It nevertheless offers a particular source of internal tension: leaders need support from armed followers and communities whose food supply makes campaigning possible. Religious standing, success and relations with neighbouring powers all matter, rather than possession of imaginary hereditary castles."
+      "Content": "Gebicca coordinates kin chiefs, whose followers still answer for their settlements. Groups set different terms on passage, reward and neighbors."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A follower wants to know who is leading the expedition and who will bring grain after the first day's march. Praise for a chief rings hollow when horses lack forage or a raid brings no return. The men left behind must still tend households, so a failed campaign becomes a dispute over losses as well as courage."
+      "Content": "Gebicca coordinates kin chiefs retaining local responsibilities. Followers retain family ties; decisions about guards and distant service affect common participation. Groups set separate terms on passage, rewards and neighbors."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A Burgundian leader cannot assume that command survives every defeat. He must hear the people who supply fighters and those whose religious standing helps make authority credible. Bargaining with Rome or a neighbouring group may strengthen him, yet an agreement that benefits only his companions can cost wider support."
+      "Content": "Groups set separate terms on passage, rewards and neighbors. Coordination allocates actual supply and protection duties, not merely titles. Gebicca coordinates kin chiefs retaining local responsibilities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gebicca coordinates kin chiefs retaining local responsibilities. Households compare burdens with neighbors; unmatched protection weakens cooperation. Groups set separate terms on passage, rewards and neighbors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Groups set separate terms on passage, rewards and neighbors. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Gebicca coordinates kin chiefs retaining local responsibilities."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,20 +2,17 @@
   "Id": "be_burgundian_kingdom_legitimacy",
   "Keywords": [
     "Burgundians Legitimacy",
-    "Burgundians Gebicca Sovereign Authority",
-    "Burgundians Ruling Seat",
-    "Burgundians Feudal Oaths"
+    "Gebicca’s pledges and shares"
   ],
   "RagShortTexts": [
-    "In 374 AD, Burgundians governed from Oder & Upper Main River, under the paramount rule of Burgundian Chieftains.",
-    "The polity asserted sovereign legitimacy anchored in Burgundians dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Gebicca’s standing rests on success, reliability and shares.",
+    "Roman friendship does not replace local consent to service."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Burgundians anchored itself within Oder & Upper Main River, confronting the accelerating tremors of Late Antiquity. Governed by Burgundian Chieftains, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Burgundians heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Standing comes from success, reliability and distribution. Roman friendship strengthens bargaining without making every chief accept the same service promise."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Chieftain's riders gather at dusk to clean their weapons and talk about the oath sworn at midwinter. When the war horns sound, each man buckles on his armor and rides to the banner that carries the chief's name. The old warriors promise the younger ones a share of the spoils, and the young men believe it because they want to."
+      "Content": "Gebicca’s standing rests on success, reliability and shares. Military recognition also rests on rewards and relief; a title needs willing action. Roman friendship does not replace local consent to service."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The chieftains' council wants you to confirm the land grants made to the river families before the autumn assembly. Confirm the grants only after the river families pledge their men to the next campaign. Send the pledges by a trusted messenger and keep the copies in your own chest, since an open register will reveal the grants to the other chieftains."
+      "Content": "Roman friendship does not replace local consent to service. Nominal rights require local execution, with consent and supply both shaping authority. Gebicca’s standing rests on success, reliability and shares."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gebicca’s standing rests on success, reliability and shares. Households judge rule through protected families, land and responses to appeals. Roman friendship does not replace local consent to service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman friendship does not replace local consent to service. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Gebicca’s standing rests on success, reliability and shares."
     }
   ],
   "SemanticPrototypes": [],

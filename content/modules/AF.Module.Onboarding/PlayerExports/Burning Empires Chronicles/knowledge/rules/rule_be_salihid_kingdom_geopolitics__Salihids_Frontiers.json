@@ -1,21 +1,18 @@
 {
   "Id": "be_salihid_kingdom_geopolitics",
   "Keywords": [
-    "Salihids Frontier Marches",
-    "Salihids Zokomos the Mighty Border Defense",
-    "Salihids Strategic Passes",
-    "Salihids Geopolitical Rivals"
+    "Salihids Frontiers",
+    "Salihid oasis well routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Salihids maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Wells connect Salihid oases and desert routes.",
+    "One blocked well can force an entire group to detour."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Salihids spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Jordanian Desert & Petra Environs, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Wells link oases across desert. One blocked source can force a detour, and available water may not support every animal together."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A watchman on the rock above the wells scans the haze for dust. Smoke columns rose beyond the wadi last night, and scouts now ride the desert tracks three times a week. Every post has a loaded bow and a tethered camel, and the watch changes at midnight because no one trusts the dark. At the Salihids post, the night watchword is \"Dawn.\""
+      "Content": "Wells connect Salihid oases and desert routes. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. One blocked well can force an entire group to detour."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A courier rides in through the gate with a dispatch sealed in red wax. The phylarch's subsidy from the frontier fort has been cut again, while raiders probe the wells each month. Without silver to hire auxiliary riders, the warden must borrow from local tribes and pledge them the caravan tolls, and every debt gives a rival chief a claim on the water."
+      "Content": "One blocked well can force an entire group to detour. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Wells connect Salihid oases and desert routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Wells connect Salihid oases and desert routes. Closed routes may separate families from goods, imposing costs on those remaining at home. One blocked well can force an entire group to detour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "One blocked well can force an entire group to detour. Cargo passes different carriers, making distant route changes become local shortages through delay. Wells connect Salihid oases and desert routes."
     }
   ],
   "SemanticPrototypes": [],

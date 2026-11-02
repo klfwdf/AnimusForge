@@ -1,21 +1,18 @@
 {
   "Id": "be_danish_kingdom_geopolitics",
   "Keywords": [
-    "Danes Frontier Marches",
-    "Danes Dan Border Defense",
-    "Danes Strategic Passes",
-    "Danes Geopolitical Rivals"
+    "Danes Frontiers",
+    "Danish island straits"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Danes maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Danish straits, peninsula and anchorages form coastal routes.",
+    "Wind and tide can close otherwise accessible shores."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Danes spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Jutland & Zealand Isles, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Island straits, peninsula and anchorages form coastal routes. Wind and tide close seemingly accessible shores; safe landing matters more than distance alone."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Watchmen on the headland light a beacon of driftwood and tar when the sails of strange ships appear beyond the fjord. The shieldmen on the shore drag their boats into the shallows and wait for the signal to answer. Anyone who sleeps on the wall is sent to row back to the hall at dawn, and no one is spared the duty."
+      "Content": "Danish straits, peninsula and anchorages form coastal routes. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Wind and tide can close otherwise accessible shores."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Saxon envoys have reached the southern islands, and our harbor forts still lack timber and iron. Propose to the coastal lords a shared watch of the sound, with tolls paid to whichever chief supplies the most men. Keep it unwritten until the Thing settles the succession, since a rival faction would read any alliance as proof of your ambitions."
+      "Content": "Wind and tide can close otherwise accessible shores. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Danish straits, peninsula and anchorages form coastal routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Danish straits, peninsula and anchorages form coastal routes. Closed routes may separate families from goods, imposing costs on those remaining at home. Wind and tide can close otherwise accessible shores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Wind and tide can close otherwise accessible shores. Cargo passes different carriers, making distant route changes become local shortages through delay. Danish straits, peninsula and anchorages form coastal routes."
     }
   ],
   "SemanticPrototypes": [],

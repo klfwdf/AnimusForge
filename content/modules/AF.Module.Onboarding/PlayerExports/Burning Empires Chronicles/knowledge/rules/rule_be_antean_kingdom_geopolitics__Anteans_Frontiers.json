@@ -1,21 +1,18 @@
 {
   "Id": "be_antean_kingdom_geopolitics",
   "Keywords": [
-    "Anteans Frontier Marches",
-    "Anteans Bozh Border Defense",
-    "Anteans Strategic Passes",
-    "Anteans Geopolitical Rivals"
+    "Anteans Frontiers",
+    "Antean forest-steppe crossings"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Anteans maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Sarum’s forest-steppe routes pass wetlands and crossings.",
+    "Woodland branches preserve settlement escape routes."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Anteans spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Middle Dnieper & Dniester Forest, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Rivers and wetlands at the forest-steppe edge concentrate travel at crossings. Open ground admits cavalry while woodland branches retain escape routes."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Mist rolls off the river and the ferryman refuses to cross until dawn, so the sentry keeps a hand on his hilt. Men on the outer post sharpen their spears at every sound of horses in the forest. Before the rotation changes, each sentry must tell the next one which fords the scouts have marked as unsafe."
+      "Content": "Sarum’s forest-steppe routes pass wetlands and crossings. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Woodland branches preserve settlement escape routes."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The marcher lord fears Gothic and steppe riders will cross the eastern fords in force, with the Dniester forts holding barely half their garrisons. Send a sealed letter to the neighboring elders, offering a share of the tolls if they keep their riders on our side of the river. Let no written pact name the enemy, lest the king's officers treat it as treason."
+      "Content": "Woodland branches preserve settlement escape routes. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Sarum’s forest-steppe routes pass wetlands and crossings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Sarum’s forest-steppe routes pass wetlands and crossings. Closed routes may separate families from goods, imposing costs on those remaining at home. Woodland branches preserve settlement escape routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Woodland branches preserve settlement escape routes. Cargo passes different carriers, making distant route changes become local shortages through delay. Sarum’s forest-steppe routes pass wetlands and crossings."
     }
   ],
   "SemanticPrototypes": [],

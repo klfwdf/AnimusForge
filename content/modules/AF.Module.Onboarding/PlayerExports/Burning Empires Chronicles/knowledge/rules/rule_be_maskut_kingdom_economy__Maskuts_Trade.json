@@ -1,21 +1,18 @@
 {
   "Id": "be_maskut_kingdom_economy",
   "Keywords": [
-    "Maskuts Fiscal Levies",
-    "Maskuts Sanatruk Artisan Forges",
-    "Maskuts Agrarian Manors",
-    "Maskuts Trade Corridors"
+    "Maskuts Trade",
+    "Gelda herds and farming exchange"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Maskuts in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Caspian Dagestan Steppes, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Gelda herds, farming exchange and travelers sustain households.",
+    "Excessive roadside raiding harms the next food supply."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Maskuts was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Caspian Dagestan Steppes, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Gelda and foothill households depend on herds, farming exchange and travelers. Horses need grain exchange, while excessive raiding damages the next supply visit."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Wagons sink to the axles in the river mud below the camp, and the drivers curse each yoke in turn. The rye ration has gone hard as stone, so the cooks soak it overnight before they boil it. Pay comes in salt or copper when the quartermaster can spare it, and each man eyes the enemy dead for silver. At the Maskuts post, the night watchword is \"Iron.\""
+      "Content": "Gelda herds, farming exchange and travelers sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Excessive roadside raiding harms the next food supply."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The estate reeve weighs fleece and salt on a brass scale by lamplight. A tenth of the yield goes into the lord's granary, and the forge turned out one hundred horseshoes and forty spearheads last month. He seals the tally for the market agent, who will set what the household's armor costs next spring."
+      "Content": "Excessive roadside raiding harms the next food supply. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Gelda herds, farming exchange and travelers sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gelda herds, farming exchange and travelers sustain households. Households need meals and the means to keep producing after delivering goods. Excessive roadside raiding harms the next food supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Excessive roadside raiding harms the next food supply. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Gelda herds, farming exchange and travelers sustain households."
     }
   ],
   "SemanticPrototypes": [],

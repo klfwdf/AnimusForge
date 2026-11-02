@@ -1,21 +1,18 @@
 {
   "Id": "be_slavic_kingdom_geopolitics",
   "Keywords": [
-    "Venedians Frontier Marches",
-    "Venedians Lekh Border Defense",
-    "Venedians Strategic Passes",
-    "Venedians Geopolitical Rivals"
+    "Venedians Frontiers",
+    "Venedian woodland rivers"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Venedians maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Venedian rivers, woods and settlement crossings form routes.",
+    "Rain, seasons and disputes redirect boats and walkers."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Venedians spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Vistula Gulf & Baltic Coast, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Rivers, woods and crossings form routes, with rain, seasons and disputes affecting boats and walkers. Shore stops also need provisions."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Frost clings to the palisade at the frontier, and the sentries scan the forest edge for smoke. Signal fires flickered through the pines again last night, and hostile cavalry sweeps have tripled this month. Every embrasure holds a loaded ballista, and no sentry leaves his post until the password has passed to the next watch."
+      "Content": "Venedian rivers, woods and settlement crossings form routes. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Rain, seasons and disputes redirect boats and walkers."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Dispatches from the capital reach the Venedian palisade, and the warden finds the subsidy cut once more. Each season he trades grain for mercenary bands with neighboring lords, since no silver remains for auxiliary companies. Raiders probe closer at every new moon, so his sealed reports to the chancery now plead for the pass to be funded before winter."
+      "Content": "Rain, seasons and disputes redirect boats and walkers. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Venedian rivers, woods and settlement crossings form routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Venedian rivers, woods and settlement crossings form routes. Closed routes may separate families from goods, imposing costs on those remaining at home. Rain, seasons and disputes redirect boats and walkers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Rain, seasons and disputes redirect boats and walkers. Cargo passes different carriers, making distant route changes become local shortages through delay. Venedian rivers, woods and settlement crossings form routes."
     }
   ],
   "SemanticPrototypes": [],

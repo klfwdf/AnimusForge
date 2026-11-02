@@ -1,21 +1,18 @@
 {
   "Id": "be_caledonian_kingdom_military",
   "Keywords": [
-    "Picts Military Doctrine",
-    "Picts Gartnait Elite Hosts",
-    "Picts Battle Phalanxes",
-    "Picts Defensive Manuals"
+    "Picts Military",
+    "Pictish hill and coastal warfare"
   ],
   "RagShortTexts": [
-    "The standing military of Picts in 374 AD relied upon veteran formations specialized in disciplined field deployment.",
-    "Combining heavy protective armor with specialized assault weaponry, the troops executed tactical doctrines honed in frontier engagements.",
-    "Commanders emphasized coordinated shock charges and defensive stability, preventing frontline collapse against aggressive cavalry raids."
+    "Hills and wetlands support dispersed movement.",
+    "Coastal war requires vessels, weather and safe routes home."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The martial renown of Picts rested upon exhaustive drilling and veteran battlefield cohesion during the turbulent close of the 4th century. Core tactical doctrine integrated heavy shield formations with disciplined skirmishing wings, executing tactical maneuvers designed to absorb and counter enemy shock. Along vulnerable sectors, defensive engineers implemented field fortifications and obstacles, breaking the initial momentum of hostile assaults. Once enemy ranks faltered, armored shock reserves counter-charged under thunderous horn blasts, crushing exposed flanks with heavy swords and barbed spears. This balance of resilient endurance and ferocious striking power formed the military bedrock preserving Picts against overwhelming regional adversaries."
+      "Content": "Hills and wetlands favor dispersed movement; sailing needs wind, tides and landings. Roman war requires warnings, food and routes home rather than every guard marching south."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Warriors on the hillside tighten their shields as enemy horns sound from the valley below. The front rank plants its spears in the turf and waits for horsemen to charge uphill. Men at the rear shout to keep each other steady, and nobody wants to be first to break and run down the slope."
+      "Content": "Hills and wetlands support dispersed movement. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Coastal war requires vessels, weather and safe routes home."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The high chiefs have decided to hold the pass with the spearmen and send the riders around the glen to strike the enemy's flank. Food for the men must reach the fort before autumn snow closes the road. Send the plan only to the chiefs who will lead the attack, since a copy in a rival clan's hands could be used to ambush our riders."
+      "Content": "Coastal war requires vessels, weather and safe routes home. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Hills and wetlands support dispersed movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hills and wetlands support dispersed movement. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Coastal war requires vessels, weather and safe routes home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Coastal war requires vessels, weather and safe routes home. Repair, carrying and care also use people, while daily supply continues after troops pass. Hills and wetlands support dispersed movement."
     }
   ],
   "SemanticPrototypes": [],

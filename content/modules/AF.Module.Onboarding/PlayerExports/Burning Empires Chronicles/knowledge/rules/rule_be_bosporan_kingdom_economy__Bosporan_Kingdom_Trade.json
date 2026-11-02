@@ -1,21 +1,18 @@
 {
   "Id": "be_bosporan_kingdom_economy",
   "Keywords": [
-    "Bosporan Kingdom Fiscal Levies",
-    "Bosporan Kingdom Sauromates V Artisan Forges",
-    "Bosporan Kingdom Agrarian Manors",
-    "Bosporan Kingdom Trade Corridors"
+    "Bosporan Kingdom Trade",
+    "Panticapaeum port credit"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Bosporan Kingdom in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Panticapaeum (Kerch), merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Panticapaeum depends on grain, fish and land-sea exchange.",
+    "Port stores connect hinterland cargo to shipping."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Bosporan Kingdom was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Panticapaeum (Kerch), cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Panticapaeum and strait ports rely on grain, fish and land-sea exchange. Stores connect hinterland produce to vessels; either blocked shipping or roads hurts civilians and guards."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Dockside workers unload grain sacks from the Kerch barges, and the garrison lines up for a meal thinner than promised. Soldiers oil their scale armor against salt spray and gather at the gate to sell spare sandals to merchants. An officer who fails to pay the stevedores will find his own men slow to march."
+      "Content": "Panticapaeum depends on grain, fish and land-sea exchange. Traveling followers need real food from this production; valuables still require a buyer and exchange. Port stores connect hinterland cargo to shipping."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The governor's clerk reports that harbor tolls at Panticapaeum rose again, and wine caravans from the steppe now wait for days on the quay. Send a sealed note to the grain factors, offering a partial waiver of the tithe if they guarantee our reserves through winter. Discretion matters, because rival houses in the port watch every shipment leaving the warehouses."
+      "Content": "Port stores connect hinterland cargo to shipping. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Panticapaeum depends on grain, fish and land-sea exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Panticapaeum depends on grain, fish and land-sea exchange. Households need meals and the means to keep producing after delivering goods. Port stores connect hinterland cargo to shipping."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Port stores connect hinterland cargo to shipping. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Panticapaeum depends on grain, fish and land-sea exchange."
     }
   ],
   "SemanticPrototypes": [],

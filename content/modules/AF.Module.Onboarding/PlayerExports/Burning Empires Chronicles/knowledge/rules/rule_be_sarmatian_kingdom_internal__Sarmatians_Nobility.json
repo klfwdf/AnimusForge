@@ -2,19 +2,17 @@
   "Id": "be_sarmatian_kingdom_internal",
   "Keywords": [
     "Sarmatians Nobility",
-    "Sarmatians Kasagos Clan Lineages",
-    "Sarmatians Court Factions",
-    "Sarmatians Internal Strife"
+    "Sarmatian mounted kin and weaker households"
   ],
   "RagShortTexts": [
-    "Sarmatian covers distinct groups; it is not a single uniform fourth-century state.",
-    "Herds, grazing and dependants' safety constrain a mounted following's choices."
+    "Kasagos coordinates mounted families and kin partners.",
+    "Alans and Jazyges have separate chiefs; aid needs separate negotiation."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Sarmatian is a broad designation covering groups with different locations and relationships, not a single uniform state. In the module, authority can depend on kin connections, herds, access to grazing and a leader's armed following. Relations with Rome or other steppe peoples may offer protection and opportunity while exposing dependants to new obligations. The pressure of movements farther east need not be identical at every camp in 374, and later Hunnic domination is not certain knowledge for every speaker. Disputes over movement, supplies and the protection of households distinguish this politics from invented senatorial courts and castle-based fiefs."
+      "Content": "Kasagos joins mounted families and kin partners. Alans and Jazyges have separate leaders; aid needs defined terms rather than assumed common customs."
     },
     {
       "Priority": 0,
@@ -24,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A mounted follower needs a sound horse, forage and a place where the household's animals can rest. An order to move quickly may conflict with the pace of children and loaded carts. Men argue over scouts and watering places because a mistake can cost the herd, even when no enemy has yet reached the camp."
+      "Content": "Kasagos coordinates mounted families and kin partners. Followers retain family ties; decisions about guards and distant service affect common participation. Alans and Jazyges have separate chiefs; aid needs separate negotiation."
     },
     {
       "Priority": 0,
@@ -34,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A Sarmatian leader weighs an offer of outside protection against the men, supplies or obedience it may require. Other households may prefer a different route or patron. Prestige alone cannot settle grazing and security; a workable bargain must leave dependants able to live, rather than rescue only the chief's immediate companions."
+      "Content": "Alans and Jazyges have separate chiefs; aid needs separate negotiation. Coordination allocates actual supply and protection duties, not merely titles. Kasagos coordinates mounted families and kin partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kasagos coordinates mounted families and kin partners. Households compare burdens with neighbors; unmatched protection weakens cooperation. Alans and Jazyges have separate chiefs; aid needs separate negotiation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Alans and Jazyges have separate chiefs; aid needs separate negotiation. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Kasagos coordinates mounted families and kin partners."
     }
   ],
   "SemanticPrototypes": [],

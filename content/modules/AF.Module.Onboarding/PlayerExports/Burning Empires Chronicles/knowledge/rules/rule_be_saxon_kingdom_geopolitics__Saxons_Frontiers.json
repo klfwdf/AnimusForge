@@ -1,21 +1,18 @@
 {
   "Id": "be_saxon_kingdom_geopolitics",
   "Keywords": [
-    "Saxons Frontier Marches",
-    "Saxons Freawine Border Defense",
-    "Saxons Strategic Passes",
-    "Saxons Geopolitical Rivals"
+    "Saxons Frontiers",
+    "Saxon estuaries to Britain"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Saxons maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Saxon estuaries lead toward the North Sea, Gaul and Britain.",
+    "Tides and safe landings determine coastal access."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Saxons spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward North Sea Coastal Marshes, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Estuary landings lead toward the North Sea, Gaul and Britain. Tides and safe anchorage determine access while inland food connects maritime operations."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Salt wind rakes the sea dike, and the watchman rubs his hands and studies the grey water. Smoke rose from the marsh islands twice last night, and boats have been seen probing the estuary three times a week. Every post keeps a torch and a spear within reach, and the watch changes at midnight because no one trusts the tide. At the Saxons post, the night watchword is \"Dawn.\""
+      "Content": "Saxon estuaries lead toward the North Sea, Gaul and Britain. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Tides and safe landings determine coastal access."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A rider reaches the coastal fort with a dispatch wrapped in oilcloth. The warlord's subsidy from the border garrison has been cut again, while raiders test the river mouths each month. Without silver to hire auxiliary oarsmen, the commander must borrow from local chieftains and pledge them the harbor tolls, and every debt gives a neighboring clan a claim on the ferry."
+      "Content": "Tides and safe landings determine coastal access. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Saxon estuaries lead toward the North Sea, Gaul and Britain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Saxon estuaries lead toward the North Sea, Gaul and Britain. Closed routes may separate families from goods, imposing costs on those remaining at home. Tides and safe landings determine coastal access."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tides and safe landings determine coastal access. Cargo passes different carriers, making distant route changes become local shortages through delay. Saxon estuaries lead toward the North Sea, Gaul and Britain."
     }
   ],
   "SemanticPrototypes": [],

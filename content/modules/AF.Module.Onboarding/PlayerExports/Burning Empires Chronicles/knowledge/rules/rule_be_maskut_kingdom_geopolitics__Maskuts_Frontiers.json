@@ -1,21 +1,18 @@
 {
   "Id": "be_maskut_kingdom_geopolitics",
   "Keywords": [
-    "Maskuts Frontier Marches",
-    "Maskuts Sanatruk Border Defense",
-    "Maskuts Strategic Passes",
-    "Maskuts Geopolitical Rivals"
+    "Maskuts Frontiers",
+    "Distinct Derbent and Darial routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Maskuts maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Coastal Caspian Derbent and inland Darial are distinct corridors.",
+    "Maskut travelers need separate guides and pasture arrangements."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Maskuts spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Caspian Dagestan Steppes, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Narrow western Caspian roads and Caucasian tracks have different entrances. Coastal Derbent and inland Darial are distinct routes requiring separate guides and pasture arrangements."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "The sentry on the pass wall squints into the dust at dusk. Signal smoke rose on two ridges last night, and horse scouts now ride the caravan road three times a week. Every embrasure has a loaded bolt-thrower, and the watch changes at midnight because no one trusts the dark. At the Maskuts post, the night watchword is \"Dawn.\""
+      "Content": "Coastal Caspian Derbent and inland Darial are distinct corridors. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Maskut travelers need separate guides and pasture arrangements."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The pass warden receives a dispatch from the capital after dark. The treasury has trimmed the frontier subsidy again, while raiders probe the gap each week. Without silver to hire auxiliary bands, the warden must borrow from the local khan's household and pledge them the caravan tolls, and every debt gives a neighboring house a claim on the pass."
+      "Content": "Maskut travelers need separate guides and pasture arrangements. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Coastal Caspian Derbent and inland Darial are distinct corridors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Coastal Caspian Derbent and inland Darial are distinct corridors. Closed routes may separate families from goods, imposing costs on those remaining at home. Maskut travelers need separate guides and pasture arrangements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Maskut travelers need separate guides and pasture arrangements. Cargo passes different carriers, making distant route changes become local shortages through delay. Coastal Caspian Derbent and inland Darial are distinct corridors."
     }
   ],
   "SemanticPrototypes": [],

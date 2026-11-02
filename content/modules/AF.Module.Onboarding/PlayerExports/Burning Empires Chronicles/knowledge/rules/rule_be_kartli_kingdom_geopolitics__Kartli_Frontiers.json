@@ -1,21 +1,18 @@
 {
   "Id": "be_kartli_kingdom_geopolitics",
   "Keywords": [
-    "Kartli Frontier Marches",
-    "Kartli Mihrdat Border Defense",
-    "Kartli Strategic Passes",
-    "Kartli Geopolitical Rivals"
+    "Kartli Frontiers",
+    "Kura valley and Darial"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Kartli maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Kura routes link east and west, while Darial leads north.",
+    "Coastal contact requires western passage."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Kartli spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Mtskheta Royal Seat, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Kura routes link east and west and Darial leads north. Seasons and local controllers affect each road; coastal contact depends on western passage."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Smoke has been rising from the valley villages, and a guard on the mountain tower scans the passes toward the north. Riders from beyond the ridge have appeared twice in the last month, and the captain orders the gate barred at dusk. The men on the wall take turns sleeping, knowing the ridge is the only place an attack could come from."
+      "Content": "Kura routes link east and west, while Darial leads north. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Coastal contact requires western passage."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Sealed by the king of Iberia, a letter arrives with the royal envoy, and the lord breaks its seal with care. The treasury can spare few men for the passes, so he proposes to hold the ridge with local levies and promise tax relief to the mountain villages. A frontier governor who fails to hold the pass will answer for it at court."
+      "Content": "Coastal contact requires western passage. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Kura routes link east and west, while Darial leads north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kura routes link east and west, while Darial leads north. Closed routes may separate families from goods, imposing costs on those remaining at home. Coastal contact requires western passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Coastal contact requires western passage. Cargo passes different carriers, making distant route changes become local shortages through delay. Kura routes link east and west, while Darial leads north."
     }
   ],
   "SemanticPrototypes": [],

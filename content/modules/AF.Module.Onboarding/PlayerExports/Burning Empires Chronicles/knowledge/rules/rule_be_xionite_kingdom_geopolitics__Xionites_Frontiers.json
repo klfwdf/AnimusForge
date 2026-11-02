@@ -1,21 +1,18 @@
 {
   "Id": "be_xionite_kingdom_geopolitics",
   "Keywords": [
-    "Xionites Frontier Marches",
-    "Xionites Kidara Border Defense",
-    "Xionites Strategic Passes",
-    "Xionites Geopolitical Rivals"
+    "Xionites Frontiers",
+    "Kidarite oasis and plateau routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Xionites maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Oases, pasture and plateau passes divide Kidara’s routes into stages.",
+    "Passage needs food, water and local permission along the way."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Xionites spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Bactria & Oxus River, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Oases, pasture and plateau passes divide routes into stages. Riders need the next food, water and permission as well as distance."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A lookout on the mud-brick wall of the Oxus fort scans the steppe for a dust column. Horsemen have probed the western wells twice this week, and each embrasure now holds a loaded bow. The sentry who sleeps through his watch will be found at dawn with an arrow in his throat, and no one will ask how it happened."
+      "Content": "Oases, pasture and plateau passes divide Kidara’s routes into stages. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Passage needs food, water and local permission along the way."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The governor of the Oxus march breaks the seal on a dispatch from Kidara and finds the subsidy halved. Without silver to hire mounted auxiliaries from the nomad tribes, he must offer pasture and tribute to neighboring khans to keep the river crossings guarded. Each sealed report now carries a plea for grain and men before the autumn raids begin."
+      "Content": "Passage needs food, water and local permission along the way. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Oases, pasture and plateau passes divide Kidara’s routes into stages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Oases, pasture and plateau passes divide Kidara’s routes into stages. Closed routes may separate families from goods, imposing costs on those remaining at home. Passage needs food, water and local permission along the way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Passage needs food, water and local permission along the way. Cargo passes different carriers, making distant route changes become local shortages through delay. Oases, pasture and plateau passes divide Kidara’s routes into stages."
     }
   ],
   "SemanticPrototypes": [],

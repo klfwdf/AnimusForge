@@ -1,21 +1,18 @@
 {
   "Id": "be_caledonian_kingdom_economy",
   "Keywords": [
-    "Picts Fiscal Levies",
-    "Picts Gartnait Artisan Forges",
-    "Picts Agrarian Manors",
-    "Picts Trade Corridors"
+    "Picts Trade",
+    "Alata valley and firth produce"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Picts in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Highland Brochs & Hillforts, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Alata valley farms, herds, fishing and coastal exchange sustain households.",
+    "Raid gains cannot replace local harvest and winter stores."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Picts was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Highland Brochs & Hillforts, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Valley farming, livestock, fishing and exchange around Alata sustain households. Silver and prizes buy goods but cannot replace harvest; absence reduces winter stores and animal care."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Men in the hill country climb the stone stairs of the brochs in darkness, dragging ropes and flasks of watered wine. Their leather jerkins are stiff with cold, and supply sledges reach camp only after the fires have died. Spearmen trade what little silver they own for dry peat and a second blanket, knowing winter will last longer than the rations."
+      "Content": "Alata valley farms, herds, fishing and coastal exchange sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Raid gains cannot replace local harvest and winter stores."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The chief's steward sends a sealed note from the glen: sheep counts are down, the wool tithe from eastern farms is incomplete, and the coastal trading party brought back less salt than promised. Offer the coastal merchants reduced tolls if they carry our hides south before the autumn gales. Keep the arrangement off the public ledger, because clan rivals watch every cart."
+      "Content": "Raid gains cannot replace local harvest and winter stores. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Alata valley farms, herds, fishing and coastal exchange sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Alata valley farms, herds, fishing and coastal exchange sustain households. Households need meals and the means to keep producing after delivering goods. Raid gains cannot replace local harvest and winter stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Raid gains cannot replace local harvest and winter stores. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Alata valley farms, herds, fishing and coastal exchange sustain households."
     }
   ],
   "SemanticPrototypes": [],

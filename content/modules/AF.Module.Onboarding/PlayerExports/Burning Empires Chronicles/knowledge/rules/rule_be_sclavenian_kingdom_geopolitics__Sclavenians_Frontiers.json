@@ -1,21 +1,18 @@
 {
   "Id": "be_sclavenian_kingdom_geopolitics",
   "Keywords": [
-    "Sclavenians Frontier Marches",
-    "Sclavenians Perbund Border Defense",
-    "Sclavenians Strategic Passes",
-    "Sclavenians Geopolitical Rivals"
+    "Sclavenians Frontiers",
+    "Sclavenian wetland crossings"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Sclavenians maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Sclavenian woods and valleys connect through wetlands and crossings.",
+    "Water levels and local tracks affect passage."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Sclavenians spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Upper Vistula Marshlands, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Woodland and valley routes connect settlements, with wetlands and crossings changing access. Travelers depend on water levels and local tracks."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Watchmen on the palisade report a flicker of signal fires deep in the pines. Enemy horsemen have raided the outer posts three times this week, so every embrasure now holds a loaded ballista. A sentry who dozes at his post will be the first body the raiders find at dawn."
+      "Content": "Sclavenian woods and valleys connect through wetlands and crossings. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Water levels and local tracks affect passage."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The warden breaks a wax seal and frowns at the figures: treasury subsidies have been cut again, while raiding bands probe closer each season. Without silver to hire auxiliary companies, he must trade favors with neighboring lords, or the pass will fall. Every letter he sends now carries a request for grain."
+      "Content": "Water levels and local tracks affect passage. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Sclavenian woods and valleys connect through wetlands and crossings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Sclavenian woods and valleys connect through wetlands and crossings. Closed routes may separate families from goods, imposing costs on those remaining at home. Water levels and local tracks affect passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Water levels and local tracks affect passage. Cargo passes different carriers, making distant route changes become local shortages through delay. Sclavenian woods and valleys connect through wetlands and crossings."
     }
   ],
   "SemanticPrototypes": [],

@@ -2,20 +2,17 @@
   "Id": "be_lazica_kingdom_legitimacy",
   "Keywords": [
     "Lazica Legitimacy",
-    "Lazica Opsites Sovereign Authority",
-    "Lazica Ruling Seat",
-    "Lazica Feudal Oaths"
+    "Opsites’ mediation and outside aid"
   ],
   "RagShortTexts": [
-    "In 374 AD, Lazica governed from Archaeopolis (Nokalakevi), under the paramount rule of Kings of Lazica.",
-    "The polity asserted sovereign legitimacy anchored in Lazica dynastic heritage and royal assemblies.",
-    "Surrounded by shifting imperial and tribal pressures, the regime enforced loyalty through binding oaths and martial law."
+    "Dynasty, local recognition and foreign links support Opsites.",
+    "Aid makes ports and collection rights bargaining issues."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 374 AD, the sovereign authority of Lazica anchored itself within Archaeopolis (Nokalakevi), confronting the accelerating tremors of Late Antiquity. Governed by Kings of Lazica, the state projected imperial legitimacy through dynastic lineage, military patronage, and strict codification of feudal oaths. Emphasizing institutional doctrine rooted in Lazica heritage, the crown mobilized loyal retinues and aristocratic councils to repel external encroachment. Beneath ceremonial grandeur lay unceasing vigilance against shifting steppe incursions and frontier uprisings, compelling the leadership to bind provincial magnates to the throne through land redistribution and martial alliance, safeguarding royal continuity amid an era of continent-wide transition."
+      "Content": "Dynasty, local recognition and foreign contact support the court. Aid balances neighbors while making ports and collection rights bargaining issues."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Old sergeants of the royal guard sharpen blades beside a smoky fire. When the king's banners move out from the citadel, every man straps on iron armor and marches. Blood shed in the field is repaid with gold and land grants, and the old soldiers know a grant is worth only what the living heir chooses to honor. At the Lazica post, the night watchword is \"Ridge.\""
+      "Content": "Dynasty, local recognition and foreign links support Opsites. Military recognition also rests on rewards and relief; a title needs willing action. Aid makes ports and collection rights bargaining issues."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A chancellor reads the royal decree aloud at the banquet, and the magnates raise their cups without a word. They will bow to it in public, but clan liberties and the tax revenue from their domains remain beyond the crown's reach. Each letter passing between the great houses repeats one condition: obedience holds only while the king guards noble privileges."
+      "Content": "Aid makes ports and collection rights bargaining issues. Nominal rights require local execution, with consent and supply both shaping authority. Dynasty, local recognition and foreign links support Opsites."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Dynasty, local recognition and foreign links support Opsites. Households judge rule through protected families, land and responses to appeals. Aid makes ports and collection rights bargaining issues."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Aid makes ports and collection rights bargaining issues. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Dynasty, local recognition and foreign links support Opsites."
     }
   ],
   "SemanticPrototypes": [],

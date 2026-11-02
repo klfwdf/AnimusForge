@@ -1,21 +1,18 @@
 {
   "Id": "be_arran_kingdom_geopolitics",
   "Keywords": [
-    "Arran Frontier Marches",
-    "Arran Vachagan II Border Defense",
-    "Arran Strategic Passes",
-    "Arran Geopolitical Rivals"
+    "Arran Frontiers",
+    "Gabala and Caspian approaches"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Arran maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Eastern Caucasian roads connect Kura and Caspian directions.",
+    "Coastal and central mountain routes have different water and guards."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Arran spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Partav (Barda), the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Eastern Caucasian routes link Kura and Caspian directions, with different guards at narrow passages. Coastal and central mountain disputes cannot all be settled by one promise."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A garrison scout lies flat on the riverbank, watching the reeds for movement and listening to the water's current. When he returns, he reports the number of horses he counted and whether the raiders carried torches or bows. The captain writes each report into the frontier roll so that the relief column knows where the next attack will fall."
+      "Content": "Eastern Caucasian roads connect Kura and Caspian directions. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Coastal and central mountain routes have different water and guards."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "Caravans from the Caspian coast are being stopped at the fords, and rival lords along the river now levy their own tolls. Offer those lords a joint patrol for a share of the barge tax, but leave command unsettled until your envoys learn their true intentions. A written agreement would invite the king's officers to claim the frontier."
+      "Content": "Coastal and central mountain routes have different water and guards. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Eastern Caucasian roads connect Kura and Caspian directions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Eastern Caucasian roads connect Kura and Caspian directions. Closed routes may separate families from goods, imposing costs on those remaining at home. Coastal and central mountain routes have different water and guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Coastal and central mountain routes have different water and guards. Cargo passes different carriers, making distant route changes become local shortages through delay. Eastern Caucasian roads connect Kura and Caspian directions."
     }
   ],
   "SemanticPrototypes": [],

@@ -1,21 +1,18 @@
 {
   "Id": "be_hibernian_kingdom_economy",
   "Keywords": [
-    "Hibernians Fiscal Levies",
-    "Hibernians Niall Artisan Forges",
-    "Hibernians Agrarian Manors",
-    "Hibernians Trade Corridors"
+    "Hibernians Trade",
+    "Eblana grain herds and vessels"
   ],
   "RagShortTexts": [
-    "The economic sustenance of Hibernians in 374 AD relied upon extensive agrarian estates, pastoral herds, and strategic mineral extraction.",
-    "Anchored around commercial hubs near Hill of Tara & Gaelic Tuaths, merchant caravans traded valuable bullion, grain, wine, and exotic raw goods.",
-    "Advanced weapon smithies and metallurgical workshops provided the industrial backbone necessary to equip large armies in the field."
+    "Eblana farming, herds, fishing and exchange sustain coastal households.",
+    "Lost vessels harm cargo, fishing and kin contact together."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Underpinning the immense martial demands of Hibernians was an agrarian and mercantile economic system rooted in rural estates and municipal workshops. Across fertile valleys and pastures, countless tenant farmers and laborers produced wheat harvests, vintage wines, cured pelts, and high-grade iron ingots destined for storehouses. Within thriving market plazas around Hill of Tara & Gaelic Tuaths, cosmopolitan merchants converged to barter gold coinage, imported silks, fine armaments, and livestock. Imperial or royal customs officials maintained toll gates, extracting heavy excise duties from freight wagons. Yet the system faced constant vulnerability from harvest failures and trade route disruptions, compelling rulers to enforce grain requisitions to sustain armies in the field."
+      "Content": "Eblana and Irish Sea households live from grain, herds, fishing and exchange. Lost vessels harm transport, fishing and kin contact as well as raids; voyage returns must offset lost farm labor."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Drovers push the cattle down the lane toward the hill fort, and a spearman guards the herd against thieves waiting in the bracken. Pay comes in cattle, bronze, and a few gold rings, and a warrior who loses the herd loses his share as well. He would rather fight a rival clan than walk home with an empty fold."
+      "Content": "Eblana farming, herds, fishing and exchange sustain coastal households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Lost vessels harm cargo, fishing and kin contact together."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "The royal reeve tallies the cattle brought to Tara and marks which tuath owes tribute. Hides, butter, and iron go to the fair at the hill, and the high king takes his cut before the chieftains divide the rest. Every cow recorded in the reeve's book is a claim that a neighbor may one day dispute."
+      "Content": "Lost vessels harm cargo, fishing and kin contact together. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Eblana farming, herds, fishing and exchange sustain coastal households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Eblana farming, herds, fishing and exchange sustain coastal households. Households need meals and the means to keep producing after delivering goods. Lost vessels harm cargo, fishing and kin contact together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lost vessels harm cargo, fishing and kin contact together. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Eblana farming, herds, fishing and exchange sustain coastal households."
     }
   ],
   "SemanticPrototypes": [],

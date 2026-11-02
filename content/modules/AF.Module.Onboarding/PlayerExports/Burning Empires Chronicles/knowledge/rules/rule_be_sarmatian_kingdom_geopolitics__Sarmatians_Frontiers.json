@@ -1,21 +1,18 @@
 {
   "Id": "be_sarmatian_kingdom_geopolitics",
   "Keywords": [
-    "Sarmatians Frontier Marches",
-    "Sarmatians Kasagos Border Defense",
-    "Sarmatians Strategic Passes",
-    "Sarmatians Geopolitical Rivals"
+    "Sarmatians Frontiers",
+    "Sarmatian forest-steppe routes"
   ],
   "RagShortTexts": [
-    "Situated across critical crossroads, Sarmatians maintained fortified border networks anchored against rivers, mountain passes, and dense forests.",
-    "Under intense pressure from migrating populations and rival expansion, the borders faced acute strain from regional upheavals.",
-    "Frontier governors exercised broad emergency prerogatives, maintaining patrol outposts and garrison bastions to shield agrarian heartlands."
+    "Forest-edge tracks connect steppe water with grain exchanges.",
+    "Movement in woods depends more on roads and warnings."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The territorial perimeter of Sarmatians spanned treacherous terrain encompassing river crossings, mountain defiles, and primeval woodlands. Shielding the arterial supply corridors leading toward Don-Danube Steppes, the regime garrisoned fortified outposts and watchtowers tasked with round-the-clock reconnaissance. In 374 AD, strategic volatility reached a fever pitch, aggravated by border clashes and cross-frontier raiding. Provincial commanders operated under persistent resource deficits, forced to contain covert banditry while preparing against full-scale royal invasions, knowing that any fatal rupture along the forward limes would unleash catastrophic devastation upon undefended inland communities."
+      "Content": "Water, forest-edge tracks and grain exchanges connect settlements. Open ground permits riding, while woods increase dependence on roads and warnings."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "A lookout on the earthen mound scans the grey distance until his eyes ache. Smoke rose beyond the river twice last night, and scouts now ride the grazing grounds three times a week. Every post keeps a strung bow and a saddled horse, and the watch changes at midnight because no one trusts the dark. At the Sarmatians post, the night watchword is \"Thorn.\""
+      "Content": "Forest-edge tracks connect steppe water with grain exchanges. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Movement in woods depends more on roads and warnings."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A rider arrives at the river fort with a dispatch sealed in wax. The chieftain's subsidy from the frontier garrison has been cut again, while raiders probe the fords each month. Without silver to hire auxiliary riders, the garrison commander must borrow from local clans and pledge them the river tolls, and every debt gives a rival clan a claim on the ford."
+      "Content": "Movement in woods depends more on roads and warnings. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Forest-edge tracks connect steppe water with grain exchanges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Forest-edge tracks connect steppe water with grain exchanges. Closed routes may separate families from goods, imposing costs on those remaining at home. Movement in woods depends more on roads and warnings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Movement in woods depends more on roads and warnings. Cargo passes different carriers, making distant route changes become local shortages through delay. Forest-edge tracks connect steppe water with grain exchanges."
     }
   ],
   "SemanticPrototypes": [],

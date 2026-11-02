@@ -2,20 +2,17 @@
   "Id": "be_hunnic_kingdom_internal",
   "Keywords": [
     "Huns Nobility",
-    "Huns Balamber Clan Lineages",
-    "Huns Court Factions",
-    "Huns Internal Strife"
+    "Older and newer Hunnic followings"
   ],
   "RagShortTexts": [
-    "The ruling elite of Huns comprised ancient aristocratic houses and military dynasties competing for feudal land and fiscal control.",
-    "Domestic politics were profoundly steered by court intrigues and noble factions resisting excessive central centralization.",
-    "Intricate matrimonial alliances and blood feuds permeated the nobility, ensuring that disputed successions frequently sparked nationwide crises."
+    "Balamber joins different riders and chiefs.",
+    "Incorporating partners also adds distribution claims."
   ],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Within the opulent halls and sprawling feudal estates of Huns, the balance of domestic power remained in perilous equilibrium. Ancient lineages commanded vast agricultural latifundia, hereditary warrior retinues, and lucrative trade monopolies, acting simultaneously as imperial cornerstones and covert rivals to the throne. Court assemblies seethed with venomous factionalism, pitting entrenched senatorial aristocrats against battle-hardened military commanders who demanded greater political dominance. Behind tapestried corridors, clandestine poisonings, forged wills, and intercepted treaties dictated political ascendancy. Lesser vassals maneuvered cautiously between dominant magnates, ready to shift allegiance whenever the central authority showed signs of exhaustion or military defeat."
+      "Content": "Balamber joins different chiefs and mounted groups. New partners add forces and reward claims; one tent cannot simply command every following."
     },
     {
       "Priority": 0,
@@ -25,7 +22,7 @@
           "wanderer"
         ]
       },
-      "Content": "Two clan chiefs fight over a river crossing, and the king's guards are ordered to separate them. A rider who takes an arrow in the scuffle learns that the feud was never his to fight. His kin group demands a horse as compensation, and the chiefs settle the matter without asking the men who did the work."
+      "Content": "Balamber joins different riders and chiefs. Followers retain family ties; decisions about guards and distant service affect common participation. Incorporating partners also adds distribution claims."
     },
     {
       "Priority": 0,
@@ -35,7 +32,26 @@
           "notable"
         ]
       },
-      "Content": "A chieftain must feed his kin and keep his rivals in debt, the old man tells his son. Marriage ties bind the clans together, but a bride's brothers will demand bridewealth in horses. When the herds grow thin, the great houses turn on each other, so keep your tally sticks honest and your allies close."
+      "Content": "Incorporating partners also adds distribution claims. Coordination allocates actual supply and protection duties, not merely titles. Balamber joins different riders and chiefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Balamber joins different riders and chiefs. Households compare burdens with neighbors; unmatched protection weakens cooperation. Incorporating partners also adds distribution claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Incorporating partners also adds distribution claims. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Balamber joins different riders and chiefs."
     }
   ],
   "SemanticPrototypes": [],
