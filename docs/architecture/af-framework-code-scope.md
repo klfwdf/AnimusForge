@@ -1,3 +1,18 @@
+<a id="diplomacy-stable-case-prefix-20261102"></a>
+## 2026-11-02 外交请求原案与动态尾部顺序
+
+产品9dd4028e1e；交付及验证/未验范围见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-stable-case-prefix-20261102)。不新增模块、DLL、公开API或存档形状。
+
+| 源码（一基行号） | 符号 | 覆盖职责 |
+| --- | --- | --- |
+| src/modules/AF.Module.Diplomacy/Application/DiplomacyRequestProjection.cs:15-54 | DynamicTailFields / OrderForStablePrefix | 请求边界前置trigger_material、后置动态根字段；保留全部值、内部原文及数组顺序；非法/超限/其他kind原值返回 |
+| src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmMessageApplication.cs:33-77 | BuildLlmMessageArray | 真实发送副本应用重排，独立于节省字符的压缩门槛；保留存储源/system与冻结修复链 |
+| tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/PrefixOrderingReplay.cs:5-135 | Run / RunLog | 六类CN/EN保值、消费者接线、动态尾部、非法边界和实际原文前后回放 |
+| tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/Program.cs:96-100 | Main | 接入--prefix-ordering与--prefix-ordering-log |
+
+未覆盖provider缓存能力/TTL/计费和实机接受；不更改API路由、模型、亲和调度、业务规则、历史压缩或当前世界事实获取。没有跨请求结果复用或Tick IO。
+
+---
 <a id="prisoner-status-ownership-20261102"></a>
 ## 2026-11-02 俘虏状态单一注入职责
 

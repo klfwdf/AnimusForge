@@ -1,3 +1,23 @@
+<a id="diplomacy-stable-case-prefix-20261102"></a>
+## 2026-11-02 外交请求原案前置与动态字段后置（本任务）
+
+SOURCE_COMMITTED / TARGETED_REPLAY_PASS / DUAL_BUILD_PASS / NOT_DEPLOYED。用户仅要求前置重复原案、后置摘要/实时值/修正，并保留精度和全部规则。产品9dd4028e1e，意图检查点7c0c4ca4d，基线cc588b61d9；原有其他作者dirty未纳入本任务提交，构建使用当前工作树。
+
+实现：在最终detached messages副本上，将trigger_material置于根字段首位，来源/世界/人物、历史摘要、seed/digest、候选/退稿和修正字段按固定次序后置；不排序来源数组、不截断原案、不取整、不冻结当前事实、不更改system规则或原job提示词。六类event_concept/event_concept_audit/event_boundary/event_boundary_audit/event_progress/event_progress_audit统一接入。重排独立于既有压缩节省门槛，等长度、已压缩请求也生效；generate/compress/privacy及冻结语义修复链保持原路径。没有新增固定自然语言、资源、设置、存档键或公开API；CN/EN原文、未知字段和规则按原值传递。
+
+频率与性能：只在六类请求真正构造发送副本时执行；输入沿用最大512*1024字符限制，一次有界JSON解析与根属性移动，来源数组和原案内部不扫描改写。没有新增Tick工作、游戏对象读取、磁盘IO、反射、轮询或跨请求缓存。
+
+验证（日志均在.tmp/diplomacy-prefix-order-20261102/）：
+- dotnet <WorldDiplomacyRoundLifecycle.SmokeTests.dll> --prefix-ordering：97项，六类真实消费者、CN/EN原案字符串、数值、来源顺序、未知字段、根字段顺序、幂等及非法/超限/冻结合同排除PASS。
+- --prefix-ordering-log <已安装模块Logs/Token_Stats.txt>：71项，2026-11-02 19:33:57启动段的23条结构化真实请求逐条比较原压缩基线与新实际消息；全部字段值、system和存储源保持，6组重复请求共同前缀增长。仅输出聚合数字，不复制私密提示词到仓库。
+- user连续相同前缀（字符，非provider token）：检索5015→16596及1666→16596，比较5015→21450，准入识别315→21307，准入审核74→21304，构思1363→17418。
+- 原--token-optimization 72项、--shared-declarations 47项、--material-supply 472项PASS；以上连同新增回放共759项断言。原压缩样例10411→6150字符仍成立。
+- 1.3/1.4生产编译分别exit0、各405警告/0错误；Bootstrap exit0、0警告/错误。沿用既有生产参数并隔离obj/输出，不修改一键脚本。候选bin/Debug/diplomacy_prefix_order_20261102/{versions/1.3,versions/1.4,bootstrap}。
+- 双语表26张、missing_english=0、failures=0。全仓l10n门exit1，仍为DiplomacySponsorReceiptRules.cs:17-19的4条既有中文词法失败；基线cc588同样存在，路径未改，不作为本次通过或已修复。
+
+未验：真实provider缓存命中/计费、实机语义与性能、旧档；未付费重放API，未覆盖游戏、打包、push或升版本。离线前缀变长不代表缓存已经命中。汇总verification.json；[代码范围](architecture/af-framework-code-scope.md#diplomacy-stable-case-prefix-20261102)。源码回滚只聚焦git revert 9dd4028e1e，不回退其他作者改动；本任务未部署，游戏目录无本任务回滚动作。
+
+---
 <a id="prisoner-status-ownership-20261102"></a>
 ## 2026-11-02 普通英雄俘虏状态单一注入职责（本任务完成）
 

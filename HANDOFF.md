@@ -1,3 +1,10 @@
+## 2026-11-02 外交请求原案前置（本任务）
+
+SOURCE_COMMITTED / TARGETED_REPLAY_PASS / DUAL_BUILD_PASS / NOT_DEPLOYED。产品9dd4028e1e，检查点7c0c4ca4d。六类结构化外交请求在最终副本中前置原案、后置摘要/实时资料/修正；字段值、来源顺序、CN/EN原文、system、存储提示词和冻结链均保持，原压缩门槛不变。
+
+新增97项、真实23请求71项、既有591项断言PASS；6组重复前缀增长，准入审核74→21304字符。1.3/1.4/Bootstrap编译exit0；双语26表PASS，全仓语言门保留原DiplomacySponsorReceiptRules四条失败。真实provider缓存命中、实机及旧档未验；未部署/打包/push。候选bin/Debug/diplomacy_prefix_order_20261102；证据.tmp/diplomacy-prefix-order-20261102/verification.json。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-stable-case-prefix-20261102)和[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-stable-case-prefix-20261102)。回滚只聚焦revert产品9dd4028e1e，保留其他作者内容。
+
+---
 ## 2026-11-02 俘虏状态重复注入修复（本任务）
 
 SOURCE_FIXED / TARGETED_REPLAY_PASSED / DUAL_BUILD_PASSED / NOT_DEPLOYED。产品31f7b38e04，意图检查点92d42f54f6。普通英雄俘虏状态统一由共享Extras注入，人物介绍不再复制；城堡、巡查/非英雄专用说明保留。玩家自定义提示词原文与优先级未改。
