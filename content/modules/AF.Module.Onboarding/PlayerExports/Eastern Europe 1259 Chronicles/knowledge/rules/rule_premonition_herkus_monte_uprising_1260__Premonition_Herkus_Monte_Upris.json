@@ -1,22 +1,19 @@
 {
   "Id": "rule_premonition_herkus_monte_uprising_1260",
   "Keywords": [
-    "Premonition Herkus Monte Upris",
-    "Premonition Herkus Monte Upris Lore",
-    "Premonition Herkus Monte Upris Chronicles",
-    "AD1259 Premonition Herkus Monte Upris"
+    "Prussian leaders and local agreement",
+    "Musters among Prussian settlements"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Premonition Herkus Monte Upris in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Premonition Her",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Premonition He"
+    "Prussian leaders had different kin ties and views on Order demands.",
+    "Musters required food and home defense agreements, not merely shared enemies."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Premonition Herkus Monte Upris marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
+      "Content": "Prussian leaders had ties to kin, settlements and neighboring posts and could differ over Order levies and missions. Mustering required agreement over food, home defense and passage; a distant letter alone might not bring scattered communities into action."
     },
     {
       "Priority": 0,
@@ -26,7 +23,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans recall the carnage of Premonition Herkus Monte Upris with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Prussian leaders had ties to kin, settlements and neighboring posts and could differ over Order levies and missions. Mustering required agreement over food, home defense and passage; a distant letter alone might not bring scattered communities into action. Fighters needed food and animals, moving differently with booty on return. Coordinated movement depended on messages, relationships and accepted risks."
     },
     {
       "Priority": 0,
@@ -36,8 +33,20 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Premonition Herkus Monte Upris lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Prussian leaders had ties to kin, settlements and neighboring posts and could differ over Order levies and missions. Mustering required agreement over food, home defense and passage; a distant letter alone might not bring scattered communities into action. Leaders sought people through purposes, shares and defense arrangements. Heavy kin losses weakened later musters, and failed distributions damaged authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Prussian leaders had ties to kin, settlements and neighboring posts and could differ over Order levies and missions. Mustering required agreement over food, home defense and passage; a distant letter alone might not bring scattered communities into action. A household supplying fighters lost labor for fields, animals and repairs. Booty could help, but delay, wounds and animal losses burdened kin and made shared work important."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_wieliczka_without_the_later_underground_city_c4db4ab8",
+  "Keywords": [
+    "Wieliczka salt workers and transport",
+    "Fuel carriage for Wieliczka salt workers"
+  ],
+  "RagShortTexts": [
+    "Wieliczka salt production needed labor, tools, fuel and transport.",
+    "Salt prices were not net income; fuel, upkeep and carriage absorbed earnings."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Salt work around Wieliczka required workers, tools and fuel, followed by packing and delivery. Interrupted production affected preservation and income, while mine or brine work competed with field labor for household time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Salt work around Wieliczka required workers, tools and fuel, followed by packing and delivery. Interrupted production affected preservation and income, while mine or brine work competed with field labor for household time. Troops planned salt and preserved food around weight and containers; damp and leaks damaged stores. Valuable salt cargo also consumed animals and guards needed for grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Salt work around Wieliczka required workers, tools and fuel, followed by packing and delivery. Interrupted production affected preservation and income, while mine or brine work competed with field labor for household time. Salt revenue depended on production and shipment, not nominal output. Requisitioned workers, fuel shortage and blocked routes reduced receipts and promised payments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Salt work around Wieliczka required workers, tools and fuel, followed by packing and delivery. Interrupted production affected preservation and income, while mine or brine work competed with field labor for household time. Households balanced salt for food storage against other expenses, while workers depended on continuing production. Higher prices changed plans for meat, grain and livestock sales."
+    }
+  ],
+  "TextMappings": []
+}

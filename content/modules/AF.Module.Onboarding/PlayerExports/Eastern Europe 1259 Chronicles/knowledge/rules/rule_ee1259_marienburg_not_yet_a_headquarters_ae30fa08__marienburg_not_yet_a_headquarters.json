@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_marienburg_not_yet_a_headquarters_ae30fa08",
+  "Keywords": [
+    "Order transport on the lower Vistula",
+    "Order granaries on the lower Vistula"
+  ],
+  "RagShortTexts": [
+    "Lower Vistula channels and lagoons linked Order posts and coastal trade.",
+    "Guards and trade shared boats; excessive demands hindered local food carriage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lower Vistula channels and lagoons connected Order posts and coastal trade. Ships, stores and local supplies supported garrisons. Lowland water changed transport routes, and distant orders still needed comparison with available boats and workers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lower Vistula channels and lagoons connected Order posts and coastal trade. Ships, stores and local supplies supported garrisons. Lowland water changed transport routes, and distant orders still needed comparison with available boats and workers. River guards watched vessels, bank access and night landings. Escorts protected goods while allowing crews to rest, often needing local boatmen in unfamiliar water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lower Vistula channels and lagoons connected Order posts and coastal trade. Ships, stores and local supplies supported garrisons. Lowland water changed transport routes, and distant orders still needed comparison with available boats and workers. Post income depended on continuing traffic; excessive demands encouraged detours. Garrisons and river works needed resources, while households' supply varied seasonally."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lower Vistula channels and lagoons connected Order posts and coastal trade. Ships, stores and local supplies supported garrisons. Lowland water changed transport routes, and distant orders still needed comparison with available boats and workers. Riverside households fished, carried goods and traveled with boats also wanted by guards. Bad water required repairs, provisions and waiting for weather."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_treniota_without_a_predetermined_plot_2052cb88",
+  "Keywords": [
+    "Mindaugas kin and alliances",
+    "Competition for standing among Mindaugas kin"
+  ],
+  "RagShortTexts": [
+    "Mindaugas depended on kin, partners and local leaders while baptism shaped ties.",
+    "Kin could mediate or compete; support depended on actual people and supplies."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mindaugas's kingship relied on relatives, partners and local leaders whose relations were affected by baptism and alliances. Kin could mediate but also compete over land and standing. Beyond public promises, actual troops and supplies showed whose support was effective."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mindaugas's kingship relied on relatives, partners and local leaders whose relations were affected by baptism and alliances. Kin could mediate but also compete over land and standing. Beyond public promises, actual troops and supplies showed whose support was effective. Kin disputes changed commands and musters, requiring retainers to know whom to follow. Familiarity did not ensure safe routes, and treatment of relatives and captives affected service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mindaugas's kingship relied on relatives, partners and local leaders whose relations were affected by baptism and alliances. Kin could mediate but also compete over land and standing. Beyond public promises, actual troops and supplies showed whose support was effective. Princes balanced family rights, recognition and resources. Marriages and land grants won support but could anger other heirs; public or written promises needed witnesses and fulfillment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Mindaugas's kingship relied on relatives, partners and local leaders whose relations were affected by baptism and alliances. Kin could mediate but also compete over land and standing. Beyond public promises, actual troops and supplies showed whose support was effective. Dynastic changes brought new collectors, gatekeepers and service demands. Households cared whether payments remained recognized, while marriage and inheritance disputes also affected their own property."
+    }
+  ],
+  "TextMappings": []
+}

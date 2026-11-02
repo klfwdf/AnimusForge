@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_sacred_groves_and_hostile_accounts_2c994730",
+  "Keywords": [
+    "Prussian groves and local authority",
+    "Prussian sacred groves and local authority"
+  ],
+  "RagShortTexts": [
+    "Sacred woods and rituals linked Prussian communities, leaders and households.",
+    "Taboos, rites and demands prompted differing interests rather than automatic obedience."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Prussian communities could treat particular trees and places with reverence, connecting timber, grazing and worship to custom and authority. Clerics, conquerors and residents could interpret them differently. Damaging a respected place could provoke anger and damage relationships."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Prussian communities could treat particular trees and places with reverence, connecting timber, grazing and worship to custom and authority. Clerics, conquerors and residents could interpret them differently. Damaging a respected place could provoke anger and damage relationships. Troops gathering fuel or camping could encounter local prohibitions, explained by guides. Offended households withheld news, food or guidance despite military superiority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Prussian communities could treat particular trees and places with reverence, connecting timber, grazing and worship to custom and authority. Clerics, conquerors and residents could interpret them differently. Damaging a respected place could provoke anger and damage relationships. Leaders balanced custom, partners and outside religious demands. Protecting respected places won trust, while offerings, labor and access could provoke internal disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Prussian communities could treat particular trees and places with reverence, connecting timber, grazing and worship to custom and authority. Clerics, conquerors and residents could interpret them differently. Damaging a respected place could provoke anger and damage relationships. Households expressed reverence while needing fuel and pasture. Offerings in a poor harvest strained resources, and elders and younger people could differ over propriety."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

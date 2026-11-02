@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_raseiniai_samogitian_locality_95c75c1f",
+  "Keywords": [
+    "Local musters around Raseiniai",
+    "Kin duties at home around Raseiniai"
+  ],
+  "RagShortTexts": [
+    "Raseiniai households and leaders organized through kin and neighboring ties.",
+    "Taking workers harmed harvests while too few guards exposed families and animals."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Leaders and households around Raseiniai organized through kin and neighboring ties. A campaign required decisions on people, food and home defense. Taking too many workers threatened the harvest; leaving too few guards exposed families and animals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Leaders and households around Raseiniai organized through kin and neighboring ties. A campaign required decisions on people, food and home defense. Taking too many workers threatened the harvest; leaving too few guards exposed families and animals. Fighters needed food and animals, moving differently with booty on return. Coordinated movement depended on messages, relationships and accepted risks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Leaders and households around Raseiniai organized through kin and neighboring ties. A campaign required decisions on people, food and home defense. Taking too many workers threatened the harvest; leaving too few guards exposed families and animals. Leaders sought people through purposes, shares and defense arrangements. Heavy kin losses weakened later musters, and failed distributions damaged authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Leaders and households around Raseiniai organized through kin and neighboring ties. A campaign required decisions on people, food and home defense. Taking too many workers threatened the harvest; leaving too few guards exposed families and animals. A household supplying fighters lost labor for fields, animals and repairs. Booty could help, but delay, wounds and animal losses burdened kin and made shared work important."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

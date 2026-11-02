@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_decorated_eggs_and_dating_limits_12d3291d",
+  "Keywords": [
+    "Easter gifts and households",
+    "Rus household preparations for Easter"
+  ],
+  "RagShortTexts": [
+    "Easter observances connected prayer, food and household preparations.",
+    "Eggs, gifts and time away from work shaped what households could afford."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Easter mattered to church and household life, with worship, greetings, food and gifts suited to each family's means. Eggs depended on poultry and season, while gifts to relatives and neighbors could express reconciliation and care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Easter mattered to church and household life, with worship, greetings, food and gifts suited to each family's means. Eggs depended on poultry and season, while gifts to relatives and neighbors could express reconciliation and care. Duty still required gates, roads and animals watched; shifts determined attendance. Travelers used gatherings for news and increased lodging needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Easter mattered to church and household life, with worship, greetings, food and gifts suited to each family's means. Eggs depended on poultry and season, while gifts to relatives and neighbors could express reconciliation and care. Hosting displayed standing and relationships but cost food, light and hospitality. Seating, invitations and gifts could offend and turn goodwill into disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Easter mattered to church and household life, with worship, greetings, food and gifts suited to each family's means. Eggs depended on poultry and season, while gifts to relatives and neighbors could express reconciliation and care. Families prepared food, clothes and arrangements for children and elders without stopping all work. Gifts and meals sustained ties according to household stores."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

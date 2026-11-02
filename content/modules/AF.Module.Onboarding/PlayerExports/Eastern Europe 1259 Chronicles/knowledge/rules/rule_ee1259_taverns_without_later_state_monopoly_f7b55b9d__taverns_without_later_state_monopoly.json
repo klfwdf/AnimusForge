@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_taverns_without_later_state_monopoly_f7b55b9d",
+  "Keywords": [
+    "Food and lodging on Volga routes",
+    "Fuel and fodder at Volga lodgings"
+  ],
+  "RagShortTexts": [
+    "Route-side lodging depended on customers, fuel and food.",
+    "Travelers arranged prices, stays and animals while hosts supplied food and fuel."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Households providing food and lodging along routes depended on customers, fuel and grain. Travelers asked about price, space for animals and length of stay. Fermented honey drinks and cooked meals cost resources, while news traveled with their customers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Households providing food and lodging along routes depended on customers, fuel and grain. Travelers asked about price, space for animals and length of stay. Fermented honey drinks and cooked meals cost resources, while news traveled with their customers. Travelers tended mounts and dried clothes before resting and agreed who watched belongings. Drinking quarrels damaged hospitality while escorts still needed alert guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Households providing food and lodging along routes depended on customers, fuel and grain. Travelers asked about price, space for animals and length of stay. Fermented honey drinks and cooked meals cost resources, while news traveled with their customers. Route authorities watched travelers and hosts; requisitions displaced other guests. Paying providers helped sustain hospitality for later envoys and patrols."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households providing food and lodging along routes depended on customers, fuel and grain. Travelers asked about price, space for animals and length of stay. Fermented honey drinks and cooked meals cost resources, while news traveled with their customers. Hosts used household food and fuel and supplied cooking, cleaning and animal care. More guests brought income but crowded sleeping space and disrupted work."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

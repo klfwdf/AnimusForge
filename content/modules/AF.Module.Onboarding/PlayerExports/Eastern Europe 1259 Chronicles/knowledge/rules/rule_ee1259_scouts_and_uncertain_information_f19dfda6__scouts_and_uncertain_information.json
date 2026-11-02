@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_scouts_and_uncertain_information_f19dfda6",
+  "Keywords": [
+    "Mongol advance scouting and reports",
+    "Return routes for Mongol scouts"
+  ],
+  "RagShortTexts": [
+    "Advance scouts checked roads, opponents and provisions before reporting.",
+    "Timing, observation limits and mounts' fodder shaped reconnaissance."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Advance troops and scouts examined routes, opponents and provisions and sent reports to the main force. Captives, travelers and guides could disagree, requiring comparison of timing and what each had seen. Mounts and fodder limited further reconnaissance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Advance troops and scouts examined routes, opponents and provisions and sent reports to the main force. Captives, travelers and guides could disagree, requiring comparison of timing and what each had seen. Mounts and fodder limited further reconnaissance. Scouts saved strength for return; darkness and woods obscured numbers. Pursuit could separate companions and prevent reporting, so meeting points mattered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Advance troops and scouts examined routes, opponents and provisions and sent reports to the main force. Captives, travelers and guides could disagree, requiring comparison of timing and what each had seen. Mounts and fodder limited further reconnaissance. Commanders distinguished observation from inference before checks and redeployment. Reliable message routes reduced unnecessary musters and alarms as conditions changed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Advance troops and scouts examined routes, opponents and provisions and sent reports to the main force. Captives, travelers and guides could disagree, requiring comparison of timing and what each had seen. Mounts and fodder limited further reconnaissance. Residents, herders and traders knew their own routes. Giving information might bring reward or suspicion from opponents, while guiding interrupted household work."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

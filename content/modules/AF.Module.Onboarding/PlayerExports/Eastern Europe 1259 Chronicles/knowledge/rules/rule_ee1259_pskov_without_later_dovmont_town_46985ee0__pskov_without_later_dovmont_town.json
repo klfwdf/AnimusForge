@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_pskov_without_later_dovmont_town_46985ee0",
+  "Keywords": [
+    "Pskov riverside garrison",
+    "Pskov river approaches and gate supplies"
+  ],
+  "RagShortTexts": [
+    "Pskov's settlement, churches and defenses stood close to river routes.",
+    "Guards at gates and crossings depended on local food, repairs and water reports."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pskov's settlement, defenses and churches lay near rivers whose crossings and approaches served trade and defense. Residents, guards and local elites coordinated supplies, repair and movement, while flood or ice could change familiar routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Pskov's settlement, defenses and churches lay near rivers whose crossings and approaches served trade and defense. Residents, guards and local elites coordinated supplies, repair and movement, while flood or ice could change familiar routes. River guards watched vessels, bank access and night landings. Escorts protected goods while allowing crews to rest, often needing local boatmen in unfamiliar water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Pskov's settlement, defenses and churches lay near rivers whose crossings and approaches served trade and defense. Residents, guards and local elites coordinated supplies, repair and movement, while flood or ice could change familiar routes. Post income depended on continuing traffic; excessive demands encouraged detours. Garrisons and river works needed resources, while households' supply varied seasonally."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Pskov's settlement, defenses and churches lay near rivers whose crossings and approaches served trade and defense. Residents, guards and local elites coordinated supplies, repair and movement, while flood or ice could change familiar routes. Riverside households fished, carried goods and traveled with boats also wanted by guards. Bad water required repairs, provisions and waiting for weather."
+    }
+  ],
+  "TextMappings": []
+}

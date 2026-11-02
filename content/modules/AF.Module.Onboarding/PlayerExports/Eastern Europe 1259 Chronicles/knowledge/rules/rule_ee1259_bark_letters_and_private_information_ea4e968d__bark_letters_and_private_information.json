@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_bark_letters_and_private_information_ea4e968d",
+  "Keywords": [
+    "Bark family messages and commissions",
+    "Writing and reading family birchbark notes"
+  ],
+  "RagShortTexts": [
+    "Birchbark notes carried household messages, debts and requests.",
+    "Sender, writer, carrier and reader could be different people."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Small bark notes carried household matters and commissions, with literate acquaintances helping write or read them. Recipients often asked carriers to separate wording, spoken additions and news heard en route. Passing through several people also affected privacy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Small bark notes carried household matters and commissions, with literate acquaintances helping write or read them. Recipients often asked carriers to separate wording, spoken additions and news heard en route. Passing through several people also affected privacy. Carriers located recipients and watched entrusted objects; detours and missed contacts delayed delivery. Private commissions needed travel arrangements and clear spoken additions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Small bark notes carried household matters and commissions, with literate acquaintances helping write or read them. Recipients often asked carriers to separate wording, spoken additions and news heard en route. Passing through several people also affected privacy. Merchants and notables arranged deliveries and debts through trusted scribes and carriers. Accounts needed comparison with actual goods; writing did not itself complete a handover."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Small bark notes carried household matters and commissions, with literate acquaintances helping write or read them. Recipients often asked carriers to separate wording, spoken additions and news heard en route. Passing through several people also affected privacy. Kin helped write and read letters, enabling distant contact but exposing private matters. Brief requests prompted questions separating wording from roadside rumor."
+    }
+  ],
+  "TextMappings": []
+}

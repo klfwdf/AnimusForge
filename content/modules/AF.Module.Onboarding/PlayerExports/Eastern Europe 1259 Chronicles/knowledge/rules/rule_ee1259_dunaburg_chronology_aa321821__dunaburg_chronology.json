@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_dunaburg_chronology_aa321821",
+  "Keywords": [
+    "Middle Daugava routes",
+    "Cargo handovers on the middle Daugava"
+  ],
+  "RagShortTexts": [
+    "The middle Daugava linked households with distant exchange.",
+    "Shallows and transfers added handling, lodging and loss before goods reached recipients."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The middle Daugava connected households and distant exchange, with water, shallows and route holders shaping journeys. Goods needed safe landings and handovers, while residents used the river for fish, crossings and everyday supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The middle Daugava connected households and distant exchange, with water, shallows and route holders shaping journeys. Goods needed safe landings and handovers, while residents used the river for fish, crossings and everyday supplies. Escorts watched vulnerable landings and unloading. Cargo limited space for people and weapons, and speed did not ensure a safe next berth or provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The middle Daugava connected households and distant exchange, with water, shallows and route holders shaping journeys. Goods needed safe landings and handovers, while residents used the river for fish, crossings and everyday supplies. Tolls depended on route protection and navigation. Stalled cargo yielded little regardless of rates, while requisitioned boats could interrupt promised deliveries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "The middle Daugava connected households and distant exchange, with water, shallows and route holders shaping journeys. Goods needed safe landings and handovers, while residents used the river for fish, crossings and everyday supplies. Handlers, boatmen and carriers lived from repeated deliveries. A late boat meant extra days of food, lodging and lost work that could consume the agreed payment."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

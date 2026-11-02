@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_lviv_early_settlement_and_later_walls_192c21bb",
+  "Keywords": [
+    "Building and supply at Lviv",
+    "Timber and craftsmen on Lviv slopes"
+  ],
+  "RagShortTexts": [
+    "Lviv defenses and access relied on terrain, materials and working people.",
+    "Defenses competed with homes for timber and workers while guards needed food."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lviv's development related to Danylo's family and local settlement. Defense and housing required timber, craftsmen and transport. Requisitioned labor advanced works but removed people from fields and household repairs, while stores fed workers and guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lviv's development related to Danylo's family and local settlement. Defense and housing required timber, craftsmen and transport. Requisitioned labor advanced works but removed people from fields and household repairs, while stores fed workers and guards. Guards watched workers, stores and carts while keeping access clear. Troops using works under repair needed to know safe loads and passages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lviv's development related to Danylo's family and local settlement. Defense and housing required timber, craftsmen and transport. Requisitioned labor advanced works but removed people from fields and household repairs, while stores fed workers and guards. Patrons weighed repair, extension and retained supplies and paid workers. Excess labor demands hurt harvests, while diverted materials delayed urgent works."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lviv's development related to Danylo's family and local settlement. Defense and housing required timber, craftsmen and transport. Requisitioned labor advanced works but removed people from fields and household repairs, while stores fed workers and guards. Households hauling timber or making materials lost field time and still had home repairs. Craftsmen earned income but late payment forced families to cover costs first."
+    }
+  ],
+  "TextMappings": []
+}

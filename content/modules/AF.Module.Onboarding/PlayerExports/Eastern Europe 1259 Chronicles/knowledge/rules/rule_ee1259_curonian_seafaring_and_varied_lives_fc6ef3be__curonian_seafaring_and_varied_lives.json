@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_curonian_seafaring_and_varied_lives_fc6ef3be",
+  "Keywords": [
+    "Curonian seafaring and coastal conflict",
+    "Reprisal risks after Curonian raids"
+  ],
+  "RagShortTexts": [
+    "Curonian coasts supported fishing, exchange and armed seafaring.",
+    "Raids could provoke reprisals affecting trade, landings and families."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Curonian coasts saw fishing and exchange alongside armed travel and raids. Vessels needed crews, repair materials and landings, linking voyagers and households. A raid could also provoke reprisals against subsequent trade and passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Curonian coasts saw fishing and exchange alongside armed travel and raids. Vessels needed crews, repair materials and landings, linking voyagers and households. A raid could also provoke reprisals against subsequent trade and passage. Crews, guards and passengers shared space. Armed encounters prompted choices of avoidance or landing; pursuit spent strength and could leave familiar channels."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Curonian coasts saw fishing and exchange alongside armed travel and raids. Vessels needed crews, repair materials and landings, linking voyagers and households. A raid could also provoke reprisals against subsequent trade and passage. Coastal power required crews, repair materials and hosts. Raid proceeds could be offset by trade reprisals, while lost ships and people reduced later voyages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Curonian coasts saw fishing and exchange alongside armed travel and raids. Vessels needed crews, repair materials and landings, linking voyagers and households. A raid could also provoke reprisals against subsequent trade and passage. Fishing and travel required weather, while those at home prepared food, repaired nets and tended animals. Losing a boat removed both property and a means of future food."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

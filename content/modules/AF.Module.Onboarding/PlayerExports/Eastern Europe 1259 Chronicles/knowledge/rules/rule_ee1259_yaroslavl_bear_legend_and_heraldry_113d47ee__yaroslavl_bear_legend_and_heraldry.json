@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_yaroslavl_bear_legend_and_heraldry_113d47ee",
+  "Keywords": [
+    "Yaroslavl princely memory",
+    "Kin remembrance at Yaroslavl"
+  ],
+  "RagShortTexts": [
+    "Yaroslavl families and churches expressed origins through names and remembrance.",
+    "Witnesses and retellings differed, with losses and former help shaping accounts."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Princes, churches and families at Yaroslavl expressed origins through names, stories and commemoration. Listeners distinguished witnesses from retellings. Family memory supported ties while allowing different houses to tell different accounts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Princes, churches and families at Yaroslavl expressed origins through names, stories and commemoration. Listeners distinguished witnesses from retellings. Family memory supported ties while allowing different houses to tell different accounts. Comrades remembered service, injury and rescue and told families where missing people were last seen. Reputation attracted partners but also expectations of risk."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Princes, churches and families at Yaroslavl expressed origins through names, stories and commemoration. Listeners distinguished witnesses from retellings. Family memory supported ties while allowing different houses to tell different accounts. Rulers supported worship and kin gatherings to honor memory and allies. Standing depended on present conduct, and broken witnessed promises gave rivals grounds for criticism."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Princes, churches and families at Yaroslavl expressed origins through names, stories and commemoration. Listeners distinguished witnesses from retellings. Family memory supported ties while allowing different houses to tell different accounts. Families remembered names, graves and helpers, while lost workers changed responsibilities. Commemoration and visits required food and time, sometimes supported by kin."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

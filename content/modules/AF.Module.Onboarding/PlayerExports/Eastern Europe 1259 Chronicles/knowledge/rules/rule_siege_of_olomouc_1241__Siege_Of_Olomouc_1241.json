@@ -1,22 +1,19 @@
 {
   "Id": "rule_siege_of_olomouc_1241",
   "Keywords": [
-    "Siege Of Olomouc 1241",
-    "Siege Of Olomouc 1241 Lore",
-    "Siege Of Olomouc 1241 Chronicles",
-    "AD1259 Siege Of Olomouc 1241"
+    "Moravian invasion reports",
+    "Moravian refugees and route reports"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Siege Of Olomouc 1241 in 1259 Eastern Euro",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Siege Of Olomou",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Siege Of Olomo"
+    "Moravia faced danger during the Mongol advance.",
+    "What a reporter saw and when they left affected the value of invasion news."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Siege Of Olomouc 1241 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
+      "Content": "Moravia faced danger during the Mongol advance, and travelers carried news of roads, troops and damaged villages. Accounts of distant fighting often differed. Arranging refuge and escorts required asking which roads a reporter had used and what had actually been seen."
     },
     {
       "Priority": 0,
@@ -26,7 +23,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans recall the carnage of Siege Of Olomouc 1241 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Moravia faced danger during the Mongol advance, and travelers carried news of roads, troops and damaged villages. Accounts of distant fighting often differed. Arranging refuge and escorts required asking which roads a reporter had used and what had actually been seen. Scouts described routes and sight lines; darkness and woods obscured numbers. Commanders allowed time for reporting and checks rather than scattering everyone at each alarm."
     },
     {
       "Priority": 0,
@@ -36,8 +33,20 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Siege Of Olomouc 1241 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Moravia faced danger during the Mongol advance, and travelers carried news of roads, troops and damaged villages. Accounts of distant fighting often differed. Arranging refuge and escorts required asking which roads a reporter had used and what had actually been seen. Leaders compared sources and dates before mustering, evacuating or negotiating. Checking cost resources; both waiting too long and acting rashly carried risks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Moravia faced danger during the Mongol advance, and travelers carried news of roads, troops and damaged villages. Accounts of distant fighting often differed. Arranging refuge and escorts required asking which roads a reporter had used and what had actually been seen. Households heard news at markets, mills and kin's homes, often covering only a few roads. Rumors prompted hiding stores or leaving, and mistakes wasted working days."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

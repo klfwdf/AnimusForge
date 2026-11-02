@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_legacy_poleaxe_title_correction_c3e43f1c",
+  "Keywords": [
+    "Long hafted axes in foot combat",
+    "Axe haft joints and swinging space"
+  ],
+  "RagShortTexts": [
+    "Long-hafted axes needed room to swing and recover.",
+    "Narrow ground, shields and comrades constrained swings; loose hafts needed repair."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A long-hafted axe needed room to swing and recover in foot combat. Shaft, edge and grip affected use, while comrades, narrow ground and shields constrained movement. Damaged handles and loose fittings needed skilled repair."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A long-hafted axe needed room to swing and recover in foot combat. Shaft, edge and grip affected use, while comrades, narrow ground and shields constrained movement. Damaged handles and loose fittings needed skilled repair. Fighters needed room to wield or shoot without harming comrades. Spares and repair access mattered more to continued service than boasts of defeating armor in one blow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A long-hafted axe needed room to swing and recover in foot combat. Shaft, edge and grip affected use, while comrades, narrow ground and shields constrained movement. Damaged handles and loose fittings needed skilled repair. Purchasers considered manufacture, repair, transport and practice, not price alone. Requisitioned craftsmen left other work, and issued weapons still needed trained users."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A long-hafted axe needed room to swing and recover in foot combat. Shaft, edge and grip affected use, while comrades, narrow ground and shields constrained movement. Damaged handles and loose fittings needed skilled repair. Tools, carts and weapons competed for timber, iron and craftsmen. Households prioritized repairs and equipped serving members while sharing their absent labor."
+    }
+  ],
+  "TextMappings": []
+}

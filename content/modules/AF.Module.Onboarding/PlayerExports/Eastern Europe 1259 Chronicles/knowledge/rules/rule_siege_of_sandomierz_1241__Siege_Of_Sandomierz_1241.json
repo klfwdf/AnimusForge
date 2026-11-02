@@ -1,22 +1,19 @@
 {
   "Id": "rule_siege_of_sandomierz_1241",
   "Keywords": [
-    "Siege Of Sandomierz 1241",
-    "Siege Of Sandomierz 1241 Lore",
-    "Siege Of Sandomierz 1241 Chronicles",
-    "AD1259 Siege Of Sandomierz 1241"
+    "Sandomierz attacked in 1241",
+    "Sandomierz evacuation and stores"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Siege Of Sandomierz 1241 in 1259 Eastern E",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Siege Of Sandom",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Siege Of Sando"
+    "Sandomierz suffered during the Mongol invasion of 1241.",
+    "Refugees, wounded people and guards competed for limited food and labor."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Siege Of Sandomierz 1241 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
+      "Content": "Sandomierz suffered during the Mongol invasion of 1241. Roads and places of refuge near the Vistula mattered to inhabitants. Fugitives needed family, food and animals moved, while defenders balanced incoming people against limited stores."
     },
     {
       "Priority": 0,
@@ -26,7 +23,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans recall the carnage of Siege Of Sandomierz 1241 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Sandomierz suffered during the Mongol invasion of 1241. Roads and places of refuge near the Vistula mattered to inhabitants. Fugitives needed family, food and animals moved, while defenders balanced incoming people against limited stores. Defenders rotated rest, watches and repairs, while sorties exposed those outside. Besiegers also needed food and fodder; weather and delay burdened both sides."
     },
     {
       "Priority": 0,
@@ -36,8 +33,20 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Siege Of Sandomierz 1241 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Sandomierz suffered during the Mongol invasion of 1241. Roads and places of refuge near the Vistula mattered to inhabitants. Fugitives needed family, food and animals moved, while defenders balanced incoming people against limited stores. Commanders weighed stores, relief and endurance before holding or negotiating. A promised army was not a delivered grain cart, and repaired walls did not replace food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sandomierz suffered during the Mongol invasion of 1241. Roads and places of refuge near the Vistula mattered to inhabitants. Fugitives needed family, food and animals moved, while defenders balanced incoming people against limited stores. Families allocated food, water and shelter from fire, burdening hosts in crowded quarters. Refugees still worried over abandoned fields, animals and houses."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_sandomierz_martyr_narratives_and_chronology_7c03de26",
+  "Keywords": [
+    "Sandomierz religious houses and refuge",
+    "Aid around Sandomierz religious houses"
+  ],
+  "RagShortTexts": [
+    "Religious communities at Sandomierz shared the disruption of invasion.",
+    "Prayer, burial, lodging and repairs competed for labor, shelter and food."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Religious communities and residents at Sandomierz cared for people, food and sacred objects when news of war arrived. Defense, hospitality and rural fugitives competed for space and stores, while kin and clergy could help find temporary lodging."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Religious communities and residents at Sandomierz cared for people, food and sacred objects when news of war arrived. Defense, hospitality and rural fugitives competed for space and stores, while kin and clergy could help find temporary lodging. Passing troops sought prayer, food or space for wounded people, limited by hosts' means. Armed visitors consumed food and lodging, while patients needed carers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Religious communities and residents at Sandomierz cared for people, food and sacred objects when news of war arrived. Defense, hospitality and rural fugitives competed for space and stores, while kin and clergy could help find temporary lodging. Patronage sustained standing and local ties but required actual land, goods and work. Clergy balanced worship and hospitality and could not meet every additional requisition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Religious communities and residents at Sandomierz cared for people, food and sacred objects when news of war arrived. Defense, hospitality and rural fugitives competed for space and stores, while kin and clergy could help find temporary lodging. Households sought clergy for marriage, burial, prayer and messages and helped lighting and repairs. Gifts and time drew on finite stores, with kin sharing funerals and care."
+    }
+  ],
+  "TextMappings": []
+}

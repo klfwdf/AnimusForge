@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_trakai_legacy_landmark_correction_f81a7d6e",
+  "Keywords": [
+    "Travel through Lithuanian lake country",
+    "Boat support in Lithuanian lake country"
+  ],
+  "RagShortTexts": [
+    "Lithuanian lakes, forest routes and small boats shaped movement of people and goods.",
+    "Walking shores and taking boats posed different difficulties; ice needed local reports."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Shorelines, forest paths and small boats shaped movement in Lithuanian lake country. Going around a lake could be long, while crossing required a boat and landing place. In winter travelers asked people who had recently tested the ice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Shorelines, forest paths and small boats shaped movement in Lithuanian lake country. Going around a lake could be long, while crossing required a boat and landing place. In winter travelers asked people who had recently tested the ice. Escorts checked whether boats could carry people, mounts, carts or sacks. Separate land and water parties needed agreed meeting points and carriers, not distance judged by eye."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Shorelines, forest paths and small boats shaped movement in Lithuanian lake country. Going around a lake could be long, while crossing required a boat and landing place. In winter travelers asked people who had recently tested the ice. Holding a lakeside post needed vessels, boatmen and supplies. Taking too many boats disrupted fishing and exchange, allowing short-term military needs to damage longer-term income."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Shorelines, forest paths and small boats shaped movement in Lithuanian lake country. Going around a lake could be long, while crossing required a boat and landing place. In winter travelers asked people who had recently tested the ice. Fishing boats provided livelihood and carried family and small loads. Weather keeping boats ashore affected catches, markets and household stores."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_rus_ordeal_claims_and_source_limits_2d0cda4d",
+  "Keywords": [
+    "Oaths and witnesses in Rus disputes",
+    "Witnesses and attendance in Rus litigation"
+  ],
+  "RagShortTexts": [
+    "Rus disputes involved oaths, witnesses and status, sometimes religious tests.",
+    "Attendance, delay and payments cost resources; poorer households had less support."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus disputes could involve oaths, witnesses and status, with some also resorting to religious tests. People sought others to speak for them while facing the cost of attendance, waiting and payments. Powerful and poor households had unequal access to help."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Rus disputes could involve oaths, witnesses and status, with some also resorting to religious tests. People sought others to speak for them while facing the cost of attendance, waiting and payments. Powerful and poor households had unequal access to help. Enforcers identified parties, disputed property and authority. Escort and custody consumed people, and excessive force could turn compensation claims into new injury and retaliation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Rus disputes could involve oaths, witnesses and status, with some also resorting to religious tests. People sought others to speak for them while facing the cost of attendance, waiting and payments. Powerful and poor households had unequal access to help. Jurisdiction sustained order and income but needed trusted procedure and enforcement. Favoring partners could solve one problem while discouraging others from claims and compliance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Rus disputes could involve oaths, witnesses and status, with some also resorting to religious tests. People sought others to speak for them while facing the cost of attendance, waiting and payments. Powerful and poor households had unequal access to help. Poor households left work to pursue claims and sought witnesses and time to wait. Kin helped with lodging or advocacy, while adverse payments could create fresh debt."
+    }
+  ],
+  "TextMappings": []
+}

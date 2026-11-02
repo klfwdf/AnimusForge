@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_camp_wagons_and_later_systems_c9f58994",
+  "Keywords": [
+    "Wagon camps and protection",
+    "Halts and exits for Rus wagon trains"
+  ],
+  "RagShortTexts": [
+    "Wagons carried stores and shaped where a group could halt.",
+    "Camp exits, roads and ground conditions affected whether people and animals could depart."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wagons carried food, equipment and baggage and could help gather people and stores at camp. Keeping passages open, caring for draught animals and moving after an alarm depended on road width, ground and coordination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wagons carried food, equipment and baggage and could help gather people and stores at camp. Keeping passages open, caring for draught animals and moving after an alarm depended on road width, ground and coordination. Guards watched front, rear and stragglers, separated by narrow roads. Alarms required locating goods, wounded people and exits; abandoned wagons meant later shortages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Wagons carried food, equipment and baggage and could help gather people and stores at camp. Keeping passages open, caring for draught animals and moving after an alarm depended on road width, ground and coordination. Requisitioned wagons increased transport but removed farm tools. Authorities arranged return, damage and animal feed; nominal totals did not widen roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Wagons carried food, equipment and baggage and could help gather people and stores at camp. Keeping passages open, caring for draught animals and moving after an alarm depended on road width, ground and coordination. Carts and animals were major assets whose absence delayed fuel and harvest work. Shared carriage reduced costs, with repair responsibilities needing agreement."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_danylo_crown_date_correction_1b8b9aab",
+  "Keywords": [
+    "Danylo crown and diplomacy",
+    "The costs of seeking aid for crowned Danylo"
+  ],
+  "RagShortTexts": [
+    "Danylo accepted a crown in 1253 to seek recognition and support.",
+    "Recognition did not deliver troops; aid still required envoys, gifts and commitments."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Danylo accepted a crown in 1253 to seek recognition and outside support. He still maintained relations with Rus clergy, elites and kin while facing Mongol demands. Titles and the ability to mobilize people and supplies each mattered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Danylo accepted a crown in 1253 to seek recognition and outside support. He still maintained relations with Rus clergy, elites and kin while facing Mongol demands. Titles and the ability to mobilize people and supplies each mattered. Retainers protected ceremonies and embassies and needed lodging and passage. New titles affected messages and reception, but soldiers still needed actual commanders and maintenance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Danylo accepted a crown in 1253 to seek recognition and outside support. He still maintained relations with Rus clergy, elites and kin while facing Mongol demands. Titles and the ability to mobilize people and supplies each mattered. A crown strengthened diplomacy while increasing obligations to supporters. Elites, clergy and kin had expectations; external recognition did not replace local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Danylo accepted a crown in 1253 to seek recognition and outside support. He still maintained relations with Rus clergy, elites and kin while facing Mongol demands. Titles and the ability to mobilize people and supplies each mattered. Households hosted festivities and supplied work or food while hoping for stability. New titles mattered through later dues, route safety and justice, beyond the ceremony."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

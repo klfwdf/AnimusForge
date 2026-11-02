@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_kaunas_confluence_without_later_castle_354adbd8",
+  "Keywords": [
+    "Nemunas Neris confluence",
+    "Transfers at the Nemunas and Neris"
+  ],
+  "RagShortTexts": [
+    "The Nemunas and Neris confluence shaped boats, crossings and bank routes.",
+    "Carts, herds and boat crews faced different obstacles at a transfer."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Nemunas and Neris confluence shaped boats, crossings and bank routes. Transferring toward another river required knowledge of water and destination. Carts, herds and boats faced different obstacles, making local boatmen and guides valuable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The Nemunas and Neris confluence shaped boats, crossings and bank routes. Transferring toward another river required knowledge of water and destination. Carts, herds and boats faced different obstacles, making local boatmen and guides valuable. A crossing could separate the advance party from baggage, requiring escorts to watch both banks and the remaining column. Urgency could not replace boats or workable water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Nemunas and Neris confluence shaped boats, crossings and bank routes. Transferring toward another river required knowledge of water and destination. Carts, herds and boats faced different obstacles, making local boatmen and guides valuable. Controlling a crossing offered income and influence but required guards, boats and repair. Requisitioning boatmen interrupted their livelihood and needed arrangements for provisions and return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "The Nemunas and Neris confluence shaped boats, crossings and bank routes. Transferring toward another river required knowledge of water and destination. Carts, herds and boats faced different obstacles, making local boatmen and guides valuable. Households crossing for markets, kin or livestock faced waiting and fares. A blocked passage meant longer travel, more food and lost fieldwork."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

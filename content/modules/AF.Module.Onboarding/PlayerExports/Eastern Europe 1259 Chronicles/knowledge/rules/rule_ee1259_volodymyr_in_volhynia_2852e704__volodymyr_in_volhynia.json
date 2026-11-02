@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_volodymyr_in_volhynia_2852e704",
+  "Keywords": [
+    "Volodymyr town in Volhynia",
+    "Stores within Volodymyr in Volhynia"
+  ],
+  "RagShortTexts": [
+    "Volodymyr in Volhynia depended on surrounding land, routes and Romanovych authority.",
+    "Military pressure made gates, grain and refuge urgent, with repairs needing craftsmen."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Volodymyr was an important Romanovych town in Volhynia whose prince, church and residents depended on surrounding land and routes. Approaching troops or demands to dismantle defenses made gates, grain and refuge urgent, while repairs required materials and craftsmen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Volodymyr was an important Romanovych town in Volhynia whose prince, church and residents depended on surrounding land and routes. Approaching troops or demands to dismantle defenses made gates, grain and refuge urgent, while repairs required materials and craftsmen. Guards arranged watches, messages and entry checks; pursuit reduced defenders. Escorts needed closing times, waiting places and arrangements for injured mounts and cargo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Volodymyr was an important Romanovych town in Volhynia whose prince, church and residents depended on surrounding land and routes. Approaching troops or demands to dismantle defenses made gates, grain and refuge urgent, while repairs required materials and craftsmen. Lords balanced repair, stores and retainers against revenue. Requisitioned work advanced repairs at a cost to harvests, while relief required reliable reports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Volodymyr was an important Romanovych town in Volhynia whose prince, church and residents depended on surrounding land and routes. Approaching troops or demands to dismantle defenses made gates, grain and refuge urgent, while repairs required materials and craftsmen. Outlying households chose what to move, with animals, seed and kin competing for carts. Refuge inside required shelter, food and water, while staying home brought other risks."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

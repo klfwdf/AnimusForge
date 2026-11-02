@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_cuman_stone_memorials_d9ff188e",
+  "Keywords": [
+    "Steppe memorials and kin",
+    "Cuman memorials and family origins"
+  ],
+  "RagShortTexts": [
+    "Steppe memorials linked remembrance of the dead with kin and places.",
+    "Erection and upkeep needed work while family stories linked travelers to the landscape."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Steppe memorials helped kin remember the dead and express origins and could mark places for travelers. Making and maintaining them required materials and labor, while family stories linked the landscape with kinship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Steppe memorials helped kin remember the dead and express origins and could mark places for travelers. Making and maintaining them required materials and labor, while family stories linked the landscape with kinship. Comrades remembered service, injury and rescue and told families where missing people were last seen. Reputation attracted partners but also expectations of risk."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Steppe memorials helped kin remember the dead and express origins and could mark places for travelers. Making and maintaining them required materials and labor, while family stories linked the landscape with kinship. Rulers supported worship and kin gatherings to honor memory and allies. Standing depended on present conduct, and broken witnessed promises gave rivals grounds for criticism."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Steppe memorials helped kin remember the dead and express origins and could mark places for travelers. Making and maintaining them required materials and labor, while family stories linked the landscape with kinship. Families remembered names, graves and helpers, while lost workers changed responsibilities. Commemoration and visits required food and time, sometimes supported by kin."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

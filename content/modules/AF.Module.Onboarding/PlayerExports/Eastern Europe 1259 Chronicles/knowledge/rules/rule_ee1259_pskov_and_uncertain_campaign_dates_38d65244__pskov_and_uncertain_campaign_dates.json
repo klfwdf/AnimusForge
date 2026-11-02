@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_pskov_and_uncertain_campaign_dates_38d65244",
+  "Keywords": [
+    "Pskov town and approaches",
+    "Warnings from households outside Pskov"
+  ],
+  "RagShortTexts": [
+    "Pskov's defense depended on gates, river routes and people outside the walls.",
+    "Refugees used stores while warnings and repairs drew on local labor."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pskov's defense involved gates, rivers and people outside the town. Patrols and travelers brought reports. Guards arranged stores and watches while households decided where to put animals, relatives and movable possessions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Pskov's defense involved gates, rivers and people outside the town. Patrols and travelers brought reports. Guards arranged stores and watches while households decided where to put animals, relatives and movable possessions. Guards arranged watches, messages and entry checks; pursuit reduced defenders. Escorts needed closing times, waiting places and arrangements for injured mounts and cargo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Pskov's defense involved gates, rivers and people outside the town. Patrols and travelers brought reports. Guards arranged stores and watches while households decided where to put animals, relatives and movable possessions. Lords balanced repair, stores and retainers against revenue. Requisitioned work advanced repairs at a cost to harvests, while relief required reliable reports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Pskov's defense involved gates, rivers and people outside the town. Patrols and travelers brought reports. Guards arranged stores and watches while households decided where to put animals, relatives and movable possessions. Outlying households chose what to move, with animals, seed and kin competing for carts. Refuge inside required shelter, food and water, while staying home brought other risks."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

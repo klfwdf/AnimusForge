@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_ladoga_river_and_lake_passage_a4682311",
+  "Keywords": [
+    "Ladoga Volkhov passage",
+    "Ladoga crews awaiting supplies"
+  ],
+  "RagShortTexts": [
+    "Ladoga linked the Volkhov and lake routes used by passing vessels.",
+    "Fishing, trade and defense shared labor while vessels waited for suitable water."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ladoga connected the Volkhov with the lake region. Vessels needed landings, supplies and suitable water. Guards watched crews and cargo while residents fished, traded and worked; defense and commerce drew on limited people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ladoga connected the Volkhov with the lake region. Vessels needed landings, supplies and suitable water. Guards watched crews and cargo while residents fished, traded and worked; defense and commerce drew on limited people. River guards watched vessels, bank access and night landings. Escorts protected goods while allowing crews to rest, often needing local boatmen in unfamiliar water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ladoga connected the Volkhov with the lake region. Vessels needed landings, supplies and suitable water. Guards watched crews and cargo while residents fished, traded and worked; defense and commerce drew on limited people. Post income depended on continuing traffic; excessive demands encouraged detours. Garrisons and river works needed resources, while households' supply varied seasonally."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ladoga connected the Volkhov with the lake region. Vessels needed landings, supplies and suitable water. Guards watched crews and cargo while residents fished, traded and worked; defense and commerce drew on limited people. Riverside households fished, carried goods and traveled with boats also wanted by guards. Bad water required repairs, provisions and waiting for weather."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

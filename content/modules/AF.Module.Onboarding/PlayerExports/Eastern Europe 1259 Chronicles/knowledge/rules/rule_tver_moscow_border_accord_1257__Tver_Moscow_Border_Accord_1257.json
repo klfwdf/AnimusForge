@@ -1,22 +1,19 @@
 {
   "Id": "rule_tver_moscow_border_accord_1257",
   "Keywords": [
-    "Tver Moscow Border Accord 1257",
-    "Tver Moscow Border Accord 1257 Lore",
-    "Tver Moscow Border Accord 1257 Chronicles",
-    "AD1259 Tver Moscow Border Accord 1257"
+    "Land disputes around Tver",
+    "Tver crossing revenues and claims"
   ],
   "RagShortTexts": [
-    "Historical doctrine and chronicle records concerning Tver Moscow Border Accord 1257 in 1259 Eas",
-    "Geopolitical significance, tactical mechanical design, and feudal governance of Tver Moscow Bor",
-    "Primary medieval evidence on border warfare, fortifications, and treaties across Tver Moscow Bo"
+    "Tver and Moscow land disputes involved crossings, income and local families.",
+    "Disputed possession affected whom households paid and where they brought claims."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The historic clash and devastating campaign of Tver Moscow Border Accord 1257 marks a decisive geopolitical turning point in 1259 Eastern Europe. Mobilizing coordinated echelons of armored knights, deep spear phalanxes, and lethal horse-archer wings, the opposing hosts collided across contested river valleys and muddy plain crossings. The tactical interplay of false retreats, concentrated missile barrages, and flank encirclements produced staggering casualties, permanently reshaping the territorial boundaries, dynastic succession rights, and balance of power between feudal principalities and expansionist empires."
+      "Content": "Land, crossings and transport income around Tver and Moscow involved different princes and families. Boundary disputes affected whom households paid and where they brought claims. Possession, kinship and local recognition all shaped outcomes."
     },
     {
       "Priority": 0,
@@ -26,7 +23,7 @@
           "wanderer"
         ]
       },
-      "Content": "Veterans recall the carnage of Tver Moscow Border Accord 1257 with lingering dread: skies darkened by whistling steppe arrow-storms, shields splintering under heavy armor-piercing bodkins, and the desperate struggle in bloody mud beneath trampling iron hooves. When battle-horns echoed retreat, only those who kept tight formation and trusted their comrades survived the butchery."
+      "Content": "Land, crossings and transport income around Tver and Moscow involved different princes and families. Boundary disputes affected whom households paid and where they brought claims. Possession, kinship and local recognition all shaped outcomes. Guards watched roads and boundaries and protected harvests or enforced decisions. In kin disputes they needed clear authority; damaged animals and crops could widen conflict."
     },
     {
       "Priority": 0,
@@ -36,8 +33,20 @@
           "notable"
         ]
       },
-      "Content": "Lords and commanders tallying losses after Tver Moscow Border Accord 1257 lament the decimation of ancestral knights and landed retainers. Defeat exacted devastating forfeitures of fertile manors and river toll stations, accompanied by crippling ransoms in bullion silver to rescue captured heirs, severely undermining the dynasty's feudal dominance for generations to come."
+      "Content": "Land, crossings and transport income around Tver and Moscow involved different princes and families. Boundary disputes affected whom households paid and where they brought claims. Possession, kinship and local recognition all shaped outcomes. Land supplied dues and service but required resident producers. Grants, inheritance and forfeiture affected partners; prolonged disputes reduced returns through abandoned fields and duplicate demands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Land, crossings and transport income around Tver and Moscow involved different princes and families. Boundary disputes affected whom households paid and where they brought claims. Possession, kinship and local recognition all shaped outcomes. Households needed to know rent recipients, pasture access and what children inherited. Disputes delayed sowing or brought duplicate demands; witnesses and kin mattered especially to poorer people."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
 }

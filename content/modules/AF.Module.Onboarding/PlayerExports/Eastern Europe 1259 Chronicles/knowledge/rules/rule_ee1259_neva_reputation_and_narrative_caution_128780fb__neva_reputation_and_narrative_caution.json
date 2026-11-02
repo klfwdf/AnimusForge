@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_neva_reputation_and_narrative_caution_128780fb",
+  "Keywords": [
+    "Neva victory and Alexander standing",
+    "Alexander's standing in northern defense"
+  ],
+  "RagShortTexts": [
+    "Alexander's victory on the Neva in 1240 supported his standing.",
+    "Renown did not replace later route guards, supplies or local cooperation."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alexander's victory near the Neva in 1240 supported his standing, while Novgorod valued its northern routes. Military prestige still operated within local politics, with townspeople, elites and prince disputing service, income and authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Alexander's victory near the Neva in 1240 supported his standing, while Novgorod valued its northern routes. Military prestige still operated within local politics, with townspeople, elites and prince disputing service, income and authority. Veterans remembered ground, orders and comrades, unlike distant letters. Afterward they cared for wounds, gathered people and mounts and sought food; victory also left fatigue and losses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Alexander's victory near the Neva in 1240 supported his standing, while Novgorod valued its northern routes. Military prestige still operated within local politics, with townspeople, elites and prince disputing service, income and authority. Princes assessed effective forces, captive kin and changed alliances before arranging defense. Prestige helped win support, but provisions, replacement mounts and promises needed resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Alexander's victory near the Neva in 1240 supported his standing, while Novgorod valued its northern routes. Military prestige still operated within local politics, with townspeople, elites and prince disputing service, income and authority. Campaigns left households waiting, short of workers and receiving wounded or refugees. Returnees could not always work at once, so kin shared sowing, repairs and care."
+    }
+  ],
+  "TextMappings": []
+}

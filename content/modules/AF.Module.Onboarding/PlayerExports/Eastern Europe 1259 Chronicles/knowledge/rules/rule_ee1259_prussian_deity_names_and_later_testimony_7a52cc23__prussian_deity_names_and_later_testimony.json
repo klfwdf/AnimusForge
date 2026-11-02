@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_prussian_deity_names_and_later_testimony_7a52cc23",
+  "Keywords": [
+    "Prussian mourning and kinship",
+    "Prussian remembrance of the dead"
+  ],
+  "RagShortTexts": [
+    "Prussian communities remembered the dead through rites, kin and places.",
+    "Kin arranged remembrance while offerings and care for the living shared resources."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Prussian communities followed local customs in handling the dead, consoling kin and remembering them. Funerals required labor, material and time, while land, animals and dependents needed new arrangements. Beliefs about the dead gave these matters additional weight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Prussian communities followed local customs in handling the dead, consoling kin and remembering them. Funerals required labor, material and time, while land, animals and dependents needed new arrangements. Beliefs about the dead gave these matters additional weight. After a death, comrades brought news and explained belongings. Living people still needed food and safe travel, and care of the dead could not leave the party unguarded."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Prussian communities followed local customs in handling the dead, consoling kin and remembering them. Funerals required labor, material and time, while land, animals and dependents needed new arrangements. Beliefs about the dead gave these matters additional weight. Succession, property and dependents converged at funerals. Patrons balanced kin claims; supporting burial sustained ties, while seizing belongings damaged survivors' trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Prussian communities followed local customs in handling the dead, consoling kin and remembering them. Funerals required labor, material and time, while land, animals and dependents needed new arrangements. Beliefs about the dead gave these matters additional weight. A death rearranged work, care and income. Kin bringing food, labor or childcare eased pressure, while funeral costs competed with stores."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

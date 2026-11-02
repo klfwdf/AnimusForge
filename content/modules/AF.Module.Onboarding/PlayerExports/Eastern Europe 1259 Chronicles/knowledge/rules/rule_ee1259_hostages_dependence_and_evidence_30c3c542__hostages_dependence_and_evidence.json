@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_hostages_dependence_and_evidence_30c3c542",
+  "Keywords": [
+    "Kin and political guarantees at court",
+    "Letters and lodging for kin remaining at court"
+  ],
+  "RagShortTexts": [
+    "Princely kin at court connected household welfare with political relations.",
+    "Kin remaining at court needed food, lodging and safe messages to their families."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Princely kin traveling to or remaining at court linked household and politics. Lodging, attendants and messages home needed arrangements. Relatives could provide guarantees or help communication and audiences; families shared the risks of distance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Princely kin traveling to or remaining at court linked household and politics. Lodging, attendants and messages home needed arrangements. Relatives could provide guarantees or help communication and audiences; families shared the risks of distance. Escorts needed destinations, hosts and document handovers. Waiting for an audience consumed food and fodder, and changed routes could separate letters, replies and promises."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Princely kin traveling to or remaining at court linked household and politics. Lodging, attendants and messages home needed arrangements. Relatives could provide guarantees or help communication and audiences; families shared the risks of distance. Hosts asked whom visitors represented, what they could authorize and how to return gifts and replies. Kin and interpreters helped, while mistranslation damaged promises and standing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Princely kin traveling to or remaining at court linked household and politics. Lodging, attendants and messages home needed arrangements. Relatives could provide guarantees or help communication and audiences; families shared the risks of distance. Households hosted envoys, supplied carts or food, with burden set by numbers and stay. Visitors brought news whose wording and interpretation listeners might not distinguish."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

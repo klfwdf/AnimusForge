@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_rezekne_later_masonry_fdfe0f97",
+  "Keywords": [
+    "Latgalian hill and lake routes",
+    "Guides for travelers in Latgale"
+  ],
+  "RagShortTexts": [
+    "Latgale routes linked lakes, woodland settlements and water crossings.",
+    "Travel through lakes and woods needed route and lodging knowledge in bad weather."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Latgalian hills, lakes and forests made households rely on both water and land. Carriers asked about crossings and lodging, while watchers noted approaching parties. Losing even a few boats or animals could alter a journey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Latgalian hills, lakes and forests made households rely on both water and land. Carriers asked about crossings and lodging, while watchers noted approaching parties. Losing even a few boats or animals could alter a journey. Escorts checked whether boats could carry people, mounts, carts or sacks. Separate land and water parties needed agreed meeting points and carriers, not distance judged by eye."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Latgalian hills, lakes and forests made households rely on both water and land. Carriers asked about crossings and lodging, while watchers noted approaching parties. Losing even a few boats or animals could alter a journey. Holding a lakeside post needed vessels, boatmen and supplies. Taking too many boats disrupted fishing and exchange, allowing short-term military needs to damage longer-term income."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Latgalian hills, lakes and forests made households rely on both water and land. Carriers asked about crossings and lodging, while watchers noted approaching parties. Losing even a few boats or animals could alter a journey. Fishing boats provided livelihood and carried family and small loads. Weather keeping boats ashore affected catches, markets and household stores."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

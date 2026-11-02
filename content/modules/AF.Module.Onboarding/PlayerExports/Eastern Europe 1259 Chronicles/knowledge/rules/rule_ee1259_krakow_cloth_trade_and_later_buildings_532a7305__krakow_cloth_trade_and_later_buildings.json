@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_krakow_cloth_trade_and_later_buildings_532a7305",
+  "Keywords": [
+    "Krakow cloth market",
+    "Cloth stalls and delivery at Krakow"
+  ],
+  "RagShortTexts": [
+    "Krakow cloth trade needed market space, agreed measures and delivery.",
+    "Measuring cloth, delivery and payment required people and an orderly market."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cloth trade at Kraków involved stalls, quality, measurements and price, with incoming goods needing storage and carriage. Buyers compared fabric and length, while sellers paid for lodging, stalls and travel. Unsold cloth tied up capital."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Cloth trade at Kraków involved stalls, quality, measurements and price, with incoming goods needing storage and carriage. Buyers compared fabric and length, while sellers paid for lodging, stalls and travel. Unsold cloth tied up capital. Travelers bought cloth for clothes, wrapping and bedding, balancing cost and load. Rain required cover, and damaged parcels prompted renegotiation or refusal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Cloth trade at Kraków involved stalls, quality, measurements and price, with incoming goods needing storage and carriage. Buyers compared fabric and length, while sellers paid for lodging, stalls and travel. Unsold cloth tied up capital. Merchants and notables checked measures, timing and storage; valuable cloth also served gifts and rewards. Repeat trade relied on partners, while disputes harmed market reputation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Cloth trade at Kraków involved stalls, quality, measurements and price, with incoming goods needing storage and carriage. Buyers compared fabric and length, while sellers paid for lodging, stalls and travel. Unsold cloth tied up capital. Household spinning and weaving competed with fields; cash determined repair or replacement. Cold, children and illness needed cloth, making sales compete with family use."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_kuressaare_later_bishop_castle_3b3d34c1",
+  "Keywords": [
+    "Saaremaa island routes and settlements",
+    "Food for visiting parties on Saaremaa"
+  ],
+  "RagShortTexts": [
+    "Saaremaa households relied on farming, fishing and coastal travel.",
+    "Weather changed sailings; outsiders needed local arrangements for food and passage."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Saaremaa households relied on land production, fishing and coastal travel, with weather determining movement. Outside authorities needed both a presence and arrangements with households and local elites for supplies and passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Saaremaa households relied on land production, fishing and coastal travel, with weather determining movement. Outside authorities needed both a presence and arrangements with households and local elites for supplies and passage. Crews, guards and passengers shared space. Armed encounters prompted choices of avoidance or landing; pursuit spent strength and could leave familiar channels."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Saaremaa households relied on land production, fishing and coastal travel, with weather determining movement. Outside authorities needed both a presence and arrangements with households and local elites for supplies and passage. Coastal power required crews, repair materials and hosts. Raid proceeds could be offset by trade reprisals, while lost ships and people reduced later voyages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Saaremaa households relied on land production, fishing and coastal travel, with weather determining movement. Outside authorities needed both a presence and arrangements with households and local elites for supplies and passage. Fishing and travel required weather, while those at home prepared food, repaired nets and tended animals. Losing a boat removed both property and a means of future food."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

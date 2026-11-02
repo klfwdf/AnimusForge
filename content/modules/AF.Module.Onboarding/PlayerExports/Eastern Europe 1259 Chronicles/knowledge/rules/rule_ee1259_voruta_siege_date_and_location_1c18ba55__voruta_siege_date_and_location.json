@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_voruta_siege_date_and_location_1c18ba55",
+  "Keywords": [
+    "Voruta defense and kin rivalry",
+    "Food and help for Voruta defenders"
+  ],
+  "RagShortTexts": [
+    "Mindaugas used Voruta as a refuge during conflict with rivals.",
+    "Defense required people, food and nearby help, not agreement among every kinsman."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mindaugas's defense at Voruta faced pressure from relatives and outside powers. Partners could divide his opponents. Holding the post required people, food and dependable communication, with further assistance dependent on allies' interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mindaugas's defense at Voruta faced pressure from relatives and outside powers. Partners could divide his opponents. Holding the post required people, food and dependable communication, with further assistance dependent on allies' interests. Guards arranged watches, messages and entry checks; pursuit reduced defenders. Escorts needed closing times, waiting places and arrangements for injured mounts and cargo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mindaugas's defense at Voruta faced pressure from relatives and outside powers. Partners could divide his opponents. Holding the post required people, food and dependable communication, with further assistance dependent on allies' interests. Lords balanced repair, stores and retainers against revenue. Requisitioned work advanced repairs at a cost to harvests, while relief required reliable reports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Mindaugas's defense at Voruta faced pressure from relatives and outside powers. Partners could divide his opponents. Holding the post required people, food and dependable communication, with further assistance dependent on allies' interests. Outlying households chose what to move, with animals, seed and kin competing for carts. Refuge inside required shelter, food and water, while staying home brought other risks."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}
