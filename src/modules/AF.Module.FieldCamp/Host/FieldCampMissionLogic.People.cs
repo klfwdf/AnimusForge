@@ -824,9 +824,11 @@ public sealed partial class FieldCampMissionLogic
 				}
 				else
 				{
-					// Unlike ApplyByBattle(null), this fires native execution relations,
-					// honor loss, captivity removal and HeroKilled with the real killer.
-					KillCharacterAction.ApplyByExecution(hero, killer, true, true);
+					// This camp already owns the confirmed lethal scene casualty.
+					// Keep the real killer and normal death/captivity cleanup without
+					// entering vanilla execution relations or execution honor loss.
+					hero.AddDeathMark(killer, KillCharacterAction.KillCharacterActionDetail.Murdered);
+					KillCharacterAction.ApplyByDeathMarkForced(hero, true);
 					if (hero.IsAlive && hero.DeathMark == KillCharacterAction.KillCharacterActionDetail.None)
 					{
 						Logger.Log(LogSource, "[ERROR] captive scene death not accepted by campaign hero=" + character.StringId);
