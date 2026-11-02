@@ -2050,18 +2050,14 @@ public sealed partial class TownExecutionMissionBehavior
             frame.rotation.RotateAboutSide(pitch * MathF.PI / 180f);
             frame.rotation.RotateAboutForward(roll * MathF.PI / 180f);
             frame.rotation.ApplyScaleLocal(MathF.Max(0.1f, MathF.Min(5f, scale)));
-            var min = new Vec2(float.MaxValue, float.MaxValue);
-            var max = new Vec2(float.MinValue, float.MinValue);
-            for (var i = 0; i < 8; i++)
-            {
-                var p = frame.TransformToParent(new Vec3((i & 1) == 0 ? box.min.x : box.max.x,
-                    (i & 2) == 0 ? box.min.y : box.max.y, (i & 4) == 0 ? box.min.z : box.max.z));
-                min.x = MathF.Min(min.x, p.x); min.y = MathF.Min(min.y, p.y);
-                max.x = MathF.Max(max.x, p.x); max.y = MathF.Max(max.y, p.y);
-            }
-            if (float.IsNaN(min.x) || float.IsInfinity(min.x) || float.IsNaN(max.y) || float.IsInfinity(max.y))
+            var area = new FieldCampCeremonyArea(frame, box.min, box.max);
+            if (float.IsNaN(area.Min.x) || float.IsInfinity(area.Min.x) ||
+                float.IsNaN(area.Min.y) || float.IsInfinity(area.Min.y) ||
+                float.IsNaN(area.Max.x) || float.IsInfinity(area.Max.x) ||
+                float.IsNaN(area.Max.y) || float.IsInfinity(area.Max.y))
                 throw new InvalidOperationException("Execution prop has invalid footprint bounds: " + key);
-            areas.Add(new FieldCampCeremonyArea(min, max));
+            areas.Add(area);
+            RexLog.Info($"Session {Request.SessionId} prop footprint '{key}' at {position}: min={area.Min}, max={area.Max}; oriented containment.");
         }
         // This is the same complete stage used by BuildRuntimeScene, not a crowd circle.
         if (!UsesGroundExecutionSite()) Add(GallowsPrefab, ExecutionSiteResourceType.Prefab, _placement!.Origin, 0f, 0f, 0f, 1f);

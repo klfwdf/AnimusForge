@@ -190,19 +190,23 @@ public sealed partial class FieldCampMissionLogic
                 Agent agent = entry.Agent;
                 if (agent == null || !agent.IsActive() || agent == Agent.Main || _campCeremonyActors.ContainsKey(agent)) continue;
                 _ceremonyResidents[agent] = entry;
-                _ceremonyClearance.Add(agent);
+                if (!IsCeremonyClear(agent.Position)) _ceremonyClearance.Add(agent);
             }
             for (int i = 0; i < _prisoners.Count; i++)
             {
                 Agent agent = _prisoners[i];
                 if (agent == null || !agent.IsActive() || _campCeremonyActors.ContainsKey(agent)) continue;
-                _ceremonyClearance.Add(agent);
+                if (!IsCeremonyClear(agent.Position)) _ceremonyClearance.Add(agent);
                 _ceremonyPrisoners.Add(agent);
             }
-            // No spectators are moved here: only actual occupied prop footprints delay construction.
+            // Snapshot only people actually occupying the oriented prop footprints
+            // at confirmation. Unrelated camp residents are not a moving global gate.
+            for (int i = 0; i < _ceremonyClearance.Count; i++)
+                Logger.Log(LogSource, "execution footprint occupant session=" + session +
+                    " agent=" + _ceremonyClearance[i].Index + " position=" + _ceremonyClearance[i].Position);
             if (_ceremonyGeometryPresent || VerifyCeremonyClearanceNow()) CompleteCeremonyPreparation();
             else { AnimusForgeQuickInfo.Show(FieldCampText.DeploymentClearing()); TickCeremonyPreparation(); }
-            Logger.Log(LogSource, "execution footprint preparation session=" + session + " registered=" + _ceremonyClearance.Count);
+            Logger.Log(LogSource, "execution footprint preparation session=" + session + " occupants=" + _ceremonyClearance.Count);
         }
         catch (Exception ex) { FailCeremonyPreparation(ex.Message); }
         return _ceremonyReadiness;

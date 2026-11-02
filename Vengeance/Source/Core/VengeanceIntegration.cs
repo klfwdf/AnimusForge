@@ -19,10 +19,64 @@ internal readonly struct FieldCampCeremonyArea
 {
     internal readonly Vec2 Min;
     internal readonly Vec2 Max;
-    internal FieldCampCeremonyArea(Vec2 min, Vec2 max) { Min = min; Max = max; }
-    internal bool Contains(Vec3 point, float margin = 0.65f) =>
-        point.x >= Min.x - margin && point.x <= Max.x + margin &&
-        point.y >= Min.y - margin && point.y <= Max.y + margin;
+    private readonly Vec2 _origin;
+    private readonly Vec2 _side;
+    private readonly Vec2 _forward;
+    private readonly Vec2 _localMin;
+    private readonly Vec2 _localMax;
+
+    internal FieldCampCeremonyArea(Vec2 min, Vec2 max)
+    {
+        Min = _localMin = min;
+        Max = _localMax = max;
+        _origin = Vec2.Zero;
+        _side = new Vec2(1f, 0f);
+        _forward = new Vec2(0f, 1f);
+    }
+
+    internal FieldCampCeremonyArea(MatrixFrame frame, Vec3 localMin, Vec3 localMax)
+    {
+        _origin = frame.origin.AsVec2;
+        var side = frame.rotation.s.AsVec2;
+        if (!side.IsNonZero())
+        {
+            var forward = frame.rotation.f.AsVec2;
+            side = forward.IsNonZero() ? new Vec2(forward.y, -forward.x) : new Vec2(1f, 0f);
+        }
+        _side = side.Normalized();
+        _forward = new Vec2(-_side.y, _side.x);
+        var min = new Vec2(float.MaxValue, float.MaxValue);
+        var max = new Vec2(float.MinValue, float.MinValue);
+        var projectedMin = min;
+        var projectedMax = max;
+        // Measured once at confirmation. Keep yaw in the narrow phase instead
+        // of clearing the empty corners of a rotated world-axis bounding box.
+        for (var i = 0; i < 8; i++)
+        {
+            var p = frame.TransformToParent(new Vec3((i & 1) == 0 ? localMin.x : localMax.x,
+                (i & 2) == 0 ? localMin.y : localMax.y, (i & 4) == 0 ? localMin.z : localMax.z));
+            min.x = MathF.Min(min.x, p.x); min.y = MathF.Min(min.y, p.y);
+            max.x = MathF.Max(max.x, p.x); max.y = MathF.Max(max.y, p.y);
+            var delta = p.AsVec2 - _origin;
+            var x = delta.x * _side.x + delta.y * _side.y;
+            var y = delta.x * _forward.x + delta.y * _forward.y;
+            projectedMin.x = MathF.Min(projectedMin.x, x); projectedMin.y = MathF.Min(projectedMin.y, y);
+            projectedMax.x = MathF.Max(projectedMax.x, x); projectedMax.y = MathF.Max(projectedMax.y, y);
+        }
+        Min = min; Max = max;
+        _localMin = projectedMin; _localMax = projectedMax;
+    }
+
+    internal bool Contains(Vec3 point, float margin = 0.65f)
+    {
+        if (point.x < Min.x - margin || point.x > Max.x + margin ||
+            point.y < Min.y - margin || point.y > Max.y + margin) return false;
+        var delta = point.AsVec2 - _origin;
+        var x = delta.x * _side.x + delta.y * _side.y;
+        var y = delta.x * _forward.x + delta.y * _forward.y;
+        return x >= _localMin.x - margin && x <= _localMax.x + margin &&
+            y >= _localMin.y - margin && y <= _localMax.y + margin;
+    }
 }
 
 /// <summary>Owns the one-active-host rule for the standalone and embedded builds.</summary>
