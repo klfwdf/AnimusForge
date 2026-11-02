@@ -46,8 +46,10 @@ internal static class PersonaEvolutionPolicy
         => profile != null && JToken.DeepEquals(Snapshot(profile), original);
 
     // Bound request projection without truncating stored player-authored text.
-    internal static JObject RequestPersona(JObject snapshot)
+    internal static JObject RequestPersona(JObject snapshot, bool expandedPersonaEnabled = true)
     {
+        if (!expandedPersonaEnabled)
+            return new JObject { ["description"] = Clip((string)snapshot["description"], 1000) };
         var result = (JObject)snapshot.DeepClone();
         result["description"] = Clip((string)result["description"], 1000);
         result["speech_style"] = Clip((string)result["speech_style"], 240);

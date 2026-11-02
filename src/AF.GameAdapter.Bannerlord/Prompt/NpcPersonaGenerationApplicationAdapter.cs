@@ -47,7 +47,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
     internal void GetNpcPersonaStrings(Hero hero, out string personality, out string background)
     { personality = GetNpcPersonaDescription(hero); background = ""; }
     internal NpcPersonaProfile GetNpcPersonaProfile(Hero hero,bool createIfMissing) => hero==null ? null : _profiles.Get(hero.StringId,createIfMissing);
-    internal string GetNpcPersonaContext(Hero hero, bool forUi = false) => hero == null ? "" : NpcPersonaTextRules.BuildPersonaContext(_profiles.Get(hero.StringId, createIfMissing: false), forUi);
+    internal string GetNpcPersonaContext(Hero hero, bool forUi = false) => hero == null || !DuelSettings.ExpandedNpcPersonaEnabledForRuntime ? "" : NpcPersonaTextRules.BuildPersonaContext(_profiles.Get(hero.StringId, createIfMissing: false), forUi);
     internal void SaveNpcPersonaProfile(Hero hero,NpcPersonaProfile profile) => _profiles.Save(hero?.StringId,profile,_stampProfile);
     internal NpcPersonaGenerationWork CaptureNpcPersonaGeneration(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)
     {
@@ -205,12 +205,12 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
                     profile.Evolution = current.Evolution;
                     profile.RecentChangeReason = current.RecentChangeReason;
 					ApplyGeneratedExtras(profile, current, generated, overwriteExisting,
-                        work.ExpandedPersonaEnabled && DuelSettings.GetSettings()?.EnableExpandedNpcPersona != false);
+                        work.ExpandedPersonaEnabled && DuelSettings.ExpandedNpcPersonaEnabledForRuntime);
 					profile.SchemaVersion = Math.Max(profile.SchemaVersion, 3);
                     SaveNpcPersonaProfile(hero, profile);
                     saved = !string.IsNullOrWhiteSpace(profile.Description);
                     if (saved) trigger?.OnSaved(profile);
-                    if (saved && overwriteExisting) Logger.Log("NpcPersona", "[REROLL] Replaced personality and background for " + work.Id + "; voiceId preserved=" + !string.IsNullOrWhiteSpace(profile.VoiceId) + ".");
+                    if (saved && overwriteExisting) Logger.Log("NpcPersona", "[REROLL] Replaced personality and background for " + work.Id + "; voiceId preserved=" + !string.IsNullOrWhiteSpace(profile.VoiceId) + "; expanded=" + (work.ExpandedPersonaEnabled && DuelSettings.ExpandedNpcPersonaEnabledForRuntime) + ".");
                 }
                 if (!saved)
                 {
@@ -283,13 +283,14 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
         if (target == null) return;
         if (!expandedPersonaEnabled)
         {
-            if (ReferenceEquals(target, current)) return;
-            target.Traits = CloneTraits(current?.Traits);
-            target.Motivations = CloneStrings(current?.Motivations);
-            target.Values = CloneStrings(current?.Values);
-            target.Fears = CloneStrings(current?.Fears);
-            target.SpeechStyle = current?.SpeechStyle ?? "";
-            target.RecentChangeReason = current?.RecentChangeReason ?? "";
+            // A successful prose-only generation retires this profile's old expanded fields.
+            // Merely toggling the setting never mutates saved profiles or event queues.
+            target.Traits = new List<NpcPersonaTrait>();
+            target.Motivations = new List<string>();
+            target.Values = new List<string>();
+            target.Fears = new List<string>();
+            target.SpeechStyle = "";
+            target.RecentChangeReason = "";
             target.Evolution = current?.Evolution;
             return;
         }

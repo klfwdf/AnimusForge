@@ -3495,7 +3495,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_FC_IssueResolved_Spent" text="花费{GOLD}第纳尔。" />
   <string id="AF_FC_IssueResolved_Morale" text="士气{MORALE}。" />
   <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Title" text="扩展人设" />
-  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Hint" text="默认开启。首次生成或重生时同时生成特质、动机、价值观、弱点与说话风格。关闭后只生成人物正文；已有扩展数据保留并继续可用。事件驱动的完整人设重生由独立开关控制。" />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Hint" text="默认开启。首次生成或重生时同时生成特质、动机、价值观、弱点与说话风格。关闭后隐藏扩展字段且不再注入模型上下文；关闭时生成或重生成功会清除该人物已有扩展字段，仅切换开关不删除存储数据。经历驱动的人设更新由独立开关控制。" />
   <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Group" text="9. 提示词扩展" />
     <string id="AF_FC_NoCampSite" text="当前场景未找到适合整座营地的地块，未强行向山坡铺设设施。场景保持开放，由你手动离开，本次不扣巡营时间。" />
     <string id="AF_FC_IncompleteCamp" text="营地初始化未完成：已放置 {PLACED}/{TOTAL} 顶帐篷。由你决定何时离开，具体失败原因已记录在 FieldCamp 日志中。" />

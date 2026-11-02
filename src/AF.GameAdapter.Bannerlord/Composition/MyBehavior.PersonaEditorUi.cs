@@ -94,6 +94,7 @@ public partial class MyBehavior
   GetPersonaProfile = hero => GetNpcPersonaProfile(hero, createIfMissing: false),
   UpdatePersonaProfile = UpdateDevPersonaEditorProfile,
   TraitIds = NpcPersonaTextRules.AllowedTraitIdsForPrompt,
+  IsExpandedPersonaEnabled = () => DuelSettings.ExpandedNpcPersonaEnabledForRuntime,
   GeneratePersona = hero => GenerateNpcPersonaAsync(hero, ignoreRetryCooldown: true, overwriteExisting: true),
   GeneratePersonaWithPrompt = (hero, prompt) => GenerateNpcPersonaAsync(hero, ignoreRetryCooldown: true, overwriteExisting: true, requestRequirements: prompt),
   CompleteOnMainThread = RunMemorySummaryCompletionAsync

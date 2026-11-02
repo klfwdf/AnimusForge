@@ -129,7 +129,7 @@ public partial class MyBehavior
         var snapshot = PersonaEvolutionPolicy.Snapshot(profile);
         var input = new JObject
         {
-            ["persona"] = PersonaEvolutionPolicy.RequestPersona(snapshot),
+            ["persona"] = PersonaEvolutionPolicy.RequestPersona(snapshot, DuelSettings.ExpandedNpcPersonaEnabledForRuntime),
             ["events"] = new JArray(batch.Select(e => new JObject { ["facts"] = e.Facts, ["connection"] = e.Connection }))
         };
         int epoch = _personaEvolutionEpoch;
@@ -149,7 +149,7 @@ public partial class MyBehavior
             OnSaved = updated =>
             {
                 saved = true;
-                updated.RecentChangeReason = PersonaEvolutionPolicy.Clip(batch[0].Facts, 240);
+                updated.RecentChangeReason = DuelSettings.ExpandedNpcPersonaEnabledForRuntime ? PersonaEvolutionPolicy.Clip(batch[0].Facts, 240) : "";
                 PersonaEvolutionPolicy.Complete(state, batch);
                 EncyclopediaHeroPersonaPatch.QueueRefreshForHero(id);
                 Logger.Log("NpcPersonaEvolution", "[COMPLETE] full regeneration hero=" + id + " facts=" + batch.Length);

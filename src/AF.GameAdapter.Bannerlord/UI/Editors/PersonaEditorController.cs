@@ -52,6 +52,7 @@ internal sealed class PersonaEditorPort
  internal Func<Hero, MyBehavior.NpcPersonaProfile> GetPersonaProfile;
  internal Action<Hero, Action<MyBehavior.NpcPersonaProfile>> UpdatePersonaProfile;
  internal IReadOnlyCollection<string> TraitIds;
+ internal Func<bool> IsExpandedPersonaEnabled;
  internal Func<Hero, Task<string>> GeneratePersona;
  internal Func<Hero, string, Task<string>> GeneratePersonaWithPrompt;
  internal Func<long, Func<bool>, Task<bool>> CompleteOnMainThread;
@@ -64,6 +65,7 @@ internal sealed class PersonaEditorController
 	}
 
  private readonly PersonaEditorPort _port;
+ private bool ExpandedPersonaEnabled => _port.IsExpandedPersonaEnabled?.Invoke() != false;
  private long _generation = long.MinValue;
  internal void SynchronizeGeneration(long generation)
  {
@@ -153,11 +155,12 @@ internal sealed class PersonaEditorController
 			stringBuilder.AppendLine(Localize("AF_UI_Persona_PersonalityLabel", "Persona: ") + (flag ? Localize("AF_UI_Persona_Set", "set") : Localize("AF_UI_Persona_Unset", "not set")));
 			stringBuilder.AppendLine(Localize("AF_UI_Persona_VoiceCurrent", "Current voice ID:") + (flag3 ? npcVoiceId : Localize("AF_UI_Persona_VoiceUnsetAuto", "not set (assigned automatically by VoiceMapping)")));
 			string recentChange = _port.GetPersonaProfile?.Invoke(npc)?.RecentChangeReason;
-			if (!string.IsNullOrWhiteSpace(recentChange))
+			if (ExpandedPersonaEnabled && !string.IsNullOrWhiteSpace(recentChange))
 				stringBuilder.AppendLine(Localize("AF_PERSONA_UI_CONTEXT_RecentChange", "Recent change: ") + recentChange);
 			List<InquiryElement> list = new List<InquiryElement>();
 			list.Add(new InquiryElement("set_personality", Localize("AF_UI_Persona_SetPersonality", "Set or edit persona"), null));
-			list.Add(new InquiryElement("edit_expanded", Localize("AF_UI_Persona_EditExpanded", "Edit expanded persona"), null));
+			if (ExpandedPersonaEnabled)
+				list.Add(new InquiryElement("edit_expanded", Localize("AF_UI_Persona_EditExpanded", "Edit expanded persona"), null));
 			list.Add(new InquiryElement("reroll_persona", Localize("AF_UI_Persona_RerollPersona", "Regenerate persona (LLM)"), null));
 			list.Add(new InquiryElement("reroll_persona_prompt", Localize("AF_UI_Persona_PromptedRerollButton", "Regenerate with prompt"), null));
 			list.Add(new InquiryElement("set_voice", Localize("AF_UI_Persona_SetVoice", "Set or edit voice ID"), null));
@@ -401,7 +404,7 @@ internal sealed class PersonaEditorController
 	internal void OpenExpandedPersonaMenu(Hero npc)
 	{
 		long generation = _port.CaptureGeneration();
-		if (npc == null || !IsEditorCurrent(npc, generation)) return;
+		if (npc == null || (!IsEditorCurrent(npc, generation) || !ExpandedPersonaEnabled)) return;
 		var options = new List<InquiryElement>();
 		foreach (string field in new[] { "traits", "motivations", "values", "fears", "speech_style" })
 			options.Add(new InquiryElement(field, ExpandedFieldLabel(field), null));
@@ -410,7 +413,7 @@ internal sealed class PersonaEditorController
 			Localize("AF_UI_Persona_MenuPrompt", "Choose an action:"), options, true, 0, 1,
 			Localize("AF_UI_Persona_Choose", "Choose"), Localize("AF_UI_Persona_Back", "Back"), selected =>
 			{
-				if (!IsEditorCurrent(npc, generation)) return;
+				if ((!IsEditorCurrent(npc, generation) || !ExpandedPersonaEnabled)) return;
 				string field = selected?.FirstOrDefault()?.Identifier as string;
 				if (field == "traits") OpenExpandedTraits(npc);
 				else if (field == "motivations" || field == "values" || field == "fears" || field == "speech_style") OpenExpandedText(npc, field);
@@ -421,7 +424,7 @@ internal sealed class PersonaEditorController
 	private void OpenExpandedText(Hero npc, string field)
 	{
 		long generation = _port.CaptureGeneration();
-		if (!IsEditorCurrent(npc, generation)) return;
+		if ((!IsEditorCurrent(npc, generation) || !ExpandedPersonaEnabled)) return;
 		var profile = _port.GetPersonaProfile(npc);
 		var lines = field == "motivations" ? profile?.Motivations : field == "values" ? profile?.Values : profile?.Fears;
 		string initial = field == "speech_style" ? profile?.SpeechStyle ?? "" : string.Join("\n", lines ?? new List<string>());
@@ -431,7 +434,7 @@ internal sealed class PersonaEditorController
 			Localize("AF_UI_Persona_ExpandedLoaded", "The current value is loaded below."),
 			Localize("AF_UI_Persona_ExpandedTextHint", "Enter one item per line. Leave blank to clear this field."), initial, input =>
 			{
-				if (closed || !IsEditorCurrent(npc, generation)) return;
+				if (closed || (!IsEditorCurrent(npc, generation) || !ExpandedPersonaEnabled)) return;
 				closed = true;
 				string text = (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 				_port.UpdatePersonaProfile(npc, current =>
@@ -448,7 +451,7 @@ internal sealed class PersonaEditorController
 				ExpandedPersonaSaved(npc);
 			}, () =>
 			{
-				if (closed || !IsEditorCurrent(npc, generation)) return;
+				if (closed || (!IsEditorCurrent(npc, generation) || !ExpandedPersonaEnabled)) return;
 				closed = true;
 				OpenExpandedPersonaMenu(npc);
 			});
@@ -457,7 +460,7 @@ internal sealed class PersonaEditorController
 	private void OpenExpandedTraits(Hero npc)
 	{
 		long generation = _port.CaptureGeneration();
-		if (!IsEditorCurrent(npc, generation)) return;
+		if ((!IsEditorCurrent(npc, generation) || !ExpandedPersonaEnabled)) return;
 		var traits = _port.GetPersonaProfile(npc)?.Traits;
 		var options = new List<InquiryElement>();
 		foreach (string id in _port.TraitIds)
@@ -470,7 +473,7 @@ internal sealed class PersonaEditorController
 			Localize("AF_UI_Persona_TraitHint", "Choose a trait to set its strength (1-3) or remove it. Up to five traits."), options, true, 0, 1,
 			Localize("AF_UI_Persona_Choose", "Choose"), Localize("AF_UI_Persona_Back", "Back"), selected =>
 			{
-				if (!IsEditorCurrent(npc, generation)) return;
+				if ((!IsEditorCurrent(npc, generation) || !ExpandedPersonaEnabled)) return;
 				string id = selected?.FirstOrDefault()?.Identifier as string;
 				if (id != null && _port.TraitIds.Contains(id)) OpenExpandedTraitStrength(npc, id);
 				else OpenExpandedPersonaMenu(npc);
@@ -480,7 +483,7 @@ internal sealed class PersonaEditorController
 	private void OpenExpandedTraitStrength(Hero npc, string id)
 	{
 		long generation = _port.CaptureGeneration();
-		if (!IsEditorCurrent(npc, generation)) return;
+		if ((!IsEditorCurrent(npc, generation) || !ExpandedPersonaEnabled)) return;
 		var options = new List<InquiryElement> { new InquiryElement(0, Localize("AF_UI_Persona_RemoveTrait", "Remove this trait"), null) };
 		for (int strength = 1; strength <= 3; strength++)
 			options.Add(new InquiryElement(strength, Localize("AF_UI_Persona_TraitStrength", "Strength {LEVEL}", ("LEVEL", strength.ToString())), null));
@@ -490,7 +493,7 @@ internal sealed class PersonaEditorController
 			Localize("AF_UI_Persona_TraitHint", "Choose a trait to set its strength (1-3) or remove it. Up to five traits."), options, true, 0, 1,
 			Localize("AF_UI_Persona_Save", "Save"), Localize("AF_UI_Persona_Back", "Back"), selected =>
 			{
-				if (closed || !IsEditorCurrent(npc, generation)) return;
+				if (closed || (!IsEditorCurrent(npc, generation) || !ExpandedPersonaEnabled)) return;
 				closed = true;
 				if (selected?.FirstOrDefault()?.Identifier is int strength && strength >= 0 && strength <= 3)
 				{
