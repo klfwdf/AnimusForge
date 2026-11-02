@@ -1,3 +1,33 @@
+<a id="field-camp-no-auto-exit-20261102"></a>
+## 营地不自动退出修复 — 2026-11-02
+
+产品/构建输入`8876d7ff55`；[唯一台账与验收边界](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-no-auto-exit-20261102)。Setup归一次初始化/阶段隔离；Site归落点/cache；Props归帐篷/家具；Launcher/现有MissionLogic归显式离开；FieldCampBehavior归巡营计时。未扩张其他场景、伤害或独立Vengeance。
+
+| 当前一基源码范围 | 已核实符号 |
+| --- | --- |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Setup.cs:14–47` | `private void SetUpCamp` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Setup.cs:49–58` | `private bool TryCampSetupStage` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Setup.cs:60–73` | `private void SpawnEveryone` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.cs:121–164` | `public override void OnMissionTick` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.cs:196–227` | `private void SpawnPlayer` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.cs:110–114` | `public override InquiryData OnEndMissionRequest` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:74–115` | `internal static MatrixFrame Resolve(` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:118–141` | `internal static MatrixFrame ResolveFallback` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:144–169` | `internal static bool TryFindPlayerStart` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:171–187` | `private static bool TryProbePlayerPosition` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:587–654` | `internal static void InitializeGroundCache` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:152–237` | `private static int PlaceAll` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:244–339` | `private static bool PlaceTent(` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLauncher.cs:27–82` | `internal static bool TryOpen` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLauncher.cs:124–147` | `public static MissionView[] OpenFieldCampMission` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampBehavior.cs:468–474` | `internal void BeginPatrol` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampBehavior.cs:476–479` | `internal void MarkPatrolPlayerReady` |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampBehavior.cs:481–503` | `private void ConsumePatrolReturn` |
+
+`FieldCampText.SetupDegraded`和两套原生UI资源共用`AF_FC_SetupDegraded`，实际消费及内容投影同步完成。102项直接生产Setup链接测试使用fake场景/人物；15项检查是静态声明/接线；原72/105/121与双API/Bootstrap及安装哈希已验。原生地形/射线/帐篷、TAB/ESC、昏迷/越界及旧档仍未验，不能计入102项。源码hash与完整符号范围见`.tmp/field-camp-no-auto-exit-20261102/code-map.json`，三DLL及安装证据见`verification.json`；原九项/审查修复的其他职责边界不改。
+
+---
+
 <a id="field-camp-review-deployed-20261102"></a>
 ## 营地部署前测试依赖对齐与安装证据 — 2026-11-02
 

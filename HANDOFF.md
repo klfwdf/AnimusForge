@@ -1,3 +1,11 @@
+## 2026-11-02 营地不自动退出修复已覆盖
+
+**DEPLOYED / FAILURE_INJECTION_PASS / LIVE_NOT_RUN**。产品/构建输入`8876d7ff55`，意图点`591f9ad4d`。前次补丁把布置异常升级为EndMission，造成进营地即退出；现已移除这条退场链路并分阶段隔离失败。完整营地放不下时寻找安全玩家落点，帐篷/家具局部失败不拖垮全营；移除营地昏迷自动结束及越界倒计时退出owner，保留TAB/ESC主动离开、边界墙和手动清理。玩家未初始化不扣巡营时间；CN/EN降级提示已接线。
+
+新增生产Setup链接故障注入102项PASS；不自动退出源码契约旧2/15→新15/15，原C#72/105/121、源码65+6、双语26表通过。双API/Bootstrap和managed门禁通过，原统一流程成功更新11文件到`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；模块仍v1.7.0，安装/映射/三DLL及11玩家保护文件核验PASS。实机原始三地图、原生碰撞、TAB/ESC、昏迷/越界和旧档仍未验；外交语言门既有4处失败保留。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-no-auto-exit-20261102) / [代码图](docs/architecture/af-framework-code-scope.md#field-camp-no-auto-exit-20261102)。完整证据及before/旧项目候选在`.tmp/field-camp-no-auto-exit-20261102/`，无安装自动回滚；未打包/push/启动游戏。
+
+---
+
 ## 2026-11-02 营地审查修复与当前世界书候选已部署（CN）
 
 **DEPLOYED / HASH_VERIFIED / LIVE_NOT_RUN**。用户本轮明确授权“部署 / 激进型 / 继续”。构建输入 `958fd4d257e92b84adef9b7c97aeb1a4b1c10ce1`，含营地九项 `175a6e0cc7`、审查修复 `e386527d47` 和当前已提交世界书更新；版本保持 v1.7.0。已通过原统一入口构建 1.3.15.110062 / 1.4.6.115628 + Bootstrap，接续原部署脚本成功更新 3947 个受管文件到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，不打包、不push。

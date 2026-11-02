@@ -1,3 +1,36 @@
+<a id="field-camp-no-auto-exit-20261102"></a>
+## 2026-11-02 营地进入即退回的回归修复
+
+**DEPLOYED / MANAGED_AND_WIRING_PASS / NATIVE_RETEST_NOT_RUN**。用户明确要求“修复……无论如何都不会自动退出”。工作区`F:/AnimusForge-main`、main；开始HEAD`ab38985433`，意图点`591f9ad4d`，产品/构建输入`8876d7ff55`。本条就当前安装状态替代[上一轮部署](#field-camp-review-deployed-20261102)，保留其当时编译通过而实机未验的历史。其他会话源码换行差异、HANDOFF和本台账私有增量均保留。
+
+### 已确认原因与修复
+
+- `Logs/Mod_Logic.txt`的14:49:55/14:50:02：`battle_terrain_biome_093b`无完整选址；14:50:20/14:50:31：`battle_terrain_biome_092`、`battle_terrain_biome_107`已选址但`No accessible, grounded tent candidate: Tent:empire`失败。之后均扣1小时巡营时间。本轮筛存`incident-field-camp.log`，不复制API日志/凭据。
+- 对照`175a6e0cc7`父版本，原异常分支只记日志，九项补丁新增`Mission.EndMission()`才导致强制退场。原65项源码测试也曾要求失败必须退出；本轮依据明确的新要求替换该契约，保留缓存清理及原业务断言，并新增15项接线/安全声明检查。
+- `FieldCampMissionLogic.Setup`分隔layout/site/fallback/clutter/preset/props/cache/actors/horses/envoys；人物子阶段各自容错。失败不调用EndMission、不阻塞其余初始化阶段，缺玩家时不运行不完整camp-life owner、不循环初始化/刷日志。场景仍可由原生TAB/ESC主动离开。
+- 完整布局不合适时，从既有路径和有界网格找干燥、可导航、无碰撞的玩家点，以玩家而非营地中心为锚，不压缩真实prefab比例；首选玩家点被挡时，先查最多98304格的已有cache，再用有界原生候选。水面、navmesh高度、坡差、碰撞和逐人物安全校验保留，不把玩家硬塞水里/物体里。
+- 单道具/帐篷失败只跳过对应对象，家具失败不再否决整顶合格帐篷；后验入口堵塞的帐篷及其家具移除。最终道具后只尝试一次地面cache，即使道具阶段异常也执行；首选直线营门通道失败不再废除其他安全格。
+- 营地不注册`BasicLeaveMissionLogic`（昏迷自动结束）或`MissionBoundaryCrossingHandler`及倒计时view；保留原生leave view、ESC、硬边界/墙、`OnEndMissionRequest(canPlayerLeave=true)`及清理。没有全局EndMission补丁，没有伤害归零/无敌或其他场景变化。CN/EN资源同步注册`AF_FC_SetupDegraded`，由真实TextObject消费。
+- 原FieldCampBehavior只在主Agent已激活后记运行时巡营ready，Begin/返回/加载/新游戏清理该凭据；无凭据不扣巡营时间。不增加存档键、配置owner或设置。所有新增搜索/阶段委托只在初始化运行；Tick新增O(1)布尔检查，既有0.5秒/最多20人维护和cache策略不变。
+
+### 实际验证及边界
+
+- `FieldCampSetupFailureTests`直接链接生产Setup及人物阶段编排，fake native scene/actors故障注入102断言PASS；覆盖每阶段异常仍不请求退出、人物子阶段继续、无玩家不记ready、通知异常不退场。它不执行原生射线/prefab/输入。
+- `contracts.py`旧before2/15，新15/15；原C#接续72、围观105、记忆/命令121全部重跑PASS；源码65+审查6、双语26/0和diff-check通过。全仓l10n_gate仍因外交`DiplomacySponsorReceiptRules.cs:17–19`既有4处中文常量失败，未改无关业务或豁免门禁。
+- 原`build_single_module.ps1 -Configuration Debug -Deploy`，显式1.4参考`.tmp/build_check/1.4`，双实现各0错误/387警告、Bootstrap构建与双coup seam/registration smoke通过（managed门禁）。部署exit 0，受管更新11文件，仍是单AnimusForge模块/Bootstrap-only、XML版本v1.7.0；未升版、打包、push或启动游戏。
+- Stage9023文件，8998与安装SHA一致；25个差异依原规则保留（2份用户提示词、23份较新布匿战争导出）。9007项source→Stage全部一致；三DLL及marker产物/Stage/安装一致，双实现hash不同；19690源码输入未变、11玩家文件hash未变、无部署candidate残留。
+- 原始三张地图重进、真实地形/碰撞/帐篷、TAB/ESC、昏迷/越界、真实TTS/provider、旧档、独立Vengeance和全业务回归仍NOT_RUN；不能把静态或fake引擎检查说成实机通过，也不承诺引擎/进程永不崩溃。
+
+| DLL | 实际参考版本 | 最终SHA256 |
+| --- | --- | --- |
+| 1.3 | v1.3.15.110062 | `f94fcd15c83edc61209343a5f18ee4b5825b934148a34cb459eb84d2b3e6172a` |
+| 1.4 | v1.4.6.115628 | `87d5d19433da6da767e8f3c11fd727b188d0ccbc9b0ed77de6c190704fc9c9ee` |
+| Bootstrap | v1.3.15.110062 | `ca02ecbfdf165860995a643a1a64c54188c7bab93f7ffe4d3363965bf74a91d5` |
+
+精确行号/符号见[代码图](architecture/af-framework-code-scope.md#field-camp-no-auto-exit-20261102)。完整证据`.tmp/field-camp-no-auto-exit-20261102/`含before、事故/测试/构建部署日志、source-build-input、protected-before、code-map、verification及核验脚本。`previous-stage/`、`previous-artifacts/`是替换前项目候选，不是安装Recovery/玩家备份。回退只聚焦inverse`8876d7ff55`（会恢复已被本轮废止的退场行为，必须说明），不hard reset/改他人dirty；旧候选重新安装需原校验和对应授权，无自动回滚。
+
+---
+
 <a id="field-camp-review-deployed-20261102"></a>
 ## 2026-11-02 营地九项及审查修复的统一模组部署
 
