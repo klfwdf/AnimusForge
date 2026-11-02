@@ -18,7 +18,6 @@ namespace AnimusForge;
 public sealed partial class FieldCampMissionLogic
 {
 	private const int MaxCeremonyWatchers = 16;
-	private const int WatchersPerRow = 8;
 	private const int CeremonyTickBudget = 20;
 	private const float CeremonyClearRadius = 2f;
 	private const float CeremonyPreparationTimeoutSeconds = 55f;
@@ -36,8 +35,6 @@ public sealed partial class FieldCampMissionLogic
         internal Vec3[] Route = Array.Empty<Vec3>();
         internal int RouteIndex;
 		internal bool ReturningHome;
-		internal bool CountedWaiting = true;
-		internal bool CountedUncleared;
 		internal Vec3 Home;
 		internal Vec2 HomeFacing;
 		internal Vec3 Goal;
@@ -57,9 +54,6 @@ public sealed partial class FieldCampMissionLogic
 	private readonly List<CeremonyMove> _ceremonyWatchers = new List<CeremonyMove>(MaxCeremonyWatchers);
 	private readonly Dictionary<long, Vec2> _ceremonyMarks = new Dictionary<long, Vec2>();
 	private Agent[] _ceremonyCrowd = Array.Empty<Agent>();
-	private int _ceremonyWaiting;
-	private int _ceremonyUnclearedMoves;
-	private bool _ceremonyClearanceVerified;
 	private Guid _ceremonySession;
 	private FieldCampCeremonyReadiness _ceremonyReadiness;
 	private bool _ceremonyActive;
@@ -323,11 +317,12 @@ public sealed partial class FieldCampMissionLogic
                         away = away.IsNonZero() ? away.Normalized() : -_ceremonyForward;
                         bool moved = false;
                         int pathAttempts = 0;
+                        float directionOffset = MBRandom.RandomInt(8) * MathF.PI * 0.25f;
                         // Find the closest exit, not a distant point beyond a 9 m camp-wide circle.
                         for (int ring = 1; ring <= 8 && !moved && pathAttempts < 4; ring++)
                             for (int attempt = 0; attempt < 8; attempt++)
                             {
-                                float angle = attempt * MathF.PI * 0.25f;
+                                float angle = attempt * MathF.PI * 0.25f + directionOffset;
                                 var direction = new Vec2(away.x * MathF.Cos(angle) - away.y * MathF.Sin(angle),
                                     away.x * MathF.Sin(angle) + away.y * MathF.Cos(angle));
                                 Vec2 flat = agent.Position.AsVec2 + direction * (ring * 1.5f);
@@ -364,6 +359,13 @@ public sealed partial class FieldCampMissionLogic
 
     private void CompleteCeremonyPreparation()
     {
+        for (int i = 0; i < _ceremonyWalkers.Count; i++)
+        {
+            CeremonyMove move = _ceremonyWalkers[i];
+            if (!move.Agent.IsActive() || IsSceneConversationHeld(move.Agent)) continue;
+            HoldCeremonyActor(move);
+            move.ClearanceHeld = true;
+        }
         _ceremonyReadiness = FieldCampCeremonyReadiness.Ready;
         Logger.Log(LogSource, "execution preparation ready session=" + _ceremonySession + "; footprint clear, no spectator gate");
     }

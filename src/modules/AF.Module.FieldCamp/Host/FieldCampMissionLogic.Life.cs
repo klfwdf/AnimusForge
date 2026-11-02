@@ -336,7 +336,7 @@ public sealed partial class FieldCampMissionLogic
 					if (TryNearbyStroll(entry, out Vec3 stroll)) MoveTo(entry, stroll, entry.HomeFacing, run: false);
 					continue;
 				}
-			if (!_assembled && entry.Seated && _elapsed >= entry.NextWanderTime && entry.Activity != Activity.Wounded && entry.Activity != Activity.Post)
+			if (!_assembled && entry.Seated && _elapsed >= entry.NextWanderTime && entry.Activity != Activity.Wounded)
 			{
 				Refresh(entry);
 				continue;
