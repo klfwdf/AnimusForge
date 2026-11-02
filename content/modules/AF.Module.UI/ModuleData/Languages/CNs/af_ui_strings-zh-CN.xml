@@ -390,11 +390,6 @@
   <string id="AF_UI_Terminal_SourceRoots" text="来源根目录：" />
   <string id="AF_UI_Terminal_Tag" text="标签" />
   <string id="AF_UI_Terminal_Source" text="来源：" />
-  <string id="AF_UI_Terminal_KeepEntry" text="至少需要保留一个终端入口（按键或图标）。" />
-  <string id="AF_UI_Terminal_HotkeyOff" text="已关闭终端按键呼出（U键）。" />
-  <string id="AF_UI_Terminal_HotkeyOn" text="已开启终端按键呼出（U键）。" />
-  <string id="AF_UI_Terminal_MapIconOff" text="已关闭大地图终端图标入口。" />
-  <string id="AF_UI_Terminal_MapIconOn" text="已开启大地图终端图标入口。" />
   <string id="AF_UI_Terminal_WarBreadcrumb" text="战争" />
   <string id="AF_UI_Terminal_WeeklyBreadcrumb" text="王国近况" />
   <string id="AF_UI_Terminal_VassalBreadcrumb" text="臣属贡金结算记录" />
@@ -676,9 +671,6 @@
     <string id="AF_UI_Terminal_Prefab_014" text="返回列表" />
     <string id="AF_UI_Terminal_Prefab_015" text="生成完整周报" />
     <string id="AF_UI_Terminal_Prefab_016" text="调用 AI 诊断分析" />
-    <string id="AF_UI_Terminal_Prefab_017" text="按键呼出" />
-    <string id="AF_UI_Terminal_Prefab_018" text="图标入口" />
-    <string id="AF_UI_Terminal_Prefab_019" text="修改后可保存；ESC 或关闭退出" />
     <string id="AF_UI_Terminal_Prefab_020" text="返回上一级" />
     <string id="AF_UI_Terminal_Prefab_021" text="保存设置" />
     <string id="AF_UI_Terminal_Prefab_022" text="关闭" />

@@ -1011,51 +1011,9 @@
                   </Children>
                 </Widget>
 
-                <!-- Bottom controls: entry toggles and hints on the left, native buttons on the right -->
+                <!-- Bottom controls: native navigation and close buttons -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="52" VerticalAlignment="Bottom">
                   <Children>
-                    <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Left" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight" MarginLeft="6">
-                      <Children>
-                        <!-- Option 1: Open with a hotkey -->
-                        <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="32" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight" MarginRight="16">
-                          <Children>
-                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" VerticalAlignment="Center" Brush="SPOptions.Checkbox.Empty.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleHotkey">
-                              <Children>
-                                <BrushWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="SPOptions.Checkbox.Full.Button" IsVisible="@IsHotkeyEnabled" />
-                              </Children>
-                            </ButtonWidget>
-                            <ButtonWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleHotkey">
-                              <Children>
-                                <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" VerticalAlignment="Center" Brush="Popup.Description.Text" Brush.FontSize="17" Brush.FontColor="#D4C8B4FF" Text="@AF_UI_Terminal_Prefab_017Text" />
-                              </Children>
-                            </ButtonWidget>
-                          </Children>
-                        </ListPanel>
-
-                        <!-- Option 2: Icon entry -->
-                        <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="32" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight" MarginRight="20">
-                          <Children>
-                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" VerticalAlignment="Center" Brush="SPOptions.Checkbox.Empty.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleMapIcon">
-                              <Children>
-                                <BrushWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="SPOptions.Checkbox.Full.Button" IsVisible="@IsMapIconEnabled" />
-                              </Children>
-                            </ButtonWidget>
-                            <ButtonWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleMapIcon">
-                              <Children>
-                                <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" VerticalAlignment="Center" Brush="Popup.Description.Text" Brush.FontSize="17" Brush.FontColor="#D4C8B4FF" Text="@AF_UI_Terminal_Prefab_018Text" />
-                              </Children>
-                            </ButtonWidget>
-                          </Children>
-                        </ListPanel>
-
-                        <!-- Thin vertical divider -->
-                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="18" VerticalAlignment="Center" MarginRight="16" Sprite="BlankWhiteSquare_9" Color="#765D3C66" />
-
-                        <!-- Quick-action hints -->
-                        <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#8C806DFF" Text="@AF_UI_Terminal_Prefab_019Text" />
-                      </Children>
-                    </ListPanel>
-
                     <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
                         <ButtonWidget IsVisible="@CanGoBack" DoNotPassEventsToChildren="true" Command.Click="ExecuteBack" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="44" MarginRight="12" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">

@@ -390,11 +390,6 @@
   <string id="AF_UI_Terminal_SourceRoots" text="Source roots:" />
   <string id="AF_UI_Terminal_Tag" text="Tag" />
   <string id="AF_UI_Terminal_Source" text="Source:" />
-  <string id="AF_UI_Terminal_KeepEntry" text="At least one terminal entry (key or icon) must remain." />
-  <string id="AF_UI_Terminal_HotkeyOff" text="Terminal hotkey access disabled (U key)." />
-  <string id="AF_UI_Terminal_HotkeyOn" text="Terminal hotkey access enabled (U key)." />
-  <string id="AF_UI_Terminal_MapIconOff" text="World-map terminal icon entry disabled." />
-  <string id="AF_UI_Terminal_MapIconOn" text="World-map terminal icon entry enabled." />
   <string id="AF_UI_Terminal_WarBreadcrumb" text="War" />
   <string id="AF_UI_Terminal_WeeklyBreadcrumb" text="Current kingdom reports" />
   <string id="AF_UI_Terminal_VassalBreadcrumb" text="Vassal tribute settlement history" />
@@ -678,9 +673,6 @@ Produces a very large log and is intended for developers only." />
     <string id="AF_UI_Terminal_Prefab_014" text="Back to list" />
     <string id="AF_UI_Terminal_Prefab_015" text="Generate full report" />
     <string id="AF_UI_Terminal_Prefab_016" text="Run AI diagnostic analysis" />
-    <string id="AF_UI_Terminal_Prefab_017" text="Open with hotkey" />
-    <string id="AF_UI_Terminal_Prefab_018" text="Icon entry" />
-    <string id="AF_UI_Terminal_Prefab_019" text="Save after editing; press ESC or Close to exit" />
     <string id="AF_UI_Terminal_Prefab_020" text="Back to previous level" />
     <string id="AF_UI_Terminal_Prefab_021" text="Save settings" />
     <string id="AF_UI_Terminal_Prefab_022" text="Close" />
