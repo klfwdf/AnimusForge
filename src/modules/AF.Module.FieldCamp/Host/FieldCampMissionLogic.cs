@@ -84,6 +84,9 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	{
 		base.AfterStart();
 		Mission.SetMissionMode(MissionMode.StartUp, atStart: true);
+		Mission.DoesMissionRequireCivilianEquipment = true;
+		Mission.IsInventoryAccessible = !Campaign.Current.IsMainHeroDisguised;
+		Mission.IsQuestScreenAccessible = true;
 		// CampaignMissionComponent owns the campaign events and conversation lifetime.
 		Campaign.Current.ConversationManager.ConversationBegin += OnCampConversationBegin;
 		Campaign.Current.ConversationManager.ConversationEnd += OnCampConversationEnd;
@@ -232,7 +235,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			RunCampSetup("envoys", QueueEnvoys);
 			FieldCampBehavior.Instance?.MarkPatrolPlayerReady();
 		}
-		Logger.Log(LogSource, "camp initialization ready=" + _campInitialized + " stageFailure=" + _setupFailed + " tents=" + FieldCampProps.PlacedTentCount + "/" + FieldCampProps.RequestedTentCount + " scene=" + Mission.SceneName);
+		Logger.Log(LogSource, "camp initialization ready=" + _campInitialized + " stageFailure=" + _setupFailed + " tents=" + FieldCampProps.PlacedTentCount + "/" + FieldCampProps.RequestedTentCount
+			+ " residents=" + _agents.Count + " prisoners=" + _prisoners.Count + " scene=" + Mission.SceneName);
 		if (!site) AnimusForgeQuickInfo.Show(FieldCampText.NoCampSite());
 		else if (_setupFailed || !_campInitialized || FieldCampProps.PlacedTentCount < FieldCampProps.RequestedTentCount)
 			AnimusForgeQuickInfo.Show(FieldCampText.IncompleteCamp(FieldCampProps.PlacedTentCount, FieldCampProps.RequestedTentCount));
@@ -240,12 +244,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 
 	private void CreateCampTeam()
 	{
-		Hero main = Hero.MainHero;
-		uint c1 = main?.MapFaction?.Color ?? 4278190335u;
-		uint c2 = main?.MapFaction?.Color2 ?? 4278190208u;
-		_team = Mission.Teams.Add(BattleSideEnum.Attacker, c1, c2, main?.Clan?.Banner, true, false);
-		Mission.PlayerTeam = _team;
-
+		_team = Mission.PlayerTeam; // Initialized by the same team owner as TownCenter.
+		if (_team == null || _team == Team.Invalid) throw new InvalidOperationException("Native camp player team unavailable.");
 	}
 
 	private void SpawnPlayer()
@@ -258,21 +258,19 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			if (!FieldCampSite.TryFindPlayerStart(Mission, ToWorld(_layout.PlayerStart), out Vec3 pos))
 				throw new InvalidOperationException("Player start has no grounded clearance.");
 			Vec2 dir = ToWorldDirection(_layout.PlayerFacing);
-		AgentBuildData data = new AgentBuildData(hero)
-			.Team(_team)
-			.TroopOrigin(new PartyAgentOrigin(PartyBase.MainParty, hero, -1, default(UniqueTroopDescriptor), false, true))
-			.Equipment(Hero.MainHero.CivilianEquipment ?? Hero.MainHero.BattleEquipment)
-			.CivilianEquipment(true)
-			.NoHorses(true)
-			.InitialPosition(in pos)
-			.InitialDirection(in dir)
-			.Controller(AgentControllerType.Player);
-		Agent agent = Mission.SpawnAgent(data);
-		if (agent != null)
+		MatrixFrame frame = MatrixFrame.Identity;
+		frame.rotation.f = new Vec3(dir.x, dir.y, 0f);
+		frame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
+		frame.origin = pos;
+		GameEntity spawn = GameEntity.CreateEmpty(Mission.Scene);
+		try
 		{
-			Mission.MainAgent = agent;
-			agent.Controller = AgentControllerType.Player;
+			spawn.SetGlobalFrame(frame);
+			// Native town entry owns BeforePlayerAgentSpawn / PlayerAgentSpawned,
+			// disguise, equipment, player controller and initial visual animation.
+			SandBox.SandBoxHelpers.MissionHelper.SpawnPlayer(spawn, civilianEquipment: true, noHorses: true);
 		}
+		finally { spawn.Remove(0); }
 	}
 
 	/// <summary>
@@ -384,28 +382,16 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		}
 		try
 		{
-				if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, ToWorld(local), 0.35f, out Vec3 pos))
+				if (!FieldCampSite.TryFindNearbyGroundedPosition(Mission.Scene, ToWorld(local), 0.35f, 2f, out Vec3 pos))
 				{
 					Logger.Log(LogSource, "spawn skipped blocked slot troop=" + character.StringId);
 					return null;
 				}
 				Vec2 dir = ToWorldDirection(facing.LengthSquared < 0.01f ? new Vec2(0f, 1f) : facing);
-			AgentBuildData data = new AgentBuildData(character)
-				.Team(_team)
-				// The camp scene only shows the roster: an invincible origin never writes
-				// wounds or deaths back (sampled wounded agents would otherwise double-count).
-				.TroopOrigin(new PartyAgentOrigin(party, character, -1, default(UniqueTroopDescriptor), false, true))
-				.Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(character.Race, "_settlement"))
-				.CivilianEquipment(civilian)
-				.NoHorses(true)
-				.InitialPosition(in pos)
-				.InitialDirection(in dir)
-				.Controller(AgentControllerType.AI);
-			Agent agent = Mission.SpawnAgent(data);
+			Agent agent = Mission.GetMissionBehavior<FieldCampAgentHandler>().SpawnResident(character, party, _team, pos, dir, civilian);
 			if (agent != null)
 			{
 				agent.SetWatchState(Agent.WatchState.Patrolling);
-				ApplyCampActionSet(agent);
 			}
 			return agent;
 		}

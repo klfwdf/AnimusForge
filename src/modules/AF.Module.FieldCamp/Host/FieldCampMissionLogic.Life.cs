@@ -40,7 +40,7 @@ public sealed partial class FieldCampMissionLogic
 	/// still works) and adds the sitting, eating, cooking, repairing, leaning, talking and
 	/// sleeping clips the camp needs. Applied once per agent at spawn.
 	/// </summary>
-	private static void ApplyCampActionSet(Agent agent)
+	internal static void ApplyCampActionSet(Agent agent)
 	{
 		try
 		{

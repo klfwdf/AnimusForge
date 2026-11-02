@@ -58,6 +58,10 @@ internal static class FieldCampMissionLauncher
 			{
 				new MissionOptionsComponent(),
 				new CampaignMissionComponent(),
+				new MissionBasicTeamLogic(),
+				new FieldCampAgentHandler(),
+				new MissionAgentLookHandler(),
+				new MissionFacialAnimationHandler(),
 				new FieldCampConversationLogic(),
 				FieldCampMissionLogic.CreateCampPrisonerStateDecider(),
 				new FieldCampMissionLogic(snapshot),
@@ -123,26 +127,15 @@ public class FieldCampMissionViews
 	[ViewMethod(FieldCampMissionLogic.MissionName)]
 	public static MissionView[] OpenFieldCampMission(Mission mission)
 	{
-		return new MissionView[]
-		{
-				new MissionCampaignView(),
-				new MissionConversationCameraView(),
-				SandBoxViewCreator.CreateMissionConversationView(mission),
-				ViewCreator.CreateMissionSingleplayerEscapeMenu(CampaignOptions.IsIronmanMode),
-			ViewCreator.CreateMissionAgentLabelUIHandler(mission),
-			ViewCreator.CreateOptionsUIHandler(),
-				new MissionSingleplayerViewHandler(),
-				ViewCreator.CreateMissionAgentStatusUIHandler(mission),
-				ViewCreator.CreateMissionMainAgentEquipmentController(mission),
-			ViewCreator.CreateMissionMainAgentCheerBarkControllerView(mission),
-			// Hold-TAB progress ring; without it a TAB tap gives no feedback.
-			ViewCreator.CreateMissionLeaveView(),
-			new MissionBoundaryWallView(),
-			new MissionItemContourControllerView(),
-				new MissionAgentContourControllerView(),
-				SandBoxViewCreator.CreateMissionBarterView(),
-				ViewCreator.CreatePhotoModeView(),
-			new MissionFaceCacheView()
-		};
+		// Use the actual town view factory so conversation, barter, F and manual TAB
+		// share the native owners. Boundary countdown has no place in a persistent camp.
+		var views = new List<MissionView>(SandBoxMissionViews.OpenTownCenterMission(mission));
+		// Gauntlet replaces this view with a different class, not a subclass of
+		// MissionBoundaryCrossingView. Resolve the registered factory type once.
+		Type boundaryViewType = ViewCreator.CreateMissionBoundaryCrossingView().GetType();
+		views.RemoveAll(view => view is MissionBoundaryCrossingView || boundaryViewType.IsInstanceOfType(view));
+		views.Add(ViewCreator.CreateMissionAgentLabelUIHandler(mission));
+		views.Add(new MissionFaceCacheView());
+		return views.ToArray();
 	}
 }

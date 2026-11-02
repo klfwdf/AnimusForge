@@ -5,7 +5,9 @@ namespace AnimusForge;
 // Pure geometry used by the real scene consumers. All sampling runs once at camp initialization.
 internal static class FieldCampPlacementRules
 {
-    internal const float MaxCampSpread = 2.4f;
+    // The full camp spans over 70 m. A 2.4 m cap rejected ordinary gentle fields;
+    // local grade and per-tent fitting still reject hills, steps and uneven floors.
+    internal const float MaxCampSpread = 6f;
     internal const float MaxCampGrade = 0.12f;
     internal static bool Finite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
 

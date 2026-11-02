@@ -314,7 +314,7 @@ public sealed partial class FieldCampMissionLogic
 	{
 		try
 		{
-				if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, ToWorld(slot.Position), 0.35f, out Vec3 pos))
+				if (!FieldCampSite.TryFindNearbyGroundedPosition(Mission.Scene, ToWorld(slot.Position), 0.35f, 2f, out Vec3 pos))
 				{
 					Logger.Log(LogSource, "prisoner spawn skipped blocked slot troop=" + character.StringId);
 					return null;
@@ -324,16 +324,8 @@ public sealed partial class FieldCampMissionLogic
 			// This camp owns casualties, including the real killer and wounded samples.
 			// Mark before SpawnAgent so no native/third-party origin callback can settle twice.
 			origin.MarkCampaignCasualtyHandledExternally("field_camp_captive_owner");
-			AgentBuildData data = new AgentBuildData(character)
-				.Team(_prisonerTeam)
-				.TroopOrigin(origin)
-				.Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(character.Race, "_settlement"))
-				.CivilianEquipment(true)
-				.NoHorses(true)
-				.InitialPosition(in pos)
-				.InitialDirection(in dir)
-				.Controller(AgentControllerType.AI);
-			Agent agent = Mission.SpawnAgent(data);
+			Agent agent = Mission.GetMissionBehavior<FieldCampAgentHandler>().SpawnResident(
+				character, PartyBase.MainParty, _prisonerTeam, pos, dir, civilian: true, origin: origin);
 			if (agent != null && character.IsHero)
 			{
 				agent.Health = Math.Max(1, character.HeroObject.HitPoints);

@@ -16,7 +16,7 @@ static class Program
         Check(Terrain((x,y)=>0f),"whole flat footprint accepted");
         Check(Terrain((x,y)=>x*0.15f+y*0.1f),"gentle whole footprint accepted");
         Check(!Terrain((x,y)=>x*1.0f),"hillside grade rejected even with a safe centre");
-        Check(!Terrain((x,y)=>x*0.4f),"broad elevation spread rejected despite locally gentle grade");
+        Check(Terrain((x,y)=>x*0.4f),"gentle field across the whole camp is not rejected by the old global spread cap");
         Check(!Terrain((x,y)=>x==4&&y==4?2f:0f),"interior mound rejected");
         Check(!Terrain((x,y)=>float.NaN),"NaN never classified as flat");
         Check(!Terrain((x,y)=>float.PositiveInfinity),"infinite terrain rejected");

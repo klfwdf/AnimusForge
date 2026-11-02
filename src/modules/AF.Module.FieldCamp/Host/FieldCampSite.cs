@@ -15,7 +15,7 @@ namespace AnimusForge;
 /// limits reject hillsides; distance to the encounter never overrides these limits.
 /// Every candidate is probed over the camp's real rectangle (palisade extents).
 /// Cost, once: at most (600 + 576) x two orientations x 25 cheap probes, then
-/// Finalists x 81 probes, each with a navmesh lookup and one downward raycast.
+/// Up to all coarse survivors x 81 probes if the first finalists are unusable.
 /// Afterwards small rocks and bushes left inside the palisade are hidden (one entity scan).
 /// </summary>
 internal static class FieldCampSite
@@ -91,26 +91,35 @@ internal static class FieldCampSite
 		for (int s = 0; s < Scales.Length; s++)
 		{
 			float k = Scales[s];
+			int coarseRejected = 0, fineRejected = 0, criticalRejected = 0, checkedSites = 0;
 			for (int i = 0; i < candidates.Count; i++)
 			{
 				Candidate c = candidates[i];
 				c.Score = Evaluate(mission, scene, c, layout, k, grid: 5, fine: false, sampleHeights, out c.Bad);
 				candidates[i] = c;
+				if (c.Bad != 0) coarseRejected++;
 			}
 			candidates.Sort((a, b) => a.Score.CompareTo(b.Score));
 			Candidate best = default(Candidate);
 			bool found = false;
-			for (int i = 0; i < candidates.Count && i < Finalists; i++)
+			for (int i = 0; i < candidates.Count; i++)
 			{
+				// A flat but unusable cluster must not starve the rest of the scene.
+				if (found && checkedSites >= Finalists) break;
 				Candidate c = candidates[i];
+				if (c.Bad != 0) continue;
+				checkedSites++;
 				c.Score = Evaluate(mission, scene, c, layout, k, grid: 9, fine: true, sampleHeights, out c.Bad);
-					if (c.Bad == 0 && (!found || c.Score < best.Score)
-						&& ValidateCriticalAreas(mission, scene, c, layout, k))
+				if (c.Bad != 0) { fineRejected++; continue; }
+				if (!found || c.Score < best.Score)
 					{
+						if (!ValidateCriticalAreas(mission, scene, c, layout, k)) { criticalRejected++; continue; }
 						best = c;
 						found = true;
 					}
 			}
+			Logger.Log(LogSource, "site search candidates=" + candidates.Count + " coarseRejected=" + coarseRejected
+				+ " fineChecked=" + checkedSites + " fineRejected=" + fineRejected + " criticalRejected=" + criticalRejected);
 			if (found)
 			{
 				fitScale = Scales[s];
@@ -125,7 +134,7 @@ internal static class FieldCampSite
     // A safe player point is exclusively an emergency spawn, never an authorization to place a camp.
     internal static bool TryFindPlayerStart(Mission mission, Vec3 desired, out Vec3 grounded)
     {
-        if (TryResolveGroundedPosition(mission.Scene, desired, 0.45f, out grounded)) return true;
+        if (TryFindNearbyGroundedPosition(mission.Scene, desired, 0.45f, 6f, out grounded)) return true;
         bool encounter = TryEncounterPoint(mission, out Vec2 point);
         var candidates = CollectCandidates(mission.Scene, encounter, point);
         for (int i = -1; i < candidates.Count; i++)
@@ -413,7 +422,7 @@ internal static class FieldCampSite
 					Vec3 max = entity.GlobalBoxMax;
 					if (!min.IsValid || !max.IsValid || max.x < min.x || max.y < min.y || max.z < min.z
 						|| max.x - min.x > ClutterMaxExtent || max.y - min.y > ClutterMaxExtent
-						|| max.z - min.z > ClutterMaxExtent)
+						|| max.z - min.z > (IsVegetationName(entity.Name) ? 35f : ClutterMaxExtent))
 					{
 						continue;
 					}
@@ -602,17 +611,40 @@ internal static class FieldCampSite
 				}
 			}
 			cache.Router = new FieldCampGroundRouter(cache.Width, cache.Height, cache.Open, cache.Heights);
-			cache.Ready = true;
+			cache.Ready = open > 0;
 			Logger.Log(LogSource, "ground cache cells=" + cache.Open.Length + " open=" + open + " step=" + GroundStep);
+			if (!cache.Ready) throw new InvalidOperationException("Camp ground cache has no walkable cells.");
 			Vec3 player = frame.TransformToParent(new Vec3(layout.PlayerStart.x * scale, layout.PlayerStart.y * scale, 0f));
 			Vec3 gate = frame.TransformToParent(new Vec3(0f, layout.Front * scale, 0f));
-			if (!TryResolveGroundedPosition(scene, player, 0.45f, out _)
-				|| !TryValidateGroundedPassage(scene, player, gate, 0.45f))
+			// A fire, fence or tent can block the straight line without blocking a route.
+			// Cache validity belongs to its samples, not to this optional gate connection.
+			if (!TryFindNearbyGroundedPosition(scene, player, 0.45f, 6f, out Vec3 entry)
+				|| !TryFindNearbyGroundedPosition(scene, gate, 0.45f, 3f, out Vec3 exit)
+				|| !TryBuildGroundedRoute(scene, entry, exit, out _, out _))
 			{
-				cache.Ready = false;
-				throw new InvalidOperationException("Camp player start/gate passage is blocked after prop placement.");
+				Logger.Log(LogSource, "[WARN] camp gate route unavailable; retaining independently validated actor positions");
 			}
 		}
+
+        // Initialization/spawn only. Search at most 24 rings (49 x 49 cells),
+        // retaining the same terrain, collision and body-clearance checks as exact placement.
+        internal static bool TryFindNearbyGroundedPosition(Scene scene, Vec3 desired, float clearanceRadius, float maxDistance, out Vec3 grounded)
+        {
+            grounded = Vec3.Invalid;
+            if (!IsFinite(maxDistance) || maxDistance < 0f || maxDistance > 12f || !desired.IsValid) return false;
+            if (TryResolveGroundedPosition(scene, desired, clearanceRadius, out grounded)) return true;
+            int rings = (int)Math.Floor(maxDistance / GroundStep);
+            for (int ring = 1; ring <= rings; ring++)
+                for (int dy = -ring; dy <= ring; dy++)
+                    for (int dx = -ring; dx <= ring; dx++)
+                    {
+                        if (Math.Abs(dx) != ring && Math.Abs(dy) != ring) continue;
+                        if ((dx * dx + dy * dy) * GroundStep * GroundStep > maxDistance * maxDistance) continue;
+                        if (TryResolveGroundedPosition(scene, desired + new Vec3(dx * GroundStep, dy * GroundStep, 0f), clearanceRadius, out grounded))
+                            return true;
+                    }
+            return false;
+        }
 
 		private static bool CellHasClearance(Scene scene, Vec3 p)
 		{
@@ -786,6 +818,12 @@ internal static class FieldCampSite
 		}
 
 		private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+
+    private static bool IsVegetationName(string name) => !string.IsNullOrEmpty(name)
+        && (name.IndexOf("tree", StringComparison.OrdinalIgnoreCase) >= 0
+            || name.IndexOf("bush", StringComparison.OrdinalIgnoreCase) >= 0
+            || name.IndexOf("shrub", StringComparison.OrdinalIgnoreCase) >= 0
+            || name.IndexOf("plant", StringComparison.OrdinalIgnoreCase) >= 0);
 
 	private static bool IsClutterName(string name)
 	{

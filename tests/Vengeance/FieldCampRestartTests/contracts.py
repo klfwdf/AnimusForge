@@ -27,13 +27,29 @@ zones=read(prefix+'FieldCampLayout.Zones.cs')
 behavior=read(prefix+'Host/FieldCampBehavior.cs')
 town=read('Vengeance/Source/Scene/TownExecutionMissionBehavior.cs')
 retire=read('Vengeance/Source/Scene/TownExecutionMissionBehavior.CampRetirement.cs')
+handler=read(prefix+'Host/FieldCampAgentHandler.cs')
+check('GetBattleSceneForMapPatch(patch, false)' in launcher, 'town lifecycle retains wild field map selection')
+check('new MissionBasicTeamLogic()' in launcher and 'Mission.Teams.Add(' not in block(main,'private void CreateCampTeam('),
+      'native town team owner initializes camp teams exactly once')
+check('SandBox.SandBoxHelpers.MissionHelper.SpawnPlayer(spawn' in main, 'native town player entry owns actual spawn lifecycle events')
+check('view is MissionBoundaryCrossingView' in launcher and
+      'ViewCreator.CreateMissionBoundaryCrossingView().GetType()' in launcher and
+      'boundaryViewType.IsInstanceOfType(view)' in launcher, 'native town views omit registered Gauntlet boundary override as well as default countdown')
+check('CreateAgentNavigator(resident)' in handler and 'resident.AddBehaviors(agent)' in handler and
+      'LocationCharacterAgentSpawnedMissionEvent(resident, agent' in handler, 'native residents publish lifecycle after navigator creation')
+check('origin ?? new PartyAgentOrigin' in handler and 'civilian: true, origin: origin' in read(prefix+'Host/FieldCampMissionLogic.People.cs'),
+      'prisoners use resident lifecycle without losing mortal origin ownership')
+check('cache.Ready = false' not in block(site,'internal static void InitializeGroundCache(') and
+      'TryBuildGroundedRoute(scene, entry, exit' in site, 'blocked gate uses detour route without invalidating all actor cells')
+check('if (found && checkedSites >= Finalists) break;' in site and 'i < candidates.Count && i < Finalists' not in site,
+      'no valid site is lost solely because all initial finalists are unusable')
 check('EndMission(' not in block(main,'private void SetUpCamp('),'setup failures do not terminate camp')
 check('EndMission(' not in retire and 'RetreatMission' not in retire,'cleanup exhaustion never exits parent camp')
 check('BasicLeaveMissionLogic' not in launcher and 'MissionBoundaryCrossingHandler' not in launcher,
       'camp omits native automatic casualty and boundary retreat owners')
 check('canPlayerLeave = true;' in main and 'return false;' in block(main,'override bool MissionEnded('),
       'manual leave stays available without automatic victory result')
-check('CreateMissionLeaveView' in launcher,'native manual leave view remains wired')
+check('SandBoxMissionViews.OpenTownCenterMission(mission)' in launcher,'native town factory supplies manual leave and interaction views')
 check('TryPlaceExecutionPreset' not in grounds and '.Add(' not in block(zones,'private void PlaceExecutionGround('),
       'logical execution ground creates no apparatus fences or decoration')
 check('bool ready = _patrolPlayerReady;' in behavior and 'float hours = ready ? FieldCampSettings.PatrolHours : 0f;' in behavior and

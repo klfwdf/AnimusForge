@@ -55,8 +55,13 @@ bridge = read('src/bridges/Vengeance/Host/VengeanceRuntimeBridge.cs')
 check('new CampaignMissionComponent()' in launcher and 'new FieldCampConversationLogic()' in launcher,
       'camp uses native campaign/conversation lifecycle')
 check('using SandBox.View;' in launcher, 'native conversation view factory namespace imported')
-check(all(x in launcher for x in ('new MissionConversationCameraView()', 'CreateMissionConversationView(mission)',
-      'CreateMissionAgentStatusUIHandler(mission)', 'CreateMissionBarterView()')), 'native conversation views and HUD wired')
+native_views = [read('原版游戏本体代码1.3.x/SandBox.View/Missions/SandBoxMissionViews.cs'),
+                read('原版游戏本体代码1.4.5/SandBox.View/SandBox/View/Missions/SandBoxMissionViews.cs')]
+check('SandBoxMissionViews.OpenTownCenterMission(mission)' in launcher and all(
+      all(x in version.split('[ViewMethod("FacialAnimationTest")]', 1)[0] for x in
+          ('new MissionConversationCameraView()', 'CreateMissionConversationView(mission)',
+           'CreateMissionAgentStatusUIHandler(mission)', 'CreateMissionBarterView()', 'CreateMissionLeaveView()'))
+      for version in native_views), 'native town factory supplies conversation HUD barter and manual leave in both versions')
 check('Mission.SetMissionMode(MissionMode.StartUp, atStart: true)' in main, 'camp starts in peaceful F-enabled mode')
 check('CanStartNativeConversation(otherAgent)' in launcher and 'camp.IsCampPrisoner(otherAgent)' in launcher,
       'native F restricted to camp registry, including mortal hostile captives')
@@ -68,8 +73,9 @@ check('ConversationBegin += OnCampConversationBegin' in main and 'ConversationBe
 check('IsSceneConversationHeld(agent)' in life.split('private void UpkeepBatchOfAgents()', 1)[1], 'daily upkeep respects conversation ownership')
 check('TryAcquireSceneConversation(initiator)' in ambient and 'ReleaseSceneConversation(session.Initiator)' in ambient,
       'ambient borrows and returns camp ownership')
-check('TryPrepareCampNavigation(agent)' in life and 'AddBehaviorGroup<DailyBehaviorGroup>()' in life,
-      'camp creates navigator only on demand')
+check('TryPrepareCampNavigation(agent)' in life and 'AddBehaviorGroup<DailyBehaviorGroup>()' in life and
+      'component.AgentNavigator ?? component.CreateAgentNavigator()' in life,
+      'camp movement reuses resident native navigator and attaches daily behavior only on demand')
 check('ScriptBehavior.AddAgentTarget(envoy.Agent, Agent.Main)' in envoys and 'private void WalkEnvoy()' not in envoys,
       'envoy follows the player Agent, not repeated coordinate guesses')
 check('_envoyVisits[issue]' in envoys and '_envoyVisits[index] =' not in envoys,
