@@ -2,6 +2,19 @@
 
 AnimusForge uses one source tree, builds two Bannerlord-compatible implementation DLLs, and publishes one launcher module. The historical filename is retained so existing repository references do not break; the old two-module output contract is retired.
 
+## Default Extreme 7z Output (2026-11-02)
+
+The one-click package entry now defaults to two extreme-compression 7z archives:
+AnimusForge_vVERSION_CN_MMdd_HHmm.7z and AnimusForge_vVERSION_EN_MMdd_HHmm.7z.
+The pair shares one version, timestamp and collision suffix; existing packages are never overwritten.
+The shared encoder is scripts/build/package_sevenzip.ps1. Its fixed settings reproduce the earlier selected extreme package: LZMA, level 9, 512 MiB dictionary, fb273, bt4, mc1000000, lc4/lp2/pb0, solid sorting, two threads and no file timestamps. The archive contains the AnimusForge/ tree directly.
+
+ArchiveFormat defaults to 7z; an explicit -ArchiveFormat zip preserves the legacy writer for compatibility. The existing ZIP projection, layout, DLL and version-transaction checks remain an internal step for the normal verified flow; 7z readback is compared with the locked projection before publishing either final archive. References to ZIP streams/checks below describe that internal or explicitly selected legacy format, not the default delivery extension.
+
+Models stay excluded by default. To explicitly bundle a selected original or quantized bekko payload, pass -OnnxModelDir with the directory containing model.onnx, tokenizer.json and config.json. Only these three files are projected to ONNX/bekko in both editions; vector caches and retired rerankers are not bundled. -ExcludeOnnx conflicts with a selected model directory. No model is copied into the game or source by packaging.
+
+This changes archive creation only. The existing build, Bootstrap/dual-implementation layout, version increments, rollback and game-directory protection remain. Session-specific requests to omit tests or hashes do not remove the normal future release gates; such a one-off delivery must record the omitted evidence separately.
+
 ## Output Contract
 
 All build, deploy, overwrite, package, and push flows must target exactly one Bannerlord module:
@@ -73,7 +86,7 @@ Every function under `一键编译覆盖推送` (the `.bat` entry points) and `s
 - Build: build Bootstrap plus both implementation variants, then assemble one staged `AnimusForge` module.
 - Deploy/overwrite: assemble and validate the project-local Stage against current build artifacts, then replace only Stage-listed files in `Modules/AnimusForge` through same-volume per-file candidates. Deployment creates no Recovery directory, backup, manifest, completion marker, or automatic rollback; a failure stops and reports the target state for manual inspection before retry. Preserve existing `CustomPrompts` and `ModuleData/TerminalSettings.json`, installing only missing files. Merge `PlayerExports` by modification time (newer wins; installed files win ties). Unlisted installed files are never mirrored or deleted.
 - Build and overwrite: run the unified build, deploy the one module, and retain the existing optional launch behavior.
-- Package: project the one staged module into CN and EN ZIPs, each containing both implementation DLLs.
+- Package: project the one staged module into CN and EN extreme 7z archives, each containing both implementation DLLs; ZIP is an explicit compatibility option.
 - Push: publish the same unified source/output contract; no step may recreate or publish the legacy two modules.
 - Validation: verify the module id, Bootstrap declaration, both implementation paths, and absence of conflicting implementation declarations before deployment or packaging.
 
@@ -127,7 +140,7 @@ Both temporary archives must pass the Bootstrap-only XML, strict DLL allowlist, 
 
 The isolated `LocalizedPackageContractTests.ps1` covers both real ZIP writers, canonical pair names, minute collisions, source/Stage preservation, missing English, escaped Chinese, JSON/protocol/variable drift, actual tiny managed DLL strings, and second-archive failure cleanup. `PackageVersionContractTests.ps1` separately verifies the existing release version rollback behavior. These tests do not build the mod, assemble a production Stage, deploy, create release packages, or establish game acceptance. Release readiness still requires the actual source/DLL gates and complete CN/EN projection against current inputs.
 
-The client ZIP must not include the `ONNX` folder. Package validation must fail if any ONNX entry appears, if either implementation is missing, if more than one module root exists, or if `SubModule.xml` declares an implementation DLL directly.
+The default client archive excludes ONNX. An explicit -OnnxModelDir adds only the selected bekko model/tokenizer/config to both editions. Without that option, package validation rejects ONNX entries. Both modes still reject missing implementations, multiple module roots or direct implementation DLL declarations in SubModule.xml.
 
 Players install the separate model package into `Modules/AnimusForge/ONNX`. The missing-model campaign gate and actual model loaders use that same installed location; missing required models block campaign continuation through the existing pause/exit flow. No AppData model fallback, migration receipt, Recovery completion record, Python installation, or player-run migration command is required. Program upgrades preserve installed ONNX files. The corrected resolver and its acceptance cases are tracked in [J15 F4-M](plans/j15-content-profile-plan.md#j15-onnx-install-contract); offline verification does not replace two-version game and old-save acceptance.
 

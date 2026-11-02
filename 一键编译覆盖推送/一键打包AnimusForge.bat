@@ -52,9 +52,9 @@ echo.
 
 echo Building and packaging a project-local unified module with the next patch version...
 if defined WORKSHOP_CONTENT_DIR (
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%PACKAGE_SCRIPT%" -ModuleDir "%STAGE_MODULE%" -BannerlordRoot "%BANNERLORD_ROOT%" -WorkshopContentDir "%WORKSHOP_CONTENT_DIR%" -Configuration "%CONFIG%" -Build -ExcludeOnnx %*
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%PACKAGE_SCRIPT%" -ModuleDir "%STAGE_MODULE%" -BannerlordRoot "%BANNERLORD_ROOT%" -WorkshopContentDir "%WORKSHOP_CONTENT_DIR%" -Configuration "%CONFIG%" -Build %*
 ) else (
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%PACKAGE_SCRIPT%" -ModuleDir "%STAGE_MODULE%" -BannerlordRoot "%BANNERLORD_ROOT%" -Configuration "%CONFIG%" -Build -ExcludeOnnx %*
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%PACKAGE_SCRIPT%" -ModuleDir "%STAGE_MODULE%" -BannerlordRoot "%BANNERLORD_ROOT%" -Configuration "%CONFIG%" -Build %*
 )
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
@@ -65,7 +65,8 @@ if not "%ERR%"=="0" (
 
 echo.
 echo [SUCCESS] Both CN and EN AnimusForge packages were generated.
-echo Names: AnimusForge_vVERSION_CN_MMdd_HHmm.zip and AnimusForge_vVERSION_EN_MMdd_HHmm.zip
+echo Default names: AnimusForge_vVERSION_CN_MMdd_HHmm.7z and AnimusForge_vVERSION_EN_MMdd_HHmm.7z
+echo Extreme 7Z: LZMA, 512MiB dictionary, solid, 2 threads.
 echo The game Modules directory was not modified.
 pause
 exit /b 0
