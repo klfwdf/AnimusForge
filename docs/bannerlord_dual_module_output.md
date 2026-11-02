@@ -38,6 +38,10 @@ The Bootstrap must:
 
 The Bootstrap must stay minimal and compile against API surface shared by both game lines. Harmony scanning, UIExtender registration, campaign behaviors, save types, and gameplay code belong to the selected implementation rather than the Bootstrap.
 
+## Player Package Debug Symbols
+
+PDB files remain in local implementation/Bootstrap build artifacts and the clean Stage for debugging. Client CN/EN archives exclude every .pdb; ZIP layout and Stage-to-package comparisons use that release projection. Required DLLs and build markers stay in the package. This does not change the one-click build or game-overwrite flow.
+
 ## Build Rules
 
 Both implementation DLLs are still required and must be built sequentially through the verified unified build entry:

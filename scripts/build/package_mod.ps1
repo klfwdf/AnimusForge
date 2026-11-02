@@ -613,6 +613,9 @@ function Assert-ZipLayout {
     $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
     try {
         $names = @($archive.Entries | ForEach-Object { $_.FullName })
+        if ($names | Where-Object { $_ -match "(?i)\.pdb$" } | Select-Object -First 1) {
+            throw "Player packages must not contain PDB debug symbols; retain them in local build artifacts."
+        }
         $outsideRoot = $names | Where-Object { -not $_.StartsWith("AnimusForge/", [System.StringComparison]::Ordinal) }
         if ($outsideRoot) {
             throw "ZIP contains an entry outside the AnimusForge root: $($outsideRoot[0])"
@@ -620,25 +623,19 @@ function Assert-ZipLayout {
 
         $subModuleEntryName = "AnimusForge/SubModule.xml"
         $bootstrapDllEntryName = "AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll"
-        $bootstrapPdbEntryName = "AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.pdb"
         $bootstrapMarkerEntryName = "AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.build.json"
         $dll13EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll"
-        $pdb13EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.pdb"
         $marker13EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.build.json"
         $dll14EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll"
-        $pdb14EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.pdb"
         $marker14EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.build.json"
         $shippingPrefix = "AnimusForge/bin/Win64_Shipping_Client/"
         $requiredEntries = @(
             $subModuleEntryName,
             $bootstrapDllEntryName,
-            $bootstrapPdbEntryName,
             $bootstrapMarkerEntryName,
             $dll13EntryName,
-            $pdb13EntryName,
             $marker13EntryName,
             $dll14EntryName,
-            $pdb14EntryName,
             $marker14EntryName
         )
         foreach ($required in $requiredEntries) {
@@ -650,10 +647,8 @@ function Assert-ZipLayout {
 
         $allowedVersionEntries = @(
             $dll13EntryName,
-            $pdb13EntryName,
             $marker13EntryName,
             $dll14EntryName,
-            $pdb14EntryName,
             $marker14EntryName
         )
         $versionPrefix = "AnimusForge/bin/Win64_Shipping_Client/versions/"
@@ -665,7 +660,6 @@ function Assert-ZipLayout {
         }
 
         $allowedShippingRootEntries = @($AllowedPackageRootDllNames | ForEach-Object { $shippingPrefix + $_ }) + @(
-            $bootstrapPdbEntryName,
             $bootstrapMarkerEntryName
         )
         $unexpectedShippingEntry = $names | Where-Object {
@@ -748,7 +742,7 @@ function Assert-ZipMatchesCleanStage {
     )
 
     $stageFull = (Get-FullPathSafe -Path $StageModuleDir).TrimEnd('\', '/')
-    $stageFiles = @(Get-ChildItem -LiteralPath $stageFull -Recurse -File -Force)
+    $stageFiles = @(Get-ChildItem -LiteralPath $stageFull -Recurse -File -Force | Where-Object { $_.Extension -ine '.pdb' })
     $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
     try {
         if ($archive.Entries.Count -ne $stageFiles.Count) {

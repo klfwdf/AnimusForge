@@ -299,6 +299,8 @@ function Get-AnimusForgePackageProjection {
     $projection = [Collections.Generic.List[object]]::new()
     $failures = [Collections.Generic.List[string]]::new()
     foreach ($file in Get-ChildItem -LiteralPath $stage -Recurse -File -Force | Sort-Object FullName) {
+        # Keep debug symbols in local builds/Stage, never in player archives.
+        if ($file.Extension -ieq '.pdb') { continue }
         $relative = $file.FullName.Substring($stage.Length).TrimStart('\', '/').Replace('\', '/')
         $source = $file.FullName
         $bytes = $null
