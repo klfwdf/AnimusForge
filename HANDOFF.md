@@ -4168,3 +4168,42 @@ Apolytea同意命令自己的队伍巡逻 Diathma 三天；provider真实输出 
 - [唯一主台账与命令/风险](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af-bilateral-direct-20261030) / [准确代码范围](docs/architecture/af-framework-code-scope.md#af-bilateral-direct-20261030)。源/DLL SHA 与日志在 `artifacts/bilateral-direct-20261030/verification.json`。父会话已完成独立审查，无本次剩余须修问题；下一步仍需新任务授权；保留原有 dirty 文档，仅选择性提交本项追加段落，无新发布授权。
 
 - 2026-10-30 后续部署已完成，更新本项此前“部署 NOT_RUN”：原统一 Debug 双 API/Bootstrap 与门禁通过，目标为 Steam 的 `Modules/AnimusForge`，更新 11 文件；4825 项安装核对通过（4822 同 SHA、3 项保留自定义），39 个既有配置/提示词 SHA 不变。详见主台账同节“部署补记”和 `artifacts/bilateral-direct-20261030-deploy/deployment-verification.json`。实机/真实模型/旧档、打包、push 仍未验或未执行。
+
+
+---
+## 2026-11-02 1.8.0玩家公告（1.7.0→远端增量）
+
+已新增docs/releases/AnimusForge_1.8.0_更新公告_20261102.md及.txt。远端origin/main=51d5d94f43，基线065db278d1；营地/手动刑场、场景互动、新历史世界书、外交/语音修复与bekko瘦身，沿既有包体记录补充量化数据。详细来源及未验范围见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-notes-1-8-remote-comparison-20261102)；原始对比与责任入口见.tmp/release-notes-1.8-20261102/。仅写公告和记录，未构建/测试/哈希/部署/push/外部发布。
+
+
+---
+## 2026-11-02 1.8.0公告完整版
+
+按用户反馈扩写到14主题及使用提示，补人设定向重生成/经历更新、营地当面报事与决斗、派系/犯罪结算/模型参数等遗漏；世界书名修正为燃烬帝国编年史。两个既有1.8公告文件已更新，前稿备份于.tmp/release-notes-1.8-20261102/announcement-before-expansion.md/.txt。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-notes-1-8-expanded-20261102)及SOURCES.md增补。仅文档，未测试/哈希/实机/部署/push/外部发布。
+
+
+---
+## 2026-11-03 扩展人设关闭修复与全日志结论（未构建/未部署）
+
+人设关闭后隐藏扩展展示/编辑及模型上下文；关闭时成功生成清除该人物旧扩展值，正文/语音/经历状态保留，CN/EN双入口说明同步。现有23日志完整读取：1839知识结果全miss、3020实体候选全0；bekko统计窗口699次推理全成功，运行库存在，不能归咎于缺旧ONNX文件。检索空候选根因未确认；另25个外交事件证据预算耗尽、358政策快照拒绝。完整状态、代码范围、未解决项、原字节快照和checkpoint见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#expanded-persona-disable-runtime-log-20261103)及[分析报告](docs/reports/AnimusForge_运行日志分析_20261103.md)。按用户要求未做测试/构建/校验/哈希/模型实验/实机，未部署/打包/push，既有包不含本次源码；不要以本分析完成宣称检索已修复。
+
+
+---
+## 2026-11-03 检索与缓存专项（只读定位，未修复）
+
+用户要求只看检索模型。安装DLL仍有ONNX/bekko/vectors缓存；仅知识批量嵌入创建，单条成功不代表建库。已发现空实体请求跳过规则快照发布却仍建库、null快照被固化为同版本就绪空索引的源码缺陷，与上轮无建库记录/全零候选吻合，但未实机复现。游戏自行重开后当前日志已换成00:28:45新轮（目前rules=0），勿覆盖或混用上轮1839结果。未改检索源码、模型、缓存或配置，未测试/构建/校验/哈希/模型实验/部署。[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#retrieval-empty-mentions-index-cache-analysis-20261103) / [专项报告](docs/reports/AnimusForge_检索与向量缓存定位_20261103.md)。
+
+
+- 2026-11-03 00:33检索新状态：同构建DLL本轮已建库1859条向量（4.645秒、批次0失败），bekko/vectors缓存约2.8MiB已生成；玩家日耳曼问句有2次知识上下文成功，各匹配2条。日耳曼泛称仍被名字门槛过滤；空快照固化缺陷未改。详见上述检索专项报告末节及唯一主台账补记；未部署修复、未测试/构建/校验。此条替代“当前无vectors”的旧时点状态，保留上轮失败事实。
+
+
+---
+## 2026-11-03 首次对话空实体也建库（源码已修，未构建部署）
+
+用户要求首次对话必须建库，覆盖此前“空实体不建库”建议：PreparePromptLoreRetrieval始终先发布规则快照，后台沿原顺序建库后选候选；稀疏/ONNX构建器均拒绝把null快照标为空库完成。保留按版本复用、批量/线程/磁盘缓存与失败冷却。只改KnowledgeLibraryBehavior.cs、KnowledgeRuleIndex.cs；未动阈值、模型、外交/政策。按用户要求不测试/构建/校验/哈希，未部署/打包/push，产品未提交。空检查点4a5cde59d，快照及差异在.tmp/first-dialogue-knowledge-index-20261103/。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#first-dialogue-knowledge-index-fix-20261103)和[检索专项报告末节](docs/reports/AnimusForge_检索与向量缓存定位_20261103.md)；旧DLL的本轮成功不代表本修复实机通过。
+
+
+---
+## 2026-11-03 1.8.0修复已构建、打包、部署及推送
+
+此条替代上文人设/首次对话索引“未构建部署”状态。双API及Bootstrap编译0错误；1.8.0_CN/EN_1103_0049极限7Z已生成（171.47/171.03MiB），含量化bekko；435个受管理文件已部署游戏。人设eae418f4bc、索引379d24a12c和移除远端当前树旧bekko的65bb09ee45已推送origin/main；本地模型/玩家数据/向量缓存保留，Git/LFS历史未清理。无测试、门禁、归档回读、哈希或修复后实机验收。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-180-persona-index-delivery-20261103)与[交付记录](docs/releases/AnimusForge_1.8.0_交付记录_20261103.md)。本机证据.tmp/package-180-persona-index-20261103-004209/；回滚聚焦本任务提交及人设/索引before快照，不覆盖其他作者dirty，部署无自动回滚。

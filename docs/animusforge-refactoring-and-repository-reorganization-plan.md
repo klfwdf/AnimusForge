@@ -13518,3 +13518,76 @@ NOT_RUN：真实 provider 语义、两版游戏内交互、实际战和平/条�
 使用原 `scripts/build/build_single_module.ps1 -ProjectRoot . -BannerlordRoot "E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Bannerlord13ReferenceDir .tmp/build_check/1.3 -WorkshopContentDir "E:/SteamLibrary/steamapps/workshop/content/261550" -Configuration Debug -Deploy` 完成双 API、Bootstrap、双 seam、registration、干净 Stage 与部署。实际引用仍为 1.3.15.110062 / 1.4.6.115628；游戏安装库识别为 1.4.8.119303。原 Debug Stage 因旧 DiplomacyPromptTexts 与当前源不一致被门禁拒绝，已在工作区内保留到 `artifacts/bilateral-direct-20261030-deploy/previous-debug-stage/`，随后原脚本生成新 Stage，没有放宽校验。
 
 目标为 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，更新 11 个受管文件，脚本退出 0。部署后逐项核对 Stage 的 4825 个文件：4822 个 SHA 一致，3 个自定义提示词按保护规则保留；部署前记录的 39 个配置/自定义提示词文件全部 SHA 不变，缺失/异常差异为 0。三个已安装 DLL 与 Stage 一致，SHA 和引用版本记录在 `artifacts/bilateral-direct-20261030-deploy/deployment-verification.json`，完整日志为同目录 `build-deploy.log`。仅部署原中文内容包，未启动游戏、未创建发行包或推送；未创建部署 Recovery/自动回滚，其他未列入 Stage 的安装文件由原脚本保留。
+
+
+---
+<a id="release-notes-1-8-remote-comparison-20261102"></a>
+## 2026-11-02 基于1.7.0及远端增量编写1.8.0玩家公告
+
+DOCUMENT_WRITTEN / NO_PRODUCT_CHANGE / NOT_PUBLISHED。用户要求对比远端、基于上次1.7.0更新出一期面向玩家的公告。已读取上次公告docs/releases/AnimusForge_1.7.0_更新公告_20261028.txt，以065db278d1为版本基线，成功fetch后的origin/main为51d5d94f438afc7fde2e01be8d687981f0919382，共273个提交；已结合净差异及最终源码去除合并旧历史、内部重构、检查点、测试和独立reply-tool。
+
+新增docs/releases/AnimusForge_1.8.0_更新公告_20261102.md及.txt：面向玩家介绍野外营地、手动刑场与连续行刑、场景闲聊、外交后续、三套新历史世界书、语音/任务/UI修复、语言行为及bekko与包体瘦身。模型量化与171.45/171.01MiB包体为远端之后的本地交付增补，引用既有.tmp/package-int8-extreme-20261102/232148/delivery.json与量化报告，不宣传远端已含量化模型、无损量化、全硬件提速或游戏实机通过。
+
+证据.tmp/release-notes-1.8-20261102/comparison.json保留确切修订、全部提交和净改动清单；SOURCES.md列玩家条目的源码/提交及覆盖边界。仅回读公告文字确认文件保存；未运行构建、离线测试、归档校验、哈希、游戏、部署、push或外部发布；不声称当前dirty源码都已进入现有包。仅新增发布文档及记录，不改产品源文件或包体。回退时仅移除本轮两个新公告及本锚点记录，不恢复共享大文档旧快照、不处理他人dirty。
+
+
+---
+<a id="release-notes-1-8-expanded-20261102"></a>
+## 2026-11-02 1.8.0玩家公告扩写与漏项补充
+
+DOCUMENT_EXPANDED / NO_PRODUCT_CHANGE / NOT_PUBLISHED。用户指出上一稿内容过少；本次继续同一1.7.0基线065db278d1→已抓取远端51d5d94f43范围，结合净改动补充场景犯罪结算、人设带提示词重生成、事件驱动完整人设更新、玩家建派系冷却修复、推理参数兼容、俘虏身份及营地当面报事/营地内决斗。把前稿合并的休整、营地生活、报事、语音、个性、外交、派系、世界书、检索、任务、界面语言和包体分别展开，最终14主题及使用提示。修正世界书名为燃烬帝国编年史。不把日志中合并带入而相对基线无净变化的数据库导入、导航图标、1.6.6与1.5.6特供构建写成新增。
+
+覆写两份docs/releases/AnimusForge_1.8.0_更新公告_20261102.md/.txt，替代[前稿](#release-notes-1-8-remote-comparison-20261102)的文案；证据与旧稿留在.tmp/release-notes-1.8-20261102/。SOURCES.md追加具体入口/行号及未覆盖范围。仅回读公告及排版，不运行测试、构建、归档校验、哈希、实机、部署、push或外部发布；产品源文件、发行包和1.7.0公告未改。回退本次文案可从announcement-before-expansion.md/.txt恢复这两份稿件，保留共享台账其他作者内容。
+
+
+---
+<a id="expanded-persona-disable-runtime-log-20261103"></a>
+## 2026-11-03 扩展人设关闭语义修复与完整运行日志分析
+
+SOURCE_CHANGED / LOG_ANALYSIS_COMPLETE / NOT_BUILT / NOT_DEPLOYED / RETRIEVAL_ROOT_CAUSE_UNCONFIRMED。用户要求修复关闭后仍显示和重生保留扩展字段，并读全日志重点看检索；明确禁止本会话校验、离线测试、哈希。修复共享展示/上下文入口、场景旧缓存消费、编辑入口及延迟回调、成功生成时清旧扩展值、经历请求/最近变化回写；保留正文/语音/经历状态和并发保护；MCM/终端CN/EN说明与两份1.8公告同步。只读已加载MCM owner，无新增Tick IO/扫描。受影响代码入口/行号见.tmp/runtime-log-analysis-20261103/persona-code-map.json；清单与改前快照见.tmp/expanded-persona-disable-20261102/。
+
+完整读取游戏现有23日志：40,517,274字节、62,421行，对应11月2日23:36:52—23:55:47。1839条知识结果全miss（72 rules_empty、1767 rules=415仍rule_miss）；3020实体候选全0、1395分配全0。包含2个玩家trace下11条构建结果，并非1839次独立玩家提问。bekko三个已输出窗口699/699成功、31采样384维成功，运行库实际位于bin且存在；单文件量化不需旧model.onnx_data/tokenizer_config或退休重排器。已只读反编译安装索引/宿主/外交实现确认入口；不能从现有日志确认索引空候选具体根因，未擅降阈值或声称检索已修。
+
+其他：25个外交事件最终必需证据预算耗尽；政策358条快照拒绝、4个生成批次失败；FirstChance不能作崩溃计数，Watchdog帧间隔受失焦影响不能全作死锁。详见docs/reports/AnimusForge_运行日志分析_20261103.md与.tmp/runtime-log-analysis-20261103/summary.json。安装DLL是11月2日21:19:59构建，未包含本次源码。
+
+仅源码/资源/文档修改与现有日志读取统计，未测试/构建/哈希/模型实验/实机/部署/打包/push；检索具体根因、外交预算和政策快照问题未解决。空检查点a8f2e9d8ee，改前原字节快照.tmp/expanded-persona-disable-20261102/before/，仅允许聚焦本轮差异逆向修改，不覆盖共享dirty；未把未验证源码提交为已验证切片。
+
+
+---
+<a id="retrieval-empty-mentions-index-cache-analysis-20261103"></a>
+## 2026-11-03 检索模型与向量缓存专项定位
+
+ANALYSIS_ONLY / SOURCE_DEFECT_IDENTIFIED / NOT_FIXED / NOT_TESTED。用户收窄为只查检索模型，并追问ONNX知识缓存为何消失。实际安装只有bekko三文件、无vectors；安装DLL仍含ONNX/bekko/vectors持久向量实现。单条嵌入走内存查询缓存，知识批量嵌入才创建磁盘缓存；上一轮没有index_embed/vector_store/embedding.batch记录，不能以699次单条成功声称建库成功。
+
+源码及安装DLL确认：PreparePromptLoreRetrieval空实体跳过PublishPromptRules却返回当前版本，CollectPromptLoreCandidates仍调用Ensure；未发布_rules()返回null，两种索引可把null固化为同版本就绪空索引，后续同版本快照发布不触发重建。首轮问候空实体、415规则仍零候选、无建库日志与此缺陷吻合；缺少当时内存版本/条目数，未宣称实机复现或排除所有根因。未改源码/阈值/模型/缓存，修复方向为无实体不建库、null快照不提交就绪状态。
+
+调查中游戏自行重开，最新日志头2026-11-03 00:28:45；00:30:09新一轮72条均rules=0，不能与上一轮1839条（72空库+1767已有415规则仍miss）混用，旧统计保留。详见docs/reports/AnimusForge_检索与向量缓存定位_20261103.md及本机.tmp/runtime-log-analysis-20261103/installed-source/。仅新增报告/追加记录；无构建、离线测试、模型推理、校验、哈希、实机操作、部署、打包或push。回退只移除本报告/本追加段，不覆盖共享dirty。
+
+
+### 2026-11-03 00:33 检索后续状态：本轮已成功（替代前文当前无缓存状态）
+
+游戏自行运行的新日志显示同构建DLL在00:31:43完成3098种子项/1859去重向量，4.645秒、failedBatches=0，缓存1859条已写入ONNX/bekko/vectors约2.8MiB。玩家日耳曼问句的2次知识上下文构建各匹配2条，四条variant_hit、两条knowledge查询成功；此前72条空库记录不能用于判断建库后准确率。泛称“日耳曼”仍被0.65名字阈值过滤（best0.384）；多瑙河/夸迪人有命中。此前空快照固化源码缺陷未修，不能称已部署修复或所有召回均正常；上轮1839全miss统计仍是历史事实。证据与详情追加docs/reports/AnimusForge_检索与向量缓存定位_20261103.md，独立快照.tmp/runtime-log-analysis-20261103/latest-success-0033/retrieval-summary.json，未覆盖旧统计；只读日志/目录，未测试/构建/校验/模型实验/部署。
+
+
+---
+<a id="first-dialogue-knowledge-index-fix-20261103"></a>
+## 2026-11-03 首次对话必须建库（空实体索引修复）
+
+SOURCE_FIXED / NOT_BUILT / NOT_TESTED / NOT_DEPLOYED。用户明确要求首次对话必须建库，覆盖前检索分析里“空实体请求不建库”的建议；仅修检索初始化，不处理外交或政策。KnowledgeLibraryBehavior.PreparePromptLoreRetrieval在owner存在时一律发布当前规则快照，不再以mentions为空跳过；无owner返回0。后台CollectPromptLoreCandidates仍先建稀疏/ONNX索引再选实体，即使“你好”无实体也完成建库。KnowledgeRuleIndex两种构建器不再把null未发布快照提交为就绪空索引；ONNX捕获异常不发布空完成，嵌入失败保留原冷却；合法已发布空库仍允许为空。
+
+两个产品文件原先clean，仅改当前范围；无模型/阈值/资格/设置/协议/存档身份或玩家文案变更，CN/EN共用实现。快照/索引按规则版本复用，保留批次16/4线程/磁盘缓存/失败冷却，不新增Tick IO或扫描。源码符号/准确行号与边界见.tmp/first-dialogue-knowledge-index-20261103/source-map.json，改前原字节快照before/，修改差异change.patch；报告docs/reports/AnimusForge_检索与向量缓存定位_20261103.md末节更新状态。
+
+空检查点4a5cde59d；按用户本会话禁止校验/离线测试/哈希，仅源码回读，未构建/测试/模型推理/门禁/实机/部署/打包/push，产品修改未提交为验证切片；新一轮旧DLL已成功建库证据不能替代本修复接受。回滚仅逆向本轮差异，不覆盖人设及其他作者dirty。
+
+
+---
+<a id="release-180-persona-index-delivery-20261103"></a>
+## 2026-11-03 1.8.0人设与首次对话建库修复交付
+
+BUILT / PACKAGED / DEPLOYED / SOURCE_PUSHED / USER_SKIPPED_VALIDATION。用户先明确构建打包保持1.8.0，再授权部署、推送及删除远端旧bekko；替代前述人设/索引记录的未构建、未部署、未推送状态，不改写历史日志。API1.3/1.4各0错误406警告，Bootstrap零错误零警告；任务临时BuildInputs.targets排除work辅助Probe重复定义，生产项目及一键流程未改。
+
+新CN/EN极限7Z位于一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1103_0049.7z（171.47MiB）与EN同名（171.03MiB），均含量化bekko三文件；保留旧包。已对游戏Modules/AnimusForge逐文件写入435个受管理程序/资源；玩家配置、世界书、向量缓存等保留，无安装Recovery/备份/manifest/自动回滚。首个部署尝试空参数失败时替换0文件，修复任务脚本后成功。
+
+源码eae418f4bc（人设）、379d24a12c（索引）与65bb09ee45（移除远端当前树旧bekko/LFS路径）已推送origin/main；本地模型和游戏量化模型保留，未清Git历史或远端历史LFS对象。本次构建输入包含工作区既有dirty，Git提交不收纳其他作者无关改动。未测试/校验门禁/离线模型实验/哈希/归档回读/修复后游戏接受，不以旧DLL00:33成功代替新修复实机验收。
+
+完整产物、编译/部署证据与回滚界限见docs/releases/AnimusForge_1.8.0_交付记录_20261103.md及本机.tmp/package-180-persona-index-20261103-004209/delivery.json。人设与索引源图仍见.tmp/runtime-log-analysis-20261103/persona-code-map.json、.tmp/first-dialogue-knowledge-index-20261103/source-map.json；修改前检查点a8f2e9d8ee/4a5cde59d，原字节快照各before/；旧模型移除前7844a6d42f。聚焦逆向本任务提交，不还原共享大文档旧快照、不改他人dirty；游戏需人工重部署旧构建才能回退。
