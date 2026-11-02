@@ -1,3 +1,19 @@
+<a id="field-camp-review-fixes-20261102"></a>
+## 营地审查三项修复源码范围 — 2026-11-02
+
+产品 `e386527d471bc81ee5641c330d5729b5229963bc`；[主台账与局限](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-review-fixes-20261102)。本项补充原九项地图，不替代其历史验证。
+
+| 源码/一基范围 | 符号与职责 |
+| --- | --- |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Grounds.cs:33-64` | `internal void PlaceDuelists(`：俘虏隔离玩家的决斗前队伍交接 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Life.cs:66-88` | `internal bool Assemble(`：集合等待仪式观众回营owner退出 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Life.cs:90-109` | `internal bool Dismiss(`：解散同样等待回营owner退出 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Life.cs:283-360` | `private void UpkeepBatchOfAgents(`：堵路冷却后经原MoveTo有界重试 |
+
+真实消费者：DuelBehavior原地决斗在营地PlaceDuelists后捕获队伍；Main营地0.5秒批次调用隔离、回营和日常维护。精确SHA与未覆盖责任见 `.tmp/field-camp-review-fixes-20261102/code-map.json`；未验C#执行、双API构建或原生寻路/战斗。新增review_source_contracts.py只提供静态回归/源码反例，不是引擎替身执行。
+
+---
+
 <a id="field-camp-nine-fixes-20261102"></a>
 ## 营地九项修复源码范围 — 2026-11-02
 

@@ -1,3 +1,9 @@
+## 2026-11-02 营地审查三项修复（源码，未构建部署）
+
+本地产品 `e386527d47`：修复有俘虏时决斗把全营设为敌队、堵路人物永久跳过维护、观众回营与集合/解散抢目标。仅改两个营地生产文件并新增离线源码回归检查，沿用原批次与队伍owner，没有新增UI/设置/存档身份。
+
+新检查修改前3项FAIL、修改后6项PASS；原65项接线、26表双语、两文件语法与diff-check通过。全仓语言门仍有外交既有4处失败。C#执行、双API/Bootstrap/独立Vengeance构建和实机等仍NOT_RUN，不能称已部署或游戏内通过。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-review-fixes-20261102) / [代码范围图](docs/architecture/af-framework-code-scope.md#field-camp-review-fixes-20261102)。证据/备份 `.tmp/field-camp-review-fixes-20261102/`，回滚仅聚焦 `e386527d47`，保留其他会话dirty。
+
 ## 2026-11-02 营地九项修复接续完成（源码，未编译部署）
 
 本地产品 `175a6e0cc7`，接续 Claude 会话 `f0b1388c-f505-4503-bd09-7b9ff1272b3a`。帐篷/地形净空、原生HUD/F、步行围观准备、取消保场、日常/闲聊占用、处决评论候选、全部俘虏伤亡与处决TTS补丁已收口；本轮另补注视避让仪式移动、清旧限速、营地士兵身份中英Prompt和视图命名空间。按原批准计划只做本地源码与离线检查，不构建、部署、打包、push或调用模型。

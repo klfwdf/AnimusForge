@@ -1,3 +1,29 @@
+<a id="field-camp-review-fixes-20261102"></a>
+## 2026-11-02 营地九项补丁的三项审查问题修复
+
+**SOURCE_FIXED / OFFLINE_CHECKS_PASS / BUILD_AND_GAME_NOT_RUN**。产品 `e386527d471bc81ee5641c330d5729b5229963bc`；本轮用户“修复”指前轮审查的1个P1和2个P2，更新[营地九项源码交付](#field-camp-nine-fixes-20261102)的已知缺陷状态，不将其提升为编译/实机通过。真实工作区为 `F:/AnimusForge-main`、main；开始HEAD `b4746dc78dff2a8cf2dd33bce05455428e894e7c`，本地检查点 `9b007a53db`，并行世界书提交与dirty不纳入本项。范围仅两个营地生产文件及一个源码检查脚本；不构建/执行C#测试、不部署/打包/push、启动游戏或调用模型。
+
+- **P1决斗队伍**：`PlaceDuelists`在现有决斗选队和快照前，仅将当前主Agent从营地俘虏专用玩家队放回营地队。现有DuelBehavior同队分支再将对手单独移入敌队，不再把全营队当对手队。决斗期间沿用 `_duelists` 维护屏障，释放后现有0.5秒维护恢复俘虏隔离；不改DuelBehavior、普通战斗队伍或全局伤害规则。
+- **P2寻路恢复**：堵路人物先等现有30秒冷却，再向失败目标发出一次 `MoveTo`，由原owner清除MoveBlocked并重新设25秒移动期限；继续失败再次冷却，外部会话/仪式/决斗等占用仍优先。没有新增任务、反射、IO、扫描或每帧重发，沿用0.5秒/最多20人批次。
+- **P2回营与阵列互斥**：`Assemble`、`Dismiss` 均将仍存在 `_ceremonyWalkers` 视为忙碌；退场记录由原return owner到达、失活或超时后移除，随后集合/解散才重新准入。拒绝时不写 `_assembled`、不改目标、不发成功提示，避免双owner抢写。
+- 不新增玩家文案、资源、设置、存档身份或API；既有中英消费者和失败语义保持。
+
+### 验证与边界
+
+| 项目 | 实际结果 |
+| --- | --- |
+| `python tests/Vengeance/FieldCampContinuationTests/review_source_contracts.py` | 修改前3个正向断言FAIL；修改后6项PASS，含撤销队伍修复/恢复永久skip/移除任一阵列准入守卫的源码反例。只检查生产源码结构与顺序，不是生产C#执行 |
+| 原 `source_contracts.py` | 65项源码/资源契约PASS |
+| `check_bilingual_tables.py` | 26表，缺英文0、失败0 |
+| `l10n_gate.py` | 仍FAIL：DiplomacySponsorReceiptRules.cs:17–19既有4处中文常量；未放宽门禁 |
+| tree-sitter解析、Python AST、staged diff-check | 两个C#文件无解析错误，新增Python语法PASS，`core.whitespace=cr-at-eol`差异检查PASS |
+
+NOT_RUN：C#回放、双API/Bootstrap/独立Vengeance构建、实机含俘虏决斗及退出恢复、堵路解除后活动、处决后回营和集合、模型/音频/旧档、Stage/正式包/部署/push。双版本只复用既有SetTeam等调用，无新增版本专属API；没有编译证据不得声称兼容构建已通过。
+
+精确符号、一基行范围及源码SHA见[代码范围图](architecture/af-framework-code-scope.md#field-camp-review-fixes-20261102)，本地收据 `.tmp/field-camp-review-fixes-20261102/verification.json`、`code-map.json`、`regression-before.log`、`regression-after.log`及各检查日志；`before/` 保留修改前字节。仅对产品 `e386527d47` 做聚焦inverse/revert回滚，不重置共享main或恢复整份文档覆盖其他作者内容。本轮未改变已安装游戏。
+
+---
+
 <a id="field-camp-nine-fixes-20261102"></a>
 ## 2026-11-02 营地九项实测修复：源码收口，待构建与实机
 
