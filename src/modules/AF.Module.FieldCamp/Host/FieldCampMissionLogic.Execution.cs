@@ -32,6 +32,9 @@ public sealed partial class FieldCampMissionLogic
 		internal bool Arrived;
         internal bool ClearanceHeld;
         internal bool Spectator;
+        internal bool SpectatorRoutePending;
+        internal int SpectatorRouteAttempts;
+        internal float SpectatorDeadline;
         internal Vec3[] Route = Array.Empty<Vec3>();
         internal int RouteIndex;
 		internal bool ReturningHome;
@@ -468,25 +471,96 @@ public sealed partial class FieldCampMissionLogic
     {
         var camp = Current;
         if (camp == null || camp._ceremonySession != session || !camp._ceremonyActive) return;
+        float front = 0f;
+        for (int i = 0; i < camp._ceremonyAreas.Count; i++)
+        {
+            FieldCampCeremonyArea area = camp._ceremonyAreas[i];
+            for (int corner = 0; corner < 4; corner++)
+            {
+                Vec2 delta = new Vec2((corner & 1) == 0 ? area.Min.x : area.Max.x,
+                    (corner & 2) == 0 ? area.Min.y : area.Max.y) - camp._ceremonyOrigin.AsVec2;
+                front = Math.Max(front, delta.x * camp._ceremonyForward.x + delta.y * camp._ceremonyForward.y);
+            }
+        }
+        Vec2 side = new Vec2(camp._ceremonyForward.y, -camp._ceremonyForward.x);
         int watchers = 0;
         for (int i = 0; i < camp._agents.Count && watchers < MaxCeremonyWatchers; i++)
         {
             CampAgent entry = camp._agents[i];
             Agent agent = entry.Agent;
             if (!camp.CanMoveForCeremony(agent) || camp._ceremonyMoves.ContainsKey(agent) || agent.Character?.IsHero == true ||
-                entry.Activity == Activity.Wounded || entry.Activity == Activity.Sentry || entry.Activity == Activity.Post ||
-                !camp.IsCeremonyClear(agent.Position) || agent.Position.AsVec2.DistanceSquared(camp._ceremonyOrigin.AsVec2) > 225f) continue;
-            Vec2 facing = camp._ceremonyOrigin.AsVec2 - agent.Position.AsVec2;
-            var move = new CeremonyMove { Agent = agent, Camp = entry, Spectator = true, Arrived = true,
-                Home = entry.Home, HomeFacing = entry.HomeFacing, Goal = agent.Position,
-                Facing = facing.IsNonZero() ? facing.Normalized() : entry.HomeFacing };
+                entry.Activity == Activity.Wounded || entry.Activity == Activity.Sentry || entry.Activity == Activity.Post) continue;
+            Vec2 flat = camp._ceremonyOrigin.AsVec2 + camp._ceremonyForward * (front + 2.5f + (watchers / 8) * 1.7f)
+                + side * ((watchers % 8 - 3.5f) * 1.5f);
+            var move = new CeremonyMove { Agent = agent, Camp = entry, Spectator = true, SpectatorRoutePending = true,
+                SpectatorDeadline = camp._elapsed + 60f, Home = entry.Home, HomeFacing = entry.HomeFacing,
+                Goal = new Vec3(flat.x, flat.y, camp._ceremonyOrigin.z), Facing = -camp._ceremonyForward };
             camp._ceremonyWalkers.Add(move); camp._ceremonyMoves.Add(agent, move); camp._ceremonyMoved.Add(entry);
-            camp.HoldCeremonyActor(move);
-            agent.LookDirection = new Vec3(move.Facing.x, move.Facing.y, 0f);
-            camp.PlayOnce(agent, SentryActions, agent.Index);
+            camp._ceremonyWatchers.Add(move);
+            entry.Returning = false; entry.Seated = false;
+            camp.StopCampNavigation(agent); agent.SetIsAIPaused(true);
             watchers++;
         }
-        Logger.Log(LogSource, "execution built before spectator arrangement session=" + session + " watchers=" + watchers);
+        Logger.Log(LogSource, "execution spectator walks queued session=" + session + " watchers=" + watchers);
+    }
+
+    private void TickCeremonySpectators()
+    {
+        if (!_ceremonyActive || !_ceremonyStaged) return;
+        // At most sixteen existing residents; only two route attempts per upkeep.
+        // Audience arrival never participates in preparation or actor readiness.
+        int routeBudget = 2;
+        for (int i = _ceremonyWatchers.Count - 1; i >= 0; i--)
+        {
+            CeremonyMove move = _ceremonyWatchers[i];
+            Agent agent = move.Agent;
+            if (!agent.IsActive() || IsSceneConversationHeld(agent))
+            {
+                RemoveCeremonyMove(move); _ceremonyWatchers.RemoveAt(i);
+                continue;
+            }
+            if (move.Arrived) continue;
+            if (move.SpectatorRoutePending)
+            {
+                if (routeBudget <= 0) continue;
+                routeBudget--;
+                Vec3 desired = move.Goal + new Vec3(_ceremonyForward.x, _ceremonyForward.y, 0f) * (move.SpectatorRouteAttempts * 1.5f);
+                move.SpectatorRouteAttempts++;
+                if (FieldCampSite.TryResolveGroundedPosition(Mission.Scene, desired, 0.35f, out Vec3 goal) &&
+                    IsCeremonyClear(goal) && TryCampRoute(agent.Position, goal, out Vec3[] route))
+                {
+                    move.Goal = goal; move.Route = route; move.RouteIndex = 0; move.SpectatorRoutePending = false;
+                    Vec2 facing = _ceremonyOrigin.AsVec2 - goal.AsVec2;
+                    move.Facing = facing.IsNonZero() ? facing.Normalized() : -_ceremonyForward;
+                    IssueCeremonyWalk(move, move.Goal, move.Facing);
+                }
+                else if (move.SpectatorRouteAttempts >= 3)
+                {
+                    RemoveCeremonyMove(move); _ceremonyWatchers.RemoveAt(i);
+                    StopCampNavigation(agent); agent.SetIsAIPaused(false);
+                    if (move.Camp != null) SettleCampAgent(move.Camp, blocked: true);
+                }
+                continue;
+            }
+            bool arrived = agent.Position.AsVec2.DistanceSquared(move.Goal.AsVec2) <= CeremonyArrivalSquared &&
+                Math.Abs(agent.Position.z - move.Goal.z) <= 0.65f;
+            bool stopped = _elapsed >= move.SpectatorDeadline || (_elapsed >= move.RetryAt &&
+                agent.Position.AsVec2.DistanceSquared(move.LastPosition.AsVec2) < 0.04f);
+            if (arrived || stopped)
+            {
+                move.Arrived = true;
+                Vec2 facing = _ceremonyOrigin.AsVec2 - agent.Position.AsVec2;
+                move.Facing = facing.IsNonZero() ? facing.Normalized() : -_ceremonyForward;
+                HoldCeremonyActor(move);
+                agent.LookDirection = new Vec3(move.Facing.x, move.Facing.y, 0f);
+                PlayOnce(agent, SentryActions, agent.Index);
+                continue;
+            }
+            if (move.RouteIndex < move.Route.Length &&
+                agent.Position.AsVec2.DistanceSquared(move.Route[move.RouteIndex].AsVec2) <= 0.36f)
+            { move.RouteIndex++; IssueCeremonyWalk(move, move.Goal, move.Facing); }
+            else if (_elapsed >= move.RetryAt) IssueCeremonyWalk(move, move.Goal, move.Facing);
+        }
     }
 
 	private void HideCampCopyOfCondemned(Hero victim)

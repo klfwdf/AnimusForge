@@ -27,18 +27,12 @@ public sealed partial class FieldCampMissionLogic
         internal Vec2 HomeFacing;
         internal Vec3 Target;
         internal Vec2 Facing;
-        internal Vec3[] Route = Array.Empty<Vec3>();
-        internal int Corner;
         internal bool Arrived = true;
         internal bool Failed;
-        internal Vec3 LastPosition;
-        internal float ProgressAt;
-        internal float Deadline;
     }
 
     private readonly Dictionary<string, CampCeremonyActor> _campCeremonyRoles = new Dictionary<string, CampCeremonyActor>(StringComparer.Ordinal);
     private readonly Dictionary<Agent, CampCeremonyActor> _campCeremonyActors = new Dictionary<Agent, CampCeremonyActor>();
-    private readonly List<CampCeremonyActor> _campCeremonyActorWalks = new List<CampCeremonyActor>();
 
     private static Agent AcquireCampCeremonyActorHook(Guid session, string role, Hero victim) => Current?.AcquireCampCeremonyActor(session, role, victim);
     private static bool OwnsCampVictimOriginHook(Agent agent) => Current is FieldCampMissionLogic camp &&
@@ -103,43 +97,21 @@ public sealed partial class FieldCampMissionLogic
         return chosen;
     }
 
+    // Retain the existing same-DLL hook signature; ceremony personnel now
+    // arrive immediately, while spectators use their independent walking queue.
     private bool WalkCampCeremonyActor(Guid session, Agent agent, Vec3 target, Vec2 facing, IReadOnlyList<Vec3> approach)
     {
-        if (!_campCeremonyActors.TryGetValue(agent, out CampCeremonyActor actor) || actor.Session != session || !agent.IsActive()) return false;
-        actor.Target = target; actor.Facing = facing; actor.Arrived = false; actor.Failed = false; actor.Corner = 0;
-        if (agent.Position.AsVec2.DistanceSquared(target.AsVec2) <= 0.36f && Math.Abs(agent.Position.z - target.z) <= 0.65f)
-        {
-            actor.Route = Array.Empty<Vec3>();
-            HoldCampCeremonyActor(actor);
-            _campCeremonyActorWalks.Remove(actor);
-            return true;
-        }
-        var route = new List<Vec3>();
-        Vec3 groundGoal = approach != null && approach.Count > 0 ? approach[0] : target;
-        if (agent.Position.AsVec2.DistanceSquared(groundGoal.AsVec2) > 0.36f)
-        {
-            if (!TryCampRoute(agent.Position, groundGoal, out Vec3[] groundRoute)) { actor.Failed = true; return false; }
-            route.AddRange(groundRoute);
-            route.Add(groundGoal);
-        }
-        if (approach != null) for (int i = 1; i < approach.Count; i++) route.Add(approach[i]);
-        route.Add(target); actor.Route = route.ToArray();
-        actor.Deadline = _elapsed + 90f;
-        if (!_campCeremonyActorWalks.Contains(actor)) _campCeremonyActorWalks.Add(actor);
-        IssueCampCeremonyActorWalk(actor);
-        return true;
-    }
-
-    private void IssueCampCeremonyActorWalk(CampCeremonyActor actor)
-    {
-        Agent agent = actor.Agent; Vec3 goal = actor.Route[actor.Corner];
-        StopCampNavigation(agent); agent.Controller = AgentControllerType.AI;
-        agent.SetIsAIPaused(false); agent.SetMaximumSpeedLimit(-1f, false);
+        if (!_campCeremonyActors.TryGetValue(agent, out CampCeremonyActor actor) || actor.Session != session ||
+            !agent.IsActive() || !target.IsValid || !facing.IsNonZero()) return false;
+        actor.Target = target; actor.Facing = facing; actor.Arrived = false; actor.Failed = false;
+        StopCampNavigation(agent);
+        agent.SetIsAIPaused(true);
+        agent.Controller = AgentControllerType.None;
         agent.SetActionChannel(0, in ActionIndexCache.act_none, true);
-        var world = new WorldPosition(Mission.Scene, UIntPtr.Zero, goal, false);
-        agent.SetScriptedPositionAndDirection(ref world, actor.Facing.RotationInRadians, false,
-            Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
-        actor.LastPosition = agent.Position; actor.ProgressAt = _elapsed + 6f;
+        agent.TeleportToPosition(target);
+        HoldCampCeremonyActor(actor);
+        Logger.Log(LogSource, "positioned existing camp ceremony actor role=" + actor.Role + " agent=" + agent.Index + " session=" + session);
+        return true;
     }
 
     private void HoldCampCeremonyActor(CampCeremonyActor actor)
@@ -149,30 +121,6 @@ public sealed partial class FieldCampMissionLogic
         actor.Agent.Controller = AgentControllerType.None;
         actor.Agent.LookDirection = new Vec3(actor.Facing.x, actor.Facing.y, 0f);
         actor.Arrived = true;
-    }
-
-    private void TickCampCeremonyActorWalks()
-    {
-        // Only borrowed personnel, max 20 per existing half-second maintenance.
-        int budget = Math.Min(20, _campCeremonyActorWalks.Count);
-        for (int i = budget - 1; i >= 0; i--)
-        {
-            CampCeremonyActor actor = _campCeremonyActorWalks[i]; Agent agent = actor.Agent;
-            if (!agent.IsActive() || _elapsed >= actor.Deadline)
-            { actor.Failed = true; StopCampNavigation(agent); _campCeremonyActorWalks.RemoveAt(i); continue; }
-            Vec3 goal = actor.Route[actor.Corner];
-            if (agent.Position.AsVec2.DistanceSquared(goal.AsVec2) <= 0.36f && Math.Abs(agent.Position.z - goal.z) <= 0.65f)
-            {
-                if (++actor.Corner < actor.Route.Length) { IssueCampCeremonyActorWalk(actor); continue; }
-                HoldCampCeremonyActor(actor); _campCeremonyActorWalks.RemoveAt(i);
-            }
-            else if (_elapsed >= actor.ProgressAt)
-            {
-                if (agent.Position.AsVec2.DistanceSquared(actor.LastPosition.AsVec2) < 0.04f)
-                { StopCampNavigation(agent); actor.Failed = true; _campCeremonyActorWalks.RemoveAt(i); }
-                else { actor.LastPosition = agent.Position; actor.ProgressAt = _elapsed + 6f; }
-            }
-        }
     }
 
     private FieldCampCeremonyReadiness CampActorsReady(Guid session)
@@ -189,7 +137,6 @@ public sealed partial class FieldCampMissionLogic
 
     private void ReleaseCampCeremonyActors()
     {
-        _campCeremonyActorWalks.Clear();
         foreach (CampCeremonyActor actor in _campCeremonyRoles.Values)
         {
             Agent agent = actor.Agent;

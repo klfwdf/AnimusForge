@@ -31,10 +31,7 @@ public sealed partial class TownExecutionMissionBehavior
     private bool _buildingFieldCampScene;
     private bool _retainedFieldCampSite;
     private bool _fieldCampActorsEntering;
-    private bool _fieldCampVictimEntryStarted;
     private int _fieldCampHelperNumber;
-    private float _fieldCampEntryPoll;
-    private IReadOnlyList<Vec3>? _fieldCampStairApproach;
 
     private CharacterObject GetCampRoleCharacter(string role)
     {
@@ -112,7 +109,6 @@ public sealed partial class TownExecutionMissionBehavior
         _burningSupportBaseFrames.AddRange(previous._burningSupportBaseFrames);
         _fieldCampPreparationAreas = previous._fieldCampPreparationAreas;
         _fieldCampPreparationRadius = previous._fieldCampPreparationRadius;
-        _fieldCampStairApproach = previous._fieldCampStairApproach;
         RexLog.Info($"Session {Request.SessionId} retained {_spawnedEntities.Count} existing site entities; stage teardown/rebuild skipped.");
     }
 
@@ -141,69 +137,24 @@ public sealed partial class TownExecutionMissionBehavior
         _strategyCleanupComplete = true;
     }
 
-    private IReadOnlyList<Vec3> FieldCampStageApproach(Vec3 destination)
-    {
-        if (_placement is null || _stageSurfaceHeight <= 0.35f || destination.z < _placement.Origin.z + 0.45f)
-            return Array.Empty<Vec3>();
-        if (_fieldCampStairApproach is not null) return _fieldCampStairApproach;
-        GameEntity? ramp = _gallowsRampEntities.FirstOrDefault();
-        if (ramp is null && _gallowsEntity is not null)
-            ramp = _gallowsEntity.GetEntityAndChildren().FirstOrDefault(part =>
-                (part.Name ?? string.Empty).IndexOf("stairs", StringComparison.OrdinalIgnoreCase) >= 0);
-        if (ramp is not null &&
-            TryProjectStairFootprint(ramp.GetGlobalFrame(), ramp.GetLocalBoundingBox(),
-                out var runAlongForward, out var runMinimum, out var runMaximum, out var widthCenter, out _) &&
-            TrySampleStairSurface(ramp, ramp.GetGlobalBoundingBox(), runAlongForward,
-                runMinimum, runMaximum, widthCenter, out var samples))
-        {
-            // The existing static-body probes measure actual treads; a local
-            // bounding-box top has the same Z at both ends of an authored stair.
-            bool ascending = samples[samples.Count - 1].Height >= samples[0].Height;
-            var approach = new Vec3[samples.Count + 1];
-            for (int i = 0; i < samples.Count; i++)
-            {
-                var sample = samples[ascending ? i : samples.Count - 1 - i];
-                approach[i + 1] = ComposePlacementPoint(runAlongForward, sample.RunCoordinate,
-                    widthCenter, sample.Height + 0.04f);
-            }
-            var away = approach[1].AsVec2 - approach[approach.Length - 1].AsVec2;
-            if (away.IsNonZero())
-            {
-                away = away.Normalized();
-                var foot = approach[1] + new Vec3(away.x * 1.6f, away.y * 1.6f, 0f);
-                foot.z = Mission.Scene.GetTerrainHeight(foot.AsVec2, true);
-                approach[0] = foot;
-                _fieldCampStairApproach = approach;
-                return approach;
-            }
-        }
-        var entrance = _placement.Offset(0f, _frontInteractionOffset + 2f);
-        entrance.z = Mission.Scene.GetTerrainHeight(entrance.AsVec2, true);
-        _fieldCampStairApproach = new[] { entrance, _placement.Offset(0f, _stageFrontExtent - 0.5f, _stageSurfaceHeight) };
-        return _fieldCampStairApproach;
-    }
-
     private void BeginFieldCampActorEntry()
     {
         foreach (var entity in _spawnedEntities)
             if (!_fieldCampInitialFrames.ContainsKey(entity)) _fieldCampInitialFrames[entity] = entity.GetGlobalFrame();
-        _fieldCampActorsEntering = true; _fieldCampVictimEntryStarted = false; _fieldCampEntryPoll = 0f;
+        _fieldCampActorsEntering = true;
         foreach (var pair in _fieldCampEntryMarks)
         {
-            if (pair.Key == _victimAgent) continue;
             if (VengeanceIntegration.FieldCampWalkActor?.Invoke(Request.SessionId, pair.Key,
-                pair.Value.Position, pair.Value.Direction, FieldCampStageApproach(pair.Value.Position)) != true)
-                throw new InvalidOperationException("Camp personnel cannot walk to the retained ceremony mark: " + pair.Key.Index);
+                pair.Value.Position, pair.Value.Direction, Array.Empty<Vec3>()) != true)
+                throw new InvalidOperationException("Camp personnel could not be positioned at the ceremony mark: " + pair.Key.Index);
         }
-        RexLog.Info($"Session {Request.SessionId} site exists; resetting borrowed personnel before spectators and prisoner entry.");
+        VengeanceIntegration.FieldCampArrangeSpectators?.Invoke(Request.SessionId);
+        RexLog.Info($"Session {Request.SessionId} existing ceremony personnel and prisoner positioned immediately; spectators walk independently.");
     }
 
     private bool TickFieldCampActorEntry(float dt)
     {
         if (!_fieldCampActorsEntering) return true;
-        _fieldCampEntryPoll -= MathF.Max(0f, dt);
-        if (_fieldCampEntryPoll > 0f) return false;
-        _fieldCampEntryPoll = 0.5f;
         var ready = VengeanceIntegration.FieldCampActorReadiness?.Invoke(Request.SessionId) ?? FieldCampCeremonyReadiness.Failed;
         if (ready == FieldCampCeremonyReadiness.Pending) return false;
         if (ready == FieldCampCeremonyReadiness.Failed)
@@ -212,22 +163,12 @@ public sealed partial class TownExecutionMissionBehavior
                 new TextObject("{=REX_Error_FieldCamp_Unavailable}The field camp cannot host an execution right now."));
             return false;
         }
-        if (!_fieldCampVictimEntryStarted)
-        {
-            VengeanceIntegration.FieldCampArrangeSpectators?.Invoke(Request.SessionId);
-            _fieldCampVictimEntryStarted = true;
-            if (_victimAgent is null || VengeanceIntegration.FieldCampWalkActor?.Invoke(Request.SessionId, _victimAgent,
-                _victimPosition, _placement!.Forward, FieldCampStageApproach(_victimPosition)) != true)
-                CancelSceneAndReturn(ExecutionFailureReason.ScenePlacementFailed,
-                    new TextObject("{=REX_Error_FieldCamp_Unavailable}The field camp cannot host an execution right now."));
-            return false;
-        }
         _fieldCampActorsEntering = false;
         foreach (var pair in _fieldCampEntryMarks)
             if (pair.Key.IsActive()) PoseAgentAt(pair.Key, pair.Value.Position, pair.Value.Direction);
-        TryPlayAction(_victimAgent!, _sceneAct!.VictimIdleAction, "borrowed prisoner arrived");
+        TryPlayAction(_victimAgent!, _sceneAct!.VictimIdleAction, "borrowed prisoner positioned");
         _executionerInitialStandbySettlePending = !TryRestoreExecutionerEntryStandby();
-        RexLog.Info($"Session {Request.SessionId} existing camp prisoner reached the existing site; F execution entry enabled.");
+        RexLog.Info($"Session {Request.SessionId} existing camp actors ready; F execution entry enabled without spectator gate.");
         return true;
     }
 }

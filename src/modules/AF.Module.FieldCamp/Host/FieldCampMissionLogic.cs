@@ -164,7 +164,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			MaintainCampPrisonerCombatIsolation();
 			TickCeremonyPreparation();
 			TickCeremonyReturn();
-            TickCampCeremonyActorWalks();
+            TickCeremonySpectators();
 			UpkeepBatchOfAgents();
             if (!_ceremonyActive) TickEnvoys();
 		}
