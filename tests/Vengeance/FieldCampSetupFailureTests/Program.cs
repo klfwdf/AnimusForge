@@ -41,6 +41,8 @@ static class Program
         Check(host.Initialized && host.Degraded, "a notification exception cannot exit the camp");
         host = Run("placement_degraded");
         Check(host.Initialized && host.Degraded, "optional skipped tent/furniture reports degradation without cancelling actors");
+        host=Run("optional_furniture");
+        Check(host.Initialized && !host.Degraded && Fixture.Calls.Contains("notice"), "optional cosmetics get informational notice, not a false core failure");
         Fixture.Reset(Array.Empty<string>());Fixture.NoPlayer = true;host = new FieldCampMissionLogic();host.RunSetup();
         Check(!host.Initialized && !FieldCampBehavior.Instance.PlayerReady && host.Mission.EndCalls == 0, "no safe player position stays open without a time receipt");
         Check(Fixture.Logs.Any(x => x.Contains("player=False")), "missing player is logged, not falsely claimed ready");
@@ -93,6 +95,7 @@ namespace AnimusForge
     static class FieldCampProps
     {
         internal static bool HadPlacementFailures => Fixture.Failures.Contains("placement_degraded");
+        internal static int OptionalFurnitureSkips => Fixture.Failures.Contains("optional_furniture") ? 3 : 0;
         internal static int Place(FakeScene s, FieldCampLayout l, object f, float k) { Fixture.Step("props");return 4; }
     }
     sealed class FieldCampBehavior
@@ -101,7 +104,7 @@ namespace AnimusForge
         internal void MarkPatrolPlayerReady() => PlayerReady = true;
     }
     static class Logger { internal static void Log(string source, string line) => Fixture.Logs.Add(line); }
-    static class FieldCampText { internal static object SetupDegraded() => new(); }
+    static class FieldCampText { internal static object SetupDegraded() => new(); internal static object OptionalFurnitureSkipped(int count) => new(); }
     static class AnimusForgeQuickInfo { internal static void Show(object text) => Fixture.Step("notice"); }
     public sealed partial class FieldCampMissionLogic
     {

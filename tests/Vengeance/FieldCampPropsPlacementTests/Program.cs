@@ -46,6 +46,9 @@ static class Program
         Check(s.MeasurementSpawns==1,"failed doorway rotations reuse the same measured prefab bounds");
         s=SceneWith("gallows",Box(2f,2f));GameEntity.Prefabs["bd_log_and_axe"]=Box(1f,1f);l=new FieldCampLayout();l.Props.Add(new() {Kind=FieldCampLayout.PropKind.Gallows});l.Props.Add(new() {Kind=FieldCampLayout.PropKind.ExecutionBlock});Place(s,l);
         Check(s.Entities.All(e=>e.Removed),"even legacy camp-layout apparatus records cannot pre-spawn a gallows or block");
+        s=SceneWith("tent_vlandia_a",Box(2.5f,2.7f));l=Layout();l.Props.Add(new() {Kind=FieldCampLayout.PropKind.Chest,TentAnchor=1,Position=new Vec2(0.58f,0f)});Place(s,l);
+        Check(LiveTents(s).Count==1 && !FieldCampProps.HadPlacementFailures,"missing optional furniture is not misreported as failed core camp initialization");
+        Check(FieldCampProps.OptionalFurnitureSkips==1 && AnimusForge.Logger.Lines.Any(x=>x.Contains("optional tent furniture skipped")),"optional furnishing loss is counted and logged, not hidden");
         Console.WriteLine($"PASS {checks} production tent placement assertions (real Library math; fake native scene/prefab queries)");
     }
     static int Main() {try {Run();return 0;}catch(Exception e){Console.Error.WriteLine(e.Message);return 1;}}

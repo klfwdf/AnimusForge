@@ -37,9 +37,11 @@ public sealed partial class FieldCampMissionLogic
         else _setupDegraded = true;
         if (_setupDegraded)
             TryCampSetupStage("notice", () => AnimusForgeQuickInfo.Show(FieldCampText.SetupDegraded()));
+        else if (FieldCampProps.OptionalFurnitureSkips > 0)
+            TryCampSetupStage("notice", () => AnimusForgeQuickInfo.Show(FieldCampText.OptionalFurnitureSkipped(FieldCampProps.OptionalFurnitureSkips)));
         Logger.Log(LogSource, "camp initialization complete player=" + _campInitialized + " degraded=" + _setupDegraded
             + " agents=" + _agents.Count + " prisoners=" + _prisoners.Count + " props=" + props + "/" + _layout.Props.Count
-            + " horses=" + horses + " cleared=" + cleared + " scene=" + (Mission.SceneName ?? ""));
+            + " horses=" + horses + " optionalFurnitureSkipped=" + FieldCampProps.OptionalFurnitureSkips + " cleared=" + cleared + " scene=" + (Mission.SceneName ?? ""));
     }
 
     private bool TryCampSetupStage(string stage, Action action)

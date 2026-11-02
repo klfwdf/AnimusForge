@@ -60,6 +60,7 @@ internal static class FieldCampSite
 			internal float[] Heights;
 			internal bool[] Open;
 			internal bool Ready;
+			internal FieldCampGroundRouter Router;
 		}
 
 	private struct Candidate
@@ -642,6 +643,17 @@ internal static class FieldCampSite
 				}
 			}
 			cache.Ready = true;
+			// Cache pedestrian clearance once, after the final camp props. No native queries in route search.
+			var walkable = new bool[cache.Open.Length];
+			for (int y = 0; y < cache.Height; y++)
+				for (int x = 0; x < cache.Width; x++)
+				{
+					int index = y * cache.Width + x;
+					if (!cache.Open[index]) continue;
+					Vec3 sample = frame.TransformToParent(new Vec3(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep, 0f));
+					walkable[index] = TryResolveGroundedPosition(scene, sample, 0.4f, out _);
+				}
+			cache.Router = new FieldCampGroundRouter(cache.Width, cache.Height, walkable, cache.Heights);
 			Logger.Log(LogSource, "ground cache cells=" + cache.Open.Length + " open=" + open + " step=" + GroundStep);
 			Vec3 player = frame.TransformToParent(new Vec3(layout.PlayerStart.x * scale, layout.PlayerStart.y * scale, 0f));
 			Vec3 gate = frame.TransformToParent(new Vec3(0f, layout.Front * scale, 0f));
@@ -708,6 +720,58 @@ internal static class FieldCampSite
 			grounded.z = height + 0.04f;
 			return true;
 		}
+
+        /// <summary>Routes around runtime camp bodies on the already sampled grid. Covered-but-blocked
+        /// must not fall back to the baked navmesh, which does not know those tents/fences.</summary>
+        internal static bool TryBuildGroundedRoute(Scene scene, Vec3 from, Vec3 target, out Vec3[] route, out bool covered)
+        {
+            route = Array.Empty<Vec3>(); covered = false;
+            if (scene == null || !from.IsValid || !target.IsValid || !GroundCaches.TryGetValue(scene, out GroundCache cache)
+                || !cache.Ready || cache.Router == null) return false;
+            Vec3 localFrom = cache.Frame.TransformToLocal(from), localTarget = cache.Frame.TransformToLocal(target);
+            if (!WithinGroundGrid(cache, localFrom) || !WithinGroundGrid(cache, localTarget)) return false;
+            covered = true;
+            if (!TryResolveGroundedPosition(scene, target, 0.4f, out Vec3 end)) return false;
+            // Seated actors may start next to furniture; find the closest traversable neighbouring cell once.
+            int sx = (int)Math.Round((localFrom.x - cache.MinX) / GroundStep);
+            int sy = (int)Math.Round((localFrom.y - cache.MinY) / GroundStep);
+            Vec3 endLocal = cache.Frame.TransformToLocal(end);
+            int goal = (int)Math.Round((endLocal.y - cache.MinY) / GroundStep) * cache.Width
+                + (int)Math.Round((endLocal.x - cache.MinX) / GroundStep);
+            int[] corners = null;
+            for (int radius = 0; radius <= 3 && corners == null; radius++)
+                for (int dy = -radius; dy <= radius && corners == null; dy++)
+                    for (int dx = -radius; dx <= radius; dx++)
+                    {
+                        if (Math.Abs(dx) != radius && Math.Abs(dy) != radius) continue;
+                        int x = sx + dx, y = sy + dy;
+                        if (x < 0 || y < 0 || x >= cache.Width || y >= cache.Height) continue;
+                        if (!cache.Router.IsTraversable(y * cache.Width + x)) continue;
+                        Vec3 start = cache.Frame.TransformToParent(new Vec3(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep, 0f));
+                        start.z = cache.Heights[y * cache.Width + x] + 0.04f;
+                        // The actor walks the short start connector too; never jump through a solid body.
+                        if (radius > 0 && scene.RayCastForClosestEntityOrTerrain(from + new Vec3(0f, 0f, 1f), start + new Vec3(0f, 0f, 1f),
+                            out _, out _, out _, 0.3f, ClearanceExcludeFlags)) continue;
+                        if (cache.Router.TryRoute(y * cache.Width + x, goal, out int[] found)) { corners = found; break; }
+                        // A valid source in another component must not trigger 48 copies of the same search.
+                        if (cache.Router.LastSearchVisited > 0) return false;
+                    }
+            if (corners == null) return false;
+            route = new Vec3[corners.Length];
+            for (int i = 0; i < corners.Length; i++)
+            {
+                int cell = corners[i];
+                route[i] = cache.Frame.TransformToParent(new Vec3(cache.MinX + cell % cache.Width * GroundStep,
+                    cache.MinY + cell / cache.Width * GroundStep, 0f));
+                route[i].z = cache.Heights[cell] + 0.04f;
+            }
+            return true;
+        }
+
+        private static bool WithinGroundGrid(GroundCache cache, Vec3 local) => IsFinite(local.x) && IsFinite(local.y)
+            && local.x >= cache.MinX && local.y >= cache.MinY
+            && local.x <= cache.MinX + (cache.Width - 1) * GroundStep
+            && local.y <= cache.MinY + (cache.Height - 1) * GroundStep;
 
 		/// <summary>Conservative direct ground corridor, cache-only, capped at MaxPassageSteps. Not a navmesh rebuild/pathfinder.</summary>
 		internal static bool TryValidateGroundedPassage(Scene scene, Vec3 from, Vec3 to, float clearanceRadius)

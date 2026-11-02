@@ -39,6 +39,8 @@ public sealed partial class FieldCampMissionLogic
 		internal Vec3 Goal;
 		internal Vec2 Facing;
 		internal float RetryAt;
+		internal Vec3[] Route = Array.Empty<Vec3>();
+		internal int RouteIndex;
 	}
 
 	// Also read by camp-life upkeep: these entries must not receive work/wander orders.
@@ -67,6 +69,7 @@ public sealed partial class FieldCampMissionLogic
 	private int _ceremonyWalkCursor;
 	private int _ceremonyClearCursor;
 	private bool _ceremonyClearPassBlocked;
+	private float _nextCeremonyProgressLog;
 
 	internal static bool IsExecutionCeremonyAvailable =>
 		VengeanceIntegration.IsEnabled && VengeanceIntegration.IsEmbeddedHostActive && RichExecutionApi.IsInitialized;
@@ -100,7 +103,7 @@ public sealed partial class FieldCampMissionLogic
 	private static bool CanStartCeremony(Mission mission)
 	{
 		var camp = mission?.GetMissionBehavior<FieldCampMissionLogic>();
-		return camp != null && camp._spawned && !mission.IsMissionEnding &&
+		return camp != null && camp._spawned && camp._campInitialized && !mission.IsMissionEnding &&
 			!camp._ceremonyActive && camp._ceremonyWalkers.Count == 0 && !camp.SlaughterBusy && camp._duelists.Count == 0;
 	}
 
@@ -150,6 +153,7 @@ public sealed partial class FieldCampMissionLogic
 		_ceremonyMarks.Clear();
 		_ceremonyWaiting = _ceremonyUnclearedMoves = 0;
 		_ceremonyClearanceVerified = false;
+		_nextCeremonyProgressLog = _elapsed + 5f;
 		try
 		{
 			if (_envoy != null)
@@ -201,6 +205,7 @@ public sealed partial class FieldCampMissionLogic
 				return _ceremonyReadiness;
 			}
 			Logger.Log(LogSource, "execution preparation started session=" + session + " watchers=" + watchers + " registered=" + _ceremonyClearance.Count);
+			AnimusForgeQuickInfo.Show(FieldCampText.CeremonyPreparing());
 		}
 		catch (Exception ex)
 		{
@@ -220,7 +225,9 @@ public sealed partial class FieldCampMissionLogic
 		if (!CanMoveForCeremony(agent) || _ceremonyMoves.ContainsKey(agent)) return false;
 		Vec3 goal = new Vec3(flat.x, flat.y, _ceremonyOrigin.z);
 		goal.z = GroundHeight(Mission.Scene, goal);
-		if (!HasCeremonyWalkPath(agent.Position, goal)) return false;
+		bool routed = FieldCampSite.TryBuildGroundedRoute(Mission.Scene, agent.Position, goal, out Vec3[] route, out bool covered);
+		if (!routed && (covered || !HasCeremonyWalkPath(agent.Position, goal))) return false;
+		if (routed && route.Length > 0) { goal = route[route.Length - 1]; flat = goal.AsVec2; }
 		int cellX = (int)Math.Floor(flat.x / 1.3f);
 		int cellY = (int)Math.Floor(flat.y / 1.3f);
 		if (_ceremonyMarks.ContainsKey(CeremonyMarkKey(cellX, cellY))) return false;
@@ -235,7 +242,8 @@ public sealed partial class FieldCampMissionLogic
 			Agent = agent, Camp = entry, Prisoner = _ceremonyPrisoners.Contains(agent),
 			Home = entry != null ? entry.Home : agent.Position,
 			HomeFacing = entry != null ? entry.HomeFacing : agent.LookDirection.AsVec2,
-			Goal = goal, Facing = facing.IsNonZero() ? facing.Normalized() : -_ceremonyForward
+			Goal = goal, Facing = facing.IsNonZero() ? facing.Normalized() : -_ceremonyForward,
+			Route = routed ? route : Array.Empty<Vec3>()
 		};
 		// Record ownership before touching AI so a partial failure is still returned.
 		_ceremonyWalkers.Add(move);
@@ -253,6 +261,7 @@ public sealed partial class FieldCampMissionLogic
 			entry.TargetFacing = move.Facing;
 		}
 		IssueCeremonyWalk(move, goal, move.Facing);
+		Logger.Log(LogSource, "ceremony walk assigned agent=" + agent.Index + " cachedRoute=" + routed + " waypoints=" + move.Route.Length);
 		return true;
 	}
 
@@ -276,9 +285,15 @@ public sealed partial class FieldCampMissionLogic
 			!float.IsNaN(path) && !float.IsInfinity(path) && path >= 0f && path <= direct * 3f + 8f;
 	}
 
-	private void IssueCeremonyWalk(CeremonyMove move, Vec3 goal, Vec2 facing)
+	private void IssueCeremonyWalk(CeremonyMove move, Vec3 goal, Vec2 facing, bool followRoute = true)
 	{
 		Agent agent = move.Agent;
+		if (followRoute && _ceremonyActive && move.Route.Length > 0)
+		{
+			while (move.RouteIndex + 1 < move.Route.Length && agent.Position.AsVec2.DistanceSquared(move.Route[move.RouteIndex].AsVec2) <= 0.09f)
+				move.RouteIndex++;
+			goal = move.Route[move.RouteIndex];
+		}
 		StopCampNavigation(agent);
 		agent.Controller = AgentControllerType.AI;
 		agent.SetIsAIPaused(false);
@@ -324,12 +339,16 @@ public sealed partial class FieldCampMissionLogic
 					FailCeremonyPreparation("ceremony actor acquired by conversation");
 					return;
 				}
-				if (move.Agent.Position.AsVec2.DistanceSquared(move.Goal.AsVec2) <= CeremonyArrivalSquared)
+				if (move.Route.Length > 0 && move.RouteIndex + 1 < move.Route.Length
+					&& move.Agent.Position.AsVec2.DistanceSquared(move.Route[move.RouteIndex].AsVec2) <= 0.09f)
+					IssueCeremonyWalk(move, move.Goal, move.Facing);
+				if ((move.Route.Length == 0 || move.RouteIndex + 1 == move.Route.Length)
+					&& move.Agent.Position.AsVec2.DistanceSquared(move.Goal.AsVec2) <= CeremonyArrivalSquared)
 				{
 					if (!move.Arrived)
 					{
 						// Soft hold at the actual arrival position; never snap the root to its mark.
-						IssueCeremonyWalk(move, move.Agent.Position, move.Facing);
+						IssueCeremonyWalk(move, move.Agent.Position, move.Facing, followRoute: false);
 						move.Arrived = true;
 						if (move.CountedWaiting) { _ceremonyWaiting--; move.CountedWaiting = false; }
 						if (move.Camp != null)
@@ -350,6 +369,7 @@ public sealed partial class FieldCampMissionLogic
 			// Round-robin the immutable registry, not Mission.Agents. A blocked pass
 			// cannot grant ready even if its last blocker was just told to walk away.
 			int budget = Math.Min(CeremonyTickBudget, _ceremonyClearance.Count);
+			int newRoutes = 2; // Bound collision-grid searches separately from cheap actor checks.
 			for (int i = 0; i < budget; i++)
 			{
 				Agent agent = _ceremonyClearance[_ceremonyClearCursor++];
@@ -359,15 +379,19 @@ public sealed partial class FieldCampMissionLogic
 					// Tracked movers have an O(1) outstanding counter; this pass
 					// only waits for residents not yet safely assigned a route.
 					if (!_ceremonyMoves.ContainsKey(agent)) _ceremonyClearPassBlocked = true;
-					if (!_ceremonyMoves.ContainsKey(agent) && CanMoveForCeremony(agent) &&
+					if (newRoutes > 0 && !_ceremonyMoves.ContainsKey(agent) && CanMoveForCeremony(agent) &&
 						(!_ceremonyRouteRetryAt.TryGetValue(agent, out float retryAt) || _elapsed >= retryAt))
 					{
+						newRoutes--;
 						_ceremonyRouteRetryAt[agent] = _elapsed + 5f;
 						Vec2 away = agent.Position.AsVec2 - _ceremonyOrigin.AsVec2;
 						away = away.IsNonZero() ? away.Normalized() : -_ceremonyForward;
-						for (int attempt = 0; attempt < 3; attempt++)
+						for (int attempt = 0; attempt < 8; attempt++)
 						{
-							Vec2 flat = _ceremonyOrigin.AsVec2 + away * (_ceremonyRadius + 2f + attempt * 1.8f);
+							float angle = attempt * MathF.PI * 0.25f;
+							float cosine = MathF.Cos(angle), sine = MathF.Sin(angle);
+							Vec2 direction = new Vec2(away.x * cosine - away.y * sine, away.x * sine + away.y * cosine);
+							Vec2 flat = _ceremonyOrigin.AsVec2 + direction * (_ceremonyRadius + 2.5f);
 							if (TryStartCeremonyWalk(agent, flat, watcher: false)) break;
 						}
 					}
@@ -380,6 +404,12 @@ public sealed partial class FieldCampMissionLogic
 					_ceremonyClearanceVerified = clear;
 					break;
 				}
+			}
+			if (_elapsed >= _nextCeremonyProgressLog)
+			{
+				_nextCeremonyProgressLog = _elapsed + 5f;
+				Logger.Log(LogSource, "execution preparation pending session=" + _ceremonySession + " waiting=" + _ceremonyWaiting
+					+ " uncleared=" + _ceremonyUnclearedMoves + " clearanceVerified=" + _ceremonyClearanceVerified);
 			}
 			if ((_ceremonyClearanceVerified || _ceremonyClearance.Count == 0) &&
 				_ceremonyWaiting == 0 && _ceremonyUnclearedMoves == 0) CompleteCeremonyPreparation();
@@ -463,7 +493,7 @@ public sealed partial class FieldCampMissionLogic
 				if (!remove && !move.ReturningHome)
 				{
 					if (agent.Controller != AgentControllerType.AI && !giveUp) { _ceremonyWalkCursor++; continue; }
-					IssueCeremonyWalk(move, move.Home, move.HomeFacing);
+					IssueCeremonyWalk(move, move.Home, move.HomeFacing, followRoute: false);
 					move.ReturningHome = true;
 					if (move.Camp != null)
 					{
@@ -495,7 +525,7 @@ public sealed partial class FieldCampMissionLogic
 				}
 				else if (!remove && _elapsed >= move.RetryAt)
 				{
-					IssueCeremonyWalk(move, move.Home, move.HomeFacing);
+					IssueCeremonyWalk(move, move.Home, move.HomeFacing, followRoute: false);
 				}
 			}
 			catch (Exception ex)

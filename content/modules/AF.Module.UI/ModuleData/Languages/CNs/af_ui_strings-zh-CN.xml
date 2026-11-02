@@ -3501,6 +3501,8 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_FC_PatrolWounded" text="你伤势太重，无法巡视营地。" />
   <string id="AF_FC_PatrolFailed" text="此处无法打开营地场景。" />
   <string id="AF_FC_SetupDegraded" text="部分营地设施未能初始化。营地不会自动退出，由你自行决定何时离开。" />
+  <string id="AF_FC_CeremonyPreparing" text="正在部署你确认的刑场：营地人员正步行让场，观众正在就位。请等待准备完成。" />
+  <string id="AF_FC_OptionalFurnitureSkipped" text="营地已就绪，{COUNT} 件可选帐内摆件因空间限制未放置，不影响营地使用和打开自定义部署。" />
   <string id="AF_FC_Assembled" text="部队按兵种列队完毕。" />
   <string id="AF_FC_Dismissed" text="部队解散，各自回营。" />
   <string id="AF_FC_IssueResolved_Encourage" text="你安抚了士兵。" />

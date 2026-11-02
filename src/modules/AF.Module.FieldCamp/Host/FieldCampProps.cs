@@ -124,6 +124,7 @@ internal static class FieldCampProps
 	internal static int Place(Scene scene, FieldCampLayout layout, MatrixFrame campFrame, float scale)
 	{
 		HadPlacementFailures = false;
+		OptionalFurnitureSkips = 0;
 		_solidRequested = 0;
 		_solidWithBody = 0;
 		int placed = PlaceAll(scene, layout, campFrame, scale);
@@ -135,6 +136,7 @@ internal static class FieldCampProps
 	private static int _solidRequested;
 	private static int _solidWithBody;
 	internal static bool HadPlacementFailures { get; private set; }
+	internal static int OptionalFurnitureSkips { get; private set; }
 
 		private sealed class TentInterior
 		{
@@ -286,12 +288,13 @@ internal static class FieldCampProps
 						trial = new TentInterior { Root = tent, Frame = door, HalfWidth = width * 0.68f, HalfDepth = depth * 0.68f,
 							RoofHeight = (box.max.z - box.min.z) * scale, DoorDepth = depth };
 						CaptureTentEntities(tent, trial.Entities);
+						int skippedFurniture = 0;
 						for (int f = 0; furnishingPlan != null && f < furnishingPlan.Count; f++)
 						{
 							FieldCampLayout.Prop furniture = furnishingPlan[f];
 							if (!PlaceTentFurniture(scene, furniture, PoolFor(furniture, out _), trial, furnitureSizes))
 							{
-								HadPlacementFailures = true;
+								skippedFurniture++;
 								Logger.Log(LogSource, "[WARN] optional tent furniture skipped prefab=" + pool[c] + " kind=" + furniture.Kind);
 							}
 						}
@@ -300,6 +303,7 @@ internal static class FieldCampProps
 							continue;
 						}
 						interior = trial;
+						OptionalFurnitureSkips += skippedFurniture; // Only count the accepted tent, never rejected candidate trials.
 						doorwayTurns[pool[c]] = turn;
 						Logger.Log(LogSource, "tent interior prefab=" + pool[c] + " doorwayTurn=" + turn + " scale=" + scale.ToString("0.00") + " half=" + width.ToString("0.00") + "," + depth.ToString("0.00"));
 						accepted = true;
