@@ -20,7 +20,6 @@ namespace AnimusForge;
 public sealed partial class FieldCampMissionLogic
 {
 	private const int MaxExtraCompanions = 24;
-	private const int MaxPrisonerLords = 3;
 	private const int AttackersPerPrisoner = 2;
 	private const int MaxAttackers = 16;
 
@@ -261,7 +260,7 @@ public sealed partial class FieldCampMissionLogic
 			}
 			if (e.Character.IsHero)
 			{
-				if (picks.Count < MaxPrisonerLords && e.Character.HeroObject?.IsAlive == true)
+				if (e.Character.HeroObject?.IsAlive == true)
 				{
 					picks.Add(e.Character);
 				}

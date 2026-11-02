@@ -446,9 +446,11 @@ public sealed partial class FieldCampMissionLogic
     private static void OnCeremonyGeometryChangedHook(Guid session, IReadOnlyList<FieldCampCeremonyArea> areas, bool created)
     {
         var camp = Current;
-        if (camp == null || camp.Mission.IsMissionEnding) return;
-        FieldCampSite.RefreshGroundObstacles(camp.Mission.Scene, areas);
-        if (camp._ceremonySession != session) return;
+        if (camp == null || camp.Mission.IsMissionEnding || camp._ceremonySession != session) return;
+        // A failed actor acquisition never published geometry to the ground cache.
+        // Do not raycast the whole site again for a build that never existed.
+        if (created || camp._ceremonyGeometryPresent)
+            FieldCampSite.RefreshGroundObstacles(camp.Mission.Scene, areas);
         camp._ceremonyGeometryPresent = created;
         if (!created) { camp.ReleaseCampCeremonyActors(); return; }
         if (!camp._ceremonyActive) return;

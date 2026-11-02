@@ -186,7 +186,22 @@ internal sealed partial class FieldCampLayout
 		}
 		int tents = ClampInt((totalMen + 7) / 8, 2, Math.Max(2, tentCap));
 		string home = CultureOf(parties.Count > 0 ? parties[0] : null);
+		// Noble captives are actual residents, not a capped sample. Reserve their
+		// pen before the perimeter, site solver and ground cache consume the layout.
+		int noblePrisoners = 0;
+		TroopRoster prisonRoster = PartyBase.MainParty?.PrisonRoster;
+		if (prisonRoster != null)
+			for (int i = 0; i < prisonRoster.Count; i++)
+			{
+				TroopRosterElement prisoner = prisonRoster.GetElementCopyAtIndex(i);
+				if (prisoner.Number > 0 && prisoner.Character?.IsHero == true && prisoner.Character.HeroObject?.IsAlive == true)
+					noblePrisoners++;
+			}
+		int prisonerSlots = Math.Max(9, noblePrisoners);
 		layout.PlaceTentStreets(parties, totalMen, tents);
+		int prisonerRows = (prisonerSlots + 2) / 3;
+		float penDepth = Math.Max(7f, (prisonerRows - 1) * 1.6f + 3.8f);
+		layout.Back = Math.Min(layout.Back, layout._penY + 3.5f - penDepth - 1.5f);
 		layout.PlaceFrame(home);
 		layout.PlaceCommand(home);
 		layout.PlaceTraining(home);
@@ -195,7 +210,7 @@ internal sealed partial class FieldCampLayout
 		layout.PlaceSmithy(home);
 		layout.PlaceSupply(home, SupplyPiles(parties));
 		layout.PlaceInfirmary(home, totalWounded);
-		layout.PlacePen(home);
+		layout.PlacePen(home, prisonerSlots);
 		layout.PlaceRing(home);
 		layout.PlaceExecutionGround(home, HasPrisoners(parties));
 		layout.PlaceWander();

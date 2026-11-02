@@ -185,19 +185,21 @@ internal sealed partial class FieldCampLayout
 	}
 
 	/// <summary>Fenced pen behind the tent streets; the gap faces the road so a slaughter order can reach it.</summary>
-	private void PlacePen(string home)
+	private void PlacePen(string home, int prisonerSlots)
 	{
 		const float half = 3.5f;
 		const float gap = 1.1f;
 		Vec2 c = new Vec2(0f, _penY);
-		AddWall(home, c + new Vec2(-half, -half), c + new Vec2(half, -half));
-		AddWall(home, c + new Vec2(-half, -half), c + new Vec2(-half, half));
-		AddWall(home, c + new Vec2(half, -half), c + new Vec2(half, half));
+		int rows = (prisonerSlots + 2) / 3;
+		float back = half - Math.Max(7f, (rows - 1) * 1.6f + 3.8f);
+		AddWall(home, c + new Vec2(-half, back), c + new Vec2(half, back));
+		AddWall(home, c + new Vec2(-half, back), c + new Vec2(-half, half));
+		AddWall(home, c + new Vec2(half, back), c + new Vec2(half, half));
 		AddWall(home, c + new Vec2(-half, half), c + new Vec2(-gap, half));
 		AddWall(home, c + new Vec2(gap, half), c + new Vec2(half, half));
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < prisonerSlots; i++)
 		{
-			PrisonerSlots.Add(new Slot { Kind = SlotKind.Prisoner, Position = c + new Vec2(-1.6f + (i % 3) * 1.6f, -1.6f + (i / 3) * 1.6f), Facing = new Vec2(0f, 1f) });
+			PrisonerSlots.Add(new Slot { Kind = SlotKind.Prisoner, Position = c + new Vec2(-1.6f + (i % 3) * 1.6f, half - 1.9f - (i / 3) * 1.6f), Facing = new Vec2(0f, 1f) });
 		}
 		Props.Add(new Prop { Kind = PropKind.Torch, CultureId = home, Position = c + new Vec2(-half - 1f, half + 1f) });
 		SentrySlots.Add(new Slot { Kind = SlotKind.Sentry, Position = c + new Vec2(half + 1.2f, half + 1.2f), Facing = new Vec2(-1f, -1f).Normalized() });

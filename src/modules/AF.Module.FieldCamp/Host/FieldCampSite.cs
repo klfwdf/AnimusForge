@@ -817,8 +817,12 @@ internal static class FieldCampSite
                     for (int x = left; x <= right; x++)
                     {
                         int cell = y * cache.Width + x;
-                        if (!touched.Add(cell) || !cache.BaseOpen[cell]) continue;
+                        if (!cache.BaseOpen[cell] || touched.Contains(cell)) continue;
                         Vec3 p = cache.Frame.TransformToParent(new Vec3(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep, 0f));
+                        // Rotated component bounds do not occupy the empty corners
+                        // of their broad-phase box. Sample each relevant cell once.
+                        if (!area.Contains(p, 1.5f)) continue;
+                        touched.Add(cell);
                         p.z = cache.Heights[cell];
                         try { cache.Open[cell] = CellHasClearance(scene, p); }
                         catch { cache.Open[cell] = false; }

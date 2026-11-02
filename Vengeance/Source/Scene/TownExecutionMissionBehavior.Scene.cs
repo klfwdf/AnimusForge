@@ -2016,11 +2016,11 @@ public sealed partial class TownExecutionMissionBehavior
     private void BuildFieldCampPreparationAreas()
     {
         var areas = new List<FieldCampCeremonyArea>();
-        var bounds = new Dictionary<string, BoundingBox>(StringComparer.Ordinal);
+        var bounds = new Dictionary<string, List<(MatrixFrame Frame, Vec3 Min, Vec3 Max)>>(StringComparer.Ordinal);
         void Add(string key, ExecutionSiteResourceType type, Vec3 position, float yaw, float pitch, float roll, float scale)
         {
             var cacheKey = ((int)type).ToString() + ":" + key;
-            if (!bounds.TryGetValue(cacheKey, out var box))
+            if (!bounds.TryGetValue(cacheKey, out var parts))
             {
                 GameEntity? probe = null;
                 try
@@ -2040,8 +2040,46 @@ public sealed partial class TownExecutionMissionBehavior
                     if (probe is null) return;
                     probe.SetVisibilityExcludeParents(false);
                     probe.SetPhysicsState(false, true);
-                    box = probe.GetLocalBoundingBox();
-                    bounds[cacheKey] = box;
+                    parts = new List<(MatrixFrame Frame, Vec3 Min, Vec3 Max)>();
+                    if (type == ExecutionSiteResourceType.Prefab &&
+                        string.Equals(key, GallowsPrefab, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // The prefab root includes disabled compound geometry. Measure
+                        // the very same parts restored by the actual gallows builder.
+                        foreach (var part in probe.GetEntityAndChildren())
+                        {
+                            if (!string.Equals(part.Name, GallowsDeckPartName, StringComparison.OrdinalIgnoreCase) &&
+                                !string.Equals(part.Name, GallowsDeckCoverPartName, StringComparison.OrdinalIgnoreCase) &&
+                                !string.Equals(part.Name, GallowsStairsPartName, StringComparison.OrdinalIgnoreCase) &&
+                                !string.Equals(part.Name, GallowsStructuralBeamPartName, StringComparison.OrdinalIgnoreCase)) continue;
+                            var partFrame = part.GetGlobalFrame();
+                            var before = parts.Count;
+                            for (var componentIndex = 0; componentIndex < part.MultiMeshComponentCount; componentIndex++)
+                            {
+                                var metaMesh = part.GetMetaMesh(componentIndex);
+                                if (metaMesh is null || !metaMesh.IsValid) continue;
+                                var componentFrame = partFrame.TransformToParent(metaMesh.Frame);
+                                for (var meshIndex = 0; meshIndex < metaMesh.MeshCount; meshIndex++)
+                                {
+                                    var mesh = metaMesh.GetMeshAtIndex(meshIndex);
+                                    if (mesh is null) continue;
+                                    parts.Add((componentFrame.TransformToParent(mesh.GetLocalFrame()),
+                                        mesh.GetBoundingBoxMin(), mesh.GetBoundingBoxMax()));
+                                }
+                            }
+                            if (parts.Count == before)
+                            {
+                                var box = part.GetLocalBoundingBox();
+                                parts.Add((partFrame, box.min, box.max));
+                            }
+                        }
+                    }
+                    if (parts.Count == 0)
+                    {
+                        var box = probe.GetLocalBoundingBox();
+                        parts.Add((MatrixFrame.Identity, box.min, box.max));
+                    }
+                    bounds[cacheKey] = parts;
                 }
                 finally { probe?.Remove(0); }
             }
@@ -2050,14 +2088,17 @@ public sealed partial class TownExecutionMissionBehavior
             frame.rotation.RotateAboutSide(pitch * MathF.PI / 180f);
             frame.rotation.RotateAboutForward(roll * MathF.PI / 180f);
             frame.rotation.ApplyScaleLocal(MathF.Max(0.1f, MathF.Min(5f, scale)));
-            var area = new FieldCampCeremonyArea(frame, box.min, box.max);
-            if (float.IsNaN(area.Min.x) || float.IsInfinity(area.Min.x) ||
-                float.IsNaN(area.Min.y) || float.IsInfinity(area.Min.y) ||
-                float.IsNaN(area.Max.x) || float.IsInfinity(area.Max.x) ||
-                float.IsNaN(area.Max.y) || float.IsInfinity(area.Max.y))
-                throw new InvalidOperationException("Execution prop has invalid footprint bounds: " + key);
-            areas.Add(area);
-            RexLog.Info($"Session {Request.SessionId} prop footprint '{key}' at {position}: min={area.Min}, max={area.Max}; oriented containment.");
+            foreach (var part in parts)
+            {
+                var area = new FieldCampCeremonyArea(frame.TransformToParent(part.Frame), part.Min, part.Max);
+                if (float.IsNaN(area.Min.x) || float.IsInfinity(area.Min.x) ||
+                    float.IsNaN(area.Min.y) || float.IsInfinity(area.Min.y) ||
+                    float.IsNaN(area.Max.x) || float.IsInfinity(area.Max.x) ||
+                    float.IsNaN(area.Max.y) || float.IsInfinity(area.Max.y))
+                    throw new InvalidOperationException("Execution prop has invalid footprint bounds: " + key);
+                areas.Add(area);
+                RexLog.Info($"Session {Request.SessionId} prop footprint '{key}' at {position}: min={area.Min}, max={area.Max}; oriented containment.");
+            }
         }
         // This is the same complete stage used by BuildRuntimeScene, not a crowd circle.
         if (!UsesGroundExecutionSite()) Add(GallowsPrefab, ExecutionSiteResourceType.Prefab, _placement!.Origin, 0f, 0f, 0f, 1f);
@@ -2075,12 +2116,21 @@ public sealed partial class TownExecutionMissionBehavior
                 }
             }
         if (_customSitePreset is not null)
+        {
+            var profileRoles = _visualProfile is null
+                ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                : new HashSet<string>(_visualProfile.Props.Select(prop => prop.RoleId), StringComparer.OrdinalIgnoreCase);
             foreach (var piece in _customSitePreset.Pieces)
             {
-                if (ExecutionSitePresetStore.IsObsoletePiece(piece)) continue;
+                if (ExecutionSitePresetStore.IsObsoletePiece(piece) ||
+                    string.Equals(piece.RoleId, "site_stage_gallows", StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrWhiteSpace(piece.RoleId) && profileRoles.Contains(piece.RoleId!)) ||
+                    string.Equals(piece.RoleId, "impalement_base", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(piece.RoleId, "impalement_spike", StringComparison.OrdinalIgnoreCase)) continue;
                 var t = piece.Transform;
                 Add(piece.ResourceKey, piece.ResourceType, _placement!.Offset(t.X, t.Y, t.Z), t.Yaw, t.Pitch, t.Roll, t.Scale);
             }
+        }
         if (areas.Count == 0)
         {
             var p = _placement!.Origin.AsVec2;
