@@ -7,7 +7,7 @@ using TaleWorlds.CampaignSystem;
 internal static class Program
 {
     private static int _checks;
-    private static void Check(bool ok, string name) { _checks++; if (!ok) throw new Exception(name); }
+    private static void Check(bool ok, string name) { _checks++; if (!ok) { Console.Error.WriteLine("FAIL: " + name); throw new Exception(name); } }
     private static SpeechCue Cue(string text, bool last = true) => new(SpeechSpeaker.Victim, -1, text, "", 3, isLastStatement: last);
     private sealed class Sink : ISpeechPlaybackSink
     {
@@ -35,7 +35,12 @@ internal static class Program
         var rule = ExecutionPromptConfiguration.CreateOrderRule();
         Check(rule.Id == PublicExecutionOrderPolicy.RuleId && rule.IsEnabled, "embedded default rule available for older configurations");
         Check(!rule.Instruction.Contains("[ACTION:") && rule.PostprocessRules.Single().Tag == PublicExecutionOrderPolicy.Tag, "tag lives exclusively in postprocess rules");
-        Check(ExecutionPromptConfiguration.SystemPrompt.Contains("[最后陈述]") && ExecutionPromptConfiguration.SystemPrompt.Contains("{language}"), "configured ceremony schema and language slot");
+        string gameLanguage = "Chinese";
+        PromptLanguage.Install(() => gameLanguage, id => id == "Chinese");
+        Check(ExecutionPromptConfiguration.SystemPrompt.Contains("[最后陈述]") && !ExecutionPromptConfiguration.SystemPrompt.Contains("{language}"), "Chinese ceremony schema without retired output-language slot");
+        gameLanguage = "English";
+        Check(ExecutionPromptConfiguration.SystemPrompt.Contains("[last_statement]") && !ExecutionPromptConfiguration.SystemPrompt.Contains("{language}"), "English game language selects real English ceremony schema");
+        gameLanguage = "Chinese";
         var eligible = new PromptRuleEligibility();
         Check(!eligible.CanInjectRuleTopicIntoPreprocess(rule.Id) && !eligible.IsRuleEligibleForRag(rule.Id), "unbound target excludes topic");
         eligible.PublicExecutionEligible = true;
