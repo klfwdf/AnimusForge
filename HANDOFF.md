@@ -1,3 +1,11 @@
+## 2026-11-02 营地审查修复与当前世界书候选已部署（CN）
+
+**DEPLOYED / HASH_VERIFIED / LIVE_NOT_RUN**。用户本轮明确授权“部署 / 激进型 / 继续”。构建输入 `958fd4d257e92b84adef9b7c97aeb1a4b1c10ce1`，含营地九项 `175a6e0cc7`、审查修复 `e386527d47` 和当前已提交世界书更新；版本保持 v1.7.0。已通过原统一入口构建 1.3.15.110062 / 1.4.6.115628 + Bootstrap，接续原部署脚本成功更新 3947 个受管文件到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，不打包、不push。
+
+C# 72/105/121 项、源码契约65+6项、双语26表通过；9007项内容映射、三DLL/marker、19689源码输入及11份受保护文件核验通过。9023个Stage文件中8998个与安装一致，另保留2份自定义提示词和23份较新布匿战争导出，未绕过保护。全仓语言门仍有外交既有4处失败；游戏、真实TTS/provider、旧档、独立Vengeance构建未验。仅就C#离线执行、构建和安装状态替代下方营地/世界书“未部署”历史，实机结论不变。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-review-deployed-20261102) / [代码范围图](docs/architecture/af-framework-code-scope.md#field-camp-review-deployed-20261102)。完整日志/哈希在 `.tmp/deploy-camp-review-20261102/verification.json`；旧项目输出在同目录 `previous-stage/`、`previous-artifacts/`，不是安装备份，无自动回滚。
+
+---
+
 ## 2026-11-02 三部历史世界书对照权游补全（源内容完成，未部署）
 
 **SOURCE_DELIVERED / TARGET_OFFLINE_PASS / LIVE_NOT_RUN**。已定位Claude会话 `cab6b663-8b2a-4189-a53d-c6b66c249264`并续接最新三书目标。权游只读提炼18维；AD1259、东欧1259、燃烬帝国六个中英源包已按实际联网正文补缺、纠正时点并接真实英文消费映射。8256个JSON，固定人设5964文件、知识1128对、国家116对六段综述；源内容终稿`5e67a4eff5`，全部产品切片见本轮`delivery-commits.json`。

@@ -1,3 +1,19 @@
+<a id="field-camp-review-deployed-20261102"></a>
+## 营地部署前测试依赖对齐与安装证据 — 2026-11-02
+
+测试/最终构建输入 `958fd4d257e92b84adef9b7c97aeb1a4b1c10ce1`；[唯一台账与实际部署收据](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-review-deployed-20261102)。生产营地职责范围仍由下方九项/三项修复图所有，不重复扩张。
+
+| 源码/一基范围 | 符号与覆盖/未覆盖责任 |
+| --- | --- |
+| `tests/Vengeance/ExecutionMemoryContractTests/Fakes.cs:70–80,127` | `WorldBulletinParticipant`、`BulletinParticipants`及`CaptureWorldBulletinEvent`对齐生产observer参与者签名；fake campaign/周报边界，不证明真实事件广播 |
+| `tests/Vengeance/ExecutionMemoryContractTests/Fakes.cs:171–191` | 非处刑UI/聚会/政策投影以抛错替身隔离，禁止静默假成功 |
+| `tests/Vengeance/ExecutionMemoryContractTests/ExecutionMemoryContractTests.csproj:32–45` | 链接生产双语reader/事实投影，嵌入三组CN/EN兼容资源并复制Prompt两版到真实ModuleData reader路径 |
+| `tests/Vengeance/ExecutionMemoryContractTests/Program.cs:10,38–43` | `Check`显式输出失败名；验证游戏语言CN→EN选择及未追加退役语言占位符，保留原业务断言 |
+
+实际C#执行72/105/121项、源码契约65+6、双语26表及双API/Bootstrap通过；完整内容/三DLL/玩家保护核验PASS，已部署v1.7.0。源码/资源具体哈希见 `.tmp/deploy-camp-review-20261102/source-build-input.json`，产物/安装哈希见 `verification.json`。仅就本轮C#执行、构建和安装证据补充历史图；原生引擎寻路/战斗/UI、真实provider/TTS、旧档及独立Vengeance构建仍未验证，全仓语言门既有4项失败仍保留。
+
+---
+
 <a id="field-camp-review-fixes-20261102"></a>
 ## 营地审查三项修复源码范围 — 2026-11-02
 

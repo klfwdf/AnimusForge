@@ -1,3 +1,35 @@
+<a id="field-camp-review-deployed-20261102"></a>
+## 2026-11-02 营地九项及审查修复的统一模组部署
+
+**DEPLOYED / TARGET_HASH_PASS / LIVE_NOT_RUN**。用户“部署”，随后要求“激进型 / 继续”；实际工作区 `F:/AnimusForge-main`、main。开始 HEAD `7244d55b5f`，仅补提交测试依赖/双语契约修复 `958fd4d257e92b84adef9b7c97aeb1a4b1c10ce1`，该提交即最终构建输入，生产源码没有额外改写。输入已含营地九项 `175a6e0cc7`、审查修复 `e386527d47` 与当前已提交三部世界书更新。保留其他会话源码换行差异、HANDOFF/本台账私有增量及生成物；未切换分支、升版本、打包、push、启动游戏、调用provider或改存档。
+
+### 测试补齐与实际执行
+
+- `ExecutionMemoryContractTests` 原因是直接链接的生产observer已增加 `WorldBulletinParticipant[]`，测试替身仍为旧签名，且缺少当前双语reader/资源依赖；同步替身边界，链接真实 `PromptComposerTexts`、`AdapterRecordTexts`、`MemoryTextResources`、事实投影和CN/EN资产。无关UI/聚会/政策分支用明确抛错替身，不代替真实执行语音/记忆生产逻辑。
+- 更新已退役 `{language}` 强制输出语言占位符断言为两种游戏语言切换及真实仪式协议断言；原业务断言保留，并将失败名显式输出。精确范围见[代码图](architecture/af-framework-code-scope.md#field-camp-review-deployed-20261102)。只改测试，无新增产品热路径、Tick IO/扫描或存档身份。
+- 实际运行 `dotnet run --project tests/Vengeance/FieldCampContinuationTests/FieldCampContinuationTests.csproj`：72项PASS；`ExecutionCrowdDispersalTests`：105项PASS；`ExecutionMemoryContractTests`：121项PASS。均是生产链接+fake engine/service，不是原生游戏验收。
+- Python `FieldCampContinuationTests/source_contracts.py` 65项PASS，`review_source_contracts.py` 6项PASS；`check_bilingual_tables.py --require-all` 26表/0失败。`l10n_gate.py` 仍在外交 `DiplomacySponsorReceiptRules.cs:17–19` 报既有4处中文常量；不改业务/豁免该门，不称全仓语言通过。
+
+### 构建、接续与安装核验
+
+- 原命令 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Bannerlord14ReferenceDir F:/AnimusForge-main/.tmp/build_check/1.4 -Configuration Debug -Deploy`。1.3参考 `v1.3.15.110062`、1.4参考 `v1.4.6.115628`，双实现各0错误/387警告，Bootstrap构建通过，双coup seam/registration smoke PASS（仅managed门禁）。
+- 初次进程在Stage阶段中断，没有部署退出回执；核实安装无本轮新文件时间/残留candidate、11保护文件和19689源码输入不变，保留 `interrupted-stage/` 后使用原 `deploy_module.ps1` 及已验证三DLL接续，不改构建/部署脚本，不重复编译或虚称自动恢复。接续exit 0：`Deploy Result: success; managed files updated: 3947; Recovery disabled`。
+- 安装目录 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，版本 `v1.7.0`，单模块Id/Name为AnimusForge，XML只声明Bootstrap。完整Stage9023文件：8998与安装SHA256一致，25个差异按现有保护规则保留（2份用户提示词、23份较新布匿战争导出）；未知安装文件不删。9007项content-map的source→Stage逐一SHA256一致，三DLL及三marker在产物/Stage/安装一致且双实现不同，19689源码输入未变，11份玩家配置/提示词hash不变，无部署临时candidate残留。
+
+| 实现 | 参考版本 | 最终DLL SHA256 |
+| --- | --- | --- |
+| 1.3 | v1.3.15.110062 | `e35b9c3d5b3c9325c2690a5f4b9c64ad32e0be14ca09a934f80cb83f7ddaa62c` |
+| 1.4 | v1.4.6.115628 | `fc9dd1a6b75ff85a38e1393a71543bc2e1026c163e93489e27fc8fe1e9779d86` |
+| Bootstrap | v1.3.15.110062 baseline | `8dcb3d95223930bf7452dc36f6c52272932ffb9b2a4d7e392203d421e60adc80` |
+
+### 有效状态、边界与恢复
+
+本条仅就离线C#执行、双API/Bootstrap构建和安装状态，明确取代[营地审查修复](#field-camp-review-fixes-20261102)、[营地九项](#field-camp-nine-fixes-20261102)及[三部世界书](#worldbook-18-dimension-review-20261102)中未部署的历史陈述，不将源码检查或managed门禁提升为实机/真实TTS/模型/旧档通过。未跑独立Vengeance（本地无对应项目）、全业务回归、正式CN/EN双包、游戏与旧档；既有全仓语言/布匿战争内容问题保持。
+
+证据目录 `.tmp/deploy-camp-review-20261102/`：`source-before.json`、`source-build-input.json`、`protected-before.json`、各测试日志、`build-deploy.log`、`interruption-inspection.json`、`deploy-resume.log`/exit、`verification.json`及核验脚本。旧项目输出已保留为 `previous-stage/`、`previous-artifacts/`，测试before为同目录三份备份；它们不是安装端Recovery。回滚源码仅对具名产品提交/测试提交做focused inverse，不hard reset/改他人dirty；旧候选重新安装需按原脚本重新校验并取得对应授权，没有部署自动回滚或已备份玩家数据的承诺。
+
+---
+
 <a id="worldbook-18-dimension-review-20261102"></a>
 ## 2026-11-02 AD1259／东欧1259／燃烬帝国：18维内容复核与联网补全
 
