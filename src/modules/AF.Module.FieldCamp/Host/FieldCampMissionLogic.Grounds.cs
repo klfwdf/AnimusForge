@@ -38,6 +38,13 @@ public sealed partial class FieldCampMissionLogic
 		}
 		try
 		{
+			// Captive combat isolates only the player. Rejoin the camp before DuelBehavior
+			// snapshots teams, so it moves just the opponent to its separate enemy team.
+			// Camp upkeep resumes captive isolation after the duel releases both actors.
+			if (player == Mission.MainAgent && _prisonerPlayerTeam != null && player.Team == _prisonerPlayerTeam)
+			{
+				player.SetTeam(_team, true);
+			}
 			EnsureDuelEnemyTeam();
 			Vec2 inward = new Vec2(1f, 0f);
 			float r = _layout.RingRadius * 0.55f;

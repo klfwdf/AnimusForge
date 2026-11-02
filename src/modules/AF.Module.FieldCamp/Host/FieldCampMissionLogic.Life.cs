@@ -65,7 +65,7 @@ public sealed partial class FieldCampMissionLogic
 	/// <summary>Idempotent: several speakers may emit the same order in one shout.</summary>
 	internal bool Assemble()
 	{
-		if (!_spawned || _assembled || SlaughterBusy || _duelists.Count > 0 || _ceremonyActive || _sceneConversationAgents.Count > 0 || _envoy != null)
+		if (!_spawned || _assembled || SlaughterBusy || _duelists.Count > 0 || _ceremonyActive || _ceremonyWalkers.Count > 0 || _sceneConversationAgents.Count > 0 || _envoy != null)
 		{
 			return false;
 		}
@@ -89,7 +89,7 @@ public sealed partial class FieldCampMissionLogic
 
 	internal bool Dismiss()
 	{
-		if (!_spawned || !_assembled || SlaughterBusy || _duelists.Count > 0 || _ceremonyActive || _sceneConversationAgents.Count > 0)
+		if (!_spawned || !_assembled || SlaughterBusy || _duelists.Count > 0 || _ceremonyActive || _ceremonyWalkers.Count > 0 || _sceneConversationAgents.Count > 0)
 		{
 			return false;
 		}
@@ -298,25 +298,33 @@ public sealed partial class FieldCampMissionLogic
 			{
 				continue;
 			}
-				if (!entry.Seated && _elapsed >= entry.MoveDeadline)
+			if (entry.MoveBlocked)
+			{
+				// A transient obstruction must not retire this actor for the whole mission.
+				// Retry its failed destination once per existing cooldown, with a new deadline.
+				if (_elapsed < entry.NextWanderTime) continue;
+				entry.Returning = false;
+				MoveTo(entry, entry.Target, entry.TargetFacing, run: false);
+				continue;
+			}
+			if (!entry.Seated && _elapsed >= entry.MoveDeadline)
+			{
+				// One bounded return attempt, never teleport a blocked walker home.
+				if (entry.Target.AsVec2.DistanceSquared(entry.Home.AsVec2) > ArriveDistanceSquared)
 				{
-					// One bounded return attempt, never teleport a blocked walker home.
-					if (entry.Target.AsVec2.DistanceSquared(entry.Home.AsVec2) > ArriveDistanceSquared)
-					{
-						entry.Returning = false;
-						MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
-					}
-					else
-					{
-						agent.DisableScriptedMovement();
-						agent.ClearTargetFrame();
-						entry.Seated = true;
-						entry.MoveBlocked = true;
-						entry.NextWanderTime = _elapsed + 30f;
-					}
-					continue;
+					entry.Returning = false;
+					MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
 				}
-				if (entry.MoveBlocked) continue;
+				else
+				{
+					agent.DisableScriptedMovement();
+					agent.ClearTargetFrame();
+					entry.Seated = true;
+					entry.MoveBlocked = true;
+					entry.NextWanderTime = _elapsed + 30f;
+				}
+				continue;
+			}
 				if (!_assembled && entry.Seated && entry.Activity == Activity.Wander && _elapsed >= entry.NextWanderTime)
 				{
 					entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 45f);
