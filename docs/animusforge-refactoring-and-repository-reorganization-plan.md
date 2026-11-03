@@ -1,3 +1,14 @@
+<a id="bootstrap-nonfatal-logging-20261104"></a>
+## 2026-11-04 Bootstrap 日志初始化失败不再终止启动
+
+产品修订 `4ec3b06b40`，修改前检查点 `5a115ff16`，工作区 F:/AnimusForge-main，main。玩家 v1.4.8 启动在 Bootstrap DLL 加载后结束，无 AF 日志；网吧目录权限/重解析点是否实际命中仍未证实。历史 2026-10-12 移除日志回退后，初始化失败可中断启动，ReportFatal 的 LogPath 读取可能二次抛错，源码确认了这条故障路径。
+
+已实现：BootstrapLog.Initialize 仅尝试一次，目录拒绝、创建异常通过游戏 Debug.Print 记录并允许 LoadImplementation 继续；日志写入失败停用文件 sink，后续保留游戏日志输出，避免反复失败 IO。LogPath 只读状态，返回路径或英文技术诊断 unavailable，错误报告不重新触发目录访问。原模组身份、ancestor reparse 校验保留，未添加外部临时目录回退。无新设置、存档或玩家语料资源；启动时一次目录解析，每条实际日志原有同步追加，无 Tick 任务。
+
+用户要求停止验证之前已完成 45 项生产日志/错误方法回归，日志 artifacts/tests/bootstrap-logging/run-0bbd207afb96400abd9f41feba2dfc90/run.log。覆盖无效目录、初始化异常、初始化不重复、真实文件写入/写失败、debug sink 抛错、完整 ReportFatal 保留根因。初始化创建失败 fixture 仅替换模块根解析，Debug 为 fake，真实网吧 ACL/目录联接和游戏 UI 未测。第一轮夹具缺少 System.Text，补齐后通过。原 build_single_module.ps1 双 API/Bootstrap/双接缝/registration smoke 已通过，日志 .tmp/bootstrap-logging-dual-build-20261104.log。源码和构建包含工作区既有其他修改，本次产品提交仅四个具名修复/测试文件。
+
+后续用户明确要求不做验证、校验或冒烟并只打 CN。本次直接复用现有 Stage，覆盖当前 content-map 资源和已构建 Bootstrap/两实现，沿用默认模型排除、PDB/轻量世界书排除和现有 LZMA2 level9/16MiB/2线程编码器，不修改一键脚本和源版本。打包目录 .tmp/bootstrap-logging-cn-20261104-033820/，结果见 delivery.json 和 encode.log。目标一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1104_0338.7z。按用户要求未运行该包门禁、哈希、解包回读、实机或旧档验收。未部署、push。产品回滚采用 4ec3b06b40 的聚焦逆向提交，产物保留旧包。代码坐标见[范围图](architecture/af-framework-code-scope.md#bootstrap-nonfatal-logging-20261104)。
+
 <a id="packaging-lzma2-16m-20261104"></a>
 ## 2026-11-04 打包切换 LZMA2 / 16 MiB 字典
 

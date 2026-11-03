@@ -1,3 +1,7 @@
+## 2026-11-04 Bootstrap 日志不可用容错与 CN 打包
+
+产品提交 `4ec3b06b40`，检查点 `5a115ff16`。日志初始化失败后启动继续，失败写入停用文件 sink，错误报告读取状态不再触发 IO。用户随后要求停止验证并只打 CN 包，本轮使用已构建的 Bootstrap/双 API 和现有 Stage，默认不含 ONNX 模型，调用现有 LZMA2/16 MiB 编码器。详细范围、已有验证与未验项见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bootstrap-nonfatal-logging-20261104)和[代码范围](docs/architecture/af-framework-code-scope.md#bootstrap-nonfatal-logging-20261104)。玩家网吧现场根因仍未确认，最新包用于复测。
+
 ## 2026-11-04 打包切换 LZMA2 / 16 MiB 字典
 
 ## 2026-11-04 审查、合并、构建与部署完成，普通推送待核实

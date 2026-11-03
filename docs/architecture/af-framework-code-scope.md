@@ -1,3 +1,10 @@
+<a id="bootstrap-nonfatal-logging-20261104"></a>
+## 2026-11-04 Bootstrap 文件日志容错
+
+源码修订 `4ec3b06b40`。`src/AF.Bootstrap/BootstrapLog.cs` 的 `LogPath` 第15行起只读路径/不可用状态，`Initialize` 第26行起一次初始化并隔离失败，`WriteToGameLog` 第103行起隔离引擎诊断失败，`Write` 第115行起处理文件追加失败并停用 sink。模块根身份和重解析点拒绝逻辑保留。实际消费者为 `BootstrapRuntime.LoadImplementation` 第82行及 fatal 消息构造。
+
+`src/AF.Bootstrap/BootstrapRuntime.cs` 的 `ReportFatal` 第167行起保留原错误上报，`BuildFatalMessage` 第1210行起、`BuildFatalDialogMessage` 第1224行起使用无 IO 的日志状态。`tests/AF.Bootstrap/BootstrapLoggingTests/` 链接生产日志文件，抽取生产 fatal 方法/初始化方法执行45项回归，游戏 Debug 与安装根解析为具名 fixture；不覆盖真实网吧环境。详细命令/证据、打包特例和回滚见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#bootstrap-nonfatal-logging-20261104)。
+
 <a id="courier-party-recovery-20261104"></a>
 ## 2026-11-04 信使英雄转队中断恢复
 
