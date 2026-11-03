@@ -1,3 +1,8 @@
+<a id="camp-life-fence-duel-20261104-deployed"></a>
+## 2026-11-04 营地修复部署与获准推送
+
+本条取代camp-life-fence-duel-20261104中“未部署、未push”的当时状态。用户明确授权“部署推送”。使用既有deploy-session部署方式，提取scripts/build/deploy_module.ps1原路径保护函数，候选在.tmp/camp-life-wall-duel-20261104-044029/CN/AnimusForge，目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge。运行时游戏已退出，原子替换7项，deployment-result.json记录SUCCESS。内容为产品08e297c3d3对应Bootstrap/1.3/1.4 DLL和3份marker，以及导航栏画刷。marker Sha256=null，ValidationStatus=DisabledByUser。无部署备份、manifest或自动回滚。按前序要求未执行测试、哈希、解包回读或实机，编译证据沿用本条上游记录。后续普通fetch/push本轮提交到origin/main，最终远端ref由本地delivery.json/会话输出记录。本次未生成新发行包，其他作者未提交修改保留。实机复测需要完整重启并重新建营，回滚以08e297c3d3聚焦逆向后编译覆盖。
+
 <a id="camp-life-fence-duel-20261104"></a>
 ## 2026-11-04 营地全员活动、外围阻挡和决斗误打修复
 

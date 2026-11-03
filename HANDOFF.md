@@ -1,3 +1,7 @@
+## 2026-11-04 营地修复已部署，执行获准推送
+
+用户授权“部署推送”。营地/围栏/决斗/导航栏产品08e297c3d3已通过本地部署，覆盖Bootstrap及双实现DLL/marker共6项与AFTerminalMapBarBrushes.xml共1项，部署记录SUCCESS。复用既有部署路径保护与原子替换，按前序要求未执行测试/哈希/回读/实机。详细状态见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-life-fence-duel-20261104-deployed)。此次授权推送本轮提交至origin/main，最终状态以远端ref为准。
+
 ## 2026-11-04 营地居民活动、围栏寻路、决斗隔离与导航栏收尾
 
 产品 `08e297c3d3`，检查点 `44d77811f`。居民分配失败单独恢复，健康无动作人员转循环巡游，实际围栏段计入含人物净空的禁行网格，原生导航组由营地移动owner接管，卡住仅重规划且不传送。营地决斗复用双独立队伍并恢复，开打检查双方落点及路线。导航栏王国中间按钮改用平直背景，终端保留收尾。双API/Bootstrap仅编译完成，测试/校验/实机未运行。本轮未部署、打包或push。见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-life-fence-duel-20261104)及[代码范围](docs/architecture/af-framework-code-scope.md#camp-life-fence-duel-20261104)。
