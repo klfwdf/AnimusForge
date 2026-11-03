@@ -1,3 +1,33 @@
+<a id="packaging-lzma2-16m-20261104"></a>
+## 2026-11-04 打包切换 LZMA2 / 16 MiB 字典
+
+OFFLINE_VERIFIED / RELEASE_NOT_RUN / LIVE_NOT_RUN。用户授权修改打包脚本与 AGENTS.md；工作区 `F:/AnimusForge-main`、分支 `main`，基线 `1d2aea94c0`，修改前本地检查点 `b825cb1846`，产品提交 `0ce766dc76b0dd0a0c4669ed17cbfe50353191e0`。既有工作区及台账/HANDOFF 改动保留，不纳入本任务提交。
+
+### 实际修改与边界
+
+- `scripts/build/package_sevenzip.ps1:13-87`：`Write-AnimusForgeExtremeSevenZip` / `Write-AnimusForgeProjectedSevenZip`，实际编码参数在 26-31 行改为 `-mx=9 -m0=LZMA2:d=16m:fb=273`；保留 solid、按类型排序、2 线程、无时间戳、UTF-8 include list、禁止覆盖、逐文件 SHA256 回读与临时目录保护，不改函数身份或调用关系。
+- `scripts/build/package_mod.ps1:878` 与 `一键编译覆盖推送/一键打包AnimusForge.bat:69`：仅同步实际压缩摘要；CN/EN 命名、版本事务、ZIP 投影、两包校验后发布及不隐式部署保持。
+- `AGENTS.md:45-46` 与 `docs/bannerlord_dual_module_output.md:5-16,93,118`：固定新约定，分别说明算法、Unicode 文件名与完整性验收；历史体积/内存不是未来保证，既有人物 ID、文件名和正文不变。
+- `tests/content/J15ContentContractTests/SevenZipPackageContractTests.ps1:1-114`：新增真实编码与 CN/EN ZIP→7Z 回读测试；DLL 只是夹具路径及文本，不冒充真实游戏程序集。
+- 全部逻辑仅在显式打包命令执行时运行；不改运行时、缓存、Tick、游戏 API、Bootstrap 或双实现 DLL，无新增游戏扫描、反射、IO 或后台对象读取。
+
+### 验证与证据
+
+证据根：`artifacts/tests/sevenzip-lzma2-20261104-022945/`。
+
+1. PowerShell 7.6.5：新增 7Z 契约 **58 项 PASS**，`sevenzip-contract-v2.log`。测试初稿误用 PowerShell 自动变量 `$input`，已修成 `$inputDirectory`；失败记录保留，不当作通过证据。
+2. Windows PowerShell 5.1（实际一键入口宿主）：相同 **58 项 PASS**，`sevenzip-winps51.log`。覆盖真实 CN/EN 投影、单 AnimusForge 根、Bootstrap/双实现路径、Unicode 文件名、逐文件哈希、禁止覆盖、坏投影拒绝、临时目录清理；Windows tar 独立解码 ASCII 路径夹具且哈希一致。
+3. 既有工作区版本 `LocalizedPackageContractTests.ps1`：Windows PowerShell 5.1 **95 项 PASS**，`localized-zip.log`。覆盖真实 ZIP 投影、语言协议/路径保护、规范双包命名、同对重名尾号、旧包保留、第二包失败清理；其原有改动未纳入本任务提交。测试源哈希记录在 `verified-test-sha256.json`。
+4. 实际 PowerShell 解析通过；执行脚本无旧字典/特殊 lc/lp 参数残留。差异空白检查按 CRLF 的 `cr-at-eol` 规则通过，未重排既有行尾风格。
+
+### 未验证与保留风险
+
+- 未正式生成发行 CN/EN 双包，未递增版本、部署、推送或实机验证；既有发行包不变，后续显式打包才使用新参数。
+- 未重编译 1.3/1.4/Bootstrap：无 C#、嵌入内容、API、DLL 或 Stage 组装变更；双实现仅验证归档夹具路径，不冒充双构建通过。
+- Windows tar 对 AD 1259 的 21 个人物资料文件名的代码页转换失败未修复。完整 Unicode 解压以独立 7-Zip 回读为有效证据，不声称 Explorer 或玩家机器完全兼容。
+
+回滚：对产品提交 `0ce766dc76` 做 focused inverse commit；文档记录独立提交。不硬重置、不覆盖其他作者改动，本记录不新增打包/部署/push 授权。
+
 <a id="courier-party-recovery-20261104"></a>
 ## 2026-11-04 信使英雄转队中断与归队恢复
 

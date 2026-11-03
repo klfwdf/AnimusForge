@@ -1,3 +1,9 @@
+## 2026-11-04 打包切换 LZMA2 / 16 MiB 字典
+
+OFFLINE_VERIFIED / RELEASE_NOT_RUN / LIVE_NOT_RUN。产品提交 `0ce766dc76`；本地检查点 `b825cb1846`。共享 7Z 编码改为 LZMA2、level 9、16 MiB 字典、fb273，保留双语规范命名、单模块双实现、回读哈希和事务。同步根 AGENTS、入口摘要及输出案例。新增 7Z 契约在 PowerShell 7 / Windows PowerShell 5.1 各通过 58 项，既有 ZIP 投影/事务 95 项通过。无正式打包、版本递增、双 API 重编译、部署、push 或实机；21 个 Unicode 人物文件名的 Windows 解压兼容问题未修复，完整解压仍建议独立 7-Zip。既有工作区与本文件改动保留，仅本任务新增段落提交。
+
+详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#packaging-lzma2-16m-20261104)；[代码范围图](docs/architecture/af-framework-code-scope.md)的运行时职责边界本轮不变。回滚只对产品提交做 focused inverse commit。
+
 ## 2026-11-04 信使英雄归队与派遣部分失败修复
 
 OFFLINE_VERIFIED / LIVE_NOT_RUN。产品提交 `e77048cf38`，检查点 `39d4fb3071`。返还未确认时保留会话与队伍，记录转移中的英雄 ID 并支持读档重试；正常调走、被俘或死亡会结束已失效的返还记录。信使战败补俘核对实际所属部队和名册，派遣部分失败进入返还恢复，返程会话不启动出站预生成。50 项生产方法故障回放、182 项派遣生命周期检查、三组链路检查、存档分块回放和契约通过；1.3.15、1.4.6、Bootstrap 与双接缝构建通过。实机和玩家旧档仍待验，截图根因尚未实证。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#courier-party-recovery-20261104)及[代码范围](docs/architecture/af-framework-code-scope.md#courier-party-recovery-20261104)。本轮构建产物位于 `bin/Debug/single_module_artifacts/`，回滚采用产品提交的聚焦逆向提交。
