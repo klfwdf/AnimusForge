@@ -1,0 +1,44 @@
+using System;using System.Linq;using System.IO;using System.Collections.Generic;using TaleWorlds.MountAndBlade;using TaleWorlds.Engine;using AnimusForge;
+static class Trace {public static List<string> Events=new();}
+namespace TaleWorlds.MountAndBlade {
+ public class MBAgentVisuals {public bool Valid=true;public bool IsValid()=>Valid; public void StartRhubarbRecord(string p,int id){if(!Valid)throw new Exception("invalid native visual");Trace.Events.Add("detach");}}
+ public class Agent {public int Index;public MBAgentVisuals AgentVisuals=new();public bool IsActive()=>false;}
+ public class Mission {public static Mission Current=new();public List<Agent> Agents=new();}
+}
+namespace TaleWorlds.Engine {public class SoundEvent {public bool IsValid=>true;public int GetSoundId()=>1032;public void Stop(){Trace.Events.Add("sound-stop");}}}
+namespace AnimusForge {
+ class Port {public Action<Action> Dispatch=a=>a();public Action<TtsEngine.PlaybackRequest> Cancelled=r=>{},CancelMapPlayback=r=>{};public Action ClearPending=()=>{};public Action<bool> PauseTyping=b=>{},StopTyping=b=>{};public Action<int> ClearAgentPending=i=>{},ClearAgentInteraction=i=>{};public Func<bool> SuppressMeetingControl=()=>false;public Action ClearSpeechQueue=()=>{},ClearMeetingControl=()=>{};}
+ class TtsEngine {public class PlaybackRequest {public long RequestId;public int AgentIndex;}public static TtsEngine Instance=new();public bool InterruptCurrentPlaybackForAgent(int i,string r){Trace.Events.Add("cancel-audio");return true;}public void StopPlayback(){Trace.Events.Add("cancel-all");}public HashSet<long> Cancelled=new();public int CancelRequests(HashSet<long> ids,bool keepCurrent){Cancelled.UnionWith(ids);return ids.Count;}}
+ static class Logger {public static void Log(string c,string s){}}
+ static class BannerlordExceptionSentinel {public static void ReportObservedException(string c,Exception e,string d){throw new Exception(c,e);}}
+ partial class SceneAudioLipSyncController {
+ internal long ActiveId;internal bool IsActiveTtsPlaybackRequest(TtsEngine.PlaybackRequest r,bool allowCancelled)=>r.RequestId==ActiveId;internal object _requestLock=new();internal class Owner {public Request Request;}internal class Request {public int AgentIndex;}internal Dictionary<long,Owner> _ttsPlaybackOwners=new();internal Port _ports=new();internal object _speakingLock=new();internal HashSet<int> _speakingAgentIndices=new(),_agentLipSyncDetachedForSafety=new();internal Dictionary<int,SoundEvent> _agentSoundEvents=new();internal Dictionary<int,string> _agentWavPaths=new(),_agentXmlPaths=new();internal Dictionary<int,MBAgentVisuals> _agentLipSyncVisuals=new();internal bool _ttsPausedByInterruption,_ttsPausedByShoutUi;internal long _deferredCleanupStableSinceUtcTicks;internal List<DeferredCleanupItem> _deferredCleanupQueue=new();
+ internal class DeferredCleanupItem {public int AgentIndex;public SoundEvent SoundEvent;public string WavPath,XmlPath;}
+ void ResetRequestOwnership(){Trace.Events.Add("retire");}void Report(string s,int i,string x=null){}static void LogLipSyncNativeProbe(string s,int i,string x=null){}
+ void QueueDeferredCleanup(SoundEvent s,string w,string x,string r,int i){_deferredCleanupQueue.Add(new(){AgentIndex=i,SoundEvent=s,WavPath=w,XmlPath=x});}
+ }
+}
+namespace TaleWorlds.CampaignSystem {public interface ICampaignMission {}public static class CampaignMission {public static ICampaignMission Current;}}
+namespace SandBox.View.Map {public class Tableau {public void RemovePreviousAgentsSoundEvent(){Trace.Events.Add("map-detach");}public void StopConversationSoundEvent(){Trace.Events.Add("map-stop");}}public class MapConversationView {public class MapConversationMission:TaleWorlds.CampaignSystem.ICampaignMission {public Tableau ConversationTableau=new();}}}
+namespace AnimusForge {partial class NativeConversationSpeechAdapter {internal long _mapPlaybackRequestId;internal TaleWorlds.CampaignSystem.ICampaignMission _mapPlaybackMission;}}
+class Program {
+ static void Check(bool value,string name){if(!value)throw new Exception(name);Console.WriteLine("PASS "+name);}
+ static SceneAudioLipSyncController Active(){var c=new SceneAudioLipSyncController();c._agentLipSyncVisuals[90]=new();c._agentSoundEvents[90]=new();c._speakingAgentIndices.Add(90);return c;}
+ static void Main(){
+ var c=Active();Trace.Events.Clear();c.CancelAgentSpeechForRemoval(90,"killed");Check(Trace.Events.SequenceEqual(new[]{"detach","cancel-audio","sound-stop"}),"dead agent absent from Mission detaches before cancellation");Check(c._agentLipSyncVisuals.Count==0&&c._deferredCleanupQueue.Count==1,"death retires native visual and queues sound once");
+ Trace.Events.Clear();c.CancelAgentSpeechForRemoval(90,"deleted");Check(!Trace.Events.Contains("detach"),"duplicate death callback cannot re-detach old visual");
+ c=Active();c._agentLipSyncVisuals[90].Valid=false;Trace.Events.Clear();c.CancelAgentSpeechForRemoval(90,"deleted");Check(!Trace.Events.Contains("detach")&&c._agentLipSyncVisuals.Count==0,"deleted native visual never called");
+ c=Active();Trace.Events.Clear();c.InterruptAgentSpeechForCombat(90,"hit");Check(Trace.Events[0]=="detach"&&Trace.Events[1]=="cancel-audio","combat interruption detaches first");
+ c=Active();string path=Path.GetTempFileName();c._agentWavPaths[90]=path;Trace.Events.Clear();c.StopAllLipSyncPlaybackAndCleanup();Check(Trace.Events.IndexOf("detach")<Trace.Events.IndexOf("sound-stop"),"mission exit detaches before native sound stop");Check(!File.Exists(path)&&c._agentSoundEvents.Count==0&&c._agentLipSyncVisuals.Count==0,"mission exit releases files and owners");
+ Trace.Events.Clear();c.StopAllLipSyncPlaybackAndCleanup();Check(!Trace.Events.Contains("detach")&&!Trace.Events.Contains("sound-stop"),"duplicate mission exit is idempotent");
+ c=Active();Trace.Events.Clear();c.CleanupSceneLipSyncAfterPlaybackFinished(90);Check(Trace.Events.SequenceEqual(new[]{"detach"}),"request cancellation cleanup detaches corpse before deferred sound");
+ c=Active();c._ttsPlaybackOwners[1]=new(){Request=new(){AgentIndex=90}};c._ttsPlaybackOwners[2]=new(){Request=new(){AgentIndex=90}};c._ttsPlaybackOwners[3]=new(){Request=new(){AgentIndex=91}};TtsEngine.Instance.Cancelled.Clear();c.CancelAgentSpeechForRemoval(90,"killed");Check(TtsEngine.Instance.Cancelled.SetEquals(new long[]{1,2}),"death cancels same-agent queued and active IDs without cancelling other NPC");
+ c=Active();Trace.Events.Clear();c.CleanupSceneLipSyncAfterPlaybackFinished(90,true);Check(Trace.Events.SequenceEqual(new[]{"detach","sound-stop"}),"explicit cancellation stops native audio immediately after detach");
+ c=Active();c.ActiveId=2;Trace.Events.Clear();c.HandleRequestPlaybackCancelled(new(){RequestId=1,AgentIndex=90});Check(Trace.Events.Count==0,"late old request cannot detach replacement audio");
+ c.HandleRequestPlaybackCancelled(new(){RequestId=2,AgentIndex=90});Check(Trace.Events.SequenceEqual(new[]{"detach","sound-stop"}),"active cancellation event detaches and stops sound");
+ c=Active();c.ActiveId=3;int map=0;c._ports.CancelMapPlayback=r=>map++;c.HandleRequestPlaybackCancelled(new(){RequestId=3,AgentIndex=-1});Check(map==1,"map cancellation routes to tableau cleanup");
+ var mission=new SandBox.View.Map.MapConversationView.MapConversationMission();TaleWorlds.CampaignSystem.CampaignMission.Current=mission;var adapter=new NativeConversationSpeechAdapter{_mapPlaybackRequestId=8,_mapPlaybackMission=mission};Trace.Events.Clear();adapter.CancelMapPlayback(new(){RequestId=7});Check(Trace.Events.Count==0,"old map request cannot stop replacement tableau");adapter.CancelMapPlayback(new(){RequestId=8});Check(Trace.Events.SequenceEqual(new[]{"map-detach","map-stop"}),"map cancellation detaches tableau before sound stop");
+ adapter._mapPlaybackRequestId=9;adapter._mapPlaybackMission=mission;TaleWorlds.CampaignSystem.CampaignMission.Current=new SandBox.View.Map.MapConversationView.MapConversationMission();Trace.Events.Clear();adapter.CancelMapPlayback(new(){RequestId=9});Check(Trace.Events.Count==0,"departed map mission cannot stop new tableau");
+ Console.WriteLine("RESULT 17 PASS + host wiring checks");
+ }
+}

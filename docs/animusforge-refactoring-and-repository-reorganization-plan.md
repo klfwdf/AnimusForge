@@ -1,3 +1,12 @@
+<a id="tts-death-cancel-lipsync-20261103"></a>
+## 2026-11-03 TTS 死亡、取消与离场口型清理
+
+DEPLOYED / HASH_VERIFIED / LIVE_NOT_RUN。用户授权“修复并且TTS离场要取消包括口型”“当取消声音也要取消口型”，之后授权“部署”。检查点 `2ffc94d4c`；原现场14:14:39 Agent90死亡，因IsActive过滤跳过口型停止，14:14:41停止sound1032后原版报Null sound event for lip sync并以0xc0000005崩溃，现场证据在work/tts-speaker-death-20261103-141441/。
+
+修复：SceneAudio缓存实际启动口型的MBAgentVisuals，死亡后按原生IsValid解绑；死亡/删除/受击取消同Agent已接受的当前及排队请求，不取消其他NPC。取消事件在主线程重验请求身份，先解绑口型再停止SoundEvent。Mission结束先清请求身份、解绑全部持有口型再停音/删文件；新增OnAgentRemoved/OnAgentDeleted/OnEndMission入口。原生对话结束也取消当前语音；地图取消按请求和CampaignMission身份解绑Tableau再停音。无新增玩家文案、设置、资源、存档或公开API。缓存仅每次口型开始/结束维护；取消只遍历本控制器持有请求，无新Tick扫描/反射/IO。
+
+验证：生产方法抽取fixture 17 PASS + host接线检查；最终用统一`build_single_module.ps1 -Configuration Debug -Deploy`从当前修复源码重建并部署，1.3/1.4/Bootstrap，双Coup接缝与registration smoke通过，部署日志`.tmp/tts-death-build-deploy-20261103.log`。三份安装DLL与最终构建产物SHA256一致：Bootstrap `E1A6FE62F40608689C8D9FC9BCAAECFB3E12174FF67FB1C320D6ADF0473925D1`，1.3 `810492D37D9DD652493D8E05AA5A79E466F9877B344A3C5685F785863EE0145E`，1.4 `8CD1B499A96AED0ED823CFC1637083AA714C72E1384715D76B890BEE1600AB39`；XML只声明Bootstrap，build marker分别确认1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628`，接缝门禁Passed。部署计532个Stage管理文件（旧脚本部署），重建后再更新9个构建产物文件；这部署了当前工作区完整Stage，可能包含其他既有未提交内容，不代表仅TTS差异。首次build误包含既有work下独立测试C#，失败1095错；只在命令环境暂设DefaultItemExcludes=**/work/**后重跑，不修改构建入口。首次部署发现旧构建DLL早于修复文件；随后已重建并再次部署，以最终哈希为准。旧10月Stage留存`.tmp/tts-death-stale-stage-20261103/`。TtsRequestLifetimeRegressionTests为103 PASS/1 FAIL，既有音色/audio/voices 404到/v1/models备用接口测试仍失败，见`.tmp/tts-death-lifetime-20261103/run.log`；不称全套通过。fixture不是原生引擎验收。未打包、push、启动游戏；未解析dump。待实机验死亡中断、取消按钮/对话结束及离场。代码证据见[范围图](architecture/af-framework-code-scope.md#tts-death-cancel-lipsync-20261103)。回滚仅逆向本任务提交，勿回退工作区他人改动。
+
 <a id="merge-origin-local-171-20261103"></a>
 ## 2026-11-03 拉取最新远端并合并本地 1.7.1
 

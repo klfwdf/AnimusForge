@@ -38,6 +38,7 @@ private long CaptureSpeechInteractionToken(int agentIndex) => _j17SceneInteracti
   Finished = HandleSceneTtsPlaybackFinishedOnMainThread,
   CompleteNativeWait = (request, reason) => CompleteNativeConversationTtsPlaybackWait(request, reason),
   IsNativeWait = IsNativeConversationTtsPlaybackWaitRequest, QueueMapPlayback = TryQueueNativeMapConversationTableauTtsPlayback,
+  CancelMapPlayback = request => _j17NativeConversationSpeechAdapter.CancelMapPlayback(request),
   UseMapPlayback = ShouldUseMapConversationTableauPlaybackForNativeTtsExternal, CanParticipate = CanAgentParticipateInSceneSpeechExternal,
   CanLipSync = CanAgentUseSceneLipSync, CanLipSyncIndex = CanAgentUseSceneLipSyncExternal,
   AudioDuration = EnqueuePendingAudioDuration, DispatchBubble = TryDispatchPendingNpcBubbleForTts,

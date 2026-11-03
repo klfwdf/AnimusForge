@@ -1,3 +1,11 @@
+<a id="tts-death-cancel-lipsync-20261103"></a>
+## 2026-11-03 TTS取消与原生口型
+
+- `src/AF.GameAdapter.Bannerlord/Scene/SceneAudioLipSyncController.cs`: `HandleRequestPlaybackCancelled`496-509，`StopAllLipSyncPlaybackAndCleanup`1179-1215，Visuals身份缓存与`StopAgentRhubarbRecordIfPossible`1424-1452，`CancelTrackedAgentPlayback`1471-1477及死亡/受击清理1479-1600。主线程归属、缓存解绑、先口型后停音、旧请求隔离。
+- `src/AF.GameAdapter.Bannerlord/Scene/NativeConversationSpeechAdapter.cs`: `CancelPlaybackForConversationEnd`109-130，地图请求捕获513-515及`CancelMapPlayback`536-551；对话当前/队列取消，Tableau按原Mission身份解绑后停音。
+- `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs`: `ShoutMissionBehavior.OnAgentRemoved/OnAgentDeleted/OnEndMission`529-544；`ShoutBehavior.SceneAudio.cs`36-43取消地图端口绑定。
+- `tests/modules/AF.Module.Conversation/TtsNativeCleanupTests/`: 当前生产方法抽取与17行为检查，原生叶子为stub；不覆盖真实TaleWorlds.Native/WinMM或实际Mission。修订为本任务fix提交；构建及未验见[台账](../animusforge-refactoring-and-repository-reorganization-plan.md#tts-death-cancel-lipsync-20261103)。
+
 <a id="merge-origin-local-171-20261103"></a>
 ## 2026-11-03 远端 1.8 与本地 1.7.1 合并范围
 
