@@ -9,6 +9,17 @@ static class Program
     static bool Rejected(Action action){try{action();return false;}catch(InvalidOperationException){return true;}}
     static void Main()
     {
+        try { Run(); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(error.GetType().FullName);
+            Console.Error.WriteLine(error.Message);
+            Console.Error.WriteLine(error.StackTrace);
+            Environment.ExitCode = 1;
+        }
+    }
+    static void Run()
+    {
         var layout=new FieldCampLayout();var scene=new Scene{Blocked=p=>Math.Abs(p.x)<1.1f&&p.y>17&&p.y<19};var m=Use(scene);
         FieldCampSite.InitializeGroundCache(scene,MatrixFrame.Identity,layout,1);
         Check(!FieldCampSite.TryValidateGroundedPassage(scene,new Vec3(0,12,0),new Vec3(0,30,0),.45f),"reproduce blocked straight entrance");
@@ -28,10 +39,13 @@ static class Program
         scene=new Scene{Terrain=p=>p.x*.07f};m=Use(scene);
         var frame=FieldCampSite.Resolve(m,layout,out float scale);
         Check(frame.origin.IsValid&&scale==1,"ordinary seven percent field slope accepted across actual camp footprint");
-        scene=new Scene{Terrain=p=>p.x*.2f};m=Use(scene);
-        Check(Rejected(()=>FieldCampSite.Resolve(m,layout,out _)),"steep hillside rejected without forced placement");
+        scene=new Scene{Terrain=p=>p.x*1f};m=Use(scene);
+        frame=FieldCampSite.Resolve(m,layout,out _,out bool rough);
+        Check(frame.origin.IsValid&&rough&&Logger.Lines.Any(s=>s.Contains("approximate; continuing generation")),"rough site is explicitly approximate, not falsely approved terrain");
         scene=new Scene{Water=1};m=Use(scene);
-        Check(Rejected(()=>FieldCampSite.Resolve(m,layout,out _)),"underwater scene rejected");
+        frame=FieldCampSite.Resolve(m,layout,out _,out rough);
+        Check(rough&&!FieldCampSite.TryFindPlayerStart(m,frame.origin,out _),"approximate underwater site cannot authorize an unsafe player spawn");
+        Check(Rejected(()=>FieldCampSite.InitializeGroundCache(scene,MatrixFrame.Identity,layout,1)),"underwater cache cannot authorize resident spawning");
         scene=new Scene{Navigable=p=>p.x>160&&p.y>160};m=Use(scene);
         frame=FieldCampSite.Resolve(m,layout,out _);
         Check(frame.origin.x>160&&frame.origin.y>160,"distant valid scene corner survives flat unusable finalists");

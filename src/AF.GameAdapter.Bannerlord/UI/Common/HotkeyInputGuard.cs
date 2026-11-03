@@ -28,7 +28,7 @@ internal static class HotkeyInputGuard
 		{
 			return true;
 		}
-		if (ShoutTextInputPopup.IsOpen)
+		if (ShoutTextInputPopup.IsOpen || CourierLetterInputPopup.IsOpen)
 		{
 			return true;
 		}

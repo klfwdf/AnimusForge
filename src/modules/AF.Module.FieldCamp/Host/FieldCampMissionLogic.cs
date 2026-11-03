@@ -40,6 +40,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	{
 		internal Agent Agent;
 		internal Activity Activity;
+		internal bool CanLeavePost;
 		internal Vec3 Home;
 		internal Vec2 HomeFacing;
 		internal Vec3 Target;
@@ -49,7 +50,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal float NextWanderTime;
 		internal FieldCampLayout.WorkKind Work;
 		internal int PoseVariant;
-		/// <summary>On a short stroll; walks back to Home on arrival.</summary>
+		/// <summary>On a short visit; rests at the destination before returning Home.</summary>
 		internal bool Returning;
 		internal float MoveDeadline;
 		internal bool MoveBlocked;
@@ -76,6 +77,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	private float _upkeepTimer;
 	private int _upkeepCursor;
     private int _campRouteBudget = 2;
+    private int _campRecoveryBudget = 2;
 	private int _woundedSlotsUsed;
 
 	internal static FieldCampMissionLogic Current => Mission.Current?.GetMissionBehavior<FieldCampMissionLogic>();
@@ -161,6 +163,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		if (_upkeepTimer <= 0f)
 		{
 			_upkeepTimer = UpkeepIntervalSeconds;
+            _campRecoveryBudget = 2;
 			MaintainCampPrisonerCombatIsolation();
 			TickCeremonyPreparation();
 			TickCeremonyReturn();
@@ -274,7 +277,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			spawn.SetGlobalFrame(frame);
 			// Native town entry owns BeforePlayerAgentSpawn / PlayerAgentSpawned,
 			// disguise, equipment, player controller and initial visual animation.
-			SandBox.SandBoxHelpers.MissionHelper.SpawnPlayer(spawn, civilianEquipment: true, noHorses: true);
+			SandBox.SandBoxHelpers.MissionHelper.SpawnPlayer(spawn, civilianEquipment: false, noHorses: true);
 		}
 		finally { spawn.Remove(0); }
 	}
@@ -300,7 +303,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			for (int i = 0; i < group.SpawnWounded && wounded < _layout.WoundedSlots.Count; i++)
 			{
 				FieldCampLayout.Slot s = _layout.WoundedSlots[wounded++];
-				Agent agent = SpawnCharacter(group.Character, group.Party.Party, s.Position, s.Facing, civilian: true);
+				Agent agent = SpawnCharacter(group.Character, group.Party.Party, s.Position, s.Facing, civilian: false);
 				if (agent != null)
 				{
 					Track(agent, Activity.Wounded, s.Position, s.Facing, troopClass, s.Work);
@@ -369,9 +372,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 						break;
 					}
 				}
-				// Archers keep their bow; sentries keep their arms; everyone else is in camp clothes.
-				bool armed = activity == Activity.Sentry || s.Work == FieldCampLayout.WorkKind.Archer;
-				Agent agent = SpawnCharacter(group.Character, group.Party.Party, s.Position, s.Facing, civilian: !armed);
+				// All residents retain their battle equipment; only prisoners use civilian outfits.
+				Agent agent = SpawnCharacter(group.Character, group.Party.Party, s.Position, s.Facing, civilian: false);
 				if (agent != null)
 				{
 					Track(agent, activity, s.Position, s.Facing, troopClass, s.Work);
@@ -393,7 +395,27 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 					Logger.Log(LogSource, "spawn skipped blocked slot troop=" + character.StringId);
 					return null;
 				}
-				Vec2 dir = ToWorldDirection(facing.LengthSquared < 0.01f ? new Vec2(0f, 1f) : facing);
+                if (!IsInsideCamp(pos) || !IsCampPositionAvailable(null, pos))
+                {
+                    bool found = false;
+                    Vec3 desired = ToWorld(local);
+                    // Spawn-only bounded spacing probes; never share a fallback point.
+                    for (int attempt = 0; attempt < 40; attempt++)
+                    {
+                        float angle = (attempt % 8) * MathF.PI / 4f;
+                        float radius = 1f + attempt / 8;
+                        Vec3 candidate = desired + new Vec3(MathF.Cos(angle) * radius, MathF.Sin(angle) * radius, 0f);
+                        if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out Vec3 safe)
+                            || !IsInsideCamp(safe) || !IsCampPositionAvailable(null, safe)) continue;
+                        pos = safe; found = true; break;
+                    }
+                    if (!found)
+                    {
+                        Logger.Log(LogSource, "resident spawn skipped: no unoccupied camp position troop=" + character.StringId);
+                        return null;
+                    }
+                }
+                Vec2 dir = ToWorldDirection(facing.LengthSquared < 0.01f ? new Vec2(0f, 1f) : facing);
 			Agent agent = Mission.GetMissionBehavior<FieldCampAgentHandler>().SpawnResident(character, party, _team, pos, dir, civilian);
 			if (agent != null)
 			{
@@ -408,9 +430,47 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		}
 	}
 
-	private void Track(Agent agent, Activity activity, Vec2 local, Vec2 facing, FormationClass troopClass, FieldCampLayout.WorkKind work = FieldCampLayout.WorkKind.None)
+	private void Track(Agent agent, Activity activity, Vec2 local, Vec2 facing, FormationClass troopClass, FieldCampLayout.WorkKind work = FieldCampLayout.WorkKind.None, bool canLeavePost = false, bool walkToAssignedSlot = false)
 	{
-		Vec3 home = agent.Position;
+        Vec3 home = agent.Position;
+        if (walkToAssignedSlot)
+        {
+            Vec3 desired = ToWorld(local);
+            int routeProbes = 0;
+            // Spawn-only: a clear destination must also be reachable from the entrance.
+            for (int attempt = 0; attempt < 17; attempt++)
+            {
+                Vec3 candidate = desired;
+                if (attempt > 0)
+                {
+                    float angle = (attempt - 1) % 8 * MathF.PI / 4f;
+                    float radius = attempt <= 8 ? 1f : 2f;
+                    candidate += new Vec3(MathF.Cos(angle) * radius, MathF.Sin(angle) * radius, 0f);
+                }
+                if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out Vec3 assigned)
+                    || !IsInsideCamp(assigned) || !IsCampPositionAvailable(agent, assigned)) continue;
+                if (routeProbes++ >= 4) break;
+                if (!TryCampRoute(agent.Position, assigned, out _)) continue;
+                home = assigned;
+                break;
+            }
+        }
+        // Do not leave a healthy companion at the entrance when a role post is blocked.
+        if (walkToAssignedSlot && home.AsVec2.DistanceSquared(agent.Position.AsVec2) < 0.01f)
+        {
+            int count = _layout.WanderSlots.Count;
+            int routeProbes = 0;
+            for (int i = 0; i < count; i++)
+            {
+                Vec3 candidate = ToWorld(_layout.WanderSlots[(agent.Index + i) % count].Position);
+                if (candidate.AsVec2.DistanceSquared(agent.Position.AsVec2) < 4f
+                    || !FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out Vec3 assigned)
+                    || !IsInsideCamp(assigned) || !IsCampPositionAvailable(agent, assigned)) continue;
+                if (routeProbes++ >= 4) break;
+                if (!TryCampRoute(agent.Position, assigned, out _)) continue;
+                home = assigned; work = FieldCampLayout.WorkKind.Gossip; break;
+            }
+        }
         // Spawn fallback can move an actor away from its original work prop.
         if (home.AsVec2.DistanceSquared(ToWorld(local).AsVec2) > 2.25f &&
             work != FieldCampLayout.WorkKind.Sit && work != FieldCampLayout.WorkKind.Eat &&
@@ -419,12 +479,13 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		{
 			Agent = agent,
 			Activity = activity,
+			CanLeavePost = canLeavePost,
 			Home = home,
 			HomeFacing = ToWorldDirection(facing.LengthSquared < 0.01f ? new Vec2(0f, 1f) : facing),
 			Target = home,
 			TroopClass = troopClass,
 			Work = work,
-			NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(4f, 14f)
+			NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(10f, 25f)
 		};
 		entry.TargetFacing = entry.HomeFacing;
 			_agents.Add(entry);

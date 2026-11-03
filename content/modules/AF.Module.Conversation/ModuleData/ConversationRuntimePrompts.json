@@ -351,7 +351,7 @@
   "AF_FC_IssuePromptHeader": "【营中待处理的事】以下是本次扎营中士兵们的抱怨或请求，编号即问题序号；只有玩家明确表态处理某一件时才算处理：",
   "AF_FC_IssuePromptLine": "{INDEX}. {TEXT}（可选处理：{OPTIONS}）",
   "AF_FC_IssuePromptNone": "【营中待处理的事】目前没有尚未处理的抱怨或请求。",
-  "AF_FC_EnvoyTopic": "作为本营士兵代表，你走到{PLAYER}跟前，当面反映营中这件事：{ISSUE}。用你自己的口吻说清楚弟兄们的处境和想要什么，可以请{PLAYER}拿主意；不要替{PLAYER}作决定",
+  "AF_FC_EnvoyTopic": "你以自己的实际身份走到{PLAYER}跟前，当面反映营中这件事：{ISSUE}。如果你是同伴，就转达相关士兵或当事同伴的处境和诉求；如果你是士兵，就以士兵代表身份说明。保留问题实际涉及的人物或兵种，用自己的口吻说清楚，可以请{PLAYER}拿主意，不要替{PLAYER}作决定",
   "AF_FC_IssueOptEncourage": "鼓舞",
   "AF_FC_IssueOptGrant": "应允",
   "AF_FC_IssueOptRefuse": "驳回",

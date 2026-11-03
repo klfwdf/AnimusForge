@@ -1,6 +1,7 @@
 using TaleWorlds.Library;
 namespace TaleWorlds.Engine
 {
+    public struct BoundingBox { } // Only a cache key/value type in this site-only fixture.
     [Flags] public enum BodyFlags { Disabled=1, DoNotCollideWithRaycast=2, CommonCollisionExcludeFlagsForAgent=2 }
     public struct WeakGameEntity { public static WeakGameEntity Invalid=>default;public UIntPtr Pointer; public bool IsValid=>Pointer!=UIntPtr.Zero; }
     public sealed class Path { public int NumberOfPoints=>0; public float GetTotalLength()=>0; public MatrixFrame GetFrameForDistance(float d)=>MatrixFrame.Identity; }
@@ -53,5 +54,15 @@ namespace AnimusForge
         internal struct Slot{internal Vec2 Position;}
         internal float HalfX=36.75f,Back=-34,Front=30;internal Vec2 PlayerStart=new Vec2(0,12);
         internal readonly List<Slot> HorseSlots=new();internal readonly List<Prop> Props=new();
+    }
+}
+
+namespace AnimusForge
+{
+    internal static class FieldCampProps
+    {
+        // These site cases have no tent assets; do not pretend to validate native prefab support.
+        internal static bool CanSupportTents(TaleWorlds.Engine.Scene scene, FieldCampLayout layout, MatrixFrame frame, Dictionary<string, TaleWorlds.Engine.BoundingBox> measured)
+        { if (layout.Props.Count != 0) throw new NotSupportedException("Tent geometry needs the prop-placement harness/native assets."); return true; }
     }
 }

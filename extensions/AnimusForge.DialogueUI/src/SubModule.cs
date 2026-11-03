@@ -80,7 +80,7 @@ namespace AnimusForge.DialogueUI
                 SceneWheel.Install(_harmony);
                 SceneSessionPanel.Install(_harmony);
                 ShoutBehavior.ScenePresentationSessionHook = () => SceneSessionPanel.IsAvailable;
-                ShoutBehavior.ScenePresentationBlocksHotkeysHook = () => SceneWheel.IsOpen;
+                ShoutBehavior.ScenePresentationBlocksHotkeysHook = () => SceneSessionPanel.IsCapturingInput;
             }
             catch (Exception ex)
             {

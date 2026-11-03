@@ -91,6 +91,9 @@ public static class VengeanceIntegration
 
     public static bool IsEnabled { get; private set; } = true;
 
+    // Optional same-DLL host input owner; standalone has no dependency on AF UI.
+    internal static Func<bool>? SceneHotkeysBlocked { get; set; }
+
     // Optional camp owner. Preparation is polled at most every 0.5 s, keyed by
     // session; staging and release remain once-only notifications. No AF types
     // enter the shared standalone source. Missing preparation keeps legacy flow.
@@ -173,6 +176,7 @@ public static class VengeanceIntegration
         lock (Sync)
         {
             _embeddedHostActive = false;
+            SceneHotkeysBlocked = null;
             ProtectedVictimAgentIndexes.Clear();
             ExecutedVictimAgentIndexes.Clear();
         }

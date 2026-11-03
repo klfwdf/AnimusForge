@@ -9,6 +9,7 @@ namespace TaleWorlds.Localization
         private readonly Dictionary<string, string> _variables = new Dictionary<string, string>();
         public TextObject(string text) { _text = text.Substring(text.IndexOf('}') + 1); }
         public void SetTextVariable(string name, string value) { _variables[name] = value; }
+        public void SetTextVariable(string name, TextObject value) { _variables[name] = value.ToString(); }
         public override string ToString()
         {
             string text = _text;

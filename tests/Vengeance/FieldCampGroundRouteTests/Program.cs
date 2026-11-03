@@ -29,6 +29,12 @@ static class Program
         cells[2*15+7]=false;
         Check(!router.TryRoute(start,goal,out path) && path.Length==0,"closed fence remains a blocked deployment, not a fake success/teleport");
         cells[2*15+7]=true;
+        Check(!router.TryRoute(start,goal,out path, minY:3), "camp bounds reject a detour through an outside gate");
+        Check(router.TryRoute(start,goal,out path, minX:1, minY:1, maxX:13, maxY:13), "inner camp gate remains reachable");
+        Check(path.All(p=>p%15>=1 && p%15<=13 && p/15>=1 && p/15<=13), "bounded route corners stay inside camp");
+        Check(!router.TryRoute(start,goal,out path, maxX:10), "goal outside bounds is rejected");
+        Check(!router.TryRoute(start,goal,out path, minX:4), "start outside bounds is rejected");
+        Check(!router.TryRoute(start,goal,out path, minX:8, maxX:6), "inverted bounds are rejected");
         Check(router.TryRoute(start,goal,out path),"shared scratch supports later routes without stale visited marks");
         Validate(router,15,start,goal,path);
         router=Grid(2,2,out cells,out heights);cells[1]=cells[2]=false;

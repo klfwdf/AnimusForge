@@ -44,6 +44,8 @@ internal static class Program
         _mission = Mission.Current = new Mission();
         _mission.Scene.TimeSpeed = paused ? 0 : 0.75f;
         MissionState.Current = new MissionState { Paused = paused };
+        MBCommon.IsPaused = paused; MBCommon.PauseCalls = MBCommon.UnpauseCalls = 0;
+        _mission.IsInPhotoMode = paused;
         Game.Current = new Game();
         if (paused) Game.Current.GameStateManager.RegisterActiveStateDisableRequest("prior_ui");
         _screen = new MissionScreen { Mission = _mission };
@@ -74,6 +76,8 @@ internal static class Program
         Check(MissionState.Current.Paused==paused&&_mission.Scene.TimeSpeed==(paused?0:0.75f),label+": original pause retained");
         Check(_mission.RequestCount==0&&Game.Current.GameStateManager.Count==(paused?1:0),label+": prior owners preserved");
         Check(Camera.Created==Camera.ReleasedCount,label+": native cameras released once");
+        Check(MBCommon.IsPaused==paused && _mission.IsInPhotoMode==paused,label+": engine/photo state restored");
+        Check(MBCommon.PauseCalls==(paused?0:1) && MBCommon.UnpauseCalls==(paused?0:1),label+": only own engine pause released once");
     }
     private static void CaptureCases()
     {
@@ -82,6 +86,8 @@ internal static class Program
             Setup(paused);int shots=0;Utilities.Export=path=>{shots++;Check(MBDebug.DisableAllUI,"hint/UI hidden during native export");File.WriteAllBytes(path,BitmapBytes(Color.Red));};
             var capture=new MissionScreenshotCapture(_mission,true);
             Check(_mission.Scene.TimeSpeed==0&&MissionState.Current.Paused,"freeze on entry");
+            Check(MBCommon.IsPaused && _mission.IsInPhotoMode,"native photo simulation freeze on entry");
+            Check(Game.Current.GameStateManager.Count==(paused?1:0),"normal mission render state stays enabled");
             Check(Photo.Hint.Contains("Enter")&&!Photo.ChoicesVisible,"only Enter hint before screenshot");
             Reject(()=>new MissionScreenshotCapture(_mission,true),"capture gate serializes native resources");
             for(int i=0;i<10;i++){IllustratorRuntime.ApplicationFrame++;capture.Tick();}

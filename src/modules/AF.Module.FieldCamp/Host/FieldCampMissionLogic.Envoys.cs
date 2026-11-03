@@ -70,7 +70,8 @@ public sealed partial class FieldCampMissionLogic
 			return;
 		}
 		if (_envoyQueue.Count == 0 || _elapsed < _nextEnvoyTime || _assembled || _duelists.Count > 0
-			|| Agent.Main == null || !Agent.Main.IsActive() || ShoutBehavior.IsSceneSpeechBusyForExternal())
+			|| Agent.Main == null || !Agent.Main.IsActive() || !IsInsideCamp(Agent.Main.Position)
+            || ShoutBehavior.IsSceneSpeechBusyForExternal())
 		{
 			return;
 		}
@@ -108,7 +109,13 @@ public sealed partial class FieldCampMissionLogic
 				return;
 			}
 			if (IsSceneConversationHeld(agent) && _envoyStage == EnvoyStage.Walking) return;
-			if (_assembled)
+        if (!IsInsideCamp(Agent.Main.Position))
+        {
+            Requeue(_envoyIssue);
+            DropEnvoy(sendHome: true);
+            return;
+        }
+		if (_assembled)
 		{
 			// The assemble order already gave him a place in the ranks.
 			DropEnvoy(sendHome: false);
@@ -125,6 +132,7 @@ public sealed partial class FieldCampMissionLogic
 			if (distance <= EnvoyArriveDistance)
 			{
 					StopCampNavigation(agent);
+                    agent.SetIsAIPaused(true);
 					_envoyNavigationActive = false;
 					Vec2 toPlayer = Agent.Main.Position.AsVec2 - agent.Position.AsVec2;
 					if (toPlayer.IsNonZero()) agent.LookDirection = new Vec3(toPlayer.Normalized(), 0f);
@@ -217,10 +225,12 @@ public sealed partial class FieldCampMissionLogic
 		return issue.IsOpen ? issue : null;
 	}
 
-	/// <summary>Nearest main-party agent the issue is about: the companion, or a soldier of the troop type.</summary>
+	/// <summary>Prefer the concerned companion, then an available companion, then a soldier of the issue's troop type.</summary>
 	private CampAgent PickEnvoy(FieldCampIssues.Issue issue)
 	{
-		CampAgent best = PickEnvoy(issue, issue.Subject);
+        CampAgent best = issue.IsCompanionIssue ? PickEnvoy(issue, issue.Subject) : PickEnvoy(issue, null);
+        if (best == null && issue.IsCompanionIssue) best = PickEnvoy(issue, issue.Subject2);
+        if (best == null && !issue.IsCompanionIssue) best = PickEnvoy(issue, issue.Subject);
 		if (best == null && !issue.IsCompanionIssue && issue.Kind == FieldCampIssues.Kind.CultureFriction)
 		{
 			best = PickEnvoy(issue, issue.Subject2);
@@ -230,7 +240,7 @@ public sealed partial class FieldCampMissionLogic
 
 	private CampAgent PickEnvoy(FieldCampIssues.Issue issue, string id)
 	{
-		if (string.IsNullOrEmpty(id))
+		if (id != null && id.Length == 0)
 		{
 			return null;
 		}
@@ -242,15 +252,19 @@ public sealed partial class FieldCampMissionLogic
 			CampAgent entry = _agents[i];
 			Agent agent = entry.Agent;
 			if (agent == null || agent == Agent.Main || !agent.IsActive() || entry.Activity == Activity.Wounded || IsDuelist(agent)
+                    || IsCeremonyAgentHeld(agent)
 					|| IsSceneConversationHeld(agent) || _ceremonyMoved.Contains(entry)
 				|| !(agent.Character is CharacterObject character)
 				|| !ReferenceEquals(agent.Origin?.BattleCombatant as PartyBase, PartyBase.MainParty))
 			{
 				continue;
 			}
-			bool match = issue.IsCompanionIssue
-				? character.HeroObject != null && character.HeroObject.StringId == id
-				: !character.IsHero && character.StringId == id;
+            Hero hero = character.HeroObject;
+            bool match = id == null
+                ? hero != null && hero.IsPlayerCompanion && !hero.IsWounded
+                : issue.IsCompanionIssue
+                    ? hero != null && !hero.IsWounded && hero.StringId == id
+                    : !character.IsHero && character.StringId == id;
 			if (!match)
 			{
 				continue;

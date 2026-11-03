@@ -14,6 +14,7 @@ namespace TaleWorlds.Core
 }
 namespace TaleWorlds.CampaignSystem
 {
+    public sealed class Hero { }
     public sealed class CharacterObject { public int Race; }
     public sealed class AgentData
     {
@@ -66,7 +67,7 @@ namespace TaleWorlds.MountAndBlade
 {
     public enum MissionMode { StartUp,Conversation,Battle } public enum AgentControllerType { AI }
     public sealed class Team { public uint Color=1,Color2=2; }
-    public sealed class Agent { public T GetComponent<T>() where T:new()=>new(); }
+    public sealed class Agent { public int Index; public T GetComponent<T>() where T:new()=>new(); }
     public sealed class AgentBuildData
     {
         public readonly TaleWorlds.CampaignSystem.AgentData Data;public Vec3 Position;public bool Civilian;
@@ -77,3 +78,5 @@ namespace TaleWorlds.MountAndBlade
     }
 }
 namespace AnimusForge {internal static class FieldCampMissionLogic{internal static void ApplyCampActionSet(TaleWorlds.MountAndBlade.Agent agent)=>NativeCalls.Events.Add("action_set");}}
+
+namespace RichExecutions.Scene { public sealed class TownExecutionMissionBehavior { } }

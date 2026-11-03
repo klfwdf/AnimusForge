@@ -61,6 +61,7 @@ internal static class FieldCampSite
             internal bool[] BaseOpen;
 			internal bool Ready;
             internal FieldCampGroundRouter Router;
+            internal int CampMinX, CampMinY, CampMaxX, CampMaxY;
 		}
 
 	private struct Candidate
@@ -603,6 +604,11 @@ internal static class FieldCampSite
 			var cache = new GroundCache { Frame = frame, MinX = -layout.HalfX * scale - 2f, MinY = layout.Back * scale - 2f };
 			cache.Width = (int)Math.Ceiling((layout.HalfX * 2f * scale + 4f) / GroundStep) + 1;
 			cache.Height = (int)Math.Ceiling(((layout.Front - layout.Back) * scale + 4f) / GroundStep) + 1;
+            float margin = 0.8f * scale;
+            cache.CampMinX = (int)Math.Floor((-layout.HalfX * scale + margin - cache.MinX) / GroundStep) + 1;
+            cache.CampMaxX = (int)Math.Ceiling((layout.HalfX * scale - margin - cache.MinX) / GroundStep) - 1;
+            cache.CampMinY = (int)Math.Floor((layout.Back * scale + margin - cache.MinY) / GroundStep) + 1;
+            cache.CampMaxY = (int)Math.Ceiling((layout.Front * scale - margin - cache.MinY) / GroundStep) - 1;
 			GroundCaches.Add(scene, cache);
 			if (cache.Width <= 0 || cache.Height <= 0 || (long)cache.Width * cache.Height > MaxGroundCells)
 			{
@@ -830,7 +836,7 @@ internal static class FieldCampSite
             }
         }
 
-        internal static bool TryBuildGroundedRoute(Scene scene, Vec3 from, Vec3 target, out Vec3[] route, out bool covered)
+        internal static bool TryBuildGroundedRoute(Scene scene, Vec3 from, Vec3 target, out Vec3[] route, out bool covered, bool stayInsideCamp = false)
         {
             route = Array.Empty<Vec3>(); covered = false;
             if (scene == null || !from.IsValid || !target.IsValid || !GroundCaches.TryGetValue(scene, out GroundCache cache)
@@ -859,7 +865,9 @@ internal static class FieldCampSite
                         // The actor walks the short start connector too; never jump through a solid body.
                         if (radius > 0 && scene.RayCastForClosestEntityOrTerrain(from + new Vec3(0f, 0f, 1f), start + new Vec3(0f, 0f, 1f),
                             out _, out _, out _, 0.3f, ClearanceExcludeFlags)) continue;
-                        if (cache.Router.TryRoute(y * cache.Width + x, goal, out int[] found)) { corners = found; break; }
+                        if (cache.Router.TryRoute(y * cache.Width + x, goal, out int[] found,
+                            stayInsideCamp ? cache.CampMinX : 0, stayInsideCamp ? cache.CampMinY : 0,
+                            stayInsideCamp ? cache.CampMaxX : cache.Width - 1, stayInsideCamp ? cache.CampMaxY : cache.Height - 1)) { corners = found; break; }
                         // A valid source in another component must not trigger 48 copies of the same search.
                         if (cache.Router.LastSearchVisited > 0) return false;
                     }

@@ -69,6 +69,13 @@ namespace TaleWorlds.Core
 namespace TaleWorlds.MountAndBlade
 {
     using TaleWorlds.Engine;
+    public static class MBCommon
+    {
+        public static bool IsPaused;
+        public static int PauseCalls, UnpauseCalls;
+        public static void PauseGameEngine() { IsPaused = true; PauseCalls++; }
+        public static void UnPauseGameEngine() { IsPaused = false; UnpauseCalls++; }
+    }
     public static class GameNetwork {public static bool IsMultiplayer;}
     public static class MBDebug { public static bool DisableAllUI; }
     public sealed class MissionState { public static MissionState Current; public bool Paused; }
@@ -76,7 +83,7 @@ namespace TaleWorlds.MountAndBlade
     {
         public static Mission Current;
         public Scene Scene = new Scene();
-        public bool MissionEnded;
+        public bool MissionEnded, IsInPhotoMode;
         private readonly Dictionary<int, float> _requests = new Dictionary<int, float>();
         public int RequestCount => _requests.Count;
         public sealed class TimeSpeedRequest { public float Speed; public int Id; public TimeSpeedRequest(float speed, int id) { Speed = speed; Id = id; } }
@@ -132,7 +139,6 @@ namespace AnimusForge.Illustrator.Core
         public static string EnsureDirectory(string path) { System.IO.Directory.CreateDirectory(path); return path; }
     }
 }
-namespace Newtonsoft.Json.Linq { public class JObject : Dictionary<string, object> { } }
 namespace TaleWorlds.Engine.GauntletUI {
     public sealed class FakeUiView { public int Clears; public void Clear() { Clears++; } }
     public sealed class Context { public TaleWorlds.GauntletUI.BaseTypes.Widget Root=new TaleWorlds.GauntletUI.BaseTypes.Widget(); }
@@ -151,5 +157,8 @@ namespace TaleWorlds.InputSystem {
 }
 namespace AnimusForge.Illustrator.Engine
 {
-    public static partial class ScreenCaptureHelper { private static readonly SemaphoreSlim _stageLock = new SemaphoreSlim(1, 1); }
+    public static partial class ScreenCaptureHelper {
+        private static readonly SemaphoreSlim _stageLock = new SemaphoreSlim(1, 1);
+        internal static System.Threading.Tasks.Task PrepareNativeCaptureOnMainThread(CancellationToken token) => System.Threading.Tasks.Task.CompletedTask;
+    }
 }

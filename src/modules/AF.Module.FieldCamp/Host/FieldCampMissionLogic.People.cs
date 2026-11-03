@@ -60,6 +60,7 @@ public sealed partial class FieldCampMissionLogic
 		AddPost(posts, main, PartyRole.Scout, "scout");
 		AddPost(posts, main, PartyRole.Engineer, "engineer");
 		int extra = 0;
+        int activitySlotCursor = 0;
 		for (int i = 0; i < roster.Count; i++)
 		{
 			CharacterObject character = roster.GetElementCopyAtIndex(i).Character;
@@ -70,27 +71,40 @@ public sealed partial class FieldCampMissionLogic
 			}
 			FieldCampLayout.Slot slot;
 			Activity activity = Activity.Post;
-			if (posts.TryGetValue(hero, out string post) && _layout.CompanionSlots.TryGetValue(post, out slot))
-			{
-			}
-			else if (hero.IsWounded && _woundedSlotsUsed < _layout.WoundedSlots.Count)
+			if (hero.IsWounded && _woundedSlotsUsed < _layout.WoundedSlots.Count)
 			{
 				slot = _layout.WoundedSlots[_woundedSlotsUsed++];
 				activity = Activity.Wounded;
 			}
+            else if (posts.TryGetValue(hero, out string post) && _layout.CompanionSlots.TryGetValue(post, out slot))
+            {
+            }
 			else if (extra < MaxExtraCompanions)
 			{
-				slot = StandbySlot(_standbyUsed++);
+                slot = StandbySlot(_standbyUsed++);
+                while (activitySlotCursor < _layout.WanderSlots.Count)
+                {
+                    FieldCampLayout.Slot candidate = _layout.WanderSlots[activitySlotCursor++];
+                    Vec3 desired = ToWorld(candidate.Position);
+                    if (FieldCampSite.TryResolveGroundedPosition(Mission.Scene, desired, 0.4f, out Vec3 grounded)
+                        && IsInsideCamp(grounded) && IsCampPositionAvailable(null, grounded))
+                    {
+                        slot = candidate;
+                        slot.Work = FieldCampLayout.WorkKind.Gossip;
+                        break;
+                    }
+                }
 				extra++;
 			}
 			else
 			{
 				continue;
 			}
-			Agent agent = SpawnCharacter(character, PartyBase.MainParty, slot.Position, slot.Facing, civilian: true);
+            FieldCampLayout.Slot entrySlot = hero.IsWounded ? slot : StandbySlot(_standbyUsed++);
+			Agent agent = SpawnCharacter(character, PartyBase.MainParty, entrySlot.Position, entrySlot.Facing, civilian: false);
 			if (agent != null)
 			{
-				Track(agent, activity, slot.Position, slot.Facing, character.DefaultFormationClass, slot.Work);
+				Track(agent, activity, slot.Position, slot.Facing, character.DefaultFormationClass, slot.Work, canLeavePost: !hero.IsWounded, walkToAssignedSlot: !hero.IsWounded);
 			}
 		}
 	}
@@ -134,7 +148,7 @@ public sealed partial class FieldCampMissionLogic
 				slot = StandbySlot(_standbyUsed++);
 				fallback++;
 			}
-			Agent agent = SpawnCharacter(lord.CharacterObject, party.Party, slot.Position, slot.Facing, civilian: true);
+			Agent agent = SpawnCharacter(lord.CharacterObject, party.Party, slot.Position, slot.Facing, civilian: false);
 			if (agent != null)
 			{
 				Track(agent, Activity.Post, slot.Position, slot.Facing, lord.CharacterObject.DefaultFormationClass);

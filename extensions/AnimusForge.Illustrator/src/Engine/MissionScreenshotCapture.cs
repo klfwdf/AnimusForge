@@ -26,7 +26,7 @@ namespace AnimusForge.Illustrator.Engine
         internal static void ReleaseMissionScreenshotStage() => _stageLock.Release();
     }
 
-    // Interactive free camera: no game ticks/scans or generation worker while the player composes.
+    // Interactive free camera: frozen simulation, normal scene rendering, no capture scans or generation worker.
     // Each Enter has a finite native file-export deadline; a user-controlled session has no aim timeout.
     internal sealed class MissionScreenshotCapture
     {
@@ -35,11 +35,10 @@ namespace AnimusForge.Illustrator.Engine
         private readonly Mission _mission;
         private readonly MissionScreen _screen;
         private readonly MissionState _missionState;
-        private readonly GameStateManager _states;
         private readonly Camera _oldCustom;
         private Camera _backup, _captureCamera;
         private MissionPhotoOverlay _overlay;
-        private readonly bool _oldHideUi, _oldPaused;
+        private readonly bool _oldHideUi, _oldPaused, _oldEnginePaused, _oldMissionPhotoMode;
         private readonly float _oldTimeSpeed;
         private readonly bool _clean;
         private readonly TaskCompletionSource<MissionScreenshotPair> _done = new TaskCompletionSource<MissionScreenshotPair>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -54,7 +53,7 @@ namespace AnimusForge.Illustrator.Engine
         // Aim, Export, Decide, CancelChoice. Buttons are guarded by their matching phase.
         private int _phase;
         private bool _keysReleased;
-        private bool _closed, _ownsStage, _ownsPause, _ownsStateDisable, _changedUi, _changedCamera, _changedPaused;
+        private bool _closed, _ownsStage, _ownsPause, _ownsEnginePause, _changedPhotoMode, _changedUi, _changedCamera, _changedPaused;
         internal Task<MissionScreenshotPair> Completion => _done.Task;
 
         internal MissionScreenshotCapture(Mission mission, bool clean)
@@ -63,7 +62,6 @@ namespace AnimusForge.Illustrator.Engine
             _mission = mission;
             _screen = ScreenManager.TopScreen as MissionScreen;
             _missionState = MissionState.Current;
-            _states = Game.Current?.GameStateManager;
             if (_mission?.Scene == null || _screen?.CombatCamera == null || _screen.SceneView == null || !ReferenceEquals(_screen.Mission, mission)
                 || !_screen.MissionStartedRendering() || mission.MissionEnded || GameNetwork.IsMultiplayer)
                 throw new InvalidOperationException("The current mission has no single-player frame available for capture.");
@@ -72,6 +70,8 @@ namespace AnimusForge.Illustrator.Engine
             _oldCustom = _screen.CustomCamera;
             _oldHideUi = MBDebug.DisableAllUI;
             _oldPaused = _missionState?.Paused == true;
+            _oldEnginePaused = MBCommon.IsPaused;
+            _oldMissionPhotoMode = mission.IsInPhotoMode;
             _oldTimeSpeed = mission.Scene.TimeSpeed;
             _clean = clean;
             try
@@ -89,8 +89,16 @@ namespace AnimusForge.Illustrator.Engine
                 _pitch = (float)Math.Asin(Math.Max(-1f, Math.Min(1f, forward.z)));
                 mission.AddTimeSpeedRequest(new Mission.TimeSpeedRequest(0f, PauseRequestId));
                 _ownsPause = true;
-                _states?.RegisterActiveStateDisableRequest(this);
-                _ownsStateDisable = _states != null;
+                // Keep the Mission's normal render/camera update path alive. Disabling
+                // the active state sends it to IdleTick while this free camera moves.
+                // Native photo mode freezes the engine instead of disabling the state.
+                if (!_oldEnginePaused)
+                {
+                    _ownsEnginePause = true;
+                    MBCommon.PauseGameEngine();
+                }
+                _changedPhotoMode = true;
+                mission.IsInPhotoMode = true;
                 if (_missionState != null) { _missionState.Paused = true; _changedPaused = true; }
                 mission.Scene.TimeSpeed = 0f;
                 _changedUi = true;
@@ -280,7 +288,8 @@ namespace AnimusForge.Illustrator.Engine
             if (_ownsPause) RestorePart(() => { if (_mission.GetRequestedTimeSpeed(PauseRequestId, out float _)) _mission.RemoveTimeSpeedRequest(PauseRequestId); }, "time_request");
             if (_changedPaused && ReferenceEquals(MissionState.Current, _missionState)) _missionState.Paused = _oldPaused;
             if (ReferenceEquals(Mission.Current, _mission) && _mission.Scene != null) RestorePart(() => _mission.Scene.TimeSpeed = _oldTimeSpeed, "scene_time");
-            if (_ownsStateDisable) RestorePart(() => _states.UnregisterActiveStateDisableRequest(this), "state_disable");
+            if (_changedPhotoMode) RestorePart(() => _mission.IsInPhotoMode = _oldMissionPhotoMode, "mission_photo_mode");
+            if (_ownsEnginePause) RestorePart(() => MBCommon.UnPauseGameEngine(), "engine_pause");
             if (_captureCamera != null) RestorePart(() => _captureCamera.ReleaseCamera(), "capture_camera_release");
             if (_backup != null) RestorePart(() => _backup.ReleaseCamera(), "backup_camera_release");
             if (_ownsStage) { ScreenCaptureHelper.ReleaseMissionScreenshotStage(); _ownsStage = false; }

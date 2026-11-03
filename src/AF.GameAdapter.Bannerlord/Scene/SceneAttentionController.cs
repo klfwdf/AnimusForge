@@ -769,6 +769,7 @@ internal sealed class SceneAttentionController
 			return;
 		}
 		ClearAgentSceneConversationFocus(agent);
+        if (FieldCampMissionLogic.Current?.RestoreCampAttentionOwner(agent) == true) return;
 		if (ShouldPreserveMeetingSceneAutonomy() || IsAgentUsingSceneObject(agent) || IsCampCeremonyMovementOwned(agent))
 		{
 			return;
@@ -782,11 +783,21 @@ internal sealed class SceneAttentionController
 		}
 		try
 		{
-			agent.SetIsAIPaused(isPaused: false);
+			ResumeAttentionAgentAi(agent);
 		}
 		catch
 		{
 		}
+	}
+
+	private static void ResumeAttentionAgentAi(Agent agent)
+	{
+		// The camp owns captive AI; releasing conversation attention must not arm its enemies.
+		if (Mission.Current?.GetMissionBehavior<FieldCampMissionLogic>()?.IsCampPrisoner(agent) == true)
+		{
+			return;
+		}
+		agent.SetIsAIPaused(isPaused: false);
 	}
 
 	internal void ReleaseSceneConversationAttention(IEnumerable<int> participantAgentIndices, bool fullyRestoreAutonomy = true)
@@ -880,7 +891,8 @@ internal sealed class SceneAttentionController
 
 	internal static void RefreshHostileCombatAgentAutonomy(Agent agent)
 	{
-		if (!IsAgentHostileToMainAgent(agent) || !agent.IsAIControlled)
+		if (FieldCampMissionLogic.Current?.IsCampPrisoner(agent) == true
+            || !IsAgentHostileToMainAgent(agent) || !agent.IsAIControlled)
 		{
 			return;
 		}
@@ -922,7 +934,7 @@ internal sealed class SceneAttentionController
 		}
 		try
 		{
-			agent.SetIsAIPaused(isPaused: false);
+			ResumeAttentionAgentAi(agent);
 		}
 		catch
 		{
@@ -964,8 +976,9 @@ internal sealed class SceneAttentionController
 			return;
 		}
 		_sceneMovement.ClearSceneSummonScriptedBehavior(agent);
-		bool flag = IsAgentHostileToMainAgent(agent);
 		ClearAgentSceneConversationFocus(agent);
+        if (FieldCampMissionLogic.Current?.RestoreCampAttentionOwner(agent) == true) return;
+		bool flag = IsAgentHostileToMainAgent(agent);
 		if (ShouldPreserveMeetingSceneAutonomy())
 		{
 			return;
@@ -992,7 +1005,7 @@ internal sealed class SceneAttentionController
 		}
 		try
 		{
-			agent.SetIsAIPaused(isPaused: false);
+			ResumeAttentionAgentAi(agent);
 		}
 		catch
 		{
@@ -1119,6 +1132,13 @@ internal sealed class SceneAttentionController
 			}
 			return;
 		}
+        if (FieldCampMissionLogic.Current?.IsCampPrisoner(agent) == true)
+        {
+            if (IsCampCeremonyMovementOwned(agent)) return;
+            agent.SetLookAgent(Agent.Main);
+            agent.SetIsAIPaused(true);
+            return;
+        }
 		try
 		{
 			agent.SetLookAgent(Agent.Main);
@@ -1132,7 +1152,7 @@ internal sealed class SceneAttentionController
 		}
 		try
 		{
-			agent.SetIsAIPaused(isPaused: false);
+			ResumeAttentionAgentAi(agent);
 		}
 		catch
 		{

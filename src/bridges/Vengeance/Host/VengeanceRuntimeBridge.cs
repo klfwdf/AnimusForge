@@ -33,6 +33,7 @@ internal static class VengeanceRuntimeBridge
 
         try
         {
+            VengeanceIntegration.SceneHotkeysBlocked = HotkeyInputGuard.IsTextInputFocused;
             ExecutionContinuation.EscortedHeroesProvider = NoblePrisonerEscortBehavior.GetEscortedHeroesForExecution;
             FieldCampMissionLogic.RegisterVengeanceHooks();
             VengeanceIntegration.FieldCampControllerChanged = ExecutionSceneConflictBridge.Register;

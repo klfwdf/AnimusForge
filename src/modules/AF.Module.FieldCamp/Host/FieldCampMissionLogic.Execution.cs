@@ -484,17 +484,23 @@ public sealed partial class FieldCampMissionLogic
         }
         Vec2 side = new Vec2(camp._ceremonyForward.y, -camp._ceremonyForward.x);
         int watchers = 0;
+        int spectatorSlot = 0;
         for (int i = 0; i < camp._agents.Count && watchers < MaxCeremonyWatchers; i++)
         {
             CampAgent entry = camp._agents[i];
             Agent agent = entry.Agent;
             if (!camp.CanMoveForCeremony(agent) || camp._ceremonyMoves.ContainsKey(agent) || agent.Character?.IsHero == true ||
                 entry.Activity == Activity.Wounded || entry.Activity == Activity.Sentry || entry.Activity == Activity.Post) continue;
-            Vec2 flat = camp._ceremonyOrigin.AsVec2 + camp._ceremonyForward * (front + 2.5f + (watchers / 8) * 1.7f)
-                + side * ((watchers % 8 - 3.5f) * 1.5f);
+            Vec2 flat = camp._ceremonyOrigin.AsVec2 + camp._ceremonyForward * (front + 2.5f + (spectatorSlot / 8) * 1.7f)
+                + side * ((spectatorSlot % 8 - 3.5f) * 1.5f);
+            spectatorSlot++;
+            Vec3 desired = new Vec3(flat.x, flat.y, camp._ceremonyOrigin.z);
+            if (!FieldCampSite.TryResolveGroundedPosition(camp.Mission.Scene, desired, 0.35f, out Vec3 goal)
+                || !camp.IsInsideCamp(goal) || !camp.IsCeremonyClear(goal)
+                || !camp.IsCampPositionAvailable(agent, goal, 1.2f)) continue;
             var move = new CeremonyMove { Agent = agent, Camp = entry, Spectator = true, SpectatorRoutePending = true,
                 SpectatorDeadline = camp._elapsed + 60f, Home = entry.Home, HomeFacing = entry.HomeFacing,
-                Goal = new Vec3(flat.x, flat.y, camp._ceremonyOrigin.z), Facing = -camp._ceremonyForward };
+                Goal = goal, Facing = -camp._ceremonyForward };
             camp._ceremonyWalkers.Add(move); camp._ceremonyMoves.Add(agent, move); camp._ceremonyMoved.Add(entry);
             camp._ceremonyWatchers.Add(move);
             entry.Returning = false; entry.Seated = false;
@@ -527,7 +533,8 @@ public sealed partial class FieldCampMissionLogic
                 Vec3 desired = move.Goal + new Vec3(_ceremonyForward.x, _ceremonyForward.y, 0f) * (move.SpectatorRouteAttempts * 1.5f);
                 move.SpectatorRouteAttempts++;
                 if (FieldCampSite.TryResolveGroundedPosition(Mission.Scene, desired, 0.35f, out Vec3 goal) &&
-                    IsCeremonyClear(goal) && TryCampRoute(agent.Position, goal, out Vec3[] route))
+                    IsInsideCamp(goal) && IsCeremonyClear(goal) && IsCampPositionAvailable(agent, goal, 1.2f)
+                    && TryCampRoute(agent.Position, goal, out Vec3[] route))
                 {
                     move.Goal = goal; move.Route = route; move.RouteIndex = 0; move.SpectatorRoutePending = false;
                     Vec2 facing = _ceremonyOrigin.AsVec2 - goal.AsVec2;
@@ -608,11 +615,21 @@ public sealed partial class FieldCampMissionLogic
         }
     }
 
-    private void FinishCeremonyReturn(CeremonyMove move)
+    private bool FinishCeremonyReturn(CeremonyMove move)
     {
         StopCampNavigation(move.Agent);
+        move.Agent.SetIsAIPaused(true);
+        bool returned = move.Agent.Position.AsVec2.DistanceSquared(move.Home.AsVec2) <= CeremonyArrivalSquared;
+        if (!returned && _elapsed < move.RetryAt) return false;
+        if (!returned) returned = TryReturnToSafeCampPosition(move.Agent, move.Home);
+        if (!returned)
+        {
+            move.RetryAt = _elapsed + 8f;
+            return false;
+        }
         if (move.Prisoner) ApplyPrisonerPose(move.Agent);
         if (move.Camp != null) SettleCampAgent(move.Camp, blocked: false);
+        return true;
     }
 
     private void TickCeremonyReturn()
@@ -631,13 +648,27 @@ public sealed partial class FieldCampMissionLogic
                 if (!remove && IsSceneConversationHeld(agent)) { RemoveCeremonyMove(move); continue; }
                 if (!remove && (_elapsed >= _ceremonyReturnDeadline ||
                     agent.Position.AsVec2.DistanceSquared(move.Home.AsVec2) <= CeremonyArrivalSquared))
-                { FinishCeremonyReturn(move); remove = true; }
+                {
+                    if (!FinishCeremonyReturn(move))
+                    {
+                        _ceremonyWalkCursor++;
+                        continue;
+                    }
+                    remove = true;
+                }
                 if (!remove && !move.ReturningHome)
                 {
                     if (routeBudget <= 0) { _ceremonyWalkCursor++; continue; }
                     routeBudget--;
                     if (IsReservedCeremonyPosition(move.Home) || !TryCampRoute(agent.Position, move.Home, out Vec3[] route))
-                    { FinishCeremonyReturn(move); remove = true; }
+                    {
+                        if (!FinishCeremonyReturn(move))
+                        {
+                            _ceremonyWalkCursor++;
+                            continue;
+                        }
+                        remove = true;
+                    }
                     else
                     {
                         move.Route = route; move.RouteIndex = 0; move.ReturningHome = true;
@@ -651,7 +682,14 @@ public sealed partial class FieldCampMissionLogic
                 {
                     // Do not repeatedly drive an actor into an obstacle after a failed return.
                     if (agent.Position.AsVec2.DistanceSquared(move.LastPosition.AsVec2) < 0.04f)
-                    { FinishCeremonyReturn(move); remove = true; }
+                    {
+                        if (!FinishCeremonyReturn(move))
+                        {
+                            _ceremonyWalkCursor++;
+                            continue;
+                        }
+                        remove = true;
+                    }
                     else IssueCeremonyWalk(move, move.Home, move.HomeFacing);
                 }
             }

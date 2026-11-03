@@ -52,15 +52,27 @@ def blocked_retry(life):
     retry = block(upkeep, "if (entry.MoveBlocked)")
     require("if (_elapsed < entry.NextWanderTime) continue;" in retry,
             "failed walkers wait for the existing cooldown")
-    require(retry.index("entry.NextWanderTime") < retry.index("MoveTo(entry, entry.Target, entry.TargetFacing, run: false);"),
-            "retry the failed destination once, only after cooldown")
+    require(retry.index("entry.NextWanderTime") < retry.index("MoveTo(entry, entry.Target, entry.TargetFacing, run: entry.Run);"),
+            "queued/assembled walkers retry the actual destination and speed only after cooldown")
+    require("entry.RouteQueued || _assembled" in retry and "entry.CanLeavePost" in retry and
+            "MoveTo(entry, entry.Home, entry.HomeFacing, run: false);" in retry,
+            "ordinary companions retry home rather than remaining blocked at a stroll")
     require("continue;" in retry and upkeep.index("if (entry.MoveBlocked)") < upkeep.index("if (!entry.Seated && _elapsed >= entry.MoveDeadline)"),
-            "blocked recovery runs before the old deadline and does not fall through")
-    require("entry.NextWanderTime = _elapsed + 30f;" in upkeep,
-            "another failed return reinstates the bounded cooldown")
+            "blocked recovery precedes stale movement deadlines")
+    require("RecoverBlockedCampWalk(entry);" in upkeep,
+            "expired/stuck walkers enter the bounded recovery owner")
+    recovery = block(life, "private bool TryReturnToSafeCampPosition(")
+    require("_campRecoveryBudget <= 0" in recovery and "_campRecoveryBudget--;" in recovery and "attempt < 17" in recovery,
+            "recovery has per-upkeep and per-actor candidate budgets")
+    require("IsInsideCamp(safe)" in recovery and "IsCampPositionAvailable(agent, safe)" in recovery,
+            "recovery cannot relocate outside camp or onto another actor")
     move = block(life, "private void MoveTo(")
-    require("entry.MoveBlocked = false;" in move and "entry.MoveDeadline = _elapsed + 25f;" in move,
-            "the actual command owner resets blockage with a new bounded movement deadline")
+    require("entry.MoveBlocked = entry.RouteQueued = false;" in move and "entry.MoveDeadline = _elapsed + 30f;" in move,
+            "actual command owner resets blockage and retains a finite deadline")
+    queued = block(move, "if (_campRouteBudget <= 0)")
+    require("entry.Returning = returnAfterVisit;" in queued and "entry.RouteQueued = true;" in queued and
+            "entry.NextWanderTime = _elapsed + 0.5f;" in queued,
+            "budget deferral preserves return intent and retries on next upkeep")
 
 
 def formation_owner(life, execution):
@@ -72,8 +84,11 @@ def formation_owner(life, execution):
         require("_ceremonyWalkers.Count > 0" in guard,
                 name + " must wait for returning ceremony walkers")
     returning = block(execution, "private void TickCeremonyReturn(")
-    require("_ceremonyWalkers.RemoveAt(index);" in returning,
-            "the original return owner clears admission when it retires walkers")
+    require("if (remove) RemoveCeremonyMove(move);" in returning and
+            "_ceremonyWalkers.Remove(move);" in block(execution, "private void RemoveCeremonyMove("),
+            "the return owner retires walkers through the shared cleanup owner")
+    require("if (!FinishCeremonyReturn(move))" in returning,
+            "failed safe returns retain their owner instead of reporting completion")
 
 
 class CampReviewSourceContracts(unittest.TestCase):

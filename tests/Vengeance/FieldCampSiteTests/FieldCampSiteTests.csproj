@@ -3,5 +3,6 @@
 <Compile Include="../../../src/modules/AF.Module.FieldCamp/FieldCampGroundRouter.cs" Link="Production/FieldCampGroundRouter.cs" />
 <Compile Include="../../../src/modules/AF.Module.FieldCamp/FieldCampPlacementRules.cs" Link="Production/FieldCampPlacementRules.cs" />
 <Compile Include="../../../src/modules/AF.Module.FieldCamp/Host/FieldCampAgentHandler.cs" Link="Production/FieldCampAgentHandler.cs" />
+<Compile Include="../../../Vengeance/Source/Core/VengeanceIntegration.cs" Link="Production/VengeanceIntegration.cs" />
 <Reference Include="TaleWorlds.Library"><HintPath>../../../_deps_auto/TaleWorlds.Library.dll</HintPath></Reference>
 </ItemGroup></Project>

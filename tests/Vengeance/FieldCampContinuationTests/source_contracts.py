@@ -88,10 +88,11 @@ check('AmbientStage.Opening' in ambient and 'AmbientStage.Presenting' in ambient
       'ambient opening generation and presentation precede reply window')
 check('ownerCancellationToken: session.OpeningLifetime.Token' in ambient and 'canStillPublish: () => CanPublishAmbientOpening(session)' in ambient,
       'late opening publication is owner-cancelled and revalidated')
-check('Math.Min(count, 12)' in life and 'DistanceSquared(entry.Home.AsVec2) > 64f' in life,
+check('Math.Min(count, 12)' in life and 'DistanceSquared(entry.Home.AsVec2) > 144f' in life,
       'stroll targets bounded near home with finite candidates')
-check('TryValidateGroundedPassage' in life and 'MoveDeadline' in main and 'entry.MoveBlocked = true' in life,
-      'blocked daily walkers stop after bounded return attempt')
+check('TryBuildGroundedRoute' in life and 'stayInsideCamp: true' in life and 'RecoverBlockedCampWalk(entry);' in life and
+      'MoveDeadline' in main and 'entry.MoveBlocked = blocked;' in life,
+      'blocked daily walkers use camp-bounded routes and the recovery owner')
 check('GetHeightAtPoint' not in life and 'TryGetCachedTerrainHeight' in life, 'camp height no longer selects prop tops')
 check('TryResolveGroundedPosition(Mission.Scene, desired, 1.5f' in people, 'horses require cached body clearance')
 check('ConditionalWeakTable<Scene, GroundCache>' in site and 'MaxGroundCells' in site and 'MaxPassageSteps' in site,
@@ -131,8 +132,9 @@ check('OnCampPrisonerScoreHit(' in main and 'OnCampPrisonerRemoved(' in main and
       'real hit, removal and native death decider consumers wired')
 check('MortalityState.Invulnerable' not in people and 'MortalityState.Mortal' in people,
       'registered captives stay mortal after restore')
-check('MarkCampaignCasualtyHandledExternally("field_camp_captive_owner")' in people and 'ApplyByExecution(hero, killer' in people,
-      'camp owns casualty once and attributes hero execution to actual killer')
+check('MarkCampaignCasualtyHandledExternally("field_camp_captive_owner")' in people and 'hero.AddDeathMark(killer, KillCharacterAction.KillCharacterActionDetail.Murdered)' in people and
+      'KillCharacterAction.ApplyByDeathMarkForced(hero, true)' in people and 'ApplyByExecution(hero, killer' not in people,
+      'camp owns actual lethal casualty once without vanilla execution side effects')
 check('hero.MakeWounded()' in people and 'HasFreshCampPrisonerFatalHit' in people and 'affected.IsFadingOut()' in people,
       'wound, real death and visual removal are distinguished')
 check('MaintainCampPrisonerCombatIsolation();' in main and 'CleanupCampPrisonerCombatIsolation();' in main,

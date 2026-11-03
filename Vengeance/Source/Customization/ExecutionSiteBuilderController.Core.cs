@@ -191,6 +191,8 @@ internal sealed partial class ExecutionSiteBuilderController
     internal void Tick(float dt)
     {
         if (!IsActive || _view is null) return;
+        // The builder keeps its own panel controls; scene dialogue owns all other shortcuts.
+        if (!_panelOpen && VengeanceIntegration.SceneHotkeysBlocked?.Invoke() == true) return;
         if (_panelOpen)
         {
             if (_view.IsEscapeReleased || Input.IsKeyPressed(InputKey.Escape))

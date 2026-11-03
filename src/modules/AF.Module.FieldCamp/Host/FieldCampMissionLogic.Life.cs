@@ -19,6 +19,8 @@ public sealed partial class FieldCampMissionLogic
 	private const int MinFilesPerRank = 10;
 	private const int MaxRanks = 6;
 	private const float BlockGap = 4f;
+    private int _campStrollBudget;
+    private readonly MBList<Agent> _campNearbyAgents = new MBList<Agent>();
 
 	private static readonly string[] SitActions = { "act_sit_idle_on_floor_1", "act_sit_idle_on_floor_2", "act_sit_idle_on_floor_3" };
 	private static readonly string[] SentryActions = { "act_guard_cautious_look_around_1", "act_guard_normal_look_around_1", "act_stand_1" };
@@ -209,6 +211,22 @@ public sealed partial class FieldCampMissionLogic
 
 	internal bool IsCampPrisoner(Agent agent) => agent != null && _prisoners.Contains(agent);
 
+    internal bool RestoreCampAttentionOwner(Agent agent)
+    {
+        if (agent == null || !agent.IsActive()) return false;
+        if (IsCampPrisoner(agent))
+        {
+            if (!IsCeremonyAgentHeld(agent) && !SlaughterBusy) ApplyPrisonerPose(agent);
+            return true;
+        }
+        if (!_campAgentsByAgent.TryGetValue(agent, out CampAgent entry)) return false;
+        if (IsCampAgentBusyForConversation(agent)) return true;
+        entry.Returning = false;
+        MoveTo(entry, _assembled ? entry.Target : entry.Home,
+            _assembled ? entry.TargetFacing : entry.HomeFacing, run: false);
+        return true;
+    }
+
 	internal bool CanStartNativeConversation(Agent agent) =>
 		agent != null && (_campAgentsByAgent.ContainsKey(agent) || _prisoners.Contains(agent)) &&
 		!SlaughterBusy && !IsDuelist(agent) && !IsCeremonyAgentHeld(agent);
@@ -231,7 +249,7 @@ public sealed partial class FieldCampMissionLogic
 					campAgent.Seated = false;
 				}
 				StopCampNavigation(agent);
-				if (_prisoners.Contains(agent)) agent.SetIsAIPaused(false);
+				if (_prisoners.Contains(agent)) agent.SetIsAIPaused(true);
 			}
 			_sceneConversationAgents.Add(agent);
 			return true;
@@ -289,6 +307,7 @@ public sealed partial class FieldCampMissionLogic
 			return;
 		}
 		_campRouteBudget = 2;
+        _campStrollBudget = 2;
         int batch = Math.Min(UpkeepBatch, count);
 		for (int n = 0; n < batch; n++)
 		{
@@ -301,11 +320,20 @@ public sealed partial class FieldCampMissionLogic
 			{
 				continue;
 			}
+            if (!IsInsideCamp(agent.Position))
+            {
+                if (entry.MoveBlocked && _elapsed < entry.NextWanderTime) continue;
+                if (!entry.Seated && _elapsed < entry.ProgressAt) continue;
+                RecoverBlockedCampWalk(entry);
+                continue;
+            }
             if (entry.MoveBlocked)
             {
                 if (_elapsed < entry.NextWanderTime) continue;
                 if (entry.RouteQueued || _assembled)
                     MoveTo(entry, entry.Target, entry.TargetFacing, run: entry.Run);
+                else if (entry.CanLeavePost && agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) > ArriveDistanceSquared)
+                    MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
                 else
                 {
                     entry.MoveBlocked = false;
@@ -315,13 +343,13 @@ public sealed partial class FieldCampMissionLogic
             }
             if (!entry.Seated && _elapsed >= entry.MoveDeadline)
             {
-                SettleCampAgent(entry, blocked: true);
+                RecoverBlockedCampWalk(entry);
                 continue;
             }
             if (!entry.Seated && _elapsed >= entry.ProgressAt)
             {
                 if (agent.Position.AsVec2.DistanceSquared(entry.LastWalkPosition.AsVec2) < 0.04f)
-                { SettleCampAgent(entry, blocked: true); continue; }
+                { RecoverBlockedCampWalk(entry); continue; }
                 entry.LastWalkPosition = agent.Position;
                 entry.ProgressAt = _elapsed + 4f;
             }
@@ -331,9 +359,15 @@ public sealed partial class FieldCampMissionLogic
                 entry.RouteIndex++;
                 IssueCampWalk(entry);
             }
-				if (!_assembled && entry.Seated && entry.Activity == Activity.Wander && _elapsed >= entry.NextWanderTime)
+            if (!_assembled && entry.Seated && entry.Returning && _elapsed >= entry.NextWanderTime)
+            {
+                entry.Returning = false;
+                MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
+                continue;
+            }
+                if (!_assembled && entry.Seated && entry.Activity == Activity.Wander && _elapsed >= entry.NextWanderTime)
 				{
-					entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(10f, 22f);
+					entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 50f);
 					if (TryNearbyStroll(entry, out Vec3 stroll)) MoveTo(entry, stroll, entry.HomeFacing, run: false);
 					continue;
 				}
@@ -346,15 +380,6 @@ public sealed partial class FieldCampMissionLogic
 			{
 				continue;
 			}
-			if (entry.Returning)
-			{
-				// End of a stroll: walk back to the post.
-				entry.Returning = false;
-				entry.Target = entry.Home;
-				entry.TargetFacing = entry.HomeFacing;
-				MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
-				continue;
-			}
 			// Arrived: release the movement goal before applying an idle animation.
             StopCampNavigation(agent);
             agent.SetIsAIPaused(true);
@@ -364,19 +389,20 @@ public sealed partial class FieldCampMissionLogic
 				ApplyPose(entry);
 			}
 			entry.Seated = true;
+            entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 50f);
 		}
 	}
 
 	/// <summary>
-	/// Camp life (every 25-60 s per agent, in the 0.5 s upkeep batch): a seated or working
+	/// Camp life (every 25-55 s per agent, in the 0.5 s upkeep batch): a seated or working
 	/// man may switch pose, take a short walk to a patrol point and come back, or turn to
 	/// talk with the nearest comrade. Sentries only change their look-around pose.
 	/// </summary>
 	private void Refresh(CampAgent entry)
 	{
-		entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(12f, 28f);
+		entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 55f);
 		float roll = MBRandom.RandomFloat;
-		if (entry.Activity == Activity.Sentry || entry.Activity == Activity.Post || roll < 0.35f)
+		if (entry.Activity == Activity.Sentry || (entry.Activity == Activity.Post && !entry.CanLeavePost) || roll < 0.35f)
 		{
 			entry.PoseVariant++;
 			ApplyPose(entry);
@@ -429,16 +455,18 @@ public sealed partial class FieldCampMissionLogic
 		private bool TryNearbyStroll(CampAgent entry, out Vec3 target)
 		{
 			target = entry.Home;
+            if (_campStrollBudget <= 0) return false;
+            _campStrollBudget--;
 			int count = _layout.WanderSlots.Count;
-			if (count == 0) return false;
-			int start = MBRandom.RandomInt(count);
+			int start = count > 0 ? MBRandom.RandomInt(count) : 0;
 			for (int i = 0; i < Math.Min(count, 12); i++)
 			{
 				Vec3 candidate = ToWorld(_layout.WanderSlots[(start + i) % count].Position);
 				if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) > 144f ||
 					candidate.AsVec2.DistanceSquared(entry.Agent.Position.AsVec2) < 4f ||
 					!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target) ||
-					IsReservedCeremonyPosition(target)) continue;
+                    (!IsInsideCamp(target) || IsReservedCeremonyPosition(target))
+                    || !IsCampPositionAvailable(entry.Agent, target, 1.6f)) continue;
 				return true;
 			}
             // Dense layouts need nearby choices rather than only distant layout slots.
@@ -449,7 +477,8 @@ public sealed partial class FieldCampMissionLogic
                 Vec3 candidate = entry.Agent.Position + new Vec3(MathF.Cos(angle) * distance, MathF.Sin(angle) * distance, 0f);
                 if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) <= 144f &&
                     FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target) &&
-                    !IsReservedCeremonyPosition(target)) return true;
+                    IsInsideCamp(target) && !IsReservedCeremonyPosition(target)
+                    && IsCampPositionAvailable(entry.Agent, target, 1.6f)) return true;
             }
             return false;
         }
@@ -466,7 +495,7 @@ public sealed partial class FieldCampMissionLogic
 				|| IsSceneConversationHeld(other.Agent) || IsEnvoy(other) || IsDuelist(other.Agent)
 					|| _campCeremonyActors.ContainsKey(other.Agent)
                     || (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(other))
-					|| other.Activity == Activity.Sentry || other.Activity == Activity.Wounded || other.Activity == Activity.Post)
+					|| other.Activity == Activity.Sentry || other.Activity == Activity.Wounded || (other.Activity == Activity.Post && !other.CanLeavePost))
 			{
 				continue;
 			}
@@ -523,7 +552,9 @@ public sealed partial class FieldCampMissionLogic
             }
             if (_campRouteBudget <= 0)
             {
+                bool returnAfterVisit = entry.Returning;
                 SettleCampAgent(entry, blocked: true);
+                entry.Returning = returnAfterVisit;
                 entry.RouteQueued = true;
                 entry.NextWanderTime = _elapsed + 0.5f;
                 return;
@@ -548,9 +579,16 @@ public sealed partial class FieldCampMissionLogic
 
     private bool TryCampRoute(Vec3 from, Vec3 target, out Vec3[] route)
     {
-        if (FieldCampSite.TryBuildGroundedRoute(Mission.Scene, from, target, out route, out bool covered)) return true;
-        if (covered || !HasCeremonyWalkPath(from, target)) return false;
         route = Array.Empty<Vec3>();
+        if (!IsInsideCamp(from) || !IsInsideCamp(target)) return false;
+        if (FieldCampSite.TryBuildGroundedRoute(Mission.Scene, from, target, out route, out bool covered, stayInsideCamp: true))
+        {
+            // A valid terrain detour may still leave the fenced camp. Never issue it.
+            for (int i = 0; i < route.Length; i++)
+                if (!IsInsideCamp(route[i])) { route = Array.Empty<Vec3>(); return false; }
+            return true;
+        }
+        if (covered || !HasCeremonyWalkPath(from, target)) return false;
         return true;
     }
 
@@ -568,6 +606,71 @@ public sealed partial class FieldCampMissionLogic
         entry.Agent.SetScriptedPositionAndDirection(ref world, entry.TargetFacing.RotationInRadians, false, flags);
     }
 
+    private void RecoverBlockedCampWalk(CampAgent entry)
+    {
+        StopCampNavigation(entry.Agent);
+        bool returned = TryReturnToSafeCampPosition(entry.Agent, entry.Home);
+        SettleCampAgent(entry, blocked: !returned);
+    }
+
+    private bool TryReturnToSafeCampPosition(Agent agent, Vec3 home)
+    {
+        // Share two recovery probes per upkeep across residents and ceremony returns.
+        if (_campRecoveryBudget <= 0) return false;
+        _campRecoveryBudget--;
+        for (int attempt = 0; attempt < 17; attempt++)
+        {
+            Vec3 desired = home;
+            if (attempt > 0)
+            {
+                float angle = (attempt - 1) % 8 * MathF.PI / 4f;
+                float radius = attempt <= 8 ? 1f : 2f;
+                desired += new Vec3(MathF.Cos(angle) * radius, MathF.Sin(angle) * radius, 0f);
+            }
+            if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, desired, 0.4f, out Vec3 safe)
+                || !IsInsideCamp(safe) || IsReservedCeremonyPosition(safe)) continue;
+            if (!IsCampPositionAvailable(agent, safe)) continue;
+            agent.TeleportToPosition(safe);
+            return true;
+        }
+        return false;
+    }
+
+    private bool IsCampPositionAvailable(Agent agent, Vec3 position, float clearance = 0.8f)
+    {
+        float separationSquared = clearance * clearance;
+        // Native spatial query reuses one list; do not scan the whole mission for every candidate.
+        Mission.GetNearbyAgents(position.AsVec2, clearance, _campNearbyAgents);
+        foreach (Agent other in _campNearbyAgents)
+        {
+            if (other != agent && other.IsActive() && other.Position.AsVec2.DistanceSquared(position.AsVec2) < separationSquared)
+                return false;
+        }
+        // Incoming companions reserve their destinations before they start walking.
+        foreach (CampAgent entry in _agents)
+        {
+            if (entry.Agent != agent && entry.Agent?.IsActive() == true
+                && (entry.Home.AsVec2.DistanceSquared(position.AsVec2) < separationSquared
+                    || ((!entry.Seated || entry.RouteQueued || entry.MoveBlocked)
+                        && entry.Target.AsVec2.DistanceSquared(position.AsVec2) < separationSquared))) return false;
+        }
+        foreach (CeremonyMove move in _ceremonyWalkers)
+        {
+            if (move.Agent != agent && move.Agent?.IsActive() == true
+                && move.Goal.AsVec2.DistanceSquared(position.AsVec2) < separationSquared) return false;
+        }
+        return true;
+    }
+
+    private bool IsInsideCamp(Vec3 position)
+    {
+        Vec3 local = _campFrame.TransformToLocal(position);
+        float margin = 0.8f * _campScale;
+        return Math.Abs(local.x) < _layout.HalfX * _campScale - margin
+            && local.y > _layout.Back * _campScale + margin
+            && local.y < _layout.Front * _campScale - margin;
+    }
+
     private void SettleCampAgent(CampAgent entry, bool blocked)
     {
         StopCampNavigation(entry.Agent);
@@ -578,7 +681,7 @@ public sealed partial class FieldCampMissionLogic
         entry.Returning = false;
         entry.MoveBlocked = blocked;
         entry.RouteQueued = false;
-        entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(8f, 18f);
+        entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 50f);
         if (!_assembled) ApplyPose(entry);
     }
 
