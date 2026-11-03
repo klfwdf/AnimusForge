@@ -10,13 +10,16 @@ namespace AnimusForge.Bootstrap
         private static readonly object Sync = new object();
         private static readonly Encoding Utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
         private static string _logPath;
+        private static bool _initialized;
 
         internal static string LogPath
         {
             get
             {
-                EnsureInitialized();
-                return _logPath;
+                lock (Sync)
+                {
+                    return _logPath ?? "unavailable (see game log)";
+                }
             }
         }
 
@@ -24,17 +27,25 @@ namespace AnimusForge.Bootstrap
         {
             lock (Sync)
             {
-                if (!string.IsNullOrWhiteSpace(_logPath))
+                if (_initialized)
                 {
                     return;
                 }
-
-                string moduleRoot = ResolveModuleRoot(binDirectory);
-                if (moduleRoot == null)
-                    throw new InvalidOperationException("The active AnimusForge module is unavailable; Bootstrap logging has no external fallback.");
-                string logDirectory = Path.Combine(moduleRoot, "Logs");
-                Directory.CreateDirectory(logDirectory);
-                _logPath = Path.Combine(logDirectory, "AnimusForge.Bootstrap.log");
+                // Logging is optional. Do not retry failed directory access on every message.
+                _initialized = true;
+                try
+                {
+                    string moduleRoot = ResolveModuleRoot(binDirectory);
+                    if (moduleRoot == null)
+                        throw new InvalidOperationException("The active AnimusForge module is unavailable for file logging.");
+                    string logDirectory = Path.Combine(moduleRoot, "Logs");
+                    Directory.CreateDirectory(logDirectory);
+                    _logPath = Path.Combine(logDirectory, "AnimusForge.Bootstrap.log");
+                }
+                catch (Exception exception)
+                {
+                    WriteToGameLog($"File logging unavailable: {exception}");
+                }
             }
         }
 
@@ -89,41 +100,37 @@ namespace AnimusForge.Bootstrap
             Write("ERROR", message);
         }
 
-        private static void EnsureInitialized()
+        private static void WriteToGameLog(string message)
         {
-            if (!string.IsNullOrWhiteSpace(_logPath))
+            try
             {
-                return;
+                TaleWorlds.Library.Debug.Print("[AnimusForge.Bootstrap] " + message);
             }
-
-            string location = typeof(BootstrapLog).Assembly.Location;
-            Initialize(Path.GetDirectoryName(location) ?? AppDomain.CurrentDomain.BaseDirectory);
+            catch
+            {
+                // Diagnostics must never replace the original startup result.
+            }
         }
 
         private static void Write(string level, string message)
         {
             string line = $"{DateTime.UtcNow:O} [{level}] {message}";
-
-            try
+            WriteToGameLog(line);
+            lock (Sync)
             {
-                TaleWorlds.Library.Debug.Print("[AnimusForge.Bootstrap] " + line);
-            }
-            catch
-            {
-                // File logging still works when the engine debug manager is unavailable.
-            }
-
-            try
-            {
-                lock (Sync)
+                if (_logPath == null)
                 {
-                    EnsureInitialized();
+                    return;
+                }
+                try
+                {
                     File.AppendAllText(_logPath, line + Environment.NewLine, Utf8);
                 }
-            }
-            catch
-            {
-                // Logging must never hide the original Bootstrap failure.
+                catch (Exception exception)
+                {
+                    _logPath = null;
+                    WriteToGameLog($"File logging disabled after write failure: {exception}");
+                }
             }
         }
     }

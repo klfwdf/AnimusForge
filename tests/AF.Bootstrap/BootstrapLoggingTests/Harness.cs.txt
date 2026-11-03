@@ -1,0 +1,150 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using AnimusForge.Bootstrap;
+
+namespace TaleWorlds.Library
+{
+    public static class Debug
+    {
+        public static readonly List<string> Lines = new List<string>();
+        public static bool Fail;
+        public static string CrashReport;
+        public static string Dialog;
+        public static void SetCrashReportCustomString(string message) { CrashReport = message; }
+        public static void ShowMessageBox(string message, string title, uint flags) { Dialog = message; }
+        public static void Print(string line)
+        {
+            if (Fail) throw new InvalidOperationException("debug unavailable");
+            Lines.Add(line);
+        }
+    }
+}
+namespace AnimusForge.Bootstrap
+{
+    // Exercise production Initialize with only module-root admission replaced.
+    internal class InitializeFixture
+    {
+        private static readonly object Sync = new object();
+        private static bool _initialized;
+        private static string _logPath;
+        public static readonly List<string> Lines = new List<string>();
+        private static string ResolveModuleRoot(string directory) => directory;
+        private static void WriteToGameLog(string message) { Lines.Add(message); }
+@@INITIALIZE@@
+        public static string PathValue => _logPath;
+        public static void Reset() { _initialized = false; _logPath = null; Lines.Clear(); }
+    }
+    internal class FatalMessageFixture
+    {
+        private static int _fatalMessageShown;
+        private string RuntimeVersionText => "v1.4.8";
+        private string SelectedApiText => "1.4";
+        private string SelectedImplementationPath => "fixture.dll";
+@@MESSAGES@@
+        public string Report(Exception error) => BuildFatalMessage("fixture", error);
+        public string Dialog(Exception error) => BuildFatalDialogMessage("fixture", error);
+    }
+}
+internal static class Program
+{
+    private static int checks;
+    private static void Check(bool value, string label)
+    {
+        checks++;
+        if (!value) throw new Exception("FAIL " + label);
+    }
+    private static FieldInfo Field(string name) => typeof(BootstrapLog).GetField(name, BindingFlags.NonPublic | BindingFlags.Static);
+    private static void Reset()
+    {
+        Field("_initialized").SetValue(null, false);
+        Field("_logPath").SetValue(null, null);
+        TaleWorlds.Library.Debug.Fail = false;
+        TaleWorlds.Library.Debug.Lines.Clear();
+    }
+    public static void Main()
+    {
+        Reset();
+        Check(BootstrapLog.LogPath.Contains("unavailable"), "status available before init");
+        Check(!(bool)Field("_initialized").GetValue(null), "status performs no initialization");
+        BootstrapLog.Error("original-before-init");
+        Check(TaleWorlds.Library.Debug.Lines[0].Contains("original-before-init"), "pre-init game diagnostic");
+        foreach (string path in new string[] { null, "relative", "", Environment.CurrentDirectory })
+        {
+            Reset();
+            BootstrapLog.Initialize(path);
+            Check((bool)Field("_initialized").GetValue(null), "failed initialization completes");
+            Check(BootstrapLog.LogPath.Contains("unavailable"), "failed initialization status");
+            Check(TaleWorlds.Library.Debug.Lines.Count == 1, "failure logged once");
+            BootstrapLog.Initialize(path);
+            Check(TaleWorlds.Library.Debug.Lines.Count == 1, "no repeated path IO");
+            BootstrapLog.Info("startup continued");
+            Check(TaleWorlds.Library.Debug.Lines[1].Contains("startup continued"), "startup continues");
+        }
+        Reset();
+        TaleWorlds.Library.Debug.Fail = true;
+        BootstrapLog.Initialize("relative");
+        BootstrapLog.Error("debug and file unavailable");
+        Check(BootstrapLog.LogPath.Contains("unavailable"), "both sinks unavailable nonfatal");
+
+        // Inject only file-sink state. Module-root admission is exercised above unchanged.
+        // The repository's intentional workspace exclusion prevents valid installed roots here.
+        Reset();
+        string output = System.IO.Path.Combine(Environment.CurrentDirectory, "sink.log");
+        Field("_initialized").SetValue(null, true);
+        Field("_logPath").SetValue(null, output);
+        BootstrapLog.Info("file success");
+        Check(System.IO.File.ReadAllText(output).Contains("file success"), "real file sink");
+        TaleWorlds.Library.Debug.Fail = true;
+        BootstrapLog.Warning("file without debug");
+        Check(System.IO.File.ReadAllText(output).Contains("file without debug"), "debug failure keeps file sink");
+
+        Reset();
+        string directorySink = System.IO.Path.Combine(Environment.CurrentDirectory, "directory-sink");
+        System.IO.Directory.CreateDirectory(directorySink);
+        Field("_initialized").SetValue(null, true);
+        Field("_logPath").SetValue(null, directorySink);
+        BootstrapLog.Error("original write failure");
+        Check(Field("_logPath").GetValue(null) == null, "failed file sink disabled");
+        Check(TaleWorlds.Library.Debug.Lines[0].Contains("original write failure"), "original diagnostic retained");
+        Check(TaleWorlds.Library.Debug.Lines[1].Contains("write failure"), "sink error recorded");
+        BootstrapLog.Error("second original");
+        Check(TaleWorlds.Library.Debug.Lines.Count == 3, "no repeated file failure");
+
+        InitializeFixture.Reset();
+        string validRoot = System.IO.Path.Combine(Environment.CurrentDirectory, "valid-root");
+        InitializeFixture.Initialize(validRoot);
+        Check(Directory.Exists(System.IO.Path.Combine(validRoot, "Logs")), "production init creates logs");
+        Check(InitializeFixture.PathValue.EndsWith("AnimusForge.Bootstrap.log"), "production init selects file");
+        Check(InitializeFixture.Lines.Count == 0, "successful init has no error");
+        InitializeFixture.Reset();
+        string blockedRoot = System.IO.Path.Combine(Environment.CurrentDirectory, "blocked-root");
+        Directory.CreateDirectory(blockedRoot);
+        File.WriteAllText(System.IO.Path.Combine(blockedRoot, "Logs"), "occupied");
+        InitializeFixture.Initialize(blockedRoot);
+        Check(InitializeFixture.PathValue == null, "directory creation failure nonfatal");
+        Check(InitializeFixture.Lines.Count == 1, "directory failure diagnostic");
+        InitializeFixture.Initialize(blockedRoot);
+        Check(InitializeFixture.Lines.Count == 1, "directory failure not retried");
+
+        Reset();
+        var fixture = new FatalMessageFixture();
+        var error = new InvalidOperationException("outer startup failure", new IOException("original root cause"));
+        string report = fixture.Report(error);
+        string dialog = fixture.Dialog(error);
+        Check(report.Contains("outer startup failure"), "original fatal message");
+        Check(dialog.Contains("original root cause"), "innermost fatal message");
+        Check(report.Contains("unavailable") && dialog.Contains("unavailable"), "unavailable log status in reports");
+        Check(!(bool)Field("_initialized").GetValue(null), "fatal formatting never initializes log");
+        Check(TaleWorlds.Library.Debug.Lines.Count == 0, "fatal formatting has no logging side effects");
+        fixture.ReportFatal("original-stage", error);
+        Check(TaleWorlds.Library.Debug.CrashReport.Contains("original-stage"), "fatal reporter keeps stage");
+        Check(TaleWorlds.Library.Debug.CrashReport.Contains("original root cause"), "fatal reporter keeps exception chain");
+        Check(TaleWorlds.Library.Debug.Dialog.Contains("original root cause"), "emergency dialog keeps root cause");
+        Check(!(bool)Field("_initialized").GetValue(null), "complete fatal report never reinitializes");
+        Console.WriteLine($"PASS bootstrap logging checks={checks} LIVE=NOT_RUN");
+    }
+}

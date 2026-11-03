@@ -175,7 +175,7 @@ namespace AnimusForge.Bootstrap
             }
             catch
             {
-                // The standalone UTF-8 log remains the source of truth.
+                // Continue to the emergency dialog even if the crash reporter is unavailable.
             }
 
             if (Interlocked.Exchange(ref _fatalMessageShown, 1) != 0)
@@ -1216,6 +1216,7 @@ namespace AnimusForge.Bootstrap
             builder.AppendLine($"API: {SelectedApiText}");
             builder.AppendLine($"DLL: {SelectedImplementationPath}");
             builder.AppendLine($"Error: {exception.GetType().Name}: {exception.Message}");
+            // Reading log status must not perform IO while reporting another failure.
             builder.Append($"UTF-8 log: {BootstrapLog.LogPath}");
             return builder.ToString();
         }
@@ -1234,6 +1235,7 @@ namespace AnimusForge.Bootstrap
             {
                 builder.AppendLine($"Root cause: {rootCause.GetType().Name}: {rootCause.Message}");
             }
+            // Reading log status must not perform IO while reporting another failure.
             builder.Append($"UTF-8 log: {BootstrapLog.LogPath}");
             return builder.ToString();
         }
