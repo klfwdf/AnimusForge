@@ -1,3 +1,7 @@
+## 2026-11-04 CN 包补入 ONNX，默认打包包含 bekko
+
+用户指出 ONNX 被错误排除并明确要求取消排除。本次 CN 重包加入仓库 bekko 的 model.onnx、tokenizer.json、config.json，目标 `一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1104_0342.7z`，替代0338包。`package_mod.ps1` 默认选择仓库 bekko，指定 ExcludeOnnx 才排除，双实现输出案例同步。按用户要求跳过校验/测试/回读。记录见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bootstrap-cn-onnx-20261104)。
+
 ## 2026-11-04 Bootstrap 日志不可用容错与 CN 打包
 
 产品提交 `4ec3b06b40`，检查点 `5a115ff16`。日志初始化失败后启动继续，失败写入停用文件 sink，错误报告读取状态不再触发 IO。用户随后要求停止验证并只打 CN 包，本轮使用已构建的 Bootstrap/双 API 和现有 Stage，默认不含 ONNX 模型，调用现有 LZMA2/16 MiB 编码器。详细范围、已有验证与未验项见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bootstrap-nonfatal-logging-20261104)和[代码范围](docs/architecture/af-framework-code-scope.md#bootstrap-nonfatal-logging-20261104)。玩家网吧现场根因仍未确认，最新包用于复测。

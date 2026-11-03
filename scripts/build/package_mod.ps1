@@ -31,6 +31,10 @@ if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
 if ($IncludeReranker) {
     throw "The retired reranker is not supported. Use -OnnxModelDir to include a selected bekko payload."
 }
+# Bundle the repository bekko payload by default; an explicit exclusion remains available.
+if (-not $ExcludeOnnx -and [string]::IsNullOrWhiteSpace($OnnxModelDir)) {
+    $OnnxModelDir = Join-Path $PSScriptRoot '../../AnimusForge/ONNX/bekko'
+}
 if ($IncludeOnnx -and [string]::IsNullOrWhiteSpace($OnnxModelDir)) {
     throw "Select the exact bekko directory with -OnnxModelDir when including ONNX."
 }

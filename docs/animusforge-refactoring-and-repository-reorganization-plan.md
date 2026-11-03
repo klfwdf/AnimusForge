@@ -1,3 +1,10 @@
+<a id="bootstrap-cn-onnx-20261104"></a>
+## 2026-11-04 取消默认排除 ONNX 并重打 CN
+
+用户纠正前次0338包遗漏ONNX，要求取消排除。`scripts/build/package_mod.ps1` 的默认模型来源改为仓库 `AnimusForge/ONNX/bekko`，保留显式 OnnxModelDir 和 ExcludeOnnx 行为，`docs/bannerlord_dual_module_output.md` 同步默认包含说明。前次“默认模型排除”的交付结论由本条替代。
+
+本轮继承0338已准备CN内容和Bootstrap修复，增加model.onnx（199300251字节）、tokenizer.json（34363442字节）、config.json（1749字节）至ONNX/bekko，用既有LZMA2/16MiB编码器直接打包。目标 `一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1104_0342.7z`，完整编码结果和状态在 `.tmp/bootstrap-logging-cn-onnx-20261104-034205/encode.log`、`delivery.json`。按最新要求仅CN，跳过校验、测试、哈希和解包回读；网吧实机未验。旧包保留。默认规则变更可聚焦逆向本轮提交，产品修复回滚点仍为4ec3b06b40。
+
 <a id="bootstrap-nonfatal-logging-20261104"></a>
 ## 2026-11-04 Bootstrap 日志初始化失败不再终止启动
 
