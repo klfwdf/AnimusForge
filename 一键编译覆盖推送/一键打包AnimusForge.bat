@@ -66,7 +66,7 @@ if not "%ERR%"=="0" (
 echo.
 echo [SUCCESS] Both CN and EN AnimusForge packages were generated.
 echo Default names: AnimusForge_vVERSION_CN_MMdd_HHmm.7z and AnimusForge_vVERSION_EN_MMdd_HHmm.7z
-echo Extreme 7Z: LZMA, 512MiB dictionary, solid, 2 threads.
+echo Level 9 7Z: LZMA2, 16MiB dictionary, fb273, solid, 2 threads.
 echo The game Modules directory was not modified.
 pause
 exit /b 0

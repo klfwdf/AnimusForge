@@ -25,7 +25,8 @@ function Write-AnimusForgeExtremeSevenZip {
     $sevenZip = Resolve-AnimusForgeSevenZip
     $arguments = @(
         'a', '-t7z', '-mx=9',
-        '-m0=LZMA:d=512m:fb=273:mf=bt4:mc=1000000:lc=4:lp=2:pb=0',
+        # Keep the measured low-memory profile; legacy lc/lp overrides break liblzma readers.
+        '-m0=LZMA2:d=16m:fb=273',
         '-ms=on', '-mqs=on', '-mmt=2', '-mtm=off', '-mtc=off', '-mta=off',
         '-scsUTF-8', '-bsp0', $archiveFull, ('@' + $listFull)
     )

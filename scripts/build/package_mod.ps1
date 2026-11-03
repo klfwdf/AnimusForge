@@ -875,7 +875,7 @@ function Write-ZipFromModule {
             foreach ($path in $temporaryPaths.Values) { Remove-Item -LiteralPath $path -Force }
         }
         Write-Host "Package Mode : CN and EN $archiveExtension archives, each with both supported game versions"
-        if ($archiveExtension -eq '7z') { Write-Host 'Compression  : LZMA, 512MiB dictionary, fb273, bt4, mc1000000, lc4/lp2/pb0, solid, 2 threads' }
+        if ($archiveExtension -eq '7z') { Write-Host 'Compression  : LZMA2, level 9, 16MiB dictionary, fb273, solid, 2 threads' }
         Write-Host "Module Path  : $moduleFull"
         Write-Host "Module Detect: $(if ($AutoDetected) { 'Auto' } else { 'Manual' })"
         Write-Host "Output CN    : $($zipPaths['CN'])"

@@ -2,12 +2,16 @@
 
 AnimusForge uses one source tree, builds two Bannerlord-compatible implementation DLLs, and publishes one launcher module. The historical filename is retained so existing repository references do not break; the old two-module output contract is retired.
 
-## Default Extreme 7z Output (2026-11-02)
+## Default Level-9 LZMA2 7z Output (2026-11-04)
 
-The one-click package entry now defaults to two extreme-compression 7z archives:
+The one-click package entry defaults to two level-9 LZMA2 7z archives:
 AnimusForge_vVERSION_CN_MMdd_HHmm.7z and AnimusForge_vVERSION_EN_MMdd_HHmm.7z.
 The pair shares one version, timestamp and collision suffix; existing packages are never overwritten.
-The shared encoder is scripts/build/package_sevenzip.ps1. Its fixed settings reproduce the earlier selected extreme package: LZMA, level 9, 512 MiB dictionary, fb273, bt4, mc1000000, lc4/lp2/pb0, solid sorting, two threads and no file timestamps. The archive contains the AnimusForge/ tree directly.
+The shared encoder is scripts/build/package_sevenzip.ps1. Its fixed profile is LZMA2, level 9, a 16 MiB dictionary, fb273, solid sorting, two threads and no file timestamps (`-mx=9 -m0=LZMA2:d=16m:fb=273 -ms=on -mqs=on -mmt=2 -mtm=off -mtc=off -mta=off`). Do not reintroduce the legacy LZMA literal-context/position overrides: their sum exceeded the liblzma decoder limit. The archive contains the AnimusForge/ tree directly.
+
+The 16 MiB profile was selected after a same-content comparison: 169.45 MiB versus 169.37 MiB with a 64 MiB dictionary on the tested 1.8.0 CN package. These are historical measurements, not future package-size or RAM guarantees. Dictionary size is an encoder setting, not archive size, total decoder memory or in-game RAM.
+
+Compression-method support, Unicode filename support and content integrity are separate acceptance checks. A Windows tar readback previously skipped 21 AD 1259 persona files whose names could not be represented in the local ANSI code page; changing the compression profile does not repair that filename-conversion issue. Keep the original names, hero IDs and content. Successful 7-Zip readback does not prove Windows Explorer compatibility; use independent 7-Zip for the verified full extraction path.
 
 ArchiveFormat defaults to 7z; an explicit -ArchiveFormat zip preserves the legacy writer for compatibility. The existing ZIP projection, layout, DLL and version-transaction checks remain an internal step for the normal verified flow; 7z readback is compared with the locked projection before publishing either final archive. References to ZIP streams/checks below describe that internal or explicitly selected legacy format, not the default delivery extension.
 
@@ -86,7 +90,7 @@ Every function under `一键编译覆盖推送` (the `.bat` entry points) and `s
 - Build: build Bootstrap plus both implementation variants, then assemble one staged `AnimusForge` module.
 - Deploy/overwrite: assemble and validate the project-local Stage against current build artifacts, then replace only Stage-listed files in `Modules/AnimusForge` through same-volume per-file candidates. Deployment creates no Recovery directory, backup, manifest, completion marker, or automatic rollback; a failure stops and reports the target state for manual inspection before retry. Preserve existing `CustomPrompts` and `ModuleData/TerminalSettings.json`, installing only missing files. Merge `PlayerExports` by modification time (newer wins; installed files win ties). Unlisted installed files are never mirrored or deleted.
 - Build and overwrite: run the unified build, deploy the one module, and retain the existing optional launch behavior.
-- Package: project the one staged module into CN and EN extreme 7z archives, each containing both implementation DLLs; ZIP is an explicit compatibility option.
+- Package: project the one staged module into CN and EN level-9 LZMA2 7z archives, each containing both implementation DLLs; ZIP is an explicit compatibility option.
 - Push: publish the same unified source/output contract; no step may recreate or publish the legacy two modules.
 - Validation: verify the module id, Bootstrap declaration, both implementation paths, and absence of conflicting implementation declarations before deployment or packaging.
 
@@ -111,7 +115,7 @@ Because the launcher module id changes from a retired versioned id to `AnimusFor
 
 ## Package Rules
 
-One-click packaging creates two extreme-compression 7z client archives from the same Stage and runtime DLLs:
+One-click packaging creates two level-9 LZMA2 7z client archives from the same Stage and runtime DLLs:
 
 ```text
 AnimusForge_v1.X.X_CN_MMdd_HHmm.7z
