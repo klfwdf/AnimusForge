@@ -526,6 +526,23 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			}
 		}
 
+		public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState state, KillingBlow blow)
+        {
+            if (affectedAgent != null) _parent.CancelAgentSpeechForRemoval(affectedAgent.Index, "agent_removed");
+        }
+
+        public override void OnAgentDeleted(Agent affectedAgent)
+        {
+            if (affectedAgent != null) _parent.CancelAgentSpeechForRemoval(affectedAgent.Index, "agent_deleted");
+        }
+
+        protected override void OnEndMission()
+        {
+            _parent.StopAllLipSyncPlaybackAndCleanup();
+            _parent.UnsubscribeTtsPlaybackEvents();
+            base.OnEndMission();
+        }
+
 		public override void OnRemoveBehavior()
 		{
 			base.OnRemoveBehavior();

@@ -105,8 +105,7 @@ internal sealed class NativeConversationSpeechAdapter
 		lock (_conversationRequestLock) target.Add(request.RequestId);
 	}
 
-	// Real ConversationEnded only. Map meetings stop at once (the tableau is gone); scene NPCs
-	// finish the reply already playing and drop the queued ones.
+	// Real ConversationEnded retires both current and queued speech, including native lip sync.
 	internal void CancelPlaybackForConversationEnd()
 	{
 		HashSet<long> map, scene;
@@ -120,7 +119,7 @@ internal sealed class NativeConversationSpeechAdapter
 		{
 			TtsEngine tts = TtsEngine.Instance;
 			if (tts == null) return;
-			int cancelled = tts.CancelRequests(map, keepCurrent: false) + tts.CancelRequests(scene, keepCurrent: true);
+			int cancelled = tts.CancelRequests(map, keepCurrent: false) + tts.CancelRequests(scene, keepCurrent: false);
 			if (cancelled != 0) Logger.Log("NativeConversation", "[TTS] conversation ended; cancelled unplayed speech=" + cancelled);
 		}
 		catch (Exception ex)
@@ -511,7 +510,9 @@ internal sealed class NativeConversationSpeechAdapter
 					{
 						return;
 					}
-					currentMission.OnConversationPlay("", "", "", "", wavPath);
+					instance._mapPlaybackRequestId = request.RequestId;
+                    instance._mapPlaybackMission = currentMission;
+                    currentMission.OnConversationPlay("", "", "", "", wavPath);
 					ConversationHelper.StartTypewriterPlaybackIfWaiting(request.StreamingPlayback ? request.StreamingDurationSeconds : durationSecs);
 					ScheduleNativeMapConversationTtsFileCleanup(wavPath, xmlPath, durationSecs);
 					Logger.Log("NativeConversation", "[TTS] queued map conversation tableau playback. wav=" + System.IO.Path.GetFileName(wavPath) + ", duration=" + durationSecs.ToString("F2"));
@@ -531,6 +532,23 @@ internal sealed class NativeConversationSpeechAdapter
 			return false;
 		}
 	}
+
+    private long _mapPlaybackRequestId;
+    private ICampaignMission _mapPlaybackMission;
+
+    internal void CancelMapPlayback(TtsEngine.PlaybackRequest request)
+    {
+        if (request == null || request.RequestId != _mapPlaybackRequestId) return;
+        // Only touch the tableau captured for this request, while it is still the current mission.
+        if (ReferenceEquals(_mapPlaybackMission, CampaignMission.Current)
+            && _mapPlaybackMission is SandBox.View.Map.MapConversationView.MapConversationMission mission)
+        {
+            mission.ConversationTableau?.RemovePreviousAgentsSoundEvent();
+            mission.ConversationTableau?.StopConversationSoundEvent();
+        }
+        _mapPlaybackRequestId = 0;
+        _mapPlaybackMission = null;
+    }
 
 	internal static void ScheduleNativeMapConversationTtsFileCleanup(string wavPath, string xmlPath, float durationSecs)
 	{

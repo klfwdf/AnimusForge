@@ -339,7 +339,9 @@ internal sealed class SceneAudioLipSyncController
 													{
 														PrepareAgentForTrueLipSyncIfPossible(agent);
 														LogLipSyncNativeProbe("StartRhubarbRecord.Before", agentIndex, $"soundId={soundId};xml={System.IO.Path.GetFileName(xmlPath)}");
-														agent.AgentVisuals.StartRhubarbRecord(xmlPath, soundId);
+														MBAgentVisuals visuals = agent.AgentVisuals;
+                                                _agentLipSyncVisuals[agentIndex] = visuals;
+                                                visuals.StartRhubarbRecord(xmlPath, soundId);
 														LogLipSyncNativeProbe("StartRhubarbRecord.After", agentIndex, "soundId=" + soundId);
 														Logger.Log("LipSync", $"[Rhubarb] StartRhubarbRecord call succeeded, agentIndex={agentIndex}, soundId={soundId}");
 													}
@@ -474,7 +476,7 @@ internal sealed class SceneAudioLipSyncController
 
 					});
 				};
-				_ttsOnPlaybackCancelledHandler = _ports.Cancelled;
+				_ttsOnPlaybackCancelledHandler = HandleRequestPlaybackCancelled;
                 instance.OnRequestSpeechSegmentReady += _ttsOnSpeechSegmentReadyHandler;
 				instance.OnRequestPlaybackCancelled += _ttsOnPlaybackCancelledHandler;
 				instance.OnRequestAudioFileReady += _ttsOnAudioFileReadyHandler;
@@ -490,6 +492,20 @@ internal sealed class SceneAudioLipSyncController
 			Logger.Log("LipSync", "[ERROR] SubscribeTtsPlaybackEvents failed: " + ex.Message);
 		}
 	}
+
+    internal void HandleRequestPlaybackCancelled(TtsEngine.PlaybackRequest request)
+    {
+        _ports.Dispatch(() =>
+        {
+            if (!IsActiveTtsPlaybackRequest(request, allowCancelled: true)) return;
+            if (request.AgentIndex >= 0)
+                CleanupSceneLipSyncAfterPlaybackFinished(request.AgentIndex, stopSoundImmediately: true);
+            else
+                _ports.CancelMapPlayback?.Invoke(request);
+        });
+        _ports.Cancelled(request);
+    }
+
 
 	internal void UnsubscribeTtsPlaybackEventsInternal(TtsEngine tts, bool clearOwnerIfMatch)
 	{
@@ -553,7 +569,7 @@ internal sealed class SceneAudioLipSyncController
 
 
 
-	internal void CleanupSceneLipSyncAfterPlaybackFinished(int agentIndex)
+	internal void CleanupSceneLipSyncAfterPlaybackFinished(int agentIndex, bool stopSoundImmediately = false)
 	{
 		Report("PlaybackFinished.MainThreadCleanupStart", agentIndex);
 		LogLipSyncNativeProbe("PlaybackFinished.CleanupEnter", agentIndex);
@@ -591,6 +607,11 @@ internal sealed class SceneAudioLipSyncController
 		if (soundEvent != null || !string.IsNullOrWhiteSpace(wavPath) || !string.IsNullOrWhiteSpace(xmlPath))
 		{
 			string source = wasDetached ? "PlaybackFinished.DetachedSafety" : "PlaybackFinished.NaturalCleanup";
+            if (stopSoundImmediately)
+            {
+                SafeStopAndReleaseSoundEvent(soundEvent);
+                soundEvent = null;
+            }
 			QueueDeferredCleanup(soundEvent, wavPath, xmlPath, source, agentIndex);
 			Logger.Log("LipSync", $"[Rhubarb] queued native lipsync cleanup after playback finished, agentIndex={agentIndex}, detached={wasDetached}, hasSe={(soundEvent != null)}, hasWav={(!string.IsNullOrWhiteSpace(wavPath))}, hasXml={(!string.IsNullOrWhiteSpace(xmlPath))}");
 			Report("PlaybackFinished.CleanupQueued", agentIndex, $"detached={wasDetached};hasSe={(soundEvent != null)};hasWav={(!string.IsNullOrWhiteSpace(wavPath))};hasXml={(!string.IsNullOrWhiteSpace(xmlPath))}");
@@ -1156,111 +1177,47 @@ internal sealed class SceneAudioLipSyncController
 	}
 
 	internal void StopAllLipSyncPlaybackAndCleanup(bool preserveVisibleBubbles = false)
-	{
-		try
-		{
-			TtsEngine.Instance?.StopPlayback();
-		}
-		catch
-		{
-		}
-		_ports.ClearPending();
-		try
-		{
-			_ports.PauseTyping(false);
-			_ports.StopTyping(!preserveVisibleBubbles);
-		}
-		catch
-		{
-		}
-		_ttsPausedByInterruption = false;
-		_ttsPausedByShoutUi = false;
-		List<int> list = null;
-		lock (_speakingLock)
-		{
-			list = _agentSoundEvents.Keys.ToList();
-			_speakingAgentIndices.Clear();
-			_agentLipSyncDetachedForSafety.Clear();
-			foreach (KeyValuePair<int, SoundEvent> agentSoundEvent in _agentSoundEvents)
-			{
-				_ = agentSoundEvent.Value;
-			}
-			_agentSoundEvents.Clear();
-			foreach (KeyValuePair<int, string> agentWavPath in _agentWavPaths)
-			{
-				try
-				{
-					if (!string.IsNullOrEmpty(agentWavPath.Value) && File.Exists(agentWavPath.Value))
-					{
-						File.Delete(agentWavPath.Value);
-					}
-				}
-				catch
-				{
-				}
-			}
-			foreach (KeyValuePair<int, string> agentXmlPath in _agentXmlPaths)
-			{
-				try
-				{
-					if (!string.IsNullOrEmpty(agentXmlPath.Value) && File.Exists(agentXmlPath.Value))
-					{
-						File.Delete(agentXmlPath.Value);
-					}
-				}
-				catch
-				{
-				}
-			}
-			_agentWavPaths.Clear();
-			_agentXmlPaths.Clear();
-			foreach (DeferredCleanupItem deferredCleanupItem in _deferredCleanupQueue)
-			{
-				try
-				{
-					SafeStopAndReleaseSoundEvent(deferredCleanupItem?.SoundEvent);
-				}
-				catch
-				{
-				}
-				try
-				{
-					if (!string.IsNullOrEmpty(deferredCleanupItem?.WavPath) && File.Exists(deferredCleanupItem.WavPath))
-					{
-						File.Delete(deferredCleanupItem.WavPath);
-					}
-				}
-				catch
-				{
-				}
-				try
-				{
-					if (!string.IsNullOrEmpty(deferredCleanupItem?.XmlPath) && File.Exists(deferredCleanupItem.XmlPath))
-					{
-						File.Delete(deferredCleanupItem.XmlPath);
-					}
-				}
-				catch
-				{
-				}
-			}
-			_deferredCleanupQueue.Clear();
-			try
-			{
-				Interlocked.Exchange(ref _deferredCleanupStableSinceUtcTicks, 0L);
-			}
-			catch
-			{
-			}
-		}
-		if (list != null)
-		{
-			for (int i = 0; i < list.Count; i++)
-			{
-				StopAgentRhubarbRecordIfPossible(list[i], "StopAllLipSyncPlaybackAndCleanup");
-			}
-		}
-	}
+    {
+        // Retire identities first so a queued audio chunk cannot restart the detached visual.
+        ResetRequestOwnership();
+        var indices = new HashSet<int>(_agentLipSyncVisuals.Keys);
+        foreach (int index in _agentSoundEvents.Keys) indices.Add(index);
+        foreach (DeferredCleanupItem item in _deferredCleanupQueue)
+            if (item != null && item.AgentIndex >= 0) indices.Add(item.AgentIndex);
+        foreach (int index in indices) StopAgentRhubarbRecordIfPossible(index, "StopAllLipSyncPlaybackAndCleanup");
+        try { TtsEngine.Instance?.StopPlayback(); } catch { }
+        _ports.ClearPending();
+        try { _ports.PauseTyping(false); _ports.StopTyping(!preserveVisibleBubbles); } catch { }
+        _ttsPausedByInterruption = false;
+        _ttsPausedByShoutUi = false;
+        lock (_speakingLock)
+        {
+            foreach (SoundEvent sound in _agentSoundEvents.Values) SafeStopAndReleaseSoundEvent(sound);
+            foreach (DeferredCleanupItem item in _deferredCleanupQueue)
+                SafeStopAndReleaseSoundEvent(item?.SoundEvent);
+            foreach (string path in _agentWavPaths.Values) DeleteStoppedAudioFile(path);
+            foreach (string path in _agentXmlPaths.Values) DeleteStoppedAudioFile(path);
+            foreach (DeferredCleanupItem item in _deferredCleanupQueue)
+            {
+                DeleteStoppedAudioFile(item?.WavPath);
+                DeleteStoppedAudioFile(item?.XmlPath);
+            }
+            _speakingAgentIndices.Clear();
+            _agentLipSyncDetachedForSafety.Clear();
+            _agentSoundEvents.Clear();
+            _agentWavPaths.Clear();
+            _agentXmlPaths.Clear();
+            _deferredCleanupQueue.Clear();
+            _agentLipSyncVisuals.Clear();
+        }
+        Interlocked.Exchange(ref _deferredCleanupStableSinceUtcTicks, 0L);
+    }
+
+    private static void DeleteStoppedAudioFile(string path)
+    {
+        try { if (!string.IsNullOrEmpty(path) && File.Exists(path)) File.Delete(path); }
+        catch { }
+    }
 
 	internal void TickLipSyncAnimations(float dt)
 	{
@@ -1464,36 +1421,34 @@ internal sealed class SceneAudioLipSyncController
 
 
 
-	internal void StopAgentRhubarbRecordIfPossible(int agentIndex, string reason = "Unknown")
-	{
-		Mission mission = Mission.Current;
-		var agents = mission?.Agents;
-		if (agentIndex < 0 || agents == null)
-		{
-			Report("StopRhubarbRecord.Skip", agentIndex, "reason=" + reason + ";missionNull=" + (mission == null));
-			return;
-		}
-		try
-		{
-			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
-			if (agent == null || agent.AgentVisuals == null)
-			{
-				Report("StopRhubarbRecord.Skip", agentIndex, $"reason={reason};agentMissing={(agent == null)};visualsMissing={(agent != null && agent.AgentVisuals == null)}");
-				return;
-			}
-			LogLipSyncNativeProbe("StopRhubarbRecord.Before", agentIndex, "reason=" + reason);
-			agent.AgentVisuals.StartRhubarbRecord("", -1);
-			LogLipSyncNativeProbe("StopRhubarbRecord.After", agentIndex, "reason=" + reason);
-			Logger.Log("LipSync", $"[Rhubarb] StopRhubarbRecord called, agentIndex={agentIndex}, reason={reason}");
-			Report("StopRhubarbRecord", agentIndex, "reason=" + reason);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("LipSync", $"[WARN] StopRhubarbRecord failed, agentIndex={agentIndex}, reason={reason}, error={ex.Message}");
-			Report("StopRhubarbRecord.Failed", agentIndex, $"reason={reason};error={ex.Message}");
-			BannerlordExceptionSentinel.ReportObservedException("LipSync.StopRhubarbRecord", ex, $"agentIndex={agentIndex};reason={reason}");
-		}
-	}
+	// Keep the exact native visual used at start: dead Agents are no longer in the active list.
+    internal readonly Dictionary<int, MBAgentVisuals> _agentLipSyncVisuals = new Dictionary<int, MBAgentVisuals>();
+
+    internal void StopAgentRhubarbRecordIfPossible(int agentIndex, string reason = "Unknown")
+    {
+        if (agentIndex < 0) return;
+        try
+        {
+            if (!_agentLipSyncVisuals.TryGetValue(agentIndex, out MBAgentVisuals visuals))
+            {
+                Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == agentIndex);
+                visuals = agent?.AgentVisuals;
+            }
+            // Native visual validity, rather than Agent.IsActive, decides whether a corpse can detach.
+            if (visuals != null && visuals.IsValid())
+            {
+                LogLipSyncNativeProbe("StopRhubarbRecord.Before", agentIndex, "reason=" + reason);
+                visuals.StartRhubarbRecord("", -1);
+                LogLipSyncNativeProbe("StopRhubarbRecord.After", agentIndex, "reason=" + reason);
+                Logger.Log("LipSync", $"[Rhubarb] StopRhubarbRecord called, agentIndex={agentIndex}, reason={reason}");
+            }
+            _agentLipSyncVisuals.Remove(agentIndex);
+        }
+        catch (Exception ex)
+        {
+            BannerlordExceptionSentinel.ReportObservedException("LipSync.StopRhubarbRecord", ex, $"agentIndex={agentIndex};reason={reason}");
+        }
+    }
 
 	internal void DetachAgentLipSyncForSafety(int agentIndex, string reason)
 	{
@@ -1513,12 +1468,22 @@ internal sealed class SceneAudioLipSyncController
 		Report("LipSyncSafeguard.Detached", agentIndex, $"reason={reason};hadSpeaking={hadSpeakingEntry};alreadyDetached={alreadyDetached}");
 	}
 
+    internal void CancelTrackedAgentPlayback(int agentIndex)
+    {
+        HashSet<long> requests;
+        lock (_requestLock)
+            requests = new HashSet<long>(_ttsPlaybackOwners.Where(pair => pair.Value.Request.AgentIndex == agentIndex).Select(pair => pair.Key));
+        if (requests.Count != 0) TtsEngine.Instance?.CancelRequests(requests, keepCurrent: false);
+    }
+
 	internal void InterruptAgentSpeechForCombat(int agentIndex, string reason)
 	{
 		if (agentIndex < 0)
 		{
 			return;
 		}
+        if (_agentLipSyncVisuals.ContainsKey(agentIndex) || _agentSoundEvents.ContainsKey(agentIndex))
+            StopAgentRhubarbRecordIfPossible(agentIndex, "Cancel:" + reason);
 		bool speaking = false;
 		SoundEvent soundEvent = null;
 		string wavPath = null;
@@ -1545,6 +1510,7 @@ internal sealed class SceneAudioLipSyncController
 		bool interrupted = false;
 		try
 		{
+			CancelTrackedAgentPlayback(agentIndex);
 			interrupted = TtsEngine.Instance?.InterruptCurrentPlaybackForAgent(agentIndex, reason) ?? false;
 		}
 		catch
@@ -1561,8 +1527,8 @@ internal sealed class SceneAudioLipSyncController
 			return;
 		}
 		Report("InterruptAgentSpeechForCombat", agentIndex, $"reason={reason};speaking={speaking};interrupted={interrupted};hadSe={(soundEvent != null)};hadWav={(!string.IsNullOrWhiteSpace(wavPath))};hadXml={(!string.IsNullOrWhiteSpace(xmlPath))}");
-		StopAgentRhubarbRecordIfPossible(agentIndex, "Interrupt:" + reason);
-		QueueDeferredCleanup(soundEvent, wavPath, xmlPath, "Interrupt:" + reason, agentIndex);
+		SafeStopAndReleaseSoundEvent(soundEvent);
+		QueueDeferredCleanup(null, wavPath, xmlPath, "Interrupt:" + reason, agentIndex);
 		if (_ports.SuppressMeetingControl())
 		{
 			_ports.ClearSpeechQueue();
@@ -1576,6 +1542,8 @@ internal sealed class SceneAudioLipSyncController
 		{
 			return;
 		}
+        if (_agentLipSyncVisuals.ContainsKey(agentIndex) || _agentSoundEvents.ContainsKey(agentIndex))
+            StopAgentRhubarbRecordIfPossible(agentIndex, "Cancel:" + reason);
 		bool speaking = false;
 		SoundEvent soundEvent = null;
 		string wavPath = null;
@@ -1602,6 +1570,7 @@ internal sealed class SceneAudioLipSyncController
 		bool interrupted = false;
 		try
 		{
+			CancelTrackedAgentPlayback(agentIndex);
 			interrupted = TtsEngine.Instance?.InterruptCurrentPlaybackForAgent(agentIndex, reason) ?? false;
 		}
 		catch
@@ -1614,8 +1583,8 @@ internal sealed class SceneAudioLipSyncController
 			return;
 		}
 		Report("CancelAgentSpeechForRemoval", agentIndex, $"reason={reason};speaking={speaking};interrupted={interrupted};hadSe={(soundEvent != null)};hadWav={(!string.IsNullOrWhiteSpace(wavPath))};hadXml={(!string.IsNullOrWhiteSpace(xmlPath))}");
-		StopAgentRhubarbRecordIfPossible(agentIndex, "Removed:" + reason);
-		QueueDeferredCleanup(soundEvent, wavPath, xmlPath, "Removed:" + reason, agentIndex);
+		SafeStopAndReleaseSoundEvent(soundEvent);
+		QueueDeferredCleanup(null, wavPath, xmlPath, "Removed:" + reason, agentIndex);
 	}
 
 
@@ -1796,6 +1765,7 @@ internal sealed class SceneAudioLipSyncPort
  internal Func<int, bool> HasPlaybackStarted, CanParticipate;
  internal Func<TtsEngine.PlaybackRequest, bool> IsNativeWait;
  internal Func<TtsEngine.PlaybackRequest, string, string, float, bool> QueueMapPlayback;
+ internal Action<TtsEngine.PlaybackRequest> CancelMapPlayback;
  internal Func<bool> UseMapPlayback, SpeechBusy, SuppressMeetingControl;
  internal SceneLipSyncAgentCheck CanLipSync;
  internal SceneLipSyncIndexCheck CanLipSyncIndex;

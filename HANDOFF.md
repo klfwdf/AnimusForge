@@ -1,3 +1,7 @@
+## 2026-11-03 TTS取消同步解除口型
+
+SOURCE_FIXED / DUAL_BUILD_PASS / LIVE_NOT_RUN / NOT_DEPLOYED。修复说话NPC死亡后口型未解除、声音被清理导致原生崩溃的链路；死亡/删除/受击、取消事件、对话结束及Mission结束同步取消音频和口型，旧请求不能影响新播放。17项fixture与双API/Bootstrap构建通过；完整TTS回归103 PASS/1个既有音色备用接口FAIL。未部署/实机；原现场、范围与回滚见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-death-cancel-lipsync-20261103)及[代码图](docs/architecture/af-framework-code-scope.md#tts-death-cancel-lipsync-20261103)。
+
 ## 2026-11-02 外交请求原案前置（本任务）
 
 SOURCE_COMMITTED / TARGETED_REPLAY_PASS / DUAL_BUILD_PASS / NOT_DEPLOYED。产品9dd4028e1e，检查点7c0c4ca4d。六类结构化外交请求在最终副本中前置原案、后置摘要/实时资料/修正；字段值、来源顺序、CN/EN原文、system、存储提示词和冻结链均保持，原压缩门槛不变。

@@ -1,3 +1,12 @@
+<a id="tts-death-cancel-lipsync-20261103"></a>
+## 2026-11-03 TTS 死亡、取消与离场口型清理
+
+SOURCE_FIXED / DUAL_BUILD_PASS / LIVE_NOT_RUN / NOT_DEPLOYED。用户授权“修复并且TTS离场要取消包括口型”“当取消声音也要取消口型”。检查点 `2ffc94d4c`；原现场14:14:39 Agent90死亡，因IsActive过滤跳过口型停止，14:14:41停止sound1032后原版报Null sound event for lip sync并以0xc0000005崩溃，现场证据在work/tts-speaker-death-20261103-141441/。
+
+修复：SceneAudio缓存实际启动口型的MBAgentVisuals，死亡后按原生IsValid解绑；死亡/删除/受击取消同Agent已接受的当前及排队请求，不取消其他NPC。取消事件在主线程重验请求身份，先解绑口型再停止SoundEvent。Mission结束先清请求身份、解绑全部持有口型再停音/删文件；新增OnAgentRemoved/OnAgentDeleted/OnEndMission入口。原生对话结束也取消当前语音；地图取消按请求和CampaignMission身份解绑Tableau再停音。无新增玩家文案、设置、资源、存档或公开API。缓存仅每次口型开始/结束维护；取消只遍历本控制器持有请求，无新Tick扫描/反射/IO。
+
+验证：生产方法抽取fixture 17 PASS + host接线检查；1.3/1.4/Bootstrap通过原build_single_module.ps1（Debug，无Stage/Deploy），双Coup接缝与registration smoke通过，最终日志`.tmp/tts-death-build-20261103-verified.log`。首次build误包含既有work下独立测试C#，失败1095错；只在命令环境暂设DefaultItemExcludes=**/work/**后重跑，不修改构建入口。TtsRequestLifetimeRegressionTests为103 PASS/1 FAIL，既有音色/audio/voices 404到/v1/models备用接口测试仍失败，见`.tmp/tts-death-lifetime-20261103/run.log`；不称全套通过。fixture不是原生引擎验收。未部署、打包、push、启动游戏；未解析dump。待实机验死亡中断、取消按钮/对话结束及离场。代码证据见[范围图](architecture/af-framework-code-scope.md#tts-death-cancel-lipsync-20261103)。回滚仅逆向本任务提交，勿回退工作区他人改动。
+
 <a id="diplomacy-stable-case-prefix-20261102"></a>
 ## 2026-11-02 外交请求原案前置与动态字段后置（本任务）
 
