@@ -2780,3 +2780,8 @@ This entry covers only the authorized repeated-planning repair, on merged base `
 | `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/PlanningRepairReplay.cs` | 43–179: `Run` and scenario methods | Controlled production-owner replay: comparison, admission, cumulative recovery/reload, same-draft audit, lossless duplicate projection, full-envelope supplementation. |
 
 Uncovered: actual provider semantic compliance, live-game/actual player-save acceptance, Stage, packaging, deployment and push. Existing transport retry and daily request rules are not redesigned. Detailed results are in the main ledger's `DIP-PLANNING-20261104` entry.
+
+
+## 2026-11-04 — 外交交付门禁补项与中文部署
+
+外交生产范围继续引用 `ad725bc08` 的上方代码图。交付合并 `822e29a82` 保留远端 TTS owner；`35210b37d` 仅补两个英文兼容表的五个不变量项；`79b9ea39d` 仅修正 content/modules/AF.Module.Onboarding/PlayerExports/english-worldbook-identity-map.json 的 354 条 heroes.en_file 路径，中文键、HeroId 与正文不变。完整 CN 投影通过，EN 的 311 个文件契约差异未修。用户明确选择中文默认部署后，复用 scripts/build/deploy_module.ps1 的原 Invoke-ManagedStageDeployment，未修改原部署脚本；实际安装及保护文件哈希验证通过。覆盖安装交付，不覆盖实机、真实模型或玩家存档验收。详见主台账 DIP-DELIVERY-20261104 及本地 verification.json。

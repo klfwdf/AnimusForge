@@ -4230,3 +4230,8 @@ Apolytea同意命令自己的队伍巡逻 Diathma 三天；provider真实输出 
 `main` 产品/测试提交 `ad725bc08`（检查点 `4e0237a9f`，合并基线 `67707d801`）：统一 CN/EN 提议证据标准、完整请求预算与精确重复引用、具体候选纠错、跨候选/读档的六次失败上限；超长输入立即暂停，审核耗尽保留原稿。双 API/Bootstrap 构建与相关离线回放通过。真实 provider、实机/玩家存档仍未验；未推送、部署或打包。全仓双语门禁有五个已核实的既存英文资源缺项，本次受影响提示词配对和真实双语消费者已通过。
 
 详细证据：[主台账 DIP-PLANNING-20261104](docs/animusforge-refactoring-and-repository-reorganization-plan.md#dip-planning-20261104--重复外交规划修复源码与离线验证完成)；[已核实代码范围](docs/architecture/af-framework-code-scope.md#2026-11-04--diplomacy-planning-retry-and-evidence-repair-ad725bc08)。开工已有文档改动与未跟踪目录保持原状；此条只交接本次修复，不发出发布/推送授权。
+
+
+## 2026-11-04 — 外交修复已推送并部署中文默认内容
+
+用户明确授权“部署并推送”，随后确认“先部署到游戏里吧反正，我玩的是中文版没有英文版的副本”。产品提交 `79b9ea39d` 已推送并核实远端；已将同源双 API/Bootstrap 与中文默认内容安装到现有游戏 AnimusForge 模块，安装后文件哈希和既有设置保护检查通过。完整 CN 投影通过；EN 世界书 311 个文件契约差异仍未修复，按本次明确授权仅部署中文默认内容，未制作双语发行包。未启动实机或验收玩家存档。详细状态见主台账 `DIP-DELIVERY-20261104`、代码图及 `artifacts/diplomacy-deploy-push-20261104/verification.json`。原有 dirty 文档和未跟踪资料保留；旧 Stage 保留于该证据目录的 `previous-stage/`。

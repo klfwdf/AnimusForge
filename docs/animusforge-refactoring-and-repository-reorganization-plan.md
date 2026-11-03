@@ -13653,3 +13653,16 @@ BUILT / PACKAGED / DEPLOYED / SOURCE_PUSHED / USER_SKIPPED_VALIDATION。用户�
 性能：预算组装、完整记录筛选和精确去重仅在请求准备边界执行；每次协作捕获一个已准入国家，保留既有世界查询缓存；暂停任务沿用 30 秒轻量元数据探测，无新增 Tick IO、全世界扫描或后台游戏对象读取。作用域只限规划，未改事件执行/发布规则。
 
 未验：真实模型是否稳定遵守新语义、实机及该玩家存档验收。未授权/未执行：push、部署、正式打包。回滚用针对 `ad725bc08` 的聚焦 inverse commit，不回滚开工已有改动。此前日志调查的重复 API/准备记录不等于已有重复事件发布；本次不据此声称修复了已发生的重复执行。
+
+
+## DIP-DELIVERY-20261104 — 推送与中文默认部署完成
+
+本条更新 DIP-PLANNING-20261104 的交付状态。用户要求“部署并推送”，并在获知 EN 世界书校验失败后明确授权“先部署到游戏里吧反正，我玩的是中文版没有英文版的副本”。该选择仅覆盖这次中文默认部署，不修改全局发布门禁、不授权扩大英文世界书修复。
+
+已合并远端 TTS 清理 `14b33b8b1` 至 `822e29a82`；保留外交实现 `ad725bc08` 与按需查询修复 `2020d2758`。`35210b37d` 补五个英文兼容表不变量项；`79b9ea39d` 仅按唯一 HeroId 校正布匿世界书 354 条 en_file 路径，世界书正文和身份不变。产品已普通推送 origin/main，并以 ls-remote 核实 `79b9ea39d0ffb6e5a59f90365db9793ca9e53895`。无强推。原有四份 dirty 文档经 stash 保存/恢复和内容比较保全，未跟踪资料未改。
+
+双 API（1.3.15/1.4.6 引用）与 Bootstrap 零编译错误，双 coup seam/registration 通过；TTS 清理 17 + host wiring、音色 187、外交 CN/EN 38 通过；l10n 门禁 26 表/2106 运行文件零失败。原脚本完成 8997 文件干净 Stage/current artifact 校验，完整 CN 投影 8472 文件通过。EN 投影仍有 311 个文件契约差异，示例为布匿 Profiles/规则字段集合；此数量不等于已证实的运行故障数量，未声称 EN 校验通过。
+
+实际部署：复用已验证 Stage，通过临时调用器加载并执行未修改的 deploy_module.ps1 原部署 owner；仅按用户明确例外检查 CN 投影收据，保留当前产物、模块身份、路径、玩家文件、哈希/并发修改及同卷替换保护。目标为 E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge；不创建 Recovery 备份或自动回滚，不改游戏原版 DLL。安装后核对全部 Stage 文件与保护文件，双实现 DLL 和 Bootstrap 哈希已记录在 verification.json。现有配置和自定义提示词保留，较新玩家导出按原规则保留。
+
+本地证据：artifacts/diplomacy-deploy-push-20261104/verification.json；旧 Stage 原样保留于 previous-stage/。本次未启动游戏、未调用真实 provider、未验收玩家存档、未制作发行包；构建与文件安装验收不能代替实机外交行为验收。
