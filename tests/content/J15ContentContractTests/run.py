@@ -544,7 +544,7 @@ WORLD_BULLETIN_EXPECTED = {
 }
 # Native map-bar terminal entry brushes (layers resolved by ItemId in AfWarStatsMapNavigationEntry.cs).
 TERMINAL_MAPBAR_EXPECTED = {
-    "GUI/Brushes/AFTerminalMapBarBrushes.xml": {"owner": "AF.Module.WarStats", "source": "content/modules/AF.Module.WarStats/GUI/Brushes/AFTerminalMapBarBrushes.xml", "sha256": "40D3BD2F661AE197681E8A216BD441BE472834E6BC31BA12A90F9BF017BF2A4E"},
+    "GUI/Brushes/AFTerminalMapBarBrushes.xml": {"owner": "AF.Module.WarStats", "source": "content/modules/AF.Module.WarStats/GUI/Brushes/AFTerminalMapBarBrushes.xml", "sha256": "6E88650F944A0862B38449D305A491762E490AF407F57E102611DBA48D41625E"},
     "GUI/SpriteParts/af_terminal/af_terminal_icon.png": {"owner": "AF.Module.WarStats", "source": "content/modules/AF.Module.WarStats/GUI/SpriteParts/af_terminal/af_terminal_icon.png", "sha256": "740360C51DC882DCBA5958F5F4A0DFEDFCD4C1FF824A629B6E03FE09E386F802"},
 }
 # Courier stationery presets (MCM 信纸样式): new sprite layers loaded on demand by AnimusForgeCourierUiSprites.cs.
@@ -1102,7 +1102,7 @@ def verify_map_and_resources() -> None:
         text = source.read_text(encoding="utf-8-sig")
         check('OverrideBrush="MapBar.Left.Icons"' in text and 'OverrideBrush="MapBar.Left.Button.Backgrounds"' in text, "terminal map bar brush overrides")
         consumer = (ROOT / "WarStats/AfWarStatsMapNavigationEntry.cs").read_text(encoding="utf-8-sig")
-        check('ItemId = "af_terminal"' in consumer and text.count('BrushLayer Name="af_terminal"') == 2, "terminal map bar layer/ItemId drift")
+        check('ItemId = "af_terminal"' in consumer and text.count('BrushLayer Name="af_terminal"') == 2 and 'Name="kingdom" Sprite="MapBar\\bottom_left_button6_clan"' in text, "terminal map bar layer/ItemId drift")
 
     design_root = ROOT / "content" / "modules" / "AF.Module.Economy" / "AssetSources"
     check({path.name for path in design_root.iterdir()} == set(F4A_DESIGN_EXPECTED),

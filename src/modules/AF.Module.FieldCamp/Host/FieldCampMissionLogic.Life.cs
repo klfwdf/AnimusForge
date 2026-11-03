@@ -13,7 +13,8 @@ namespace AnimusForge;
 /// <summary>Camp life, assemble/dismiss orders and camp-local coordinates.</summary>
 public sealed partial class FieldCampMissionLogic
 {
-	private const float ArriveDistanceSquared = 1.2f;
+	private const float ArriveDistanceSquared = 0.16f;
+    private const float RouteCornerDistanceSquared = 0.04f;
 	private const float RowSpacing = 1.6f;
 	private const float FileSpacing = 1.3f;
 	private const int MinFilesPerRank = 10;
@@ -299,6 +300,37 @@ public sealed partial class FieldCampMissionLogic
 
 	// ---------- camp life ----------
 
+    // Distance checks only, at most 20 residents per frame. Route construction stays
+    // in upkeep; reached corners must not wait for a full 150-person upkeep cycle.
+    private void AdvanceCampWalks()
+    {
+        int count = _agents.Count;
+        for (int n = 0; n < Math.Min(UpkeepBatch, count); n++)
+        {
+            _walkCursor = (_walkCursor + 1) % count;
+            CampAgent entry = _agents[_walkCursor];
+            Agent agent = entry.Agent;
+            if (entry.Seated || entry.MoveBlocked || agent == null || !agent.IsActive()
+                || IsDuelist(agent) || IsEnvoy(entry) || IsSceneConversationHeld(agent)
+                || _campCeremonyActors.ContainsKey(agent) || _ceremonyMoved.Contains(entry)) continue;
+            if (entry.RouteIndex >= entry.Route.Length
+                || agent.Position.AsVec2.DistanceSquared(entry.Route[entry.RouteIndex].AsVec2) > RouteCornerDistanceSquared) continue;
+            try
+            {
+                entry.RouteIndex++;
+                IssueCampWalk(entry);
+            }
+            catch (Exception ex)
+            {
+                entry.MoveBlocked = true;
+                entry.RouteQueued = true;
+                entry.Seated = true;
+                entry.NextWanderTime = _elapsed + 3f;
+                Logger.Log(LogSource, "resident waypoint pending agent=" + agent.Index + " error=" + ex.Message);
+            }
+        }
+    }
+
 	private void UpkeepBatchOfAgents()
 	{
 		int count = _agents.Count;
@@ -320,76 +352,85 @@ public sealed partial class FieldCampMissionLogic
 			{
 				continue;
 			}
-            if (!IsInsideCamp(agent.Position))
+            try
             {
-                if (entry.MoveBlocked && _elapsed < entry.NextWanderTime) continue;
-                if (!entry.Seated && _elapsed < entry.ProgressAt) continue;
-                RecoverBlockedCampWalk(entry);
-                continue;
-            }
-            if (entry.MoveBlocked)
-            {
-                if (_elapsed < entry.NextWanderTime) continue;
-                if (entry.RouteQueued || _assembled)
-                    MoveTo(entry, entry.Target, entry.TargetFacing, run: entry.Run);
-                else if (entry.CanLeavePost && agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) > ArriveDistanceSquared)
-                    MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
-                else
+                if (!IsInsideCamp(agent.Position) && entry.Seated && !entry.MoveBlocked)
                 {
-                    entry.MoveBlocked = false;
-                    Refresh(entry);
+                    RecoverBlockedCampWalk(entry);
+                    continue;
                 }
-                continue;
-            }
-            if (!entry.Seated && _elapsed >= entry.MoveDeadline)
-            {
-                RecoverBlockedCampWalk(entry);
-                continue;
-            }
-            if (!entry.Seated && _elapsed >= entry.ProgressAt)
-            {
-                if (agent.Position.AsVec2.DistanceSquared(entry.LastWalkPosition.AsVec2) < 0.04f)
-                { RecoverBlockedCampWalk(entry); continue; }
-                entry.LastWalkPosition = agent.Position;
-                entry.ProgressAt = _elapsed + 4f;
-            }
-            if (!entry.Seated && entry.RouteIndex < entry.Route.Length &&
-                agent.Position.AsVec2.DistanceSquared(entry.Route[entry.RouteIndex].AsVec2) <= 0.36f)
-            {
-                entry.RouteIndex++;
-                IssueCampWalk(entry);
-            }
-            if (!_assembled && entry.Seated && entry.Returning && _elapsed >= entry.NextWanderTime)
-            {
-                entry.Returning = false;
-                MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
-                continue;
-            }
+                if (entry.MoveBlocked)
+                {
+                    if (_elapsed < entry.NextWanderTime) continue;
+                    if (entry.RouteQueued || _assembled)
+                        MoveTo(entry, entry.Target, entry.TargetFacing, run: entry.Run);
+                    else if (entry.CanLeavePost && agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) > ArriveDistanceSquared)
+                        MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
+                    else
+                    {
+                        entry.MoveBlocked = false;
+                        Refresh(entry);
+                    }
+                    continue;
+                }
+                if (!entry.Seated && _elapsed >= entry.MoveDeadline)
+                {
+                    RecoverBlockedCampWalk(entry);
+                    continue;
+                }
+                if (!entry.Seated && entry.RouteIndex < entry.Route.Length &&
+                    agent.Position.AsVec2.DistanceSquared(entry.Route[entry.RouteIndex].AsVec2) <= RouteCornerDistanceSquared)
+                {
+                    entry.RouteIndex++;
+                    IssueCampWalk(entry);
+                }
+                if (!entry.Seated && _elapsed >= entry.ProgressAt)
+                {
+                    if (agent.Position.AsVec2.DistanceSquared(entry.LastWalkPosition.AsVec2) < 0.04f)
+                    { RecoverBlockedCampWalk(entry); continue; }
+                    entry.LastWalkPosition = agent.Position;
+                    entry.ProgressAt = _elapsed + 4f;
+                }
+                if (!_assembled && entry.Seated && entry.Returning && _elapsed >= entry.NextWanderTime)
+                {
+                    entry.Returning = false;
+                    MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
+                    continue;
+                }
                 if (!_assembled && entry.Seated && entry.Activity == Activity.Wander && _elapsed >= entry.NextWanderTime)
-				{
-					entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 50f);
-					if (TryNearbyStroll(entry, out Vec3 stroll)) MoveTo(entry, stroll, entry.HomeFacing, run: false);
-					continue;
-				}
-			if (!_assembled && entry.Seated && _elapsed >= entry.NextWanderTime && entry.Activity != Activity.Wounded)
-			{
-				Refresh(entry);
-				continue;
-			}
-			if (entry.Seated || agent.Position.AsVec2.DistanceSquared(entry.Target.AsVec2) > ArriveDistanceSquared)
-			{
-				continue;
-			}
-			// Arrived: release the movement goal before applying an idle animation.
-            StopCampNavigation(agent);
-            agent.SetIsAIPaused(true);
-			agent.LookDirection = new Vec3(entry.TargetFacing.x, entry.TargetFacing.y, 0f);
-			if (!_assembled)
-			{
-				ApplyPose(entry);
-			}
-			entry.Seated = true;
-            entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 50f);
+                {
+                    entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(2f, 5f);
+                    if (TryNearbyStroll(entry, out Vec3 stroll)) MoveTo(entry, stroll, entry.HomeFacing, run: false);
+                    continue;
+                }
+    			if (!_assembled && entry.Seated && _elapsed >= entry.NextWanderTime && entry.Activity != Activity.Wounded)
+    			{
+    				Refresh(entry);
+    				continue;
+    			}
+    			if (entry.Seated || agent.Position.AsVec2.DistanceSquared(entry.Target.AsVec2) > ArriveDistanceSquared)
+    			{
+    				continue;
+    			}
+    			// Arrived: release the movement goal before applying an idle animation.
+                StopCampNavigation(agent);
+                agent.SetIsAIPaused(true);
+    			agent.LookDirection = new Vec3(entry.TargetFacing.x, entry.TargetFacing.y, 0f);
+    			if (!_assembled)
+    			{
+    				ApplyPose(entry);
+    			}
+    			entry.Seated = true;
+                entry.NextWanderTime = _elapsed + (entry.Activity == Activity.Wander ? MBRandom.RandomFloatRanged(2f, 5f) : MBRandom.RandomFloatRanged(12f, 25f));
+            }
+            catch (Exception ex)
+            {
+                entry.Seated = true;
+                entry.MoveBlocked = true;
+                entry.RouteQueued = true;
+                entry.NextWanderTime = _elapsed + 3f;
+                Logger.Log(LogSource, "resident upkeep failed agent=" + agent.Index + " error=" + ex.Message);
+            }
 		}
 	}
 
@@ -401,6 +442,12 @@ public sealed partial class FieldCampMissionLogic
 	private void Refresh(CampAgent entry)
 	{
 		entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 55f);
+        if (entry.Activity == Activity.Wander)
+        {
+            entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(2f, 5f);
+            if (TryNearbyStroll(entry, out Vec3 patrol)) MoveTo(entry, patrol, entry.HomeFacing, run: false);
+            return;
+        }
 		float roll = MBRandom.RandomFloat;
 		if (entry.Activity == Activity.Sentry || (entry.Activity == Activity.Post && !entry.CanLeavePost) || roll < 0.35f)
 		{
@@ -434,11 +481,20 @@ public sealed partial class FieldCampMissionLogic
 		mate.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(12f, 28f);
 	}
 
+    // Camp life supplies every movement goal. Keep native daily behaviours from
+    // periodically selecting a town wander target outside this temporary camp.
+    private sealed class CampMovementBehaviorGroup : AgentBehaviorGroup
+    {
+        public CampMovementBehaviorGroup(AgentNavigator navigator, Mission mission) : base(navigator, mission) { }
+        public override float GetScore(bool isSimulation) => 10f;
+    }
+
 		private static bool TryPrepareCampNavigation(Agent agent)
 		{
 			var component = agent.GetComponent<CampaignAgentComponent>();
 			if (component == null) return false;
 			var navigator = component.AgentNavigator ?? component.CreateAgentNavigator();
+            navigator.RemoveBehaviorGroup<CampMovementBehaviorGroup>();
 			if (navigator.GetBehaviorGroup<DailyBehaviorGroup>() == null) navigator.AddBehaviorGroup<DailyBehaviorGroup>();
 			return true;
 		}
@@ -446,8 +502,16 @@ public sealed partial class FieldCampMissionLogic
 		private static void StopCampNavigation(Agent agent)
 		{
 			var navigator = agent?.GetComponent<CampaignAgentComponent>()?.AgentNavigator;
-			navigator?.GetBehaviorGroup<DailyBehaviorGroup>()?.DisableScriptedBehavior();
-			navigator?.ClearTarget();
+            var daily = navigator?.GetBehaviorGroup<DailyBehaviorGroup>();
+            daily?.DisableScriptedBehavior();
+            daily?.DisableAllBehaviors();
+            if (navigator != null)
+            {
+                if (navigator.GetBehaviorGroup<CampMovementBehaviorGroup>() == null)
+                    navigator.AddBehaviorGroup<CampMovementBehaviorGroup>();
+                navigator.RefreshBehaviorGroups(false);
+                navigator.ClearTarget();
+            }
 			agent?.DisableScriptedMovement();
 			agent?.ClearTargetFrame();
 		}
@@ -455,7 +519,7 @@ public sealed partial class FieldCampMissionLogic
 		private bool TryNearbyStroll(CampAgent entry, out Vec3 target)
 		{
 			target = entry.Home;
-            if (_campStrollBudget <= 0) return false;
+            if (_campStrollBudget <= 0 || _campRouteBudget <= 0) return false;
             _campStrollBudget--;
 			int count = _layout.WanderSlots.Count;
 			int start = count > 0 ? MBRandom.RandomInt(count) : 0;
@@ -467,7 +531,10 @@ public sealed partial class FieldCampMissionLogic
 					!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target) ||
                     (!IsInsideCamp(target) || IsReservedCeremonyPosition(target))
                     || !IsCampPositionAvailable(entry.Agent, target, 1.6f)) continue;
-				return true;
+                _campRouteBudget--;
+                if (TryCampRoute(entry.Agent.Position, target, out Vec3[] route))
+                { entry.Route = route; entry.RoutePrepared = true; return true; }
+                if (_campRouteBudget <= 0) return false;
 			}
             // Dense layouts need nearby choices rather than only distant layout slots.
             for (int i = 0; i < 6; i++)
@@ -478,7 +545,13 @@ public sealed partial class FieldCampMissionLogic
                 if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) <= 144f &&
                     FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target) &&
                     IsInsideCamp(target) && !IsReservedCeremonyPosition(target)
-                    && IsCampPositionAvailable(entry.Agent, target, 1.6f)) return true;
+                    && IsCampPositionAvailable(entry.Agent, target, 1.6f))
+                {
+                    _campRouteBudget--;
+                    if (TryCampRoute(entry.Agent.Position, target, out Vec3[] route))
+                    { entry.Route = route; entry.RoutePrepared = true; return true; }
+                    if (_campRouteBudget <= 0) return false;
+                }
             }
             return false;
         }
@@ -542,6 +615,7 @@ public sealed partial class FieldCampMissionLogic
             entry.Target = target;
             entry.TargetFacing = facing;
             entry.Run = run;
+            Vec3[] preparedRoute = entry.Route;
             entry.Route = Array.Empty<Vec3>();
             entry.RouteIndex = 0;
             entry.MoveBlocked = entry.RouteQueued = false;
@@ -550,7 +624,10 @@ public sealed partial class FieldCampMissionLogic
                 SettleCampAgent(entry, blocked: false);
                 return;
             }
-            if (_campRouteBudget <= 0)
+            bool prepared = entry.RoutePrepared && preparedRoute.Length > 0
+                && preparedRoute[preparedRoute.Length - 1].AsVec2.DistanceSquared(target.AsVec2) <= 0.36f;
+            entry.RoutePrepared = false;
+            if (!prepared && _campRouteBudget <= 0)
             {
                 bool returnAfterVisit = entry.Returning;
                 SettleCampAgent(entry, blocked: true);
@@ -559,15 +636,16 @@ public sealed partial class FieldCampMissionLogic
                 entry.NextWanderTime = _elapsed + 0.5f;
                 return;
             }
-            _campRouteBudget--;
-            if (IsReservedCeremonyPosition(target) || !TryCampRoute(agent.Position, target, out Vec3[] route))
+            Vec3[] route = prepared ? preparedRoute : Array.Empty<Vec3>();
+            if (!prepared) _campRouteBudget--;
+            if (IsReservedCeremonyPosition(target) || (!prepared && !TryCampRoute(agent.Position, target, out route)))
             {
                 SettleCampAgent(entry, blocked: true);
                 return;
             }
             entry.Route = route;
             entry.Seated = false;
-            entry.MoveDeadline = _elapsed + 30f;
+            entry.MoveDeadline = _elapsed + Math.Max(30f, agent.Position.AsVec2.Distance(target.AsVec2) * 3f);
             IssueCampWalk(entry);
         }
         catch (Exception ex)
@@ -580,11 +658,12 @@ public sealed partial class FieldCampMissionLogic
     private bool TryCampRoute(Vec3 from, Vec3 target, out Vec3[] route)
     {
         route = Array.Empty<Vec3>();
-        if (!IsInsideCamp(from) || !IsInsideCamp(target)) return false;
+        if (!IsInsideCamp(target)) return false;
         if (FieldCampSite.TryBuildGroundedRoute(Mission.Scene, from, target, out route, out bool covered, stayInsideCamp: true))
         {
-            // A valid terrain detour may still leave the fenced camp. Never issue it.
-            for (int i = 0; i < route.Length; i++)
+            // Interior routes stay interior. An outside start may return through the gate.
+            bool interiorStart = IsInsideCamp(from);
+            for (int i = 0; interiorStart && i < route.Length; i++)
                 if (!IsInsideCamp(route[i])) { route = Array.Empty<Vec3>(); return false; }
             return true;
         }
@@ -596,6 +675,7 @@ public sealed partial class FieldCampMissionLogic
     {
         Vec3 goal = entry.RouteIndex < entry.Route.Length ? entry.Route[entry.RouteIndex] : entry.Target;
         StopCampNavigation(entry.Agent);
+        entry.Agent.Controller = AgentControllerType.AI;
         entry.Agent.SetIsAIPaused(false);
         entry.Agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
         entry.LastWalkPosition = entry.Agent.Position;
@@ -603,37 +683,22 @@ public sealed partial class FieldCampMissionLogic
         var world = new WorldPosition(Mission.Scene, UIntPtr.Zero, goal, false);
         var flags = Agent.AIScriptedFrameFlags.NoAttack;
         if (!entry.Run) flags |= Agent.AIScriptedFrameFlags.DoNotRun;
-        entry.Agent.SetScriptedPositionAndDirection(ref world, entry.TargetFacing.RotationInRadians, false, flags);
+        var navigator = entry.Agent.GetComponent<CampaignAgentComponent>()?.AgentNavigator;
+        if (navigator != null)
+            navigator.SetTargetFrame(world, entry.TargetFacing.RotationInRadians, 0.15f, -10f, flags);
+        else
+            entry.Agent.SetScriptedPositionAndDirection(ref world, entry.TargetFacing.RotationInRadians, false, flags);
     }
 
     private void RecoverBlockedCampWalk(CampAgent entry)
     {
-        StopCampNavigation(entry.Agent);
-        bool returned = TryReturnToSafeCampPosition(entry.Agent, entry.Home);
-        SettleCampAgent(entry, blocked: !returned);
-    }
-
-    private bool TryReturnToSafeCampPosition(Agent agent, Vec3 home)
-    {
-        // Share two recovery probes per upkeep across residents and ceremony returns.
-        if (_campRecoveryBudget <= 0) return false;
-        _campRecoveryBudget--;
-        for (int attempt = 0; attempt < 17; attempt++)
-        {
-            Vec3 desired = home;
-            if (attempt > 0)
-            {
-                float angle = (attempt - 1) % 8 * MathF.PI / 4f;
-                float radius = attempt <= 8 ? 1f : 2f;
-                desired += new Vec3(MathF.Cos(angle) * radius, MathF.Sin(angle) * radius, 0f);
-            }
-            if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, desired, 0.4f, out Vec3 safe)
-                || !IsInsideCamp(safe) || IsReservedCeremonyPosition(safe)) continue;
-            if (!IsCampPositionAvailable(agent, safe)) continue;
-            agent.TeleportToPosition(safe);
-            return true;
-        }
-        return false;
+        // Replan from the actual position. Never teleport on collision or stall.
+        Vec3 goal = entry.Target;
+        SettleCampAgent(entry, blocked: true);
+        entry.Target = goal;
+        entry.RouteQueued = _assembled || !IsInsideCamp(entry.Agent.Position);
+        if (entry.RouteQueued && !IsInsideCamp(entry.Agent.Position)) entry.Target = entry.Home;
+        entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(1f, 3f);
     }
 
     private bool IsCampPositionAvailable(Agent agent, Vec3 position, float clearance = 0.8f)
@@ -677,33 +742,35 @@ public sealed partial class FieldCampMissionLogic
         entry.Agent.SetIsAIPaused(true);
         entry.Route = Array.Empty<Vec3>();
         entry.RouteIndex = 0;
+        entry.RoutePrepared = false;
         entry.Seated = true;
         entry.Returning = false;
         entry.MoveBlocked = blocked;
         entry.RouteQueued = false;
-        entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(25f, 50f);
+        entry.NextWanderTime = _elapsed + (entry.Activity == Activity.Wander ? MBRandom.RandomFloatRanged(2f, 5f) : MBRandom.RandomFloatRanged(12f, 25f));
         if (!_assembled) ApplyPose(entry);
+        if (blocked) entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(1f, 3f);
     }
 
 	private void ApplyPose(CampAgent entry)
-	{
-		string[] pool = PoseFor(entry);
-		if (pool == null)
-		{
-			return;
-		}
-		ActionIndexCache action = ResolveAction(pool[(entry.Agent.Index + entry.PoseVariant) % pool.Length]);
-		if (action != ActionIndexCache.act_none)
-		{
-			try
-			{
-				entry.Agent.SetActionChannel(0, in action, true);
-			}
-			catch
-			{
-			}
-		}
-	}
+    {
+        string[] pool = PoseFor(entry);
+        if (pool == null) return;
+        for (int i = 0; i < pool.Length; i++)
+        {
+            ActionIndexCache action = ResolveAction(pool[(entry.Agent.Index + entry.PoseVariant + i) % pool.Length]);
+            if (action == ActionIndexCache.act_none) continue;
+            try { if (entry.Agent.SetActionChannel(0, in action, true)) return; }
+            catch { }
+        }
+        if (entry.Activity != Activity.Wounded && entry.Activity != Activity.Sentry
+            && (entry.Activity != Activity.Post || entry.CanLeavePost))
+        {
+            entry.Work = FieldCampLayout.WorkKind.None;
+            entry.Activity = Activity.Wander;
+            entry.NextWanderTime = _elapsed + 1f;
+        }
+    }
 
 	private static string[] PoseFor(CampAgent entry)
 	{

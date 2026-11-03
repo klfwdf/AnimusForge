@@ -21,60 +21,72 @@ public sealed partial class FieldCampMissionLogic
 
 	private readonly HashSet<Agent> _duelists = new HashSet<Agent>();
 	private float _duelReleaseCheck;
+    private Team _campDuelPlayerTeam;
+    private Team _campDuelOpponentTeam;
+
+    internal void GetDuelTeams(out Team playerTeam, out Team opponentTeam)
+    {
+        if (_campDuelPlayerTeam == null)
+            _campDuelPlayerTeam = Mission.Teams.Add(BattleSideEnum.Attacker, _team.Color, _team.Color2, _team.Banner, true, false);
+        if (_campDuelOpponentTeam == null)
+            _campDuelOpponentTeam = Mission.Teams.Add(BattleSideEnum.Defender, _team.Color, _team.Color2, _team.Banner, false, false);
+        playerTeam = _campDuelPlayerTeam;
+        opponentTeam = _campDuelOpponentTeam;
+    }
 
 	/// <summary>
 	/// Called by the duel start, before the duel teams are set: both fighters are
-	/// teleported to opposite sides of the ring facing each other, and the enemy team the
-	/// duel needs is created (the camp has only the player's team).
+	/// placed on validated opposite sides of the ring. DuelBehavior owns team isolation.
 	/// </summary>
-	internal void PlaceDuelists(Agent player, Agent opponent)
+	internal bool PlaceDuelists(Agent player, Agent opponent)
 	{
 		if (player == null || opponent == null || !player.IsActive() || !opponent.IsActive())
 		{
-			return;
+			return false;
 		}
 		try
 		{
+            // Prove both start positions and their connecting route before moving either actor.
+            Vec3 playerPosition = Vec3.Invalid, opponentPosition = Vec3.Invalid;
+            Vec2 inward = Vec2.Forward;
+            bool placed = false;
+            for (int trial = 0; trial < 8; trial++)
+            {
+                float angle = trial * MathF.PI / 4f;
+                inward = new Vec2(MathF.Cos(angle), MathF.Sin(angle));
+                float radius = _layout.RingRadius * 0.55f;
+                if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, ToWorld(_layout.RingCenter + inward * radius), 0.4f, out playerPosition)
+                    || !FieldCampSite.TryResolveGroundedPosition(Mission.Scene, ToWorld(_layout.RingCenter - inward * radius), 0.4f, out opponentPosition)
+                    || !IsCampPositionAvailable(player, playerPosition)
+                    || !IsCampPositionAvailable(opponent, opponentPosition)
+                    || !TryCampRoute(playerPosition, opponentPosition, out _)) continue;
+                placed = true;
+                break;
+            }
+            if (!placed) return false;
 			// Captive combat isolates only the player. Rejoin the camp before DuelBehavior
-			// snapshots teams, so it moves just the opponent to its separate enemy team.
+			// snapshots the original teams, then isolates both duelists.
 			// Camp upkeep resumes captive isolation after the duel releases both actors.
 			if (player == Mission.MainAgent && _prisonerPlayerTeam != null && player.Team == _prisonerPlayerTeam)
 			{
 				player.SetTeam(_team, true);
 			}
-			EnsureDuelEnemyTeam();
-			Vec2 inward = new Vec2(1f, 0f);
-			float r = _layout.RingRadius * 0.55f;
-			Vec2 playerLocal = _layout.RingCenter + inward * r;
-			Vec2 opponentLocal = _layout.RingCenter - inward * r;
-			HoldDuelist(opponent);
-			Teleport(player, playerLocal, -inward);
-			Teleport(opponent, opponentLocal, inward);
+            HoldDuelist(opponent);
+            player.TeleportToPosition(playerPosition);
+            opponent.TeleportToPosition(opponentPosition);
+            Vec2 facing = ToWorldDirection(inward);
+            player.LookDirection = new Vec3(-facing.x, -facing.y, 0f);
+            opponent.LookDirection = new Vec3(facing.x, facing.y, 0f);
 			_duelists.Add(player);
 			_duelists.Add(opponent);
 			Logger.Log(LogSource, "duel ring placed opponent=" + opponent.Index);
+            return true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log(LogSource, "[WARN] duel ring placement failed: " + ex.Message);
+            return false;
 		}
-	}
-
-	/// <summary>The duel needs a hostile team; create the defender team once and keep it peaceful until the duel arms it.</summary>
-	private void EnsureDuelEnemyTeam()
-	{
-		if (Mission.PlayerEnemyTeam != null && Mission.PlayerEnemyTeam != _team)
-		{
-			return;
-		}
-		Team enemy = Mission.DefenderTeam;
-		if (enemy == null || enemy == _team)
-		{
-			enemy = Mission.Teams.Add(BattleSideEnum.Defender, 0xFF7A2020u, 0xFF2A0808u, null, false, false);
-		}
-		// A PlayerEnemy team only exists while the two sides are hostile.
-		_team.SetIsEnemyOf(enemy, true);
-		enemy.SetIsEnemyOf(_team, true);
 	}
 
 	/// <summary>Takes a camp agent out of camp life: no pose, no scripted hold.</summary>
@@ -90,20 +102,12 @@ public sealed partial class FieldCampMissionLogic
 		}
 		try
 		{
-			agent.DisableScriptedMovement();
+            StopCampNavigation(agent);
+            agent.SetIsAIPaused(false);
 		}
 		catch
 		{
 		}
-	}
-
-	private void Teleport(Agent agent, Vec2 local, Vec2 facingLocal)
-	{
-		Vec3 pos = ToWorld(local);
-		agent.TeleportToPosition(pos);
-		Vec2 dir = ToWorldDirection(facingLocal);
-		agent.LookDirection = new Vec3(dir.x, dir.y, 0f);
-		agent.Controller = agent == Agent.Main ? AgentControllerType.Player : agent.Controller;
 	}
 
 	private bool IsDuelist(Agent agent) => _duelists.Count > 0 && agent != null && _duelists.Contains(agent);

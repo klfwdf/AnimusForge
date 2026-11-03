@@ -2,6 +2,7 @@
   <!-- Layer names must match AfWarStatsMapNavigationEntry.ItemId; the native map bar resolves both sprites by ItemId. -->
   <Brush Name="AFTerminal.MapBar.Left.Button.Backgrounds" OverrideBrush="MapBar.Left.Button.Backgrounds">
     <Layers>
+      <BrushLayer Name="kingdom" Sprite="MapBar\bottom_left_button6_clan" />
       <BrushLayer Name="af_terminal" Sprite="MapBar\bottom_left_button7_kingdom" />
     </Layers>
   </Brush>

@@ -94,6 +94,7 @@ public sealed partial class FieldCampMissionLogic
 			envoy.Seated = false;
 			ReleasePose(envoy);
 			StopCampNavigation(envoy.Agent);
+            TryPrepareCampNavigation(envoy.Agent);
 			ScriptBehavior.AddAgentTarget(envoy.Agent, Agent.Main);
 			_envoyNavigationActive = true;
 		Logger.Log(LogSource, "envoy issue=" + (index + 1) + " kind=" + issue.Kind + " agent=" + envoy.Agent.Index);
@@ -148,6 +149,7 @@ public sealed partial class FieldCampMissionLogic
 			}
 				else if (!_envoyNavigationActive)
 				{
+                    TryPrepareCampNavigation(agent);
 					ScriptBehavior.AddAgentTarget(agent, Agent.Main);
 					_envoyNavigationActive = true;
 				}

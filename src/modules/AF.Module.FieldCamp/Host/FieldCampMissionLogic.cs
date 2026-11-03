@@ -55,6 +55,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal float MoveDeadline;
 		internal bool MoveBlocked;
         internal bool RouteQueued;
+        internal bool RoutePrepared;
         internal Vec3[] Route = Array.Empty<Vec3>();
         internal int RouteIndex;
         internal bool Run;
@@ -76,8 +77,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	private float _elapsed;
 	private float _upkeepTimer;
 	private int _upkeepCursor;
+    private int _walkCursor;
     private int _campRouteBudget = 2;
-    private int _campRecoveryBudget = 2;
 	private int _woundedSlotsUsed;
 
 	internal static FieldCampMissionLogic Current => Mission.Current?.GetMissionBehavior<FieldCampMissionLogic>();
@@ -159,11 +160,11 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		{
 			EndSlaughter();
 		}
+        AdvanceCampWalks();
 		_upkeepTimer -= dt;
 		if (_upkeepTimer <= 0f)
 		{
 			_upkeepTimer = UpkeepIntervalSeconds;
-            _campRecoveryBudget = 2;
 			MaintainCampPrisonerCombatIsolation();
 			TickCeremonyPreparation();
 			TickCeremonyReturn();
@@ -419,7 +420,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			Agent agent = Mission.GetMissionBehavior<FieldCampAgentHandler>().SpawnResident(character, party, _team, pos, dir, civilian);
 			if (agent != null)
 			{
-				agent.SetWatchState(Agent.WatchState.Patrolling);
+				try { agent.SetWatchState(Agent.WatchState.Patrolling); }
+                catch (Exception ex) { Logger.Log(LogSource, "resident watch setup failed agent=" + agent.Index + " error=" + ex.Message); }
 			}
 			return agent;
 		}
@@ -430,7 +432,24 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		}
 	}
 
-	private void Track(Agent agent, Activity activity, Vec2 local, Vec2 facing, FormationClass troopClass, FieldCampLayout.WorkKind work = FieldCampLayout.WorkKind.None, bool canLeavePost = false, bool walkToAssignedSlot = false)
+    private void Track(Agent agent, Activity activity, Vec2 local, Vec2 facing, FormationClass troopClass, FieldCampLayout.WorkKind work = FieldCampLayout.WorkKind.None, bool canLeavePost = false, bool walkToAssignedSlot = false)
+    {
+        try { TrackAssignedResident(agent, activity, local, facing, troopClass, work, canLeavePost, walkToAssignedSlot); }
+        catch (Exception ex)
+        {
+            if (!_campAgentsByAgent.ContainsKey(agent))
+            {
+                var entry = new CampAgent { Agent = agent, Activity = activity == Activity.Wounded ? Activity.Wounded : Activity.Wander,
+                    Home = agent.Position, Target = agent.Position, HomeFacing = Vec2.Forward,
+                    TargetFacing = Vec2.Forward, TroopClass = troopClass, Seated = true, NextWanderTime = _elapsed + 1f };
+                _agents.Add(entry);
+                _campAgentsByAgent[agent] = entry;
+            }
+            Logger.Log(LogSource, "resident assignment recovered agent=" + agent.Index + " error=" + ex.Message);
+        }
+    }
+
+	private void TrackAssignedResident(Agent agent, Activity activity, Vec2 local, Vec2 facing, FormationClass troopClass, FieldCampLayout.WorkKind work = FieldCampLayout.WorkKind.None, bool canLeavePost = false, bool walkToAssignedSlot = false)
 	{
         Vec3 home = agent.Position;
         if (walkToAssignedSlot)
@@ -475,6 +494,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
         if (home.AsVec2.DistanceSquared(ToWorld(local).AsVec2) > 2.25f &&
             work != FieldCampLayout.WorkKind.Sit && work != FieldCampLayout.WorkKind.Eat &&
             work != FieldCampLayout.WorkKind.Lie) work = FieldCampLayout.WorkKind.None;
+        if (work == FieldCampLayout.WorkKind.None && activity != Activity.Wounded && activity != Activity.Sentry
+            && (activity != Activity.Post || canLeavePost)) activity = Activity.Wander;
 		var entry = new CampAgent
 		{
 			Agent = agent,
@@ -484,12 +505,20 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			HomeFacing = ToWorldDirection(facing.LengthSquared < 0.01f ? new Vec2(0f, 1f) : facing),
 			Target = home,
 			TroopClass = troopClass,
-			Work = work,
-			NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(10f, 25f)
+            Work = work,
+            NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(1f, 4f)
 		};
 		entry.TargetFacing = entry.HomeFacing;
 			_agents.Add(entry);
 			_campAgentsByAgent[agent] = entry;
-			HoldAt(entry);
+            try { HoldAt(entry); }
+            catch (Exception ex)
+            {
+                entry.Activity = activity == Activity.Wounded || activity == Activity.Sentry ? activity : Activity.Wander;
+                entry.Seated = true;
+                entry.NextWanderTime = _elapsed + 1f;
+                Logger.Log(LogSource, "resident activity pending agent=" + agent.Index + " error=" + ex.Message);
+            }
+            if (entry.Activity == Activity.Wander) entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(1f, 4f);
 	}
 }

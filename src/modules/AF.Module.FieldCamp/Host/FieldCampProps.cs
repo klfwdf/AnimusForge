@@ -21,11 +21,18 @@ namespace AnimusForge;
 internal static class FieldCampProps
 {
 	private const string LogSource = "FieldCamp";
+    internal struct FenceObstacle
+    {
+        internal Vec3 From, To;
+        internal float HalfWidth;
+    }
+    internal static readonly List<FenceObstacle> FenceObstacles = new List<FenceObstacle>();
     internal static int PlacedTentCount { get; private set; }
     internal static int RequestedTentCount { get; private set; }
     internal static void ResetPlacementCounts()
     {
         PlacedTentCount = RequestedTentCount = 0;
+        FenceObstacles.Clear();
     }
 		private const float FencePiece = 2.9f;
 		private const BodyFlags ClearanceExcludeFlags = BodyFlags.CommonCollisionExcludeFlagsForAgent & ~BodyFlags.DoNotCollideWithRaycast;
@@ -34,6 +41,7 @@ internal static class FieldCampProps
 	private struct PieceSize
 	{
 		internal float Length;
+        internal float HalfWidth;
 		internal bool AlongY;
         internal Vec3 PivotToGroundCentre;
 	}
@@ -638,7 +646,11 @@ internal static class FieldCampProps
                 frame.rotation.s = along * stretch;
             }
             frame.origin = (start + end) * 0.5f - frame.rotation.TransformToParent(size.PivotToGroundCentre);
-            if (TrySpawn(scene, prefab, frame, true) != null) placed++;
+            if (TrySpawn(scene, prefab, frame, true) != null)
+            {
+                placed++;
+                FenceObstacles.Add(new FenceObstacle { From = start, To = end, HalfWidth = size.HalfWidth });
+            }
         }
 		return placed;
 	}
@@ -653,13 +665,13 @@ internal static class FieldCampProps
 			float longest = Math.Max(x, y);
 			if (longest > 0.5f && longest < 20f)
 			{
-				return new PieceSize { Length = longest, AlongY = y > x, PivotToGroundCentre = new Vec3((box.min.x + box.max.x) * 0.5f, (box.min.y + box.max.y) * 0.5f, box.min.z) };
+				return new PieceSize { Length = longest, AlongY = y > x, HalfWidth = Math.Max(0.1f, Math.Min(x, y) * 0.5f), PivotToGroundCentre = new Vec3((box.min.x + box.max.x) * 0.5f, (box.min.y + box.max.y) * 0.5f, box.min.z) };
 			}
 		}
 		catch
 		{
 		}
-		return new PieceSize { Length = FencePiece, AlongY = false };
+		return new PieceSize { Length = FencePiece, AlongY = false, HalfWidth = 0.3f };
 	}
 
 	private static MatrixFrame FrameFor(Scene scene, MatrixFrame campFrame, Vec2 local, float yaw, float uniformScale)

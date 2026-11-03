@@ -59,6 +59,7 @@ internal static class FieldCampSite
 			internal float[] Heights;
 			internal bool[] Open;
             internal bool[] BaseOpen;
+            internal bool[] FenceBlocked;
 			internal bool Ready;
             internal FieldCampGroundRouter Router;
             internal int CampMinX, CampMinY, CampMaxX, CampMaxY;
@@ -661,6 +662,31 @@ internal static class FieldCampSite
 				}
 			}
 			cache.BaseOpen = (bool[])cache.Open.Clone();
+            cache.FenceBlocked = new bool[cache.Open.Length];
+            // Rasterize only accepted fence pieces, once after placement. Include actor
+            // radius and half a grid cell so no route centre can graze a rail or post.
+            foreach (FieldCampProps.FenceObstacle fence in FieldCampProps.FenceObstacles)
+            {
+                Vec3 a = frame.TransformToLocal(fence.From), b = frame.TransformToLocal(fence.To);
+                float clearance = fence.HalfWidth + 0.35f + GroundStep * 0.71f;
+                int left = Math.Max(0, (int)Math.Floor((Math.Min(a.x, b.x) - clearance - cache.MinX) / GroundStep));
+                int right = Math.Min(cache.Width - 1, (int)Math.Ceiling((Math.Max(a.x, b.x) + clearance - cache.MinX) / GroundStep));
+                int bottom = Math.Max(0, (int)Math.Floor((Math.Min(a.y, b.y) - clearance - cache.MinY) / GroundStep));
+                int top = Math.Min(cache.Height - 1, (int)Math.Ceiling((Math.Max(a.y, b.y) + clearance - cache.MinY) / GroundStep));
+                Vec2 segment = b.AsVec2 - a.AsVec2;
+                for (int y = bottom; y <= top; y++)
+                    for (int x = left; x <= right; x++)
+                    {
+                        Vec2 point = new Vec2(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep);
+                        Vec2 delta = point - a.AsVec2;
+                        float t = segment.LengthSquared > 0.0001f
+                            ? Math.Max(0f, Math.Min(1f, Vec2.DotProduct(delta, segment) / segment.LengthSquared)) : 0f;
+                        if (point.DistanceSquared(a.AsVec2 + segment * t) > clearance * clearance) continue;
+                        int cell = y * cache.Width + x;
+                        cache.FenceBlocked[cell] = true;
+                        if (cache.Open[cell]) { cache.Open[cell] = false; open--; }
+                    }
+            }
             cache.Router = new FieldCampGroundRouter(cache.Width, cache.Height, cache.Open, cache.Heights);
 			cache.Ready = open > 0;
 			Logger.Log(LogSource, "ground cache cells=" + cache.Open.Length + " open=" + open + " step=" + GroundStep);
@@ -823,7 +849,7 @@ internal static class FieldCampSite
                     for (int x = left; x <= right; x++)
                     {
                         int cell = y * cache.Width + x;
-                        if (!cache.BaseOpen[cell] || touched.Contains(cell)) continue;
+                        if (!cache.BaseOpen[cell] || cache.FenceBlocked[cell] || touched.Contains(cell)) continue;
                         Vec3 p = cache.Frame.TransformToParent(new Vec3(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep, 0f));
                         // Rotated component bounds do not occupy the empty corners
                         // of their broad-phase box. Sample each relevant cell once.
@@ -851,6 +877,8 @@ internal static class FieldCampSite
             Vec3 endLocal = cache.Frame.TransformToLocal(end);
             int goal = (int)Math.Round((endLocal.y - cache.MinY) / GroundStep) * cache.Width
                 + (int)Math.Round((endLocal.x - cache.MinX) / GroundStep);
+            bool constrainToCamp = stayInsideCamp && sx >= cache.CampMinX && sx <= cache.CampMaxX
+                && sy >= cache.CampMinY && sy <= cache.CampMaxY;
             int[] corners = null;
             for (int radius = 0; radius <= 3 && corners == null; radius++)
                 for (int dy = -radius; dy <= radius && corners == null; dy++)
@@ -863,11 +891,11 @@ internal static class FieldCampSite
                         Vec3 start = cache.Frame.TransformToParent(new Vec3(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep, 0f));
                         start.z = cache.Heights[y * cache.Width + x] + 0.04f;
                         // The actor walks the short start connector too; never jump through a solid body.
-                        if (radius > 0 && scene.RayCastForClosestEntityOrTerrain(from + new Vec3(0f, 0f, 1f), start + new Vec3(0f, 0f, 1f),
+                        if (scene.RayCastForClosestEntityOrTerrain(from + new Vec3(0f, 0f, 1f), start + new Vec3(0f, 0f, 1f),
                             out _, out _, out _, 0.3f, ClearanceExcludeFlags)) continue;
                         if (cache.Router.TryRoute(y * cache.Width + x, goal, out int[] found,
-                            stayInsideCamp ? cache.CampMinX : 0, stayInsideCamp ? cache.CampMinY : 0,
-                            stayInsideCamp ? cache.CampMaxX : cache.Width - 1, stayInsideCamp ? cache.CampMaxY : cache.Height - 1)) { corners = found; break; }
+                            constrainToCamp ? cache.CampMinX : 0, constrainToCamp ? cache.CampMinY : 0,
+                            constrainToCamp ? cache.CampMaxX : cache.Width - 1, constrainToCamp ? cache.CampMaxY : cache.Height - 1)) { corners = found; break; }
                         // A valid source in another component must not trigger 48 copies of the same search.
                         if (cache.Router.LastSearchVisited > 0) return false;
                     }

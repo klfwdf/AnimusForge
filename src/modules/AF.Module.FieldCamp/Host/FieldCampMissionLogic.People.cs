@@ -151,7 +151,8 @@ public sealed partial class FieldCampMissionLogic
 			Agent agent = SpawnCharacter(lord.CharacterObject, party.Party, slot.Position, slot.Facing, civilian: false);
 			if (agent != null)
 			{
-				Track(agent, Activity.Post, slot.Position, slot.Facing, lord.CharacterObject.DefaultFormationClass);
+				Track(agent, lord.IsWounded ? Activity.Wounded : Activity.Post, slot.Position, slot.Facing, lord.CharacterObject.DefaultFormationClass,
+                    lord.IsWounded ? FieldCampLayout.WorkKind.Sit : FieldCampLayout.WorkKind.Gossip, canLeavePost: !lord.IsWounded);
 			}
 		}
 	}

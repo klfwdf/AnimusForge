@@ -7131,8 +7131,13 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 		Banner banner2 = _targetHero?.Clan?.Banner;
 		try
 		{
+            FieldCampMissionLogic camp = FieldCampMissionLogic.Current;
+            if (camp != null) camp.GetDuelTeams(out _duelPlayerTeam, out _duelEnemyTeam);
+            else
+            {
 			_duelPlayerTeam = current.Teams.Add(BattleSideEnum.Attacker, color, color2, banner, isPlayerGeneral: true, isPlayerSergeant: false);
 			_duelEnemyTeam = current.Teams.Add(BattleSideEnum.Defender, color3, color4, banner2, isPlayerGeneral: false, isPlayerSergeant: true);
+            }
 		}
 		catch (Exception ex)
 		{
@@ -7199,39 +7204,41 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 				}
 				try
 				{
-					team.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: false);
+					SetDuelTeamRelation(team, _duelPlayerTeam, false);
 				}
 				catch
 				{
 				}
 				try
 				{
-					_duelPlayerTeam.SetIsEnemyOf(team, isEnemyOf: false);
+					SetDuelTeamRelation(_duelPlayerTeam, team, false);
 				}
 				catch
 				{
 				}
 				try
 				{
-					team.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: false);
+					SetDuelTeamRelation(team, _duelEnemyTeam, false);
 				}
 				catch
 				{
 				}
 				try
 				{
-					_duelEnemyTeam.SetIsEnemyOf(team, isEnemyOf: false);
+					SetDuelTeamRelation(_duelEnemyTeam, team, false);
 				}
 				catch
 				{
 				}
 			}
-			_duelEnemyTeam.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: true);
-			_duelPlayerTeam.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: true);
+			SetDuelTeamRelation(_duelEnemyTeam, _duelPlayerTeam, true);
+			SetDuelTeamRelation(_duelPlayerTeam, _duelEnemyTeam, true);
 		}
 		catch
 		{
 		}
+        if (Agent.Main.Team != _duelPlayerTeam || targetAgent.Team != _duelEnemyTeam
+            || !_duelPlayerTeam.IsEnemyOf(_duelEnemyTeam) || !_duelEnemyTeam.IsEnemyOf(_duelPlayerTeam)) return false;
 		Logger.Log("DuelBehavior", "[FormalDuel] Created temporary duel party; non-participants neutral to both sides.");
 		return true;
 	}
@@ -7364,7 +7371,13 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			DiscardUnboundDuelArtifacts(_targetHero);
 			return;
 		}
-		FieldCampMissionLogic.Current?.PlaceDuelists(Agent.Main, agent);
+        FieldCampMissionLogic fieldCamp = FieldCampMissionLogic.Current;
+        if (fieldCamp != null && !fieldCamp.PlaceDuelists(Agent.Main, agent))
+        {
+            RejectDetachedDuelDispatch(duelDispatchContext, "camp_ring_unavailable");
+            Logger.Log("DuelBehavior", "Camp duel cancelled: no clear connected ring positions.");
+            return;
+        }
 		if (_activeDuelOutcomeStart != null)
 		{
 			MarkDuelOutcomeUnknown(
@@ -7433,96 +7446,107 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 				current.SetMissionMode(MissionMode.Battle, atStart: true);
 				if (!flag)
 				{
-					_duelPlayerTeam = Agent.Main?.Team ?? current.PlayerTeam;
-					_duelEnemyTeam = agent.Team;
-					if (_duelEnemyTeam == null || _duelEnemyTeam == _duelPlayerTeam)
-					{
-						Team team = null;
+                    if (FieldCampMissionLogic.Current != null)
+                    {
+                        if (!TryInitializeFormalDuelTeams(current, agent))
+                        {
+                            AbortInPlaceDuel("camp_team_setup_failed");
+                            return;
+                        }
+                    }
+                    else
+                    {
+						_duelPlayerTeam = Agent.Main?.Team ?? current.PlayerTeam;
+						_duelEnemyTeam = agent.Team;
+						if (_duelEnemyTeam == null || _duelEnemyTeam == _duelPlayerTeam)
+						{
+							Team team = null;
+							try
+							{
+								team = current.PlayerEnemyTeam;
+							}
+							catch
+							{
+								team = null;
+							}
+							if (team != null && team != _duelPlayerTeam)
+							{
+								_duelEnemyTeam = team;
+								try
+								{
+									agent.SetTeam(_duelEnemyTeam, sync: true);
+								}
+								catch
+								{
+								}
+								try
+								{
+									Agent mountAgent = agent.MountAgent;
+									if (mountAgent != null && mountAgent.IsActive())
+									{
+										mountAgent.SetTeam(_duelEnemyTeam, sync: true);
+									}
+								}
+								catch
+								{
+								}
+								Logger.Log("DuelBehavior", "[MeetingDuel] Target is on player team; switched to native enemy team as duel opponent.");
+							}
+						}
+						if (_duelPlayerTeam == null || _duelEnemyTeam == null || _duelEnemyTeam == _duelPlayerTeam)
+						{
+							MarkActiveDuelUnknown(
+								duelDispatchContext,
+								"team_setup_failed",
+								"in_place_start");
+							Logger.Log("DuelBehavior", "[MeetingDuel][ERROR] Unable to establish stable duel team relation; cancelled duel to avoid issues.");
+							AbortInPlaceDuel("team_setup_failed");
+							DiscardUnboundDuelArtifacts(_targetHero);
+							return;
+						}
 						try
 						{
-							team = current.PlayerEnemyTeam;
+							foreach (Team item in current.Teams)
+							{
+								if (item != null && item != _duelPlayerTeam && item != _duelEnemyTeam)
+								{
+									try
+									{
+										SetDuelTeamRelation(item, _duelPlayerTeam, false);
+									}
+									catch
+									{
+									}
+									try
+									{
+										SetDuelTeamRelation(_duelPlayerTeam, item, false);
+									}
+									catch
+									{
+									}
+									try
+									{
+										SetDuelTeamRelation(item, _duelEnemyTeam, false);
+									}
+									catch
+									{
+									}
+									try
+									{
+										SetDuelTeamRelation(_duelEnemyTeam, item, false);
+									}
+									catch
+									{
+									}
+								}
+							}
+							SetDuelTeamRelation(_duelEnemyTeam, _duelPlayerTeam, true);
+							SetDuelTeamRelation(_duelPlayerTeam, _duelEnemyTeam, true);
 						}
 						catch
 						{
-							team = null;
 						}
-						if (team != null && team != _duelPlayerTeam)
-						{
-							_duelEnemyTeam = team;
-							try
-							{
-								agent.SetTeam(_duelEnemyTeam, sync: true);
-							}
-							catch
-							{
-							}
-							try
-							{
-								Agent mountAgent = agent.MountAgent;
-								if (mountAgent != null && mountAgent.IsActive())
-								{
-									mountAgent.SetTeam(_duelEnemyTeam, sync: true);
-								}
-							}
-							catch
-							{
-							}
-							Logger.Log("DuelBehavior", "[MeetingDuel] Target is on player team; switched to native enemy team as duel opponent.");
-						}
-					}
-					if (_duelPlayerTeam == null || _duelEnemyTeam == null || _duelEnemyTeam == _duelPlayerTeam)
-					{
-						MarkActiveDuelUnknown(
-							duelDispatchContext,
-							"team_setup_failed",
-							"in_place_start");
-						Logger.Log("DuelBehavior", "[MeetingDuel][ERROR] Unable to establish stable duel team relation; cancelled duel to avoid issues.");
-						AbortInPlaceDuel("team_setup_failed");
-						DiscardUnboundDuelArtifacts(_targetHero);
-						return;
-					}
-					try
-					{
-						foreach (Team item in current.Teams)
-						{
-							if (item != null && item != _duelPlayerTeam && item != _duelEnemyTeam)
-							{
-								try
-								{
-									SetDuelTeamRelation(item, _duelPlayerTeam, false);
-								}
-								catch
-								{
-								}
-								try
-								{
-									SetDuelTeamRelation(_duelPlayerTeam, item, false);
-								}
-								catch
-								{
-								}
-								try
-								{
-									SetDuelTeamRelation(item, _duelEnemyTeam, false);
-								}
-								catch
-								{
-								}
-								try
-								{
-									SetDuelTeamRelation(_duelEnemyTeam, item, false);
-								}
-								catch
-								{
-								}
-							}
-						}
-						SetDuelTeamRelation(_duelEnemyTeam, _duelPlayerTeam, true);
-						SetDuelTeamRelation(_duelPlayerTeam, _duelEnemyTeam, true);
-					}
-					catch
-					{
-					}
+                    }
 					TrySetAgentController(agent, "None");
 					try
 					{
@@ -8199,6 +8223,13 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 		}
 		if (player != null && player.IsActive())
 		{
+            if (FieldCampMissionLogic.Current != null && _preDuelPlayerTeam != null)
+            {
+                player.SetTeam(_preDuelPlayerTeam, true);
+                Mission.Current.PlayerTeam = _preDuelPlayerTeam;
+                if (player.MountAgent != null && _preDuelPlayerMountTeam != null)
+                    player.MountAgent.SetTeam(_preDuelPlayerMountTeam, true);
+            }
 			TrySetAgentController(player, "Player");
 			UnlockAgentMovement(player, unpauseAi: true, clearTargetFrame: true);
 			try

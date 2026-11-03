@@ -278,8 +278,10 @@ public sealed partial class FieldCampMissionLogic
         move.Agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
         move.Agent.SetActionChannel(0, in ActionIndexCache.act_none, true);
         var world = new WorldPosition(Mission.Scene, UIntPtr.Zero, goal, false);
-        move.Agent.SetScriptedPositionAndDirection(ref world, facing.RotationInRadians, false,
-            Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
+        var navigator = move.Agent.GetComponent<SandBox.CampaignAgentComponent>()?.AgentNavigator;
+        var flags = Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun;
+        if (navigator != null) navigator.SetTargetFrame(world, facing.RotationInRadians, 0.15f, -10f, flags);
+        else move.Agent.SetScriptedPositionAndDirection(ref world, facing.RotationInRadians, false, flags);
         move.RetryAt = _elapsed + 5f;
         move.LastPosition = move.Agent.Position;
     }
@@ -313,7 +315,7 @@ public sealed partial class FieldCampMissionLogic
                 }
                 move.ClearanceHeld = false;
                 if (move.RouteIndex < move.Route.Length &&
-                    move.Agent.Position.AsVec2.DistanceSquared(move.Route[move.RouteIndex].AsVec2) <= 0.36f)
+                    move.Agent.Position.AsVec2.DistanceSquared(move.Route[move.RouteIndex].AsVec2) <= RouteCornerDistanceSquared)
                 { move.RouteIndex++; IssueCeremonyWalk(move, move.Goal, move.Facing); }
                 else if (_elapsed >= move.RetryAt)
                 {
@@ -564,7 +566,7 @@ public sealed partial class FieldCampMissionLogic
                 continue;
             }
             if (move.RouteIndex < move.Route.Length &&
-                agent.Position.AsVec2.DistanceSquared(move.Route[move.RouteIndex].AsVec2) <= 0.36f)
+                agent.Position.AsVec2.DistanceSquared(move.Route[move.RouteIndex].AsVec2) <= RouteCornerDistanceSquared)
             { move.RouteIndex++; IssueCeremonyWalk(move, move.Goal, move.Facing); }
             else if (_elapsed >= move.RetryAt) IssueCeremonyWalk(move, move.Goal, move.Facing);
         }
@@ -621,10 +623,19 @@ public sealed partial class FieldCampMissionLogic
         move.Agent.SetIsAIPaused(true);
         bool returned = move.Agent.Position.AsVec2.DistanceSquared(move.Home.AsVec2) <= CeremonyArrivalSquared;
         if (!returned && _elapsed < move.RetryAt) return false;
-        if (!returned) returned = TryReturnToSafeCampPosition(move.Agent, move.Home);
         if (!returned)
         {
-            move.RetryAt = _elapsed + 8f;
+            // Return ownership at the current grounded position, then let camp life
+            // replan through the same obstacle grid. No collision-triggered teleport.
+            if (move.Camp != null)
+            {
+                RecoverBlockedCampWalk(move.Camp);
+                move.Camp.Target = move.Home;
+                move.Camp.RouteQueued = true;
+                return true;
+            }
+            move.RetryAt = _elapsed + 2f;
+            move.ReturningHome = false;
             return false;
         }
         if (move.Prisoner) ApplyPrisonerPose(move.Agent);
@@ -676,7 +687,7 @@ public sealed partial class FieldCampMissionLogic
                     }
                 }
                 if (!remove && move.RouteIndex < move.Route.Length &&
-                    agent.Position.AsVec2.DistanceSquared(move.Route[move.RouteIndex].AsVec2) <= 0.36f)
+                    agent.Position.AsVec2.DistanceSquared(move.Route[move.RouteIndex].AsVec2) <= RouteCornerDistanceSquared)
                 { move.RouteIndex++; IssueCeremonyWalk(move, move.Home, move.HomeFacing); }
                 else if (!remove && _elapsed >= move.RetryAt)
                 {

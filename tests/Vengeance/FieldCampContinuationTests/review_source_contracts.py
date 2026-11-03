@@ -30,17 +30,17 @@ def require(value, description):
 
 
 def duel_handoff(grounds, duel, people):
-    place = block(grounds, "internal void PlaceDuelists(")
+    place = block(grounds, "internal bool PlaceDuelists(")
     scoped = "if (player == Mission.MainAgent && _prisonerPlayerTeam != null && player.Team == _prisonerPlayerTeam)"
     require(scoped in place, "only the real captive-isolated player rejoins the camp team")
     handoff = place.index("player.SetTeam(_team, true);")
-    require(handoff < place.index("EnsureDuelEnemyTeam();"), "normalize before selecting the duel enemy team")
-    call = duel.index("FieldCampMissionLogic.Current?.PlaceDuelists(Agent.Main, agent);")
+    require(handoff < place.index("HoldDuelist(opponent);"), "normalize before handing off the duel participants")
+    call = duel.index("!fieldCamp.PlaceDuelists(Agent.Main, agent)")
     require(call < duel.index("_preDuelPlayerTeam = Agent.Main?.Team ?? current.PlayerTeam;", call),
             "existing duel snapshot follows the camp handoff")
-    require("_duelEnemyTeam == null || _duelEnemyTeam == _duelPlayerTeam" in duel and
-            "agent.SetTeam(_duelEnemyTeam, sync: true);" in duel,
-            "same-team opponent still uses the existing separate enemy-team path")
+    require("camp.GetDuelTeams(out _duelPlayerTeam, out _duelEnemyTeam)" in duel and
+            "TryInitializeFormalDuelTeams(current, agent)" in duel,
+            "camp isolates both participants from the resident team")
     isolation = block(people, "private void MaintainCampPrisonerCombatIsolation(")
     require(isolation.index("_duelists.Count != 0") < isolation.index("player.SetTeam(_prisonerPlayerTeam, true);"),
             "camp upkeep cannot re-isolate the player during a duel")
@@ -61,15 +61,13 @@ def blocked_retry(life):
             "blocked recovery precedes stale movement deadlines")
     require("RecoverBlockedCampWalk(entry);" in upkeep,
             "expired/stuck walkers enter the bounded recovery owner")
-    recovery = block(life, "private bool TryReturnToSafeCampPosition(")
-    require("_campRecoveryBudget <= 0" in recovery and "_campRecoveryBudget--;" in recovery and "attempt < 17" in recovery,
-            "recovery has per-upkeep and per-actor candidate budgets")
-    require("IsInsideCamp(safe)" in recovery and "IsCampPositionAvailable(agent, safe)" in recovery,
-            "recovery cannot relocate outside camp or onto another actor")
+    recovery = block(life, "private void RecoverBlockedCampWalk(")
+    require("TeleportToPosition" not in recovery and "SettleCampAgent(entry, blocked: true)" in recovery,
+            "collision recovery replans without teleporting")
     move = block(life, "private void MoveTo(")
-    require("entry.MoveBlocked = entry.RouteQueued = false;" in move and "entry.MoveDeadline = _elapsed + 30f;" in move,
+    require("entry.MoveBlocked = entry.RouteQueued = false;" in move and "entry.MoveDeadline = _elapsed + Math.Max(30f," in move,
             "actual command owner resets blockage and retains a finite deadline")
-    queued = block(move, "if (_campRouteBudget <= 0)")
+    queued = block(move, "if (!prepared && _campRouteBudget <= 0)")
     require("entry.Returning = returnAfterVisit;" in queued and "entry.RouteQueued = true;" in queued and
             "entry.NextWanderTime = _elapsed + 0.5f;" in queued,
             "budget deferral preserves return intent and retries on next upkeep")

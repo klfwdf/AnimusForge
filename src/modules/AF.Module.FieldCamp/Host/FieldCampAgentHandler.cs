@@ -1,3 +1,4 @@
+using System;
 using SandBox;
 using SandBox.Missions.MissionLogics;
 using TaleWorlds.CampaignSystem;
@@ -44,10 +45,18 @@ internal sealed class FieldCampAgentHandler : MissionAgentHandler
         Agent agent = Mission.SpawnAgent(build);
         if (agent == null) return null;
         FieldCampMissionLogic.ApplyCampActionSet(agent);
-        agent.GetComponent<CampaignAgentComponent>().CreateAgentNavigator(resident);
-        resident.AddBehaviors(agent);
-        resident.AfterAgentCreated?.Invoke(agent);
-        Game.Current.EventManager.TriggerEvent(new LocationCharacterAgentSpawnedMissionEvent(resident, agent, WeakGameEntity.Invalid));
+        try
+        {
+            agent.GetComponent<CampaignAgentComponent>()?.CreateAgentNavigator(resident);
+            resident.AddBehaviors(agent);
+            resident.AfterAgentCreated?.Invoke(agent);
+            Game.Current.EventManager.TriggerEvent(new LocationCharacterAgentSpawnedMissionEvent(resident, agent, WeakGameEntity.Invalid));
+        }
+        catch (Exception ex)
+        {
+            // The agent exists and must still be returned to the camp activity owner.
+            Logger.Log("FieldCamp", "resident native setup incomplete agent=" + agent.Index + " error=" + ex.Message);
+        }
         return agent;
     }
 }
