@@ -1,3 +1,26 @@
+<a id="courier-party-recovery-20261104"></a>
+## 2026-11-04 信使英雄转队中断与归队恢复
+
+OFFLINE_VERIFIED / LIVE_NOT_RUN。用户要求重新审查并修复截图相关链路。工作区 `F:/AnimusForge-main`，分支 `main`，产品修订 `e77048cf3857cd40ff4f226c6aa5a0761056d99c`，修改前检查点 `39d4fb3071`。截图中家族队伍掉帅与英雄送信后停留的共同根因尚未实机证实。
+
+### 已完成范围
+
+- 返程转移先记录英雄 ID，核对实际归属、目标名册和源名册后确认成功。原版转队回调中途失败时保留待返还英雄、会话和信使队伍，支持后续及读档重试。已合法调往别队、死亡、被俘、传送或留城且源名册已无条目的英雄结束失效待返还记录。
+- 信使战败补俘同时核对英雄当前归属和被毁信使队名册，避免按出发历史名单误俘已离队英雄。
+- 派遣在第一次成员转移前登记会话，部分失败进入 Returning 并尝试恢复，完成返还后才销毁队伍。返程会话不启动出站回信预生成。
+- `PendingReturnHeroIds` 是既有会话 DTO 的可选列表，兼容旧 null 值，沿用 `_af_courier_sessions_v1` 分块存档。新增技术诊断使用英文。仅在派遣/返还转移边界遍历当前信使名册和待返还 ID，复用既有会话调度，异常日志按英雄 ID 节流 10 秒，无新增 Tick 全局扫描、反射或磁盘 IO。
+
+### 验证与产物
+
+- `python -B tests/modules/AF.Module.Conversation/CourierDeliveryLifetimeTests/run_party_recovery.py --dotnet "C:/Program Files/dotnet/dotnet.exe" --sdk-version 8.0.421` 通过 50 项，日志 `artifacts/tests/courier-party-recovery/run-638709d32ee241d7afeab22d9032bb19/run.log`。抽取真实 DTO/方法，覆盖转移前、移出后、加入后异常与恢复、JSON 往返、旧 null 字段、失败派遣及误俘边界。游戏 API 为 fixture，JSON 往返使用 System.Text.Json。
+- `python -B tests/modules/AF.Module.Conversation/CourierSessionCreationTests/run_admission.py --dotnet "C:/Program Files/dotnet/dotnet.exe" --lifecycle --run-root "F:/AnimusForge-main/.tmp/courier-repair-tests/lifecycle-final"` 通过 182 项，日志 `.tmp/courier-repair-tests/lifecycle-final/run.log`。补齐测试中缺失的现有本地化/外交 fixture，并验证返还未确认时保留、重试成功后清理。
+- `CourierDeliveryLifetimeTests/run.py`、`CourierSessionCreationTests/run.py`、`CourierRouteTransportTests/run.py` 三组链路检查通过。现有 PersistenceChunkReplayTests 在隔离 SDK 8.0.421 项目中通过，日志 `.tmp/courier-repair-tests/persistence/run.log`。`python -B tests/AF.Persistence/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py --chunk-contract-only` 通过，覆盖 22 个字符串键、47 个扁平字典键及 12000 UTF-8 字节块约束。
+- 原入口 `scripts/build/build_single_module.ps1 -ProjectRoot "F:/AnimusForge-main" -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug` 成功。引用 1.3.15.110062 和 1.4.6.115628，双 API、Bootstrap、双 Coup 接缝与 registration smoke 通过。完整日志 `.tmp/courier-lifecycle-final-build-20261104.log`，产物 `bin/Debug/single_module_artifacts/`，源码修订、产物大小与 SHA-256 见 `.tmp/courier-repair-tests/delivery.json`。构建包含工作区既有修改，产品提交仅包含本任务具名差异。
+
+### 验收边界与回滚
+
+实机、玩家旧档、真实 Newtonsoft/.sav 往返及截图个案尚未验证。已丢失会话的历史损坏状态未执行修档。交付状态为本地源码和构建，部署、打包、push 均未执行。产品回滚采用 `e77048cf38` 的聚焦逆向提交，保留其他作者改动。代码职责和一基行号见[代码范围图](architecture/af-framework-code-scope.md#courier-party-recovery-20261104)。本条只更新本轮信使修复状态。
+
 <a id="tts-death-cancel-lipsync-20261103"></a>
 ## 2026-11-03 TTS 死亡、取消与离场口型清理
 

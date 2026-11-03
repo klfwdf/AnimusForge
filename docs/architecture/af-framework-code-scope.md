@@ -1,3 +1,14 @@
+<a id="courier-party-recovery-20261104"></a>
+## 2026-11-04 信使英雄转队中断恢复
+
+源码修订 `e77048cf3857cd40ff4f226c6aa5a0761056d99c`，以下为一基行号。详细命令、日志、回滚和验收边界见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#courier-party-recovery-20261104)。
+
+- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs` 中 `CourierSession.PendingReturnHeroIds` 第 150–151 行保存待返还英雄身份。`MoveRosterFromMainParty` 第 1372–1390 行和 `MoveCharacterFromMainMembersToParty` 第 1391 行起在原版转移前记录英雄。`MoveWholeMemberRoster` 第 1521–1572 行处理实际归属核对、部分转移重试、过期记录退出与节流诊断。
+- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs` 中 `CompleteReturn` 第 42 行起控制确认归队后的终结，`ReturnCourierContentsToPlayer` 第 337–358 行兼容旧 null 列表并核对返还结果，`TryMoveHeroLossesToDestroyer` 第 415–452 行以实际被毁信使队归属和名册限定补俘对象。
+- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs` 中 `CreateCourierSession` 第 675–739 行在成员转移前登记会话，派遣部分失败进入 Returning，恢复完成后清理。
+- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs` 中 `ProcessSessionCore` 第 74–78 行限定出站预生成阶段，避免恢复返程触发回信请求。
+- `tests/modules/AF.Module.Conversation/CourierDeliveryLifetimeTests/run_party_recovery.py` 与 `PartyRecoveryHarness.cs.txt` 抽取生产 DTO/方法执行 50 项故障回放。`CourierSessionCreationTests` 的 Admission/Lifecycle harness 与 `run_admission.py` 执行 182 项派遣生命周期检查。`CourierRouteTransportTests/run.py` 补充返程禁止预生成约束。覆盖离线逻辑与模拟 API 回调顺序，真实游戏对象、Newtonsoft/.sav 往返和玩家旧档未验。
+
 <a id="tts-death-cancel-lipsync-20261103"></a>
 ## 2026-11-03 TTS取消与原生口型
 
