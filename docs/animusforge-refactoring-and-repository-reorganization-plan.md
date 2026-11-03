@@ -14707,3 +14707,13 @@ INVESTIGATED / NO_PRODUCT_CHANGE / NO_PLAYER_CRASH_EVIDENCE。用户报告部分
 - 校验工具修正 `53dde75c20`：DiplomacyReceiptCompatibility 是仅匹配旧双语身份的单一嵌入表（不按语言生成正文），归入现有身份表豁免；XML键允许原生已验证的连字符，稳定音色ID不改。主l10n门禁26表/2106运行文件、汉字字面量0、失败0。较旧全量XML契约继续报远端原有重复 `AF_MCM_Tts_Provider_Hint`（UI和LLM表各一项）；本次没有改业务提示词/加载顺序来掩盖该既有问题，不宣称该测试通过。
 - 推送前闭包检查未发现被排除本地HANDOFF、私有官网/输出/work/NuGet路径；暂存区干净。未跟踪资料、14个纯换行文件的stash `e661d37eb7ff523b9e0fc5eede70412fc7eb71f3` 和原字节快照保留，交付末尾恢复。
 - 部署已调用未修改的 `scripts/build/deploy_module.ps1`，只覆盖统一模块受管文件，保持Stage/目标/reparse/玩家文件/哈希/并发改动保护；目标 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。部署前确认进程与3个DLL独占写句柄，记录模块保护文件11、原生MCM JSON13、原版关键文件3、PlayerExports8540个哈希/时间戳；当前等待原部署owner成功回执，尚不声明完成。最终部署/远端核实追加如下。
+
+
+### 部署最终核实与待推送记录（2026-11-04 03:19，Asia/Shanghai）
+
+- 原 `deploy_module.ps1` 成功，受管文件更新 **25** 项；`deploy.log` 明确 Recovery disabled，无自动回滚。目标为 `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`，构建产品源码闭包为合并提交 `c9a3b818e3`，之后仅测试/文档变更，不改变部署的产品源码。
+- 部署后8987个非豁免Stage文件哈希逐项一致，差异0。原规则保留的玩家配置/自定义提示词保持；模块保护文件11、MCM JSON13、原版关键文件3的哈希全部未变。现有PlayerExports8540文件均未删除，未知安装文件未清理；未创建Modules/.AnimusForge.Recovery，无候选替换临时文件残留。`deployment-preflight.json`、`player-exports-before.json`、`deployment-result.json`保存具体证据及原规则豁免项。
+- 追加验证：7Z真实双语fixture58项（非发行打包）、信使派送异常恢复50项、草稿生命周期182项通过。信使初次使用SDK10时要求本机缺失的8.0.30 targeting pack，固定已安装SDK8.0.421重跑通过；未改产品或全局SDK。`merged-courier-*-sdk8.log`和`merged-sevenzip-fixture.log`为最终证据。
+- 发布边界：普通fetch核实 `origin/main=bb9ec7ee15`，本地领先18、落后0；排除路径历史及新增行凭据形态检查未发现命中。完成本条后普通push，不强推。最终ls-remote/本地HEAD一致性写入本地 `push-result.json` 并在会话报告。
+- 仍未验：游戏内真实渲染/原生AI/玩家存档、独立RichExecutions完整构建、完整续场旧fixture、工作树范围图的既有过期项；全量旧XML契约仍报远端已有重复 `AF_MCM_Tts_Provider_Hint`，完整EN世界书发行投影本轮未重跑/未修历史311项，不以此次中文默认安装或主l10n成功冒充双语发行验收。
+- 原有14个纯换行文件按原字节快照逐文件复核后恢复，stash继续保留可恢复；其他无语义脏文件及未跟踪输出原样保留，不擅自清理。代码回滚使用 `git revert d0d8035578` 的聚焦逆向提交，合并回滚须明确主父链并保护双方工作；原字节与旧Stage在 `.tmp/review-uncommitted-20261104_023448/`。游戏部署没有自动备份或回滚，源码逆提交后需重新构建、校验、授权覆盖，不能声称直接恢复安装。

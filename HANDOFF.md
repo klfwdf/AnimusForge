@@ -1,5 +1,10 @@
 ## 2026-11-04 打包切换 LZMA2 / 16 MiB 字典
 
+## 2026-11-04 审查、合并、构建与部署完成，普通推送待核实
+
+审查修复 `d0d8035578`，普通合并 `c9a3b818e3` 保留远端外交/TTS与本地营地/自由镜头。双API/Bootstrap/接缝通过；干净Stage8997文件通过，原脚本更新游戏25项，部署后8987个非豁免文件零差异，模块配置11/MCM13/原版3不变，8540玩家导出均未删除。复用原保护流程，无Recovery。专项和主l10n通过，实机/旧档、旧XML重复键与EN世界书历史发行问题不作通过声明。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#pending-changes-review-sync-20261104)、[代码范围](docs/architecture/af-framework-code-scope.md#pending-changes-review-sync-20261104)和本地`deployment-result.json`。本条完成后普通push并以ls-remote核实，不强推，不另打发行包。
+
+
 ## 2026-11-04 远端已合并，合并后构建与专项通过，部署执行中
 
 合并 `c9a3b818e3`（远端 `bb9ec7ee15`）保留营地/自由镜头与外交/TTS双方修复；冲突已解决。双API/Bootstrap/双接缝及相关专项通过，8997文件干净Stage验证通过；原部署脚本正在覆盖F盘统一模块，未得成功回执前不声明部署完成。校验修正 `53dde75c20` 的主l10n门禁零失败；旧XML全量测试仍有远端既有重复提示键，未声称通过。完整证据及剩余边界见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#pending-changes-review-sync-20261104)。本轮未打包、未启动实机或调用模型，普通push待部署核实后执行。
