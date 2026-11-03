@@ -109,7 +109,7 @@ try {
     }
 }
 finally { $zip.Dispose() }
-Assert-ZipLayout -ZipPath $zipPath -ExpectedVersion $version -OnnxMustBeAbsent:$true -CustomPromptsMustBeAbsent:$false
+Assert-ZipLayout -ZipPath $zipPath -ExpectedVersion $version -CustomPromptsMustBeAbsent:$false
 Assert-ZipMatchesCleanStage -ZipPath $zipPath -StageModuleDir $stage -PackageVersion $version
 
 $private = Join-Path $stage 'PlayerExports\private.json'

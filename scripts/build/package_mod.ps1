@@ -19,7 +19,6 @@ param(
     [switch]$BumpMicro,
     [switch]$IncludeOnnx,
     [switch]$IncludeReranker,
-    [switch]$ExcludeOnnx,
     [switch]$ExcludeCustomPrompts
 )
 
@@ -31,15 +30,9 @@ if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
 if ($IncludeReranker) {
     throw "The retired reranker is not supported. Use -OnnxModelDir to include a selected bekko payload."
 }
-# Bundle the repository bekko payload by default; an explicit exclusion remains available.
-if (-not $ExcludeOnnx -and [string]::IsNullOrWhiteSpace($OnnxModelDir)) {
+# Every client package includes the selected bekko payload.
+if ([string]::IsNullOrWhiteSpace($OnnxModelDir)) {
     $OnnxModelDir = Join-Path $PSScriptRoot '../../AnimusForge/ONNX/bekko'
-}
-if ($IncludeOnnx -and [string]::IsNullOrWhiteSpace($OnnxModelDir)) {
-    throw "Select the exact bekko directory with -OnnxModelDir when including ONNX."
-}
-if ($ExcludeOnnx -and -not [string]::IsNullOrWhiteSpace($OnnxModelDir)) {
-    throw "-ExcludeOnnx cannot be combined with -OnnxModelDir."
 }
 if ($ExcludeCustomPrompts) {
     throw "AF2 packages require the locked Prompt defaults; -ExcludeCustomPrompts is no longer supported."
@@ -620,7 +613,6 @@ function Assert-ZipLayout {
     param(
         [Parameter(Mandatory = $true)][string]$ZipPath,
         [Parameter(Mandatory = $true)][string]$ExpectedVersion,
-        [bool]$OnnxMustBeAbsent,
         [bool]$CustomPromptsMustBeAbsent
     )
 
@@ -709,9 +701,6 @@ function Assert-ZipLayout {
         }
         if ($names | Where-Object { $_ -match '(^|/)Logs(/|$)' } | Select-Object -First 1) {
             throw "ZIP must not contain Logs."
-        }
-        if ($OnnxMustBeAbsent -and ($names | Where-Object { $_ -match '(^|/)ONNX(/|$)' } | Select-Object -First 1)) {
-            throw "ZIP must not contain ONNX files."
         }
         if ($CustomPromptsMustBeAbsent -and ($names | Where-Object { $_ -match '(^|/)CustomPrompts(/|$)' } | Select-Object -First 1)) {
             throw "ZIP must not contain CustomPrompts files."
@@ -839,15 +828,13 @@ function Write-ZipFromModule {
         }
         $projections = @{}
         $selectedOnnx = @()
-        if (-not [string]::IsNullOrWhiteSpace($OnnxModelDir)) {
-            $modelDirectory = Get-FullPathSafe -Path $OnnxModelDir
-            Assert-AnimusForgeNoReparsePoint -Path $modelDirectory -Label 'Selected bekko directory'
-            foreach ($name in @('model.onnx', 'tokenizer.json', 'config.json')) {
-                $source = Join-Path $modelDirectory $name
-                Assert-AnimusForgeNoReparsePoint -Path $source -Label 'Selected bekko file'
-                if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Selected bekko file is missing: $source" }
-                $selectedOnnx += [pscustomobject]@{ Target = ('ONNX/bekko/' + $name); SourcePath = $source; Bytes = $null; Hash = (Get-FileSha256 -LiteralPath $source) }
-            }
+        $modelDirectory = Get-FullPathSafe -Path $OnnxModelDir
+        Assert-AnimusForgeNoReparsePoint -Path $modelDirectory -Label 'Selected bekko directory'
+        foreach ($name in @('model.onnx', 'tokenizer.json', 'config.json')) {
+            $source = Join-Path $modelDirectory $name
+            Assert-AnimusForgeNoReparsePoint -Path $source -Label 'Selected bekko file'
+            if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Selected bekko file is missing: $source" }
+            $selectedOnnx += [pscustomobject]@{ Target = ('ONNX/bekko/' + $name); SourcePath = $source; Bytes = $null; Hash = (Get-FileSha256 -LiteralPath $source) }
         }
         foreach ($language in @('CN', 'EN')) {
             $zipPaths[$language] = Join-Path $outputFull ("{0}_{1}_{2}.{3}" -f $baseName, $language, $releaseStamp, $archiveExtension)
@@ -856,7 +843,7 @@ function Write-ZipFromModule {
         }
         foreach ($language in @('CN', 'EN')) {
             Write-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
-            Assert-ZipLayout -ZipPath $temporaryPaths[$language] -ExpectedVersion $PackageVersion -OnnxMustBeAbsent:($selectedOnnx.Count -eq 0) -CustomPromptsMustBeAbsent:$false
+            Assert-ZipLayout -ZipPath $temporaryPaths[$language] -ExpectedVersion $PackageVersion -CustomPromptsMustBeAbsent:$false
             Assert-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
         }
         if ($archiveExtension -eq '7z') {
@@ -885,7 +872,7 @@ function Write-ZipFromModule {
         Write-Host "Output CN    : $($zipPaths['CN'])"
         Write-Host "Output EN    : $($zipPaths['EN'])"
         Write-Host "Input Rule   : verified clean Stage plus locked language projection"
-        Write-Host "ONNX payload : $(if ($selectedOnnx.Count -gt 0) { $modelDirectory } else { 'Excluded; use -OnnxModelDir to select bekko explicitly' })"
+        Write-Host "ONNX payload : $modelDirectory"
         return @($zipPaths['CN'], $zipPaths['EN'])
     }
     catch {

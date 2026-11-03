@@ -196,5 +196,5 @@ foreach ($entry in @('一键打包AnimusForge.bat', '一键打包AnimusForge小�
 $baseEntry = [System.IO.File]::ReadAllText((Join-Path $ProjectRoot '一键编译覆盖推送\一键打包AnimusForge.bat'))
 Check ([regex]::Matches($baseEntry, ' -Build ').Count -eq 2) 'Both workshop/non-workshop paths must stamp before build.'
 Check (-not $baseEntry.Contains('-File "%BUILD_SCRIPT%"')) 'Entry must not build before selecting the release version.'
-Check ($baseEntry.Contains('-ExcludeOnnx %*')) 'Entry must keep package options and the ONNX exclusion.'
+Check (-not $baseEntry.Contains('-ExcludeOnnx')) 'Entry must include the default bekko payload.'
 Write-Output "PASS package version contract: checks=$script:Checks; successive releases=1.5.6,1.5.7; both DLL file versions verified; build/ZIP/stale-DLL failures rolled back."

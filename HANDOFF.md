@@ -1,3 +1,7 @@
+## 2026-11-04 移除 ONNX 排除规则
+
+用户明确要求删除排除规则。打包入口移除 ExcludeOnnx 参数、无模型分支和 ONNX 禁入检查，默认及自定义模型路径均固定加入三个 bekko 文件；现行说明与旧测试签名同步。按用户要求本轮跳过测试/校验。已完成的含模型 CN 包为 `一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1104_0342.7z`。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remove-onnx-exclusion-20261104)。
+
 ## 2026-11-04 CN 包补入 ONNX，默认打包包含 bekko
 
 用户指出 ONNX 被错误排除并明确要求取消排除。本次 CN 重包加入仓库 bekko 的 model.onnx、tokenizer.json、config.json，目标 `一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1104_0342.7z`，替代0338包。`package_mod.ps1` 默认选择仓库 bekko，指定 ExcludeOnnx 才排除，双实现输出案例同步。按用户要求跳过校验/测试/回读。记录见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bootstrap-cn-onnx-20261104)。

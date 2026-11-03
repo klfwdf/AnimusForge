@@ -202,7 +202,7 @@ $writer = (Get-Command Write-AnimusForgeProjectedZip).ScriptBlock
 function Assert-AnimusForgeCleanStage { param($ProjectRoot, $StageModuleDir, [switch]$RequireCurrentArtifacts) }
 function Assert-AnimusForgeEnglishRuntimeSource { param($ProjectRoot) }
 function Assert-AnimusForgeEnglishRuntimeDll { param($DllPath) }
-function Assert-ZipLayout { param($ZipPath, $ExpectedVersion, $OnnxMustBeAbsent, $CustomPromptsMustBeAbsent) }
+function Assert-ZipLayout { param($ZipPath, $ExpectedVersion, $CustomPromptsMustBeAbsent) }
 function Get-AnimusForgePackageProjection {
     param($ProjectRoot, $StageModuleDir, $Language, $PackageVersion)
     if ($Language -eq 'CN') { return $cn } else { return $en }

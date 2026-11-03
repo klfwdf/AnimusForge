@@ -1,3 +1,8 @@
+<a id="remove-onnx-exclusion-20261104"></a>
+## 2026-11-04 删除 ONNX 排除选项与规则
+
+用户要求“把排除ONNX的规则去掉”，取代之前允许显式 ExcludeOnnx 的方案。scripts/build/package_mod.ps1 移除 ExcludeOnnx 参数、排除分支、OnnxMustBeAbsent 入包检查和排除提示，打包必选仓库或自定义完整 bekko 三文件。docs/bannerlord_dual_module_output.md 清理单独安装/默认排除的过时描述；三个既有打包测试同步调用签名与入口预期，不运行测试、校验或冒烟。LocalizedPackageContractTests.ps1 中其他作者原有未提交修改保留。已生成含模型CN包0342，编码器exit0，252484865字节，8475文件，交付记录 .tmp/bootstrap-logging-cn-onnx-20261104-034205/delivery.json，本轮规则删除无需重打同内容包。历史台账中的排除描述作为交付历史保留并由本条取代。回滚采用本轮提交的聚焦逆向提交。
+
 <a id="bootstrap-cn-onnx-20261104"></a>
 ## 2026-11-04 取消默认排除 ONNX 并重打 CN
 
