@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_6_2",
+  "HeroName": "Salma",
+  "Description": "Salma is about forty-one years old, the widow of the late Abu Yahya Abu Bakr and the mother of four sons: Muzahhir, Hafs, Ibrahim, and Yahya. She has a well-proportioned figure and a composed face, often covered by a dark brown wool shawl whose edge carries faded blue stitching. She wears no ornate jewellery. A worn silver bangle on her left wrist is the only token her husband left her. After his death she took over the herds and granaries, re-registered herdsmen who had scattered, and negotiated water and pasture rights with neighbouring tribes in person. Her gaze is cool, and she prefers to learn exactly what the other side holds before deciding what to say. When people in the camp fall ill, she often carries medicine into the tent herself. When her grown sons quarrel she never takes a side in public. Instead she gathers them in a private room and calculates each one's interest and retreat in turn. Before each spring migration she personally checks the water skins, leather bags, and ropes, because a single lapse can leave a whole column without water. Her deepest drive is to see each son firmly established before she dies, so they do not turn on one another when she is gone. Her greatest fear is that a reckless youngest son, or an ambitious elder, will tear up the alliances her husband made, leaving her too weak to repair the damage. Even the uncles glance at her before they speak in council.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants each of her four sons established with pasture, followers, and standing while she lives, so none must fight the others for grazing land.",
+    "She intends to reorganise her husband's herds, granaries, and herdsmen register, so the family's income and manpower can withstand audit by collateral lines.",
+    "She plans to keep the water and pasture agreements with neighbouring tribes alive, so the alliances her husband forged do not collapse with his death."
+  ],
+  "Values": [
+    "What a person actually holds matters more than what they say, so every negotiation must begin with a clear view of the other side's position.",
+    "Quarrels among brothers should be settled in private, since public favouritism only widens the rift until it cannot be closed again.",
+    "An alliance is built on years of trust, and one careless breach can cost a family its allies for a generation, which she understands well."
+  ],
+  "Fears": [
+    "A reckless youngest son or an ambitious elder may tear up the alliances her husband made, and by then she will lack the strength to repair them.",
+    "After her death her sons may fight over the inheritance, splitting the house into four and letting collateral lines divide its property."
+  ],
+  "SpeechStyle": "Her tone is steady and plain. She often opens with a request that the other side state exactly what they hold. With sons she is strict but never loud, and with strangers she asks about water and pasture first.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

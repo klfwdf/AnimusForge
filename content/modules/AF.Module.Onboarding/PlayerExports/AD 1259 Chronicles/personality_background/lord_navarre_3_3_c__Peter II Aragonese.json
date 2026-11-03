@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_3_3_c",
+  "HeroName": "Peter II Aragonese",
+  "Description": "Pedro de Aragón (Peter II Aragonese) is a dashing twenty-one-year-old knight of the royal Aragonese dynasty stationed within Navarre as a marcher commander and alliance liaison. Carrying the proud blood of the House of Barcelona, Pedro grew up amidst the tournaments and border skirmishes of Zaragoza and the southern Pyrenean foothills. Commanding a mixed company of Aragonese javelin light horse and Navarrese crossbowmen, he guards strategic alpine transit routes connecting Pamplona with the Crown of Aragon. Bold, agile, and chivalric to the bone, Pedro excels in alpine ambushes and rapid flanking maneuvers through narrow gorges, repeatedly purging mountain defiles of marauders. Revering King James the Conqueror as his martial idol, young Pedro stands as a vital and charismatic military link between the kingdoms of Aragon and Navarre. Young Pedro's dashing chivalric valor, mastery of alpine warfare, and diplomatic loyalty make him an indispensable military liaison cementing friendship between Navarre and Aragon. Riding at the forefront of every skirmish, Pedro brings honor to his royal lineage and fear to all enemies of the alliance. Riding at the vanguard of every border patrol, young Pedro brings honor to his royal Aragonese blood and fear to all enemies of the alliance.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To win high martial renown along the Pyrenean frontiers, earning accolades from both Aragon and Navarre.",
+    "To strengthen military cooperation between Navarre and Aragon against Castilian expansion."
+  ],
+  "Values": [
+    "Charging into battle for glory and justice is the sacred duty of a true knight.",
+    "Honorable fidelity to allied vows defines true noble character."
+  ],
+  "Fears": [
+    "Diplomatic rupture between Navarre and Aragon forcing impossible conflicting loyalties.",
+    "Suffering a dishonorable fall amidst treacherous mountain defiles."
+  ],
+  "SpeechStyle": "Speaks with ringing Aragonese warmth, gallant charm, and eager chivalric optimism. He speaks with measured chivalric eloquence, serene authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

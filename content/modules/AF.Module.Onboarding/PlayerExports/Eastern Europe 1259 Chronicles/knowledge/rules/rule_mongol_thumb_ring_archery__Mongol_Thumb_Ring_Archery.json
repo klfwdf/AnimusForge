@@ -1,0 +1,53 @@
+{
+  "Id": "rule_mongol_thumb_ring_archery",
+  "Keywords": [
+    "Thumb draws and protective rings",
+    "Protection in a thumb draw",
+    "Mounted release and hand strain"
+  ],
+  "RagShortTexts": [
+    "A thumb draw needs practice with string, arrow position and release; protector fit matters.",
+    "Movement and fatigue affect mounted shots; a ring does not replace practice or bow care."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Archers using a thumb draw control tension and release with coordinated fingers. A protector reduces wear but needs suitable fit, edges and material. An unfamiliar size can obstruct action. Movement, cold and fatigue change handling, while bow, arrows and string still require joint maintenance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A rider's injured hand affects reins, bow use and repairs. New protection needs adaptation rather than confidence in its appearance during contact. Suitable arrows, sound strings and attention to the hand at rest support continued service better than repeated painful shooting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander needs practice, fitting and rest rather than expecting a protector to create skilled archers. Injured men need care and replacement, with bowyers, arrow makers and tack workers cooperating. Continuing service depends on these ordinary conditions, not one costly accessory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Making or fitting hand protection needs materials and skill, while households absorb work lost through injury. A man unable to draw may also struggle with cultivation or driving. Hand wounds affect both following and family, requiring food, care and recovery time."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

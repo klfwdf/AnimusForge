@@ -1,0 +1,53 @@
+{
+  "Id": "rule_mongol_saber_draw_slash",
+  "Keywords": [
+    "Mounted saber use",
+    "Saber clearance among riders",
+    "Saber edge and scabbard care"
+  ],
+  "RagShortTexts": [
+    "Mounted saber use depends on skill, clearance and edge condition as speed and crowding change.",
+    "Scabbards and grips need reliable handling; damage and fatigue require attention."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Steppe riders carry sabers for close contact and cutting actions. Effect depends on the mount's path, grip and opposing protection. Crowded weapons and bows can obstruct drawing. Chipped edges, loose grips and damp scabbards reduce reliability; shape alone does not replace practice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A rider needs clearance from companions and horses. Contact with a shield or clothing still requires control of body and mount, while fatigue slows recovery. Checking edge, grip and scabbard afterward helps ensure the weapon can be drawn and held when needed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Equipping a following requires smiths, grip materials, scabbards and sharpening. Familiarity matters beyond decoration. Close fighting needs rally and support arrangements. Rest for tired people and mounts remains necessary; another blade does not restore an exhausted force."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sword repairs consume fuel, tools and time, while scabbard work competes with daily goods. Decoration may not buy urgent food or mounts, and returning damage still needs payment. Long requisition of craftsmen delays agricultural and transport repairs too."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

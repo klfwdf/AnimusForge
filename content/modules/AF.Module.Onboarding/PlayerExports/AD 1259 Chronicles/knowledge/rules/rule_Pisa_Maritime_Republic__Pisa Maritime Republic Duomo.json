@@ -1,0 +1,33 @@
+{
+  "Id": "rule_Pisa_Maritime_Republic",
+  "Keywords": [
+    "Pisa Maritime Republic Duomo",
+    "Arno River War Galleys Pisa",
+    "Tuscan Ghibelline Champion",
+    "Sardinia Corsica Maritime Dominance"
+  ],
+  "RagShortTexts": [
+    "Pisa was a maritime republic that projected naval power from the mouth of the Arno.",
+    "That rivalry shaped Pisa's naval budget as much as its commerce did."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pisa was a maritime republic that projected naval power from the mouth of the Arno. Its ships flew red banners charged with a white cross, and the city took the side of the imperial Ghibellines in the wars of the peninsula. Pisan galleys carried the republic's trade and its silver claims through Sardinia and Corsica, where merchant families bought mines and salt works and fought to keep the right to tax them. Rivalry with Genoa was constant, because both republics competed for the same sea lanes and the same Tyrrhenian islands. That rivalry shaped Pisa's naval budget as much as its commerce did."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk"
+        ]
+      },
+      "Content": "Towering Romanesque marble galleries celebrated Crusader victories, funding aggressive naval galleys deployed against rival Genoese convoys. Sailors load Pisan galleys with timber, iron, and oars from the arsenal, and wharf dues pay for each voyage. Rival Genoese convoys often meet them off the coast, so every merchant weighs the risk before loading cargo."
+    }
+  ],
+  "TextMappings": []
+}

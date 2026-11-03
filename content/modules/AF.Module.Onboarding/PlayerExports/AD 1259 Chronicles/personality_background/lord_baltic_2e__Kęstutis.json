@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_2e",
+  "HeroName": "Kęstutis",
+  "Description": "Prince Kęstutis is the valiant young scion of Duke Tautvilas and Duchess Žygimantė of Polotsk, growing up amidst the war-camps and fortified garrisons guarding the Western Dvina. Possessing immense physical vigor, fearless martial instinct, and a proud noble spirit, Kęstutis dedicated his youth to the grueling arts of shock horsemanship, battleaxe combat, and composite archery. Deeply influenced by his father's bold defiance of King Mindaugas and his sovereign defense of Polotsk, Kęstutis surveyed river choke points and supervised local militia drills alongside veteran captains. When territorial disputes flare along the frontier with Livonian knights or Ruthenian neighbors, the young prince ardently champions uncompromising military defense, refusing to yield an inch of his house's patrimony. Though occasionally headstrong and impatient for glory, his loyalty to his bloodline is absolute, viewing the protection of his mother and sisters as his supreme chivalric honor. Like a young northern lion testing his claws, Kęstutis sharpens his steel, eager to ride into battle and carve his own glorious legend across the Baltic battlefields. Kęstutis led relentless border cavalry sweeps along the Neman basin, dismantling hostile scout encampments before they could report. His iron discipline and personal valor established him as an indispensable vanguard captain of Baltic frontiers.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master battlefield combat to lead from the front, proving himself a warrior worthy of his house's martial fame.",
+    "Reinforce the ramparts of Polotsk and assemble an elite, fanatically loyal cavalry retinue of young warriors.",
+    "Secure sovereign dominance for his lineage amidst the chaotic succession struggles of the Lithuanian grand duchy."
+  ],
+  "Values": [
+    "Prize aggressive martial bravery, uncompromising pride, and defiance in battle, winning glory through steel.",
+    "Hold dynastic honor and familial loyalty as his supreme treasure, willing to die in defense of his hearth.",
+    "Lead every sortie from the front, never ordering his troopers to face a hazard he has not boldly confronted first."
+  ],
+  "Fears": [
+    "Being held back in the rear due to his youth while historic campaigns of glory are fought and won without his axe.",
+    "His castle falling to a sudden night assault, leaving him powerless to shield his mother and sisters from harm."
+  ],
+  "SpeechStyle": "Our warhorses are saddled and our axes sharp! Men of the Baltic never fear battle; touch our borders, and taste the fury of our charge! The Neman borders remain an unbreakable iron barrier!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

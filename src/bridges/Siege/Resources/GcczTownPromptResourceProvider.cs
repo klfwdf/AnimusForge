@@ -26,63 +26,20 @@ internal static class GcczTownPromptResourceProvider
 
 {
 
-	private static readonly Lazy<TownPromptTextCatalog> CachedCatalog = new Lazy<TownPromptTextCatalog>(LoadCatalog, true);
-
 	private static readonly Lazy<TownPromptTextCatalog> ChinesePresentation = new Lazy<TownPromptTextCatalog>(() => LoadPresentation("zh-CN"), true);
 
 	private static readonly Lazy<TownPromptTextCatalog> EnglishPresentation = new Lazy<TownPromptTextCatalog>(() => LoadPresentation("en"), true);
 
-
-
+	// Fixed GCCZ prompt text follows the game's text language; both editions ship with every package.
 	internal static TownPromptTextCatalog GetCatalog()
-
-	{
-
-		return CachedCatalog.Value;
-
-	}
-
-
-
-	private static TownPromptTextCatalog LoadCatalog()
-
-	{
-
-		string filePath = AnimusForgeModulePaths.GetModuleDataFilePath("GcczTownPrompt.json");
-
-		if (File.Exists(filePath))
-
-		{
-
-			return Deserialize(File.ReadAllText(filePath, Encoding.UTF8));
-
-		}
-
-		throw new FileNotFoundException("The selected GCCZ prompt package is missing.", filePath);
-
-	}
-
-
+		=> PromptLanguage.IsChinese ? ChinesePresentation.Value : EnglishPresentation.Value;
 
 	internal static TownPromptTextCatalog GetPresentationCatalog()
-
 		=> GcczLocalizedResourceLoader.UseChineseInterface ? ChinesePresentation.Value : EnglishPresentation.Value;
-
-
 
 	internal static TownPromptTextCatalog GetFactCatalog() => ChinesePresentation.Value;
 
-	// The package catalog is cached; UI language never controls prompt projection.
-	internal static bool UseEnglishPrompt => EnglishPrompt.Value;
-	private static readonly Lazy<bool> EnglishPrompt = new Lazy<bool>(() =>
-	{
-		string language = GetCatalog().Language;
-		if (language == "en" || language == "en-US") return true;
-		if (language == "zh-CN") return false;
-		throw new InvalidDataException("Unsupported GCCZ prompt package language: " + language);
-	}, true);
-
-
+	internal static bool UseEnglishPrompt => !PromptLanguage.IsChinese;
 
 	private static TownPromptTextCatalog LoadPresentation(string language)
 

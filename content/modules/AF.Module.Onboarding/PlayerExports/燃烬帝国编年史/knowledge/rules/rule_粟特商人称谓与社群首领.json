@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v10",
+  "Keywords": [
+    "粟特商人称谓与社群首领"
+  ],
+  "RagShortTexts": [
+    "粟特信札谦称不等于买卖身份，债务与役使须另询实情。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "粟特商信中，写信者可用“仆人”一类谦称向资深商人致意，求助者也会诉说债务和役使处境。收信人须知道双方关系，不能单凭一个敬称判断是否有人被买卖；具体债款与担保还须另行询问。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

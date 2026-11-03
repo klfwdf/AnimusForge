@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v5",
+  "Keywords": [
+    "Midhowe promontory defenses"
+  ],
+  "RagShortTexts": [
+    "Midhowe used a promontory, rock-cut shore channels and landward ditches with a rampart."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Midhowe used a promontory, rock-cut shore channels and landward ditches with a rampart. Defense combined ground, coast and works rather than a tower blocking every direction alone. Controlled access also constrained the daily carriage of supplies."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

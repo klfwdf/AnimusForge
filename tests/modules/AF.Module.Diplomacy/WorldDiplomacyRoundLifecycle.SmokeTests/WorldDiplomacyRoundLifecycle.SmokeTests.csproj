@@ -50,6 +50,8 @@
 
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Dialogue/DiplomacyCommitmentRules.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/DiplomacyNativeAdmissionRules.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptRuleBlockText.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.SubjectRelease.cs" />

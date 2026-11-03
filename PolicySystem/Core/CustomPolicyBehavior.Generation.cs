@@ -2526,7 +2526,7 @@ public sealed partial class CustomPolicyBehavior
 		LogPolicyTargetPlanRouteResult(request, planRoute, "post-module", string.Empty);
 		if (planRoute.ShouldRejectPolicy)
 		{
-			error = PolicyGenerationPromptTexts.Get("Targets_ExplicitRouteRejectionPrefix", "The policy's explicit target cannot be resolved safely: ") + string.Join("；", planRoute.Issues
+			error = PolicyGenerationPromptTexts.Get("Targets_ExplicitRouteRejectionPrefix", "The policy's explicit target cannot be resolved safely: ") + string.Join(PolicyCompatibilityTexts.Semicolon, planRoute.Issues
 				.Select(issue => issue?.Message)
 				.Where(message => !string.IsNullOrWhiteSpace(message)));
 			return false;
@@ -5548,25 +5548,25 @@ public sealed partial class CustomPolicyBehavior
 
 	private static string BuildPolicyRecentActionText(string kingdomName, string policyName, string policySummary, string impactSummary)
 	{
-		string text = PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_057") + (string.IsNullOrWhiteSpace(kingdomName) ? PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_058") : kingdomName.Trim()) + PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_059") + (policyName ?? PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_060")).Trim() + "》";
+		string text = PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_057") + PolicyCompatibilityTexts.WordGap + (string.IsNullOrWhiteSpace(kingdomName) ? PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_058") : kingdomName.Trim()) + PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_059") + (policyName ?? PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_060")).Trim() + PolicyCompatibilityTexts.CloseTitleQuote;
 		if (!string.IsNullOrWhiteSpace(policySummary))
 		{
-			text += "：" + policySummary.Trim();
+			text += PolicyCompatibilityTexts.Colon + policySummary.Trim();
 		}
 		if (!string.IsNullOrWhiteSpace(impactSummary))
 		{
 			text += PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_061") + impactSummary.Trim();
 		}
-		return LimitDisplayChars(CleanPolicyDisplayText(text.Trim().TrimEnd('。') + "。"), MaxPolicyRecentActionChars);
+		return LimitDisplayChars(CleanPolicyDisplayText(text.Trim().TrimEnd('。', '.') + PolicyCompatibilityTexts.Period), MaxPolicyRecentActionChars);
 	}
 
 	private static string BuildPolicyMajorHistoryText(string kingdomName, string policyName, string policySummary, string impactSummary, PolicyApplicationResult application)
 	{
 		string effectSummary = string.IsNullOrWhiteSpace(impactSummary) ? BuildRawPolicyEffectSummary(application) : impactSummary.Trim();
-		string text = PolicyCompatibilityTexts.Get("Legacy_BuildPolicyMajorHistoryText_062") + (policyName ?? PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_060")).Trim() + "》";
+		string text = PolicyCompatibilityTexts.Get("Legacy_BuildPolicyMajorHistoryText_062") + (policyName ?? PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_060")).Trim() + PolicyCompatibilityTexts.CloseTitleQuote;
 		if (!string.IsNullOrWhiteSpace(kingdomName))
 		{
-			text += PolicyCompatibilityTexts.Get("Legacy_BuildPolicyMajorHistoryText_063") + kingdomName.Trim();
+			text += PolicyCompatibilityTexts.Get("Legacy_BuildPolicyMajorHistoryText_063") + PolicyCompatibilityTexts.WordGap + kingdomName.Trim();
 		}
 		if (!string.IsNullOrWhiteSpace(policySummary))
 		{
@@ -5576,7 +5576,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			text += PolicyCompatibilityTexts.Get("Legacy_BuildPolicyMajorHistoryText_065") + LimitDisplayChars(CompactPolicyContextText(effectSummary), 80);
 		}
-		return LimitDisplayChars(CleanPolicyDisplayText(text.Trim().TrimEnd('。') + "。"), MaxPolicyMajorHistoryChars);
+		return LimitDisplayChars(CleanPolicyDisplayText(text.Trim().TrimEnd('。', '.') + PolicyCompatibilityTexts.Period), MaxPolicyMajorHistoryChars);
 	}
 
 	private static string BuildPolicyWeeklyMaterialEffectSummary(AppliedKingdomEffect effect)
@@ -5586,7 +5586,7 @@ public sealed partial class CustomPolicyBehavior
 			return "";
 		}
 		List<string> values = PolicyEffectSaveCodec.DescribeRawPlayerVisibleInstances(effect.ModuleEffects);
-		string text = (values.Count <= 0 ? PolicyCompatibilityTexts.Get("Legacy_BuildPolicyWeeklyMaterialEffectSummary_066") : string.Join("，", values))
+		string text = (values.Count <= 0 ? PolicyCompatibilityTexts.Get("Legacy_BuildPolicyWeeklyMaterialEffectSummary_066") : string.Join(PolicyCompatibilityTexts.Comma, values))
 			+ (effect.IsPermanentEffect
 				? PolicyCompatibilityTexts.Get("Legacy_BuildPolicyWeeklyMaterialEffectSummary_067")
 				: PolicyCompatibilityTexts.Get("Legacy_BuildPolicyWeeklyMaterialEffectSummary_068") + Math.Max(0, effect.DurationDays).ToString(CultureInfo.InvariantCulture) + PolicyCompatibilityTexts.Get("Legacy_BuildPolicyWeeklyMaterialEffectSummary_069"));
@@ -5594,7 +5594,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			text += PolicyCompatibilityTexts.Get("Legacy_BuildPolicyWeeklyMaterialEffectSummary_070") + LimitDisplayChars(CompactPolicyContextText(effect.Reason), 30);
 		}
-		return CleanPolicyDisplayText(text.Trim().TrimEnd('。') + "。");
+		return CleanPolicyDisplayText(text.Trim().TrimEnd('。', '.') + PolicyCompatibilityTexts.Period);
 	}
 
 	private static string ResolvePolicySummaryForPlayerAction(PolicyDraftRequest request, PolicyGenerationResult generationResult)
@@ -5925,7 +5925,7 @@ public sealed partial class CustomPolicyBehavior
 			{
 				continue;
 			}
-			string value = target.Length == 0 ? compact : target + "：" + compact;
+			string value = target.Length == 0 ? compact : target + PolicyCompatibilityTexts.Colon + compact;
 			if (!entry.EffectSummaries.Contains(value, StringComparer.Ordinal))
 			{
 				entry.EffectSummaries.Add(value);

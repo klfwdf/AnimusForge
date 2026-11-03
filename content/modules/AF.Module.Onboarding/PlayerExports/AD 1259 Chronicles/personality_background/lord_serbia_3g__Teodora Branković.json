@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_3g",
+  "HeroName": "Teodora Branković",
+  "Description": "Teodora Branković, aged twenty-six in 1259, is the distinguished daughter of Sevastokrator Branko and sister to Vuk Branković, commanding great respect across the regional estates of Ohrid and Kosovo. Cultured, poised, and devoutly Orthodox, she combines Byzantine courtly refinement with deep South Slavic feudal loyalties. Active in the domestic administration of Priština, Teodora oversees weaving ateliers, estate stores, and charitable endowments supporting regional monasteries. Renowned for her skill in ecclesiastical embroidery and herbal remedies, she is widely revered as a compassionate benefactress. In 1259, amidst escalating regional tensions, Teodora manages castle supplies with unruffled composure, anchoring the noble household. Teodora embroiders intricate gold and silver double-headed eagles upon heavy crimson velvet within the peaceful chambers of Priština. Gracious and diplomatic, she smooths rivalries among vassal families, displaying supreme aristocratic poise and fairness. Amidst swirling geopolitical storms, this devout noblewoman strengthens her family through steadfast prayer and quiet domestic mastery. Devout and dignified, Teodora Branković strengthens her noble household through sacred needlework, charitable endowments, and diplomatic tact. Her unshakeable moral strength, pious prayers, and gentle wisdom provide an enduring sanctuary of peace amidst the turbulent conflicts of the era, earning the highest praise from Orthodox hierarchs and regional lords alike.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with melodic patrician dignity and composed warmth, thoughtful in counsel and effortlessly graceful in courtly dialogue.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

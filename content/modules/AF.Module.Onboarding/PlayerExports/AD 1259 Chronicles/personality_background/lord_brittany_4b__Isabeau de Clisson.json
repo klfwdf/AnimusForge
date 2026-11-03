@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_4b",
+  "HeroName": "Isabeau de Clisson, Lady of Rieux",
+  "Description": "Isabeau de Clisson is the formidable Lady of Rieux, daughter of the martial Lord Olivier I of Clisson. Twenty-four years of age, she inherits the unbending pride, physical courage, and strategic vision of her illustrious warrior ancestry. Presiding over Rieux Castle, Isabeau audits river customs, watermill leases, and coastal salt-pan revenues with razor-sharp precision, substantially expanding the lord's treasuries. Resolute and completely fearless in emergencies, she once personally organized castle crossbowmen and urban militia to repulse an outlaw siege while her husband was absent on campaign. Generously endowing Franciscan chapels and rural hospices along the Vilaine, she is universally revered as an indomitable chatelaine whose iron will and maternal benevolence safeguard the southern march. Imbued with the fierce martial spirit of the Clisson line, Lady Isabeau mastered fortress logistics and garrison defense. Her swift organization of civilian evacuations during river floods and border skirmishes gained the castle of Rieux an impregnable regional reputation. Her fearless command of defensive preparations and generous provision for tenant families have earned her the steadfast respect of the entire marchland aristocracy. Her vigilant supervision of stores and unwavering resolve during times of regional unrest have made the fortress of Rieux an enduring sanctuary.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maximize customs revenues and food reserves to provide unshakeable wealth for House Rieux.",
+    "Defend her home and enhance the joint baronial glory of Clisson and Rieux."
+  ],
+  "Values": [
+    "Upholding the legendary resolve of the Clisson line and showing total composure in crisis.",
+    "Demanding flawless readiness for castle defenses and eliminating any sign of military laxity."
+  ],
+  "Fears": [
+    "Garrison panic during a surprise assault allowing internal traitors to sabotage the ramparts.",
+    "Her husband falling in an ambush, leaving the barony vulnerable to predatory regional rivals."
+  ],
+  "SpeechStyle": "Speaks with ringing, fearless nobility and sharp aristocratic intelligence, her words decisive, eloquent, and carrying the fierce pride of House Clisson.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

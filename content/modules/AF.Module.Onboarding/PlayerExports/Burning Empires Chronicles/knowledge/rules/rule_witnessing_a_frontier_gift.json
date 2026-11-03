@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v3",
+  "Keywords": [
+    "Witnessing a frontier gift"
+  ],
+  "RagShortTexts": [
+    "Witnesses to gifts and people hearing reports held different knowledge."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Officials, envoys and followers witnessed gifts and offers of support to Julian; others heard through reports. Later interpretation of the promise depended on who heard what as well as the object presented."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

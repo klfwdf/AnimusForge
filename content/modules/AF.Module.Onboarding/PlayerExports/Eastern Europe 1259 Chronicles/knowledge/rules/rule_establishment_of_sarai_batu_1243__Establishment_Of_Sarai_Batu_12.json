@@ -1,0 +1,52 @@
+{
+  "Id": "rule_establishment_of_sarai_batu_1243",
+  "Keywords": [
+    "Sarai and the lower Volga court",
+    "Batu’s camp and merchants"
+  ],
+  "RagShortTexts": [
+    "Batu’s court used the lower Volga, where Sarai’s settlement and trade developed.",
+    "Seasonal court movement required guides, gifts and provisions for waiting visitors."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The lower Volga connects steppe camps, river carriage and distant merchants. Batu’s court received princes and envoys in this region while settlement at Sarai developed. Visitors encountered tents, wagons and herds alongside suppliers and carriers. Seasonal movement meant knowing a place-name did not guarantee finding the person in authority. Travellers continually needed news of the court’s location, reception arrangements and food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A prince seeking recognition needs gifts, interpreters and trusted attendants. Waiting consumes provisions and animals; the reply must also be implemented at home. An audience involves more than presenting a name at a fixed palace gate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts ask where the camp now stands and where water and fodder are available. Merchants know routes while guards know access to the tents. Their observations serve different purposes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Carriers toward the court pay for boats, fodder and lodging. A busy settlement offers business while increasing demand for food. Households judge actual returns alongside travellers’ praise of rich tents."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

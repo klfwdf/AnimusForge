@@ -1,0 +1,59 @@
+{
+  "Id": "be_sclavenian_kingdom_economy",
+  "Keywords": [
+    "Sclavenians Trade",
+    "Navarum harvest and woodland river exchange"
+  ],
+  "RagShortTexts": [
+    "Navarum farming, herds, woodland and river exchange supply daily needs.",
+    "Harvest feeds households and fighters away from home."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Navarum farming, herds, woodland goods and river exchange supply daily needs. Harvest feeds families and forces away from home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Navarum farming, herds, woodland and river exchange supply daily needs. Traveling followers need real food from this production; valuables still require a buyer and exchange. Harvest feeds households and fighters away from home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Harvest feeds households and fighters away from home. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Navarum farming, herds, woodland and river exchange supply daily needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Navarum farming, herds, woodland and river exchange supply daily needs. Households need meals and the means to keep producing after delivering goods. Harvest feeds households and fighters away from home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Harvest feeds households and fighters away from home. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Navarum farming, herds, woodland and river exchange supply daily needs."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

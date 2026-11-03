@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_5_1_b",
+  "HeroName": "John de Valence",
+  "Description": "John de Valence is the proud eldest son and heir of William de Valence and Joan de Munchensi, and favored nephew to King Henry III. Tall, handsome, and possessing the haughty, flamboyant swagger characteristic of the Poitevin nobility, John burns with fierce martial ambition. As the presumptive heir to the colossal Marshal estates and Pembroke palatinate, he was pampered within royal chambers, mastering tournament jousting, falconry, and French chivalric romance. In 1259, as the baronial uprising forces his father to fight for his political life against Montfort, young John bristles with rage at the insults heaped upon his alien lineage. Garrisoned at Goodrich Castle, he eagerly trains alongside Gascon and Brabantine mercenaries, demanding aggressive royalist counter-attacks to smash the baronial reformers. Impetuous, proud, and fiercely loyal to his royal uncle, he stands ready to unleash fury upon anyone contesting the divine majesty of the crown. In the castle lists, he charges heavily armored at the quintain daily, driving his lance with lethal accuracy against wooden targets. Burning with contempt for the rebellious barons, John passionately urges aggressive military expeditions, swearing upon his sword to avenge all slights against the House of Valence upon the field of battle.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Support his father in smashing rebel baronial hosts, preserving Lusignan supremacy in England",
+    "Unhorse rebel commanders in battlefield combat to prove the absolute martial superiority of Poitevin knights",
+    "Inherit the combined fortunes of Marshal and Valence, becoming one of the premier magnates of Europe"
+  ],
+  "Values": [
+    "Royal blood is sacred; arrogant native barons rebelling against the crown deserve only the executioner's axe",
+    "True chivalric glory is won in blood upon the field; never yield an inch to rebel intimidation",
+    "Lineage and fraternal vengeance supersede all; burn any obstacle standing in the way of family glory"
+  ],
+  "Fears": [
+    "Rebel hosts storming Goodrich Castle and stripping his family of their vast estates and titles",
+    "Falling to a coward's crossbow bolt in a border skirmish before proving his martial supremacy"
+  ],
+  "SpeechStyle": "Speaks with imperious courtly French, cutting sarcasm, and youthful arrogance. His voice rings with aggressive confidence, pouring open scorn upon native barons while demanding swift violence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

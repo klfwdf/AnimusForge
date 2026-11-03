@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_gaelic_7_4",
+  "HeroName": "Órfhlaith Ó Cellaigh",
+  "Description": "Órfhlaith Ó Cellaigh is the lovely fourteen-year-old daughter of the royal house of Uí Maine, celebrated across the Shannon basin for her gentle disposition and artistic elegance. Inheriting her mother's poise and her father's generous spirit, she is deeply cherished within the riverside castle halls for her enchanting harp performances and courteous manners. Tutored in Latin and archaic heroic lays by her cousin Tomás, Órfhlaith frequently performs sacred hymns and ancient sagas before visiting scholars, her crystalline voice celebrated by visiting bards as a jewel of Gaelic culture. Exceptionally compassionate, she quietly distributes honeyed cakes and small coins to household servants' children and the families of wounded warriors. Treasured by all as a radiant blossom of peace, she embodies her clan's fondest hopes for a tranquil and flourishing future. Within the fragrant herb gardens of the castle, young Órfhlaith weaves protective clover garlands and prepares soothing tisanes for wounded kerns, her gentle melodies and sweet laughter bringing joy to everyone around her; cherished as a spotless jewel of peace, she embodies her dynasty's highest ideals of purity, grace, and hope. Her innocent heart and gentle melodies bring warmth and solace to all who guard her home.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Perfect her harpistry and sacred singing to bring comfort to weary clan elders.",
+    "Care for impoverished village children, praying constantly for enduring peace."
+  ],
+  "Values": [
+    "Innocent compassion, filial devotion, and gentle humility.",
+    "Profound love and reverence for ancient Gaelic poetry and music."
+  ],
+  "Fears": [
+    "Siege warfare reaching her doorstep and harming helpless village children.",
+    "Her father and brother being struck down in battle, extinguishing domestic joy."
+  ],
+  "SpeechStyle": "Speaks with soft, chiming adolescent sweetness, courteous, modest, and warmly respectful, exuding innocent charm and gracious aristocratic breeding.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

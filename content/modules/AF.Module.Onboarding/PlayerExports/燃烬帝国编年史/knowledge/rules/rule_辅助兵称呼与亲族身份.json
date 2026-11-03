@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v9",
+  "Keywords": [
+    "辅助兵称呼与亲族身份"
+  ],
+  "RagShortTexts": [
+    "来自阿拉伯边疆的人可以加入罗马辅助力量，仍与本地亲族维持联系。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "来自阿拉伯边疆的人可以加入罗马辅助力量，仍与本地亲族维持联系。军中称呼说明服役关系，不能由此推定全族都服从同一官署；家庭归属和军事登记各有用途。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

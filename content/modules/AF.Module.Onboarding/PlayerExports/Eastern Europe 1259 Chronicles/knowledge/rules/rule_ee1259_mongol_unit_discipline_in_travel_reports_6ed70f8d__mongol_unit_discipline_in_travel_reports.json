@@ -1,0 +1,30 @@
+{
+  "Id": "rule_ee1259_mongol_unit_discipline_in_travel_reports_6ed70f8d",
+  "Keywords": [
+    "Mongol discipline and shared responsibility",
+    "Separation and assistance among companions"
+  ],
+  "RagShortTexts": [
+    "Mongol forces use successive leaders and discipline linking obedience, comrades and punishment.",
+    "Severe penalties make flight and lost contact a group concern, requiring clear orders and support."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mongol forces act through successive leaders, emphasizing obedience, coordinated movement and responsibility among companions under severe penalties. Men need to know who orders, when to return and where separated comrades are. Leaders still need effective messages and mutual support; fear cannot instantly reunite forces divided by routes and lost contact."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A separated follower fears both the enemy and explaining what happened. Knowing leaders and gathering places and reporting direct observations reduces confusion. Wounded men or exhausted mounts need assistance and reports; scattering independently makes later searches, recognition and explanations harder."
+    }
+  ],
+  "TextMappings": []
+}

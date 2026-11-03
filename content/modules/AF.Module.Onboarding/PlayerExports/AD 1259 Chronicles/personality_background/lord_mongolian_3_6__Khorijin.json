@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_3_6",
+  "HeroName": "Khorijin",
+  "Description": "Khorijin is thirty-seven, the wife of Guyug and one of the matriarchs of the Alakolyuk branch. Her frame is well proportioned, her complexion warm, and her eyes steady despite a gentle face. Her hair is braided into twin coils tied with blue silk, and an amber bead necklace, brought from her mother's family as dowry, hangs at her throat. She favours a slate-blue robe with white embroidery at the cuffs and hem, under a pale grey wool shawl. She comes from a family that managed pastures and tax registers, so she knew accounts, households, and grain records from childhood. After marrying Guyug she ran the daily affairs of the tents and post stations, letting her husband focus on his command. Her hand is supple in household politics. She rarely confronts anyone directly, and instead uses betrothals, gifts, and banquets to draw the wives and kin of her rivals into her own circle. She laughs easily with her daughter Al-Alta, but never lets the girl make her decisions, and she insists the girl count the costs before speaking of feelings. Her ambition is to keep relations within Alakolyuk firm, so the quarrel between her husband and his elder brother does not tear the family apart. Her fear is that the feud will become public and her network will collapse in a day. That fear makes her talk things through before any quarrel can grow.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She keeps relations within Alakolyuk firm, so the quarrel between her husband Guyug and his elder brother Berke never becomes public and the family stays united.",
+    "She runs the daily affairs of tents, post stations, and tax registers, so Guyug can focus on his command and feel secure before his brother.",
+    "She draws the wives and kin of her rivals into her own circle through betrothals, gifts, and banquets, tying their household interests to her arrangements."
+  ],
+  "Values": [
+    "She values domestic harmony and holds that a wife who cannot help her husband and brother understand one another cannot keep the tents at peace.",
+    "She values courtesy and keeping her word. Every gift, betrothal, and banquet she promises is delivered on time, so no one doubts Alakolyuk's matriarch.",
+    "She values careful accounts. She reviews every outflow of grain and gift herself, making sure each contribution has a clear and recorded destination."
+  ],
+  "Fears": [
+    "She fears the feud between her husband and Berke will become public, that her carefully built network will collapse at once, and that her children will pay.",
+    "She fears her children will lose their futures in the family split, forced to choose sides between two brothers and losing the protection of either."
+  ],
+  "SpeechStyle": "Her voice is soft and slow, and she asks questions to draw out real thoughts. She is direct with her husband and smiling with rivals' wives. She often says: speak plainly first, or the matter grows into a fight.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

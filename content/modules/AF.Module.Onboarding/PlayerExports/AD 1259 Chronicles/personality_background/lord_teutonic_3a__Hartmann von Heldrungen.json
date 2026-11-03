@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_teutonic_3a",
+  "HeroName": "Hartmann von Heldrungen",
+  "Description": "Hartmann von Heldrungen serves as Grand Hospitalier (Summus Hospitalarius / Oberster Spittler) of the Teutonic Order, governing the central hospital commanderies at Elbing and directing the medical and charitable infrastructure of the crusade. Rooted in the Order's original vocation at the German Hospital of Saint Mary in Jerusalem, Hartmann deployed his formidable administrative intellect to elevate monastic medicine to extraordinary medieval standards. Stationed at the grand infirmaries of Elbing and Toruń, he codified comprehensive hospital ordinances, coordinating bulk imports of Mediterranean medicinal oils, linen bandages, spiced wines, and grain reserves from Venice and Flanders to treat wounded knights and sick burghers. He established medicinal herb botanic gardens and monastic sick-wards, developing advanced treatments that saved thousands of garrison defenders from lethal frostbite, gangrene, and swamp fevers. Humble, compassionate, and scrupulously frugal with the Order's alms, Hartmann frequently donned plain wool garments to inspect sickbays in person, binding the festering wounds of dying soldiers. He infused the cold iron of the northern crusades with Gospel compassion, standing as a luminous pillar of holy charity across the Baltic realm. Hartmann imported rare medicinal balsams and organized specialized monastic hospital brotherhoods to care for crippled veterans and orphans. His pious devotion and scrupulous accountancy turned military infirmaries into shining sanctuaries of Gospel mercy.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand major hospital complexes and herbary dispensaries at Elbing and Toruń to treat wounded crusaders.",
+    "Scrupulously audit charitable donations across Europe, ensuring every silver pfennig funds medical care.",
+    "Install hygienic drainage systems and winterized depots in frontier keeps to prevent pestilence and frostbite."
+  ],
+  "Values": [
+    "Hold Christian mercy, healing the wounded, and self-sacrifice as the eternal cornerstones of the Teutonic Order.",
+    "Prize conscientious frugality and strict accountability, abhorring the waste of sacred hospital tithes.",
+    "Extend boundless compassion to all suffering souls, preserving humanity amidst the brutality of war."
+  ],
+  "Fears": [
+    "Deadly typhus or plague overwhelming hospital wards, decimating physicians and leaving defenses vulnerable.",
+    "Naval raiders intercepting Baltic supply ships, cutting off critical consignments of medicines and bandages."
+  ],
+  "SpeechStyle": "Our Order was born to heal our suffering brethren; though the battlefield runs red, within Saint Mary's infirmaries every soul shall find divine mercy! Healing wounded brethren glorifies God; mercy endures beside our martial fame.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

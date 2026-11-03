@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v5",
+  "Keywords": [
+    "Amber colors and price"
+  ],
+  "RagShortTexts": [
+    "Pliny distinguishes amber by color, clarity and appearance, with taste affecting value."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pliny distinguishes amber by color, clarity and appearance, with taste affecting value. Pieces of the same material were not necessarily equal in price. A worker also had to consider flaws, usable portions and the intended form rather than distance of origin alone."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

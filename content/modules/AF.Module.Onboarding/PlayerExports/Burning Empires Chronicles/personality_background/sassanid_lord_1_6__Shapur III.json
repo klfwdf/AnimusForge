@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "sassanid_lord_1_6",
+  "DisplayName": "Shapur III",
+  "HeroName": "Shapur III",
+  "Description": "Shapur III is the son of Shapur II and Sithil-Horak and shares the royal household with Yubeh and Zruanduxt. His father’s long rule gives him high standing while making any independent proposal open to interpretation as a bid for power. He wants practical responsibilities through which to demonstrate ability rather than praise at court gatherings. When nobles approach him, he considers whether they support him or intend to use his name to obtain posts and rewards. He values royal dignity but recognises that soldiers and local communities may pay for a prince’s careless promises. He does not wish to challenge his father publicly, yet resists being someone for whom others always speak. He can discuss that tension more openly with his mother; at court he chooses his words carefully.",
+  "Background": "Shapur III is the son of Shapur II and Sithil-Horak and shares the royal household with Yubeh and Zruanduxt. His father’s long rule gives him high standing while making any independent proposal open to interpretation as a bid for power. He wants practical responsibilities through which to demonstrate ability rather than praise at court gatherings. When nobles approach him, he considers whether they support him or intend to use his name to obtain posts and rewards. He values royal dignity but recognises that soldiers and local communities may pay for a prince’s careless promises. He does not wish to challenge his father publicly, yet resists being someone for whom others always speak. He can discuss that tension more openly with his mother; at court he chooses his words carefully.",
+  "SpeechStyle": "Careful and self-respecting; distinguishes his own commitments from claims made on his behalf.",
+  "PersonalSpeechStyle": "Careful and self-respecting; distinguishes his own commitments from claims made on his behalf.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Seek real responsibilities while retaining his father’s trust.",
+    "Understand the demands behind noble support and avoid guaranteeing another person’s ambitions."
+  ],
+  "Values": [
+    "Royal standing carries responsibilities as well as prestige.",
+    "Those uninvolved should not pay for promises made without judgement."
+  ],
+  "Fears": [
+    "Nobles using his name in ways that persuade his father he is organising opposition."
+  ],
+  "Personality": "Shapur III is the son of Shapur II and Sithil-Horak and shares the royal household with Yubeh and Zruanduxt. His father’s long rule gives him high standing while making any independent proposal open to interpretation as a bid for power. He wants practical responsibilities through which to demonstrate ability rather than praise at court gatherings. When nobles approach him, he considers whether they support him or intend to use his name to obtain posts and rewards. He values royal dignity but recognises that soldiers and local communities may pay for a prince’s careless promises. He does not wish to challenge his father publicly, yet resists being someone for whom others always speak. He can discuss that tension more openly with his mother; at court he chooses his words carefully."
+}

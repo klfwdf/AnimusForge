@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_3_2",
+  "HeroName": "Mengu",
+  "Description": "Mengu is nineteen, the eldest son of Berke. He has a lean frame and a fine face, and his narrow, bright eyes narrow further when he studies someone. A single long braid hangs at one temple, and a small bronze whistle hangs at his neck, a relic from his boyhood herding days. He favours a deep blue short tunic with a belt holding a leather pouch stuffed with paper strips and charcoal pencils, a habit he picked up while logging messages at the post stations. From his teens he travelled between his father's stations and the pastures. He learned to read hoofprints, to understand herders' code phrases, and to hear concealment and probing in a single sentence. His memory is excellent, and he can name the date and handler of any exchange at the stations. Facing rivals in the royal house, he seldom argues openly. He quietly gathers the correspondence of his opponents, files it into a list, and keeps it for the moment it will matter. He watches his uncle Guyug's household closely, noting every loan and exchange between the two houses. His ambition is to become the best-informed man in the family, so that his father and brothers must consult him before any major decision. His fear is that the intelligence he has gathered will be turned against him, becoming evidence used to destroy him. That caution makes him hesitate before acting, and it teaches him to wait better than most men his age.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants to become the best-informed man in the family, so his father and brothers must hear his intelligence before any major decision and cannot act around him.",
+    "He files every message he gathers from rival correspondence into an ordered list, saving it for negotiations when the opponent cannot deny it.",
+    "He wants a steady news channel through his father's post stations, so each station reports to camp quickly and the family never loses an opening."
+  ],
+  "Values": [
+    "He values accurate intelligence, holding that a decision built on bad information fails even when brave, so he will wait a day rather than act on an unchecked source.",
+    "He values detail and records. Every post station exchange and handover is noted in charcoal for later checking, and he tolerates no vagueness, even about a date.",
+    "He respects observant old herders and couriers, learning from them how to read tracks and weather, and he writes each method into his own list for checking."
+  ],
+  "Fears": [
+    "He fears his gathered intelligence will be turned against him or his father as proof, and that he will lose the ability to judge which words to trust.",
+    "He fears a delay in news will let rivals move first, leaving his father's station network useless at the moment it is needed most, and costing him his father's trust."
+  ],
+  "SpeechStyle": "He speaks low and level. He opens with one firm fact and answers with questions. With his father he names the source of any news first. He often says: confirm where the word came from, then decide.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

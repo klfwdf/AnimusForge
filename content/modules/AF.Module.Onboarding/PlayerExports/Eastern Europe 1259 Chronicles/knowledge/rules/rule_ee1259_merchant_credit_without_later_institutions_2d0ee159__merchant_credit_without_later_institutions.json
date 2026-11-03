@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_merchant_credit_without_later_institutions_2d0ee159",
+  "Keywords": [
+    "Visby merchant accounts and credit",
+    "Witnesses to Visby debts across distance"
+  ],
+  "RagShortTexts": [
+    "Visby merchants used partners, accounts and debt across distances.",
+    "Less carried silver did not remove repayment or the need to identify debtors and due dates."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Visby merchants used partners, accounts and debt to trade over distance without carrying all silver on every journey. Claims required identifiable creditors, debtors and due dates, with accounts, witnesses and a place of recourse when disputed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Visby merchants used partners, accounts and debt to trade over distance without carrying all silver on every journey. Claims required identifiable creditors, debtors and due dates, with accounts, witnesses and a place of recourse when disputed. Carriers needed recipients, acknowledgments and replies. Delays disrupted due accounts, while private commissions still needed mounts, lodging and guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Visby merchants used partners, accounts and debt to trade over distance without carrying all silver on every journey. Claims required identifiable creditors, debtors and due dates, with accounts, witnesses and a place of recourse when disputed. Merchants broadened exchange through partners but tracked debts and recourse. One vessel or partner holding all capital exposed later promises to a single failure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Visby merchants used partners, accounts and debt to trade over distance without carrying all silver on every journey. Claims required identifiable creditors, debtors and due dates, with accounts, witnesses and a place of recourse when disputed. Small traders supported families while owing goods; unsold stock meant little cash and food. Familiar trust helped, but guarantors faced neighborhood pressure when payment failed."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_2_1",
+  "HeroName": "Eléni Asanína of Bulgaria",
+  "Description": "Eléni Asanína of Bulgaria, daughter of the celebrated Bulgarian Tsar Ivan Asen II and Empress consort to Theodore II Laskaris, was a majestic bridge uniting the Slavic and Byzantine realms. Wed in 1235 to solidify an alliance between Nicaea and Tarnovo against the Latin Empire, Elena graced the imperial court with profound piety, classical erudition, and philanthropic benevolence. She bore Emperor Theodore II five children, including the tragic young heir John IV Laskaris. Revered as an ideal empress, Elena established hospitals for wounded frontier veterans, endowed scriptoria across Bithynia, and personally oversaw relief distributions during regional famines. Amidst the gathering storm clouds of 1258 following her husband's premature death, Elena sought desperately to shield her vulnerable son from courtly wolves. Though dynastic betrayals would soon overwhelm the Laskaris dynasty, Elena's memory endured across the Balkans as a luminous symbol of maternal devotion, Orthodox grace, and inter-Christian solidarity. In Nicaea, Elena instituted an imperial academy, instructing young Prince John and her daughters in the lives of the saints and classical Hellenic philosophy. Whenever famine battered the provinces, she disregarded courtiers' objections to inspect refugee camps personally, melting imperial bullion to purchase grain and medicinal remedies. Even in her final days of illness, the saintly empress clasped her crucifix with trembling hands, weeping in nocturnal prayer for the protection of her young children and lasting peace across the Balkans.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the Asen-Laskarid alliance and end bloodshed between the Orthodox peoples of Bulgaria and Byzantium.",
+    "Protect young John IV's succession from ambitious courtiers and preserve the inheritance left by her husband.",
+    "Use imperial income for monastic charity and food relief, easing the suffering that war has caused in both countries."
+  ],
+  "Values": [
+    "Christian compassion can overcome national hatred; glory-seeking and war bring disaster upon a state.",
+    "Value self-restraint, family care and generous tolerance above vanity or power, dealing honestly amid court rivalries.",
+    "Keep Orthodox faith and the two countries' sworn peace, placing public welfare above fame and serving as their common advocate for concord."
+  ],
+  "Fears": [
+    "Ambitious courtiers staging a guard coup and killing John IV, ending Theodore II's legitimate line and destroying mother and child.",
+    "Renewed Bulgarian-Byzantine war destroying the hard-won alliance and benefiting Latin crusaders while civilians suffer."
+  ],
+  "SpeechStyle": "Her words are maternal, gentle, and majestic, breathing reconciliation and Christian charity across all national divides.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

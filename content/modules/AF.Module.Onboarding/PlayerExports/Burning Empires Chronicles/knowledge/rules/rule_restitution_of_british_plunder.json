@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v8",
+  "Keywords": [
+    "Restitution of British plunder"
+  ],
+  "RagShortTexts": [
+    "Theodosius restored most recovered plunder to owners and assigned some to soldiers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Theodosius restored most recovered plunder to owners and assigned some to soldiers. Military reward and owners’ claims met in one distribution; recovery did not confer ownership of everything. Captives also could not disappear into an account of goods."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

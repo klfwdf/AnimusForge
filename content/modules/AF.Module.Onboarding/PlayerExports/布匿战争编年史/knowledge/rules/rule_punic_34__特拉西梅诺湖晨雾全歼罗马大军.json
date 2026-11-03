@@ -1,0 +1,107 @@
+{
+  "Id": "rule_punic_34",
+  "Name": "特拉西梅诺湖晨雾设伏与全歼执政官军团",
+  "Description": "公元前217年6月，汉尼拔在特拉西梅诺湖北岸狭长隘口依山设伏，利用浓重晨雾三面合围盲目追击的执政官弗拉米尼乌斯大军，在两个小时内全歼三万罗马军团。",
+  "Tags": [
+    "特拉西梅诺湖之战",
+    "汉尼拔",
+    "弗拉米尼乌斯阵亡",
+    "晨雾伏击",
+    "湖滨屠杀",
+    "罗马震动"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 88,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前217年6月特拉西梅诺湖战役汉尼拔利用浓重晨雾完美合围罗马军。",
+    "将罗马三万大军封锁在北面险山与南面湖泊之间长达数里的狭窄走廊中。",
+    "执政官弗拉米尼乌斯在乱军中战死致使全军崩溃万余人被迫投湖溺毙。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 92,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "特拉西梅诺湖是古代伏击战的最高巅峰！汉尼拔故意纵火焚烧伊特鲁里亚庄园引诱弗拉米尼乌斯暴怒急追。清晨山谷湖面升起伸手不见五指的乳白大雾，罗马军团鱼贯挤入悬崖与湖泊夹击的狭道。当敌军尾部进峡口的号角吹响，我们埋伏在山坡密林中的轻重步兵与骑兵同时如天崩地裂般扑下！两个时辰，整整三万罗马军队没有展开战线的机会，全军非死即降，湖水被鲜血彻底染成赤红！"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是共和国历史上最黑暗的清晨！弗拉米尼乌斯执政官被狂怒蒙蔽了双眼，连斥候都没有派出就全军涌入隘口！大雾中战吼四起，滚木礌石从头顶倾泻而下，高卢骑士的长矛穿透了执政官的喉咙！一万五千名勇敢的公民兵倒在血泊中，更多的人绝望地跳进深湖，重甲拖着他们沉入水底！当大裁判官在元老院广场宣布‘我们在一次重大战役中战败了’时，罗马全城陷入了嚎啕痛哭！"
+    },
+    {
+      "Priority": 82,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "高卢的仇恨在特拉西梅诺湖得到了洗雪！我们的勇士杜卡里乌斯一眼认出了那个曾经血洗我们高卢部族的执政官弗拉米尼乌斯，杜卡里乌斯策马狂奔，长矛如闪电般挑飞了他的护卫，直接扎进了他的胸膛！我们割下了执政官的头颅，把罗马人的鹰旗扔进湖里喂鱼！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前217年6月，汉尼拔在特拉西梅诺湖北岸山地利用山谷大雾设伏。执政官弗拉米尼乌斯盲目追击进入狭窄走廊，遭迦太基全军从山林俯冲合围。罗马三万大军在此役中伤亡一万五千人、被俘一万五千人，执政官弗拉米尼乌斯战死。罗马元老院随后紧急任命法比乌斯为战时独裁官。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "特拉西梅诺湖晨雾设伏与全歼执政官军团",
+    "rule_punic_34"
+  ]
+}

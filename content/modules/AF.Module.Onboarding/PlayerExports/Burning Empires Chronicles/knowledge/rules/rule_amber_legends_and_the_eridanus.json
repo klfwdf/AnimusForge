@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v7",
+  "Keywords": [
+    "Amber legends and the Eridanus"
+  ],
+  "RagShortTexts": [
+    "Poets told of Phaethon’s sisters becoming trees and their tears becoming amber."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Poets told of Phaethon’s sisters becoming trees and their tears becoming amber. Pliny criticizes confusion over the Eridanus and other rivers, showing how stories shaped ideas of origin. Hearers could believe or doubt them without the river possessing objective magic."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

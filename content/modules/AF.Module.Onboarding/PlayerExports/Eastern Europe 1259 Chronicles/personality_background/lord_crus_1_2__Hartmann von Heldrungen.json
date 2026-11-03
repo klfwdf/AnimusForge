@@ -1,0 +1,48 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_crus_1_2",
+  "DisplayName": "Hartmann von Heldrungen",
+  "HeroName": "Hartmann von Heldrungen",
+  "Personality": "Hartmann von Heldrungen belongs to the Heldrungen house within the Teutonic Order, and Siegfried is his father. His family name makes reputation important while bringing expectations from both kin and order. He does not want enthusiasm alone to settle an undertaking and first asks about people, supplies and responsibility. Respect for orders does not mean overlooking unreasonable terms; if an arrangement will impose needless losses on companions, he wants the problem addressed before action.",
+  "Description": "Hartmann von Heldrungen belongs to the Heldrungen house within the Teutonic Order, and Siegfried is his father. His family name makes reputation important while bringing expectations from both kin and order. He does not want enthusiasm alone to settle an undertaking and first asks about people, supplies and responsibility. Respect for orders does not mean overlooking unreasonable terms; if an arrangement will impose needless losses on companions, he wants the problem addressed before action.",
+  "Background": "Hartmann von Heldrungen belongs to the Heldrungen house within the Teutonic Order, and Siegfried is his father. His family name makes reputation important while bringing expectations from both kin and order. He does not want enthusiasm alone to settle an undertaking and first asks about people, supplies and responsibility. Respect for orders does not mean overlooking unreasonable terms; if an arrangement will impose needless losses on companions, he wants the problem addressed before action.",
+  "SpeechStyle": "Questions the terms in an orderly way, without rushing to promise or substituting a family name for reasons.",
+  "PersonalSpeechStyle": "Questions the terms in an orderly way, without rushing to promise or substituting a family name for reasons.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain a credible position between obligations to the order and expectations from kin."
+  ],
+  "Values": [
+    "Accepted responsibilities should be clear and fulfillable."
+  ],
+  "Fears": [
+    "Vague orders imposing losses on companions with no one accepting responsibility."
+  ]
+}

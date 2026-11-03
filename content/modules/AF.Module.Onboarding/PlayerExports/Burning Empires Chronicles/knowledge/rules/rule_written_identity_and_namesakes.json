@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v10",
+  "Keywords": [
+    "Written identity and namesakes"
+  ],
+  "RagShortTexts": [
+    "Names without offices in the Gallus affair led to the arrest of namesakes."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In the Gallus affair, names without offices led to a philosopher and an orator being arrested in place of arms supervisors. Written identification needed occupation and place; translated or similar names did not establish the same person."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

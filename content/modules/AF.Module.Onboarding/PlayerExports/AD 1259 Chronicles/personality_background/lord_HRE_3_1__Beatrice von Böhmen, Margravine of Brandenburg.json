@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_3_1",
+  "HeroName": "Beatrice von Böhmen, Margravine of Brandenburg",
+  "Description": "Beatrice of Bohemia, daughter of King Wenceslaus I of the Přemyslid dynasty and sister of Ottokar II, was the consort of Otto III of Brandenburg. Bringing immense dowries and royal prestige from Prague, she served as a pivotal diplomatic anchor between Bohemia and the Ascanians. Beatrice established scholarly halls for Bohemian jurists in Spandau, negotiating reciprocal trade exemptions between Prague and Berlin that earned boundless public affection. Deploying exceptional diplomatic vision to sustain northern leagues, she counseled King Ottokar to honor imperial statutes, revered across Germany as an exemplary sovereign. Bearing royal Přemyslid blood, Beatrice built diplomatic bridges of lasting peace, revered across the Empire as an immortal sovereign matriarch. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain an unbreakable defensive pact between the Přemyslid crown and House Ascania.",
+    "Introduce refined Bohemian court culture and scholastic learning to Spandau and Berlin.",
+    "Ensure unimpeded merchant transit linking Bohemian silver mines with Baltic trade routes."
+  ],
+  "Values": [
+    "Upholds royal Přemyslid pedigree and courtly manners as sacred standards of princely dignity.",
+    "Believes transnational matrimonial fidelity alone extinguishes destructive border conflicts."
+  ],
+  "Fears": [
+    "Her brother King Ottokar's overreach provoking imperial coalitions that ruin her husband.",
+    "Border robber-knights severing trade routes and sparking war between Prague and Berlin."
+  ],
+  "SpeechStyle": "Speaks with imperial Bohemian elegance and regal poise, dignified, prudent, and firm. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

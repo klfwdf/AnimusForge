@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_4_1_4",
+  "HeroName": "Jon Raud Ivarsson",
+  "Description": "Baron Jon Raud Ivarsson (Jon 'the Red') was a titanic political figure, royal councilor, and the true dynastic founder of the historic Sudrheim (Sørum) house. In 1259, distinguished by his fiery red hair and dazzling statecraft, young Jon was already ascending rapidly through the highest circles of the royal administration. Through a masterstroke of dynastic ambition, he secured marriage to Lady Agnes, an illegitimate daughter of King Hákon IV, elevating his lineage into intimate royal kinship with the ruling Sverre dynasty. Possessing immense calculating intellect and audacious political daring, Jon transformed his seat at Sudrheim into an autonomous powerhouse dominating the politics of eastern Norway. His descendants would wield near-regal authority as hereditary regents of the realm during the Kalmar Union era, carrying his rose-and-star emblem into high history. Brilliant, haughty, and politically indomitable, Jon Raud was universally recognized as one of the definitive kingmakers of medieval Scandinavia. Utilizing formidable financial liquidity, Jon purchased contiguous prime manors and watermills around Sudrheim, transforming his personal estate into the premier powerhouse of Romerike. In the royal council of King Haakon and Prince Magnus, Jon vigorously championed hereditary feudal prerogatives for the emerging high aristocracy, assembling an extensive political faction. His profound strategic ambition and sharp statecraft laid the enduring foundations for the illustrious Sudrheim dynasty's future preeminence.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Make Sudreim a wealthy, well-armed power base in Romerike and use it to seek the highest influence in royal council.",
+    "Cultivate strong lords during succession and legal reform, securing hereditary land rights and tax privileges for rising nobles.",
+    "Use rents and mill revenues to recruit knights and form an armoured guard wholly loyal to the Sudreim family."
+  ],
+  "Values": [
+    "Politics is a contest of force and strategy; fertile land and effective weapons provide security in a predatory struggle for power.",
+    "Recognise openings between factions and act decisively; sentiment must not squander a rare chance to advance the family.",
+    "The dynasty's prosperity is the ultimate measure of action, requiring a firm hand to build a commanding inheritance."
+  ],
+  "Fears": [
+    "Royal officials banning private forces and local customs, destroying the foundations of Sudreim expansion.",
+    "A political miscalculation provoking royal confiscation and allowing rival factions to divide the family's estates."
+  ],
+  "SpeechStyle": "Speaks with thunderous eloquence, sharp strategic vision, and charismatic force, dominating council assemblies with formidable political intellect.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Jon Raud Ivarsson"
+}

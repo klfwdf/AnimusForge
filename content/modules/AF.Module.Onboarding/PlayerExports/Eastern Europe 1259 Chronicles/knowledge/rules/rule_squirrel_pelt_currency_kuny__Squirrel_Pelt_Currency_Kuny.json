@@ -1,0 +1,52 @@
+{
+  "Id": "rule_squirrel_pelt_currency_kuny",
+  "Keywords": [
+    "valuing squirrel skins in trade",
+    "kuna accounts and fur cargo"
+  ],
+  "RagShortTexts": [
+    "Furs serve as goods and payment, but monetary names do not always denote actual skins.",
+    "Quality, local agreements and demand govern valuation rather than one universal fur rate."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Squirrel and other small pelts from northern forests accumulate into lots through hunters, buyers and merchants, each bearing preparation and transport costs. Coat, season and damage affect price; damp or fragment-filled packages cannot all be valued as the best skins. Counting is only part of inspection and sorting.\n\nAccount names such as kuna have historical links to fur, but an amount need not demand whole skins of the named animal. Silver, pelts or other goods can settle an agreed payment if the receiver accepts it. Exchanging skins for salt and grain helps where small money is scarce, while foreign markets set different values and require travel expenses first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Fur dues need quality and delivery terms beyond counts. Poor storage reduces what an estate can sell later."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers offering pelts need willing recipients and risk poor prices when hungry. Damp protection matters as much as armed security."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A small bundle represents many forest hours. Familiar buyers simplify exchange but can create debt and dependence."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

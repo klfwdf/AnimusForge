@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_3a",
+  "HeroName": "Branko Mladenović",
+  "Description": "Branko Mladenović, aged sixty-two in 1259, is the veteran patriarch of the Branković dynasty, serving as Sevastokrator and military lord of Ohrid and northwestern Macedonia. Having survived decades of brutal conflicts between Byzantium, Bulgaria, and Serbia, he commands unmatched respect among both Slavic knights and native Greek clergy along Lake Ohrid. A master of mountain warfare and diplomatic survival, Branko fortifies key defiles controlling transit toward the Adriatic. In 1259, as imperial armies mobilize toward the fateful plains of Pelagonia, Branko places his garrisons on maximum alert, deploying heavy crossbowmen and reinforcing stone redoubts, standing as an unyielding granite bulwark shielding Serbia's southern flank. Sevastokrator Branko stands motionless upon the high ramparts of Ohrid, his weathered countenance as rugged as the surrounding granite peaks. Familiar with every mountain pass in Macedonia, he tests his crossbowmen and infantry lines with relentless perfectionism. In the grand geopolitical confrontation shaping the southern Balkans, this veteran general guards the frontier with unshakeable fortitude. Carrying the weight of six decades of frontier combat, Sevastokrator Branko commands the defenses of Lake Ohrid with granite-like resolve. His tactical mastery and strict military standards ensure that the southwestern march of Serbia remains impenetrable to all hostile forces.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with gravelly veteran command and unshakeable authority, austere and blunt, cutting instantly through hesitation and fear.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

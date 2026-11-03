@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v1",
+  "Keywords": [
+    "阿拉古斯狭路"
+  ],
+  "RagShortTexts": [
+    "阿拉古斯河旁狭路使军队和驮载顺次通过。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "斯特拉波形容高加索北面进入伊比利亚的路线：先艰难上山，再沿阿拉古斯河走狭路。不同路段限制行列展开，马队和驮载必须顺次通过；短地图距离不等于短行程。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

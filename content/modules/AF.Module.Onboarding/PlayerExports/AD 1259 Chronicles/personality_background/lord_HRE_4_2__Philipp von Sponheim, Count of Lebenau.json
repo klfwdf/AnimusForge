@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_4_2",
+  "HeroName": "Philipp von Sponheim, Count of Lebenau",
+  "Description": "Philipp von Sponheim, Count of Lebenau and Archbishop-elect of Salzburg, was a formidable prince-prelate of Carinthia. Fierce, ambitious, and unyielding, he waged protracted territorial wars across Salzburg and contested King Ottokar II for the ducal inheritance of Carinthia. Philipp formed household knightly retinues in Salzburg, wielding ecclesiastical interdicts and heavy lances to crush secular resistance against archiepiscopal tithes. Erecting formidable stone bastions in Salzburg, he challenged King Ottokar II for Carinthia, unleashing political tempests across the eastern Alps with fierce determination. Waging war for his ancestral succession with crozier and lance, Philipp shook the eastern Alps as an unyielding warrior prince-archbishop. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Reclaim the Duchy of Carinthia bequeathed away by his brother to King Ottokar II of Bohemia.",
+    "Deploy prince-archbishopric armies to crush burgher insurrections in the city of Salzburg.",
+    "Forge a vast prince-bishopric domain along the eastern Alps dominated by House Sponheim."
+  ],
+  "Values": [
+    "Believes pastoral crozier and knightly spear are one; divine justice requires armed conquest.",
+    "Holds dynastic patrimony inviolable, vowing to unleash total war rather than yield succession."
+  ],
+  "Fears": [
+    "Ottokar II's Bohemian armies storming Salzburg and stripping him of secular and holy office.",
+    "Papal anathemas formally stripping him of his archiepiscopal see and election bulls."
+  ],
+  "SpeechStyle": "Speaks with ecclesiastical fury and bellicose arrogance, brooking zero opposition. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

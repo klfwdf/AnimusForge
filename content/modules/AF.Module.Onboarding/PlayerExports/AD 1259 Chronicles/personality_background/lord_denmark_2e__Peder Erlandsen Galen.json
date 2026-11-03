@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2e",
+  "HeroName": "Peder Erlandsen Galen",
+  "Description": "Sir Peder Erlandsen Galen, youngest brother of Archbishop Jakob, was a fiery vanguard knight of the Scanian aristocracy. Trained from boyhood in tournament warfare, two-handed broadsword combat, and heavy crossbow marksmanship, Peder operated as the mobile skirmish commander of the Galen house. During the war against King Christoffer, he directed light cavalry and agile shallow-draft boats along the Scanian coast, staging audacious maritime raids against royal transports in the Sound. He captured multiple royalist supply vessels ferrying German mercenary crossbowmen, severely disrupting Copenhagen's reinforcements. Passionate, fiercely loyal, and direct, Peder idolized his elder brothers and clamored for the vanguard in every assault, renowned as the most relentless and aggressive cavalry ranger of the Galen lineage. Enforcing strict soldierly discipline throughout his Scanian defensive commands, Peder transformed ordinary manor garrisons into formidable strike units capable of opposing royal household knights in open combat. When King Christoffer's naval transports attempted an amphibious landing along the Sound to arrest dissident nobles, Peder led a crushing cavalry charge along the surf, driving the royalists back into the sea. Reticent and determined, he executed archiepiscopal defensive mandates with ruthless efficiency, acclaimed throughout Scania as the Iron Bulwark of Galen.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Intercept royalist grain transports in the Sound, choking off maritime reinforcements heading to Copenhagen through aggressive ambushes.",
+    "Spearhead cavalry assaults to win knightly glory, asserting the martial supremacy of the Galen house across Scandinavian tournament fields."
+  ],
+  "Values": [
+    "Reveres frontline valor and fraternal loyalty above all, believing true knights earn their honor in the crucible of charge and melee.",
+    "Champions lightning tactical strikes and daring aggression, scorning timid diplomatic dithering in favor of steel."
+  ],
+  "Fears": [
+    "Dreads having his horse cut down in combat and falling captive, used as a shameful bargaining chip to extort his brothers."
+  ],
+  "SpeechStyle": "Speaks with rapid, ringing youthful audacity, his bold words bursting with restless battlefield adrenaline and knightly pride.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

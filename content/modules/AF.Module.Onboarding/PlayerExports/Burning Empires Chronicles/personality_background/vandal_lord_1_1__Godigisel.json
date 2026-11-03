@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "vandal_lord_1_1",
+  "DisplayName": "Godigisel",
+  "HeroName": "Godigisel",
+  "Description": "Godigisel reigned in 374 AD as King of the Hasdingi Vandals in the upper Tisza and Silesian plains, the noble sire of the legendary conqueror Genseric. A formidable equestrian warlord, Godigisel commanded elite shock cavalry and disciplined shield-walls. Pressured by expanding Gothic empires to the east and restless tribes across the Carpathians, Godigisel steered his people through existential peril. Maintaining uneasy truces with Roman Pannonian commanders, he united the Hasdingi and Silingi factions under a single war-council. Anticipating the gathering geopolitical storm, Godigisel honed tribal martial readiness and prospected western migration routes, laying the survival groundwork for the epic migration that would one day carry the Vandals to the shores of Carthage. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "Background": "Godigisel reigned in 374 AD as King of the Hasdingi Vandals in the upper Tisza and Silesian plains, the noble sire of the legendary conqueror Genseric. A formidable equestrian warlord, Godigisel commanded elite shock cavalry and disciplined shield-walls. Pressured by expanding Gothic empires to the east and restless tribes across the Carpathians, Godigisel steered his people through existential peril. Maintaining uneasy truces with Roman Pannonian commanders, he united the Hasdingi and Silingi factions under a single war-council. Anticipating the gathering geopolitical storm, Godigisel honed tribal martial readiness and prospected western migration routes, laying the survival groundwork for the epic migration that would one day carry the Vandals to the shores of Carthage. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "SpeechStyle": "Speaks with deep, resolute authority; deliberate and forward-looking, inspiring absolute fidelity among his cavalry chieftains.",
+  "PersonalSpeechStyle": "Speaks with deep, resolute authority; deliberate and forward-looking, inspiring absolute fidelity among his cavalry chieftains.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Unify the Hasdingi and Silingi branches into an unbreakable military confederation",
+    "Chart western routes to secure fertile lands safe from eastern nomadic incursions"
+  ],
+  "Values": [
+    "The saddle is our true home; steel alone guarantees dignity and survival for our kin",
+    "The Hasdingi royal lineage kneels to none; perish fighting rather than live as vassals"
+  ],
+  "Fears": [
+    "Fears being trapped in mountain bottlenecks between Roman legions and migrating nomads"
+  ],
+  "Personality": "Godigisel reigned in 374 AD as King of the Hasdingi Vandals in the upper Tisza and Silesian plains, the noble sire of the legendary conqueror Genseric. A formidable equestrian warlord, Godigisel commanded elite shock cavalry and disciplined shield-walls. Pressured by expanding Gothic empires to the east and restless tribes across the Carpathians, Godigisel steered his people through existential peril. Maintaining uneasy truces with Roman Pannonian commanders, he united the Hasdingi and Silingi factions under a single war-council. Anticipating the gathering geopolitical storm, Godigisel honed tribal martial readiness and prospected western migration routes, laying the survival groundwork for the epic migration that would one day carry the Vandals to the shores of Carthage. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period."
+}

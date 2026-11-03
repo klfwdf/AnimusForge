@@ -1,0 +1,59 @@
+{
+  "Id": "be_danish_kingdom_military",
+  "Keywords": [
+    "Danes Military",
+    "Danish warfare against Geats"
+  ],
+  "RagShortTexts": [
+    "War with Geats divides people between vessels and land defence.",
+    "Repair, fresh water and landings set operational duration."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "War with Geats divides people between land warnings and vessels. Repair, water and landings set endurance; lost ships also harm households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "War with Geats divides people between vessels and land defence. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Repair, fresh water and landings set operational duration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Repair, fresh water and landings set operational duration. Usable strength includes supply, home guards and exits; concentration reduces another reserve. War with Geats divides people between vessels and land defence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "War with Geats divides people between vessels and land defence. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Repair, fresh water and landings set operational duration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Repair, fresh water and landings set operational duration. Repair, carrying and care also use people, while daily supply continues after troops pass. War with Geats divides people between vessels and land defence."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

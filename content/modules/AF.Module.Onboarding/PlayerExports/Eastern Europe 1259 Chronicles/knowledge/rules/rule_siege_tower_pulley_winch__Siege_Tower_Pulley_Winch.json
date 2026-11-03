@@ -1,0 +1,53 @@
+{
+  "Id": "rule_siege_tower_pulley_winch",
+  "Keywords": [
+    "Moving a siege tower",
+    "Ground beneath a siege tower",
+    "Siege tower carpentry and hauling"
+  ],
+  "RagShortTexts": [
+    "A siege tower needs a load-bearing approach; ditches, mud and slopes can stop it.",
+    "Towers consume timber, fittings and hauling labor; platform height must suit the defenses."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A timber tower gives attackers an elevated position, but construction does not ensure access to a wall. Ditches before Baltic wetland forts and Rus strongholds can halt heavy equipment, while slopes strain its running gear. Carpenters maintain frames, platforms and joints. Haulers need a firm, protected approach; ropes and winding gear cannot make soft ground bear the load."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men working around a tower watch for loose supports, sinking wheels and crowded platforms. Reaching the upper level still leaves the transfer to the wall. Those behind must stop when the way is blocked. Haulers need missile protection and coordinated orders when movement stalls, rather than conflicting pulls on ropes and frame."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander examines the approach before committing to a tower. Timber, carpenters, wheelwrights and draft animals extend supply demands while defenders prepare barriers and fire. A narrow muddy slope may favor another attack point or continued blockade. Failed equipment still ties down guards and men retrieving casualties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tower beams compete with bridges, roofs and carts for timber, while nearby villages may supply road labor. Drivers know where heavy wheels sink; carpenters repair joints distorted by damp. Workmen and animals require food and rest. Urgency alone cannot move a large frame once its labor and teams are exhausted."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

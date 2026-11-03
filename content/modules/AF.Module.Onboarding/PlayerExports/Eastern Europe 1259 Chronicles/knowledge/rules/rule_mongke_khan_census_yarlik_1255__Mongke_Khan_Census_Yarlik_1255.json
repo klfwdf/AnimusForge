@@ -1,0 +1,52 @@
+{
+  "Id": "rule_mongke_khan_census_yarlik_1255",
+  "Keywords": [
+    "registration under Möngke",
+    "local execution of khanal commands"
+  ],
+  "RagShortTexts": [
+    "Under Möngke, registration helped organise tribute and service across Mongol domains.",
+    "Local people needed to identify valid commands, collectors and deliveries already made."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Under Möngke, Mongol authorities used registration of people and resources to organise tribute and service. Rus princes negotiated with visiting officials. Northeastern lands faced enumeration in 1257, while Novgorod had its own urban circumstances. Local execution required interpretation, identification of households and collection; residents might see escorting riders or a recording official. The authority of a command did not make production and existing burdens identical everywhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord distinguishes the instruction, resources actually available and additions imposed by officers. Confirmed handover preserves opportunities for appeal. Invoking khanal authority to silence every question makes later cooperation harder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "An escort carrying commands needs credentials and a designated host. Travel support and formal obligations require distinction; arbitrary fodder demands can close doors previously open to reception."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Recorded households still need food and seed. People ask about duplicate payment, help from relatives and further demands by guards. Recognition of completed deliveries matters alongside knowing a distant ruler’s name."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_3f",
+  "HeroName": "Peter I.",
+  "Description": "Peter I Frankopan, aged four in 1259, is the beloved young eldest son of Frederick I and grandson of Count Jerindo I, carrying the supreme dynastic hopes of the House of Frankopan. Sturdy, spirited, and bright-eyed, the young boy is adored by the armored knights and household retainers of Krk castle. Growing amidst the rhythmic crash of waves and the clanking of mail, young Peter already displays fascination with swords and shields, enthusiastically mimicking naval boarding actions with wooden play blades. Shielded within the thick stone battlements of the island fortress in 1259, the child thrives in radiant health, a promising young shoot of maritime nobility sheltered from the geopolitical tempests shaping the Adriatic. Little Peter plays happily among the mailed sentries of Castle Krk, proudly raising his wooden sword in cheerful imitation of armored knights. Castle chaplains and comital elders tenderly bless his golden hair, praying for St. Mark's eternal protection over this young scion of Frankopan nobility. Sheltered within formidable harbor fortifications, little Peter enjoys a joyous childhood, treasured as a precious gem guarded by iron and sea. Surrounded by the clash of steel and roar of surf, young Peter thrives in joyful innocence, carrying the proud warrior traditions of his maritime lineage.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with lively, cheerful toddler enthusiasm, bright and fearless, delighted by knights' armor and wooden play weapons.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

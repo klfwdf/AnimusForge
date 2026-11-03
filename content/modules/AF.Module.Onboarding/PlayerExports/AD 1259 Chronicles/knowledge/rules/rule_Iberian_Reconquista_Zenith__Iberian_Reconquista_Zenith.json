@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Iberian_Reconquista_Zenith",
+  "Keywords": [
+    "Iberian Reconquista Zenith",
+    "Post Las Navas Expansion",
+    "Alfonso X and James the Conqueror",
+    "Al-Andalus Muslim Retreat"
+  ],
+  "RagShortTexts": [
+    "Iberian conquest and settlement redistribute power, land and obligations.",
+    "Privileges vary by place and do not erase the interests of existing cultivators."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After the victory at Las Navas de Tolosa in 1212, the Reconquista surged across Andalusia. Fernando III of Castile took Córdoba and Seville, while James I of Aragon conquered Valencia and Majorca. The advance shrank Islamic power in the peninsula to the mountainous Emirate of Granada, a last redoubt on the southern coast. Castile and Aragon divided the conquered lands into repartimientos, with towns and villages granted to nobles, the military orders and the crown. Frontier commanderies of the Orders of Santiago and Calatrava guarded the new borders, and the royal treasury grew from the taxes and tributes of the reconquered towns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Castilian hidalgos and the military orders received repartimientos of olive groves and wheat plains in the conquered south. Each grant was recorded in the royal chancery, and each commandery was expected to send men to the frontier when the crown called them up."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Frontier cavalry patrol the arid badlands with light lances and javelins, drilled by years of swift razzia raids. Minarets topped with bells now mark the towns that were taken, and the sentries read the dust on the horizon for the signs of a Granadan raiding party. Water is scarce, and every rider carries a skin and a spare horse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Settlers trek south from northern hills with ox-carts to reclaim fallow lands under royal fueros. Danger of Moorish raids remains, but the promise of freehold land and tax exemptions outweighs the perils. Families sow barley and beans on the new plots and register their boundaries with the concejo."
+    }
+  ],
+  "TextMappings": []
+}

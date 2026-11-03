@@ -65,6 +65,89 @@ internal sealed class SceneAttentionController
 
 	internal float _stopStaringTime = 0f;
 
+	// Relay gaze override: agentIndex -> agent it should look at instead of the player.
+	// Written only on the main thread by speech publication and cleared with the stare list.
+	internal readonly Dictionary<int, Agent> _relayLookTargets = new Dictionary<int, Agent>();
+
+	private Agent ResolveStareLookTarget(Agent agent)
+	{
+		if (agent != null && _relayLookTargets.Count > 0 && _relayLookTargets.TryGetValue(agent.Index, out Agent target)
+			&& target != null && target != agent && target.IsActive())
+		{
+			return target;
+		}
+		return Agent.Main;
+	}
+
+	// Speaker faces the addressee; the other held participants face the speaker.
+	// Only look targets change: no forced turn, no position or movement changes.
+	internal void ApplyRelaySpeechGaze(Agent speaker, Agent addressee, IEnumerable<int> participantAgentIndices)
+	{
+		if (speaker == null || !speaker.IsActive() || ShouldSuppressSceneConversationControlForMeeting())
+		{
+			return;
+		}
+		Agent speakerTarget = addressee != null && addressee != speaker && addressee.IsActive() ? addressee : Agent.Main;
+		if (speakerTarget == Agent.Main) _relayLookTargets.Remove(speaker.Index);
+		else _relayLookTargets[speaker.Index] = speakerTarget;
+		TrySetLook(speaker, speakerTarget);
+		if (participantAgentIndices == null)
+		{
+			return;
+		}
+		Agent main = Agent.Main;
+		foreach (int index in participantAgentIndices)
+		{
+			if (index < 0 || index == speaker.Index) continue;
+			Agent listener = FindStaringAgent(index);
+			if (listener == null) continue;
+			// The addressee always looks back at the speaker; other listeners split between the
+			// speaker and the player (about half each, re-rolled per line) so a relay line does not
+			// snap the whole crowd around at once.
+			bool watchSpeaker = (addressee != null && listener == addressee) || main == null || !main.IsActive()
+				|| MBRandom.RandomFloat < RelayListenerWatchSpeakerChance;
+			Agent lookTarget = watchSpeaker ? speaker : main;
+			if (lookTarget == main) _relayLookTargets.Remove(index);
+			else _relayLookTargets[index] = lookTarget;
+			TrySetLook(listener, lookTarget);
+		}
+	}
+
+	private const float RelayListenerWatchSpeakerChance = 0.5f;
+
+	internal void ClearRelaySpeechGaze()
+	{
+		if (_relayLookTargets.Count == 0) return;
+		foreach (KeyValuePair<int, Agent> pair in _relayLookTargets)
+		{
+			Agent agent = FindStaringAgent(pair.Key);
+			if (agent != null) TrySetLook(agent, Agent.Main);
+		}
+		_relayLookTargets.Clear();
+	}
+
+	private Agent FindStaringAgent(int index)
+	{
+		for (int i = 0; i < _staringAgents.Count; i++)
+		{
+			Agent agent = _staringAgents[i];
+			if (agent != null && agent.Index == index && agent.IsActive()) return agent;
+		}
+		return null;
+	}
+
+	private static void TrySetLook(Agent agent, Agent target)
+	{
+		try
+		{
+			agent.SetLookAgent(target);
+		}
+		catch
+		{
+			// Look target is cosmetic; a rejected call must not break speech publication.
+		}
+	}
+
 	internal const float PLAYER_DRIVEN_MULTI_SCENE_STARE_HOLD_SECONDS = 60f;
 
 	internal const float MULTI_SCENE_MOVEMENT_SUPPRESSION_INTERVAL = 0.01f;
@@ -418,10 +501,8 @@ internal sealed class SceneAttentionController
 		}
 		try
 		{
-			agent.SetLookAgent(Agent.Main);
-			agent.SetMaximumSpeedLimit(0f, isMultiplier: false);
-			WorldPosition worldPosition = agent.GetWorldPosition();
-			agent.SetScriptedPosition(ref worldPosition, addHumanLikeDelay: false);
+			agent.SetLookAgent(ResolveStareLookTarget(agent));
+			HoldAgentInPlaceUnlessSeated(agent);
 		}
 		catch
 		{
@@ -429,6 +510,34 @@ internal sealed class SceneAttentionController
 		if (!_staringAgents.Contains(agent))
 		{
 			_staringAgents.Add(agent);
+		}
+	}
+
+	// A scripted position makes a seated agent leave its chair, so seated (or otherwise
+	// object-using) agents only turn their gaze and keep using the object.
+	private static void HoldAgentInPlaceUnlessSeated(Agent agent)
+	{
+		if (IsAgentUsingSceneObject(agent) || IsCampCeremonyMovementOwned(agent))
+		{
+			return;
+		}
+		agent.SetMaximumSpeedLimit(0f, isMultiplier: false);
+		WorldPosition worldPosition = agent.GetWorldPosition();
+		agent.SetScriptedPosition(ref worldPosition, addHumanLikeDelay: false);
+	}
+
+	private static bool IsCampCeremonyMovementOwned(Agent agent) =>
+		FieldCampMissionLogic.Current?.IsCeremonyAgentHeld(agent) == true;
+
+	private static bool IsAgentUsingSceneObject(Agent agent)
+	{
+		try
+		{
+			return agent != null && (agent.IsUsingGameObject || agent.CurrentlyUsedGameObject != null);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -645,7 +754,8 @@ internal sealed class SceneAttentionController
 		}
 		try
 		{
-			agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+			if (!IsCampCeremonyMovementOwned(agent))
+				agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
 		}
 		catch
 		{
@@ -659,7 +769,7 @@ internal sealed class SceneAttentionController
 			return;
 		}
 		ClearAgentSceneConversationFocus(agent);
-		if (ShouldPreserveMeetingSceneAutonomy())
+		if (ShouldPreserveMeetingSceneAutonomy() || IsAgentUsingSceneObject(agent) || IsCampCeremonyMovementOwned(agent))
 		{
 			return;
 		}
@@ -710,6 +820,7 @@ internal sealed class SceneAttentionController
 			list.Add(agent);
 			_staringAgents.RemoveAt(num);
 			_staringAgentAnchors.Remove(agent.Index);
+			_relayLookTargets.Remove(agent.Index);
 		}
 		if (list == null || list.Count == 0)
 		{
@@ -847,11 +958,22 @@ internal sealed class SceneAttentionController
 		{
 			return;
 		}
+		if (IsCampCeremonyMovementOwned(agent))
+		{
+			ClearAgentSceneConversationFocus(agent);
+			return;
+		}
 		_sceneMovement.ClearSceneSummonScriptedBehavior(agent);
 		bool flag = IsAgentHostileToMainAgent(agent);
 		ClearAgentSceneConversationFocus(agent);
 		if (ShouldPreserveMeetingSceneAutonomy())
 		{
+			return;
+		}
+		if (!flag && IsAgentUsingSceneObject(agent))
+		{
+			// A seated (object-using) agent was only held by gaze; clearing its scripted movement
+			// or navigator target would make it stand up and wander to a new usable point.
 			return;
 		}
 		try
@@ -1214,7 +1336,8 @@ internal sealed class SceneAttentionController
 			try
 			{
 				controlledSpeaker.SetLookAgent(null);
-				controlledSpeaker.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+				if (!IsCampCeremonyMovementOwned(controlledSpeaker))
+					controlledSpeaker.SetMaximumSpeedLimit(-1f, isMultiplier: false);
 			}
 			catch
 			{
@@ -1234,8 +1357,11 @@ internal sealed class SceneAttentionController
 				{
 					try
 					{
-						staringAgent.SetLookAgent(Agent.Main);
-						staringAgent.SetMaximumSpeedLimit(0f, isMultiplier: false);
+						staringAgent.SetLookAgent(ResolveStareLookTarget(staringAgent));
+						if (!IsAgentUsingSceneObject(staringAgent) && !IsCampCeremonyMovementOwned(staringAgent))
+						{
+							staringAgent.SetMaximumSpeedLimit(0f, isMultiplier: false);
+						}
 					}
 					catch
 					{
@@ -1256,8 +1382,9 @@ internal sealed class SceneAttentionController
 				try
 				{
 					staringAgent.SetLookAgent(null);
+					if (IsCampCeremonyMovementOwned(staringAgent)) continue;
 					staringAgent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
-					if (!ShouldPreserveMeetingSceneAutonomy())
+					if (!ShouldPreserveMeetingSceneAutonomy() && !IsAgentUsingSceneObject(staringAgent))
 					{
 						staringAgent.DisableScriptedMovement();
 					}
@@ -1270,6 +1397,7 @@ internal sealed class SceneAttentionController
 		_staringAgents.Clear();
 		_staringAgentAnchors.Clear();
 		_staringUseConversationAgents.Clear();
+		_relayLookTargets.Clear();
 	}
 
 	internal void AddAgentToStareList(Agent agent, bool interruptCurrentUse = false)
@@ -1302,10 +1430,8 @@ internal sealed class SceneAttentionController
 			}
 			try
 			{
-				agent.SetLookAgent(Agent.Main);
-				agent.SetMaximumSpeedLimit(0f, isMultiplier: false);
-				WorldPosition worldPosition = agent.GetWorldPosition();
-				agent.SetScriptedPosition(ref worldPosition, addHumanLikeDelay: false);
+				agent.SetLookAgent(ResolveStareLookTarget(agent));
+				HoldAgentInPlaceUnlessSeated(agent);
 			}
 			catch
 			{
@@ -1336,6 +1462,7 @@ internal sealed class SceneAttentionController
     {
         _staringAgents.RemoveAll(agent => agent == null || agent.Index == index);
         _staringAgentAnchors.Remove(index);
+        _relayLookTargets.Remove(index);
     }
     // Read-only capture leaf: preserve original null-safe Any(Index) semantics without exposing the store.
     internal bool IsStaringAgentIndex(int index)
@@ -1353,7 +1480,7 @@ internal sealed class SceneAttentionController
     internal void RemoveAttentionRelease(int index) { lock (_pendingSceneConversationAttentionReleaseLock) _pendingSceneConversationAttentionReleaseAgentIndices.Remove(index); }
     internal void ResetAttentionTransientForLoadedSave()
     {
-        _staringAgents.Clear(); _staringAgentAnchors.Clear(); _staringUseConversationAgents.Clear();
+        _staringAgents.Clear(); _staringAgentAnchors.Clear(); _staringUseConversationAgents.Clear(); _relayLookTargets.Clear();
     }
 
 }

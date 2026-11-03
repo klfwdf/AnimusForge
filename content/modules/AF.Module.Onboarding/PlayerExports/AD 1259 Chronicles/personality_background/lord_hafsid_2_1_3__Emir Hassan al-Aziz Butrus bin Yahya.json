@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_2_1_3",
+  "HeroName": "Emir Hassan al-Aziz Butrus bin Yahya",
+  "Description": "Hassan al-Aziz Butrus bin Yahya is the second son of Emir Yahya Butrus al-Mutawakkil. The game data records him at nineteen, with a governance-minded court template and political skill that is outstanding among men his age. The game model shows a young man's face with an Aserai-style beard, and no scars are recorded. His manner is mild and courteous, with a quiet calculation beneath it. The chronicles say nothing of him, so this account rests on game setting and dynastic background. Under his mother Halwa's direction he was trained from childhood in court etiquette and the courtesies of hospitality, and he followed his father to learn the rules of taxes, posting roads, and appointments. He is skilled at dealing with people, quickly learns the family ties and interests of others, and knows how to find partners at banquets. While his elder brother Zakariya wants to win his place through battle, Hassan prefers to seek his path through governance and personal ties, often sorting the replies of regional lords for his father and brother. His lofty aim is to widen the branch's power without bloodshed, weaving the Hafsid political network into a firm web. His private shadow is the fear that his smoothness may make him seem to lack principle at a decisive moment, costing him the trust of his old allies. For this reason he weighs every promise carefully, afraid of a careless word.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Build influence in royal governance and appointments, keeping taxes and posting roads under the control of himself and his father and out of outsiders' hands.",
+    "Forge reciprocal bonds with regional lords and young men of the kin, so that they will serve the branch when it needs them and form a firm network.",
+    "Combine his elder brother's military reputation with his own governing strengths, so that the branch leads in both battle record and administration and is not easily overruled."
+  ],
+  "Values": [
+    "He believes practical agreements serve better than the threat of force, and that arrangements benefiting all parties make the most lasting and most secure politics.",
+    "He values the courtesy of hospitality and the measure of words, holding that relationships should rest on trust and dignity rather than passing advantage.",
+    "He values calm judgment of the situation, believing that in the struggle for power, seeing who truly controls resources matters more than a hasty stance."
+  ],
+  "Fears": [
+    "His smoothness may lead old allies to think he lacks principle, so no one will stand with him at a critical moment, and the political network he wove will fall apart.",
+    "His disagreement with his brother may be exploited by the kin, forcing the two onto opposite sides and shattering the branch's unity in faction struggles beyond repair."
+  ],
+  "SpeechStyle": "His tone is mild and his wording careful. He often guides others to their real thoughts through questions. With senior kin and regional lords he is attentive, with his brother more direct, and on promises he confirms details twice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

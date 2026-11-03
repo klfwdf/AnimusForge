@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_1_4",
+  "HeroName": "Gutkeled nembeli Pál",
+  "Description": "Gutkeled nembeli Pál is the spirited youngest son of Ban István I, recognized as a dashing cavalry officer and scout commander for the clan. Reared among the horse-breeding pastures of Slavonia, he served as royal Master of the Horse, mastering wide-ranging reconnaissance with light cavalry squadrons. Agile, daring, and charismatic, Pál coordinates mixed detachments of mounted scouts and crossbowmen, intercepting hostile messengers along the Drava corridor. Sharing hardships alongside common soldiers in the saddle, he commands enthusiastic devotion throughout the vanguard camps. In 1259, as Bohemian armed provocations multiply along the Styrian border, Pál garrisons the westernmost forward redoubts, patrolling alpine defiles with hawk-like vigilance. Pál established hidden scouting outposts throughout treacherous alpine ravines, leading cavalry patrols through grueling weather without complaint. His sharp tactical intelligence repeatedly disrupted enemy reconnaissance columns before they could report back to Austrian border commanders. His infectious enthusiasm and unpretentious camaraderie earned passionate loyalty from the light horsemen under his direct command. His agile mounted scouts patrolled alpine passes with unceasing vigilance, ensuring that surprise assaults were detected and crushed long before reaching settlements, guaranteeing the safety and tranquility of border homesteads and mountain hamlets.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Intercept enemy vanguards through daring reconnaissance, earning the praise of his father and king.",
+    "Secure decisive outpost victories for his clan in impending border clashes."
+  ],
+  "Values": [
+    "Prize swift mobility, keen reflexes, and mutual trust among horsemen over sluggish bureaucracy.",
+    "Admire spirited martial optimism, maintaining undaunted morale in the face of danger."
+  ],
+  "Fears": [
+    "Fears harsh mountain blizzards crippling his horse herds and blinding reconnaissance units.",
+    "Dreads being encircled behind enemy lines, failing to convey vital intelligence to headquarters."
+  ],
+  "SpeechStyle": "My war-steeds outrun the mountain wind! Our bows are strung; any trespasser stepping into the Drava march will face a lethal storm of arrows! Swift horsemen bar the passes; trespassers across the Drava will die!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

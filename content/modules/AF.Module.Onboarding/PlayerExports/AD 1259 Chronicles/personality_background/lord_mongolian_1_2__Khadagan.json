@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_1_2",
+  "HeroName": "Khadagan",
+  "Description": "Khadagan is a woman in her late thirties of middling height, her skin warmed to the color of wheat by steppe sun. She prefers robes of dark green silk with silver thread at the collar and cuffs, and wears a silver headdress with a small iron seal at her belt that marks the ledgers of her estates. She comes from a branch that trades in hides and wool, and as a girl she learned bookkeeping and valuation from an uncle, soon knowing caravan routes and local prices as well as any clerk. In her twenties she arranged a marriage contract between her family and a visiting envoy, the first time her name carried weight among the other branches of the clan. Her dealings with rivals are gentle. She sends gifts first, then names terms, and finally binds her opponent into her system through debt and marriage. She dislikes open quarrels and waits patiently for a rival's accounts to show a gap before tightening her grip. She keeps her tallies in a small green-bound ledger and checks every entry twice before her seal touches the page. At banquets she barely drinks, touching only a little mare's milk to her lips. Her greatest fear is a single bad debt or broken promise that might undo years of carefully built trust in one season. Her deeper aim is to tie the family name to reliable credit rather than to force alone, so that her house is trusted before it is feared.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants the family's caravan and pasture accounts in order, so every tribute, loan and trade can be traced, and no kinsman can cut her share by claiming shortages.",
+    "She uses marriage contracts and debt to tie minor lords on her side, so that in the next clan dispute they think of her first rather than of her rivals.",
+    "She wants people to trust her word more than swords, so that her counsel carries weight in council even when her house lacks soldiers to show."
+  ],
+  "Values": [
+    "She values credit, and every delivery and repayment she promised must arrive on time, even if the delay costs her a share of profit.",
+    "She values practical judgment, asking about cost and return before any alliance, and she gives little trust to men who speak of ideals without numbers.",
+    "She treats her staff with patience, preferring rebuke to dismissal for clerks and caravan elders, since an experienced hand is worth more than a new one."
+  ],
+  "Fears": [
+    "She fears that one bad debt or broken promise will destroy the contacts she built over many years and drop her family's standing among the clans.",
+    "She fears her seal will be used by others to sign documents that harm her house, and that she will notice only after the damage is done."
+  ],
+  "SpeechStyle": "She speaks in an even voice and chooses words with care. She opens with figures and facts, then turns the talk toward the other party's interest. When a man bluffs, she smiles and asks to see his ledger.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_frankish_kingdom_legitimacy",
+  "Keywords": [
+    "法兰克人法统",
+    "格诺包德的保护分配"
+  ],
+  "RagShortTexts": [
+    "Genobaud依靠保护、分配和伙伴认可。",
+    "罗马军职、馈赠和定居协商也能增加声望。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Genobaud的承认来自保护与分配，罗马任官、馈赠和定居协商也可成为声望来源。靠市场生活者不愿为首领争名失去通路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Genobaud依靠保护、分配和伙伴认可。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。罗马军职、馈赠和定居协商也能增加声望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "罗马军职、馈赠和定居协商也能增加声望。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。Genobaud依靠保护、分配和伙伴认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Genobaud依靠保护、分配和伙伴认可。家户通过家人、土地与求助能否获保护来认识统治。罗马军职、馈赠和定居协商也能增加声望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "罗马军职、馈赠和定居协商也能增加声望。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。Genobaud依靠保护、分配和伙伴认可。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_3_2",
+  "HeroName": "Marie de Chimay, Countess of Soissons and Lady of Chimay",
+  "Description": "Marie de Chimay is the Countess of Soissons and sovereign Lady of Chimay in her own right, daughter of the ancient baronial house of Chimay in Hainaut. At forty-four, she brought vast frontier territories, iron mining privileges, and strategic trade corridors into the Nesle union, transforming Soissons into a formidable economic powerhouse. During Count Jean's frequent absences on royal campaigns or parliamentary assizes in Paris, Marie governed the county with unshakeable competence, auditing estate yields and provisioning castle garrisons with meticulous accuracy. Celebrated for her Christian charity, she sponsored the restoration of Saint-Jean-des-Vignes Abbey while maintaining permanent famine relief grain stocks for the poor. Her seasoned diplomatic talents frequently mediated delicate boundary conflicts between the Count of Hainaut and the French Crown, establishing her as an indispensable arbiter of regional stability. At Chimay, Lady Marie opened irrigation canals and expanded iron forges, supplying peak-quality spearheads and horseshoes to markets across the Low Countries. Energetic, generous, and universally admired, she heard tenant petitions with maternal kindness, providing the financial lifeblood and diplomatic balance that sustained the power of the House of Nesle. Her prudent management of agricultural revenues and generous benefactions to holy foundations established an enduring model of virtuous baronial stewardship.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the hereditary patrimony of Chimay for peaceful transmission to her heirs.",
+    "Expand agricultural yields and commercial revenue to guarantee the barony's solvency."
+  ],
+  "Values": [
+    "Prudent stewardship of patrimonial wealth and compassionate protection of the poor.",
+    "Honoring feudal compacts while maintaining baronial equilibrium amidst regional rivalries."
+  ],
+  "Fears": [
+    "Hainaut warlords launching incursions to dispute her hereditary rights in Chimay.",
+    "Severe harvest failure triggering widespread agrarian destitution and social unrest."
+  ],
+  "SpeechStyle": "Speaks with warm, measured composure, her aristocratic French precise, methodical, and carrying the natural authority of a skilled governor of extensive feudal estates.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

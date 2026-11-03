@@ -1,0 +1,59 @@
+{
+  "Id": "be_votadinian_kingdom_geopolitics",
+  "Keywords": [
+    "Votadinians Frontiers",
+    "Traprain hill routes and anchorages"
+  ],
+  "RagShortTexts": [
+    "Votadinian hill roads and landings connect toward Traprain Law.",
+    "Ridge and estuary knowledge affects warnings and deliveries."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hills, routes toward Traprain Law and coastal landings connect interior and sea. Ridge and estuary knowledge affects warnings and deliveries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Votadinian hill roads and landings connect toward Traprain Law. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Ridge and estuary knowledge affects warnings and deliveries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ridge and estuary knowledge affects warnings and deliveries. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Votadinian hill roads and landings connect toward Traprain Law."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Votadinian hill roads and landings connect toward Traprain Law. Closed routes may separate families from goods, imposing costs on those remaining at home. Ridge and estuary knowledge affects warnings and deliveries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ridge and estuary knowledge affects warnings and deliveries. Cargo passes different carriers, making distant route changes become local shortages through delay. Votadinian hill roads and landings connect toward Traprain Law."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

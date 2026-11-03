@@ -1,0 +1,59 @@
+{
+  "Id": "be_marcomannic_kingdom_geopolitics",
+  "Keywords": [
+    "Marcomans Frontiers",
+    "Casurgis southward mountain routes"
+  ],
+  "RagShortTexts": [
+    "Bohemian basin, woods and southern passes lead toward the Danube.",
+    "Crossings aid travel while narrow roads congest carts and families."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bohemian basin, woods and southern passes lead toward the Danube. Crossings aid travel, but narrow roads hinder simultaneous movement of carts and families."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Bohemian basin, woods and southern passes lead toward the Danube. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Crossings aid travel while narrow roads congest carts and families."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Crossings aid travel while narrow roads congest carts and families. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Bohemian basin, woods and southern passes lead toward the Danube."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Bohemian basin, woods and southern passes lead toward the Danube. Closed routes may separate families from goods, imposing costs on those remaining at home. Crossings aid travel while narrow roads congest carts and families."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Crossings aid travel while narrow roads congest carts and families. Cargo passes different carriers, making distant route changes become local shortages through delay. Bohemian basin, woods and southern passes lead toward the Danube."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

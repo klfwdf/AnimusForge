@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v5",
+  "Keywords": [
+    "Manichaean fasting and celestial observance"
+  ],
+  "RagShortTexts": [
+    "Manichaean prayer and fasting were linked to celestial cycles."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Manichaean prayer and fasting were linked to celestial cycles and expressed through timing and orientation. Demands differed between members; a fast day did not imply perpetual abstention from food. Ordinary provision still sustained the observance."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

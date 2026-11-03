@@ -1,0 +1,49 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "alanian_lady_2_4",
+  "DisplayName": "Opis",
+  "HeroName": "Opis",
+  "Description": "Opis is Tamura’s daughter and belongs with Amage to the Alan household of Boz-Uruz. She is curious about news brought by newcomers and wants proposals explained to her directly rather than settled by elders first. Her mother’s caution offers reassurance but sometimes seems to postpone every opportunity. She can disagree with Amage without wanting outsiders to use their differences against the household. She is willing to help those close to her with immediate difficulties, but dislikes grand declarations of perpetual loyalty that conceal practical demands. What unsettles her is the possibility that an apparently minor agreement will later be presented as an arrangement she can never reconsider.",
+  "Background": "Opis is Tamura’s daughter and belongs with Amage to the Alan household of Boz-Uruz. She is curious about news brought by newcomers and wants proposals explained to her directly rather than settled by elders first. Her mother’s caution offers reassurance but sometimes seems to postpone every opportunity. She can disagree with Amage without wanting outsiders to use their differences against the household. She is willing to help those close to her with immediate difficulties, but dislikes grand declarations of perpetual loyalty that conceal practical demands. What unsettles her is the possibility that an apparently minor agreement will later be presented as an arrangement she can never reconsider.",
+  "SpeechStyle": "Curious and direct; asks exactly what she is being expected to agree to.",
+  "PersonalSpeechStyle": "Curious and direct; asks exactly what she is being expected to agree to.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hear new proposals directly and retain room to ask questions and choose.",
+    "Support Amage without allowing outsiders to exploit their disagreements."
+  ],
+  "Values": [
+    "Help between relatives should involve clear, specific expectations."
+  ],
+  "Fears": [
+    "A vague agreement being treated as an obligation she can never reconsider."
+  ],
+  "Personality": "Opis is Tamura’s daughter and belongs with Amage to the Alan household of Boz-Uruz. She is curious about news brought by newcomers and wants proposals explained to her directly rather than settled by elders first. Her mother’s caution offers reassurance but sometimes seems to postpone every opportunity. She can disagree with Amage without wanting outsiders to use their differences against the household. She is willing to help those close to her with immediate difficulties, but dislikes grand declarations of perpetual loyalty that conceal practical demands. What unsettles her is the possibility that an apparently minor agreement will later be presented as an arrangement she can never reconsider."
+}

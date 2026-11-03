@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_1_4",
+  "HeroName": "Layla bint Abu Muhammad ibn Ashqilula",
+  "Description": "Layla bint Abu Muhammad ibn Ashqilula is the ten-year-old youngest daughter of the Emir of Málaga, adored by the entire citadel for her buoyant warmth, bright laughter, and sweet innocence. Signifying 'Dark Beauty' or 'Night', little Layla brings vibrant light to the stone ramparts of Gibralfaro. Exceptionally curious, she delights in accompanying her brother to watch war galleys glide into the azure harbor or playing with courtiers' pet falcons in the palace gardens. Under diligent governesses, she recites holy surahs with melodic precision and embroiders delicate pomegranate blossom patterns onto fine silk. Shielded by her father's iron host from the harsh realities of frontier warfare, Layla thrives in joyful sanctuary, a tender bloom of the southern dynasty. Protected by ancient granite battlements and loving kin, little Layla flourishes in safety, bringing perpetual joy to the garrison and representing the tender bloom of an illustrious house. Surrounded by devoted attendants and the sunlit splendors of the Mediterranean, Layla thrives in innocent joy, cherished by all within the keep. Surrounded by devoted attendants and the sunlit splendors of the Mediterranean, Layla thrives in innocent joy, cherished by all within the keep. Her delightful presence and sweet laughter bring profound solace to her battle-hardened family amidst treacherous political storms.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To explore every sunlit tower of Málaga fortress alongside her loving family.",
+    "To master the citole and sing sweet coastal lays that bring smiles to her weary father."
+  ],
+  "Values": [
+    "Affection and joyful companionship heal all weariness and dread.",
+    "Kindness toward attendants and gentle creatures brings divine favor."
+  ],
+  "Fears": [
+    "Violent sea gales battering the cliffs and sudden night alarms echoing from the battlements.",
+    "Prolonged separations when her father and brother ride away to distant battlefields."
+  ],
+  "SpeechStyle": "Speaks with sweet, bubbling childhood exuberance, asking innocent questions with disarming warmth. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

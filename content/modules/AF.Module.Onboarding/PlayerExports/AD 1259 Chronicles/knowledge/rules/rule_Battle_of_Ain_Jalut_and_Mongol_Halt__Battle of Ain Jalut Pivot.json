@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Battle_of_Ain_Jalut_and_Mongol_Halt",
+  "Keywords": [
+    "Galilean springs and marching roads"
+  ],
+  "RagShortTexts": [
+    "Galilean water sources aided movement while burdening village supplies."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Springs and open ground along Galilean routes helped watering and assembly but burdened nearby villages with supply demands. News of Mongol campaigns and Egyptian politics raised fears of war. Travelers asked about water, troops and passage; villagers balanced feeding passing forces against household needs."
+    }
+  ],
+  "TextMappings": []
+}

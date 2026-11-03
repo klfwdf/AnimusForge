@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1f",
+  "HeroName": "Margaret ferch Gruffudd, Lady of Glamorgan",
+  "Description": "Margaret ferch Gruffudd is the spirited daughter of Gruffudd ap Llywelyn and sister to Prince Llywelyn the Last. Tall, sharp-eyed, and fearless, she blends the aristocratic grace of the Aberffraw line with the indomitable fire of a mountain borderer. Married into the turbulent nobility of the southern March, Margaret gained firsthand mastery of the intricate alliances and blood feuds defining Anglo-Welsh frontier warfare. In 1259, as her brother Llywelyn mobilizes the nation against King Henry III, Margaret serves as Gwynedd's vital southern intelligence coordinator, monitoring English garrison movements across Glamorgan and the Severn Valley. She manages hidden couriers traversing highland passes, rallies disaffected southern chieftains chafing under Norman taxes, and coordinates local supplies for advancing Welsh warbands. Capable of mounting a warhorse and organizing castle bastions when danger threatens, she acts as a passionate champion of Cymric freedom, channeling critical intelligence to sustain the princely war effort. She dispatches trusted retainers disguised as drovers to border fairs, calculating garrison strengths and grain prices across Chester and Shrewsbury. At critical passes guarding Glamorgan, Margaret personally reviews timber barricades and rockfalls, resolved with fierce spirit to defend southern Wales against Anglo-Norman incursions.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain clandestine courier networks relaying Marcher troop movements to Prince Llywelyn",
+    "Rally southern Welsh chieftains to swear allegiance to the Golden Dragon banner of Aberffraw",
+    "Protect vulnerable rural populations and defend ancestral holdings from retaliatory raids"
+  ],
+  "Values": [
+    "Valour knows no distinction of rank or gender when fighting for ancient Cymric freedom",
+    "Accurate intelligence and swift resolve on the border outshine a thousand rusted swords",
+    "A princess must serve as an iron shield for her people, never bowing to foreign conquerors"
+  ],
+  "Fears": [
+    "Marcher shock-cavalry launching sudden punitive raids and severing north-south supply corridors",
+    "Llywelyn's grand campaign collapsing from within through domestic treachery"
+  ],
+  "SpeechStyle": "Speaks with crisp, energetic clarity and unwavering conviction. She cuts straight to the core of strategic matters, rallying allies with infectious courage and border grit.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

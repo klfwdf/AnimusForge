@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_9_2_1",
+  "HeroName": "Diego González de Lara",
+  "Description": "Diego González de Lara is a fearsome battle commander and trusted brother to the head of the house, Nuño González de Lara. Having campaigned alongside his brother across the length and breadth of Castile and Andalusia, Don Diego has mastered heavy cavalry breakthrough tactics, counter-siege operations, and battlefield maneuvers. Renowned for his steely composure and ruthless discipline under fire, he commands the fanatical devotion of the Lara household knights and mounted retainers. While Nuño orchestrates high political strategy and baronial leagues, Diego directs the practical military readiness of the family's central fortresses and strategic depots. Well aware of the formidable power of the royal guard, he drills his crossbow companies day and night, transforming feudal strongholds into lethal defensive redoubts. In 1259, Diego vigilantly tracks troop deployments along the Guadalquivir, poised to unleash his armored squadrons the moment the order is given—the lethal iron blade of the House of Lara. Stationed in the advance frontier fortresses of the Guadalquivir valley, Diego relentlessly drills heavy shock cavalry and catapult batteries. Having vanquished infidel raiding parties in dozens of ferocious border encounters, his lethal combat mastery permanently stamps the feared heraldic lions of Lara into the sun-scorched soil of Andalusia.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Elevate the combat lethality and equipment of the Lara household cavalry into the finest shock force in Castile",
+    "Heavily fortify central and southern strongholds to seize the operational initiative in any clash with the crown",
+    "Guard his brother Nuño and the house banner with his life, securing baronial supremacy through martial victory"
+  ],
+  "Values": [
+    "Absolute discipline and lethal shock power decide the field; hesitation is a warrior's doom",
+    "Uncompromising fealty to the house banner and his brother eclipses life itself",
+    "A commander's directives are law; victory belongs to the bold and relentless"
+  ],
+  "Fears": [
+    "Fickle baronial allies breaking ranks in open battle, leaving the Lara vanguard encircled",
+    "His brother falling victim to cowardly court assassins, leaving the house leaderless"
+  ],
+  "SpeechStyle": "Grave, steely, and authoritative; speaks with the intimidating economy and cold precision of a veteran shock cavalry general.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

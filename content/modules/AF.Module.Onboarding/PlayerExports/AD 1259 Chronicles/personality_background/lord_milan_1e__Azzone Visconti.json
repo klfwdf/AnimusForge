@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1e",
+  "HeroName": "Azzone Visconti",
+  "Description": "Azzone Visconti, son of Galeazzo I and Beatrice d'Este, served as Lord of Milan. Victor of Parabiago against rebellious mercenary armies, he codified civic statutes and commissioned architectural masterpieces, transforming Milan into an unshakeable sovereign state. Azzone revolutionized civic defense through codified urban militias, erecting the fortified arched bridge across the Adda at Lecco and commissioning the magnificent bell tower of San Gottardo in Milan. Leading the ducal guards in a desperate winter counterattack at Parabiago, he eradicated the rebellious Saint George mercenary company in a tactical victory celebrated as miraculous. A brilliant synthesis of warrior and administrator, young Azzone transformed Milan from a turbulent medieval commune into a disciplined, early modern territorial state through rational law. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Neutralize predatory mercenary companies through tactical discipline and decisive battles.",
+    "Construct monumental civic fortifications and canals to make Milan Europe's premier city.",
+    "Annex Como, Bergamo, and Cremona into a centralized, modern territorial state."
+  ],
+  "Values": [
+    "Holds civic order, codification, and monumental architecture superior to lawless plunder.",
+    "Believes patronage of master engineers and scholarly minds establishes eternal empires."
+  ],
+  "Fears": [
+    "Debilitating illness cutting short his youthful vision of a united Lombard state.",
+    "Ambitious paternal uncles staging fratricidal coups to usurp the Signoria."
+  ],
+  "SpeechStyle": "Speaks with measured precision and intellectual gravity, projecting imperial vision. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

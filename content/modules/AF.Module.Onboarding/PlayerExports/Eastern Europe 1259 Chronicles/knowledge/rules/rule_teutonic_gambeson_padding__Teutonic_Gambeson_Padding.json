@@ -1,0 +1,53 @@
+{
+  "Id": "rule_teutonic_gambeson_padding",
+  "Keywords": [
+    "Padded clothing beneath armor",
+    "Mending and drying armor padding",
+    "Fitting clothes for armored service"
+  ],
+  "RagShortTexts": [
+    "Padding reduces rubbing and helps support armor, while cut and thickness must allow movement.",
+    "Sweat and rain slow drying; changes, mending and rest matter on long armored journeys."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A wearer of mail or other armor needs padding fitted for raised arms and riding. Layers and stuffing reduce rubbing and some impact but add heat and weight; excessive bulk restricts shoulders and elbows. After damp Baltic journeys, sweat and rain remain in the layers. Drying, changing and mending keep the whole equipment usable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A soldier checks seams and lumps around the shoulders before armoring; sweat aggravates chafing already caused by marching. Sleeping in wet clothing before another armored day compounds fatigue. Removing the outer armor, airing the padding and mending seams at rest supports the next shield duty, ride and watch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord equipping retainers also needs fitted padding and replacement clothes rather than spending everything on metal. Makers require the wearer's measurements and movement needs; campaigns need sewing supplies, drying space and time for changes. Neglect can leave an armored man unable to serve effectively through chafing and restricted movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families sewing padding need cloth, filling and strong thread, with room at shoulders and elbows. Concentrated military orders delay ordinary clothes and bedding. Old padding can be repaired but needs drying and attention to worn patches. Those sending it care about fit, rain and whether their relative can change out of wet clothing."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

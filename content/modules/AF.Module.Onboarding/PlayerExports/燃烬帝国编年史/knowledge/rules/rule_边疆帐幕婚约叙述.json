@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v9",
+  "Keywords": [
+    "边疆帐幕婚约叙述"
+  ],
+  "RagShortTexts": [
+    "移动家户的婚约牵涉居所、相处安排和亲属责任。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "移动家户缔结婚约时，居所、相处安排和亲属责任都需要协商。营地迁移之后，夫妻还要照顾孩子并维持食物来源；一处家户的约定不能替其他村镇或亲族作主。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

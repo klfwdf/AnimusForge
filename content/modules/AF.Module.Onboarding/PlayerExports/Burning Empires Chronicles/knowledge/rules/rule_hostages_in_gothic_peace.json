@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v7",
+  "Keywords": [
+    "Hostages in Gothic peace"
+  ],
+  "RagShortTexts": [
+    "Hostages secured the settlement of 369, while leaders still had to restrain followers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After the Roman-Gothic settlement of 369, hostages secured the agreement and Valens returned. Hostages and their relatives became part of its enforcement, but leaders still had to restrain their followers. Local conflict did not disappear merely through the delivery of hostages."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

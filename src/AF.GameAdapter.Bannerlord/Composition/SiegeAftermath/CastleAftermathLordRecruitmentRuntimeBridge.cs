@@ -344,7 +344,7 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 			string stableKey = "gccz_castle_lord_recruit:" + (capturedLord?.StringId ?? "unknown")
 				+ ":" + CurrentDay() + ":" + branch;
 			string npcText = CastleAftermathCompatibilityTexts.Raw("political_fact_prefix") + castleName + CastleAftermathCompatibilityTexts.Raw("political_fact_middle")
-				+ SiegeCastleLordRecruitmentBranchProfile.Describe(branch) + "。" + (status ?? string.Empty);
+				+ SiegeCastleLordRecruitmentBranchProfile.Describe(branch, GcczTownPromptResourceProvider.UseEnglishPrompt) + SiegeAftermathCompatibilityTexts.Period + (status ?? string.Empty);
 			MyBehavior.RecordNpcActionForExternal(
 				capturedLord,
 				npcText,
@@ -359,7 +359,7 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 				won: false);
 			MyBehavior.RecordPlayerActionForExternal(
 				CastleAftermathCompatibilityTexts.Raw("political_fact_prefix") + castleName + CastleAftermathCompatibilityTexts.Raw("political_fact_between") + lordName + CastleAftermathCompatibilityTexts.Raw("political_fact_suffix")
-					+ SiegeCastleLordRecruitmentBranchProfile.Describe(branch) + "。",
+					+ SiegeCastleLordRecruitmentBranchProfile.Describe(branch, GcczTownPromptResourceProvider.UseEnglishPrompt) + SiegeAftermathCompatibilityTexts.Period.TrimEnd(),
 				stableKey + ":player",
 				"gccz_castle_lord_recruit",
 				isMajor: true,

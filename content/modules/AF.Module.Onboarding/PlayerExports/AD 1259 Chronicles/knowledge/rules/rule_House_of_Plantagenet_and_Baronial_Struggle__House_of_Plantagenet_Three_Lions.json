@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Plantagenet_and_Baronial_Struggle",
+  "Keywords": [
+    "House of Plantagenet Three Lions",
+    "Henry III Westminster Reconstruction",
+    "Plantagenet Angevin Legacy",
+    "Magna Carta Baronial Parliament Dispute"
+  ],
+  "RagShortTexts": [
+    "Manor courts collect grain tithes whether the King or baronial council rules.",
+    "Reeves measure each sheaf at harvest, and villagers still owe labour on the lord's demesne."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Plantagenet crown ruled an empire stretched across the Channel, from the Welsh marches to the vineyards of Gascony. Its wealth lay largely in the Duchy of Aquitaine, whose wine and wool shipped through Bordeaux, and whose vassals owed knight service in return for their fiefs. Henry III poured revenue into rebuilding Westminster Abbey, a project that consumed the treasury long before it was finished. Lavish patronage of Poitevin and Savoyard kin, who received castles, marriages and offices, angered the magnates who paid the taxes. That grievance came to a head in 1258, when the barons forced the Provisions of Oxford upon the king, demanding a council of fifteen to supervise royal finance and appointments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Honours held of the crown forced every baron to choose between the king's household and Simon de Montfort's party. Sealed letters passed between royal officials and the baronial council, each side counting shire knights and castles. Prince Edward rallied the shire knights to defend royal prerogative against the council's restrictions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Manor courts collect grain tithes whether the King or baronial council rules. Reeves measure each sheaf at harvest, and villagers still owe labour on the lord's demesne. Yet rumors spread of armed levies mustering along the Welsh marches, heralding renewed civil strife that could call sons from the plough."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_dmitrov_yakhroma_routes_d1b0f1b2",
+  "Keywords": [
+    "Dmitrov's Yakhroma routes",
+    "Transfers over wet ground at Dmitrov"
+  ],
+  "RagShortTexts": [
+    "Dmitrov links the Yakhroma and nearby roads through seasonally changing transfers.",
+    "Landed cargo needs carts and labor, with wet ground and ice changing usable routes."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dmitrov's connections combine the Yakhroma with overland legs requiring carriage. Low water, uncertain ice and soft ground interrupt transfers, making contacts familiar with both routes valuable. Local authority benefits from passage and exchange while needing roads and supplies that prevent one delay holding up an entire load."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Dmitrov households ask how far carts can go and how much carrying remains. Each transfer risks damage and disputes, favoring witnessed counts. Animals still eat while carts wait in mud or for boats. Combining small consignments saves costs but requires agreed delivery priorities."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

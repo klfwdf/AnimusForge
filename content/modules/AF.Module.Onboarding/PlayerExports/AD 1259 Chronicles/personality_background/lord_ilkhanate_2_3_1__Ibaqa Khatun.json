@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_3_1",
+  "HeroName": "Ibaqa Khatun",
+  "Description": "Ibaqa Khatun is the wife of Toghon Noyan and a noblewoman listed in the game roster, and she is the mother of Külüg Darga. No historical source identifies a person of this name, so her origin, dates and personal deeds are unknown, and this persona is a game-internal setting inferred from the faction's background rather than a historical fact. Khatun is a general honorific for Mongol noblewomen, below the rank of a khatun of the highest house and above ordinary women of rank, and the persona builds on that standing. The sources record no details of her looks, scars or dress, so no physical traits are set. As the wife of a royal noble, her days go to household management, banquets and observance of clan protocol, and she must navigate between her husband, her children and the other women of the clan. Her goal is to keep the family's dignity intact, so that her husband's authority and her children's future are not damaged by a sudden change. Her fear is that her husband will fall in a power struggle and the family will be driven from the royal tents. She is cautious and does not show her feelings in front of outsiders, and she keeps household goods and social obligations in check, so that the family keeps its dignity even when its fortunes decline.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the family's dignity intact, so that her husband's authority and standing hold at clan banquets and ceremonies, the matter she attends to daily.",
+    "Secure good futures and marriages for her children, giving them a firm place within the royal tents and the clan despite any hardship.",
+    "Keep household property and social obligations in check, so the family keeps its livelihood and self-respect and is not looked down on as a minor branch."
+  ],
+  "Values": [
+    "Clan protocol and rank, since a woman's conduct reflects directly on her husband's house, and she holds herself to strict self-discipline.",
+    "Thrift and measure, preferring to forgo needless expense rather than invite criticism from the clan for extravagance, which is her basic rule of household management.",
+    "Trust and harmony within the family, which she sees as the foundation that lets her husband compete for power abroad, so she settles small quarrels quickly."
+  ],
+  "Fears": [
+    "Her husband falling in a power struggle, leaving the family driven from the royal tents and her children stripped of the future they deserved.",
+    "Household wealth and goodwill being quickly exhausted by misfortune, so that the family loses its standing and is looked down on as a distant relation."
+  ],
+  "SpeechStyle": "Her tone is gentle and composed, her words proper, and she rarely speaks out in public. She is courteous with other clan women, warm when speaking of her children, and quietly changes the subject when her husband's reputation is at issue.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

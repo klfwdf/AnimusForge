@@ -1,0 +1,52 @@
+{
+  "Id": "rule_fall_of_pereyaslav_1239",
+  "Keywords": [
+    "Pereiaslav’s fall in 1239",
+    "frontier town on the Trubizh"
+  ],
+  "RagShortTexts": [
+    "Mongol forces captured Pereiaslav in 1239, damaging the southern Rus frontier.",
+    "Survivors near the Trubizh needed provisions, routes and habitable shelter."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mongol forces captured Pereiaslav in 1239. The Rus frontier town near the Trubizh suffered damage to princely and church institutions, changing refuge and passage for surrounding households. Some escaped from the town; others saw troops and displaced people from nearby villages. Its memory belongs to more than the court. Those remaining still needed repairs, provisions and neighbours with whom they could travel safely."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Losing a frontier position changes routes for messengers, warnings and service. Restoring a claim requires people able to remain and approaches that can be protected before a permanent garrison is promised."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Frontier soldiers remember the direction of warnings and where to meet retainers after withdrawal. No post sees the whole region. Messages and prepared support can turn partial observations into useful information."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families look for relatives and fields still usable. Borrowed grain, repairable cooking vessels and a neighbour’s shelter begin recovery. A surviving place-name does not mean ordinary life has already returned."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

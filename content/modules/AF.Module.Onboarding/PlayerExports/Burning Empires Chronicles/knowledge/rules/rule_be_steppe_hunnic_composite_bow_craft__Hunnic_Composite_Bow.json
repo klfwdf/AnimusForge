@@ -1,0 +1,38 @@
+{
+  "Id": "be_steppe_hunnic_composite_bow_craft",
+  "Keywords": [
+    "Mounted archery and bow maintenance"
+  ],
+  "RagShortTexts": [
+    "Mounted archery required riding skill, serviceable strings and replacement arrows."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Steppe riders using bows divided their attention between controlling a mount and aiming. Bow, string, shafts and points all needed to work; moisture and damage impaired equipment. Mounted archery required practice and maintenance rather than being acquired simply through ancestry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A rider checked worn strings and bent or split shafts and kept arrows within reach. The horse’s motion, wind and moving targets affected accuracy, and discharged arrows might not be recovered. Shooting also had to allow for companions and the mount’s endurance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Supporting mounted archers required horses, arrow-making materials and supplies. Long expeditions consumed strings and arrows. Choosing dispersed shooting or a concentrated formation involved ground, the reach of commands and the direction of approaching enemies."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

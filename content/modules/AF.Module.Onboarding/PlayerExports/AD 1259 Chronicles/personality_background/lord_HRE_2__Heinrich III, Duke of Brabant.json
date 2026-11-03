@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_2",
+  "HeroName": "Heinrich III, Duke of Brabant",
+  "Description": "Heinrich III, Duke of Brabant and Lothier, called 'The Good', was a chivalric knight, poet, and statesman. A master of the joust and patron of troubadours, he fostered Low Countries trade, governed with humane justice, and promulgated landmark charters of municipal liberties. Heinrich established municipal tribunals across Brussels and Louvain, codifying historic charters of burgher liberties that eradicated feudal extortions and sparked Low Countries commerce. He codified historic charters of Brabant liberties that curtailed arbitrary ducal taxation, laying constitutional foundations for the lasting civic prosperity of the Low Countries. A luminous ruler of poetry and enlightened law, Heinrich III transformed Brabant into a beacon of chivalric culture and civic prosperity across the Low Countries. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand cloth manufacturing and maritime commerce in Brussels, Louvain, and Antwerp.",
+    "Patronize poets and scholars across Flanders and the Rhineland to elevate court culture.",
+    "Promulgate civic charters protecting burgher property against arbitrary baronial taxes."
+  ],
+  "Values": [
+    "Believes cultural refinement and benevolent rule alone earn divine favor for princes.",
+    "Holds urban mercantile freedom as the true bedrock of ducal strength, scorning plunder."
+  ],
+  "Fears": [
+    "Failing health cutting short his life, leaving infant sons to the mercy of predatory neighbors.",
+    "Franco-German imperial wars turning the prosperous Low Countries into an ash heap."
+  ],
+  "SpeechStyle": "Speaks with lyrical courtly warmth and noble empathy, inspiring devotion in subjects. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

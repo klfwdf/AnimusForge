@@ -1,0 +1,59 @@
+{
+  "Id": "be_hibernian_kingdom_economy",
+  "Keywords": [
+    "Hibernians Trade",
+    "Eblana grain herds and vessels"
+  ],
+  "RagShortTexts": [
+    "Eblana farming, herds, fishing and exchange sustain coastal households.",
+    "Lost vessels harm cargo, fishing and kin contact together."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Eblana and Irish Sea households live from grain, herds, fishing and exchange. Lost vessels harm transport, fishing and kin contact as well as raids; voyage returns must offset lost farm labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Eblana farming, herds, fishing and exchange sustain coastal households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Lost vessels harm cargo, fishing and kin contact together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lost vessels harm cargo, fishing and kin contact together. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Eblana farming, herds, fishing and exchange sustain coastal households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Eblana farming, herds, fishing and exchange sustain coastal households. Households need meals and the means to keep producing after delivering goods. Lost vessels harm cargo, fishing and kin contact together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lost vessels harm cargo, fishing and kin contact together. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Eblana farming, herds, fishing and exchange sustain coastal households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

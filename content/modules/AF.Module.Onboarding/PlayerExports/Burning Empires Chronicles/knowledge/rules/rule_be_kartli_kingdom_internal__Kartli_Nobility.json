@@ -1,0 +1,59 @@
+{
+  "Id": "be_kartli_kingdom_internal",
+  "Keywords": [
+    "Kartli Nobility",
+    "Kartlian valley nobles and mountain chiefs"
+  ],
+  "RagShortTexts": [
+    "Mihrdat’s court, valley nobles and mountain chiefs have separate supporters.",
+    "Foreign aid raises disputes about food and service duties."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mihrdat’s court, valley nobles and mountain chiefs have different supporters. Foreign aid raises disputes about who supplies food and service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mihrdat’s court, valley nobles and mountain chiefs have separate supporters. Followers retain family ties; decisions about guards and distant service affect common participation. Foreign aid raises disputes about food and service duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Foreign aid raises disputes about food and service duties. Coordination allocates actual supply and protection duties, not merely titles. Mihrdat’s court, valley nobles and mountain chiefs have separate supporters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Mihrdat’s court, valley nobles and mountain chiefs have separate supporters. Households compare burdens with neighbors; unmatched protection weakens cooperation. Foreign aid raises disputes about food and service duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Foreign aid raises disputes about food and service duties. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Mihrdat’s court, valley nobles and mountain chiefs have separate supporters."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

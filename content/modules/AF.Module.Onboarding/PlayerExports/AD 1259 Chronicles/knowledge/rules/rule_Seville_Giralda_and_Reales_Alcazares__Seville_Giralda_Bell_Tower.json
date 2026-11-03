@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Seville_Giralda_and_Reales_Alcazares",
+  "Keywords": [
+    "Seville Giralda Bell Tower",
+    "Reales Alcazares Palace",
+    "Guadalquivir Maritime Harbor",
+    "Andalusian Reconquest Settlement"
+  ],
+  "RagShortTexts": [
+    "Castile recaptured Seville in 1248, and the city became the royal capital of Lower Andalusia.",
+    "The architecture records a city in which Muslim and Christian craft traditions sit side by side."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Castile recaptured Seville in 1248, and the city became the royal capital of Lower Andalusia. It stands where the tidal Guadalquivir stays navigable for ocean galleys, so ships dock below the twelve-sided Torre del Oro. The former Great Mosque of the city had its minaret rebuilt as the Giralda bell tower, and the tower overlooks the Reales Alcazares, where Mudejar plasterwork decorates the Christian halls. The architecture records a city in which Muslim and Christian craft traditions sit side by side."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Tens of thousands of fertile olive groves were redistributed to Christian settlers after the conquest. Seville became the military base for campaigns pressing toward Granada, and it regulated the fleets and river trade that passed through its harbour. A lord who held land in the Guadalquivir valley owed his estates to royal grants, and he was expected to supply men when the king called."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "The river bustles with lateen-rigged barges loading olive oil and sweet Andalusian wines. The Almohad minaret of the Great Mosque, now the Giralda, rises above the rooftops. Even in uncertain times, working the wharves pays honest copper to keep bread on family tables, though the toll men take their share first."
+    }
+  ],
+  "TextMappings": []
+}

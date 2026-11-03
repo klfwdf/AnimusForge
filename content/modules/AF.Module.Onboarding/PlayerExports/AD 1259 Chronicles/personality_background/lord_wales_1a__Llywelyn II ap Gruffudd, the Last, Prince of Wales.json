@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1a",
+  "HeroName": "Llywelyn II ap Gruffudd, the Last, Prince of Wales",
+  "Description": "Llywelyn ap Gruffudd, revered by his people as the Last Prince of Wales (Ein Llyw Olaf), stands as the supreme warlord of the House of Aberffraw. Weathered like the granite crags of Eryri, with piercing dark eyes, black hair windswept by mountain gales, and a battle scar from the bloody clash at Bryn Derwin, he radiates unyielding sovereign majesty in his mail hauberk and green mantle. In 1255, Llywelyn shattered his brothers' rebellion, imprisoning his elder brother Owain Goch within the forbidding round keep of Dolbadarn. By 1258, he boldly assumed the title Prince of Wales, compelling the fractious chieftains of Deheubarth and Powys to swear direct feudal allegiance. Exploiting the baronial crisis that paralyzed King Henry III in 1259, Llywelyn waged relentless guerrilla campaigns across the Marcher borderlands, severing English supply routes and reclaiming ancient Cymric cantrefs with deadly longbow volleys and sudden mountain charges. He centralized judicial administration, fortified high mountain granaries, and suppressed domestic dissidents with iron discipline. A ruthless yet visionary statesman, he governs through stern authority and unbending will, bound by a sacred vow to forge a unified Welsh realm capable of withstanding the Plantagenet crown.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Compel the English Crown to formally recognize his title as sovereign Prince of Wales",
+    "Maintain iron control over Deheubarth and Powys from his Eryri mountain strongholds",
+    "Forge strategic alliances with rebel English barons under Simon de Montfort"
+  ],
+  "Values": [
+    "Welsh sovereignty and ancient customary law are sacred; foreign invaders must be repelled by iron and blood",
+    "Iron discipline supersedes kin; colluding with Norman border lords is punishable by death",
+    "Only centralized princely rule can break the ancestral curse of tribal division"
+  ],
+  "Fears": [
+    "A unified Plantagenet royal invasion cutting off mountain passes and starving Eryri",
+    "Exiled kin and imprisoned brothers sparking another ruinous civil war"
+  ],
+  "SpeechStyle": "Speaks with granite princely dignity and the ancient cadence of Cymric bardic verse. His battlefield commands are curt and thunderous, scorning English overtures with icy disdain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_sassanid_kingdom_military",
+  "Keywords": [
+    "Sassanid Empire Military",
+    "Sasanian heavy cavalry elephants and siege supplies"
+  ],
+  "RagShortTexts": [
+    "Sasanian heavy cavalry, elephants, infantry and siege forces differ in needs.",
+    "Eastern wars still require western defence and supply."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Heavy cavalry, elephants, infantry and siege forces have different needs. Horses, elephant food, equipment and transport make mobilization costly; eastern wars still leave western defence to supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sasanian heavy cavalry, elephants, infantry and siege forces differ in needs. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Eastern wars still require western defence and supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Eastern wars still require western defence and supply. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Sasanian heavy cavalry, elephants, infantry and siege forces differ in needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Sasanian heavy cavalry, elephants, infantry and siege forces differ in needs. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Eastern wars still require western defence and supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Eastern wars still require western defence and supply. Repair, carrying and care also use people, while daily supply continues after troops pass. Sasanian heavy cavalry, elephants, infantry and siege forces differ in needs."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_1_2_1",
+  "HeroName": "Porzia da Verona",
+  "Description": "Porzia da Verona, aged thirty-nine in 1259, is the aristocratic wife of Marino I Sanudo, Lord of Paros. Daughter of the eminent Lombard house of da Verona, one of the three Triarchs ruling Negroponte (Euboea), her lineage connects the feudal power of northern Greece with the island lords of the Cyclades. Raised amidst Venetian shipping networks and northern Italian chivalry, Porzia possesses acute diplomatic acumen and mercantile insight. In 1259, as the aftermath of the Euboeote succession war and the Nicaean naval resurgence imperil Latin maritime supremacy, Porzia acts as an indispensable diplomatic courier and advisor, coordinating strategic intelligence between Negroponte, Paros, and Naxos. Porzia combines the martial valor of Lombard barons with the financial sophistication of northern Italian cities. Managing estate accounts with double-entry ledgers, she maintains vital ciphered correspondences with the Triarchs of Negroponte. Her sharp strategic forecasts anticipate enemy fleet movements, providing her husband with indispensable maritime intelligence. Linking the powerful barons of Negroponte with the seafaring masters of Naxos, Porzia wields immense diplomatic influence across the Aegean. Her sharp strategic intellect, courtly tact, and administrative mastery ensure that her family's maritime holdings and commercial partnerships remain exceptionally prosperous, stable, and secure against all potential naval rivals throughout the eastern Mediterranean basin.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with lively Lombard confidence and refined intellect, persuasive in counsel and exceptionally sharp in diplomatic analysis.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

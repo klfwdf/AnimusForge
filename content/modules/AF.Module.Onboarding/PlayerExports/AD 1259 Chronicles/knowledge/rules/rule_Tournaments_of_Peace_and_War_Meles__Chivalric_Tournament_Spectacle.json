@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Tournaments_of_Peace_and_War_Meles",
+  "Keywords": [
+    "Chivalric Tournament Spectacle",
+    "Lances à Plaisance vs Lances of War",
+    "Melee Free for All and Captures",
+    "Knight Ransom and Heraldic Finery"
+  ],
+  "RagShortTexts": [
+    "Chivalric tournaments combined spectacle with dangerous mock battles where knights captured."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tournaments served as the proving ground for knightly skill, reputation, and fortune. Contests ranged from peaceful jousts with blunted lances, called à plaisance, to combat with sharpened war steel, called à outrance. The mêlée was the great mock battle of the age: knights charged across open country in large groups, and victors claimed the armor, warhorses, and ransoms of the captives they took. Rulers used the spectacle to show their retinues' strength, and nobles used it to build reputations that could win them land or a royal marriage. Church councils repeatedly condemned the sport as sinful, yet the custom survived because the nobility valued it too highly to give it up."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Landless younger sons could build a fortune by capturing aristocratic prisoners, following the path William Marshal took before he became regent. A good ransom paid for a warhorse, armor, and a retinue. Lords who hosted the contests tested their household men, so each tournament doubled as an audition for future service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Grandstands flutter with embroidered favors tossed by ladies, but on the lists the ash lances splinter like deadly shrapnel. A glancing blow can break a neck in an instant. Keep your visor down, your reins short, and your shield arm tight. A man who falls under the hooves of the mêlée has no protection from the crowd."
+    }
+  ],
+  "TextMappings": []
+}

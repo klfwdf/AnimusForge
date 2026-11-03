@@ -1,0 +1,59 @@
+{
+  "Id": "be_scirian_kingdom_legitimacy",
+  "Keywords": [
+    "斯基里人法统",
+    "罗德里克的保人保地"
+  ],
+  "RagShortTexts": [
+    "Roderic的认可依赖保人和保地。",
+    "强邻庇护可能附带供粮、出兵与人质要求。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "首领的权威在人与土地仍可维持时才有意义，接受强邻庇护可能换来安全，也会附带出兵、供粮与人质要求。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Roderic的认可依赖保人和保地。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。强邻庇护可能附带供粮、出兵与人质要求。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "强邻庇护可能附带供粮、出兵与人质要求。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。Roderic的认可依赖保人和保地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Roderic的认可依赖保人和保地。家户通过家人、土地与求助能否获保护来认识统治。强邻庇护可能附带供粮、出兵与人质要求。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "强邻庇护可能附带供粮、出兵与人质要求。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。Roderic的认可依赖保人和保地。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

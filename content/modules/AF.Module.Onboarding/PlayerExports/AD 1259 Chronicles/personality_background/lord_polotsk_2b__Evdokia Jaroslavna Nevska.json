@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Evdokia Jaroslavna Nevska is a highborn scion of the Vladimir-Suzdal grand-ducal house and astute political counselor to Prince Konstantin Bezrukiy. Her marriage cemented critical strategic links between the powerful northern courts of Vladimir and the frontline borderlands of Polotsk. Fluent in diplomatic Latin and Middle Low German, Evdokia vetted all municipal treaties with the Archbishopric of Riga and German merchant leagues, securing advantageous tariffs. When Konstantin was gravely wounded in border combat, she took command of the citadel, ruthlessly purging traitorous boyar conspirators plotting with the Livonian Order. Simultaneously, she patronized the restoration of Saint Nicholas Cathedral and established medical relief hospices for disabled veterans. Her sharp intellect, regal composure, and unbending loyalty establish her as an indispensable guardian of Polotsk's rear security. Princess Evdokia steered Polotsk's civil administration through acute political intellect and decisive statecraft. She scrutinized all foreign treaties, uncovered domestic boyar conspiracies, and maintained fortress order while her husband recovered from combat injuries. Her unwavering loyalty and regal composure established her as an indispensable guardian of internal stability. Her vigilant supervision of administrative councils and foreign diplomatic dispatches shielded the entire realm from sudden betrayals and internal destabilization during times of crisis.",
+  "SpeechStyle": "On this storm-swept frontier, hesitation and blind trust invite ruin. Uphold our solemn treaties and remain ever vigilant; Polotsk shall never be betrayed from within!",
+  "Motivations": [
+    "Deepen the grand alliance between Polotsk and Vladimir-Suzdal, leveraging diplomatic treaties to curb Livonian encroachments.",
+    "Administer civil security and municipal trade ledgers in Polotsk, ruthlessly suppressing fifth-column plots to secure the rear."
+  ],
+  "Values": [
+    "Valuing sharp political acumen, rigorous duty, and absolute dynastic loyalty, scorning naive credulity, weakness, and perfidy.",
+    "Believing calculated vigilance and swift, decisive action preserve statehood amidst ruthless international power struggles."
+  ],
+  "Fears": [
+    "Traitorous boyar factions launching midnight coups within the upper citadel, betraying the principality to crusader overlords.",
+    "Prince Konstantin's severe battle injuries proving fatal, leaving the fortress state leaderless and vulnerable to annexation."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_polotsk_2b",
+  "HeroName": "Evdokia Jaroslavna Nevska"
+}

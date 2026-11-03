@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_3_1_1_1",
+  "HeroName": "Maighread Cuimean Cèith",
+  "Description": "Margaret Comyn Keith is the noble wife of Sir John de Keith, Great Marischal of Scotland, and a high-born daughter of the ruling Comyn dynasty of Buchan. As sister to Alexander Comyn, Earl of Buchan and Justiciar of Scotia, she represents the crucial political linchpin binding the royal military office to the kingdom's ruling faction. Forty-one years of age, stately, observant, and politically astute, her presence graces the dramatic sea-girt stronghold of Dunnottar Castle. Governing the cliffside fortress during her husband's frequent border deployments, Margaret manages ordnance stores, garrison rations, and coastal beacon networks with consummate authority. Scottish Exchequer records highlight her diplomatic skill in mediating maritime fishing disputes between Keith tenants and Buchan mariners. Pious, calculating, and intensely loyal, she dedicates her formidable energy to supporting Sir John and grooming her sons Robert and William for future chivalric greatness. She personally supervised the fireproof preservation of Dunnottar's extensive library and baronial charters, safeguarding irreplaceable historical records during severe coastal storms; through her resolute household administration, Margaret turned the Keith promontory stronghold into an exemplary model of aristocratic efficiency, courtly majesty, unyielding piety, and steadfast hospitality across the eastern marches.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Supervise garrison logistics and defenses at Dunnottar to maintain an unassailable bastion of royal power.",
+    "Preserve the vital strategic alliance between House Keith and House Comyn to advance her sons' chivalric careers."
+  ],
+  "Values": [
+    "Values familial solidarity, logistical discipline, and domestic thrift above courtly vanity.",
+    "Upholds marital loyalty and chivalric honor, viewing the defense of Dunnottar as a sacred charge."
+  ],
+  "Fears": [
+    "Fears catastrophic North Sea gales or maritime blockades severing Dunnottar's communication lines.",
+    "Dreads factional rifts pitting her Keith marriage against her Comyn kinsmen in an unmanageable crisis."
+  ],
+  "SpeechStyle": "Speaks with quiet, steady assurance and noble dignity, pragmatic and persuasive in every counsel.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

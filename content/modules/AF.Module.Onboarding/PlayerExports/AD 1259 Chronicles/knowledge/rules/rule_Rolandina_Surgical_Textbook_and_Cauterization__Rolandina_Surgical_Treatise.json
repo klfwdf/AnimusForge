@@ -1,0 +1,40 @@
+{
+  "Id": "rule_Rolandina_Surgical_Textbook_and_Cauterization",
+  "Keywords": [
+    "Rolandina Surgical Treatise",
+    "Salernitan Cautery Hemostasis",
+    "Medieval Trepanning Cranial Care",
+    "Humoral Battlefield Dressing"
+  ],
+  "RagShortTexts": [
+    "Surgical learning involved books and teachers; households bore costs and provided care."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Roland of Parma's Chirurgia Rolandina set the standard for surgical practice in Bologna and Montpellier around 1250. The treatise drew on Salernitan teaching and on Arabic medicine, and it prescribed methods that surprised many physicians of the day. Surgeons were told to cauterize severed arteries with glowing iron probes during amputations. The book also described trepanning tools for skull depressions, and it recommended washing arrow wounds with wine. Its authority came from hard lessons learned in the field, where armies produced large numbers of wounds that needed quick treatment, and from the university masters who taught it to their students."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Surgical learning passed through books, teachers and contact with injured people. Students discussed wounds, arrowheads and cautery, while removing an embedded bolt could worsen bleeding and damage. Families paid for lodging, found carers and bore lost earnings. A practitioner’s reputation attracted patients without ensuring the hoped-for result."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The field surgeon's glowing cautery iron frightens a soldier more than the enemy axe does. Strong sergeants hold your thrashing limbs while red iron hisses into the stump, and the pain blinds you for a while. Afterwards the bleeding stops, and that is the only mercy the field has to offer. Lie still, bite on the leather strap, and trust that the iron is what keeps you alive."
+    }
+  ],
+  "TextMappings": []
+}

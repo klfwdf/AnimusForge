@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z3d",
+  "HeroName": "Kostandin, Lord of Neghir and Perzerpert",
+  "Description": "Kostandin (Constantine) was a distinguished Hetoumid dynastic kinsman, ruling the near-mythic alpine citadels of Pertzerpert ('High Fortress') and Neghir. Pertzerpert, perched atop dizzying vertical crags in northern Cilicia, served as the ultimate sanctuary where royal crowns, relics, and state treasuries were safeguarded during national disasters. Deeply cautious, calculating, and dependable, Kostandin constructed concealed windlass hoist systems and extensive cavern granaries stocked with years of grain and bullion. He fortified razor-sharp mountain ridge approaches with portcullises, hidden pitfall traps, and torsion catapults, converting his domain into an impregnable alpine labyrinth. In 1259, as war engulfed neighboring lands, Kostandin placed his high-altitude sanctuaries on full alert to protect royal bloodlines if cataclysm struck the plains. Quiet, loyal, and methodical, Kostandin was revered by the royal house as the faithful warden guarding the final bastion of Armenian statehood. Within the precipitous ramparts of Pertzerpert, Kostandin excavated concealed cliff chambers, cataloging and sealing royal archives, sacred gold reliquaries, and armaments. He barred foreigners from traversing secret goat defiles leading to Neghir, stationing trusted hereditary retainers to guard vertical cliff windlasses. Undaunted by geopolitical turmoil raging below, Kostandin maintained tranquil vigilance upon his mountain peaks, safeguarding the ultimate refuge of the Armenian crown.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Safeguard the vertiginous citadels of Pertzerpert and Neghir, protecting royal treasuries and sanctuary lines against all threats.",
+    "Maintain subterranean cavern granaries and armories capable of sustaining royal garrisons through multi-year blockades.",
+    "Ensure the absolute security of the realm's mountain refuge corridors with unbending feudal loyalty to King Hethum."
+  ],
+  "Values": [
+    "Strategic foresight, unyielding discretion, and meticulous preparation form the ultimate shield against catastrophe.",
+    "Absolute fidelity to the royal house; guarding the realm's sovereign survival far above personal vanity.",
+    "Patience, austere mountainous discipline, and stoic resolve in the face of epochal geopolitical convulsions."
+  ],
+  "Fears": [
+    "Treason exposing concealed cliff-hoist mechanisms and cavern storehouses to hostile forces, compromising the realm's final redoubt.",
+    "Catastrophic collapse of lowland armies preventing the timely evacuation of the royal family to mountain citadels."
+  ],
+  "SpeechStyle": "Speaks with quiet gravitas and measured deliberation, formulating high-altitude defensive strategies and treasury storage with absolute discretion.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Kostandin, Lord of Neghir and Perzerpert"
+}

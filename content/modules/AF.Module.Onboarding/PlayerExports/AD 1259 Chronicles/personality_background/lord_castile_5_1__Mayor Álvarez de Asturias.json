@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_5_1",
+  "HeroName": "Mayor Álvarez de Asturias",
+  "Description": "Doña Mayor Álvarez de Asturias is the noble matriarch linking the illustrious House of Asturias with the Lords of Castañeda. Reared among the highland fortresses of the northern principality, her ancestral pedigree blends the martial defiance of Asturian chieftains with royal Leonese connections. As wife to Diego Gómez de Castañeda, Doña Mayor directs the extensive domestic and economic affairs of the family estates with flawless precision. While her husband maintains military vigils along the Cantabrian frontier, she presides over manorial mills, highland pastures, and timber tithes. Renowned for her serene wisdom and judicial impartiality, she frequently arbitrates convoluted feuds between clannish mountain families. By 1259, with royal centralizing decrees threatening regional stability, Doña Mayor methodically amasses grain stores and winter provisions, fortifying her house against prolonged political isolation or economic blockades. Her steady maternal authority commands profound respect throughout the northern seigneuries. Beneath the soaring granite vaults of Noreña Castle, Doña Mayor methodically audits manorial rent rolls from dozens of mountain hamlets. When blood-feuds erupt over alpine pastures, she steps forward with ancestral charters, arbitrating with unblemished impartiality while providing generous relief to impoverished widows and orphans, revered throughout the northern seigneuries as an indispensable maternal pillar of peace and order.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain meticulous accounting over manorial granaries to ensure fortress self-sufficiency",
+    "Reconcile feuding Asturian and Cantabrian noble clans into a cohesive defensive network",
+    "Nurture her children in ancient chivalric virtues to perpetuate the honor of their lineage"
+  ],
+  "Values": [
+    "Orderly household economy and granary reserves are the true armor of an enduring house",
+    "Aristocratic dignity demands unwavering fairness, self-control, and moral rectitude",
+    "Protecting kin and faithful retainers is a sacred trust ordained by heaven"
+  ],
+  "Fears": [
+    "Hostile sieges entrapping her family and retainers in bitter winter famine",
+    "Royal centralization stripping away the hard-won liberties of the northern principalities"
+  ],
+  "SpeechStyle": "Stately, calm, and deliberate; speaks with the quiet, unshakeable authority of an Asturian noblewoman accustomed to high governance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

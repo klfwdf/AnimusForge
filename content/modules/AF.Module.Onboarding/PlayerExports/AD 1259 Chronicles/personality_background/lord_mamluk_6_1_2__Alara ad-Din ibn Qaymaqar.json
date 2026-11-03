@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_6_1_2",
+  "HeroName": "Alara ad-Din ibn Qaymaqar",
+  "Description": "Alara ad-Din ibn Qaymaqar is nineteen years old and the second son of Emir Jalal ad-Din Qaymaqar. The game marks him as a tactician. He is of medium build with a fine face, and he usually wears an indigo robe with a narrow brocade edge and a leather satchel at his belt for ink, pens, and maps. The game gives no appearance details, so this dress follows the usual kit of secretaries and staff officers of the period. He speaks carefully and likes to work through possibilities over a map, seldom declaring himself in public.\nHis childhood passed between his father's camp and the sand tables in the tents. From boyhood he heard his father discuss the allocation of supplies and camp administration, and he learned in the army how to plot march routes and lay out camps. The Qaymariyya's record at La Forbie and the coup of 1250 was family lore he knew by heart.\nWith rivals at court and older emirs his method is planning and analysis. He first learns an opponent's strength in men and grain, then decides how to deploy or negotiate. Unlike his elder brother Bengü, he does not chase victory in the tournament field but prefers to reason through the situation behind the scenes, finding the safest step for the family.\nHis ideal is to keep the Qaymaqar branch's fiefs and reputation intact, and to have his strategic skill recognised, so that he is not seen merely as his father's and brother's shadow. His darkest fear is that one miscalculation will disrupt the family's deployment at a critical moment, and that he will be blamed for misleading his father, losing the trust of the elders and his peers.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the Qaymaqar branch's fiefs and reputation intact, so its deployments hold firm through every change of circumstance and no shift costs it ground.",
+    "Have his strategic skill recognised, proving he is a staff officer who can stand on his own and not merely his father's and brother's shadow.",
+    "Learn the true strength of each side in men and grain, and find the safest step for the family rather than rush into a decision."
+  ],
+  "Values": [
+    "Plan before acting, and work out men, supplies, and routes before the charge, since that is more reliable than courage alone and protects the men who follow.",
+    "Intelligence is the most precious resource, and knowing what the other side intends often matters more than knowing its numbers, because intent shapes the battle.",
+    "His brother's boldness deserves respect, but the family needs someone behind the scenes to keep a cool head and leave the reckless a way back from failure."
+  ],
+  "Fears": [
+    "Fears a miscalculation will disrupt the family's deployment at a decisive moment, leaving him blamed for misleading his father and out of favour with commanders.",
+    "Fears that his caution will cost him an opportunity while his brother's deeds overshadow all his planning, so that his contribution is forgotten by everyone."
+  ],
+  "SpeechStyle": "Speaks at an even pace, setting out several possibilities and then working through the cost of each. Talk of men and grain makes his tone exact, and he asks for figures. With his brother he teases lightly but returns to calm analysis.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

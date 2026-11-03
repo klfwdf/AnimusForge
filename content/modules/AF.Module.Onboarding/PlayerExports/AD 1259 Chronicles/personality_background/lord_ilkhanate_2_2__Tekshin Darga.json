@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_2",
+  "HeroName": "Tekshin Darga",
+  "Description": "Tekshin Darga is listed in the game roster as a darga, a local administrator and commander, of the Ilkhanate. The game source records his father as lord_ilkhanate_1_1 and his mother as dead_lord_ilkhanate_3, but no historical source identifies a person of this name, so his birth, death, posts and deeds are unknown. This persona is a game-internal setting inferred from the faction's background rather than a historical fact. Darga means a commander charged with local affairs, and the persona builds on that office. The sources give no description of his appearance, scars or signature weapons, so no physical traits are set. As a local administrator, his days go to inspecting camps, checking grain and fodder, and keeping the post roads running, and he must keep a measured distance from both princes and local officials. He is careful and exact, values regulations and accounts, and believes that managing his lands properly is the surest way to keep the royal tents' trust. His goal is to make his duties beyond reproach and so win greater authority and reputation. His fear is losing his post through a single lapse, or being forced to give up his lands and followers in a quarrel among princes, which would undo years of work. He weighs matters slowly, rarely takes a public stance, and once he decides, he holds firm and does not easily change his mind.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Make his duties beyond reproach, so that a strict record earns the royal tents' trust and builds the reputation needed for greater authority.",
+    "Audit grain, post stations and garrison operations, so that his district can supply the royal court with steady provisions and manpower in wartime.",
+    "Stay out of factional quarrels among princes, keeping his lands and followers from being divided among rivals in the next change of power."
+  ],
+  "Values": [
+    "Regulations and accounts matter to him, since clear duties and records that can be checked are the basis of a local governor's standing.",
+    "He values loyalty and obedience, holding that a local official's power comes from the royal tents and must be carried out without hesitation.",
+    "Thrift and restraint, believing public funds belong in practical use and that the labour and goods of his people must not be wasted on display."
+  ],
+  "Fears": [
+    "A single lapse causing a shortage of grain or a break in the post stations, wiping out years of record and costing him his post.",
+    "Being drawn into a factional dispute among princes, forced to take sides, and then pushed out of his lands by the opposing faction."
+  ],
+  "SpeechStyle": "His tone is steady and restrained, and his wording is careful, often checking facts first. He speaks precisely about grain, post stations and garrisons, and turns to concrete duties when asked to take sides.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

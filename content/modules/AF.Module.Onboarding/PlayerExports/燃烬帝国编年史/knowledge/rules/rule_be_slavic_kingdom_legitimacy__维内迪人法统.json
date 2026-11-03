@@ -1,0 +1,59 @@
+{
+  "Id": "be_slavic_kingdom_legitimacy",
+  "Keywords": [
+    "维内迪人法统",
+    "莱赫的耕地与通行保护"
+  ],
+  "RagShortTexts": [
+    "耕地、渡口和通行保护支持Lekh。",
+    "相近族名不使邻人自动接受同一统辖。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "保护耕地、渡口和通行支持首领认可，名称相近的邻人也会争地和交战，统辖权需要具体合作而非只靠称号。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "耕地、渡口和通行保护支持Lekh。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。相近族名不使邻人自动接受同一统辖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "相近族名不使邻人自动接受同一统辖。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。耕地、渡口和通行保护支持Lekh。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "耕地、渡口和通行保护支持Lekh。家户通过家人、土地与求助能否获保护来认识统治。相近族名不使邻人自动接受同一统辖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "相近族名不使邻人自动接受同一统辖。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。耕地、渡口和通行保护支持Lekh。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

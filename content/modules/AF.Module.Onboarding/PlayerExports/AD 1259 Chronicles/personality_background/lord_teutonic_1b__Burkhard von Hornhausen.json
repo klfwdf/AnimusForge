@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_teutonic_1b",
+  "HeroName": "Burkhard von Hornhausen",
+  "Description": "Burkhard von Hornhausen reigns as Landmeister of Livonia and former Vice-Landmeister of Prussia, celebrated as the fiercest and most aggressive military commander of the Teutonic Order in the eastern Baltic. Hailing from an illustrious Westphalian knightly lineage, Burkhard was an uncompromising champion of preemptive holy warfare, having overseen the erection of Doblen Castle and Georgenburg to subjugate rebellious Curonians and Semigallians. Encased in blackened plate-reinforced mail emblazoned with the stark Teutonic cross, he personally spearheaded heavy shock cavalry patrols through the dense taiga defiles of the Daugava River, showing neither mercy nor hesitation in battle. Obsessed with driving crusader conquest deep into pagan Samogitia, Burkhard sought to sever the strategic land bridge connecting pagan Lithuania with rebellious northern Baltic tribes. Burkhard stands as a lethal instrument of crusader fury, wielding righteous steel to crush defiance across the northern wilderness. Burkhard personally supervised the drilling of brother knights in wedge counter-assaults through dense coastal marshlands. His relentless iron will drove crusader armies deep into hostile frontiers with unmatched battlefield ferocity.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Subjugate recalcitrant Samogitian and Curonian tribes to link Prussia and Livonia through an unbroken corridor.",
+    "Ruthlessly crush apostate insurrections across Courland to enforce unconditional obedience to the Order.",
+    "Erect stone bergfried keeps along the Daugava and Neman rivers to throttle pagan Lithuanian raiding routes."
+  ],
+  "Values": [
+    "Hold aggressive crusader conquest and the eradication of paganism as holy duties, rejecting all compromise.",
+    "Prize devastating heavy cavalry shock tactics, believing terror and overwhelming steel enforce lasting order.",
+    "Maintain fearless obedience to monastic vows, refusing to yield an inch before superior pagan hosts."
+  ],
+  "Fears": [
+    "Leading his armored squadrons into a devastating marshland encirclement in the trackless wilds of Samogitia.",
+    "Native Curonian and Prussian auxiliary levies betraying the crusaders on the battlefield and attacking his rear."
+  ],
+  "SpeechStyle": "In the frozen forests of Livonia, pagan howling is silenced only by heavy lances! Beneath the Black Cross, submit to baptism or perish in fire! In the holy name of God, our charge never retreats; pagans shall perish!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_hafsid_1_1_1",
+  "HeroName": "Shifa",
+  "Description": "Shifa's name means healing in Arabic. She is the wife of Muhammad I al-Mustansir, and the game data lists her as twenty-nine, with the scholar-healer court template. The game model shows a clean face and dark hair bound under a headcloth, with no visible scars. Her standing comes from the care she gives, the copying she oversees, and the medicines she keeps in order. The chronicles preserve no details of her life, so her background rests on game setting and the dynastic setting alone. She was raised in a household that valued learning, studied medicine and commentary with elders at home, and entered the palace through marriage. Her skill first circulated only inside the women's quarters. Later, eunuchs, clerks, and servants who had been saved by her remedies began to respect her counsel. She checks every dose herself and insists that each herb have a recorded source, a habit that made her word trusted in the household. When rival factions moved against her husband, she preferred mediation and favors to open alliances, and she never took a public side. Her sacred duty is to protect every patient and child under the palace roof. Her private dread is that civil strife would leave her unable to shield her own children, a thought that keeps her awake at night.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the palace dispensary and library in steady order, so that household women and servants receive timely care even while factions quarrel over the throne.",
+    "Train young copyists and physicians so that learning survives court upheavals and her children grow up with a sound education to rely on.",
+    "Keep peace between her husband and his sons, so that succession disputes never turn the household into a source of suspicion and rivalry."
+  ],
+  "Values": [
+    "She regards healing the sick as the highest virtue and treats servants and soldiers with the same care she gives to nobles, without distinction of rank.",
+    "She values books and written texts and holds that learning must be passed on in peace, so she takes copying, collation, and recipe-keeping seriously.",
+    "She puts her children's safety above titles and office, believing that a mother's first duty is to guard them, and she will not yield on this point."
+  ],
+  "Fears": [
+    "If civil war engulfs the dynasty, the palace dispensary and library may burn, taking countless patients and rare manuscripts with them, and she cannot save them.",
+    "Her children may be swept into the struggle for succession and become pawns of rival factions, while she is powerless to stop it at the decisive moment."
+  ],
+  "SpeechStyle": "Warm and clear, she speaks like a healer, asking about the illness before the matter at hand. She is kind to servants but careful with royal titles, and when others disagree she says, let us see how the sick fare first.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

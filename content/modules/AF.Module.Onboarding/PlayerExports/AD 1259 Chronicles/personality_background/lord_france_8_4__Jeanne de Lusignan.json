@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_8_4",
+  "HeroName": "Jeanne de Lusignan, Lady of the Marches",
+  "Description": "Jeanne de Lusignan is the second daughter of Count Hugues XII and Jeanne de Fougères. At twenty, she combines graceful courtly charm with sharp practical intellect, reared in the historic halls of Angoulême. Versed in harp performance, devotional Latin verse, and heraldic protocol, she also displays an exceptional gift for managing diplomatic correspondence between French and English courts. Her marriage later linked the House of Lusignan with strategic baronies in the Welsh Marches and Ireland. Courteous, observant, and deeply compassionate, Jeanne frequently persuaded her father to remit feudal dues for impoverished parishes during bad harvests. She assists in administering castle charities, widely beloved as an emblem of gentle nobility. Before departing for England, Jeanne endowed an agricultural relief fund in Poitou for tenants crippled in regional wars. Mild-mannered, empathetic, and exceptionally intelligent, her skillful management of sensitive dynastic correspondence gained her the heartfelt esteem of noble ladies on both sides of the English Channel. Her gentle demeanor, deep moral convictions, and refined epistolary grace reflect the highest standards of French aristocracy, ensuring an honorable and advantageous dynastic future.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cultivate diplomatic and administrative skills to honor her house in an advantageous marriage.",
+    "Alleviate suffering among vulnerable tenants to reflect Christian grace and family honor."
+  ],
+  "Values": [
+    "Pious Christian virtue, modesty, and compassionate service to those in need.",
+    "Profound filial devotion and unyielding commitment to familial harmony."
+  ],
+  "Fears": [
+    "Being wed across the sea to distant lands, permanently separated from her parents.",
+    "Renewed war turning her native Poitou into a devastated battlefield between kings."
+  ],
+  "SpeechStyle": "Speaks with soft, melodious dignity, her words courteous, articulate, and carrying the gentle modesty and refined grace of an accomplished noble daughter.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

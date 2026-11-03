@@ -1,0 +1,59 @@
+{
+  "Id": "be_thervingian_kingdom_economy",
+  "Keywords": [
+    "Thervingians Trade",
+    "Apulum fields and Danube exchange"
+  ],
+  "RagShortTexts": [
+    "Apulum fields, herds and Danube exchange sustain followers.",
+    "Roman markets and local stores both support Thervingian livelihoods."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Apulum fields, herds and Danube exchange feed followers. Roman markets and local stores both matter; long assembly reduces household surplus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Apulum fields, herds and Danube exchange sustain followers. Traveling followers need real food from this production; valuables still require a buyer and exchange. Roman markets and local stores both support Thervingian livelihoods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Roman markets and local stores both support Thervingian livelihoods. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Apulum fields, herds and Danube exchange sustain followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Apulum fields, herds and Danube exchange sustain followers. Households need meals and the means to keep producing after delivering goods. Roman markets and local stores both support Thervingian livelihoods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman markets and local stores both support Thervingian livelihoods. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Apulum fields, herds and Danube exchange sustain followers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

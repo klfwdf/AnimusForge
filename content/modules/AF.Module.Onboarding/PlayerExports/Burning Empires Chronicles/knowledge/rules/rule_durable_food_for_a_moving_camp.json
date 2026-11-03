@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v8",
+  "Keywords": [
+    "Durable food for a moving camp"
+  ],
+  "RagShortTexts": [
+    "Julian’s durable provisions show processing and allocation before movement."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Julian’s durable provisions show processing and allocation before movement. Grain aboard a cart was not necessarily ready to eat; households also needed fuel and vessels. Storage did not remove loss or the next supply requirement."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

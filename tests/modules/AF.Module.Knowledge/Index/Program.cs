@@ -23,6 +23,8 @@ internal static class Program
         public List<string> Logs = new List<string>();
         public int EmbedCalls;
         public bool TryGetEmbedding(string text, out float[] vector) { EmbedCalls++; vector = Embed(text); return vector != null; }
+        public int BatchCalls;
+        public float[][] EmbedDocuments(IReadOnlyList<string> texts) { BatchCalls++; return texts.Select(t => { EmbedCalls++; return Embed(t); }).ToArray(); }
         public bool TryScoreBatch(string query, IReadOnlyList<string> documents, out List<float> scores) { scores = Score(query, documents); return scores != null; }
         public void Log(string channel, string message) => Logs.Add(channel + ":" + message);
     }
@@ -169,6 +171,7 @@ internal static class Program
         var index = new KnowledgeRuleIndex(ports, () => rules);
         index.EnsureOnnxIndex();
         Check(index.OnnxReady && index.OnnxEntryCount == 6 && ports.EmbedCalls == 6, "onnx index embeds every seed once (3 per rule)");
+        Check(ports.BatchCalls == 1, "index build hands all seeds to one batched embedding call");
         int calls = ports.EmbedCalls;
         index.EnsureOnnxIndex();
         Check(ports.EmbedCalls == calls, "ensure is idempotent at same version");
@@ -329,6 +332,53 @@ internal static class Program
         var lower = r2.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "berry" } }, 1, 10, 4, 3, out mode);
         Check(lower.Count == 2 && logs.Last(l => l.StartsWith("entity_allocation")).Contains("allowLowerRanks=True") && logs.Last(l => l.StartsWith("entity_allocation")).Contains("secondary=1"), "limit > entity count allows rank-2 sweep");
         Check(r2.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = " ", Weight = 1f }, new WeightedKnowledgeInput { Text = "x", Weight = 0f } }, 2, 10, 4, 3, out mode).Count == 0 && mode == "none", "blank/zero-weight inputs ignored");
+        NameQueryGate();
+    }
+
+    private static void NameQueryGate()
+    {
+        Check(LoreCandidateRetriever.IsNameQuery("德泰尔") && LoreCandidateRetriever.IsNameQuery("Lucon of Calradia")
+            && !LoreCandidateRetriever.IsNameQuery("斯特吉亚 国家历史 外交承诺 继承争议") && !LoreCandidateRetriever.IsNameQuery("")
+            && !LoreCandidateRetriever.IsNameQuery(new string('x', LoreCandidateRetriever.NameQueryMaxChars + 1)), "name query shape");
+        // "near*" sits at cosine 0.5 from the apple rule: below the name gate, above the generic 0.21 floor.
+        Func<string, float[]> embed = text => (text ?? "").Contains("apple") ? new[] { 1f, 0f, 0f }
+            : (text ?? "").StartsWith("near") ? new[] { 0.5f, 0.8660254f, 0f } : new[] { 0f, 0f, 1f };
+        var rules = new List<LoreRule> { Rule("apple", "apple") };
+        var logs = new List<string>();
+        var plain = new KnowledgeRuleIndex(new FakePorts { Embed = embed, SemanticMinScore = 0.21f }, () => rules);
+        plain.EnsureOnnxIndex();
+        var retriever = new LoreCandidateRetriever(plain, (c, m) => logs.Add(m));
+        var name = retriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "nearname" } }, 1, 10, 4, 4, out _);
+        Check(name.Count == 0 && logs.Any(l => l.Contains("noun=\"nearname\" candidates=0") && l.Contains($"nameGate={LoreCandidateRetriever.NameQueryMinScore:0.00}")),
+            "embedding-only name query below the name gate injects nothing: " + string.Join(" | ", logs.Where(l => l.StartsWith("entity_query"))));
+        var exact = retriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "apple" } }, 1, 10, 4, 4, out _);
+        Check(exact.Count == 1 && exact[0].Id == "apple", "exact name above the gate is kept");
+        var theme = retriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "near history old grievance" } }, 1, 10, 4, 4, out _);
+        Check(theme.Count == 1 && theme[0].Id == "apple", "themed multi-term query keeps the generic floor");
+        var reranked = new KnowledgeRuleIndex(new FakePorts { Embed = embed, SemanticMinScore = 0.21f, RerankerAvailable = true,
+            Score = (q, docs) => docs.Select(_ => 0.3f).ToList() }, () => rules);
+        reranked.EnsureOnnxIndex();
+        var withReranker = new LoreCandidateRetriever(reranked, (c, m) => { })
+            .SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "nearname" } }, 1, 10, 4, 4, out string rerankMode);
+        Check(rerankMode == "rerank_per_entity" && withReranker.Count == 1, "cross-encoder scores are not held to the embedding name gate");
+
+        // Literal rescue: a name the book writes only inside a compound keyword scores below the gate but is kept;
+        // a look-alike name that is not literally present stays rejected.
+        Func<string, float[]> compound = text => (text ?? "").Contains("瓦伦斯") || (text ?? "").Contains("东罗马") ? new[] { 1f, 0f, 0f } : new[] { 0f, 0f, 1f };
+        Func<string, float[]> queryEmbed = text => text == "瓦伦斯" || text == "瓦伦提" ? new[] { 0.6f, 0.8f, 0f } : compound(text);
+        var compoundRules = new List<LoreRule> { Rule("valens", "瓦伦斯宗教整肃", "东罗马帝国瓦伦斯王权神授") };
+        var compoundLogs = new List<string>();
+        var compoundIndex = new KnowledgeRuleIndex(new FakePorts { Embed = queryEmbed, SemanticMinScore = 0.21f }, () => compoundRules);
+        compoundIndex.EnsureOnnxIndex();
+        var compoundRetriever = new LoreCandidateRetriever(compoundIndex, (c, m) => compoundLogs.Add(m));
+        var valens = compoundRetriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "瓦伦斯" } }, 1, 10, 4, 4, out _);
+        Check(valens.Count == 1 && valens[0].Id == "valens" && compoundLogs.Any(l => l.Contains("noun=\"瓦伦斯\"") && l.Contains("literalRescued=1")),
+            "name present only inside a compound keyword is rescued below the gate: " + string.Join(" | ", compoundLogs.Where(l => l.StartsWith("entity_query"))));
+        var lookAlike = compoundRetriever.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "瓦伦提" } }, 1, 10, 4, 4, out _);
+        Check(lookAlike.Count == 0, "a similar-sounding name that is not literally in the rule stays rejected");
+        Check(LoreCandidateRetriever.NormalizeNameLiteral("“铁臂” 奥斯里克") == "铁臂奥斯里克" && LoreCandidateRetriever.NormalizeNameLiteral("an") == ""
+            && LoreCandidateRetriever.NormalizeNameLiteral("丹") == "" && LoreCandidateRetriever.NormalizeNameLiteral("丹人") == "丹人",
+            "literal normalization strips quotes/spaces and refuses fragments too short to be distinctive");
     }
 
     private static void DiplomaticThemeRecall()

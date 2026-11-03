@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_4e",
+  "HeroName": "Gebhard III  of Sanneck",
+  "Description": "Gebhard III of Sanneck, aged twenty in 1259, is a formidable young knight of the Sanneck dynasty, entrusted with the critical defence of the upper Savinja defiles. Temperamentally stoic, disciplined, and hardened by rigorous martial training, Gebhard excels in heavy lance charges and brutal dismounted axe combat. Within the family's defensive hierarchy, he oversees the fortified bastions and watchtowers guarding the alpine passes leading into Carinthia and Carniola. In 1259, as regional instability threatens the frontier marches, Gebhard maintains constant vigilance, supervising the stockpiling of grain and iron bolts, while drilling the local crossbow levies. A man of action rather than words, he stands as an incorruptible iron bulwark on the northwestern approaches to Castle Sanneck. Gebhard III knows every defensive angle of the upper Savinja defiles, supervising masonry fortifications and stockpiling vast reserves of heavy crossbow bolts. Demanding meticulous discipline, he inspects alpine beacon towers through winter blizzards, preventing hostile patrols from infiltrating valley passes. A man of steadfast action, he dedicates his youth to guarding the northwestern mountain gates, standing as an incorruptible iron bulwark of House Sanneck. Unflinching amidst winter storms and border alarms, Gebhard stands watch over the alpine passes, his iron vigilance keeping the northwestern frontier secure.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks in a low, gravelly timbre forged by weather and campaign life, wastefully brief and focused entirely on garrison strength and defensive bastions.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

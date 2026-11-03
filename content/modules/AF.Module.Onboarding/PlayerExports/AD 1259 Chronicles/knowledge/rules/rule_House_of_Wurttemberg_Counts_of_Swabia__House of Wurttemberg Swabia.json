@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Wurttemberg_Counts_of_Swabia",
+  "Keywords": [
+    "House of Wurttemberg Swabia",
+    "Stuttgart Stag Antler Crest",
+    "Ulrich I Expansion Wurttemberg",
+    "Swabian Ducal Inheritance"
+  ],
+  "RagShortTexts": [
+    "Ulrich I transformed the House of Württemberg from local Swabian counts into an assertive."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Württemberg counts rose in the power vacuum after the fall of the Hohenstaufen dynasty, when the great ducal estates of Swabia began to crumble. Ulrich I seized estates around Stuttgart and the Neckar valley, and his successors pressed the same policy of acquisition across the southern German lands. Their coat of arms, three stag antlers on gold, became a mark of the dynasty's growing authority. The counts combined purchase, marriage and conquest, and each new lordship brought its own villages, mills and judicial rights. Over time these scattered holdings were gathered into a single principality, a process that rested on careful management of revenue and on the loyalty of the knights and townsmen who served it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Württemberg bailiffs collected feudal dues from newly acquired manors, and each village was recorded in the counts' registers with its taxes and services. Retinues escorted the bailiffs on their rounds, and any village that refused payment soon learned how quickly the count's men could arrive."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_chernigov_2b",
+  "Description": "Grand Duchess Anastasia Ryurikovna is the esteemed consort of Grand Prince Gleb of Chernigov and daughter of Grand Prince Rurik of Kyiv, standing as a venerable dynastic matriarch. Her high lineage united the Smolensk Rostislavichi with the Chernigovian Olgovychi, endowing her with immense diplomatic authority across southern Rus' diets. Versed in statecraft and liturgical customs, Anastasia co-managed the ducal treasury, generously endowing the Transfiguration Cathedral and the Yeletsky Dormition Monastery. During military mobilizations, she displayed remarkable composure, organizing urban noblewomen to weave uniforms, prepare field dressings, and distribute grain to destitute refugees. Her fair governance and authentic Christian charity softened the hardships of war, commanding universal affection from soldiers and commoners alike. Revered as the 'Grace of the Desna', she serves as an indispensable anchor of civilian morale and social cohesion. Grand Duchess Anastasia was a beacon of Christian mercy and administrative calm for besieged Chernigov. Personally organizing emergency food distribution, outfitting medical shelters, and inspiring civilian steadfastness, her compassionate spirit provided an unbreakable moral shield for defenders during dark hours. Her noble memory lives on as the gentle guardian of the Desna. Her tireless charity and noble grace brought invaluable comfort to thousands of war-weary citizens.",
+  "SpeechStyle": "A fortress rests upon stone, but a realm stands upon compassion. Tend our granaries and comfort the afflicted; our quiet fortitude shields our ancestral home alongside our warriors!",
+  "Motivations": [
+    "Supervise municipal treasuries and medical stores, ensuring unflagging logistical support for defenders and civilians during sieges.",
+    "Endow monastic sanctuaries across the Desna basin, sheltering refugees and upholding the royal moral traditions of Rus'."
+  ],
+  "Values": [
+    "Valuing selfless compassion, marital fidelity, and civic duty, repudiating frivolous luxury and callous indifference.",
+    "Believing benevolent maternal care combined with structured relief administration overcomes the most terrifying historical crises."
+  ],
+  "Fears": [
+    "Enemy breach of Chernigov's perimeter walls, resulting in the sack of ancient monasteries and slaughter of refugees.",
+    "Virulent pestilence erupting within crowded bastions during prolonged sieges, incapacitating defenders before assaults."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "HeroName": "Anastasia Ryurikovna"
+}

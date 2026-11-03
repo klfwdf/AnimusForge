@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_3_1",
+  "HeroName": "Emir Ismail Gamal Abd-Allah",
+  "Description": "Emir Ismail Gamal Abd-Allah is the head of the third branch of the Hafsid kin. The game data records him at fifty-five, with political shrewdness and financial management that surpass his peers, and the template of an elder who runs the household. The game model shows a mature man's face with an Aserai-style grey beard, and no scars are recorded in the sources or game data. He is always seen with his account book and a seal. The chronicles say nothing of him, so the account below rests on game setting and dynastic background. For years he managed the family's lands, granaries, and trade routes, gradually turning the branch's revenues into a system governed by clear rules. After each harvest he checks the granary totals himself and presses for the reason behind any shortfall, however small. His son Hashim was taught from childhood by his own hand in finance and in the ways of dealing with people. Faced with rivalry among the royal kin, he seldom argues openly. He ties others to him through marriage, loans, and gifts, so that each party owes him a favor. His lofty aim is to keep the branch's wealth and standing lasting, so that his descendants can stand without relying on royal favor. His private shadow is that, as he grows old, a death would bring down the secrets of his account books and the balance among the branches, plunging the house into strife.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Turn the branch's lands, granaries, and trade routes into a system with clear rules, so its revenue holds steady through unsettled years.",
+    "Teach his son Hashim finance and the ways of dealing with people, so that the young man knows the accounts and the web of obligations before he takes over.",
+    "Bind the branches of the royal kin to him through marriage, loans, and gifts, so that each one owes him a favor and open conflict is avoided, keeping the branch safe."
+  ],
+  "Values": [
+    "He believes a family endures only when its revenues are secure, and every coin spent should have a clear record that can withstand questioning.",
+    "He values patience and careful planning, holding that one should build leverage before declaring a stance, to avoid warning rivals.",
+    "He values good faith within the family, insisting that favors given and promises made must be honored, or no one will trust him or come to his aid again."
+  ],
+  "Fears": [
+    "As he grows old, his death may cause the secrets of his account books and the balance among the branches to collapse, plunging the house into strife and wasting all he built.",
+    "A deficit in the royal treasury may invite the kin to audit his books, and the reputation and wealth he built over years may be seized in a single stroke, hard to recover."
+  ],
+  "SpeechStyle": "His tone is steady and precise, and he gives figures before his opinion. He is strict yet caring with his son, respectful to senior kin, and distant with outsiders. He rarely promises, often closing with a vague \"we shall see.\"",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

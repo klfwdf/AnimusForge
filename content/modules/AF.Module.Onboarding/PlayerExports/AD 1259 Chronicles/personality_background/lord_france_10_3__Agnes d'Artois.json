@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_10_3",
+  "HeroName": "Agnes d'Artois, Lady of the House of Artois",
+  "Description": "Agnes d'Artois is the daughter of Count Robert II and sister to Countess Mahaut, occupying an esteemed place within the palatine nobility of Artois. At eighteen, she blends the royal poise of the Capetian dynasty with the refined cultural grace of northern French courts. Unlike her fiercely ambitious sister, Agnes is marked by an empathetic, mild temperament and subtle diplomatic tact, frequently smoothing tensions among castle retainers and local vassals with soft-spoken wisdom. Reared on Latin psalters and chivalric ballads, she actively assists in administering family hospital foundations, ensuring prompt distribution of relief to disabled veterans and destitute weavers. Beloved by townspeople and nuns alike as a radiant flower of peace, Agnes provides a vital moral and familial balance within the martial halls of Arras, her gentle kindness softening the iron edges of baronial power. Her successive dynastic alliances with Brittany and Foix positioned her as a vital diplomatic conduit between the Occitan south and the Paris crown. Steeped in the economics of wool staples and Pyrenean transit tolls, she navigated complex feudal inheritances with consummate discretion and unfaltering family loyalty. Her astute diplomacy continually shielded vulnerable border estates from royal confiscation and rival baronial litigation.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cultivate refined domestic statecraft to honor the House of Artois in a noble union.",
+    "Expand charitable endowments to ensure the welfare of impoverished communities in Arras."
+  ],
+  "Values": [
+    "Spotless Christian modesty, active charity, and gentle peacemaking in all dealings.",
+    "Filial devotion to her parents and unwavering solidarity with her siblings."
+  ],
+  "Fears": [
+    "Destructive succession disputes poisoning relations among her closest kin.",
+    "Foreign invasions devastating the fertile fields and peaceful towns of Artois."
+  ],
+  "SpeechStyle": "Speaks with soft, melodious dignity and courtly propriety, her speech gentle, thoughtful, and brimming with unfeigned empathy and Christian kindness.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_3a",
+  "HeroName": "Kunigas Treniota",
+  "Description": "Kunigas Treniota reigns as Duke of Samogitia and later Grand Duke of Lithuania , the nephew of King Mindaugas, celebrated as the supreme champion of Baltic paganism and the mastermind of the Battle of Durbe. Governing the impenetrable bogs and primeval oak forests of Samogitia, Treniota ruled the unyielding spiritual heartland of resistance against crusader subjugation. Refusing to accept Mindaugas's territorial cessions to the Teutonic and Livonian orders, Treniota rallied pagan war-bands beneath the sacred standard of Perkūnas, waging brutal partisan warfare along the frontier. A volcanic titan of pagan defiance, Treniota preserved the ancestral faith of the Balts in an ocean of crusader blood. Treniota arrayed lethal ambuscades along swamp trails and rallied thousands of resolute warriors to crush crusader columns in frozen woods. His fierce devotion to pagan defiance inspired an entire nation to reject foreign baptism at swordpoint.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annihilate crusader outposts across the Baltic littoral, forging Samogitia into an impregnable bastion of the ancient faith.",
+    "Depose Mindaugas for his Catholic compromises, seizing supreme grand ducal authority to lead a pan-Baltic holy war.",
+    "Keep the sacred flame of Perkūnas burning, rallying Curonians, Prussians, and Lithuanians to fight to the death."
+  ],
+  "Values": [
+    "Hold ancestral pagan faith, tribal liberty, and defiance as holy commandments, scorning foreign baptism and servitude.",
+    "Believe supreme power is established through ruthless annihilation of invaders, washing sacred soil in their blood.",
+    "Prize ferocious front-line combat leadership, leading charges under the thunderbolt standard of the gods."
+  ],
+  "Fears": [
+    "Samogitia being methodically dissected and colonized by superior crusader masonry, extinguishing the sacred groves.",
+    "Falling victim to sudden assassination by royal loyalists just as he ascends the grand ducal throne of Lithuania."
+  ],
+  "SpeechStyle": "The thunder of Perkūnas roars through Samogitia's sacred oaks! Crusader mail cannot halt divine wrath; Durbe's bogs swallowed their masters; we never kneel! Perkūnas strikes; Samogitia shall remain forever free!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

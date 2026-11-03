@@ -1,0 +1,59 @@
+{
+  "Id": "be_langobard_kingdom_internal",
+  "Keywords": [
+    "Langobards Nobility",
+    "Lombard kin oaths and household fields"
+  ],
+  "RagShortTexts": [
+    "Agelmund joins kin chiefs and followers.",
+    "Shared oaths do not erase family claims over fields, herds and rewards."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Agelmund joins kin chiefs and followers. Oaths mobilize people without erasing family claims over fields, herds and rewards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Agelmund joins kin chiefs and followers. Followers retain family ties; decisions about guards and distant service affect common participation. Shared oaths do not erase family claims over fields, herds and rewards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Shared oaths do not erase family claims over fields, herds and rewards. Coordination allocates actual supply and protection duties, not merely titles. Agelmund joins kin chiefs and followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Agelmund joins kin chiefs and followers. Households compare burdens with neighbors; unmatched protection weakens cooperation. Shared oaths do not erase family claims over fields, herds and rewards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Shared oaths do not erase family claims over fields, herds and rewards. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Agelmund joins kin chiefs and followers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,52 @@
+{
+  "Id": "rule_winter_sleigh_bell_caravan_wolves",
+  "Keywords": [
+    "winter freight by sleigh",
+    "ice crossings and fodder"
+  ],
+  "RagShortTexts": [
+    "Snow permits sleigh freight while thin ice, storms and changing tracks interrupt travel.",
+    "Fodder, shelter and guides govern winter hauling beyond any protection from bells."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Packed snowy tracks carry sleigh loads, making some roads usable when wheels struggle and sometimes changing routes over frozen rivers. Currents, springs and snow cover obscure ice thickness; one crossing does not prove safety for a heavier load. Wind erases tracks and darkness and cold worsen disorientation, giving guides and known lodgings value.\n\nSleigh runners, lashings and loads need checks while horses still need fodder, water and rest. High loads overturn and frozen knots resist handling. Recovering a lost grain sack affects the whole party. Bells help companions locate each other or warn other travelers, but do not replace guards or guarantee avoidance by wolves and robbers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lords need fodder and lodging along winter routes rather than assume frozen rivers ensure speed. Taking village hay can weaken the very horses needed next."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts seek local advice and actual ice conditions and space loaded sleighs carefully. A distant bell calls for checking the companion’s location."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villagers balance winter haulage with fodder at home. Lodging travelers adds water and fuel work requiring agreement over payment and duration."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

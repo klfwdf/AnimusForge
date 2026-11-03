@@ -1,0 +1,52 @@
+{
+  "Id": "rule_coronation_of_daniel_of_galicia_1253",
+  "Keywords": [
+    "Danylo’s crown",
+    "coronation at Dorohychyn"
+  ],
+  "RagShortTexts": [
+    "Danylo accepted a crown at Dorohychyn in 1253 while seeking western support.",
+    "Royal rank coexists with the interests of Orthodox institutions, boyars and towns."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1253 Danylo accepted a crown brought by a papal representative at Dorohychyn. The Romanovych house gained recognition and sought western support against Mongol pressure. Ceremony did not supply troops or provisions, which still had to come from particular families, towns and partners. Orthodox dependants did not change every practice overnight; the court continued to require cooperation from local churches and boyars."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Envoys can invoke royal rank and papal connections, but requests for aid still need routes, dates and returns. Recognition has value without establishing how much assistance another party has actually agreed to provide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "People travelling with embassies see escorts, gifts and reception. Soldiers evaluating western help ask whether troops have departed and where they can meet, rather than treating ceremonial welcome as an army already available."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Townspeople may recall bells and visitors, villagers the provisions supplied. A crown changes daily life when it brings protection and dependable judgement. Expensive gifts do not directly preserve a family’s seed."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

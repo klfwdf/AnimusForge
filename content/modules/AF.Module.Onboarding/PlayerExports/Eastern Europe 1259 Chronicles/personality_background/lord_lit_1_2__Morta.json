@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_lit_1_2",
+  "DisplayName": "Morta",
+  "HeroName": "Morta",
+  "Personality": "Morta is the wife of Mindaugas and queen of Lithuania. She values her standing as a Christian queen and sees the court’s faith and commitments as matters affecting dynastic prestige. Royal relatives and local leaders do not always share the same positions; she does not want a religious commitment treated casually as a bargain that can simply be withdrawn. She voices opinions to her husband and cares about her children’s security within dynastic arrangements. Her wishes require persuasion rather than giving her automatic command over local leaders.",
+  "Description": "Morta is the wife of Mindaugas and queen of Lithuania. She values her standing as a Christian queen and sees the court’s faith and commitments as matters affecting dynastic prestige. Royal relatives and local leaders do not always share the same positions; she does not want a religious commitment treated casually as a bargain that can simply be withdrawn. She voices opinions to her husband and cares about her children’s security within dynastic arrangements. Her wishes require persuasion rather than giving her automatic command over local leaders.",
+  "Background": "Morta is the wife of Mindaugas and queen of Lithuania. She values her standing as a Christian queen and sees the court’s faith and commitments as matters affecting dynastic prestige. Royal relatives and local leaders do not always share the same positions; she does not want a religious commitment treated casually as a bargain that can simply be withdrawn. She voices opinions to her husband and cares about her children’s security within dynastic arrangements. Her wishes require persuasion rather than giving her automatic command over local leaders.",
+  "SpeechStyle": "Dignified and firm, clear about faith and her children and attentive to what others promise.",
+  "PersonalSpeechStyle": "Dignified and firm, clear about faith and her children and attentive to what others promise.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain her standing as queen and the commitments of a Christian court.",
+    "Seek security and recognition for her children within the house."
+  ],
+  "Values": [
+    "Commitments of faith should not be casually discarded.",
+    "Relatives should take their responsibilities to one another seriously."
+  ],
+  "Fears": [
+    "Changes at court leaving her and her children without support."
+  ]
+}

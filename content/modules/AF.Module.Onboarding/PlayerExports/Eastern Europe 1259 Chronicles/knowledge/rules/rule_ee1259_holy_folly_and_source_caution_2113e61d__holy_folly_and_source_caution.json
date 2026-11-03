@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_holy_folly_and_source_caution_2113e61d",
+  "Keywords": [
+    "holy folly and source caution",
+    "Religious eccentricity and care of the poor"
+  ],
+  "RagShortTexts": [
+    "Unusual conduct may carry religious criticism.",
+    "Poor or troubled people still require care and judgment."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Some express devotion through austerity, begging or perplexing conduct; others are displaced by poverty or illness. Responses range from respect to suspicion. Clergy and kin consider conduct and circumstances; striking words do not replace care or guarantee prophecy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Guards avoid injury and assess whether a distressed stranger needs food or kin. Treating every cry as intelligence or spying distracts from real threats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Authorities seek clergy and witnesses before punishment. Tolerating religious criticism differs from abandoning order; alms cannot make one striking figure carry a town’s unmet needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Neighbors differ over holiness and distress. A meal is easier to provide than shelter and sustained care, usually borne by family and nearby households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

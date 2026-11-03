@@ -1,0 +1,18 @@
+{
+  "Id": "rule_House_of_Warenne_Earls_of_Surrey",
+  "Keywords": [
+    "Surrey’s earl and royal councils"
+  ],
+  "RagShortTexts": [
+    "John de Warenne’s earldom linked land, service and royal counsel."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "John de Warenne’s earldom linked land, service and royal counsel. Reform disputes in 1259 required balancing king, peers and local resources. Kinship aided cooperation without determining every choice in conflicts yet to occur."
+    }
+  ],
+  "TextMappings": []
+}

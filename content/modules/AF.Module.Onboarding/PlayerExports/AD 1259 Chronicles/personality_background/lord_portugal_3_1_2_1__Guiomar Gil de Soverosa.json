@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_2_1",
+  "HeroName": "Guiomar Gil de Soverosa",
+  "Description": "Dona Guiomar Gil de Soverosa belongs to the legendary and all-powerful House of Soverosa, marrying Dom Joan Rodrigues de Briteiros at nineteen years of age. Her father and brothers have long exerted titanic influence over the Portuguese royal court and the Leonese frontiers, governing premier marcher fortresses. Inheriting her dynasty's trademark pride, imperial poise, and keen political instinct, Guiomar is intimately versed in the labyrinthine genealogies of Iberian high nobility. Her marriage brought immense estates, lavish dowry manors, and retainers to Briteiros, instantly establishing her prominent standing within her husband's household. Resolute, stylish, and fiercely loyal to her dynastic ties, Dona Guiomar serves as both a dazzling hostess in high society and a formidable diplomat ensuring the unbreakable bond between Soverosa and Briteiros. Carrying the formidable gravitas and political weight of the House of Soverosa, Dona Guiomar governs her estate with iron poise, ensuring that her family's marital alliance remains an unshakeable pillar in Peninsular power politics. Dona Guiomar's imperial composure, sharp political foresight, and unwavering aristocratic pride guarantee that the Soverosa legacy continues to flourish within her household. Her consummate courtly polish and diplomatic foresight establish Dona Guiomar as an indispensable pillar of regional high society.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To solidify the unshakeable supremacy of the Soverosa-Briteiros alliance across the kingdom.",
+    "To expand her personal influence within high courtly circles, advancing her husband into premier royal appointments."
+  ],
+  "Values": [
+    "Dynastic pride is non-negotiable; hesitation or weakness invites predatory rivals.",
+    "Elegance, grandeur, and courtly display are essential instruments of feudal governance."
+  ],
+  "Fears": [
+    "Political setbacks suffered by the House of Soverosa undermining her standing.",
+    "Her marital house losing ground in high council struggles and slipping into obscurity."
+  ],
+  "SpeechStyle": "Speaks with aristocratic hauteur, diamond-cut precision, and regal composure that brooks no impertinence. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

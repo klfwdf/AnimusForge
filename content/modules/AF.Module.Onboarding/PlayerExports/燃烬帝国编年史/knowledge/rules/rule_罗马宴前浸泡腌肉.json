@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v7",
+  "Keywords": [
+    "罗马宴前浸泡腌肉"
+  ],
+  "RagShortTexts": [
+    "普劳图斯笔下的奴仆被命令把腌猪肉等浸水，准备厨师到来；主人则去市场买鱼。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "普劳图斯笔下的奴仆被命令把腌猪肉等浸水，准备厨师到来；主人则去市场买鱼。储藏肉与当天采购共同组成宴席，盐藏没有消除清理、备水和等待厨师的劳动。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

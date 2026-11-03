@@ -1,0 +1,106 @@
+{
+  "Id": "rule_punic_45",
+  "Name": "阿基米德密集投石机群与标尺交叉射网",
+  "Description": "阿基米德在叙拉古城墙各处依射程分级配置投石机与弩炮，城墙打孔设暗箭，形成远、中、近无死角交叉弹幕，无论敌军在千步之外或逼近城脚均遭毁灭性饱和打击。",
+  "Tags": [
+    "阿基米德投石机",
+    "几何射表",
+    "无死角射网",
+    "城墙暗孔",
+    "桑布卡摧毁",
+    "机械防守"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "阿基米德在叙拉古城墙严格按数学标尺部署大中小各级精密的弹射机械。",
+    "重型抛石机在远距砸碎双船浮桥中轻弩炮覆盖中近程且城墙开凿狭缝暗孔。",
+    "交织无死角立体交叉火力使罗马无论远距航行或贴墙死角均遭暴雨般打击。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 92,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿基米德将整座叙拉古城墙变成了精密的几何杀戮仪器！他根据抛物线计算，将发射十塔兰特重石的巨型投石机对准千里之外的敌舰；等敌军冲入半程，中型扭力弩炮便射出密集的重铁标枪；最绝妙的是城墙下密密麻麻开凿的人高狭缝暗孔，躲在墙根下的罗马步兵以为进入射击盲区，里面却射出成排成排的毒箭与蝎弩短矛！整个海湾在数学计算下连一只飞鸟都插翅难逃！"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马塞卢斯自嘲我们的军舰像在跟一个几何学家打靶！罗马的‘桑布卡’攻城吊桥刚推进到射程内，一颗重达数百磅的石弹便带着雷霆呼啸从城头砸下，直接砸穿了四层甲板将浮桥彻底砸烂！当我们拼死冲到墙根以为能架云梯时，石墙上的无数个小孔里却喷射出暴雨般的短箭！每一个距离、每一块礁石都被阿基米德量得清清楚楚，强攻根本就是送死！"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "只要城墙上冒出一根哪怕指头粗细的木头桩子，所有的罗马大头兵都会吓得抱头鼠窜，狂喊‘阿基米德又在用机关瞄准我们了’！那些石头砸在甲板上能把战马砸成肉饼，标枪把三个盾牌穿在一起扎透。到最后将军连靠近城墙都不敢，只能下令后退十里筑长沟打持久围困。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿基米德在叙拉古防御中建立了一套依几何与射程严格分级的立体炮兵阵地。通过大、中、小型扭力投石机与弩炮的交叉重叠射界，配合城墙暗孔射杀死角敌军，成功将罗马海陆主力压制在有效攻击范围之外，重创并摧毁了罗马精心制造的‘桑布卡’等各类攻城器械。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "阿基米德密集投石机群与标尺交叉射网",
+    "rule_punic_45"
+  ]
+}

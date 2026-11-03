@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_3a",
+  "HeroName": "Scholastika of Šternberk",
+  "Description": "Scholastika represents the illustrious bloodline of the House of Šternberk, married to the magnates of the House of Pernštejn (bearing the black aurochs head), forging an unbreakable dynastic arch connecting the golden star of Sázava with the masters of the Svratka basin. Bringing extensive dower lands and the exalted military prestige of her kin, she governed the domestic administration of Pernštejn Castle for decades with majestic grace and political prudence. Holding profound influence among Moravian oligarchs, she assisted her lord in resolving regional feudal disputes, endowed Cistercian foundations, and nurtured valiant heirs for the Pernštejn dynasty, serving as the living anchor of solidarity between Moravia's two paramount houses. Presiding over clan assemblies in the great vaulted hall of Pernštejn, Scholastika utilized her prestigious Šternberk heritage to arbitrate bitter woodland disputes between Medlov retainers and neighboring feudal lords. Auditing endowments for regional Cistercian foundations, she ensured her house's charity was perpetually remembered in monastic liturgies, serving as an esteemed moral matriarch anchoring southern Moravian baronial unity. Her majestic poise, deep Christian piety, and astute diplomacy preserved enduring peace, honor, and solidarity between the greatest feudal dynasties of the Bohemian and Moravian realm.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Deepen the blood alliance between Pernštejn and Šternberk, resisting baronial rivals and court predators.",
+    "Supervise Pernštejn's revenues and monastic endowments, securing an unassailable magnate status for her sons."
+  ],
+  "Values": [
+    "Holds pure dynastic reputation, sworn oaths, and Christian piety as non-negotiable standards of noble conduct.",
+    "Believes graceful domestic mediation and prudent alliances are the key to enduring aristocratic supremacy."
+  ],
+  "Fears": [
+    "Fears Moravian fiefs becoming engulfed in total war between the Bohemian crown and imperial coalitions.",
+    "Worries hotheaded sons will provoke bitter blood feuds with neighboring barons, inviting retaliation."
+  ],
+  "SpeechStyle": "The golden star stands proud beside the aurochs head, witnessed by the Svratka; nobility lies not in empty luxury, but in honoring our heritage. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Scholastika of Šternberk"
+}

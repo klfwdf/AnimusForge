@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_3a",
+  "HeroName": "Erik Gyldenstierne",
+  "Description": "Sir Erik Gyldenstierne of Ågård, patriarchal progenitor of the illustrious 'Golden Star' magnate dynasty of Denmark, held supreme territorial authority across northern Jutland. Commanding sprawling agricultural estates and coastal stud farms bordering the Limfjord and North Sea, Erik fortified his moated seat at Ågård into an unyielding bastion. During the catastrophic civil wars between the Danish crown and the ducal house of Schleswig, he mobilized provincial equestrian retinues and coastal beacon networks, repelling maritime raiders and rival baronial incursions. Master of Jutlandic customary jurisprudence, he commanded universal deference at the regional assembly of Viborg, adroitly safeguarding traditional baronial immunities while preserving essential feudal bonds with the crown, celebrated across the north as an unshakeable guardian of regional order. In organizing the defenses along the Limfjord, Erik established maritime beacons and coordinated tenant levies, uniting more than a dozen fishing hamlets and equestrian manors into an integrated mutual protection network. When ducal forces from Schleswig attempted amphibious landings in northern Jutland, he directed tactical ambushes along tidal shallows, compelling the invaders to retreat with heavy losses. His golden star banner gained legendary renown across the northern provinces, establishing a tradition of martial vigilance that defined his descendants for generations.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Fortify the moat and stone ramparts of Ågård against pirate raids and factional incursions across northern Jutland.",
+    "Arbitrate baronial disputes at the Viborg ting assembly to protect traditional judicial immunities of the northern lords."
+  ],
+  "Values": [
+    "Reveres ancestral lineage and civil stability as sacred pillars, maintaining iron discipline across his domain.",
+    "Upholds solemn feudal contracts, scorning treasonous opportunism in favor of pragmatic balance with the crown."
+  ],
+  "Fears": [
+    "Dreads widespread dynastic civil war destroying agricultural estates and maritime trade across northern Jutland."
+  ],
+  "SpeechStyle": "Speaks with measured patriarchal authority and soldierly precision, his commanding voice brooking no dissent.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

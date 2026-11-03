@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Constantinople_Recovery_and_Latin_Fall",
+  "Keywords": [
+    "Nicaea and the contested Latin capital"
+  ],
+  "RagShortTexts": [
+    "Nicaea and the contested Latin capital concerns current rights and obligations."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Constantinople remained the Latin center while Nicaea sought restoration and Venice defended commercial interests. Sea access, supply and allies mattered alongside walls. Court plans and merchant guesses were not actual entry through the gates."
+    }
+  ],
+  "TextMappings": []
+}

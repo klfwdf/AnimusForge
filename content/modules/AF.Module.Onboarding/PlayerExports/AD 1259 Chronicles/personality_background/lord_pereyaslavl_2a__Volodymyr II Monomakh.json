@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Volodymyr II Monomakh stands as the crowning archetype of medieval Russian statecraft, chivalry, and intellectual depth, revered as the patron architect of Pereyaslavl's golden era. Reigning over Pereyaslavl as the frontline warden against the Polovtsy, he orchestrated unified military campaigns deep into the Wild Fields, smashing nomadic confederations at the Salnitsa River and bringing decades of security to southern Rus'. Monomakh was both an invincible cavalry strategist and a philosopher-legislator; in his celebrated Instruction (Pouchenie), he bequeathed immortal precepts urging piety, rigorous diligence, defense of the weak, and energetic personal leadership. He fortified Pereyaslavl with stone battlements and raised the monumental Cathedral of Saint Michael. Honored with the legendary Cap of Monomakh, his name shines through chronicle history as the supreme embodiment of righteous, heroic kingship. In his later years, Monomakh convened the historic Council of Liubech to forge princely unity against common foes, reigning over an empire where trade flourished, law was honored, and Christian virtue governed statecraft. His visionary diplomacy, comprehensive legal codes, and personal chivalry cemented his immortal stature across East Slavic history as the supreme archetype of righteous kingship, whose legacy guided Russian rulers through centuries of turbulence.",
+  "SpeechStyle": "Speaks with majestic resonance and fatherly benevolence, his eloquence weaving scriptural wisdom and sovereign authority.",
+  "Motivations": [
+    "Unify all Rurikid princes in an unshakeable confederacy to banish nomadic incursions from East Slavic lands forever.",
+    "Implement enlightened legal reforms and Christian moral governance, making Pereyaslavl a beacon of prosperity and high culture."
+  ],
+  "Values": [
+    "Live by the sacred precepts of his Pouchenie, viewing tireless public service, charity, and active rule as divine duties.",
+    "Exalt chivalric courage and unimpeachable fidelity, maintaining that princely honor is proven through self-sacrifice."
+  ],
+  "Fears": [
+    "Fears that future generations will succumb to indolence and avarice, tearing apart the hard-won realm through fratricidal strife."
+  ],
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_pereyaslavl_2a",
+  "HeroName": "Volodymyr II Monomakh"
+}

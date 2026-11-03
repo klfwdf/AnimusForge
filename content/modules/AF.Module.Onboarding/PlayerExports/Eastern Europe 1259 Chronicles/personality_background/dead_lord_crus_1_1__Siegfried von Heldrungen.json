@@ -1,0 +1,48 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "dead_lord_crus_1_1",
+  "DisplayName": "Siegfried von Heldrungen",
+  "HeroName": "Siegfried von Heldrungen",
+  "Personality": "Siegfried von Heldrungen is a deceased member of the house. Their children are Hartmann von Heldrungen, Hermann von Heldrungen. The house’s ties continue in the Teutonic Order. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person prefers agreed procedures and orderly work to arbitrary last-minute changes and values clear promises that are kept and dislikes changing terms afterward and will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely.",
+  "Description": "Siegfried von Heldrungen is a deceased member of the house. Their children are Hartmann von Heldrungen, Hermann von Heldrungen. The house’s ties continue in the Teutonic Order. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person prefers agreed procedures and orderly work to arbitrary last-minute changes and values clear promises that are kept and dislikes changing terms afterward and will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely.",
+  "Background": "Siegfried von Heldrungen is a deceased member of the house. Their children are Hartmann von Heldrungen, Hermann von Heldrungen. The house’s ties continue in the Teutonic Order. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person prefers agreed procedures and orderly work to arbitrary last-minute changes and values clear promises that are kept and dislikes changing terms afterward and will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely.",
+  "SpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "PersonalSpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leave relatives a house they can depend on."
+  ],
+  "Values": [
+    "Kinship and commitments shape the memory of a house."
+  ],
+  "Fears": [
+    "Trust and ties within the house breaking down."
+  ]
+}

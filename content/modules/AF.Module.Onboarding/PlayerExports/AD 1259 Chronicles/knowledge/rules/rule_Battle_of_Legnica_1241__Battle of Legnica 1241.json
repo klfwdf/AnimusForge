@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Legnica_1241",
+  "Keywords": [
+    "Battle of Legnica 1241",
+    "Henry II Pious Death Silesia",
+    "Teutonic Polish Coalitions",
+    "Mongol Smoke Screen Tactics"
+  ],
+  "RagShortTexts": [
+    "In 1241 at Legnica, Mongol forces under Baidar crushed Silesian, Polish, and Teutonic."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On April 9, 1241, Baidar's Mongol columns defeated the combined forces of Poland, Moravia, and the Teutonic Order at Legnica in Silesia. The Mongols used smoke screens and feigned retreats to draw the European knights into a trap and to split their formation. Duke Henry II the Pious was surrounded and killed, and his head was taken as a trophy. The defeat left Silesia open to raids and let the Mongol main army continue its campaign into Hungary, where the Battle of Mohi followed days later. The battle showed European commanders that their heavy cavalry charge was vulnerable to coordinated mounted archery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "At Legnica, rigid heavy charges proved weak against enemies that refused close combat. Knights who had trained for a single shock charge saw their formations broken by repeated volleys from horse archers. Lords in Silesia had to rebuild their levies and reconsider how their castles could hold out against fast raiders."
+    }
+  ],
+  "TextMappings": []
+}

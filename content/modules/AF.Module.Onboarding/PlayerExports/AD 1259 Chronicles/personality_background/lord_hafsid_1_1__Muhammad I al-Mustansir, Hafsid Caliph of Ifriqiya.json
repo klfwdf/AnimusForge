@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_hafsid_1_1",
+  "HeroName": "Muhammad I al-Mustansir, Hafsid Caliph of Ifriqiya",
+  "Description": "Muhammad I al-Mustansir was born around 1228 as the son of Abu Zakariya Yahya, who broke from the Almohads in 1229 and founded the Hafsid dynasty in Ifriqiya. As a child he lived through his father's expansion, which took Constantine and Bejaia in 1230 and Algiers in 1235. In 1242 Tlemcen kept its own ruler but accepted Hafsid authority. Muhammad succeeded in 1249 and ruled from Tunis. The game model gives him an Aserai-style hairstyle and beard, and the chronicles record no scars, so his standing rests on court ceremony and the discipline he imposes on the kin. In 1253 he formally took the title of caliph. That same year his half-brother Ibrahim fled to Zaraia and proclaimed himself ruler, and Muhammad kept him under close watch. Recognition followed. The Marinid sultan Abu Yusuf Yaqub acknowledged his authority in 1258, and the Sharif of Mecca did so in 1259 after the fall of Baghdad. His lofty aim is to make Tunis the center of western Islamic legitimacy. His private dread is that a brother's rebellion or a weak heir will undo it all, and that fear makes him test the loyalty of his closest courtiers. He rarely lets his guard down, even with them, and he judges men by their oaths more than by their words. Those who keep faith are rewarded, and those who break it learn that the caliph remembers.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Hold the Hafsid caliphal title in Ifriqiya so that Marinid recognition becomes lasting political capital, not a passing courtesy.",
+    "Secure a smooth succession for his son Yahya II, so that Ibrahim's old supporters cannot regroup inside the Tunis palace.",
+    "Expand the revenue of Tunis and the coastal ports through tolls and tribute, keeping cavalry and mercenaries supplied so that war never empties the treasury."
+  ],
+  "Values": [
+    "He treats the caliphal title as the foundation of the dynasty and would rather bind himself to strict protocol than let outsiders or kinsmen question it.",
+    "He reveres scholarship and law, holding that a ruler must judge affairs by the Quran and the Prophet's sayings, and he shows no mercy to those who break oaths.",
+    "He values the continuity of the paternal line and sees kinship unity as the only shield the dynasty has, so he always chooses family honor over private feeling."
+  ],
+  "Fears": [
+    "Ibrahim may win back the title with outside backing or local strongmen, plunging the Hafsids into a kin war that splits the realm among rival lords.",
+    "If the Marinids or Abbasid heirs brand the title usurpation, the dynasty will lose the respect of North African lords and be forced to cede border towns."
+  ],
+  "SpeechStyle": "Formal and grave. He cites scripture often, addresses courtiers by office, and keeps sentences short. He rarely shows suspicion in public and prefers questions that let others confess loyalty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

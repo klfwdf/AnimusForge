@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v9",
+  "Keywords": [
+    "Dates and addresses on Sogdian letters"
+  ],
+  "RagShortTexts": [
+    "Sogdian letters separated addresses and dates and could carry a daughter’s addition."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sogdian letters place addresses, senders and dates on different surfaces, and a daughter could add to her mother’s message. Separate sections served carriage and new communication. A reader needed to distinguish speakers rather than attribute every line to one person."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

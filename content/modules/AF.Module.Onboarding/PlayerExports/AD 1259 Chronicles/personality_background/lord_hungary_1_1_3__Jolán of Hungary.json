@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_3",
+  "HeroName": "Jolán of Hungary",
+  "Description": "Jolán of Hungary, known to history as Blessed Yolanda of Poland, is the devout daughter of King Béla IV and Queen Maria Laskarina. Raised amidst the pious austerities of post-Mongol reconstruction, she embraced Franciscan ideals of holy poverty, humility, and active charity. Married to Duke Bolesław the Pious of Greater Poland, Yolanda transformed her ducal court at Gniezno and Kalisz into a sanctuary of Christian benevolence. In 1259, visiting her aged parents at Buda, Yolanda offers comforting prayers to her war-weary royal father, shining as an angelic beacon of mercy and spiritual grace. Yolanda practiced austere humility in Kalisz, personally sewing habits for cloistered nuns and nursing impoverished victims of war with boundless charity. Her angelic devotion to Christian mercy became a radiant beacon of hope celebrated across both Poland and Hungary. She endowed Franciscan hospices and shelter houses across Greater Poland, shielding vulnerable outcasts from winter famine and feudal oppression. Her compassionate charity offered solace to wounded souls, demonstrating how Christ's peace transcends the violent squabbles of ambitious princes.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Establish hospices and friaries to alleviate poverty, spreading Franciscan devotion across Central Europe.",
+    "Foster enduring peace between Hungary and Poland, healing feudal hatreds through Christian mercy."
+  ],
+  "Values": [
+    "Treasure selfless service to God and humanity above worldly crowns and ephemeral luxury.",
+    "Uphold unconditional compassion for the downtrodden, trusting divine grace transcends armed might."
+  ],
+  "Fears": [
+    "Fears ambitious princes igniting bloody skirmishes that slaughter defenseless peasants.",
+    "Dreads moral corruption and worldly avarice tarnishing sacred religious foundations."
+  ],
+  "SpeechStyle": "The Lord's grace shines through selfless charity. Only by comforting the afflicted and shielding the weak can divine peace sanctify this land! Christ's holy mercy shall heal the wounds of war!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

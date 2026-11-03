@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_1_3",
+  "HeroName": "Domhnall Ua Néill, Prince of Tír Eoghain",
+  "Description": "Domhnall Ua Néill is the young prince of Cenél nEógain and sole legitimate heir to High King Brian Ua Néill. Though only twelve years old in 1259, he has been raised within the fortified raths of Tyrone amidst the thunder of war and high council assemblies, displaying startling maturity and tactical intellect. Domhnall is steeped in heroic Fenian lore, training relentlessly under veteran kern instructors in javelin throwing, buckler defense, and swift cross-country footwork across jagged limestone bogs. Even in youth, he acutely perceives the existential menace posed by foreign feudalism, sitting attentively beside his father during clandestine embassies with southern chieftains. Monastic tutors and clan captains alike revere the lad as the dawn of Ulster's future strength. Monastic colophons preserved in Armagh attest to young Domhnall's astonishing fluency in both Latin jurisprudence and archaic Gaelic verse; standing amidst the stone raths of Tyrone, he silently vowed to avenge clan losses, growing into a formidable sovereign whose diplomatic defiance against Plantagenet tyranny echoed across Christendom and the Papal Curia with immortal renown.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master the martial arts and ancient law to become a worthy sovereign of Ulster.",
+    "Support his father in crushing Anglo-Norman encroachment and restoring Gaelic freedom."
+  ],
+  "Values": [
+    "Indomitable martial honor and unswerving filial loyalty.",
+    "Reverence for Gaelic warrior heritage and rigorous self-discipline."
+  ],
+  "Fears": [
+    "Catastrophe befalling his father on the battlefield before he comes of age.",
+    "Foreign feudal statutes completely erasing Gaelic customary liberties."
+  ],
+  "SpeechStyle": "Speaks with clear, precocious firmness, showing sharp tactical curiosity and fierce dynastic pride well beyond his boyhood years.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

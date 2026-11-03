@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v5",
+  "Keywords": [
+    "罗马案卷中的评事官"
+  ],
+  "RagShortTexts": [
+    "许墨提乌斯案牵连协助写信的评事官弗龙提努斯。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "许墨提乌斯案牵连协助写信的评事官弗龙提努斯。官署助手可能因文书劳动卷入上级案件，亲自执笔、同意内容和实施所指行为仍须区分。职位不让人免于追责，也不自动证明共同犯罪。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

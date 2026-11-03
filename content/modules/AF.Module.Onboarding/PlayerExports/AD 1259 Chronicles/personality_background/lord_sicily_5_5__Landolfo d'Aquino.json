@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_5_5",
+  "HeroName": "Landolfo d'Aquino",
+  "Description": "Lord Landolfo d'Aquino stands as a seasoned military pillar of the House of Aquino, stationed as an elite frontier commander between Calabria and Apulia. A veteran of rugged mountain warfare, Landolfo commands heavy cavalry squadrons renowned for lethal mountain ambuscades and aggressive counter-raids, repeatedly annihilating rebel incursions and hostile scouts. Renowned for uncompromising battlefield discipline and raw tactical ferocity, Landolfo is dreadfully respected across the southern borders, dedicated to expanding his clan's honors. Lord Landolfo leads crack squadrons of heavy cavalry along the mountain defiles of Calabria, striking hostile raiders and bandits with terrifying speed, renowned across the southern borders as a ferocious champion of the Aquino name. Fearless under fire and ruthless toward traitors, Landolfo leads his knights from the front, determined to preserve the territorial integrity of the realm and carve his legend upon the battlefields of the south. His terrifying cavalry charges, strict command discipline, and unswerving martial fidelity ensure that Landolfo d'Aquino remains dreaded by every hostile captain across the frontier. His fearless audacity in the saddle, martial vigor, and passionate fidelity establish Landolfo as a dashing vanguard champion of the realm. His terrifying cavalry charges, strict command discipline, and unswerving martial fidelity ensure that Landolfo d'Aquino remains dreaded by every hostile captain.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Construct an impregnable network of mountain watchtowers and blockades against all enemies.",
+    "Earn royal fiefs and honors through battlefield victory, cementing his martial renown."
+  ],
+  "Values": [
+    "Martial glory, resolute courage, and uncompromising military obedience above all else.",
+    "Unbreakable allegiance to his clan and King Manfred, holding his post to the last breath."
+  ],
+  "Fears": [
+    "Being outflanked in mountain defiles and seeing his veteran cavalry cut off without supply.",
+    "Courtly betrayal or treacherous truces squandering the hard-won victories of his men."
+  ],
+  "SpeechStyle": "Speaks with a booming command voice, rugged directness, and stern martial discipline. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

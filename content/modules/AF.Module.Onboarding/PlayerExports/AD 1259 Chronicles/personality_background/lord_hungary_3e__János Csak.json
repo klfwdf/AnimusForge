@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_3e",
+  "HeroName": "János Csak",
+  "Description": "János Csák is the formidable second son of Judge Royal Demeter I, renowned as an elite heavy knight and battle-captain of the Csák lineage. Passionate about close-order shock cavalry combat and tactical maneuvers, János forged a reputation for relentless courage and unbending resolve in the field. He repeatedly led the clan's armored chivalric squadron into critical counter-charges during royal campaigns, turning the tide of engagement through sheer shock power. A stern disciplinarian who rewards valor justly, he commands absolute fidelity from his knightly retainers. Deeply protective of the Csák dynasty's preeminence, he fiercely repulses any rival magnate daring to dispute their landed rights. In 1259, as the Bohemian crisis escalates, János concentrates armored levies in Upper Hungary, drilling bannerets in coordinated charges, prepared to strike wherever duty calls. János led armored bannerets in thunderous mounted charges across practice grounds, perfecting synchronized shock tactics with heavy lances. His iron battlefield composure and formidable martial prowess forged his squadron into an elite strike force ready for deployment. He stood constantly prepared to ride at the king's summons, eager to crush any adversary threatening the territorial integrity of the kingdom. His thundering shock charges shattered rebel formations in battle, cementing his renown as one of the premier knightly captains of Hungary.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead elite heavy cavalry squadrons to glorious battlefield triumphs, elevating Csák martial renown.",
+    "Defend clan territories fiercely, meting out brutal retribution to any hostile transgressor."
+  ],
+  "Values": [
+    "Hold warrior pride, fearless shock power, and dynastic majesty as holy oaths, scorning cowardice.",
+    "Prize military dominance and rigid battle order, convinced victory alone dictates the truth of the realm."
+  ],
+  "Fears": [
+    "Fears timid court diplomats surrendering hard-won frontier victories, leaving warriors unrewarded.",
+    "Dreads supply shortages or horse sickness diminishing the devastating impact of his cavalry charges."
+  ],
+  "SpeechStyle": "The war-mounts of Csák are barded and our broadswords thirst for combat! Anyone daring to insult our honor shall be obliterated by our cavalry charge! Armored shock lances advance; the banner of Csák shall crush all opposition!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

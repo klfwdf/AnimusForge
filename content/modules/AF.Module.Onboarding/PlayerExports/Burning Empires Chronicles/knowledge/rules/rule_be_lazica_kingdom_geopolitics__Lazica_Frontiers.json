@@ -1,0 +1,59 @@
+{
+  "Id": "be_lazica_kingdom_geopolitics",
+  "Keywords": [
+    "Lazica Frontiers",
+    "Lazican river ports and passes"
+  ],
+  "RagShortTexts": [
+    "Lazican ports, Rioni transport and passes connect routes.",
+    "Cargo often changes between vessels, rivers and pack animals."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Black Sea ports, Rioni transport and passes connect routes. Weather and roads affect different legs, often requiring cargo to change carriers and animals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lazican ports, Rioni transport and passes connect routes. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Cargo often changes between vessels, rivers and pack animals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Cargo often changes between vessels, rivers and pack animals. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Lazican ports, Rioni transport and passes connect routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Lazican ports, Rioni transport and passes connect routes. Closed routes may separate families from goods, imposing costs on those remaining at home. Cargo often changes between vessels, rivers and pack animals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Cargo often changes between vessels, rivers and pack animals. Cargo passes different carriers, making distant route changes become local shortages through delay. Lazican ports, Rioni transport and passes connect routes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

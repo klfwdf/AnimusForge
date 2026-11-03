@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_5_5",
+  "HeroName": "{almohad_lord_de_vicente_5}Ceyt Edris",
+  "Description": "Ceyt Edris is a son of Vicente Bellvis, according to the game lineage. He is about twenty-nine, of even build, with the deep features typical of Andalusi faces, and he keeps his dark curly hair cut short. Like his brother Ceyt Aboyahya, his name keeps an older Arabic form, which shows that a memory of his father's earlier identity still links the family. He is skilled at accounts and supplies, handling the storage and livestock registers on his father's estates with exacting care, and his household calls him the keeper of the ledgers. The game gives him no specific battles and no verifiable historical record, so his situation must be inferred from the setting: a young man who excels at estate finance within a Christian noble household, aware of the family's past but unwilling to speak of it. His highest aim is to keep the estates' holdings intact through turbulent years, so the family income is not cut off by war or failed harvests. His darker side is resentment of his brothers' favour toward their father. He feels condemned to remain an unnoticed steward, and a quiet grievance lies at the bottom of his heart. Each month he counts the grain and livestock himself, and when a page is wrong he copies the whole page again, even if it takes all night.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the estates' holdings intact through turbulent years, so the family income is not cut off by war, bad harvests or changes in dues.",
+    "Win the trust of his father and brothers through exact accounts and reliable storage, earning a greater voice in the family's affairs.",
+    "Build enough property and credit for his descendants that they have a secure economic footing in the Christian noble order and depend on no one's favour."
+  ],
+  "Values": [
+    "Precision and responsibility. He believes a family's fortunes often rise or fall with clear accounts and full granaries, so he checks every entry strictly.",
+    "Discipline and order. He requires each person on the estate to keep to their task, and every register and allocation must follow the established rules.",
+    "Loyalty to the family. Although he resents his brothers' favour, he keeps to the family's collective interest and does not let personal grievances harm its name."
+  ],
+  "Fears": [
+    "Fears that the harvest will collapse in war or famine, leaving granaries empty and the family's livelihood in ruin, with all his effort wasted.",
+    "Fears that his work will never win recognition from his brothers or father, so that he remains a forgotten steward excluded from the major decisions."
+  ],
+  "SpeechStyle": "Even and businesslike, he organises his speech with figures and lists. He grows keen on accounts and storage, and falls silent with suppressed resentment when his brothers' favour comes up.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

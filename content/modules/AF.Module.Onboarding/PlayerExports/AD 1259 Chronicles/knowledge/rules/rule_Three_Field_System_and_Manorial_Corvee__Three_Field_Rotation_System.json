@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Three_Field_System_and_Manorial_Corvee",
+  "Keywords": [
+    "Three Field Rotation System",
+    "Manorial Corvee Labor Duties",
+    "Serf Strips Land Tenure",
+    "Spring Autumn Fallow Cycle"
+  ],
+  "RagShortTexts": [
+    "Three-field rotation coordinates winter crops, spring crops and fallow land.",
+    "Draught power, pasture, seed and labour obligations limit the benefits of additional cultivation."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In a three-field rotation, part of the arable is sown with winter crops, another with spring crops and a third left fallow, with the allocation changing over time. Grazing, manure and legumes can help maintain fertility, while weather and local practice determine the actual crop mix. This is not a universal plan followed by every medieval village. Its operation depends on coordinating strips, animals and common rights. Where households also owe labour on a lord's demesne, competing demands can be sharpest at sowing and harvest. More cultivated ground is not automatically more food if there is too little draught power, seed or pasture to support it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Oats and beans in spring, rye in autumn, while the third field rests for grazing. Each household sends its own plough team to the lord's demesne on fixed days, but so long as the bailiff leaves our water rights alone and we pay the mill multure, barley pottage keeps our children alive through frost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The manor feeds the knight's warhorse and forged gear. Spring oats are essential fodder for charging destriers, so the reeve must see that unfree tenants reap the demesne acres before harvesting their own strips. A lord who wants his knights mounted watches the spring sowing as closely as he watches the muster rolls."
+    }
+  ],
+  "TextMappings": []
+}

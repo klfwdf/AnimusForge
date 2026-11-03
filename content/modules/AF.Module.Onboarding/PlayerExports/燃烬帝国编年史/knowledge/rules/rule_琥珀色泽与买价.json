@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v5",
+  "Keywords": [
+    "琥珀色泽与买价"
+  ],
+  "RagShortTexts": [
+    "普林尼区分不同色泽、透明度和外观的琥珀，买家偏好会影响价值。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "普林尼区分不同色泽、透明度和外观的琥珀，买家偏好会影响价值。原料同属琥珀，也不必同价；加工者要考虑裂隙、可雕部分和最终形状，不能只按来路远近定价。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

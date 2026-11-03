@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_33",
+  "Name": "阿诺河沼泽绝境行军与汉尼拔独目受创",
+  "Description": "公元前217年春，汉尼拔为避开罗马执政官重兵把守的隘口，选择罕无人迹的阿诺河泛滥沼泽强行军四昼夜，全军踩踏腐尸前行，汉尼拔因严重眼疾发炎永久失去右眼。",
+  "Tags": [
+    "阿诺河沼泽",
+    "汉尼拔独目",
+    "出其不意",
+    "亚平宁山脉",
+    "伊特鲁里亚突破",
+    "非人行军"
+  ],
+  "Category": "History",
+  "DefaultPriority": 80,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前217年春汉尼拔率大军四天三夜横穿严重泛滥的阿诺河腐烂沼泽。",
+    "全军日夜浸泡在齐腰深污水中只能叠枕死马死骡甚至战友尸骸浅眠。",
+    "汉尼拔骑在全军残存的最后一头战象上因严重眼疾感染永久失掉一只眼睛。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是一场活生生的地狱泅渡！阿诺河春汛将方圆数十里化为污浊的泽国，整整四天三夜，士兵们没有找到一寸可以坐下歇息的干地。后排的高卢雇佣兵由高卢军官持剑在后方驱策，走不动的人倒在污泥里瞬间被淹死；精疲力竭的战士只能把死骡子、死战马甚至战死同袍的尸体堆叠起来，浮在上面打个盹。汉尼拔统帅骑在仅存的一头名叫‘叙利亚’的战象上，脓血从他肿胀如卵的右眼里流淌下来，他甚至没有停下包扎过一次！正是这种非人的残酷与意志，让我们绕到了罗马军团的背后！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "执政官弗拉米尼乌斯在阿雷齐乌姆卡死了所有平坦的要道，按兵法常理，迦太基人绝无可能绕过严密的防线。然而汉尼拔根本不是按照人类常理出牌的凡人！他竟然敢把数万大军赶进致命的春季沼泽，甚至任由瘟疫剥夺自己的一只眼睛！这种蔑视自然天堑的妖异战术，把执政官完全打入了战略被动的梦魇之中。"
+    },
+    {
+      "Priority": 70,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿诺河边的泥沼里常年冒着恶臭的毒气，连放牛娃都不敢靠近。那群异邦野兽和黑皮肤士兵从沼泽里爬出来时，浑身挂满腐烂的水草和蛆虫，恶鬼也不过如此！领头的那个将领用一块脏布蒙着一只流血化脓的独眼，仅剩的一只眼睛却射出野狼般饥饿可怖的凶光，所过之处庄稼全被放火烧光。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前217年春，汉尼拔为绕过罗马执政官重兵防守的山道关隘，率军涉险穿越春季严重泛滥的阿诺河沼泽。全军在齐腰深的泥水与腐尸中强行军四昼夜，大量士兵与驮兽溺亡。汉尼拔因严重眼疾感染失去右眼视力，但成功神兵天降突入伊特鲁里亚平原，达成战略大包抄。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "阿诺河沼泽绝境行军与汉尼拔独目受创",
+    "rule_punic_33"
+  ]
+}

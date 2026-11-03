@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v3",
+  "Keywords": [
+    "Roman command and negotiating envoys"
+  ],
+  "RagShortTexts": [
+    "Valens sent the commanders Victor and Arintheus to negotiate before the formal meeting."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valens sent the commanders Victor and Arintheus to negotiate before the formal meeting. Military officers could undertake diplomacy without deciding every term alone. Their report returned an agreement to the ruler for the next stage."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

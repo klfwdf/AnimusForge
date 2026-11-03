@@ -1,0 +1,59 @@
+{
+  "Id": "be_quadian_kingdom_legitimacy",
+  "Keywords": [
+    "Quadians Legitimacy",
+    "Meeting guarantees after Gabinius’ murder"
+  ],
+  "RagShortTexts": [
+    "Marcellianus killed Gabinius after a banquet, violating hospitality.",
+    "Quadian meetings therefore emphasize enforceable guarantees."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gabinius was killed after a banquet by Marcellianus. Violated hospitality makes guarantees central to meetings; oaths need a form participants can trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Marcellianus killed Gabinius after a banquet, violating hospitality. Military recognition also rests on rewards and relief; a title needs willing action. Quadian meetings therefore emphasize enforceable guarantees."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Quadian meetings therefore emphasize enforceable guarantees. Nominal rights require local execution, with consent and supply both shaping authority. Marcellianus killed Gabinius after a banquet, violating hospitality."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Marcellianus killed Gabinius after a banquet, violating hospitality. Households judge rule through protected families, land and responses to appeals. Quadian meetings therefore emphasize enforceable guarantees."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Quadian meetings therefore emphasize enforceable guarantees. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Marcellianus killed Gabinius after a banquet, violating hospitality."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

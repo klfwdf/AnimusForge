@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_4_3",
+  "HeroName": "Isaákios Raoúl Doúkas",
+  "Description": "Isaákios Raoúl Doúkas, aged thirty-one, is a shrewd military commander and an influential leader within the prestigious Raoul aristocratic dynasty. Thoroughly educated in classical Hellenic philosophy and Byzantine tactical manuals, he expertly blends acute intellectual insight with iron administrative discipline. Having defended frontier garrisons in Thrace and along the Macedonian border, he has repeatedly repulsed incursions by Epirote raiders and Western mercenary bands. Recognizing the grave perils of multifront warfare, he advocates a methodical grand strategy focused on consolidating Balkan alliances before suffocating Frankish Constantinople. Religiously unyielding, he is a fervent champion of Eastern Orthodoxy who adamantly rejects papal ecclesiastical supremacy and theological compromises. While cooperating with Michael Palaiologos for the collective defense of the realm, he vigilantly guards provincial aristocratic privileges against excessive central fiscal extraction. Universally respected by monastic leaders and veteran thematic soldiers alike, Isaákios stands as an indispensable defender of Roman tradition and regional autonomy. In council chambers and military conferences, he systematically dissects enemy weaknesses, advocating methodical fortification and secure supply lines, consistently refusing to engage in reckless maneuvers without overwhelming tactical superiority. He remains ever ready to defend the empire against hostile Western crusaders.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 3 lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with deliberate composure and incisive legal precision, formulating strategic arguments grounded in historical precedent and military reality.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

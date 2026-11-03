@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v10",
+  "Keywords": [
+    "北方石塔与罗马货物"
+  ],
+  "RagShortTexts": [
+    "米德豪等聚落出土的器物显示北方居民与罗马世界有交换联系。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "米德豪等聚落出土的器物显示北方居民与罗马世界有交换联系。异地陶器可以经多次转手进入家庭，未必由罗马官员亲自送来。货物带来的接触也不等于当地已经接受帝国税制或拥有罗马式行政官署。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

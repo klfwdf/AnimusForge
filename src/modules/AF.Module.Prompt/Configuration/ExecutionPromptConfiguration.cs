@@ -8,9 +8,8 @@ namespace AnimusForge;
 // Missing-field defaults for existing user configurations. Never rewrites their file.
 internal static class ExecutionPromptConfiguration
 {
-    private static readonly Lazy<JObject> Defaults = new Lazy<JObject>(() =>
+    private static readonly PromptLanguageFile<JObject> Defaults = new PromptLanguageFile<JObject>("ExecutionRulePrompts.json", path =>
     {
-        string path = AnimusForgeModulePaths.GetModuleDataFilePath("ExecutionRulePrompts.json");
         return JObject.Parse(File.ReadAllText(path, System.Text.Encoding.UTF8));
     });
     internal static string SystemPrompt => (string)Defaults.Value["ExecutionCeremonySystemPrompt"] ?? "";

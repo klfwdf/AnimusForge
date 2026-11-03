@@ -1,0 +1,49 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_rus_15_4",
+  "DisplayName": "Maria Rostislavna",
+  "HeroName": "Maria Rostislavna",
+  "Personality": "Maria Rostislavna is a child of the house. Aged 7. Their father is Rostislav Izyaslavich. Their mother is Verhuslava Vsevolodovna. The house belongs to the noble network of Kyiv. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "Description": "Maria Rostislavna is a child of the house. Aged 7. Their father is Rostislav Izyaslavich. Their mother is Verhuslava Vsevolodovna. The house belongs to the noble network of Kyiv. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "Background": "Maria Rostislavna is a child of the house. Aged 7. Their father is Rostislav Izyaslavich. Their mother is Verhuslava Vsevolodovna. The house belongs to the noble network of Kyiv. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Small promises made to them matter, and they notice whether they are kept.",
+  "SpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
+  "PersonalSpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Find care and trustworthy explanations from relatives.",
+    "Gradually understand their place among relatives."
+  ],
+  "Values": [
+    "Values familiar company and small promises that are kept."
+  ],
+  "Fears": [
+    "Separation from relatives or threats they cannot understand."
+  ]
+}

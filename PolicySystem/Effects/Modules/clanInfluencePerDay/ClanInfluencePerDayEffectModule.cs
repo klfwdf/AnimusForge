@@ -11,7 +11,7 @@ internal sealed class ClanInfluencePerDayPayload : NumericPolicyEffectPayload
 
 internal sealed class ClanInfluencePerDayEffectModule : NumericPolicyEffectModuleBase<ClanInfluencePerDayPayload>, IDailyPolicyEffectModule, ICompensatingDailyPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "clanInfluencePerDay",
 		order: 102,
 		legacyIds: Array.Empty<string>(),
@@ -37,7 +37,8 @@ internal sealed class ClanInfluencePerDayEffectModule : NumericPolicyEffectModul
 		supportsIdempotency: true,
 		promptVisible: false,
 		displayGroup: "clanInfluence",
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

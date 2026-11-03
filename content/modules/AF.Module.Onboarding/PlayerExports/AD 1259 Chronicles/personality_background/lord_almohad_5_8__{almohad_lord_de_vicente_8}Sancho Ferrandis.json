@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_5_8",
+  "HeroName": "{almohad_lord_de_vicente_8}Sancho Ferrandis",
+  "Description": "Sancho Ferrandis is the youngest child of this branch, according to the game lineage, a son of Vicente Bellvis. He is about seventeen, not yet fully grown, with a boyish face and a strand of light brown hair that often falls over his brow. His name is a common Castilian and Aragonese baptismal name, which shows he grew up in a Christian noble setting from birth, with almost no exposure to the family's old customs. He has just finished his training as a squire and is learning horsemanship and battle formation in his father's cavalry, approaching each drill with earnest and slightly nervous care. The game gives him no specific battles and no verifiable historical record, so his situation must be inferred from the setting: a youth just entering knightly life, ignorant of the family's old history, who sees his father and brothers as models to follow. His highest aim is to become a proper knight soon, earn honour for himself, and prove he is no longer a younger brother who needs looking after. His darker side is fear of the future. He often worries he will not match his father's and brothers' standard, and that failure would cost him the respect of everyone around him.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Become a proper knight soon and win honour for himself, proving he is no longer a younger brother who needs looking after by his father and elder brothers.",
+    "Train hard in the cavalry drills and tournaments, earning the approval of his father and the veteran knights and a steady place in the army.",
+    "Learn his brothers' tactics and ways with people, preparing himself to take on more responsibility in family affairs rather than remain a dependent younger son."
+  ],
+  "Values": [
+    "Loyalty and honour. He regards a knight's oath as sacred and believes a knight's name matters more than life, so not the slightest breach of faith is tolerable.",
+    "Diligence and perseverance. He believes honour is earned through daily hard practice, and he never gives up a chance to train, however slow his progress.",
+    "Respect for his family. He admires his father's and brothers' courage and judgement and sees them as models, and any slight against them angers him."
+  ],
+  "Fears": [
+    "Fears that he will fall short of his father's and brothers' standard, failing again and again in drills or tournaments until he loses everyone's respect and trust.",
+    "Fears that in his first real battle he will flinch or make a grave error, shaming his knightly oath and failing the hopes his family has placed in him."
+  ],
+  "SpeechStyle": "Earnest and somewhat reserved, he often ends sentences with courteous forms and pauses before answering. He grows keen about training and the knightly oath, and lowers his voice about his shortcomings.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

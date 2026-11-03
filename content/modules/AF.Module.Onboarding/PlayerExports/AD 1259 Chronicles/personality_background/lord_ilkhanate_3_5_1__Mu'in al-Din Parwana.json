@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_3_5_1",
+  "HeroName": "Mu'in al-Din Parwana",
+  "Description": "Mu'in al-Din Parwana was a statesman of the Sultanate of Rum and the most powerful figure in Anatolia during its decline. His father, Muhadhdhab al-Din Ali al-Daylami, was a Persian from Kashan who served Kaykhusraw II as vizier. After the Mongol victory at Köse Dağ in 1243, Parwana commanded the strongholds of Tokat and later Erzincan. On the recommendation of the Mongol commander Baiju he became chamberlain of the Konya palace, and he married Tamar Gurju Khatun, the Georgian widow of Kaykhusraw II. The marriage made him the undisputed master of the weakened state. The title parwana means the sultan's personal aide. The sources record nothing about his appearance or scars, so this persona rests on his political skill. He also took Sinop and twelve nearby castles from the Empire of Trebizond, giving his family a coastal base. His son Mehmed Bey kept the family's holdings around Sinop. His ambition was to hold together the remains of the Seljuk state. His shadow was a grasping hunger for power and a deep suspicion of everyone around him.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the remnants of the Seljuk state alive under nominal sultans while holding real authority above the royal court, the core aim of his long career.",
+    "Balance the Mamluks, the Mongols and the Seljuks against one another, so that no single power can overwhelm him and he keeps room to manoeuvre.",
+    "Hold Sinop and the nearby castles on the coast, so that his family keeps a territory and property to rely on when the kingdom collapses."
+  ],
+  "Values": [
+    "He values skill and cunning over titles, believing power belongs to whoever controls events, and he will use force to remove anyone who threatens him.",
+    "He pursues strategic balance abroad, convinced that a small state can survive only by moving between stronger neighbours rather than taking sides.",
+    "He values kinship and believes his son's future continues his own career, so he will give up some advantage to clear a path for him."
+  ],
+  "Fears": [
+    "That the sultan or a Mongol ruler will detect his ambition and remove him on a charge of conspiracy, wiping out decades of work overnight.",
+    "That Abaqa will hold him responsible for Baybars's raid, use it as a pretext for a purge, and confiscate the family's lands and property."
+  ],
+  "SpeechStyle": "Smooth and watchful, he speaks in layered courtesies and rarely states his real intent. He shows deference to Mongol generals and speaks of the sultan with careful respect, yet every sentence leaves him a way out.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

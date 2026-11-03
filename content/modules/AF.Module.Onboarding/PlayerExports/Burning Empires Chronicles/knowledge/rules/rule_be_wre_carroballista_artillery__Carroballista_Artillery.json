@@ -1,0 +1,38 @@
+{
+  "Id": "be_wre_carroballista_artillery",
+  "Keywords": [
+    "Roman bolt engines torsion and transport"
+  ],
+  "RagShortTexts": [
+    "Roman bolt engines used torsion bundles and needed ammunition, transport and firm positions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Roman bolt engines stored energy in twisted elastic bundles and released a heavy bolt through their mechanism. They needed trained operators, sound bundles and ammunition, while transport had to account for weight and roads. A firing position required stability and a clear field; walls, camps and open ground offered different conditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Operators checked bundles, frames and drawing mechanisms and watched companions while loading. Someone had to bring bolts and repair damaged components. When enemies approached or the ground was unstable, winding the engine could not take priority over protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Deploying bolt engines required craftsmen, transport and ammunition together. Once delivered, they still needed firing positions and protected crews. Blocked roads or missing spares reduced availability; merely adding engines did not guarantee a breach."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

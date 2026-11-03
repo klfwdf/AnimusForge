@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_7_4",
+  "HeroName": "Margareta Petersdotter",
+  "Description": "Lady Margareta Petersdotter was the noble matriarch of the Algotssönerna clan and the devoted wife of Lagman Algot Brynjolfsson. In 1259, Margareta managed the household affairs, textile mills, and agricultural reserves of the family's vast estates in Västergötland with unfailing prudence and calm dignity. Revered as the nurturing heart of the dynasty, she provided the financial and moral backing that enabled her son Brynolf to pursue his monumental theological studies in Paris, while tirelessly curbing the reckless martial impulses of her younger sons. Her aristocratic lineage and extensive family connections across Götaland reinforced her husband's judicial standing, serving as a trusted confidante in complex inter-clan arbitrations. Deeply pious, she established dispensaries and food distribution networks across their villages, shielding vulnerable peasants from starvation during harsh northern winters. Her profound moral strength, compassionate heart, and domestic wisdom cemented her reputation as an exemplary noblewoman of medieval Sweden. Lady Margareta managed the vast estates surrounding Skara with supreme administrative calm, endowing permanent charitable granaries and infirmaries that sheltered the poor through brutal winter blizzards. In times of severe political peril, her unshakeable composure restored peace within the clan, soothing heated tempers among her ambitious sons with wise maternal counsel. Her moral purity, steadfast fortitude, and expansive charity elevated her as an immaculate paragon of noble matriarchy throughout West Götaland.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve household prosperity and peace, reconciling her husband's strict legal demands with their sons' fiery temperaments.",
+    "Help her sons excel in learning, warfare and church service, giving the Algotsson family lasting northern renown.",
+    "Aid neighbouring communities against hunger, illness and cold through Christian generosity, seeking grace for the family."
+  ],
+  "Values": [
+    "Family unity is a refuge against political storms; conflict between relatives is a principal cause of a house's collapse.",
+    "Quiet generosity and maternal endurance can soften hatred and prevent violent feuds.",
+    "Wealth and rank deserve divine favour only when used with reverence and compassion to relieve the poor and vulnerable."
+  ],
+  "Fears": [
+    "Her impulsive sons provoking an irreparable disaster that scatters the family abroad with their lives uncertain.",
+    "Plague or extreme cold killing her children young and forcing her to outlive them in grief."
+  ],
+  "SpeechStyle": "Speaks with serene maternal warmth and quiet authority, smoothing over domestic tensions with gentle wisdom and steadfast moral fortitude.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

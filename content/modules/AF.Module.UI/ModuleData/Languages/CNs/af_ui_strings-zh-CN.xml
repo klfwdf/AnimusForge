@@ -159,7 +159,7 @@
   <string id="AF_MCM_MainApi_Model_Hint" text="例如: gpt-4o-mini。请填写你当前接口实际支持的模型名。" />
   <string id="AF_MCM_MainApi_Dropdown_Hint" text="请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。" />
   <string id="AF_MCM_MainApi_Thinking_Hint" text="开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
-  <string id="AF_MCM_MainApi_Reasoning_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
+  <string id="AF_MCM_MainApi_Reasoning_Hint" text="可选 low/medium/high/xhigh/max；YJ Gemini 按所选值发送。关闭思维链时，YJ Gemini 3.7/3.8-flash-high 使用上游默认值，仍可能进行思考。" />
   <string id="AF_MCM_MainApi_Temperature_Hint" text="控制正文生成随机性。0 更稳定，2 更发散。默认 0.80。" />
   <string id="AF_MCM_MainApi_MaxTokens_Hint" text="主API正文生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。" />
   <string id="AF_MCM_MainApi_Streaming_Hint" text="此项或所选语音服务开启时，主 API 正文使用 SSE 流式传输。支持的界面逐步显示文字；本地语音在完整回复通过校验后分句朗读。前处理、后处理和周报 API 不变。此开关保存值默认关闭；下次正文请求生效。" />
@@ -390,11 +390,6 @@
   <string id="AF_UI_Terminal_SourceRoots" text="来源根目录：" />
   <string id="AF_UI_Terminal_Tag" text="标签" />
   <string id="AF_UI_Terminal_Source" text="来源：" />
-  <string id="AF_UI_Terminal_KeepEntry" text="至少需要保留一个终端入口（按键或图标）。" />
-  <string id="AF_UI_Terminal_HotkeyOff" text="已关闭终端按键呼出（U键）。" />
-  <string id="AF_UI_Terminal_HotkeyOn" text="已开启终端按键呼出（U键）。" />
-  <string id="AF_UI_Terminal_MapIconOff" text="已关闭大地图终端图标入口。" />
-  <string id="AF_UI_Terminal_MapIconOn" text="已开启大地图终端图标入口。" />
   <string id="AF_UI_Terminal_WarBreadcrumb" text="战争" />
   <string id="AF_UI_Terminal_WeeklyBreadcrumb" text="王国近况" />
   <string id="AF_UI_Terminal_VassalBreadcrumb" text="臣属贡金结算记录" />
@@ -473,8 +468,6 @@
   <string id="AF_MCM_Knowledge_Group" text="5. 知识检索（返回）" />
   <string id="AF_MCM_Knowledge_TopN" text="知识返回上限" />
   <string id="AF_MCM_Knowledge_TopN_Hint" text="控制每次对话最多向 AI 提供多少条相关知识。系统按重要性顺序取最靠前的同等数量名词，每个名词独立占一个知识槽；若最高分知识已被前面的名词占用，则顺延到第一条未占用知识。只有上限大于名词数时，才额外补充各名词的后续结果。默认 4。" />
-  <string id="AF_MCM_Knowledge_Device" text="重排序推理设备" />
-  <string id="AF_MCM_Knowledge_Device_Hint" text="默认 CPU。GPU（CUDA）仅支持 NVIDIA，需要安装可选 CUDA 运行组件；向量检索仍使用 CPU。缺少组件、驱动不兼容或 GPU 推理失败时自动回退 CPU。GPU 会额外占用显存，可能与游戏争用。修改后完整重启游戏生效；模型、候选和检索规则不变。" />
   <string id="AF_MCM_Knowledge_Entity" text="实体注入上限" />
   <string id="AF_MCM_Knowledge_Entity_Hint" text="控制每次对话最多向 AI 注入多少个人物、地点、家族和王国检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。" />
   <string id="AF_MCM_Knowledge_Candidates" text="清单候选显示上限" />
@@ -676,9 +669,6 @@
     <string id="AF_UI_Terminal_Prefab_014" text="返回列表" />
     <string id="AF_UI_Terminal_Prefab_015" text="生成完整周报" />
     <string id="AF_UI_Terminal_Prefab_016" text="调用 AI 诊断分析" />
-    <string id="AF_UI_Terminal_Prefab_017" text="按键呼出" />
-    <string id="AF_UI_Terminal_Prefab_018" text="图标入口" />
-    <string id="AF_UI_Terminal_Prefab_019" text="修改后可保存；ESC 或关闭退出" />
     <string id="AF_UI_Terminal_Prefab_020" text="返回上一级" />
     <string id="AF_UI_Terminal_Prefab_021" text="保存设置" />
     <string id="AF_UI_Terminal_Prefab_022" text="关闭" />
@@ -825,7 +815,7 @@
   <string id="AF_TERMINAL_UI_MainApiThinkingEnabled_Hint" text="开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
   <string id="AF_TERMINAL_UI_MainApiThinkingEnabled_Group" text="1. AI 核心配置/1. 主API（正文生成）" />
   <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Title" text="思维链强度" />
-  <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
+  <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Hint" text="可选 low/medium/high/xhigh/max；YJ Gemini 按所选值发送。关闭思维链时，YJ Gemini 3.7/3.8-flash-high 使用上游默认值，仍可能进行思考。" />
   <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Group" text="1. AI 核心配置/1. 主API（正文生成）" />
   <string id="AF_TERMINAL_UI_MainApiTemperature_Title" text="温度" />
   <string id="AF_TERMINAL_UI_MainApiTemperature_Hint" text="控制正文生成随机性。0 更稳定，2 更发散。默认 0.80。" />
@@ -858,7 +848,7 @@
   <string id="AF_TERMINAL_UI_AuxiliaryApiThinkingEnabled_Hint" text="开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiThinkingEnabled_Group" text="1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Title" text="思维链强度" />
-  <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
+  <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Hint" text="可选 low/medium/high/xhigh/max；YJ Gemini 按所选值发送。关闭思维链时，YJ Gemini 3.7/3.8-flash-high 使用上游默认值，仍可能进行思考。" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Group" text="1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiTemperature_Title" text="温度" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiTemperature_Hint" text="控制前处理、规则路由和简易对话链路的随机性。0 更稳定，2 更发散。默认 0.00。" />
@@ -888,7 +878,7 @@
   <string id="AF_TERMINAL_UI_ActionPostprocessApiThinkingEnabled_Hint" text="开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiThinkingEnabled_Group" text="1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Title" text="思维链强度" />
-  <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
+  <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Hint" text="可选 low/medium/high/xhigh/max；YJ Gemini 按所选值发送。关闭思维链时，YJ Gemini 3.7/3.8-flash-high 使用上游默认值，仍可能进行思考。" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Group" text="1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiTemperature_Title" text="温度" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiTemperature_Hint" text="控制动作标签与情绪标签判定的随机性。建议保持较低。默认 0.00。" />
@@ -921,7 +911,7 @@
   <string id="AF_TERMINAL_UI_EventAndRebellionApiThinkingEnabled_Hint" text="默认关闭。事件周报与王国叛乱命名是严格格式任务，建议只在确认接口会把最终答案稳定写入 content 时开启。开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiThinkingEnabled_Group" text="1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Title" text="思维链强度" />
-  <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Hint" text="支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。" />
+  <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Hint" text="可选 low/medium/high/xhigh/max；YJ Gemini 按所选值发送。关闭思维链时，YJ Gemini 3.7/3.8-flash-high 使用上游默认值，仍可能进行思考。" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Group" text="1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Title" text="温度" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint" text="控制使用事件/叛乱API的周报、王国命名、外交宣言与书记官代笔等任务的随机性。外交配置不完整并回退主API时，采用主API温度。0更稳定，2更发散。默认0.80。" />
@@ -935,9 +925,6 @@
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Title" text="知识返回上限" />
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Hint" text="控制每次对话最多向 AI 提供多少条相关知识。系统按重要性顺序取最靠前的同等数量名词，每个名词独立占一个知识槽；若最高分知识已被前面的名词占用，则顺延到第一条未占用知识。只有上限大于名词数时，才额外补充各名词的后续结果。默认 4。" />
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Group" text="5. 知识检索（返回）" />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Title" text="重排序推理设备（重启生效）" />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Hint" text="CPU 默认；GPU 需要 NVIDIA 显卡及可选 CUDA 组件，失败自动回退 CPU。保存后完整重启游戏生效。" />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Group" text="5. 知识检索（返回）" />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Title" text="实体注入上限" />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Hint" text="控制每次对话最多向 AI 注入多少个人物、地点、家族和王国检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。" />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Group" text="5. 知识检索（返回）" />
@@ -2945,8 +2932,6 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Prompt_CustomSceneFormat_Hint" text="开启后，不再注入单人交谈身份限制，以及“回复格式/动作/内心/字数”的默认要求。请在“玩家自定义规则文案”中自行提供完整格式。默认关闭。" />
   <string id="AF_MCM_Option_ModelManual" text="*手动填写*" />
   <string id="AF_MCM_Option_ModelEmpty" text="(空)" />
-  <string id="AF_MCM_Option_DeviceCpu" text="CPU（默认）" />
-  <string id="AF_MCM_Option_DeviceGpu" text="GPU（CUDA / NVIDIA）" />
   <string id="AF_MCM_Option_DiplomacySmall" text="少" />
   <string id="AF_MCM_Option_DiplomacyMedium" text="标准" />
   <string id="AF_MCM_Option_DiplomacyLarge" text="高" />
@@ -3334,7 +3319,7 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Persona_TraitLimit" text="已有五项特质，请先移除一项再添加。" />
   <string id="AF_UI_Persona_ExpandedUpdated" text="扩展人设已更新。" />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Title" text="事件驱动的 NPC 人设演变" />
-  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="默认关闭。新的已确认快报事件可改变NPC人设，使用辅助API合并、限速评估。关闭后丢弃待处理及在途更新，保留已有人设变化。需要快报模式，不要求开启自动出版。" />
+  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="默认关闭。新的已确认快报事件触发完整人物设定重生，复用生成规则与玩家可改要求；是否生成扩展字段由扩展人设开关决定。请求合并、限速执行。关闭本事件开关后丢弃待处理及在途更新，保留已有人设变化。需要快报模式，不要求自动出版。" />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Group" text="周报与快报" />
   <string id="AF_MCM_Tts_ProviderVolc" text="火山引擎" />
   <string id="AF_MCM_Tts_ProviderOpenAi" text="OpenAI 兼容" />
@@ -3354,6 +3339,8 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_OpenAiTimeout_Hint" text="此服务请求和读取共用的总时限，默认 60 秒。不自动重试，失败回退文字。" />
   <string id="AF_MCM_Tts_OpenAiTesting" text="[TTS] 正在测试选中的 OpenAI 兼容语音服务；真实合成可能产生费用。" />
   <string id="AF_MCM_Tts_TestNotQueued" text="[TTS] 测试语音未入队：队列已满或引擎已停止，请稍后重试。" />
+  <string id="AF_MCM_Tts_WaitEmotion" text="等待后处理判断语音情绪" />
+  <string id="AF_MCM_Tts_WaitEmotion_Hint" text="默认开启。等待后处理判断情绪后合成语音；关闭后直接以普通语气将清理后的回复正文请求 TTS，不使用后处理生成的朗读译文。游戏动作后处理仍照常执行。对新发起的语音请求生效。" />
   <string id="AF_MCM_Tts_Streaming" text="流式播放并同步口型" />
   <string id="AF_MCM_Tts_Streaming_Hint" text="默认开启。向 OpenAI 兼容服务发送 stream=true，收到 WAV 音频分段后开始播放并驱动口型；关闭时发送 stream=false，等待整句音频。上游是否支持流式及首段等待时间取决于服务，仅对 OpenAI 兼容服务生效。" />
   <string id="AF_TERMINAL_GROUP_TTS_API" text="TTS API" />
@@ -3376,6 +3363,38 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_KingdomStability_FactionImmunity" text="玩家王国叛乱免疫会阻止派系起兵。" />
   <string id="AF_MCM_Shout_MaxRelayTurns" text="场景喊话最大接力轮数" />
   <string id="AF_MCM_Shout_MaxRelayTurns_Hint" text="玩家一次喊话后 NPC 最多发言的总次数，包含首次回复，同一人物再次发言也计一次。设为 1 时仅首次回复，不继续接力。范围 1–8，默认 8；下一次喊话生效，人物仍可提前结束接力。" />
+  <string id="AF_MCM_Shout_RelayMutualGaze" text="接力时发言者互相注视" />
+  <string id="AF_MCM_Shout_RelayMutualGaze_Hint" text="场景接力中，发言者看向被回应的人，对方也看着发言者；其余参与者大约一半看发言者、一半看你。只改变视线方向。默认开启。" />
+  <string id="AF_MCM_Shout_RelayPrefetch" text="提前准备下一位接力者" />
+  <string id="AF_MCM_Shout_RelayPrefetch_Hint" text="接力还会继续、且下一位可能接话的人不超过两个时，在当前这句还在播放时就预先读取他们的记忆；台词本身仍在轮到对方时才生成。可缩短停顿，但可能读取了用不上的记忆。默认关闭。" />
+  <string id="AF_MCM_Ambient_Enabled" text="启用场景自主互动" />
+  <string id="AF_MCM_Ambient_Enabled_Hint" text="你在和平的酒馆、领主大厅、城镇或村庄场景中空闲时，附近的人物（有名有姓或普通 NPC）可能彼此交谈，或走过来和你说话；坐着的人离得够近时会坐在原位说话。每句台词都会调用一次模型。默认关闭。" />
+  <string id="AF_MCM_Ambient_IdleSeconds" text="触发自主互动前的玩家空闲时间（秒）" />
+  <string id="AF_MCM_Ambient_IdleSeconds_Hint" text="在这段时间内你没有喊话、对话或打开菜单。默认 20。" />
+  <string id="AF_MCM_Ambient_Cooldown" text="两次自主互动的间隔（秒）" />
+  <string id="AF_MCM_Ambient_Cooldown_Hint" text="一次自主互动结束后，至少间隔这么久才会开始下一次。默认 120。" />
+  <string id="AF_MCM_Ambient_PairCooldown" text="同一对人物冷却（现实分钟）" />
+  <string id="AF_MCM_Ambient_PairCooldown_Hint" text="同样两个人物在这段时间内不会再次自主闲聊。默认 10。" />
+  <string id="AF_MCM_Ambient_MaxPerScene" text="每个场景最多自主互动次数" />
+  <string id="AF_MCM_Ambient_MaxPerScene_Hint" text="从进入场景起计算。默认 5。" />
+  <string id="AF_MCM_Ambient_MaxLines" text="每次闲聊最多台词数" />
+  <string id="AF_MCM_Ambient_MaxLines_Hint" text="一次 NPC 之间的闲聊在说满这么多句后结束。默认 4。" />
+  <string id="AF_MCM_Ambient_NpcWeight" text="NPC 彼此闲聊的概率（%）" />
+  <string id="AF_MCM_Ambient_NpcWeight_Hint" text="自主互动中由两个 NPC 彼此交谈的比例，其余为 NPC 主动来找你说话；某一类找不到人选时改试另一类。默认 70。" />
+  <string id="AF_MCM_Ambient_PlayerRadius" text="自主互动听觉范围（米）" />
+  <string id="AF_MCM_Ambient_PlayerRadius_Hint" text="只有离你这么近的人物会参与，并会记录你旁听了这次闲聊。默认 15。" />
+  <string id="AF_MCM_Ambient_AbortRadius" text="自主互动中止距离（米）" />
+  <string id="AF_MCM_Ambient_AbortRadius_Hint" text="你离开超过这个距离时，自主互动停止，尚未说出的台词会被丢弃。默认 20。" />
+  <string id="AF_MCM_Ambient_Voice" text="自主闲聊语音" />
+  <string id="AF_MCM_Ambient_Voice_Hint" text="关闭后，即使启用了语音合成，自主互动的台词也只显示气泡和消息。默认开启。" />
+  <string id="AF_MCM_Ambient_TopicRelation" text="闲聊话题：两人之间的关系" />
+  <string id="AF_MCM_Ambient_TopicRelation_Hint" text="允许以亲属、友谊或嫌隙作为闲聊话题。默认开启。" />
+  <string id="AF_MCM_Ambient_TopicWorld" text="闲聊话题：战争与王国" />
+  <string id="AF_MCM_Ambient_TopicWorld_Hint" text="允许以发言者所属王国及其当前战事作为闲聊话题。默认开启。" />
+  <string id="AF_MCM_Ambient_TopicPlace" text="闲聊话题：当前定居点" />
+  <string id="AF_MCM_Ambient_TopicPlace_Hint" text="允许以当前定居点的领主与状况作为闲聊话题。默认开启。" />
+  <string id="AF_MCM_Ambient_TopicPlayer" text="闲聊话题：玩家" />
+  <string id="AF_MCM_Ambient_TopicPlayer_Hint" text="允许人物在闲聊中谈论你。默认开启。" />
   <string id="AF_UI_Editor_LengthStatus" text="字符：{CURRENT} / {MAX}" />
   <string id="AF_UI_Editor_LengthLimit" text="最多可输入 {MAX} 个字符。" />
   <string id="AF_UI_Editor_InputTruncated" text="部分输入已因长度上限截断，请检查文本末尾。" />
@@ -3415,5 +3434,71 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Persona_PromptedRerollIntro" text="填写本次人物性格与背景的重生方向。要求仅用于本次生成，保留声音；生成失败时保留原人物设定。" />
   <string id="AF_UI_Persona_PromptedRerollHint" text="可填写背景经历、性格方向或需要保留的细节，当前游戏事实仍然有效。" />
   <string id="AF_UI_Persona_PromptedRerollEmpty" text="请先填写本次重生要求。" />
+  <string id="AF_TERMINAL_UI_Root_FieldCamp" text="就地扎营" />
+  <string id="AF_TERMINAL_UI_Root_FieldCamp_Hint" text="在大地图上就地扎营；扎营期间打开营地菜单。" />
+  <string id="AF_MCM_FieldCamp_Group" text="19. 就地扎营" />
+  <string id="AF_MCM_FieldCamp_Enabled" text="启用就地扎营" />
+  <string id="AF_MCM_FieldCamp_Enabled_Hint" text="独自行军或身为军团长时，可在大地图上就地扎营。关闭后会结束当前营地。" />
+  <string id="AF_MCM_FieldCamp_Key" text="扎营快捷键（一个大写字母）" />
+  <string id="AF_MCM_FieldCamp_Key_Hint" text="在大地图上按下即可扎营；扎营期间按下重新打开营地菜单。默认：Z。" />
+  <string id="AF_MCM_FieldCamp_PitchHours" text="搭营耗时（小时）" />
+  <string id="AF_MCM_FieldCamp_PitchHours_Hint" text="搭建营地所需的游戏小时数。默认：1。" />
+  <string id="AF_MCM_FieldCamp_StrikeHours" text="拔营耗时（小时）" />
+  <string id="AF_MCM_FieldCamp_StrikeHours_Hint" text="拔营后才能继续行军，所需的游戏小时数。遭遇敌人被迫拔营时不计。默认：1。" />
+  <string id="AF_MCM_FieldCamp_HealMultiplier" text="伤员恢复倍率" />
+  <string id="AF_MCM_FieldCamp_HealMultiplier_Hint" text="扎营期间，伤兵与英雄的恢复速度是平时的几倍。默认：2。" />
+  <string id="AF_MCM_FieldCamp_MoralePerHour" text="每小时恢复士气" />
+  <string id="AF_MCM_FieldCamp_MoralePerHour_Hint" text="扎营期间每支部队每小时恢复的士气。默认：1。" />
+  <string id="AF_MCM_FieldCamp_MoraleCap" text="士气恢复上限" />
+  <string id="AF_MCM_FieldCamp_MoraleCap_Hint" text="单靠休整，士气不会超过这个值。默认：70。" />
+  <string id="AF_MCM_FieldCamp_MapVisuals" text="在大地图上显示营地" />
+  <string id="AF_MCM_FieldCamp_MapVisuals_Hint" text="在每支扎营部队旁放置一组营帐。若与其他改动大地图视觉的 MOD 冲突可关闭，扎营功能不受影响。" />
+  <string id="AF_FC_Menu_Title" text="野外营地" />
+  <string id="AF_FC_Menu_Rest" text="休整等待" />
+  <string id="AF_FC_Menu_Strike" text="拔营" />
+  <string id="AF_FC_Menu_Leave" text="返回大地图" />
+  <string id="AF_FC_Menu_CancelPitch" text="取消扎营" />
+  <string id="AF_FC_Menu_StopWait" text="停止休整" />
+  <string id="AF_FC_Disabled" text="就地扎营已在设置中关闭。" />
+  <string id="AF_FC_Pitched" text="营地已搭好，部队开始休整。" />
+  <string id="AF_FC_Struck" text="营地已拔起，可以继续行军。" />
+  <string id="AF_FC_MoveBlocked" text="部队正在扎营。请先在营地菜单中拔营，再行军。" />
+  <string id="AF_FC_BlockedState" text="现在无法扎营。" />
+  <string id="AF_FC_BlockedEncounter" text="遭遇或对话中无法扎营。" />
+  <string id="AF_FC_BlockedSiege" text="围城期间无法就地扎营。" />
+  <string id="AF_FC_BlockedArmyMember" text="只有军团长才能下令全军扎营。" />
+  <string id="AF_FC_BlockedSea" text="在海上或水面上无法扎营。" />
+  <string id="AF_FC_BlockedSettlement" text="离{SETTLEMENT}太近，无法就地扎营。" />
+  <string id="AF_FC_InspectionBlocked" text="请先拔营，再使用检阅士兵。" />
+  <string id="AF_FC_StrikeTooltip" text="需要 {HOURS} 小时。休整随即停止，拔营完成后即可行军。" />
+  <string id="AF_FC_Status_Pitching" text="部队正在搭营，还需约 {HOURS} 小时。" />
+  <string id="AF_FC_Status_Striking" text="部队正在拔营，还需约 {HOURS} 小时。" />
+  <string id="AF_FC_Status_Resting" text="营中正在休整。伤员恢复加快，士气缓缓回升。已扎营 {HOURS} 小时，营中共 {PARTIES} 支部队。" />
+  <string id="AF_FC_Status_Camped" text="营地一片安静。休整可以加快伤员恢复、缓慢恢复士气，但行军也随之停下。已扎营 {HOURS} 小时，营中共 {PARTIES} 支部队。" />
+  <string id="AF_MCM_FieldCamp_AgentCap" text="营中显示的士兵数" />
+  <string id="AF_MCM_FieldCamp_AgentCap_Hint" text="巡视营地时最多生成的士兵数量，按兵种比例抽样。营帐和篝火数量仍按真实兵力计算。默认：150。" />
+  <string id="AF_MCM_FieldCamp_TentCap" text="营帐数量上限" />
+  <string id="AF_MCM_FieldCamp_TentCap_Hint" text="营地场景中最多摆放的营帐数量。默认：40。" />
+  <string id="AF_MCM_FieldCamp_PatrolHours" text="巡视营地耗时（小时）" />
+  <string id="AF_MCM_FieldCamp_PatrolHours_Hint" text="每次离开营地场景时扣除一次的游戏时间，期间休整效果照常生效。默认：1。" />
+  <string id="AF_FC_Menu_Patrol" text="巡视营地" />
+  <string id="AF_FC_PatrolTooltip" text="在营帐与部队间巡视。离开营地场景时约耗费 {HOURS} 小时。" />
+  <string id="AF_FC_PatrolWounded" text="你伤势太重，无法巡视营地。" />
+  <string id="AF_FC_PatrolFailed" text="此处无法打开营地场景。" />
+  <string id="AF_FC_Assembled" text="部队按兵种列队完毕。" />
+  <string id="AF_FC_Dismissed" text="部队解散，各自回营。" />
+  <string id="AF_FC_IssueResolved_Encourage" text="你安抚了士兵。" />
+  <string id="AF_FC_IssueResolved_Grant" text="你应允了请求。" />
+  <string id="AF_FC_IssueResolved_Refuse" text="你驳回了请求。" />
+  <string id="AF_FC_IssueResolved_Discipline" text="你整肃了军纪。" />
+  <string id="AF_FC_IssueResolved_Dismissed" text="开除了{COUNT}名闹事者。" />
+  <string id="AF_FC_IssueResolved_Spent" text="花费{GOLD}第纳尔。" />
+  <string id="AF_FC_IssueResolved_Morale" text="士气{MORALE}。" />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Title" text="扩展人设" />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Hint" text="默认开启。首次生成或重生时同时生成特质、动机、价值观、弱点与说话风格。关闭后隐藏扩展字段且不再注入模型上下文；关闭时生成或重生成功会清除该人物已有扩展字段，仅切换开关不删除存储数据。经历驱动的人设更新由独立开关控制。" />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Group" text="9. 提示词扩展" />
+    <string id="AF_FC_NoCampSite" text="当前场景未找到适合整座营地的地块，未强行向山坡铺设设施。场景保持开放，由你手动离开，本次不扣巡营时间。" />
+    <string id="AF_FC_IncompleteCamp" text="营地初始化未完成：已放置 {PLACED}/{TOTAL} 顶帐篷。由你决定何时离开，具体失败原因已记录在 FieldCamp 日志中。" />
+    <string id="AF_FC_DeploymentClearing" text="正在准备你确认的刑场。场内人员须步行离开安全范围；可选观众不阻塞刑场生成。" />
 </strings>
 </base>

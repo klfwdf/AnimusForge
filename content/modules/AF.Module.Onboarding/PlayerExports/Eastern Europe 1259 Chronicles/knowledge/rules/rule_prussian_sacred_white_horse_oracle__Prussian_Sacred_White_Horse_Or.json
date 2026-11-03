@@ -1,0 +1,52 @@
+{
+  "Id": "rule_prussian_sacred_white_horse_oracle",
+  "Keywords": [
+    "Prussian sacred places and horses",
+    "priests omens and riding animals"
+  ],
+  "RagShortTexts": [
+    "Prussian traditional religion values sacred places; horses also serve war and status.",
+    "Divination and religious authority shape decisions, with rites explained locally."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Prussian communities value woods, sacred places and ritual leaders. Outsiders cutting, disturbing or removing things without permission can provoke local people. Horses carry riders into travel and war and display wealth. When weapons or horses enter a funeral, kin care especially about who can dispose of them: religion and property overlap.\n\nPriests or respected people interpret omens affecting journeys and musters, but visitors do not define local rites. Demands from the Order and missionaries to change belief also concern land, service and the authority of existing leaders. A decision can involve trust in the officiant and the availability of riding animals as well as willingness to accept a ceremony; observers see only part."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Leaders weigh followers, kin and outside powers, beyond one ceremony. Ownership and supply of mounts affect who can actually lead armed men."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Guides explain sacred places and forbidden grazing. Hostile rumours do not replace reconnaissance, and roads and supplies matter after a rite."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A household horse represents work and wealth; ritual or military demands alter everyone’s burden. Kin views and compensation matter more than distant stories."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

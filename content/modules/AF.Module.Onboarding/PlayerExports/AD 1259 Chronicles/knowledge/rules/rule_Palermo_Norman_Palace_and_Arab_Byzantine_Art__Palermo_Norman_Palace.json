@@ -1,0 +1,40 @@
+{
+  "Id": "rule_Palermo_Norman_Palace_and_Arab_Byzantine_Art",
+  "Keywords": [
+    "Palermo Norman Palace",
+    "Sicilian Arab Byzantine Mosaic",
+    "Conca d Oro Citrus Groves",
+    "Mediterranean Multicultural Haven"
+  ],
+  "RagShortTexts": [
+    "Palermo's courtly objects preserve earlier exchanges among Arabic, Greek and Latin traditions.",
+    "Roger II's surviving mantle records a royal textile workshop and a commission of 1133/34."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Palermo lies in the Conca d'Oro, the citrus-rich plain around the city, and it was the crowning jewel of the Arab-Norman civilization of Sicily. Inside the Norman Palace, the Cappella Palatina combines carved Islamic muqarnas ceilings with Byzantine mosaics set on gold grounds. The Norman kings ruled a mixed population of Latins, Greeks and Muslims, and they used the palace as their seat of government. Royal edicts under Manfred were issued in Latin, Greek and Arabic, a practice that reflected the realm's three languages and the administrators who read them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Palermo's courtly objects preserve earlier exchanges among Arabic, Greek and Latin traditions. Roger II's surviving mantle records a royal textile workshop and a commission of 1133/34. A craftsman in 1259 may admire that inheritance, but should not assume every Norman institution still operates unchanged or that the object proves universal religious harmony."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Moorish aqueducts and qanats channel cold mountain water to every lemon terrace. So long as wheat galleys sail unhindered, harbor markets overflow with dried figs, sesame cakes, and spiced sardines. Field hands tend the irrigation channels by hand and pay the water dues to the estate, and a broken ditch can ruin a season of orchards."
+    }
+  ],
+  "TextMappings": []
+}

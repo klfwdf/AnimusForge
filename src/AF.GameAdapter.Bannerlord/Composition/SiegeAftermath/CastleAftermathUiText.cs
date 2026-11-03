@@ -145,36 +145,68 @@ internal static class CastleAftermathUiText
         _ => Text("AF_CASTLE_UI_SALE_OTHER", "The native ransom action failed; details were logged.")
     };
 
-    private static readonly Regex LetterQueued = new Regex(CastleAftermathCompatibilityTexts.Raw("letter_queued_pattern"), RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
+    // Status text may come from either language edition (written before a language switch), so both patterns are tried.
+    private static readonly Lazy<Regex[]> LetterQueuedPatterns = new Lazy<Regex[]>(() => Array.ConvertAll(
+        CastleAftermathCompatibilityTexts.RawVariants("letter_queued_pattern"),
+        pattern => new Regex(pattern, RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100))), true);
+
+    private static bool TryStripSuffix(string status, string key, out string core)
+    {
+        foreach (string suffix in CastleAftermathCompatibilityTexts.RawVariants(key))
+        {
+            if (suffix.Length > 0 && status.EndsWith(suffix, StringComparison.Ordinal))
+            {
+                core = status.Substring(0, status.Length - suffix.Length);
+                return true;
+            }
+        }
+        core = null;
+        return false;
+    }
+
+    private static bool TryStripPrefix(string status, string key, out string rest)
+    {
+        foreach (string prefix in CastleAftermathCompatibilityTexts.RawVariants(key))
+        {
+            if (prefix.Length > 0 && status.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                rest = status.Substring(prefix.Length);
+                return true;
+            }
+        }
+        rest = null;
+        return false;
+    }
 
     private static string RecruitmentStatus(SiegeCastleLordRecruitmentBranch branch, string status)
     {
-        string cleanupKingdom = CastleAftermathCompatibilityTexts.Raw("cleanup_kingdom");
-        string cleanupCompanion = CastleAftermathCompatibilityTexts.Raw("cleanup_companion");
-        if (status.EndsWith(cleanupKingdom, StringComparison.Ordinal))
-            return Text("AF_CASTLE_UI_STATUS_KINGDOM_CLEANUP", "{STATUS} Political allegiance changed, but prisoner or scene cleanup was incomplete; details were logged.", ("STATUS", RecruitmentStatusCore(branch, status.Substring(0, status.Length - cleanupKingdom.Length))));
-        if (status.EndsWith(cleanupCompanion, StringComparison.Ordinal))
-            return Text("AF_CASTLE_UI_STATUS_COMPANION_CLEANUP", "{STATUS} Companion recruitment completed, but scene cleanup was incomplete; details were logged.", ("STATUS", RecruitmentStatusCore(branch, status.Substring(0, status.Length - cleanupCompanion.Length))));
+        if (TryStripSuffix(status, "cleanup_kingdom", out string kingdomCore))
+            return Text("AF_CASTLE_UI_STATUS_KINGDOM_CLEANUP", "{STATUS} Political allegiance changed, but prisoner or scene cleanup was incomplete; details were logged.", ("STATUS", RecruitmentStatusCore(branch, kingdomCore)));
+        if (TryStripSuffix(status, "cleanup_companion", out string companionCore))
+            return Text("AF_CASTLE_UI_STATUS_COMPANION_CLEANUP", "{STATUS} Companion recruitment completed, but scene cleanup was incomplete; details were logged.", ("STATUS", RecruitmentStatusCore(branch, companionCore)));
         return RecruitmentStatusCore(branch, status);
     }
 
     private static string RecruitmentStatusCore(SiegeCastleLordRecruitmentBranch branch, string status)
     {
         // These exact forms are produced by the bridge; unknown text remains authoritative.
-        if (string.Equals(status, CastleAftermathCompatibilityTexts.Raw("status_invalid"), StringComparison.Ordinal)) return Text("AF_CASTLE_UI_STATUS_INVALID", "The target lord is invalid or can no longer be handled.");
-        if (string.Equals(status, CastleAftermathCompatibilityTexts.Raw("status_not_selected"), StringComparison.Ordinal)) return Text("AF_CASTLE_UI_STATUS_NOT_SELECTED", "This lord is not among the prisoners selected for this castle aftermath.");
-        if (string.Equals(status, CastleAftermathCompatibilityTexts.Raw("status_unknown"), StringComparison.Ordinal)) return Text("AF_CASTLE_UI_STATUS_UNKNOWN", "The lord recruitment branch is not yet determined.");
-        if (string.Equals(status, CastleAftermathCompatibilityTexts.Raw("reward_unavailable"), StringComparison.Ordinal)) return Text("AF_CASTLE_UI_STATUS_REWARD_UNAVAILABLE", "The AF reward system is unavailable.");
-        if (string.Equals(status, CastleAftermathCompatibilityTexts.Raw("no_leader"), StringComparison.Ordinal)) return Text("AF_CASTLE_UI_STATUS_NO_LEADER", "No living clan leader is available to receive the introduction letter.");
-        if (string.Equals(status, CastleAftermathCompatibilityTexts.Raw("no_id"), StringComparison.Ordinal)) return Text("AF_CASTLE_UI_STATUS_NO_ID", "The lord or clan leader has no stable character identifier.");
-        if (string.Equals(status, CastleAftermathCompatibilityTexts.Raw("status_audience"), StringComparison.Ordinal)) return Text("AF_CASTLE_UI_STATUS_AUDIENCE", "Asked the player to take them to meet the ruler of the player's kingdom; clan allegiance and captivity remain unchanged.");
-        if (string.Equals(status, CastleAftermathCompatibilityTexts.Raw("status_claim"), StringComparison.Ordinal)) return Text("AF_CASTLE_UI_STATUS_CLAIM", "Expressed support for crowning the player; no kingdom is created or clan transferred while the player has no kingdom.");
-        string exceptionPrefix = CastleAftermathCompatibilityTexts.Raw("exception_prefix");
-        if (status.StartsWith(exceptionPrefix, StringComparison.Ordinal))
-            return Text("AF_CASTLE_UI_STATUS_EXCEPTION", "An exception occurred while applying lord recruitment: {ERROR}", ("ERROR", status.Substring(exceptionPrefix.Length)));
-        Match letter;
-        try { letter = LetterQueued.Match(status); }
-        catch (RegexMatchTimeoutException) { return status; }
+        if (CastleAftermathCompatibilityTexts.IsRaw(status, "status_invalid")) return Text("AF_CASTLE_UI_STATUS_INVALID", "The target lord is invalid or can no longer be handled.");
+        if (CastleAftermathCompatibilityTexts.IsRaw(status, "status_not_selected")) return Text("AF_CASTLE_UI_STATUS_NOT_SELECTED", "This lord is not among the prisoners selected for this castle aftermath.");
+        if (CastleAftermathCompatibilityTexts.IsRaw(status, "status_unknown")) return Text("AF_CASTLE_UI_STATUS_UNKNOWN", "The lord recruitment branch is not yet determined.");
+        if (CastleAftermathCompatibilityTexts.IsRaw(status, "reward_unavailable")) return Text("AF_CASTLE_UI_STATUS_REWARD_UNAVAILABLE", "The AF reward system is unavailable.");
+        if (CastleAftermathCompatibilityTexts.IsRaw(status, "no_leader")) return Text("AF_CASTLE_UI_STATUS_NO_LEADER", "No living clan leader is available to receive the introduction letter.");
+        if (CastleAftermathCompatibilityTexts.IsRaw(status, "no_id")) return Text("AF_CASTLE_UI_STATUS_NO_ID", "The lord or clan leader has no stable character identifier.");
+        if (CastleAftermathCompatibilityTexts.IsRaw(status, "status_audience")) return Text("AF_CASTLE_UI_STATUS_AUDIENCE", "Asked the player to take them to meet the ruler of the player's kingdom; clan allegiance and captivity remain unchanged.");
+        if (CastleAftermathCompatibilityTexts.IsRaw(status, "status_claim")) return Text("AF_CASTLE_UI_STATUS_CLAIM", "Expressed support for crowning the player; no kingdom is created or clan transferred while the player has no kingdom.");
+        if (TryStripPrefix(status, "exception_prefix", out string error))
+            return Text("AF_CASTLE_UI_STATUS_EXCEPTION", "An exception occurred while applying lord recruitment: {ERROR}", ("ERROR", error.Trim()));
+        Match letter = Match.Empty;
+        foreach (Regex pattern in LetterQueuedPatterns.Value)
+        {
+            try { letter = pattern.Match(status); }
+            catch (RegexMatchTimeoutException) { return status; }
+            if (letter.Success) break;
+        }
         if (letter.Success)
             return Text("AF_CASTLE_UI_STATUS_LETTER_QUEUED", "The introduction letter is ready and will reach clan leader {RECIPIENT} in {DAYS} days; no AF courier party is created, and the current lord remains a prisoner.", ("RECIPIENT", letter.Groups["recipient"].Value), ("DAYS", letter.Groups["days"].Value));
         return branch == SiegeCastleLordRecruitmentBranch.ClanLeaderJoinPlayerKingdom

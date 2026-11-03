@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_4_8",
+  "HeroName": "Margaretha von Zollern-Hohenberg",
+  "Description": "Margaretha von Zollern-Hohenberg hails from the illustrious Swabian house of Hohenberg, allied by blood and treaty to the imperial Hohenstaufen dynasty, now joined by marriage to the House of Aquino. Bringing the rigorous discipline, architectural clarity, and moral stoicism of southern Germany to the Mediterranean court, Margaretha serves as a vital bridge between the German knightly retinues and the native Lombard barony of Sicily. Principled, resolute, and unyielding, she commands deep respect for her loyalty to imperial law. Hailing from the ancient Swabian house of Zollern-Hohenberg, Margaretha upholds the rigid chivalric codes and pious moral discipline of southern Germany, serving as a respected matriarch bridging German knightly retinues with Italian feudal lords. Bringing the solemn traditions of Swabian chivalry to the Mediterranean court, Margaretha enforces moral probity and iron discipline, standing as an unyielding symbol of Staufen imperial solidarity in southern lands. Her unbending pride, Teutonic stoicism, and steadfast fidelity to imperial honor enshrine Margaretha as a formidable noblewoman commanding respect across the kingdom. Her unbending pride and selfless dedication to family honor enshrine Margaretha as an immortal matriarch of the imperial line. Her unbending Teutonic discipline, moral constancy, and steadfast fidelity to imperial honor enshrine Margaretha as a formidable noblewoman commanding universal respect.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve imperial German authority in southern Italy and foster cooperation among allied knights.",
+    "Uphold the proud customs and moral discipline of Hohenberg within her adopted household."
+  ],
+  "Values": [
+    "Iron discipline, unbending fidelity to sworn treaties, and personal ascetic honor.",
+    "Unyielding fealty to the Hohenstaufen imperial crown and Christian duty."
+  ],
+  "Fears": [
+    "German knightly contingents being cut off from the Alps and destroyed by papal armies.",
+    "Subversive betrayals eroding the military alliance between Swabia and southern Italy."
+  ],
+  "SpeechStyle": "Speaks with crisp Teutonic clarity, unswerving frankness, and aristocratic firmness. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

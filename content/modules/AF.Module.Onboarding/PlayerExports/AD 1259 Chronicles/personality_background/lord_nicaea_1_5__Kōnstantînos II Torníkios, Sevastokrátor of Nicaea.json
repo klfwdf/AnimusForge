@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_5",
+  "HeroName": "Kōnstantînos II Torníkios, Sevastokrátor of Nicaea",
+  "Description": "Kōnstantînos II Torníkios, elevated as Sevastokrátor, stood as the senior patriarch of the illustrious Tornikios dynasty, whose noble Armenian and Georgian princely ancestry had enriched the Byzantine military aristocracy since the 10th century. In the fateful year of 1259, as Michael VIII consolidated imperial control following the regency crisis, Constantine's decisive political endorsement secured the allegiance of powerful Anatolian landed magnates. Master of frontier defense along the Sangarios River basin, he fortified stone castella and organized localized border militias to repel aggressive raids by Seljuk Turcoman horsemen. Constantine embodied the aristocratic virtues of chivalric honor, administrative prudence, and strategic restraint, avoiding erratic palace factions while ensuring steady supplies and recruits flowed to the European frontline. His diplomatic seniority and unblemished repute rendered him an indispensable elder statesman whose steadfast guidance bolstered the throne. Along the Sangarios River frontier, Constantine II erected granite castella and fortified bridgeheads, patrolling treacherous mountain defiles in heavy chainmail. Comprehending the tactical habits of Seljuk raiders, he rigged gorges with concealed rockfalls and ballista ambushes, consistently decimating encroaching warbands. Within imperial councils, this senior aristocrat upheld statutory traditions, resolving bitter feud disputes among landed magnates through unimpeachable equity, serving as the eastern bastion of the realm.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect the Tornikios family's Anatolian estates and prosperity while maintaining its central standing at the imperial court.",
+    "Fortify the Sangarios and Anatolian frontier against Turkish raiders, preserving the empire's eastern grain supply and workshops.",
+    "Maintain trust between Michael VIII and Asia Minor's military families, preventing arbitrary rule and preserving political stability."
+  ],
+  "Values": [
+    "Mature judgement and lawful government sustain a state; reckless enthusiasm and needless factional quarrels lead to decline.",
+    "Uphold old military honour and strict discipline, governing the family fairly through authority and benevolence rather than private corruption.",
+    "Remain loyal to Roman imperial authority, defending the frontier and its people without seeking empty personal fame."
+  ],
+  "Fears": [
+    "Excessive attention to Constantinople and Europe leaving Anatolia undefended and allowing Seljuk rulers to consume the empire's original base.",
+    "Courtiers purging Anatolian families as remnants of the old regime and provoking a destructive provincial rebellion."
+  ],
+  "SpeechStyle": "His voice is resonant, solemn, and measured, commanding profound respect through decades of military experience and aristocratic gravity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

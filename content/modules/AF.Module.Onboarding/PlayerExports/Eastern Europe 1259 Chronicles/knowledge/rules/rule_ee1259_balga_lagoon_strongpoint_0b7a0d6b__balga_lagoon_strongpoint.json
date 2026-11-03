@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_balga_lagoon_strongpoint_0b7a0d6b",
+  "Keywords": [
+    "Balga's lagoon strongpoint",
+    "Water and land support for Balga"
+  ],
+  "RagShortTexts": [
+    "Balga is an Order strongpoint by the Vistula Lagoon, supplied through water and land carriage.",
+    "Shore observation helps defense, but weather, berthing and grain transport limit endurance."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Balga links lagoon supplies with routes into Prussian lands. The Order's garrison depends on boats, food and skills. Elevated observation cannot hasten a ship facing contrary winds. Relations with neighboring residents affect guides, animals and news; adding men to an uncertain supply route can worsen the burden."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Boatmen supplying Balga need a usable berth and carriers to move food into stores. Nearby households supplying timber, fodder and work must retain farming and winter resources. Prompt reception and agreed payment and return help them plan another journey; indefinite waiting damages their livelihoods first."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

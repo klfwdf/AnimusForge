@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Stirling_Castle_Key_to_Highlands",
+  "Keywords": [
+    "Stirling crossing and fortress"
+  ],
+  "RagShortTexts": [
+    "Stirling’s river crossings linked lowland and northern routes under an elevated stronghold."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Stirling’s river crossings linked lowland and northern routes under an elevated stronghold. A crossing affected passage and dues without guaranteeing control of everyone in every season. Armies, markets and households shared the same geography."
+    }
+  ],
+  "TextMappings": []
+}

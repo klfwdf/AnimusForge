@@ -1,0 +1,59 @@
+{
+  "Id": "be_armenian_kingdom_legitimacy",
+  "Keywords": [
+    "亚美尼亚法统",
+    "瓦拉兹达特的王族承认"
+  ],
+  "RagShortTexts": [
+    "Varazdat依靠阿尔沙克身份及贵族、教会承认。",
+    "外来王位承认可能附带驻军和军役条件。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Varazdat以阿尔沙克王族身份在位，也需要贵族与教会承认；外来王位承认能增强地位，却可能附带驻军和军役条件。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Varazdat依靠阿尔沙克身份及贵族、教会承认。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。外来王位承认可能附带驻军和军役条件。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "外来王位承认可能附带驻军和军役条件。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。Varazdat依靠阿尔沙克身份及贵族、教会承认。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Varazdat依靠阿尔沙克身份及贵族、教会承认。家户通过家人、土地与求助能否获保护来认识统治。外来王位承认可能附带驻军和军役条件。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "外来王位承认可能附带驻军和军役条件。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。Varazdat依靠阿尔沙克身份及贵族、教会承认。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

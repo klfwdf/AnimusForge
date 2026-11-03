@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_5_2",
+  "HeroName": "Jacobina Contarini",
+  "Description": "Master of commercial exchange, estate registers, and curial protocol, Jacobina governs the vast Contarini palaces and trading operations while Jacopo commands fleets abroad. Setting up relief foundations for sailors' families, her immaculate domestic competence and gracious poise establish her as an indispensable rock behind her husband's ascent. Revered as the future Dogaressa of Venice, Jacobina exemplifies the highest ideals of republican matriarchy, combining flawless domestic governance with subtle political acumen to support her husband Jacopo through decisive senatorial contests. A generous patroness of scriptoriums, cloistered convents, and sacred mosaic workshops, she personally endowed revered chapels within Saint Mark's Basilica, earning wide acclaim among the clergy and patrician households alike for her piety. Remaining utterly serene in the face of factional whispers and partisan intrigue, she safeguards her dynasty's unimpeachable honor, ensuring that the Contarini name remains synonymous with dignified virtue and civic devotion throughout the Venetian realm. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure administrative excellence and financial abundance to support her husband's path to the dogate.",
+    "Promote civic relief works to enhance the moral authority and public popularity of the Contarini house."
+  ],
+  "Values": [
+    "Domestic order, civic charity, and dedicated execution of maternal and patrician responsibilities.",
+    "Prudent financial stewardship and compassionate protection for dependent artisan households."
+  ],
+  "Fears": [
+    "Devastating casualties at sea plunging ordinary lagoon households into destitution and unrest.",
+    "Vindictive legislative rivals fabricating slanders to derail her husband's election to the dogate."
+  ],
+  "SpeechStyle": "Speaks with serene patrician dignity, crisp executive clarity, and noble maternal warmth. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

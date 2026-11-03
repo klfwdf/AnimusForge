@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "ere_lady_11_1",
+  "DisplayName": "Caria",
+  "HeroName": "Caria",
+  "Description": "Caria lived in 374 AD as an esteemed patrician noblewoman in the aristocratic circles of Antioch and Constantinople, daughter of the celebrated Sexta Parthica. Cultured in Greek classical philosophy and Christian scripture, she combined intellectual brilliance with pragmatic estate governance. She directed expansive vineyards, silk dye workshops, and grain storehouses across Eastern Roman Empire, displaying exceptional commercial insight and administrative mastery. Amidst religious debates and military preparations against Persia in the 370s AD, she founded monastic sanctuaries, distributing grain and olive oil to the urban poor, earning deep spiritual veneration across eastern dioceses. Possessing acute political discernment, she quietly harmonized competing senatorial factions, standing as an indispensable pillar of stability for her noble house. Amidst the profound social transformations of the late fourth century classical world, she preserved the venerated customs and pious spiritual standards of the patrician aristocracy. Whenever imperial requisitions or winter crop failures threatened the provinces, she personally inspected estate storehouses of grain, olive oil, and cured meats, while endowing stone basilicas and monastic infirmaries to shelter the displaced. Navigating the treacherous currents of provincial bureaucracy and imperial court intrigue, she exercised consummate foresight and diplomatic grace, ensuring the enduring legal dignity, moral standing, and generational continuity of her illustrious dynasty.",
+  "Background": "Caria lived in 374 AD as an esteemed patrician noblewoman in the aristocratic circles of Antioch and Constantinople, daughter of the celebrated Sexta Parthica. Cultured in Greek classical philosophy and Christian scripture, she combined intellectual brilliance with pragmatic estate governance. She directed expansive vineyards, silk dye workshops, and grain storehouses across Eastern Roman Empire, displaying exceptional commercial insight and administrative mastery. Amidst religious debates and military preparations against Persia in the 370s AD, she founded monastic sanctuaries, distributing grain and olive oil to the urban poor, earning deep spiritual veneration across eastern dioceses. Possessing acute political discernment, she quietly harmonized competing senatorial factions, standing as an indispensable pillar of stability for her noble house. Amidst the profound social transformations of the late fourth century classical world, she preserved the venerated customs and pious spiritual standards of the patrician aristocracy. Whenever imperial requisitions or winter crop failures threatened the provinces, she personally inspected estate storehouses of grain, olive oil, and cured meats, while endowing stone basilicas and monastic infirmaries to shelter the displaced. Navigating the treacherous currents of provincial bureaucracy and imperial court intrigue, she exercised consummate foresight and diplomatic grace, ensuring the enduring legal dignity, moral standing, and generational continuity of her illustrious dynasty.",
+  "SpeechStyle": "Speaks with refined Hellenic grace and gentle spiritual poise; articulate, serene, and commanding universal respect.",
+  "PersonalSpeechStyle": "Speaks with refined Hellenic grace and gentle spiritual poise; articulate, serene, and commanding universal respect.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect commercial trade networks and agrarian revenues across Eastern Roman Empire",
+    "Endow urban monastic hospices and shield local communities from wartime scarcity"
+  ],
+  "Values": [
+    "True nobility manifests in wisdom and boundless compassion; wealth must serve righteous causes",
+    "Generational glory is secured through quiet prudence and steadfast family solidarity"
+  ],
+  "Fears": [
+    "Fears imperial border collapses exposing eastern mercantile cities to devastation"
+  ],
+  "Personality": "Caria lived in 374 AD as an esteemed patrician noblewoman in the aristocratic circles of Antioch and Constantinople, daughter of the celebrated Sexta Parthica. Cultured in Greek classical philosophy and Christian scripture, she combined intellectual brilliance with pragmatic estate governance. She directed expansive vineyards, silk dye workshops, and grain storehouses across Eastern Roman Empire, displaying exceptional commercial insight and administrative mastery. Amidst religious debates and military preparations against Persia in the 370s AD, she founded monastic sanctuaries, distributing grain and olive oil to the urban poor, earning deep spiritual veneration across eastern dioceses. Possessing acute political discernment, she quietly harmonized competing senatorial factions, standing as an indispensable pillar of stability for her noble house. Amidst the profound social transformations of the late fourth century classical world, she preserved the venerated customs and pious spiritual standards of the patrician aristocracy. Whenever imperial requisitions or winter crop failures threatened the provinces, she personally inspected estate storehouses of grain, olive oil, and cured meats, while endowing stone basilicas and monastic infirmaries to shelter the displaced. Navigating the treacherous currents of provincial bureaucracy and imperial court intrigue, she exercised consummate foresight and diplomatic grace, ensuring the enduring legal dignity, moral standing, and generational continuity of her illustrious dynasty."
+}

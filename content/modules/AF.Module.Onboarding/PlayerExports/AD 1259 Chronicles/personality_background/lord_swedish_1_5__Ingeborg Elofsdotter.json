@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_1_5",
+  "HeroName": "Ingeborg Elofsdotter",
+  "Description": "Lady Ingeborg Elofsdotter of Ving, prominent noble heiress of West Götaland, was the eldest daughter of Lord Elof Ingridsson. Combining aristocratic grace with practical domestic capability, Ingeborg was educated in customary statutes, liturgical texts, and estate bookkeeping within the manor of Ving. While her father attended regional tings and royal councils, Ingeborg governed the extensive household economy, directing bailiffs in the harvest caching, dairy processing, and winter provisioning of livestock. Devoutly pious, she was an ardent benefactress of Varnhem Abbey, regularly funding hospices and orphanages. During harsh crop failures, she organized direct relief distributions of grain and cheese, venerated across the western provinces as a wise and compassionate noblewoman. Literate in Latin devotional texts and customary statutes, Ingeborg modernized agricultural operations at Ving, expanding hydraulic watermills and cattle breeding compounds that placed her family among the wealthiest landowners in Götaland. Following seasonal military campaigns, she distributed seed corn, iron plowshares, and interest-free loans to impoverished tenant families, revitalizing devastated hamlets. Her astute domestic administration and boundless benevolence earned the profound admiration of diocesan prelates and regional barons, celebrated as a paragon of noble virtue. Her prudent oversight of granary reserves shielded the tenant communities of Götaland through decades of political turbulence.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage granary stores and estate accounts at Ving to ensure absolute self-sufficiency during seasons of scarcity.",
+    "Endow Varnhem Abbey and regional charities, sheltering vulnerable peasant families from civil distress."
+  ],
+  "Values": [
+    "Believes humble diligence and active charity are the true jewels of nobility, ensuring ancestral blessings.",
+    "Champions orderly domestic governance and filial obedience, safeguarding her family's spotless moral reputation."
+  ],
+  "Fears": [
+    "Dreads devastating blizzards and epidemic pestilence laying waste to tenant villages across West Götaland."
+  ],
+  "SpeechStyle": "Speaks with soft-spoken composure and gentle dignity, her organized thoughts reflecting practical intelligence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

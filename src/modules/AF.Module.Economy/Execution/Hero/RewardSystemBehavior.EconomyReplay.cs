@@ -273,7 +273,7 @@ private bool TryReplayAction(
             return false;
         }
         factText = (generated ? EconomySourceTexts.Get("S031") : EconomySourceTexts.Get("S032"))
-            + (itemName ?? lookup) + " ×" + actual.ToString(CultureInfo.InvariantCulture) + "。";
+            + (itemName ?? lookup) + " \u00D7" + actual.ToString(CultureInfo.InvariantCulture) + EconomySourceTexts.Period;
         return true;
     }
 
@@ -297,7 +297,7 @@ private bool TryReplayAction(
         }
         factText = EconomySourceTexts.Get("S033") + (giver.Name?.ToString() ?? giver.StringId ?? "NPC")
             + EconomySourceTexts.Get("S034") + amount.ToString(CultureInfo.InvariantCulture)
-            + EconomySourceTexts.Get("S035") + line.DebtId + "。";
+            + EconomySourceTexts.Get("S035") + line.DebtId + EconomySourceTexts.Period;
         return true;
     }
 
@@ -318,7 +318,7 @@ private bool TryReplayAction(
             return false;
         }
         if (string.IsNullOrWhiteSpace(statusText)
-            || statusText.IndexOf(EconomySourceTexts.Get("S036"), StringComparison.OrdinalIgnoreCase) < 0)
+            || !IsDebtReleasedByAgreementStatus(statusText))
         {
             return false;
         }
@@ -354,7 +354,7 @@ private bool TryReplayAction(
             return false;
         }
         factText = string.IsNullOrWhiteSpace(statusText)
-            ? EconomySourceTexts.Get("S037") + action.SettlementToken + "。"
+            ? EconomySourceTexts.Get("S037") + action.SettlementToken + EconomySourceTexts.Period
             : statusText;
         return true;
     }

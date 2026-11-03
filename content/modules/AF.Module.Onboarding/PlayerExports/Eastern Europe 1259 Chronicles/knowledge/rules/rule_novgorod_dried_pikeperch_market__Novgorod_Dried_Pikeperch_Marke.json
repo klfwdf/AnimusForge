@@ -1,0 +1,52 @@
+{
+  "Id": "rule_novgorod_dried_pikeperch_market",
+  "Keywords": [
+    "dry fish at Novgorod markets",
+    "packing lake and river fish"
+  ],
+  "RagShortTexts": [
+    "Lake and river fish sell fresh or preserved; weather, salt and drying affect losses.",
+    "Novgorod fish links fishers, boatmen and consumers beyond the size of a catch."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fishers around Lake Ilmen and the Volkhov bring fish to Novgorod. Fresh catches need rapid preparation and sale, while longer journeys depend more on drying or salting. Cleaning, hanging and checking take labour; rain, insects and crowded heaps reduce edible supplies. Fish differ in size and fat, so a full basket does not prove sound keeping.\n\nThe market serves households and people observing fasts, with prices shifting as catches and routes change. Buyers inspect dried fish for dryness, smell and mixtures, then protect purchases from damp. Boatmen, porters and buyers take their shares; even a good catch can yield poorly if it misses market or lacks salt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Estate provisioning distinguishes fresh and stored fish; equal weights do not keep equally long. Fasting demand needs real storage and transport behind promises."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers carrying dry fish need water and cooking opportunities and must check damp packages. Ferry delays can consume a fish cargo’s value."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Fishing homes divide boating, preparation, drying and market trips. Food kept at home competes with grain purchases, under weather that will not wait."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

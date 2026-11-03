@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_2_4",
+  "HeroName": "Gracia Dionís",
+  "Description": "Gracia Dionís is the refined and gentle daughter of Count Dénes of Hungary, highly esteemed across the Kingdom of Valencia as an ideal maiden of the hybrid Hungarian-Aragonese aristocracy. Blending the stately courtly poise of her mother's Catalan pedigree with the resolute courage of her Magyar ancestors, Doña Gracia was schooled in languages, Latin psalms, tapestry arts, and herbal remedies. In the volatile border climate of the southern march, she regularly accompanies her mother to estate hospices, dispensing grain, warm clothing, and medicines to impoverished families and orphans of war, affectionately styled the 'Lily of Valencia' by local townspeople. In 1259, as illustrious noble houses seek her hand, Gracia remains devoted to her family's welfare, demonstrating exceptional composure, modesty, and tact amidst the complex matrimonial intrigues of the realm—a shining source of moral grace within her warlike house. Gracia fostered fruitful charitable alliances between monastic houses and town guilds, routinely providing winter grain and flaxen clothing to impoverished Mudejar refugees. Graceful, quick-witted, and dignified, she frequently assisted her mother in hosting royal chancellors and monastic procurators journeying from Barcelona and Zaragoza. Her magnetic courtly poise and peacemaking instincts made her one of the most sought-after noble maidens along the Levantine border.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Care for wounded frontier fighters and destitute peasant families, fulfilling Christian charity",
+    "Assist her mother in managing domestic hospitality and estate decorum for visiting grandees",
+    "Enter a prestigious matrimonial union that strengthens her house's feudal standing in Iberia"
+  ],
+  "Values": [
+    "Compassion and humble charity are the true jewels of high birth; pride invites spiritual downfall",
+    "True beauty resides in moral purity, gentle patience, and unwavering domestic fortitude",
+    "Reverent obedience to parents and unshakeable fidelity to family honor"
+  ],
+  "Fears": [
+    "Frontier raids engulfing the estate, bringing slaughter and destruction to her people",
+    "Being sacrificed in an unhappy political marriage to an uncouth or hostile baronial rival"
+  ],
+  "SpeechStyle": "Cheerful, gentle, and engaging; speaks with natural warmth and courtly grace, making all feel heard and welcomed.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

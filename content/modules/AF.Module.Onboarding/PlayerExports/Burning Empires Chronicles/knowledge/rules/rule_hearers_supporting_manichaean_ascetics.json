@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v4",
+  "Keywords": [
+    "Hearers supporting Manichaean ascetics"
+  ],
+  "RagShortTexts": [
+    "Hearers supplied food to support Elect bound by stricter disciplines."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hearers supplied food and sought blessing from Elect whose disciplines restricted some productive activities. Donors undertook procurement and labor, while ascetics provided teaching and religious service. Mutual dependence did not mean equal status or property."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

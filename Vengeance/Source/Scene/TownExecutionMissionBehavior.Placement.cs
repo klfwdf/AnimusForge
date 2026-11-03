@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -1224,8 +1224,12 @@ public sealed partial class TownExecutionMissionBehavior
         uint? clothingColor2Override = null,
         bool fixedEquipment = false,
         IAgentOriginBase? originOverride = null,
-        bool joinPlayerFormation = false)
+        bool joinPlayerFormation = false,
+        string? campRole = null)
     {
+        if (Request.IsFieldCamp && !string.Equals(campRole, "display", StringComparison.Ordinal))
+            return BorrowExistingFieldCampActor(campRole ?? (character == Request.Victim.CharacterObject ? "victim" : "helper:" + _fieldCampHelperNumber++),
+                position, direction, noWeapons, invulnerable, teamOverride);
         if (character is null)
         {
             throw new InvalidOperationException("A culture character template is missing.");
@@ -1266,8 +1270,8 @@ public sealed partial class TownExecutionMissionBehavior
             .NoHorses(true)
             .NoWeapons(noWeapons)
             .CivilianEquipment(civilianEquipment)
-            .ClothingColor1(clothingColor1Override ?? Request.Venue.MapFaction.Color)
-            .ClothingColor2(clothingColor2Override ?? Request.Venue.MapFaction.Color2)
+            .ClothingColor1(clothingColor1Override ?? Request.VenueColor1)
+            .ClothingColor2(clothingColor2Override ?? Request.VenueColor2)
             .CanSpawnOutsideOfMissionBoundary(false);
         if (playerFormation is not null)
         {
@@ -1332,7 +1336,8 @@ public sealed partial class TownExecutionMissionBehavior
         // Victims keep their dedicated battlefield origin; real heroes keep
         // their existing campaign identity. Ordinary temporary actors must be
         // visible to native door/flee checks before returning control to AI.
-        if (originOverride == null)
+        // A field camp has no town location; its actors are never handed to town AI.
+        if (originOverride == null && !Request.IsFieldCamp)
             _sceneLocationCharacters.Register(agent, CampaignMission.Current?.Location,
                 Request.Venue.LocationComplex, civilianEquipment);
         _occupiedSpawnPositions.Add(position);
@@ -1361,8 +1366,8 @@ public sealed partial class TownExecutionMissionBehavior
             {
                 playerTeam = Mission.Teams.Add(
                     BattleSideEnum.Attacker,
-                    Request.Venue.MapFaction.Color,
-                    Request.Venue.MapFaction.Color2,
+                    Request.VenueColor1,
+                    Request.VenueColor2,
                     banner: null,
                     isPlayerGeneral: true,
                     isPlayerSergeant: false,
@@ -1407,8 +1412,8 @@ public sealed partial class TownExecutionMissionBehavior
             {
                 existingEnemy = Mission.Teams.Add(
                     oppositeSide,
-                    Request.Venue.MapFaction.Color,
-                    Request.Venue.MapFaction.Color2,
+                    Request.VenueColor1,
+                    Request.VenueColor2,
                     banner: null,
                     isPlayerGeneral: false,
                     isPlayerSergeant: false,
@@ -1533,6 +1538,10 @@ public sealed partial class TownExecutionMissionBehavior
 
     private void SetCeremonyAlliesFormationControl(bool enabled, string reason)
     {
+        // Borrowed camp personnel stay with their camp/ceremony owner until
+        // the entire site is released. Formation standby would erase their
+        // entry route, and after a sentence it would make them wander away.
+        if (enabled && Request.IsFieldCamp && _borrowedCampActors.Count > 0) return;
         if (_ceremonyAlliesReleasedToPlayerFormation == enabled)
         {
             return;
@@ -1626,6 +1635,7 @@ public sealed partial class TownExecutionMissionBehavior
 
     private GameEntity? SpawnProfileProp(ExecutionScenePropPlacement prop)
     {
+        if (_retainedFieldCampSite && _profileEntities.TryGetValue(prop.RoleId, out var retainedProp)) return retainedProp;
         if (_placement is null)
         {
             return null;
@@ -2236,6 +2246,7 @@ public sealed partial class TownExecutionMissionBehavior
             return null;
         }
 
+        if (_retainedFieldCampSite && TryReuseFieldCampPrefab(prefabName, position, out var retained)) return retained;
         var frame = _placement.CreateFrame(position);
         const float degreesToRadians = MathF.PI / 180f;
         frame.rotation.RotateAboutUp(yawDegrees * degreesToRadians);
@@ -2265,6 +2276,7 @@ public sealed partial class TownExecutionMissionBehavior
         // mission tick and final cleanup can retry instead of leaving an
         // invisible collision shell in the town scene.
         _spawnedEntities.Add(entity);
+        if (Request.IsFieldCamp) _fieldCampPrefabRecords.Add(new CampPrefabRecord(prefabName, position, frame, entity));
 
         if (!createPhysics && !TryDisableEntityCollision(entity, $"visual prefab '{prefabName}'"))
         {
@@ -2316,6 +2328,12 @@ public sealed partial class TownExecutionMissionBehavior
 
     private bool TryCreateGallowsStage()
     {
+        if (_retainedFieldCampSite && _gallowsEntity is not null && _placement is not null)
+        {
+            _victimPosition.z = _placement.Origin.z + _stageSurfaceHeight;
+            PoseAgentAt(_victimAgent!, _victimPosition, _placement.Forward);
+            return true;
+        }
         if (_placement is null || _victimAgent is null)
         {
             return false;

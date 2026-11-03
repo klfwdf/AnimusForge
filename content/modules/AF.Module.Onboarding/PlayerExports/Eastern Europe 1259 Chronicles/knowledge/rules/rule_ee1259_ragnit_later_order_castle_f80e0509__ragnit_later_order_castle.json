@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_ragnit_later_order_castle_f80e0509",
+  "Keywords": [
+    "Lower Nemunas banks",
+    "Landings and bank routes on the lower Nemunas"
+  ],
+  "RagShortTexts": [
+    "The lower Nemunas linked settlements and Baltic routes.",
+    "Water, shallows and ice changed routes, requiring local landings and food."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The lower Nemunas linked settlements with routes toward the Baltic. Boats, crossings and bank roads were affected differently by water and season. People needed landings, provisions and passage agreements, and distant news could lag behind local changes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The lower Nemunas linked settlements with routes toward the Baltic. Boats, crossings and bank roads were affected differently by water and season. People needed landings, provisions and passage agreements, and distant news could lag behind local changes. River guards watched vessels, bank access and night landings. Escorts protected goods while allowing crews to rest, often needing local boatmen in unfamiliar water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The lower Nemunas linked settlements with routes toward the Baltic. Boats, crossings and bank roads were affected differently by water and season. People needed landings, provisions and passage agreements, and distant news could lag behind local changes. Post income depended on continuing traffic; excessive demands encouraged detours. Garrisons and river works needed resources, while households' supply varied seasonally."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "The lower Nemunas linked settlements with routes toward the Baltic. Boats, crossings and bank roads were affected differently by water and season. People needed landings, provisions and passage agreements, and distant news could lag behind local changes. Riverside households fished, carried goods and traveled with boats also wanted by guards. Bad water required repairs, provisions and waiting for weather."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

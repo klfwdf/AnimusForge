@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v6",
+  "Keywords": [
+    "元老院受交案件"
+  ],
+  "RagShortTexts": [
+    "皇帝把许墨提乌斯案转给元老院，元老院作出流放判决。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "皇帝把许墨提乌斯案转给元老院，元老院作出流放判决。移送改变审理者，并不表示案件消失；皇帝对判罚不满，也说明其个人愿望和裁判结果不是同一个事实。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

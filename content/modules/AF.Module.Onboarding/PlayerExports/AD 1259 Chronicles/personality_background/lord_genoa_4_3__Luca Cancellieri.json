@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_4_3",
+  "HeroName": "Luca Cancellieri",
+  "Description": "Luca Cancellieri operates as an energetic naval envoy and captain for House Cancellieri, commanding swift merchant cutters across the Tyrrhenian Sea between Tuscany and Sardinia. Expert in the shifting political alignments of maritime communes, he negotiates favorable harbor tariffs and safe-conduct treaties. Captaining swift cutters across the Ligurian and Tyrrhenian seas, Luca possessed exceptional seafaring skills, repeatedly braving treacherous coastal shoals to deliver vital diplomatic dispatches to Sardinian ports ahead of blockades. Cultivating extensive ties with Tuscan magistrates through affable wit and astute commercial concessions, he negotiated lucrative harbor exemptions and safe-passage charters for Genoese trading fleets. Broad-minded and adventurous, this seasoned mariner understood that thriving trade links and mutual alliances constituted the only true antidote to chronic urban rivalries across the Mediterranean. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Pioneer direct trading concessions across Sardinia and the Tuscan littoral.",
+    "Establish an enduring network of reciprocal commerce throughout the Tyrrhenian Sea."
+  ],
+  "Values": [
+    "Open maritime conduits bring prosperity, whereas rigid isolation breeds decay.",
+    "Cultivating friends across distant ports yields far greater profit than multiplying foes."
+  ],
+  "Fears": [
+    "Pisan blockades cutting off Sardinian harbors and impounding Genoese vessels.",
+    "Being seized as an envoy and held hostage amidst sudden declarations of war."
+  ],
+  "SpeechStyle": "Speaks with lively charm and diplomatic versatility, persuasive and well-traveled. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

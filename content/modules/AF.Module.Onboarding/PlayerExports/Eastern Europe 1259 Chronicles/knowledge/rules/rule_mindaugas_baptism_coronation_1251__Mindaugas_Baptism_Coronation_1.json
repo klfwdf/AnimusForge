@@ -1,0 +1,52 @@
+{
+  "Id": "rule_mindaugas_baptism_coronation_1251",
+  "Keywords": [
+    "Mindaugas’s baptism in 1251",
+    "Lithuanian coronation in 1253"
+  ],
+  "RagShortTexts": [
+    "Mindaugas accepted baptism in 1251 and was crowned in 1253.",
+    "Recognition aided diplomacy while relatives and Samogitian leaders retained separate interests."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mindaugas sought outside support during conflict with Tautvila and other opponents. He accepted baptism in 1251 and reached an accommodation with the Livonian Order; his coronation in 1253 strengthened diplomatic standing. Baptism and coronation were distinct experiences. Court participants, chiefs whose lands were affected and villagers hearing the news had different concerns. Samogitian groups did not all accept one arrangement, leaving kinship and local cooperation essential."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A crown aids embassies and recognition without replacing consent over land and service. Promises abroad must fit rights the court can perform, or an agreement may first damage support at home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Embassy guards know ceremony needs escorts, gifts and food. A truce can open a route temporarily, but opposing positions must receive word. A cross on a visitor’s banner does not replace checking arrangements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households may encounter new clergy, rites and offerings while retaining family customs. Protection of fields and livestock and access to judgement shape what royal recognition means in daily life."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

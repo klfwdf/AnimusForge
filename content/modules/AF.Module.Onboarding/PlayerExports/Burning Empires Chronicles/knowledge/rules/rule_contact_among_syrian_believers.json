@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v4",
+  "Keywords": [
+    "Contact among Syrian believers"
+  ],
+  "RagShortTexts": [
+    "Syrian believers encountered teaching through bishops, ascetics, travelers and kin."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Syrian believers encountered teaching through bishops, ascetics, travelers and kin. Churches and hospitality enabled meetings, without a leader’s alignment establishing every household’s worship. Religious contact did not perfectly match political alliance."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

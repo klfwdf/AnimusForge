@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Commenda_Contracts_and_Maritime_Ventures",
+  "Keywords": [
+    "Commenda Maritime Venture Partnership",
+    "Investing Stans and Sailing Tractator",
+    "Mediterranean Cog Shipwreck Risk Sharing",
+    "Venetian Genoese Early Commercial Law"
+  ],
+  "RagShortTexts": [
+    "Commenda contracts pooled landlubber capital with seafarer labor, fueling Mediterranean."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The commenda contract was the main financial instrument behind Mediterranean maritime trade. A sedentary investor, the stans, supplied capital, while a travelling merchant-captain, the tractator, sailed the voyage and sold the cargo abroad. Profits were usually split three-quarters to the investor and one-quarter to the voyager, while losses from shipwreck fell solely on the capital. The arrangement let a shopkeeper in Genoa or Venice place money in a ship bound for the Levant without going to sea himself. Because each contract covered a single voyage, the investor's risk stayed bounded, and the traveller earned a share of profit without holding the capital. Notaries recorded every agreement, which turned maritime risk into something a family could reckon with."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Public notaries along the Venetian and Genoese docks drafted thousands of commenda deeds, each a notarised parchment that bound investors and captains alike. Pooling small sums let urban widows and craftsmen take a share in Levantine spice fleets. A patrician who lent to a captain could spread his fortune across several hulls at once."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sailing to Acre or Caffa is a gamble against storms and corsairs, and a deckhand who goes down with the hull leaves his family nothing. Yet a ship returning with holds full of cloves and raw silk could lift a deckhand into the ranks of prosperous burghers."
+    }
+  ],
+  "TextMappings": []
+}

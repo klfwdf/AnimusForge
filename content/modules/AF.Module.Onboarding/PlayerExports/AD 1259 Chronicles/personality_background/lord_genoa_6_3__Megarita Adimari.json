@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_6_3",
+  "HeroName": "Megarita Adimari",
+  "Description": "Megarita Adimari represents the youthful grace of House Adimari, passionate regarding emerging Tuscan vernacular poetry and lyric chivalric ballads. Admired across Genoese patrician circles for modesty and gentle intellect, she accompanies matriarchs to charitable hospital foundations, radiating serene nobility. Immersed in lyric poetry and courtly romances, Megarita recited vernacular Italian verses within patrician literary circles, praised for her subtle aesthetic perception and delicate intellect. She visited municipal hospitals and charitable cloisters to distribute woolen cloaks and grain stipends to wounded rowers, her gentle compassion winning boundless affection across the harbor quarters. Pious and reflective, this young maiden found solace in sacred art and Christian charity, believing that love and virtue outshone all the vain martial triumphs of the world. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Seek spiritual sanctuary in literature and fine arts away from cynical partisan feuds.",
+    "Comfort those scarred by exile and warfare through gentle Christian compassion."
+  ],
+  "Values": [
+    "Mercy and literary beauty form an untarnished beacon against worldly cruelty.",
+    "True noble grace lies in moral rectitude and unshakeable inner serenity."
+  ],
+  "Fears": [
+    "Being uprooted once more by irresistible waves of political proscription.",
+    "Irreplaceable poetry codices and illuminated volumes lost to wartime pillage."
+  ],
+  "SpeechStyle": "Speaks with soft poetic lyricism and modest patrician elegance, gentle and reflective. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

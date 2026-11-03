@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v8",
+  "Keywords": [
+    "Shared words in church disputes"
+  ],
+  "RagShortTexts": [
+    "Shared theological words did not ensure agreement, even after translation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Different churches shared names for Father, Son and Spirit while interpreting their relation differently. Identical vocabulary did not establish agreement, and Gothic translation did not end disputes. Listeners needed trustworthy explanation."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

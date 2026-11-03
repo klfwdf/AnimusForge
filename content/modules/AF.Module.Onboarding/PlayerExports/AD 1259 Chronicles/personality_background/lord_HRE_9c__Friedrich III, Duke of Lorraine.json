@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_9c",
+  "HeroName": "Friedrich III, Duke of Lorraine",
+  "Description": "Friedrich III, son of Duke Matthias II and Catherine of Limburg, rules as the resolute, warlike Duke of Upper Lorraine. Forged through the perils of his mother's regency, he assumed personal rule with blazing martial determination to restore lost frontier rights. His strategic marriage to Margaret of Navarre, daughter of King Theobald I of Navarre (Count of Champagne), cemented an invaluable western alliance, neutralizing the historic encirclement of Lorraine by rival French magnates. Friedrich plunged fearlessly into the War of the Succession of Flanders and Hainaut and waged protracted campaigns against the Bishops of Metz, repeatedly charging at the head of his heavy chivalry to shatter enemy formations. Beyond combat prowess, he cultivated town burghers and merchant guilds in Nancy, securing abundant credit to sustain continuous military operations. He is determined to elevate Lorraine into an unshakeable sovereign bastion feared by rivals on both sides of the Meuse. Establishing rapid-response cavalry outposts along the borders of Lorraine and Champagne, Friedrich III personally repulsed border incursions led by the Counts of Bar, besieging rebellious enclaves surrounding Metz. Engaging in frontline sword drills alongside sworn knights, he rewarded valor with prompt munificence, terrifying predatory neighbors along the Meuse with his relentless martial tenacity. His indomitable valor transformed Upper Lorraine into a revered military bastion respected across the French and imperial marches.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush the allied forces of the Bishop of Metz, retaking frontier redoubts to establish ducal jurisdiction.",
+    "Leverage alliances with Navarre and Champagne during the Interregnum, forcing neighbors to respect Nancy."
+  ],
+  "Values": [
+    "Regards martial dread and swift resolution as the primary law of survival for border princes.",
+    "Combines mutual treaties with heavy garrison presence, determined to expand his ancestral heritage."
+  ],
+  "Fears": [
+    "Fears papal excommunication during ferocious clashes with Metz prelates, shattering his knights' morale.",
+    "Worries overextending military fronts will bankrupt ducal coffers, forcing him to mortgage sovereign rights."
+  ],
+  "SpeechStyle": "Every furrow of Lorraine was reclaimed with blood; neither the robes of Metz nor the swords of Bar shall impede our iron march! In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Friedrich III, Duke of Lorraine"
+}

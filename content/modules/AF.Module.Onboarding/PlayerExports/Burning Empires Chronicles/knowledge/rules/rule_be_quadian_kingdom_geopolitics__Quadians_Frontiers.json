@@ -1,0 +1,59 @@
+{
+  "Id": "be_quadian_kingdom_geopolitics",
+  "Keywords": [
+    "Quadians Frontiers",
+    "Disputed works on the Quadian bank"
+  ],
+  "RagShortTexts": [
+    "Danube crossings join Quadian settlements and rear mountain roads.",
+    "Disputed Roman building heightens land and passage fears."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Danube crossings join settlements to rear mountain roads. Roman building on disputed land heightens passage and property fears, with fields especially exposed at harvest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Danube crossings join Quadian settlements and rear mountain roads. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Disputed Roman building heightens land and passage fears."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Disputed Roman building heightens land and passage fears. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Danube crossings join Quadian settlements and rear mountain roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Danube crossings join Quadian settlements and rear mountain roads. Closed routes may separate families from goods, imposing costs on those remaining at home. Disputed Roman building heightens land and passage fears."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Disputed Roman building heightens land and passage fears. Cargo passes different carriers, making distant route changes become local shortages through delay. Danube crossings join Quadian settlements and rear mountain roads."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

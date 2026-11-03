@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_2h",
+  "HeroName": "Ivane Papa Jaqeli",
+  "Description": "Ivane Jaqeli (known affectionately as Papa, 'the Elder') was a grizzled veteran commander of the House of Jaqeli and castellan of Akhaltsikhe. Bearing scars from dozens of pitched campaigns, he possessed encyclopedic familiarity with Caucasian topography, defiles, and stone fortifications. Ivane directed Samtskhe's military weapon smithies, introducing water-powered trip-hammers to manufacture superior Caucasian heavy plate armor and blades. During the Battle of Tashiskari and subsequent sieges, Ivane anchored the reserve lines, repulsing flanking maneuvers by hostile cavalry with iron resolve. In 1259, despite advanced age, Ivane patrolled Akhaltsikhe's stone ramparts daily, instructing squires in ballistic mechanics and equipment maintenance. Taciturn, rigorous, and fiercely loyal, Ivane was beloved by the entire army as the venerable iron foundation of Samtskhe's defense. At Akhaltsikhe, Ivane maintained artillery proving ranges and armor quenching smithies, personally striking hot steel to forge Caucasian broadswords and mail aventails. Living in mountain guard barracks with frontier infantry, he instructed recruits in setting rockfall deadfalls and horse-stumbling snares along vertical passes. When war drums echoed below, the scarred veteran stood armored at the most vulnerable breach, an unshakeable iron tower steadying the defensive line against every wave of enemy assault along the cliffs.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Maintain the ramparts and armories of Akhaltsikhe, ensuring troops are equipped with flawless steel blades and heavy plate armor.",
+    "Mentor the rising generation of Jaqeli officers in alpine defense and siege mechanics, preserving military expertise across generations.",
+    "Command veteran reserve companies to hold critical passes during major crises, providing Atabeg Sargis with an unyielding shield."
+  ],
+  "Values": [
+    "Flawless mechanical craftsmanship and rigorous defensive preparation win wars; hasty improvisation invites slaughter.",
+    "Quiet stoic composure under fire; the older the veteran, the firmer the defensive resolve against impossible odds.",
+    "Total, lifelong fidelity to the House of Jaqeli and Caucasian freedom, dedicating his twilight years to fortress defense."
+  ],
+  "Fears": [
+    "Massive enemy siege engines battering breaches through Akhaltsikhe's primary curtain walls, compromising interior defenses.",
+    "Inexperienced junior captains succumbing to rash cavalry charges, forfeiting elite veteran troops in reckless ambushes."
+  ],
+  "SpeechStyle": "Speaks with seasoned frontier gravel and veteran authority, inspecting fortress curtain walls and armor ateliers with curt, formidable focus.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Ivane Papa Jaqeli"
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Crusades_and_Near_East_Crisis",
+  "Keywords": [
+    "Crusades Aftermath 1259",
+    "Outremer Territorial Decline",
+    "Acre Coastal Bastion",
+    "Kingdom of Jerusalem Remnants"
+  ],
+  "RagShortTexts": [
+    "Every night the watch hears a rider's hooves on the causeway and thinks of Baghdad.",
+    "Outremer is no longer a land of glory."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1259 the Latin settlements of the eastern Mediterranean are trying to recover from Louis IX failed Egyptian campaign and the losses of the 1240s and 1250s. Acre and Tyre remain important ports, while Tripoli and Antioch defend their own territories; their rulers have limited manpower and depend on shipping, local truces and fortified positions. Hulagu forces have entered Syria and the Mamluk government is preparing to resist them, creating a danger whose outcome is still unknown. Western preachers may call for another expedition, but the Eighth Crusade has not yet taken place and no one in Acre can know its course or date. For now, the barons argue over alliances, customs income, garrison pay and how to keep the coastal enclaves supplied."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The barons of Jerusalem and the masters of the Temple and Hospital harbor no illusions of reconquering Holy Zion alone. Preserving our sea walls at Acre, husbanding Italian shipping revenue, and keeping precarious neutrality while Tartars and Saracens butcher one another represents our sole hope of survival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Between Saracen horse archers and rumours of pagan Mongol riders who pile skulls into mountains, our crossbowmen sleep in mail. Every night the watch hears a rider's hooves on the causeway and thinks of Baghdad. Outremer is no longer a land of glory. It is a butcher's yard, and a single drunken sentry could set it alight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Frankish lords pray to their saints while our olive groves burn under foreign hooves. Peasants in the Levant plant and reap for whoever holds the castle, and each new master raises the tithe. When horsemen ride through, it matters little whether they carry cross or crescent: the harvest is trampled all the same. We bury seed grain in jars beneath the floor and pray the soldiers do not dig."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_gdansk_port_and_divided_interests_69d73f12",
+  "Keywords": [
+    "Gdansk's port income and livelihoods",
+    "Pomerelian merchant ship repairs"
+  ],
+  "RagShortTexts": [
+    "Gdansk and Vistula transport support Pomerelian income under differing ducal and merchant interests.",
+    "A port needs security, repairs and loading; burdens on turnover weaken future revenue."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gdansk joins Vistula goods to seaborne exchange. The duke values revenue and control; merchants need schedules, storage and delivery. Carpenters, rope workers, carriers and food sellers sustain the harbor. Negotiations with the Order and neighboring lords concern rights and continued traffic whose loss also removes local work."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Gdansk households earn during arrivals and seek other work when ships delay or buyers default. Good timber, rope and skilled repairs take time; haste can endanger another voyage. Residents value secure routes but fear disputes diverting cargo and leaving unpaid work and unsold food."
+    }
+  ],
+  "TextMappings": []
+}

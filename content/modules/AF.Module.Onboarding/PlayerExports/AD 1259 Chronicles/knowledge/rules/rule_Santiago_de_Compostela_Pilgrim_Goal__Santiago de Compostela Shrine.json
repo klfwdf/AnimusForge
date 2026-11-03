@@ -1,0 +1,32 @@
+{
+  "Id": "rule_Santiago_de_Compostela_Pilgrim_Goal",
+  "Keywords": [
+    "Santiago de Compostela Shrine",
+    "Apostle Saint James Tomb",
+    "Scallop Shell Pilgrimage Way",
+    "Galician Archbishopric Seat"
+  ],
+  "RagShortTexts": [
+    "Santiago de Compostela stood beside Rome as one of the two great goals of Western pilgrimage.",
+    "The pilgrim routes carried faith, news and trade across the continent."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Santiago de Compostela stood beside Rome as one of the two great goals of Western pilgrimage. It held the relics of Saint James the Greater, and its Romanesque basilica drew pilgrims who walked the long roads of Europe with scallop shells on their hats and staffs. The pilgrim routes carried faith, news and trade across the continent. Pilgrims came from England, France, Germany and Italy, and the road across northern Spain was dotted with churches and hospices built to serve them. Hospices and bridges along the way depended on gifts from travellers, and the town's wealth rested on the steady flow of visitors who came to the shrine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "notable",
+          "townsfolk"
+        ]
+      },
+      "Content": "Vast pilgrim hospices and imperial immunities granted the Archbishops of Compostela tremendous feudal and spiritual sovereignty in Galicia. Diego Gelmirez became the first archbishop in 1120. His successors ran the hospices and drew rents from the estates, while notables balanced pilgrim welfare against the archbishop's demand for revenue."
+    }
+  ],
+  "TextMappings": []
+}

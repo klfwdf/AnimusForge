@@ -1,0 +1,59 @@
+{
+  "Id": "be_sclavenian_kingdom_legitimacy",
+  "Keywords": [
+    "Sclavenians Legitimacy",
+    "Perbund’s relief and captive exchange"
+  ],
+  "RagShortTexts": [
+    "Settlement protection and shared risk support Perbund.",
+    "Relief and returned captives sustain trust more than titles."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Recognition comes from protection and shared risk. A title cannot levy hungry households indefinitely; relief and returned captives sustain trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Settlement protection and shared risk support Perbund. Military recognition also rests on rewards and relief; a title needs willing action. Relief and returned captives sustain trust more than titles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Relief and returned captives sustain trust more than titles. Nominal rights require local execution, with consent and supply both shaping authority. Settlement protection and shared risk support Perbund."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Settlement protection and shared risk support Perbund. Households judge rule through protected families, land and responses to appeals. Relief and returned captives sustain trust more than titles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Relief and returned captives sustain trust more than titles. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Settlement protection and shared risk support Perbund."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

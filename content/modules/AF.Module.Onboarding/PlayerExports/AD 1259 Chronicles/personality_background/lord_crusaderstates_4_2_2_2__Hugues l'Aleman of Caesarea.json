@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_4_2_2_2",
+  "HeroName": "Hugh l'Aleman, Lord of Caesarea",
+  "Description": "Hugh l'Aleman was the eldest son and heir of John l'Aleman and Marguerite de Brisebarre, fusing Germanic chivalric tenacity with Frankish nobility. Reared along the formidable ramparts of Caesarea built by Saint Louis, he received rigorous combat training from his veteran father in heavy cavalry tactics. Mastering the couched lance and broadsword, Hugh assumed command of Caesarea's mobile border scout squadrons, patrolling the coastal scrublands. In 1259, as probing Mamluk scouts intensified reconnaissance around the coastal highway, Hugh spearheaded bold cavalry counter-charges, capturing hostile vanguards. Sharing rations and watch duty with common foot-sergeants, he enforced strict tactical discipline while inspiring remarkable camaraderie among the garrison. Dedicated to securing his familial inheritance against saracen advance, Hugh stood as a stalwart vanguard captain in the defense of Outremer. Patrolling coastal dunes and highway redoubts, Hugh led cavalry reconnaissance units that neutralized probing saracen advance parties with rapid counter-charges. He studied siege mechanics under veteran castellans, distinguishing himself in combat exercises and earning the deep confidence of the royal court. Dedicated to his family's knightly code, he stood ever vigilant to defend every league of Caesarea's ramparts. His courage under fire and tactical vigilance inspired his troops to hold the line against every hostile border raid.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve battlefield distinction through aggressive border patrols, proving himself a formidable heavy cavalry commander.",
+    "Serve as his father's foremost vanguard officer, defending the perimeter of Caesarea and protecting tenant homesteads.",
+    "Master modern European fortification engineering and ballistic arts, converting Caesarea into an impregnable bulwark."
+  ],
+  "Values": [
+    "Martial glory admits no shortcuts; a knight's honor is won through sweat and blood in the face of swarming arrow storms.",
+    "Absolute obedience to military command and loyalty to his house, leading every counter-charge from the front line.",
+    "Comradely humility and deep affection for his men, eschewing aristocratic arrogance to forge an unshakeable fighting unit."
+  ],
+  "Fears": [
+    "Falling into a feigned-retreat ambush laid by nomadic horse archers, squandering his veteran cavalry company.",
+    "Caesarea succumbing to a massive Mamluk investment, rendering him unable to protect his ancestral home and people."
+  ],
+  "SpeechStyle": "Speaks with crisp martial authority and spirited chivalric resolve, issuing cavalry scout deployments and defensive patrols with energetic clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Hugh l'Aleman, Lord of Caesarea"
+}

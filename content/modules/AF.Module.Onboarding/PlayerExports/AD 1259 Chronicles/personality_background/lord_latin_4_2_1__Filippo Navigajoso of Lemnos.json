@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_2_1",
+  "HeroName": "Filippo Navigajoso of Lemnos",
+  "Description": "Filippo Navigajoso, aged thirty-eight in 1259, is the second son of Megas Doux Leonardo and younger brother to Paolo. Governing the southern anchorages and coastal watchtowers of Lemnos, he is a seasoned naval officer proficient in galley skirmishing and defensive artillery. More composed and approachable than his fierce elder brother, Filippo maintains excellent rapport with Venetian seamen and native Greek shipwrights, earning deep loyalty from the garrison ranks. He coordinates the island's beacon networks, ensuring instantaneous warning at the first glimpse of hostile sails. In 1259, as Nicaean scouts patrol northern Aegean shipping lanes, Filippo relentlessly leads inshore galley sweeps, securing the rocky coves and fortifying harbor moles against sudden amphibious assault. Filippo knows every shallow reef, inlet, and treacherous squall surrounding the shores of Lemnos. Steering patrol galleys barefoot through nocturnal shoals, he fights with lionhearted bravery while showing deep compassion to wounded crewmen. Under his charismatic leadership, the island's coastal sailors stand united as an unbreakable maritime shield ready to strike at an instant's notice. Navigating night patrols through perilous island shoals, Filippo protects the anchorages of Lemnos with steadfast bravery. His brotherly solidarity and tactical skill keep the garrison united and perpetually prepared for amphibious conflict.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with quiet naval competence and fraternal warmth, direct and reliable, inspiring calm confidence among his oarsmen.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

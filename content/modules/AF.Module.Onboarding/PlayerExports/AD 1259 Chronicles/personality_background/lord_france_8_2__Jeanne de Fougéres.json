@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_8_2",
+  "HeroName": "Jeanne de Fougères, Countess of La Marche and Lady of Fougères",
+  "Description": "Jeanne de Fougères is the Countess consort of La Marche and Angoulême, and sovereign Lady of Fougères in her own right. At forty-five, she brought into the Lusignan patrimony the colossal granite fortress of Fougères, widely recognized as one of the most impregnable defensive marvels of medieval Europe. Reared along the contested marchlands of Brittany and Normandy, Jeanne mastered the sciences of ballistics, rampart architecture, and fortress logistics from girlhood. Alongside Count Hugues XII, she managed the vast revenues of their combined domains, mediating delicate border conflicts between the Duke of Brittany and English Aquitaine. Resolute, fearless under siege alerts, and deeply devout, she founded priories and endowed hospitals for wounded veterans. Beloved throughout Poitou and Brittany, Jeanne stands as an exceptional exemplar of baronial leadership and architectural wisdom. Lady Jeanne encircled Fougères with concentric water moats and drawbridges, transforming the fortress into a self-sustaining citadel capable of withstanding years of isolation. Indomitable, vigilant, and cool under fire, she maintained flawless supply lines while her husband campaigned, celebrated as one of Christendom's greatest fortress commanders. Her fearless command of defensive preparations and generous provision for tenant families have earned her the steadfast respect of the entire marchland aristocracy.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the sovereign integrity of Fougères castle for transmission to her lawful heirs.",
+    "Manage estate reserves to ensure unshakeable logistical readiness against siege warfare."
+  ],
+  "Values": [
+    "Iron discipline, tactical realism, and refusal to yield before armed intimidation.",
+    "Honorable protection extended to vassals balanced with flawless financial stewardship."
+  ],
+  "Fears": [
+    "The Duke of Brittany launching a campaign to dispossess her house of Fougères.",
+    "Internal treachery during a siege allowing enemy forces to breach the inner bailey."
+  ],
+  "SpeechStyle": "Speaks with steely composure and sharp aristocratic precision, her tone direct, authoritative, and weighed with decades of experience in fortress governance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1i",
+  "HeroName": "Caterina Visconti",
+  "Description": "Caterina Visconti, daughter of Lord Matteo I Visconti of Milan, was the wife of Alboino I della Scala. Cementing a grand Ghibelline alliance between Milan and Verona, she deployed sharp political intellect to link the strategic interests of the Po and Adige river valleys. Lady Caterina leveraged Visconti connections to transfer advanced Milanese armour forging and silk weaving into Verona, elevating regional manufacturing to new heights. Rooting out bureaucratic corruption in Verona, she restructured court finances and provided strategic counsel that insulated the Scaliger dynasty from external crises. Astute and visionary, Caterina linked Milan and Verona into an iron Ghibelline axis, deploying razor-sharp statecraft to guide her house through northern Italian power struggles. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the iron alliance between Milan and Verona against hostile papal coalitions.",
+    "Introduce Milanese industrial statutes to bolster Verona's silk weaving and armour guilds.",
+    "Champion Visconti strategic interests within the inner councils of Alboino and Cangrande."
+  ],
+  "Values": [
+    "Believes regional supremacy requires interlocking dynastic leagues; isolation invites ruin.",
+    "Values pragmatic mutual benefit and sealed alliances above ephemeral political passion."
+  ],
+  "Fears": [
+    "Verona and Milan fracturing their grand alliance over disputed border marches like Brescia.",
+    "Facing isolation from conservative Veronese patricians suspicious of Milanese influence."
+  ],
+  "SpeechStyle": "Speaks with crisp Milanese authority and diplomatic poise, sharp and perceptive. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

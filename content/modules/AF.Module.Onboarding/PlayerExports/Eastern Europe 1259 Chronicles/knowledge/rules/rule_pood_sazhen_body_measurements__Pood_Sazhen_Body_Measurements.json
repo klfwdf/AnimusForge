@@ -1,0 +1,52 @@
+{
+  "Id": "rule_pood_sazhen_body_measurements",
+  "Keywords": [
+    "pood and local weighing",
+    "body measures in land bargains"
+  ],
+  "RagShortTexts": [
+    "Traders must confirm local weights and lengths even when names sound familiar.",
+    "Grain, cloth and boundaries need agreed methods, witnesses and checks."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Grain, wax and metal are delivered by weight, while cloth, timber and boundaries use lengths. Names such as pood, cubit or fathom need local interpretation rather than recognition alone. Body measures are convenient but arms differ; agreed rods and familiar weights reduce disputes.\n\nSacks and barrels vary too, with packing, tare and damage affecting delivery. An outsider needs an intermediary to explain net contents, containers and whether cloth means a whole piece or a cut length. Boundary changes affect fields and paths; people remembering old markers should attend rather than have a casual armspan erase a claim."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ambiguous units let stewards overcollect or underdeliver. Owners need accepted measures and practices for recorded amounts to mean anything."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ration and cargo handovers require the actual measuring method, not the previous town’s barrel. Relief escorts need the agreement as well as the goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A few missing fingers of cloth may leave no sleeve, and short grain means fewer meals. Neighbours witnessing measures protect small households’ property."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

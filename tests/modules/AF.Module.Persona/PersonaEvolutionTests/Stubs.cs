@@ -23,6 +23,12 @@ namespace AnimusForge.Refactor.Runtime
 }
 namespace AnimusForge.Refactor.Adapters
 {
+    internal sealed class NpcPersonaEventRegeneration
+    {
+        internal string Facts;
+        internal Func<bool> IsCurrent;
+        internal Action<AnimusForge.MyBehavior.NpcPersonaProfile> OnSaved;
+    }
     internal static class ConfiguredChatApplicationAdapter
     {
         internal static int Calls;
@@ -31,7 +37,7 @@ namespace AnimusForge.Refactor.Adapters
         internal static Task<AnimusForge.MyBehavior.ApiCallResult> CallAuxiliaryGatewayDetailed(string system, string user, string source, int tokens, bool forceThinkingDisabled)
         {
             Calls++; SystemPrompt=system; Input=user;
-            if (tokens != 1200 || !forceThinkingDisabled || source != "NpcPersonaEvolution") throw new Exception("wrong provider budget");
+            if (tokens != 0 || forceThinkingDisabled || source != "NpcPersona") throw new Exception("wrong provider budget");
             Pending = new(TaskCreationOptions.RunContinuationsAsynchronously); return Pending.Task;
         }
     }
@@ -39,7 +45,7 @@ namespace AnimusForge.Refactor.Adapters
 namespace AnimusForge
 {
     internal static class Logger { public static bool IsModLogicEnabled => false; internal static List<string> Lines=new(); internal static void Log(string tag,string message) => Lines.Add(message); }
-    internal sealed class DuelSettings { internal bool EnableNpcPersonaEventEvolution=true; internal static DuelSettings Current=new(); internal static int Reads; internal static DuelSettings GetSettings(){Reads++;return Current;} }
+    internal sealed class DuelSettings { internal bool EnableExpandedNpcPersona=true, EnableNpcPersonaEventEvolution=true; internal static DuelSettings Current=new(); internal static int Reads; internal static DuelSettings GetSettings(){Reads++;return Current;} }
     internal sealed class WorldBulletinEvent { internal string Kind,Key,GameDate,Sentence,Detail; internal double Hour; internal List<WorldBulletinParticipant> Participants=new(); }
     internal sealed class WorldBulletinParticipant { internal string HeroId; }
     internal static class NpcPersonaTextRules { internal static IReadOnlyCollection<string> AllowedTraitIdsForPrompt=new[]{"cautious","bold","vengeful"}; }
@@ -59,6 +65,33 @@ namespace AnimusForge
         internal static bool NewsEnabled=true;
         internal double Hour;
         private readonly PersonaProfileStateOwner _personaProfiles=new();
+        private readonly AnimusForge.Refactor.Runtime.NpcPersonaGenerationOwner _npcPersonaGeneration=new();
+        private GenerationLeaf NpcPersonaGenerationApplication => new(this);
+        private sealed class GenerationLeaf
+        {
+            private readonly MyBehavior owner;
+            internal GenerationLeaf(MyBehavior value){owner=value;}
+            internal async Task<string> RegenerateForEventAsync(Hero hero,Refactor.Adapters.NpcPersonaEventRegeneration trigger)
+            {
+                long generation=Refactor.Runtime.SaveRuntimeGuard.Generation;
+                if(!trigger.IsCurrent())return "invalidated";
+                var response=await Refactor.Adapters.ConfiguredChatApplicationAdapter.CallAuxiliaryGatewayDetailed("controlled full generation leaf",trigger.Facts,"NpcPersona",0,false);
+                await owner.RunMemorySummaryCompletionAsync(generation,()=>
+                {
+                    if(!trigger.IsCurrent()||!response.Success)return true;
+                    try {
+                        var wire=Newtonsoft.Json.Linq.JObject.Parse(response.Content);
+                        if(wire["profile"]?.Type!=Newtonsoft.Json.Linq.JTokenType.String||string.IsNullOrWhiteSpace((string)wire["profile"]))return true;
+                        var original=owner.Profile(hero.StringId);
+                        var updated=JsonConvert.DeserializeObject<NpcPersonaProfile>(JsonConvert.SerializeObject(original));
+                        updated.Description=(string)wire["profile"];updated.Evolution=original.Evolution;
+                        owner.SaveNpcPersonaProfile(hero,updated);trigger.OnSaved(updated);
+                    }catch(Newtonsoft.Json.JsonException){}
+                    return true;
+                });
+                return "";
+            }
+        }
         internal sealed class ApiCallResult { internal bool Success; internal string Content; }
         private NpcPersonaProfile GetNpcPersonaProfile(Hero hero,bool createIfMissing)=>_personaProfiles.Get(hero?.StringId,createIfMissing);
         private void SaveNpcPersonaProfile(Hero hero,NpcPersonaProfile profile)=>_personaProfiles.Save(hero.StringId,profile,(_,_)=>{});
@@ -76,6 +109,7 @@ namespace AnimusForge
         internal void Tick(bool advanceThrottle=true) {if(advanceThrottle)_personaEvolutionNextStartUtc=DateTime.MinValue;TryStartPersonaEvolution();}
         internal int Queued=>_personaEvolutionQueue.Count;
         internal void Setting(bool enabled) {DuelSettings.Current.EnableNpcPersonaEventEvolution=enabled;NotifyPersonaEvolutionSettingChanged(DuelSettings.Current);}
+        internal void ExpandedSetting(bool enabled) {DuelSettings.Current.EnableExpandedNpcPersona=enabled;}
         internal void Reload() {RestorePersonaEvolutionQueue();}
         internal async Task Finish(string json,bool success=true)
         {

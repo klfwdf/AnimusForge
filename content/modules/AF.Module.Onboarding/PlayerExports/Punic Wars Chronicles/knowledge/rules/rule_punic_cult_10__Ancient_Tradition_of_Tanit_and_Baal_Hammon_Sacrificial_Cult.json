@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_cult_10",
+  "Name": "Ancient Tradition of Tanit and Baal Hammon Sacrificial Cult",
+  "Keywords": [
+    "rule_punic_cult_10",
+    "Sacred Code of Tanit and Baal Hammon Sacrificial Cult",
+    "Civic Rites Tanit and Baal Hammon Sacrificial Cult",
+    "Ancestral Law Tanit and Baal Hammon Sacrificial Cult"
+  ],
+  "RagShortTexts": [
+    "The institutional tradition of Tanit and Baal Hammon Sacrificial Cult defined social..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The social order of antiquity was rooted in Tanit and Baal Hammon Sacrificial Cult. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Without Tanit and Baal Hammon Sacrificial Cult, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "From childhood our elders taught us to revere Tanit and Baal Hammon Sacrificial Cult. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1_7",
+  "HeroName": "Isabel of Aragon",
+  "Description": "Infanta Isabel of Aragon is the celebrated daughter of King James I and Queen Violant of Hungary. Educated at the royal court of Zaragoza in vernacular troubadour lyrics, Latin theology, and high European diplomacy, she became the living symbol of reconciliation following the Treaty of Corbeil in 1258, which resolved historic territorial disputes between the Capetian crown and the House of Barcelona. In 1259, her impending union with the Capetian heir makes her the most coveted princess in Christendom. Graceful, compassionate, and possessing acute political tact, Isabel prepares to bring the refined courtly traditions of Catalonia to the halls of Paris. Within the embroidery chambers of Zaragoza, Isabel skillfully mastered Latin and French courtly etiquette, charming visiting Capetian legates with her dignified bearing and witty grace. Embracing her destiny to heal decades of trans-Pyrenean border rivalries, she prepared to carry Aragonese prestige to Paris as an exemplar of Christian queenly majesty.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement trans-Pyrenean peace through her royal marriage to the Capetian heir of France",
+    "Perpetuate the saintly charitable legacy of her house by endowing religious and medical foundations",
+    "Uphold the highest standards of queenly virtue, honoring the houses of Barcelona and Árpád"
+  ],
+  "Values": [
+    "Dynastic union serves the sacred welfare of nations; self-sacrifice for peace is supreme honor",
+    "Authentic Christian charity and intellectual grace conquer hearts far more than imperial haughtiness",
+    "Reverent obedience to God, moral purity, and loving dedication to one's realm"
+  ],
+  "Fears": [
+    "Renewed conflict between France and Aragon turning her into a mistrusted hostage in a foreign court",
+    "Failing health or court intrigue undermining her royal duties in the unfamiliar climate of Paris"
+  ],
+  "SpeechStyle": "Graceful, melodious, and exquisitely courtly; speaks with genuine humility, poetic charm, and consummate diplomatic refinement.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

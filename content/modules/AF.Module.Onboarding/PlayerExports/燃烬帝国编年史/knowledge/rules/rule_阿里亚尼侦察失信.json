@@ -1,0 +1,38 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v1",
+  "Keywords": [
+    "阿里亚尼侦察失信"
+  ],
+  "RagShortTexts": [
+    "不列颠阿里亚尼被撤换，跨边地收集消息也伴随泄密风险。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "不列颠的阿里亚尼往来边地，向罗马将领报告邻近群体的动向。狄奥多西整顿当地军务时，因这批人员接受对方许诺和礼物、泄露罗马情况而撤换他们。能够远行收消息的人，也可能把本方消息带给敌手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "侦察者能接近双方，既能带回消息，也可能带走己方情况。部队接报时要问何处亲见、何处听说，不能因为报告者有旧职名便免除复核。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "狄奥多西的处置针对情报人员受贿泄密的具体指控。撤换后仍须获得边情，故行政问题是如何恢复可信报告，而非从此取消一切地方向导与跨境接触。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

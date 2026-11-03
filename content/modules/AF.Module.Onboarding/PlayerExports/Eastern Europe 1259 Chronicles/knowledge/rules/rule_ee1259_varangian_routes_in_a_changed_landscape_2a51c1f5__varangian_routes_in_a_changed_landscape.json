@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_varangian_routes_in_a_changed_landscape_2a51c1f5",
+  "Keywords": [
+    "Water and land routes toward Byzantium",
+    "Arranging stages along the Dnieper"
+  ],
+  "RagShortTexts": [
+    "Journeys between Baltic and Black Sea waters include rivers, watersheds and land transfers.",
+    "Water conditions and authorities vary by stage, requiring repeated transport and protection."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Older routes from northern waters toward the Dnieper and Black Sea require landings, transfers and overland legs. Damaged towns, steppe conditions and differing authorities demand information stage by stage. Traders may handle one section through trusted partners; onward movement depends on connected crews, food and protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Carrying households know the end of a river leg is not the end of a journey. Goods need counting, protection from damp and reloading; absent onward crews add guard and food costs. Shared loads and regular contacts save money, while promises of easy passage still need named recipients and places."
+    }
+  ],
+  "TextMappings": []
+}

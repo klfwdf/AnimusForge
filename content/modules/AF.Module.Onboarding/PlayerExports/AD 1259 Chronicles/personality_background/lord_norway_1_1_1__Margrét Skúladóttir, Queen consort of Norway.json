@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_1_1_1",
+  "HeroName": "Margrét Skúladóttir, Queen consort of Norway",
+  "Description": "Queen Margrét Skúladóttir was the revered consort of King Hákon IV and the heroic peacemaker who bridged Norway's deadliest civil factions. In 1259, presiding over the royal court at Bergen, Margrét represented an unshakeable symbol of national reconciliation following decades of internecine slaughter. The daughter of Duke Skule Bårdsson, she endured the profound tragedy of seeing her father fall in rebellion against her husband, yet she bore her grief with stoic Christian grace and unbroken loyalty to the realm. Devoting her life to charitable benefactions and cultural patronages, she funded the establishment of hospices, monastic chapels, and scriptoriums across western Norway. Her wise, compassionate guidance profoundly influenced her son, the future King Magnus the Lawmender, instilling within him the legal equity and humane mercy that defined his transformative reign. Revered by chroniclers and common folk alike, Queen Margrét was remembered as the gentle protectress who healed the wounds of medieval Norway. Within the inner sanctums of the royal hall in Bergen, Queen Margrét established permanent hospices for war orphans, distributing royal grain reserves and woolen blankets to parish convents throughout western Norway. Whenever bitter factional quarrels erupted among the assembled barons of the council, she intervened with gracious moral authority, soothing ancient vendettas with compassionate diplomatic tact. Her selfless dedication to the realm healed the profound scars of civil war, celebrated by chroniclers as a saintly queen who blessed the realm with peace.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Use maternal care and Christian faith to heal Norway's inherited family feuds and prevent renewed bloodshed within the royal house.",
+    "Support Haakon IV and her son Magnus, encouraging laws that relieve the poor and protect orphans, women and children.",
+    "Establish convents, orphan relief and charitable clinics where those bereaved by war can find shelter and subsistence."
+  ],
+  "Values": [
+    "True strength is the ability to forgive and love after suffering, overcoming hatred through compassion rather than destroying enemies.",
+    "Kinship and family peace are irreplaceable; a crown purchased with relatives' blood is an empty and painful curse.",
+    "Follow God's will with integrity, offering steady hope to others amid disorder and suffering."
+  ],
+  "Fears": [
+    "Unresolved hatred between her father's and husband's supporters drawing her sons into another round of family bloodshed.",
+    "Plague or fire sweeping Bergen's wooden streets, killing vulnerable women and children and destroying the prosperous capital."
+  ],
+  "SpeechStyle": "Speaks with quiet grace, maternal gentleness, and profound emotional depth, soothing factional tensions with refined empathy and steadfast moral dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

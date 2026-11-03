@@ -1,0 +1,59 @@
+{
+  "Id": "be_armenian_kingdom_geopolitics",
+  "Keywords": [
+    "Armenia Frontiers",
+    "Araxes highland passes"
+  ],
+  "RagShortTexts": [
+    "Araxes valleys and highland passes lead toward Rome and Persia.",
+    "Snow and provisioned sites affect merchant and reinforcement routes."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Araxes valley and highland passes lead toward Rome and Persia. Season, snow and provisioned sites determine routes for caravans and aid."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Araxes valleys and highland passes lead toward Rome and Persia. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Snow and provisioned sites affect merchant and reinforcement routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Snow and provisioned sites affect merchant and reinforcement routes. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Araxes valleys and highland passes lead toward Rome and Persia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Araxes valleys and highland passes lead toward Rome and Persia. Closed routes may separate families from goods, imposing costs on those remaining at home. Snow and provisioned sites affect merchant and reinforcement routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Snow and provisioned sites affect merchant and reinforcement routes. Cargo passes different carriers, making distant route changes become local shortages through delay. Araxes valleys and highland passes lead toward Rome and Persia."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

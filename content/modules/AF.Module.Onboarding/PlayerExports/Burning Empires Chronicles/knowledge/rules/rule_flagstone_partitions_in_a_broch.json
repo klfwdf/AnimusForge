@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v7",
+  "Keywords": [
+    "Flagstone partitions in a broch"
+  ],
+  "RagShortTexts": [
+    "Large flagstones divided Midhowe’s interior into smaller working and storage areas."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Large flagstones divided Midhowe’s interior into smaller working and storage areas. These divisions separated tools, stocks and activities within one enclosure. A shared wall did not mean every inhabitant spent the day solely on guard duty."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

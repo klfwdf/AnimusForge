@@ -1,0 +1,53 @@
+{
+  "Id": "rule_slavic_berdysh_poleaxe",
+  "Keywords": [
+    "Long-hafted axes in Rus",
+    "Axe clearance in wooded ground",
+    "Maintaining axe heads and hafts"
+  ],
+  "RagShortTexts": [
+    "A long haft extends reach but needs clearance for swing and recovery in woods or doorways.",
+    "Secure heads and sound hafts matter; military repairs compete with timber and cart work."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Axes in Rus and neighboring wooded lands serve timber work and close fighting, with use shaped by haft length, head weight and skill. A longer haft extends reach but catches around branches, shields and doors. Recovery after a blow matters alongside impact. Edges, sockets and wood need inspection after damp camps and long journeys."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "An axeman needs room among companions and attention to footing and branches in woodland. A missed blow or an edge caught in timber leaves an opening. Marching halts allow checks for loose heads and splitting hafts. Cooperation with a shield bearer includes making movements clear so friendly men need not dodge the weapon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord distinguishes timber work, barrier clearing and close combat when allocating axes and men. Skilled carpenters are valuable at bridges and forts and may be poorly spent in a front rank. Committing every good axe to an assault hampers camp timber work. Spare hafts, edge repairs and room on wooded roads remain necessary."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Household axes provide firewood, roofing and fences; requisition delays even winter fuel gathering. Borrowers need to account for broken hafts and damaged edges. Carpenter and smith perform different repairs. Giving military axes priority can leave a cultivator waiting another day for an essential tool."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

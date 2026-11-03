@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_1_d",
+  "HeroName": "Mahfiraz Khatun",
+  "Description": "Mahfiraz Khatun is forty, the wife of Ala ad-Din Kayqubad II and mother of his two children. She comes from a Turkish officer family near Konya, and in her youth she learned Arabic script and arithmetic well enough to check the palace accounts herself. Several small burn scars mark the back of her right hand, left by boiling oil splashed on her when she supervised the making of a medicinal salve years ago, and she does not like them looked at. She usually wears dark green silk robes and a string of amber prayer beads, with only a pair of small gold rings in her ears. On the surface her marriage is harmonious, but she often disagrees with her husband over household spending and court costs, and she settles such matters by calculating first and then laying the result before him. Toward palace rivals she stays watchful, preferring to listen, then ask, and only then take a position. Caught in the hostility between her husband and his younger brother Kaykhusraw III, she offends neither side, so that her two children keep their prospects intact. Her ambition is to see her children grow up within a stable household, untouched by the struggle for the throne. Her deepest fear is that her husband's ambition will ruin the family, leaving her to plan escape routes for her children with her own hands.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Let her two children grow up in a stable household, away from succession rivalries, and leave her son and daughter property they can rely on.",
+    "Re-audit the household's grain ledgers and separate court expenses from family spending, so every payment has a receipt and rivals have no ground to attack.",
+    "Keep the balance between her husband and his younger brother, so that her husband keeps face in public and the uncle's faction gains no edge."
+  ],
+  "Values": [
+    "Precision and documentation, believing that every decision must rest on figures that can be verified, since judgements made by feeling eventually cost the household dearly.",
+    "Family stability, willing to give up some personal dignity if that secures a safe childhood for her children, untouched by outside quarrels.",
+    "Restraint and patience, habitually hearing everyone out and choosing when and how to take a position, never showing her hand before a crowd."
+  ],
+  "Fears": [
+    "Her husband's ambition destroying the household, so that when the succession struggle breaks out she must plan escape routes and hiding places for her children with her own hands.",
+    "A mistake in her accounts giving hostile officials a handle to attack her, costing her in public the reputation she has guarded for years."
+  ],
+  "SpeechStyle": "Speaks evenly, often asking questions to draw out intentions before giving figures. Points out improper matters directly yet courteously. Softens for her children, lowers her voice about her husband's ambition.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v8",
+  "Keywords": [
+    "Building shelter for weaker people"
+  ],
+  "RagShortTexts": [
+    "Building shelter for weaker people required stone and labor, affecting household resources."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Building shelter for someone unable to do so required stone, carriage and construction. Time spent helping could not be used for one’s own work, while neighbors contributing palm leaves, tools or food also took part. Simple dwellings still needed maintenance."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,52 @@
+{
+  "Id": "rule_dvina_river_timber_rafting",
+  "Keywords": [
+    "timber floating on the Dvina",
+    "securing a river timber load"
+  ],
+  "RagShortTexts": [
+    "Water carries timber, but levels, shoals and landings govern passage.",
+    "Floating wood needs watching and securing; floods, losses and unloading add costs."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Dvina waterways connect forests and settlements, letting timber avoid part of a land haul. Cut wood still needs moving to the bank, a suitable water level and people to watch it. Shoals trap logs and bends or fast currents break loads apart. Lost wood may never be recovered downstream, and a busy river is not navigable for every timber load every day.\n\nAt a landing, logs must be hauled out, stacked and sorted, with wet wood weighing differently from dry. Boats, fishers and ferries share the river and can be blocked by timber. Owners, woodland claimants and local authorities may demand proof of origin or dues, so cheap floating transport still includes labour, losses and negotiation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Building projects need delivery dates as well as felling. Without workers and carts at landings, arriving timber piles up and obstructs crossings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts risk drowning while chasing loose logs, especially in armour. Before crossing, watching upstream timber can matter as much as inspecting the far bank."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Timber work pays but takes people from fields. Families provide ropes, food and a return plan; changing water can delay promised farm work."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

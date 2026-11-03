@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_earlier_rising_and_unsettled_peace_b6728a90",
+  "Keywords": [
+    "earlier rising and unsettled peace",
+    "Prussian relations after the 1249 agreement"
+  ],
+  "RagShortTexts": [
+    "Earlier Prussian resistance and the 1249 agreement are remembered.",
+    "Implementation still requires local recognition."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Earlier Prussian resistance and the 1249 agreement leave questions of rights, belief and obedience. In 1259 practical compliance still depends on those bound by it and on collectors honoring terms. Agreements require continued local recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A report of submission needs actual guides and road support. Unsettled grievances can escalate small disputes; identifying negotiating parties avoids treating a whole village as hostile."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Invoking the 1249 agreement requires specific rights and responsible parties. Cooperative chiefs may be worth more than declarations no one will implement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families judge peace by fields, demands and returned kin. Memories differ, and the credibility of a promise depends on who implements it."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

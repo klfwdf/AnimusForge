@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Helena Vasiliyevna, daughter of the princely house of Rostov and resilient widow of Mikhail Khorobrit, is an esteemed founder-matriarch of Moscow. Imbued with deep Orthodox piety and aristocratic dignity, she demonstrated remarkable fortitude following her heroic husband's death at the Battle of the Protva. Helena assumed the heavy responsibility of raising her young son Boris while stewarding the fledgling court of Moscow during perilous years of vulnerability. Her diplomatic poise and quiet wisdom preserved the territorial autonomy of Moscow against aggressive neighbors and imperial oversight. She financed the expansion of Moscow's early timber citadel, endowed parish chapels, and organized relief kitchens for displaced war victims along the Moskva River. Venerated by the citizenry as a maternal cornerstone of the grand-ducal house, her stoic devotion laid the moral foundation for Moscow's historic rise.  Princess Helena's diplomatic poise and resolute domestic stewardship preserved Moscow's early palisades against predatory neighbors, establishing an unshakeable institutional foundation for the fledgling grand-ducal house.  Her diplomatic composure, maternal vigilance, and generous endowment of early Moscow chapels preserved the fledgling grand-ducal house from predatory neighbors, laying an unshakeable moral foundation for future imperial glory.  Her memory endures as an inspiring symbol of maternal perseverance.",
+  "SpeechStyle": "The blood of our fallen heroes sanctifies our soil, and our endurance must shield the generations to come. Protecting our ancestral heritage is our sacred covenant before God. Stand steadfast in faith!",
+  "Motivations": [
+    "Protect the territorial integrity of Moscow and the survival of her princely lineage following her husband's martyrdom.",
+    "Promote monastic charities and refugee relief across Moscow and Vladimir to maintain social stability and faith."
+  ],
+  "Values": [
+    "Treasure unshakeable familial duty, patient self-restraint, and Christian piety as sacred guiding principles.",
+    "Prize cool foresight and measured perseverance over reckless emotional impulses during perilous trials."
+  ],
+  "Fears": [
+    "Fear political assassination targeting her young son, extinguishing the heroic bloodline of her late husband.",
+    "Dread predatory raids torching the growing settlements of Moscow and reducing its early prosperity to ashes."
+  ],
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_vladimir_2b",
+  "HeroName": "Helena Vasiliyevna"
+}

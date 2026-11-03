@@ -1,0 +1,41 @@
+{
+  "Id": "rule_English_Council_of_Fifteen_Barons",
+  "Keywords": [
+    "Council of Fifteen Barons",
+    "Montfort Baronial Governance",
+    "Great Council Oversight",
+    "Royal Treasury Co-Rule"
+  ],
+  "RagShortTexts": [
+    "The Provisions of Oxford in 1258 placed government under a council of fifteen.",
+    "Baronial reform did not automatically remove a village's rents, labour or local burdens."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Provisions of Oxford in 1258 placed King Henry III under the supervision of a council of fifteen men chosen by the barons, who answered to a parliament meeting three times a year. The council took control of appointments to the chancellorship, the treasury, and the local sheriffs, offices that had long served the Crown's own patronage. Its members claimed that the king had squandered revenue on Poitevin relatives and foreign favourites, and that his government had broken the oaths he had sworn to his subjects. The Provisions were meant to restore good governance, but their authors disagreed about how far the reform should go, and that disagreement would soon split the baronial party."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Simon de Montfort held that kings were bound by oath to their subjects and could not squander the treasury on foreign favourites. Barons sat in Westminster with their swords close at hand, ready to seal every royal decree that they had approved. A baron who doubted the reform knew his lands and his place at court depended on the council's favour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "In 1258 the barons forced King Henry III to accept the Provisions of Oxford, which placed royal government under a council of fifteen. The lords in London still argue whether the King is a tyrant or the barons are rebels. The Provisions promised sheriffs serving one-year terms, but the tax assessors still come to our village each autumn, and their demands never grow lighter for the hamlet."
+    }
+  ],
+  "TextMappings": []
+}

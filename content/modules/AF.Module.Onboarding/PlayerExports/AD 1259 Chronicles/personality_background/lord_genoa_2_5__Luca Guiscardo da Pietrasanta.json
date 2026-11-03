@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_2_5",
+  "HeroName": "Luca Guiscardo da Pietrasanta",
+  "Description": "Luca Guiscardo da Pietrasanta serves as an eminent foreign jurist and former Podestà of Genoa, closely allied with the Spinola Ghibellines. Master of Imperial jurisprudence and Tuscan communal codes, his legal rulings carry formidable authority, adroitly deploying statutory arbitration to protect aristocratic prerogatives against radical encroachment. As former Podestà and high magistrate, Luca commanded the Senate chamber with vast erudition in Roman civil law, repeatedly compelling armed factions into legal arbitration following bloody street skirmishes. Discreetly championing Ghibelline property rights, he adroitly deployed statutory loopholes to block radical decrees attempting to confiscate the Spinola family's ancestral mountain castles and customs stations. Dispassionate and astute, he recognized that political regimes ebb and flow, maintaining that rigorous statutory adherence provided the only shield capable of preserving public order amidst factional tempests. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve judicial order in Genoa while safeguarding Ghibelline aristocratic interests.",
+    "Deploy statutory jurisprudence to curb the radical overreach of popular tribunals."
+  ],
+  "Values": [
+    "Codified civil law is the ultimate rampart against unruly mob tyranny.",
+    "Dispassionate calculation and judicial precedent outweigh popular passions."
+  ],
+  "Fears": [
+    "Riotous mobs burning municipal archives and reducing civil order to anarchy.",
+    "Becoming a factional scapegoat condemned to political exile and dishonor."
+  ],
+  "SpeechStyle": "Phrased with austere legal precision and bureaucratic majesty, commanding solemn respect. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

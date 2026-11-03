@@ -1,0 +1,59 @@
+{
+  "Id": "be_votadinian_kingdom_legitimacy",
+  "Keywords": [
+    "Votadinians Legitimacy",
+    "Padern’s local judgment and Roman credit"
+  ],
+  "RagShortTexts": [
+    "Land protection and local judgment support Padern.",
+    "Roman connections add credit without ending local negotiation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Land protection and local judgment sustain recognition. Roman links add credit without making every outside request beyond negotiation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Land protection and local judgment support Padern. Military recognition also rests on rewards and relief; a title needs willing action. Roman connections add credit without ending local negotiation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Roman connections add credit without ending local negotiation. Nominal rights require local execution, with consent and supply both shaping authority. Land protection and local judgment support Padern."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Land protection and local judgment support Padern. Households judge rule through protected families, land and responses to appeals. Roman connections add credit without ending local negotiation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman connections add credit without ending local negotiation. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Land protection and local judgment support Padern."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

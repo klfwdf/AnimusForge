@@ -1,0 +1,59 @@
+{
+  "Id": "be_alemannic_kingdom_legitimacy",
+  "Keywords": [
+    "Alemans Legitimacy",
+    "Makrian’s oaths"
+  ],
+  "RagShortTexts": [
+    "Makrian relies on success, oaths and participating chiefs.",
+    "Roman agreements require local chiefs willing to implement them."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Makrian gains recognition through martial success, oaths and participation. Roman agreements preserve markets only when local chiefs also implement them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Makrian relies on success, oaths and participating chiefs. Military recognition also rests on rewards and relief; a title needs willing action. Roman agreements require local chiefs willing to implement them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Roman agreements require local chiefs willing to implement them. Nominal rights require local execution, with consent and supply both shaping authority. Makrian relies on success, oaths and participating chiefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Makrian relies on success, oaths and participating chiefs. Households judge rule through protected families, land and responses to appeals. Roman agreements require local chiefs willing to implement them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman agreements require local chiefs willing to implement them. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Makrian relies on success, oaths and participating chiefs."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

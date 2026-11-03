@@ -1,0 +1,59 @@
+{
+  "Id": "be_armenian_kingdom_legitimacy",
+  "Keywords": [
+    "Armenia Legitimacy",
+    "Varazdat’s dynastic recognition"
+  ],
+  "RagShortTexts": [
+    "Varazdat relies on Arsacid standing and noble and church recognition.",
+    "Foreign recognition can attach garrison and service conditions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Varazdat’s Arsacid position also needs aristocratic and church recognition. Foreign acknowledgment can strengthen him while attaching garrison and service conditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Varazdat relies on Arsacid standing and noble and church recognition. Military recognition also rests on rewards and relief; a title needs willing action. Foreign recognition can attach garrison and service conditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Foreign recognition can attach garrison and service conditions. Nominal rights require local execution, with consent and supply both shaping authority. Varazdat relies on Arsacid standing and noble and church recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Varazdat relies on Arsacid standing and noble and church recognition. Households judge rule through protected families, land and responses to appeals. Foreign recognition can attach garrison and service conditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Foreign recognition can attach garrison and service conditions. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Varazdat relies on Arsacid standing and noble and church recognition."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

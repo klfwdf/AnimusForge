@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v2",
+  "Keywords": [
+    "Light boats carried by wagon"
+  ],
+  "RagShortTexts": [
+    "After building light boats, Caesar moved them on wagons by night before launching a river crossing."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After building light boats, Caesar moved them on wagons by night before launching a river crossing. Portability was part of their value: carts, roads and access to the bank mattered as much as the hull. Building a boat was not yet delivering its passengers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

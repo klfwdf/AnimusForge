@@ -1,0 +1,59 @@
+{
+  "Id": "be_kartli_kingdom_legitimacy",
+  "Keywords": [
+    "Kartli Legitimacy",
+    "Mihrdat’s dynasty and church recognition"
+  ],
+  "RagShortTexts": [
+    "Dynasty, Christian links and local recognition support Kartlian kingship.",
+    "Foreign recognition does not ensure every pass chief implements its terms."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dynasty, Christian links and local recognition support kingship. External acknowledgment increases standing without guaranteeing every pass chief accepts its conditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Dynasty, Christian links and local recognition support Kartlian kingship. Military recognition also rests on rewards and relief; a title needs willing action. Foreign recognition does not ensure every pass chief implements its terms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Foreign recognition does not ensure every pass chief implements its terms. Nominal rights require local execution, with consent and supply both shaping authority. Dynasty, Christian links and local recognition support Kartlian kingship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Dynasty, Christian links and local recognition support Kartlian kingship. Households judge rule through protected families, land and responses to appeals. Foreign recognition does not ensure every pass chief implements its terms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Foreign recognition does not ensure every pass chief implements its terms. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Dynasty, Christian links and local recognition support Kartlian kingship."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

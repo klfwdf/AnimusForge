@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Siena_Ghibelline_Banking_Commune",
+  "Keywords": [
+    "Sienese communal finance and factions"
+  ],
+  "RagShortTexts": [
+    "Sienese banking and merchants supplied exchange and credit within Tuscan factional politics."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sienese banking and merchants supplied exchange and credit within Tuscan factional politics. Loans, war costs and allied promises competed for funds. Wealth did not remove repayment obligations or turn expected aid into a completed victory."
+    }
+  ],
+  "TextMappings": []
+}

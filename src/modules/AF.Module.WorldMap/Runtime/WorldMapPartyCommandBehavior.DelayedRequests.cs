@@ -67,7 +67,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (!TryOpenCreateCompanionParty(hero, request.FollowUpCommands, out string message))
 		{
-			LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0003") + message);
+			LogFact(hero, PromptComposerTexts.Format("memory_worldmap_DisplayCompanionCreateFailed", ("HERO", GetHeroName(hero)), ("DETAIL", message)));
 		}
 	}
 
@@ -206,7 +206,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (!TryCreateGovernorExpeditionNow(hero, request.OriginSettlementId, request.OriginClanId, request.FollowUpCommands, out string message))
 		{
-			LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0005") + message);
+			LogFact(hero, PromptComposerTexts.Format("memory_worldmap_DisplayGovernorExpeditionFailed", ("HERO", GetHeroName(hero)), ("DETAIL", message)));
 		}
 	}
 
@@ -413,7 +413,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			if (fromCancel)
 			{
-				LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0233"));
+				LogFact(hero, PromptComposerTexts.Format("memory_worldmap_PartyCreationCancelled", ("HERO", GetHeroName(hero))));
 				return;
 			}
 			Hero partyHero = FindHeroInRoster(leftMemberRoster) ?? hero;
@@ -430,7 +430,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			RegisterPlayerDetachedParty(partyHero, createdParty);
 			int movedMembers = MoveSelectedTroopsToCreatedParty(createdParty, partyHero, leftMemberRoster, rightOwnerParty);
 			int movedPrisoners = MoveSelectedPrisonersToCreatedParty(createdParty, leftPrisonRoster, rightOwnerParty);
-			LogFact(partyHero, GetHeroName(partyHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0235") + movedMembers + WorldMapSourceTexts.Get("raw_literals.wm_lit_0236") + (movedPrisoners > 0 ? ("、" + movedPrisoners + WorldMapSourceTexts.Get("raw_literals.wm_lit_0237")) : "") + "。");
+			LogFact(partyHero, PromptComposerTexts.Format("memory_worldmap_PartyCreated", ("HERO", GetHeroName(partyHero)), ("TROOPS", movedMembers), ("PRISONERS", movedPrisoners)));
 			if (followUpCommands != null && followUpCommands.Count > 0)
 			{
 				if (TryAppendQueue(partyHero, followUpCommands, out string fact, out string queueMessage, out _))
@@ -443,7 +443,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					LogFact(partyHero, GetHeroName(partyHero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0238") + queueMessage);
+					LogFact(partyHero, PromptComposerTexts.Format("memory_worldmap_DisplayCompanionFollowUpFailed", ("HERO", GetHeroName(partyHero)), ("DETAIL", queueMessage)));
 				}
 			}
 		}
@@ -453,7 +453,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			if (hero != null)
 			{
 				EnsureHeroRemainsAvailableAfterCreateFailure(hero, createdParty);
-				LogFact(hero, GetHeroName(hero) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0239") + ex.Message);
+				LogFact(hero, PromptComposerTexts.Format("memory_worldmap_DisplayCompanionCreateException", ("HERO", GetHeroName(hero)), ("DETAIL", ex.Message)));
 			}
 		}
 	}

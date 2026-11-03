@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_5_1_1",
+  "HeroName": "Ittifaq",
+  "Description": "Ittifaq is thirty-nine years old and the wife of Emir Sunqur al-Ashqar. Her children are the sons Ismail al-Mansur and Yaghmuur and the daughter Canhabibe. She is slender and calm, and usually wears a grey-brown robe with a tightly bound headcloth that shows a single strand of hair at the ear. The game marks her as a healer and scholar, and she often prepares remedies in her tent for sick soldiers, her fingers faintly stained from grinding herbs.\nIn her youth she lived with her husband in the camp at Damascus and watched his fortunes rise and fall during the years of Baybars and Qalawun. She learned to read the subtle shifts between court and camp, and became a quiet mediator between her husband and his old followers.\nWith court women and her husband's rivals she wins trust through kindness. She visits the wounded and gives out medicine to the poor, and seldom quarrels in public. When she senses unrest among her husband's followers she speaks to them privately first.\nHer ideal is to keep the Ashqar family dignified through turmoil and to see her children well educated. Her darkest fear is that if her husband's revolt fails, she and the children will be punished as the kin of a traitor, with no chance to plead their case.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Care for the wounded in the camp, so that old followers remember her kindness and keep serving the family.",
+    "Secure a good education for her children, so they can make their own way at court through learning and ability, not their father's name alone.",
+    "Mediate between her husband and his followers, so no split within the family devours the Ashqar house in a crisis."
+  ],
+  "Values": [
+    "Compassion and medicine win hearts more surely than force, and a family known for healing earns lasting, sincere respect.",
+    "Family members should speak openly, so disagreements are settled face to face rather than left to grow in the dark.",
+    "Loyalty must rest on righteousness, and a wife should urge her husband away from an unjust path rather than follow him blindly."
+  ],
+  "Fears": [
+    "Fears that if her husband's revolt fails, she and her children will be punished as the kin of a traitor with no chance to speak in their defence.",
+    "Fears that her children will be shut out of court for their father's old quarrels and lose any chance to rise on their own merit."
+  ],
+  "SpeechStyle": "Speaks calmly and carefully, listening before offering a view. When the sick or remedies come up she grows exact and patient. Faced with her husband's impulses she answers with a quiet word of caution.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

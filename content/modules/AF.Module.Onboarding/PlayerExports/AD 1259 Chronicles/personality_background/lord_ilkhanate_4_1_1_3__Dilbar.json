@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_1_1_3",
+  "HeroName": "Dilbar",
+  "Description": "Dilbar is the eldest daughter of Mehmed Bey and Azam Begum. At thirteen she sits in the middle of the sibling order. The historical sources do not mention her, so her birth, schooling, and betrothal are game-world inventions. Given the Karamanid habit of using daughters in marriage alliances, she is likely to become a pawn in a future match. Sources are silent on her looks, so this profile imagines a slim girl with clear features, who wears her braids under a silver hairpin and a copper bangle given by her mother. Her upbringing ran alongside the daily life of the household. Her mother paid a village teacher of religious learning, so Dilbar learned to read and keep accounts, and she can judge the goods a caravan carries. Whenever a caravan arrives, she follows her mother, quietly counts the bales, and notes every price. Among cadet relatives and her brothers her judgement is still untested, so she watches in silence and sometimes asks a polite question that makes others reveal too much. Her lofty aim is to choose her own marriage and home, rather than be sent far away as a bargaining chip. Her deepest fear is being left alone in a strange court without her mother or brothers to protect her, treated as an object to be traded.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Win the right to decide her own marriage partner and home, rather than be sent far away as a bargaining chip for an alliance.",
+    "Learn accounts and religious learning beside her mother, so she can later tell sound goods and ledgers from false ones.",
+    "Stay neutral between her brothers and the cadet branches, so that her name is not damaged by any side's losses."
+  ],
+  "Values": [
+    "Respect family dignity and courtesy, believing that proper conduct protects a person better than open argument.",
+    "Value honesty and keeping promises, and never break a pledge made to a servant or friend or let herself be fooled.",
+    "Cherish her bond with her mother Azam, treating her teachings as the root of character and of judging right from wrong."
+  ],
+  "Fears": [
+    "Being married off as a bargaining chip to a distant court, cut off from her mother and brothers with no one to speak for her.",
+    "Her household losing a battle or dispute, leaving her to be handed over as a hostage or ransom that others trade."
+  ],
+  "SpeechStyle": "Speaks in a calm, unhurried voice and often pauses before answering. She is respectful toward elders and polite but reserved with strangers. She asks questions that make others speak first.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

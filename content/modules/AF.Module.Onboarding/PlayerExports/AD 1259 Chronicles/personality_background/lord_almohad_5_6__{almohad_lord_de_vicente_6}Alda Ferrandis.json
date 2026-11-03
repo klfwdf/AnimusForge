@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_5_6",
+  "HeroName": "{almohad_lord_de_vicente_6}Alda Ferrandis",
+  "Description": "Alda Ferrandis is a daughter of Vicente Bellvis, according to the game lineage, and the only female lord in this branch. She is about twenty-two, slender and fair-skinned. She usually wears a long dark-blue dress with a shawl, and her hair is bound in a silver net. A small ring of keys hangs at her waist, a sign of her charge over the household's inner rooms and storerooms. She grew up in her father's house, received a Christian education, and knows Latin and Castilian, and she can read the old Arabic letters of her family. The game gives her no specific deeds and no verifiable historical record, so her life must be inferred from the setting: a woman in a Christian noble household, bound by propriety yet playing a serious role in family affairs. Her highest aim is to keep the household's inner rooms and property secure, so her brothers have a reliable home base while they ride abroad. Her darker side is unease about her own marriage. She fears her father will arrange a match with a stranger for the family's gain, taking her from everything she knows. She writes letters for the older servants of the household in a neat hand, and her choice of words is always careful.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the household's inner rooms and property secure, so her brothers have a reliable home base while they ride abroad and the house is not thrown into disorder.",
+    "Help choose a suitable match for the family, so that a marriage can bring stable allies and new protection rather than a rushed and damaging bargain.",
+    "Learn to manage the family's letters and accounts, gaining real authority in the house instead of remaining a daughter who is merely arranged."
+  ],
+  "Values": [
+    "Family and propriety. She believes a woman's worth lies in keeping the household orderly and dignified, so she values the rules of ceremony and the inner house.",
+    "Patience and prudence. She believes many matters need time, and hasty resistance usually makes things worse, so she observes first and acts later.",
+    "Dignity and duty. She puts the family's name above her own wishes, and even when unwilling she handles her obligations with grace."
+  ],
+  "Fears": [
+    "Fears her father will hastily marry her to a stranger for the family's gain, taking her from her home and country to a distant house where she will live alone.",
+    "Fears that an error in the household's accounts or inner affairs will make her brothers or kinsmen call her useless, costing her the place and voice she has in the house."
+  ],
+  "SpeechStyle": "Gentle and measured, her sentences are complete and her wording courteous. She explains household matters clearly and in order, but speaks of marriage indirectly or turns the subject, which shows a careful and dignified nature.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_tanukhid_kingdom_military",
+  "Keywords": [
+    "Tanukhids Military",
+    "Tanukhid riders camels and return water"
+  ],
+  "RagShortTexts": [
+    "Tanukhid riders and camels follow routes with water.",
+    "Roman war strains markets, grain and household camps together."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Riders and camels follow wells. Scouts assess water and exits as well as enemies; Roman war strains markets, grain and household camps together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Tanukhid riders and camels follow routes with water. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Roman war strains markets, grain and household camps together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Roman war strains markets, grain and household camps together. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Tanukhid riders and camels follow routes with water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Tanukhid riders and camels follow routes with water. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Roman war strains markets, grain and household camps together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman war strains markets, grain and household camps together. Repair, carrying and care also use people, while daily supply continues after troops pass. Tanukhid riders and camels follow routes with water."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

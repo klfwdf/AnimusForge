@@ -91,6 +91,18 @@
     <string id="AF_GPT_UI_OpenAiVoiceSelectionHint" text="&#10;随机只从与该人物同性别的 male-/female- 音色中抽取。带情绪变体的音色会按回复情绪切换到 _happy/_angry。随当前战役保存。" />
     <string id="AF_GPT_UI_OpenAiRefreshStarted" text="正在刷新音色列表，请稍后重新打开选择。" />
     <string id="AF_GPT_UI_OpenAiNoGenderVoice" text="服务列表中没有匹配的音色，请手动选择。" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_male_clear" text="景元·清亮少年" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_male_gentle" text="丹恒·温和青年" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_male_steady" text="瓦尔特·沉稳长者" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_male_deep" text="杰帕德·低沉英雄" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_male_senior" text="桑博·油滑大叔" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_clear" text="三月七·明朗少女" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_gentle" text="流萤·温柔少女" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_steady" text="姬子·成熟御姐" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_firm" text="希露瓦·飒爽大姐" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_senior" text="布洛妮娅·冷静少女" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_sparkle" text="花火·俏皮戏精" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_zh_default" text="默认中文女声" />
     <string id="AF_GPT_UI_VictoryReady" text="战果已处理；可进入 GCCZ 继续处置，或直接离开。" />
     <string id="AF_TTS_UI_Title" text="AnimusForge 语音功能-TTS 本地部署/API" />
     <string id="AF_TTS_UI_General" text="1. 语音选择与播放" />

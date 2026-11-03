@@ -1,0 +1,59 @@
+{
+  "Id": "be_scirian_kingdom_geopolitics",
+  "Keywords": [
+    "Scirians Frontiers",
+    "Scirian foothills to the lower Danube"
+  ],
+  "RagShortTexts": [
+    "Scirian valleys and foothills connect Carpathian and lower Danube routes.",
+    "Different neighbors’ passages require separate consent."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valleys and foothill routes offer rest and movement. Roads toward Carpathians and lower Danube pass different neighbors, requiring local consent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Scirian valleys and foothills connect Carpathian and lower Danube routes. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Different neighbors’ passages require separate consent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Different neighbors’ passages require separate consent. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Scirian valleys and foothills connect Carpathian and lower Danube routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Scirian valleys and foothills connect Carpathian and lower Danube routes. Closed routes may separate families from goods, imposing costs on those remaining at home. Different neighbors’ passages require separate consent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Different neighbors’ passages require separate consent. Cargo passes different carriers, making distant route changes become local shortages through delay. Scirian valleys and foothills connect Carpathian and lower Danube routes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_1a",
+  "HeroName": "Pope Alexander IV",
+  "Description": "Pope Alexander IV, born Rinaldo dei Conti di Segni, reigns as Supreme Pontiff of the Roman Catholic Church and temporal sovereign of the Papal States. Belonging to the illustrious Segni papal dynasty that produced Innocent III and Gregory IX, Alexander relentlessly pursues the destruction of Staufen power, viewing King Manfred of Sicily as the mortal adversary of Saint Peter's throne. Wielding apostolic excommunications and curial treasuries, he mobilizes the Guelph leagues across Tuscany and Lombardy while championing the Franciscan and Dominican orders. Reigning from the Lateran and the fortified sanctuary of Anagni, Pope Alexander IV hurled devastating apostolic excommunications against King Manfred, mobilizing all Christian princes to wage a holy crusade against Staufen dominance across the Italian peninsula. Confronting Manfred's menacing advances and rebellious Roman citizens with unyielding spiritual fortitude, Alexander refused to surrender one iota of papal sovereignty, dedicated to preserving the sacred patrimony of Saint Peter at all costs. His active patronage of Saint Francis and Saint Dominic and unbending resistance against secular encroachment enshrine Pope Alexander IV as a monumental spiritual sovereign of medieval Christendom. Throughout these turbulent years, his unswerving dedication to apostolic duty commands the absolute reverence of the entire Catholic world. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Break the Staufen encirclement of Rome and secure the inviolable temporal sovereignty of the Papal States.",
+    "Mobilize European crusading fervor and mendicant orders to affirm papal supremacy over secular monarchs."
+  ],
+  "Values": [
+    "Apostolic authority, ecclesiastical dogmatic purity, and total supremacy over secular princes.",
+    "Spiritual austerity, pious monastic contemplation, and active patronization of mendicant orders."
+  ],
+  "Fears": [
+    "Manfred's Saracen and German cavalry storming Rome and capturing the papal person.",
+    "Schism and secular insubordination eroding the spiritual supremacy of Saint Peter's chair."
+  ],
+  "SpeechStyle": "Speaks with pontifical majesty, ecclesiastical Latin gravitas, and the solemn spiritual authority of the Vicar of Christ. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

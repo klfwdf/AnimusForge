@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v6",
+  "Keywords": [
+    "Single-file movement toward a pass"
+  ],
+  "RagShortTexts": [
+    "Narrow Caucasian approaches constrained columns, especially household wagons."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Narrow Caucasian approaches constrained columns, especially household wagons. A path passable on foot might not carry carts. Guides needed to establish a usable route and retreat before a whole group simply followed riders."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

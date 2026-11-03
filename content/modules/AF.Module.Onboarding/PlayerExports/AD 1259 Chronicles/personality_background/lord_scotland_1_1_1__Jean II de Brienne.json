@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_1_1",
+  "HeroName": "Jean II de Brienne",
+  "Description": "Jean II de Brienne is a distinguished scion of the illustrious French crusader dynasty of Brienne, son of John of Brienne, King of Jerusalem and Emperor of Constantinople. Serving as Grand Butler of France, Jean became a pivotal figure in northern European politics following his high-profile marriage to Marie de Coucy, Dowager Queen of Scots. Tall, broad-shouldered, with sharp sapphire eyes and a commanding courtly presence, he personifies the chivalric elegance and crusader prestige of the Capetian court. A seasoned veteran of Louis IX's Seventh Crusade, Jean combines formidable cavalry swordsmanship with deep mastery of trans-European diplomacy. Since his union with Queen Marie, Jean has moved effortlessly between Paris, London, and Edinburgh, deploying his international prestige to counterbalance the overbearing dominance of the Comyn regency council. In 1259, as King Alexander III approaches his majority, Jean secures maritime diplomatic corridors connecting Scotland to France, dedicated to revitalizing the ancient Franco-Scottish alliance against Plantagenet encroachment. Chronicles from Saint-Denis and the English Close Rolls record that as an illustrious veteran of the crusades who fought at Acre, he steadfastly defended Brienne dynastic dignity while maintaining an impartial regency stance above the bitter feuds of Scottish barons.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Support Queen Marie de Coucy in maintaining commanding regency influence, checking Comyn family dominance",
+    "Deepen strategic and commercial ties between France and Scotland, checking Plantagenet expansionism",
+    "Deploy Brienne crusader prestige to protect the Scottish throne, ensuring Alexander III ascends smoothly"
+  ],
+  "Values": [
+    "Crusader royalty demands flawless chivalric honor and fearless resolve; never bow to treacherous factions",
+    "The alliance between France and Scotland is ordained by heaven; cross-Channel brotherhood outshines English truces",
+    "True nobility demonstrates calm fortitude amidst political storms, shielding sovereign rights with valor"
+  ],
+  "Fears": [
+    "Anglophile Scottish barons launching an armed coup against the Queen Dowager and her continental retinue",
+    "Cross-Channel warfare severing communication with France, leaving his household isolated in the north"
+  ],
+  "SpeechStyle": "Speaks with aristocratic Capetian French elegance, vibrant resonance, and immaculate crusader chivalry. His words are diplomatic yet commanding, blending continental polish with battlefield authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

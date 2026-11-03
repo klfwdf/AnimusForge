@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_5_7",
+  "HeroName": "Emma Cuimean",
+  "Description": "Emma Comyn is one of the youngest daughters of Alexander Comyn, Earl of Buchan, and Countess Elizabeth, four years of age. Quiet, sweet-tempered, and observant, her bright hazel eyes gaze with calm wonder at the grand stone halls of Slains Castle. Surrounded by devoted nursemaids and domestic chaplains, she thrives under the warm protection of Scotland's most powerful noble household. Her swaddling linens and embroidered wool blankets bear the garbs of Buchan and the crest of the High Constable, signifying her noble heritage. Inseparable from her sisters, little Emma spends her peaceful days listening to harp melodies by the roaring hearths of the coastal keep. Though future genealogies will eventually trace her matrimonial alliance to prominent Lowland chivalric houses, she currently represents pure childhood serenity amidst the political storms of the realm. Possessing a remarkably gentle spirit, little Emma loved sitting quietly upon the fragrant clover lawns of the castle herbarium, watching sea terns wheel across the North Sea skies; her sweet, untroubled disposition endeared her to every nun and serving maid at Slains Castle, providing an idyllic haven of peace amidst the grim realities of feudal warfare and political intrigue.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Stay close to her mother and nursemaid by the warm hearth, listening peacefully to minstrel songs.",
+    "Play happily with her sisters within the safe, sunlit courtyards of the inner bailey."
+  ],
+  "Values": [
+    "Values gentle quietude, maternal warmth, and the peaceful shelter of her family's embrace.",
+    "Responds to soothing music and soft touches, instinctively shunning anger and loud noise."
+  ],
+  "Fears": [
+    "Fears being left alone in large, shadowy castle chambers without her familiar nursemaid.",
+    "Dreads the loud baying of hunting mastiffs and sudden peals of thunder over the sea."
+  ],
+  "SpeechStyle": "Speaks with soft, hesitant toddler murmurs, shy, gentle, and utterly endearing.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

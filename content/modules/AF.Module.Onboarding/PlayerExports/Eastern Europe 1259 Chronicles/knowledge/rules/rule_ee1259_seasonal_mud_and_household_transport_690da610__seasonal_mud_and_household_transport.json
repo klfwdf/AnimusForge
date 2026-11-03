@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_seasonal_mud_and_household_transport_690da610",
+  "Keywords": [
+    "Thaw mud and everyday transport",
+    "Household market detours in eastern Europe"
+  ],
+  "RagShortTexts": [
+    "Thaw and rain slow carts, animals and walkers differently on each road.",
+    "Mud disrupts milling, fuel and markets; detours and repairs consume household resources."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Thaw and repeated rain soften many earth roads, flooding low ground and making slopes slippery while higher tracks may remain open. Recent weather matters to choosing a route. Armies, milling trips, fuel and markets all suffer. Repairs require timber and labor; detours add provisions and lodging, forcing plans to follow conditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A market trip can consume a day freeing a cart. More goods burden the team; fewer may not buy needed tools, prompting shared carriage. Families check passage and turning places and retain return food rather than rely on ordinary travel times."
+    }
+  ],
+  "TextMappings": []
+}

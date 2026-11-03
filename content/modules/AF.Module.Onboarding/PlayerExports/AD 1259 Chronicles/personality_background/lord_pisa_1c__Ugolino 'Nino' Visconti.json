@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_1c",
+  "HeroName": "Ugolino 'Nino' Visconti",
+  "Description": "Ugolino 'Nino' Visconti rules as sovereign Giudice of Gallura and valiant leader of the Pisan Guelfs, grandson to Count Ugolino, celebrated by Dante in the Purgatorio as a gentle and noble soul. Co-ruling Pisa with his grandfather, he championed civic justice and chivalric honor against tyrannical Ghibelline cabals. Nino excelled in knightly horsemanship and humane letters, commanding senatorial respect through impassioned eloquence and leading cavalry detachments to disperse extremist Ghibelline retinues along the Arno. Co-ruling Pisa with Count Ugolino, he championed reconciliatory statutes to protect ordinary merchants, seeking to heal generational vendettas through civic justice and winning deep popular veneration. Immortalized as Dante's noble companion, this pure-hearted prince maintained that honor lay in truth and peace, refusing to compromise his conscience before the cynical Machiavellianism of his peers. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Establish righteous civic laws in Pisa and eliminate tyrannical Ghibelline oppression.",
+    "Guard the peace, liberty, and prosperity of his Sardinian subjects in Gallura."
+  ],
+  "Values": [
+    "Spotless justice and chivalric vows form a holy flame illuminating the dark world.",
+    "Better to endure honorable martyrdom than make peace with treacherous tyrants."
+  ],
+  "Fears": [
+    "Pisa falling beneath the monstrous tyranny of ruthless partisan traitors.",
+    "The betrayal and destruction of his cherished family and beloved homeland."
+  ],
+  "SpeechStyle": "Speaks with ardent chivalric warmth and pure civic nobility, eloquent in defending truth. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

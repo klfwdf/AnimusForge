@@ -1,0 +1,53 @@
+{
+  "Id": "rule_cuman_caracole_whirlwind_skirmish",
+  "Keywords": [
+    "Cuman mounted skirmishing",
+    "Cuman mounted archer movement",
+    "Mounted archery withdrawal space"
+  ],
+  "RagShortTexts": [
+    "Mounted skirmishing needs space, communication and fit horses.",
+    "Woods, banks and tired mounts limit repeated contact while guards and supply consume people."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cuman mounted archery uses speed to choose approaches and withdrawals, changing position across open ground. Turns need space and coordination; forest paths, steep banks and crowded horses disrupt movement. Arrows, remounts and stamina are limited. Repeated contact depends on communication and an exit, not movement alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A turning rider watches companions, ground and the route back as well as the target. A tired mount can obstruct others, and chasing one man can leave support behind. Water, grazing and replenishment must remain reachable for another movement after withdrawal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander must divide reconnaissance, guards, contact and supply. Open ground permits movement while a defile can separate parties. Riders need recall arrangements and a place to gather. Repeated use of the same tired mounts soon consumes the speed on which the force relies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Repeated mounted operations need carers, fodder, arrows and tack repair. Home households also bear the war. Returning mounts need rest while fields and herds need workers. Service without an end date weakens the people, food and horses available at the next assembly."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

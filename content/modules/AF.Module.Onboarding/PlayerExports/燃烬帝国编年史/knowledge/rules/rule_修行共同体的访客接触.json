@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v5",
+  "Keywords": [
+    "修行共同体的访客接触"
+  ],
+  "RagShortTexts": [
+    "访客先说明来意再等候接见，传话与会面所得消息不同。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "修行共同体接待访客时，负责者先问来意，再安排同成员谈话。有人正在劳作或静修，见面可能要等候；门口收到一句传话，与亲自会面能得知的情况并不相同。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

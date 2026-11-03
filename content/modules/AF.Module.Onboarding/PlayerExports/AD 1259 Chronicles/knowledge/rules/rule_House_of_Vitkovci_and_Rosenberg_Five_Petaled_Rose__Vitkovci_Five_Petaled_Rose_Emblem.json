@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Vitkovci_and_Rosenberg_Five_Petaled_Rose",
+  "Keywords": [
+    "Vitkovci Five Petaled Rose Emblem",
+    "House of Rosenberg South Bohemian Domain",
+    "Vok I Supreme Marshal Royal Influence",
+    "Vitek Partition Five Roses Legend"
+  ],
+  "RagShortTexts": [
+    "The foundation at Vyssi Brod in 1259 links noble patronage with a new religious house.",
+    "Its later estates and benefits cannot all be assumed to exist at the moment of foundation."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Vítkovci were a Slavic noble house of southern Bohemia whose branches carried the red five-petaled rose on their arms. Vok I of Rožmberk, known to German speakers as Rosenberg, led the family's rise by holding the castles of Krumlov and Rožmberk on the upper Vltava. He served as High Marshal of the Kingdom of Bohemia under King Ottokar II, so the family's strength was tied to the Přemyslid crown's wars in Austria and Prussia. The lords of southern Bohemia kept their own estates, courts and fortresses, and that independence made them useful allies but dangerous rivals when the crown tried to centralise power. Their castles controlled the river road, and the tolls from those valleys paid for knights, crossbowmen and the upkeep of stone walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Rožmberk lord knew that royal wars brought both honour and debt. He led Přemyslid hosts into Austria and Prussia, then returned home to defend his baronial liberties against any crown official who tried to collect new taxes or appoint new judges. Each campaign was recorded in the household accounts, and each debt was weighed against the lands that secured it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A farmer near the new abbey at Vyssi Brod sees carts, craftsmen and requests for provisions before seeing any promised prosperity. The foundation of 1259 binds the lords' family memory to a religious house. Its future granges and mills must still be established; neither a pious charter nor a rose banner guarantees exemption from other local demands."
+    }
+  ],
+  "TextMappings": []
+}

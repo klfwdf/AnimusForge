@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_2_5",
+  "HeroName": "Carlos Dionís",
+  "Description": "Carlos Dionís is the spirited, chivalric younger son of Count Dénes of Hungary, flourishing as an accomplished cavalry captain in the Kingdom of Valencia. Combining the formidable martial legacy of his father with refined courtly education in Catalan poetry and knightly etiquette, Don Carlos embodies the romantic ideals of the thirteenth-century crusading aristocracy. Renowned for his brilliant horsemanship and jousting prowess, he has won acclaim in tournament lists from Barcelona to Valencia. By 1259, he regularly rides on frontier patrols alongside his elder brother Amor, displaying fearless initiative in skirmishes against insurgent bandits and coastal corsairs. Intensely devoted to Infante Peter, Carlos dreams of serving in grand maritime campaigns across the Mediterranean, eager to write a glorious chapter of chivalric conquest for his house. Carlos spent his days in the tilt-yard mastering the greatsword and grappling tactics, burning to follow Prince Peter into Andalusia to carve out personal renown. Fierce and spirited, he once routed a marauding bandit band single-handedly, hoisting their captured pennant above the castle gatehouse. This impassioned youth craved the crucible of war, convinced that only glorious combat could immortalize the Dionís name in Aragonese chronicles for generations.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win chivalric glory on the Levantine frontier, upholding the legendary martial fame of Count Dénes",
+    "Serve Infante Peter as a loyal and trusted companion-in-arms in future Mediterranean expeditions",
+    "Champion the chivalric code, using his sword to protect the defenseless and punish dishonor"
+  ],
+  "Values": [
+    "A knight's unblemished honor is worth more than mountains of gold; cowardice is an eternal stain",
+    "Absolute fealty to sovereign and clan banner; courage under fire conquers all obstacles",
+    "Courtly humility in peace, relentless fire in righteous combat"
+  ],
+  "Fears": [
+    "Being captured and disgraced in an ambush, casting an indelible shadow upon his house",
+    "Wasting his youth in dull peacetime administration without achieving martial immortality"
+  ],
+  "SpeechStyle": "Bold, passionate, and spirited; speaks with the fiery eagerness of a young champion thirsting for battlefield glory.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

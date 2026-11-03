@@ -511,19 +511,19 @@ public sealed partial class ProactiveNpcRequestBehavior
 		string needType = NormalizeNeedType(candidate?.NeedType);
 		if (string.Equals(needType, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase))
 		{
-			return SocialSourceTexts.Get("S308") + npcName + SocialSourceTexts.Get("S309") + playerName + "。"
-				+ BuildPolicyDiscussionSituation(new PolicyDiscussionSnapshot
+			return SocialSourceTexts.Join(SocialSourceTexts.Join(SocialSourceTexts.Get("S308"), npcName, SocialSourceTexts.Get("S309"), playerName) + SocialSourceTexts.Period,
+				BuildPolicyDiscussionSituation(new PolicyDiscussionSnapshot
 				{
 					PolicyId = candidate?.PolicyDiscussionPolicyId,
 					PolicyName = candidate?.PolicyDiscussionPolicyName,
 					PolicyContent = candidate?.PolicyDiscussionPolicyContent,
 					KingdomName = candidate?.PolicyDiscussionKingdomName,
 					PublishedDay = candidate?.PolicyDiscussionPublishedDay ?? 0
-				}, npcName, playerName)
-				+ SocialSourceTexts.Get("S310") + playerName + SocialSourceTexts.Get("S311");
+				}, npcName, playerName),
+				SocialSourceTexts.Join(SocialSourceTexts.Get("S310"), playerName, SocialSourceTexts.Get("S311")));
 		}
 		string evidence = BuildLetterNeedEvidence(candidate, needType);
-		return SocialSourceTexts.Get("S308") + npcName + SocialSourceTexts.Get("S309") + playerName + "。" + evidence + SocialSourceTexts.Get("S312") + playerName + SocialSourceTexts.Get("S313");
+		return SocialSourceTexts.Join(SocialSourceTexts.Join(SocialSourceTexts.Get("S308"), npcName, SocialSourceTexts.Get("S309"), playerName) + SocialSourceTexts.Period, evidence, SocialSourceTexts.Get("S312"), playerName, SocialSourceTexts.Get("S313"));
 	}
 
 	private static string BuildLetterNeedIntent(ProactiveCandidate candidate)
@@ -630,7 +630,7 @@ public sealed partial class ProactiveNpcRequestBehavior
 		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S315");
 		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S316");
 		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S317");
-		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase)) return string.IsNullOrWhiteSpace(candidate.CaptiveClanHeroName) ? SocialSourceTexts.Get("S318") : candidate.CaptiveClanHeroName + SocialSourceTexts.Get("S319");
+		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase)) return string.IsNullOrWhiteSpace(candidate.CaptiveClanHeroName) ? SocialSourceTexts.Get("S318") : SocialSourceTexts.Join(candidate.CaptiveClanHeroName, SocialSourceTexts.Get("S319"));
 		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S320");
 		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S321");
 		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S322");
@@ -641,19 +641,19 @@ public sealed partial class ProactiveNpcRequestBehavior
 		if (string.Equals(needType, NeedFriendship, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S327");
 		if (string.Equals(needType, NeedCourtship, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S328");
 		if (string.Equals(needType, NeedArmyJoinRequest, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S329");
-		if (string.Equals(needType, NeedBanditSuppression, StringComparison.OrdinalIgnoreCase)) return (candidate.BanditSuppressionSettlementName ?? SocialSourceTexts.Get("S330")) + SocialSourceTexts.Get("S331");
-		if (string.Equals(needType, NeedPoliticalRivalSuppression, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S332") + (candidate.PoliticalRivalSuppressionRivalClanName ?? SocialSourceTexts.Get("S333")) + SocialSourceTexts.Get("S334");
-		if (string.Equals(needType, NeedSettlementPurchase, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S335") + (candidate.SettlementPurchasePlayerFiefsText ?? SocialSourceTexts.Get("S336")) + "。";
-		if (string.Equals(needType, NeedSettlementSale, StringComparison.OrdinalIgnoreCase)) return (candidate.SettlementSaleTargetSettlementName ?? SocialSourceTexts.Get("S337")) + SocialSourceTexts.Get("S338") + (candidate.SettlementSaleForeignFactionName ?? SocialSourceTexts.Get("S339")) + SocialSourceTexts.Get("S045") + (candidate.SettlementSaleForeignSettlementName ?? SocialSourceTexts.Get("S340")) + SocialSourceTexts.Get("S341");
-		if (string.Equals(needType, NeedTerritorialInterrogation, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S342") + (candidate.TerritorialInterrogationSettlementName ?? SocialSourceTexts.Get("S343")) + SocialSourceTexts.Get("S344");
+		if (string.Equals(needType, NeedBanditSuppression, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Join(candidate.BanditSuppressionSettlementName ?? SocialSourceTexts.Get("S330"), SocialSourceTexts.Get("S331"));
+		if (string.Equals(needType, NeedPoliticalRivalSuppression, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Join(SocialSourceTexts.Get("S332"), candidate.PoliticalRivalSuppressionRivalClanName ?? SocialSourceTexts.Get("S333"), SocialSourceTexts.Get("S334"));
+		if (string.Equals(needType, NeedSettlementPurchase, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S335") + (candidate.SettlementPurchasePlayerFiefsText ?? SocialSourceTexts.Get("S336")) + SocialSourceTexts.Period;
+		if (string.Equals(needType, NeedSettlementSale, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Join(candidate.SettlementSaleTargetSettlementName ?? SocialSourceTexts.Get("S337"), SocialSourceTexts.Get("S338"), candidate.SettlementSaleForeignFactionName ?? SocialSourceTexts.Get("S339"), SocialSourceTexts.Get("S045"), candidate.SettlementSaleForeignSettlementName ?? SocialSourceTexts.Get("S340"), SocialSourceTexts.Get("S341"));
+		if (string.Equals(needType, NeedTerritorialInterrogation, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Join(SocialSourceTexts.Get("S342"), candidate.TerritorialInterrogationSettlementName ?? SocialSourceTexts.Get("S343"), SocialSourceTexts.Get("S344"));
 		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S345");
-		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S346") + (candidate.RevengeReasonText ?? SocialSourceTexts.Get("S347")) + SocialSourceTexts.Get("S348") + (string.IsNullOrWhiteSpace(candidate.RevengeTargetName) ? "。" : SocialSourceTexts.Get("S349") + candidate.RevengeTargetName + "。 ");
-		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase)) return (candidate.FiefProblemName ?? SocialSourceTexts.Get("S350")) + SocialSourceTexts.Get("S351") + (candidate.FiefIssueText ?? SocialSourceTexts.Get("S352")) + SocialSourceTexts.Get("S353");
+		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Join(SocialSourceTexts.Get("S346"), candidate.RevengeReasonText ?? SocialSourceTexts.Get("S347"), SocialSourceTexts.Get("S348")) + (string.IsNullOrWhiteSpace(candidate.RevengeTargetName) ? SocialSourceTexts.Period : SocialSourceTexts.Join(SocialSourceTexts.Get("S349"), candidate.RevengeTargetName) + SocialSourceTexts.Period + " ");
+		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Join(candidate.FiefProblemName ?? SocialSourceTexts.Get("S350"), SocialSourceTexts.Get("S351"), candidate.FiefIssueText ?? SocialSourceTexts.Get("S352"), SocialSourceTexts.Get("S353"));
 		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S354");
 		if (string.Equals(needType, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S355");
 		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S356");
 		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S357");
-		if (string.Equals(needType, NeedPolicySupport, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S358") + (candidate.PolicySupportPolicyName ?? SocialSourceTexts.Get("S359")) + "》。";
+		if (string.Equals(needType, NeedPolicySupport, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S358") + (candidate.PolicySupportPolicyName ?? SocialSourceTexts.Get("S359")) + SocialSourceTexts.CloseTitleQuote + SocialSourceTexts.Period;
 		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S360");
 		return "";
 	}
@@ -1876,7 +1876,7 @@ public sealed partial class ProactiveNpcRequestBehavior
 			return "";
 		}
 		return SocialSourceTexts.Get("S392") + policyName + SocialSourceTexts.Get("S393") + policyContent
-			+ SocialSourceTexts.Get("S394") + targetName + SocialSourceTexts.Get("S395");
+			+ SocialSourceTexts.Join(SocialSourceTexts.Get("S394"), targetName, SocialSourceTexts.Get("S395"));
 	}
 
 	private bool TryBuildFriendshipCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
@@ -2811,7 +2811,7 @@ public sealed partial class ProactiveNpcRequestBehavior
 				PlayerFiefCount = playerFiefs.Count,
 				PlayerTownCount = playerTowns.Count,
 				PlayerCastleCount = playerCastles.Count,
-				PlayerFiefsText = SocialSourceTexts.Get("S400") + (playerTowns.Count > 0 ? string.Join("、", playerTowns) : SocialSourceTexts.Get("S401")) + SocialSourceTexts.Get("S402") + (playerCastles.Count > 0 ? string.Join("、", playerCastles) : SocialSourceTexts.Get("S401")),
+				PlayerFiefsText = SocialSourceTexts.Get("S400") + (playerTowns.Count > 0 ? string.Join(SocialSourceTexts.ListSeparator, playerTowns) : SocialSourceTexts.Get("S401")) + SocialSourceTexts.Get("S402") + (playerCastles.Count > 0 ? string.Join(SocialSourceTexts.ListSeparator, playerCastles) : SocialSourceTexts.Get("S401")),
 				NpcFiefCount = requesterFiefs.Count,
 				NpcTownCount = requesterTownCount,
 				NpcCastleCount = requesterCastleCount

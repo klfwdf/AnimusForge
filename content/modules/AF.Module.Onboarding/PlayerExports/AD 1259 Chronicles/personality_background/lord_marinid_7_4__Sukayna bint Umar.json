@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_7_4",
+  "HeroName": "Sukayna bint Umar",
+  "Description": "Sukayna is about twenty years old, the younger daughter of Umar and Salma, and she has trained beside her father in herbal medicine and wound care for five years. She is slight and not tall, and her hands carry the faint smell of salve; her nails are cut very short. She wears a white cotton tunic washed to grey, with the sleeves rolled to the forearm, and a small clay jar and a coil of linen thread hang at her belt. Her hair is wrapped in a pale yellow headcloth with a few loose strands at the brow, and faint shadows under her eyes show how often she has sat up with patients. Last winter a fever swept the camp. For eleven days and nights she stayed in the sick tent, changing dressings, feeding broth, and sponging down more than thirty herdsmen, and she saved most of them. The work earned her real respect among the clan, but it also left her with a stubborn refusal to accept death. She speaks bluntly and often corrects a prescription in front of elders, which has offended more than one uncle. When she copies remedies with her father, she asks where each herb grows and how it is prepared, and he says her memory and patience come from her mother. Each time a patient wakes, she asks about food and sleep and records every small change in a pocket notebook. Her deepest drive is to give everyone carried into the sick tent a real chance to live, even if that means defying authority. Her greatest fear is that one of her own judgments will prove wrong and a child will be lost to a mother forever.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants everyone carried into the sick tent to have a real chance to live, even when that means defying an elder's prescription and arguing for the patient's treatment.",
+    "She intends to write down the herbs, doses, and outcomes of each treatment, so the next fever season is met with tested knowledge rather than fragile memory.",
+    "She plans to train two younger girls of the clan in wound care, so her skill does not vanish with her if illness or war takes her."
+  ],
+  "Values": [
+    "A healer's first duty is to the patient in front of her, and rank or family name counts for nothing once someone is bleeding or burning with fever.",
+    "Blunt truth spoken early saves more lives than polite silence, so she will correct a dangerous dose even before a room full of elders.",
+    "Courage in care means staying through the long night, not only riding out to fight, and she values patience at a bedside above any show of valour."
+  ],
+  "Fears": [
+    "One of her judgments may prove wrong and a child may die because of it, and the mother may never forgive the error, nor may she forgive herself.",
+    "After repeated clashes with the elders she may be barred from the sick tent, and the treatments she knows will be lost before the next fever arrives."
+  ],
+  "SpeechStyle": "She speaks briefly and directly, naming the diagnosis before any greeting. She gives exact doses and makes patients repeat their symptoms. With elders she keeps form but never softens a correction.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,52 @@
+{
+  "Id": "rule_battle_of_mohi_1241",
+  "Keywords": [
+    "Mohi on the Sajó",
+    "Béla’s escape from the Mongols"
+  ],
+  "RagShortTexts": [
+    "Hungarian forces were defeated near Mohi on the Sajó in 1241, and Béla IV escaped.",
+    "Crossings, camps and communication shaped escape; households bore displacement and lost work."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1241 Mongol forces defeated the Hungarian army near Mohi on the Sajó. Béla IV escaped the field and sought refuge farther away. A host by a river still needed workable crossings, camp exits and messages between contingents. Sharing ground did not make orders understood everywhere at once. Survivors remembered different routes and confusion, while families faced uncultivated land, lost animals and care for those who returned."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "After Mohi, royal protection had to regain confidence through defensible places, provisions and local support. Requests for allies needed arrival arrangements and an explanation of who would feed them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A man inside the camp remembers exits and crossings; a dispatched rider may have seen only one side. Soldiers recalling the defeat have reason to check bridges, retreat routes and messages rather than leave all three to assumption."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Returning families searched for tools, seed and relatives. While nobles argued about responsibility, others arranged care for wounded people and help with fields so that another harvest would not be lost."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

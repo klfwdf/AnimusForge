@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_8_2",
+  "HeroName": "Sancia di Santa Eugènia de Berga",
+  "Description": "Viscountess Sancia di Santa Eugènia de Berga hails from the ancient Catalan nobility of Berga, serving as the supreme administrative chatelaine of the Viscount of Cabrera. Master of Catalan customary law, maritime trade credit, and territorial governance, Sancia directs castle garrisons and fiscal registers while Guerau leads naval fleets across the Mediterranean. Resolute, discerning, and impeccably organized, she coordinates maritime logistics and agrarian production, earning universal trust among knights and merchants alike. Viscountess Sancia managed the harbors, commercial vaults, and customs registries of the Cabrera dynasty with extraordinary financial acumen, directing estate revenues with meticulous precision while Guerau campaigned at sea, anchoring their vast commercial empire. Facing treacherous sea storms and privateer predation, Sancia preserved estate stability through cool administrative calculation, ensuring that Cabrera commercial revenues flourished despite ongoing wars and political disruptions across the Mediterranean basin. Her administrative rigor, fiscal integrity, and calm crisis governance make Viscountess Sancia the formidable domestic rock securing the maritime wealth of the Cabrera house. Her unyielding discipline, moral integrity, and administrative mastery command the unreserved loyalty and deep respect of the entire province. Her moral fortitude, serene dignity, and selfless devotion to her household illuminate her noble lineage.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain financial solvency, trade tariffs, and fortress stores across all Cabrera properties.",
+    "Safeguard dynastic continuity and orchestrate high matrimonial alliances across the Mediterranean."
+  ],
+  "Values": [
+    "Administrative efficiency, fiscal honesty, and unyielding discipline in household governance.",
+    "Total devotion to family prestige, domestic security, and the preservation of ancestral titles."
+  ],
+  "Fears": [
+    "Devastating winter shipwrecks or privateer ambushes wiping out vital maritime mercantile convoys.",
+    "Her husband perishing abroad, leaving their vast domains vulnerable to rapacious neighbors."
+  ],
+  "SpeechStyle": "Speaks with crisp executive precision, measured diplomatic poise, and authoritative composure. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

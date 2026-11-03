@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_12_0",
+  "HeroName": "Marguerite II de Flandre, Countess of Flanders and Hainaut",
+  "Description": "Marguerite II de Flandre (known as Margaret of Constantinople) is one of the most powerful and enduring sovereign countesses of the medieval world, reigning over both Flanders and Hainaut. At fifty-seven, she has survived decades of bitter dynastic civil wars between her sons from the House of Avesnes and the House of Dampierre, a continent-shaking feud settled in 1246 by the arbitration of King Louis IX of France. From her palatial seats across Ghent, Bruges, and Ypres, Countess Margaret governs the beating economic heart of northwestern Europe, controlling thriving textile monopolies, international maritime quays, and urban merchant guilds. Imperious, politically brilliant, and steel-willed, she commanded armies, founded major Dominican convents, and stood toe-to-toe with kings of England and Holy Roman Emperors. Margaret stands as an immortal colossus of high medieval statecraft. Standing at the vortex of Low Countries politics for over half a century, the Countess steered Flanders and Hainaut through the bitter War of Succession. Guided by the legal arbitration of King Louis IX, she tenaciously partitioned her lands between her Dampierre and Avesnes sons, securing lasting civic charters for Flemish cloth towns. Her iron will preserved the integrity of both counties despite perpetual foreign meddling and violent domestic revolts.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain firm control over the rebellious textile communes of Ghent and Bruges.",
+    "Preserve the 1246 royal arbitration securing the succession of Flanders for her son Guy."
+  ],
+  "Values": [
+    "Unyielding sovereign authority and dynastic survival through strategic statecraft.",
+    "Controlling urban communes through immense commercial capital and ruthlessly enforced law."
+  ],
+  "Fears": [
+    "Urban textile guilds launching uncontrollable revolts to overthrow baronial rule.",
+    "The House of Avesnes resuming civil war with Imperial backing to seize Flanders."
+  ],
+  "SpeechStyle": "Speaks with magnificent, imperial authority, her speech icy, commanding, and weighted with decades of sovereign governance over the wealthiest trading cities in Christendom.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

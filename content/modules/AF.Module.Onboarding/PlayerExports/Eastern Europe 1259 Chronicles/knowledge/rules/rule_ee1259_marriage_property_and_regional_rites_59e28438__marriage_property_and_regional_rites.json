@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_marriage_property_and_regional_rites_59e28438",
+  "Keywords": [
+    "Marriage property and kin in Rus",
+    "Household marriage negotiations by the Vistula"
+  ],
+  "RagShortTexts": [
+    "Marriage concerns kin, property and inheritance under church recognition and local custom.",
+    "Marriage, widowhood and remarriage change household work and support under witnessed commitments."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Marriage in Rus and Polish lands joins kin, property and continuing support under church rites and local custom. Joy and parting accompany practical questions of goods, care for elders and widowhood. Prominent families build alliances, while ordinary households need witnessed commitments and resources for daily life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families preparing a marriage find food, clothes and travel money while considering lost workers. Witnesses help preserve promises of goods and care. Widowhood or debt may require renewed agreement, with neighbors and clergy often offering more lasting help than an impressive feast."
+    }
+  ],
+  "TextMappings": []
+}

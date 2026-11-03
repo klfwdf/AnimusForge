@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Ghent_Cloth_Guild_Commune",
+  "Keywords": [
+    "Ghent Cloth Guild Republic",
+    "Gravensteen Castle Ghent",
+    "Urban Pike Militia Ghent",
+    "Weavers and Fullers Guilds"
+  ],
+  "RagShortTexts": [
+    "Ghent formed a sprawling manufacturing commune whose armed textile militias checked."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ghent sat where the Scheldt and the Leie meet, and its prosperity came from the cloth that weavers, fullers, and dyers turned out in great quantity. Wool arrived from English estates and left as finished broadcloth for markets across Europe. Its craft syndicates were strong enough to bargain with the count over tolls and privileges, and they usually won. The counts kept their residence in the stone keep of Gravensteen, above the waterways, but even from that fortress they moved warily. The townsmen who drilled with pikes for their own defence never forgot that they could also shut the city gates. Ghent's commune rested on the guilds and on a militia that could be called out at short notice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "soldier"
+        ]
+      },
+      "Content": "When the municipal alarm bell Roeland rang, weavers and fullers put down their shuttles and took up heavy pikes. Within hours thousands of burghers stood in ranks under their guild banners, with masters leading their own apprentices into line. Men who had spent their days at the loom now had to hold the line against the count's horsemen."
+    }
+  ],
+  "TextMappings": []
+}

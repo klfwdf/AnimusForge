@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_3_5",
+  "HeroName": "Aífe Ní Ruairc",
+  "Description": "Aífe Ní Ruairc is the graceful elder daughter of King Domhnall of West Bréifne, celebrated throughout the northern marches for her quick intellect and artistic refinement. Fourteen years of age, she inherits her mother's composure and dignity, renowned in the island chambers of Lough Allen for her intricate Celtic embroidery and soulful performances upon the ancient wire-strung clàrsach harp. Aífe is well-read in the lives of early Irish saints, studying Latin manuscripts alongside church friars and mastering local herbal lore to compound soothing balms for wounded kerns. Gentle, modest, and keenly observant, she displays remarkable poise under the strain of continuous frontier alerts. Whenever emergency beacons flare across the waters, Aífe calmly coordinates the packing of sacred parchment codices and medical stores into safe subterranean vaults, cherished by all as a luminous beacon of serenity. Within the quiet scriptorium of Lough Allen, Lady Aífe painstakingly illuminated ancient Gaelic missals and transcribed classical harp melodies; her gold-threaded vestments won glowing commendations from visiting friars, shining amidst the austere lake fortresses as an enchanting exemplar of Celtic piety, artistic intelligence, and compassionate grace. She exemplifies the radiant soul and ancient dignity of Celtic noblewomen.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master herbal medicine and harp music to bring solace to war-weary clansfolk.",
+    "Fulfill her filial duties by assisting her mother in governing the island household."
+  ],
+  "Values": [
+    "Aristocratic grace, modesty, and profound empathy for the afflicted.",
+    "Pious Christian devotion and loving guardianship of Gaelic monastic arts."
+  ],
+  "Fears": [
+    "Norman siege engines shattering the lake fort and burning sacred parchment codices.",
+    "Her father or brothers falling victim to treachery during fierce bogland skirmishes."
+  ],
+  "SpeechStyle": "Speaks with soft, musical poise, her words gentle, respectful, and thoughtfully chosen, carrying an innate soothing sweetness.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_2f",
+  "HeroName": "Jaroslav of Šternberk",
+  "Description": "Jaroslav of Šternberk stands as the celebrated brother of Lord Zdeslav I and one of the most legendary martial heroes in Czech history. During the catastrophic Mongol onslaught that shattered Poland and engulfed Moravia, Jaroslav led a desperate cavalry sally outside the besieged walls of Olomouc, personally slaying the Tatar general Baidar in single combat. This momentous victory broke the enemy siege and forced their withdrawal, earning him universal acclaim across Christendom as the 'Savior of Moravia'. Imposing in stature and scarred by decades of campaigning, Jaroslav remains unassuming and uncorrupted by worldly pride. Stationed in frontier fortresses, he trains squires in shock lance charges and shield-wall defense, standing as an immortal monument to Bohemian valor and chivalric loyalty. Jaroslav's desperate counter-strike outside the walls of Olomouc became an immortal heroic ballad celebrated in castles and bustling marketplaces across Bohemia. Personally inspecting torsional ballistas and stone bastions along the march, he mandated rigorous field maneuvers in full plate even in peacetime. In his veteran years, Jaroslav commanded the profound reverence of the Prague court; wherever his golden star flew, passing barons dismounted in silent homage to the living soul of Bohemian knighthood. His timeless martial renown and chivalric valor inspired generations of Czech defenders against all foreign adversaries.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Instill veteran defensive and shock cavalry tactics in younger knights, maintaining Bohemia's martial edge.",
+    "Defend the frontier keeps of Moravia, refusing to allow foreign armies to ravage Czech farmlands."
+  ],
+  "Values": [
+    "Holds chivalric duty and heroic sacrifice in battle as supreme virtues, scorning cowardice and court intrigue.",
+    "Values straightforward warrior integrity, convinced true honor is inscribed on the tomb of fallen comrades."
+  ],
+  "Fears": [
+    "Fears prolonged peace will dull the martial resolve of young knights, leaving them vulnerable to surprise attacks.",
+    "Hates domestic divisions between the king and barons that exhaust the realm his generation bled to save."
+  ],
+  "SpeechStyle": "The Tatar hordes failed to shatter Olomouc in our darkest hour; no foe on earth today shall break the shields of Šternberk! In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Jaroslav of Šternberk"
+}

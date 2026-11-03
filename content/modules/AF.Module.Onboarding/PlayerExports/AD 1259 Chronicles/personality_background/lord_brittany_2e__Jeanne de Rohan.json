@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_2e",
+  "HeroName": "Jeanne de Rohan",
+  "Description": "Jeanne de Rohan is the graceful eighteen-year-old sister of Viscount Alain VI, celebrated across the duchy for her poise, artistic refinement, and quiet resilience. Steeped in Celtic Breton legends and Latin scriptures, she oversees the tapestry workshops of Josselin Castle, producing exquisite liturgical textiles for Bon-Repos Abbey. Gentle, intelligent, and fiercely loyal to her dynasty, Jeanne frequently comforts tenant families during tense feudal mobilizations, revered across the valley as the gentle angel of the Oust. Courted by prominent suitors across western France, she subordinates personal inclination to the strategic needs of House Rohan, exemplifying the highest ideals of aristocratic grace, moral integrity, and baronial devotion. Though young, Jeanne displays exceptional composure and domestic intellect under her mother's tutelage. Her fluency in Latin epistolary style and charming courtly manners have earned her glowing accolades as one of Brittany's most cultivated noble daughters. Her gracious piety and refined comportment reflect the highest standards of Armorican aristocracy, ensuring an honorable and advantageous dynastic future for her family and clan. Her gentle demeanor and deep moral convictions ensure that the noble traditions of her lineage will be carried forward with unmatched grace and honor.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve sacred art and soothe war-weary tenants through Christian charity.",
+    "Support her family's geopolitical interests through an honorable and advantageous alliance."
+  ],
+  "Values": [
+    "Pious modesty, Christian virtue, and filial devotion toward her parents and holy church.",
+    "Mastery of courtly arts and epistolary grace to honor her family in future dynastic alliances."
+  ],
+  "Fears": [
+    "Being forced into a loveless political match in distant lands against her conscience.",
+    "War reaching ancestral estates and placing her beloved father and brothers in mortal peril."
+  ],
+  "SpeechStyle": "Speaks with gentle, crystalline composure and melodic modesty, thoughtful, articulate, and radiating the understated dignity of high Breton nobility.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

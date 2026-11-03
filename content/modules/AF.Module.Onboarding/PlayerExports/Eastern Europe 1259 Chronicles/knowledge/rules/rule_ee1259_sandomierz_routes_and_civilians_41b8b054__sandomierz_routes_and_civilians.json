@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_sandomierz_routes_and_civilians_41b8b054",
+  "Keywords": [
+    "Sandomierz crossings and residents",
+    "Market supplies beside the Vistula"
+  ],
+  "RagShortTexts": [
+    "River carriage, crossings and markets connect at Sandomierz, sharing roads with its guards.",
+    "Alarms crowd entrances with people and animals; water and grain routes need organizing."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sandomierz draws trade along the Vistula, with crossings and ascending roads bringing rural food into town. Guards watch entrances that markets need to keep open. An alarm crowds refugees, animals and troops onto limited approaches; priorities and unloading places affect the settlement's endurance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sandomierz households want boats and rural supplies to arrive while making arrangements for relatives outside. Animals entering town need fodder and handlers, and goods must not block the gateway. Offering neighbors shelter means dividing limited water, fuel and meals among more people."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_1_5",
+  "HeroName": "Iacopo Boccanegra",
+  "Description": "Iacopo Boccanegra serves as a spirited naval captain and the young son of the Capitano del Popolo, patrolling the Ligurian littoral aboard swift war galleys. Master of coastal shoals, night engagements, and incendiary tactics, he aggressively intercepts enemy corsairs threatening Genoese shipping, winning intense loyalty among the younger generation of guild mariners. Iacopo executed daring nighttime ambushes against Pisan corsairs off Capraia and Corsica, leading boarding parties sword-in-hand through turbulent swells to seize enemy hulls with dazzling personal bravery. Shunning the comfortable halls of Palazzo San Giorgio, he shared moldy hardtack and bitter watches with ordinary rowers, mastering navigation and earning fierce personal devotion from young mariners. Driven to shatter patrician sneers through undeniable battlefield merit, this ardent young officer vows to carry the Red Cross of Saint George across every contested strait of the Mediterranean. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win legendary battle honors against Venetian and Pisan fleets to prove his martial merit.",
+    "Carry his father's revolutionary banner across the furthest maritime horizons of the Levant."
+  ],
+  "Values": [
+    "A true son of Genoa earns his name amidst crashing swells and splintered bulwarks.",
+    "Audacious courage outstrips timid hesitation when confronting peril."
+  ],
+  "Fears": [
+    "Falling into an enemy naval trap through reckless overconfidence.",
+    "Being dismissed by veterans as an unproven heir riding upon his father's coattails."
+  ],
+  "SpeechStyle": "Speaks with bold martial exuberance and youthful defiance, eager for high-seas combat. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

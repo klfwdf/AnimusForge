@@ -1,0 +1,59 @@
+{
+  "Id": "be_alanian_kingdom_legitimacy",
+  "Keywords": [
+    "阿兰人法统",
+    "贝勒的保护声望"
+  ],
+  "RagShortTexts": [
+    "Beler以保护人马和兑现分配维持认可。",
+    "家车与冬牧地的安全影响阿兰首领威望。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Beler的威望与护住人马、兑现分配相连。一次冲锋的勇武可以赢得追随，失去家庭大车和冬牧地却会使首领的保护承诺失去分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Beler以保护人马和兑现分配维持认可。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。家车与冬牧地的安全影响阿兰首领威望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "家车与冬牧地的安全影响阿兰首领威望。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。Beler以保护人马和兑现分配维持认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Beler以保护人马和兑现分配维持认可。家户通过家人、土地与求助能否获保护来认识统治。家车与冬牧地的安全影响阿兰首领威望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "家车与冬牧地的安全影响阿兰首领威望。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。Beler以保护人马和兑现分配维持认可。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

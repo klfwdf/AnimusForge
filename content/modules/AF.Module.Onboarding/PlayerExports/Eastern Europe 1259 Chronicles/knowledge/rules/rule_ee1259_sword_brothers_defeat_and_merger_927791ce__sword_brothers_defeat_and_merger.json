@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_sword_brothers_defeat_and_merger_927791ce",
+  "Keywords": [
+    "Saule's defeat and Order reorganization",
+    "The Sword Brothers' remnants in the Teutonic Order"
+  ],
+  "RagShortTexts": [
+    "Defeat at Saule in 1236 weakened the Sword Brothers, whose remnants joined the Order in 1237.",
+    "The Livonian branch still needs allies, bishops and supplies after reorganization."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Saule cost the Sword Brothers leaders and men, with their remnants subsequently entering the Teutonic Order. Its Livonian branch inherits people and responsibilities under new allegiance, while bishops and local helpers retain interests of their own. Reinforcements, repairs and garrisons require negotiated terms, not merely a changed name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Livonian residents remember acquaintances lost at Saule and ask who now makes demands. New superiors still need clear delivery points and responsibility. The Order needs local labor, while households seek an end to service and an account of goods before bearing another demand on top of old losses."
+    }
+  ],
+  "TextMappings": []
+}

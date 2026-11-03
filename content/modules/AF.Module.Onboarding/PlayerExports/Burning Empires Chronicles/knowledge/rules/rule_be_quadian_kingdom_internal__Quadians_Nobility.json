@@ -1,0 +1,59 @@
+{
+  "Id": "be_quadian_kingdom_internal",
+  "Keywords": [
+    "Quadians Nobility",
+    "Quadian retaliation and household losses"
+  ],
+  "RagShortTexts": [
+    "Viduarius balances angry followers and households protecting food and herds.",
+    "Jazygian cooperation needs defined supply and captive duties."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Viduarius joins angry followers and households seeking grain and herds. Jazygian cooperation also needs distinct supply and captive responsibilities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Viduarius balances angry followers and households protecting food and herds. Followers retain family ties; decisions about guards and distant service affect common participation. Jazygian cooperation needs defined supply and captive duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Jazygian cooperation needs defined supply and captive duties. Coordination allocates actual supply and protection duties, not merely titles. Viduarius balances angry followers and households protecting food and herds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Viduarius balances angry followers and households protecting food and herds. Households compare burdens with neighbors; unmatched protection weakens cooperation. Jazygian cooperation needs defined supply and captive duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Jazygian cooperation needs defined supply and captive duties. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Viduarius balances angry followers and households protecting food and herds."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

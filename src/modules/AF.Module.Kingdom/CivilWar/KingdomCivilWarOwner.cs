@@ -199,7 +199,7 @@ internal sealed partial class KingdomCivilWarOwner
 		if (!string.IsNullOrWhiteSpace(text)) AddHistory(state, week, text);
 		if (withdrawnClans != null)
 		{
-			string withdrawal = string.Join("、", withdrawnClans) + KingdomCivilWarTexts.Raw("KW_Raw_113") + source.Name + KingdomCivilWarTexts.Raw("KW_Raw_114");
+			string withdrawal = KingdomCivilWarTexts.Tidy(string.Join(KingdomCivilWarTexts.ListSeparator, withdrawnClans) + KingdomCivilWarTexts.W("KW_Raw_113") + source.Name + KingdomCivilWarTexts.W("KW_Raw_114"));
 			// Panel projection of the same fact. The raw `withdrawal` above still feeds the weekly material
 			// and the log; only the chronicle entry renders the localized sentence, labelled by source id.
 			string withdrawalDisplay = CivilWarUiText.T("AF_KINGDOM_CW_Chronicle_SupportWithdrawn", "{CLANS} grow discontent over {SOURCE} and withdraw their support for the crown, turning neutral", ("CLANS", string.Join(", ", withdrawnClans)), ("SOURCE", CivilWarUiText.SourceName(source.Id, source.Name)));
@@ -346,7 +346,7 @@ internal sealed partial class KingdomCivilWarOwner
 		ApplyFoundingRelationLoss(kingdom, leader);
 		string name = FactionName(faction, demand);
 		AddHistory(state, week, CivilWarUiText.T("AF_KINGDOM_CW_Core_FactionFounded", "{FACTION} is founded; demand: {DEMAND}", ("FACTION", name), ("DEMAND", FormatDemand(demand, faction.TargetName))));
-		PublishPoliticalResult(kingdom, state, faction, leader, faction.Id + ":founded", KingdomCivilWarTexts.Raw("KW_Raw_115") + name + KingdomCivilWarTexts.Raw("KW_Raw_116") + FormatDemand(demand, faction.TargetName),
+		PublishPoliticalResult(kingdom, state, faction, leader, faction.Id + ":founded", KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.Raw("KW_Raw_115") + name + KingdomCivilWarTexts.W("KW_Raw_116") + FormatDemand(demand, faction.TargetName)),
 			displayText: CivilWarUiText.T("AF_KINGDOM_CW_Chronicle_OppositionFounded", "An opposition faction is founded: {FACTION}, demanding {DEMAND}", ("FACTION", FactionDisplayName(faction, demand)), ("DEMAND", CivilWarUiText.DemandDisplayText(demand, ResolveDemandTargetDisplay(demand, faction, kingdom)))));
 	}
 
@@ -617,7 +617,7 @@ internal sealed partial class KingdomCivilWarOwner
 		CivilWarDemandDef outbreakDemand = CivilWarCatalog.FindDemand(faction.DemandId);
 		string name = FactionName(faction, outbreakDemand);
 		AddHistory(state, week, CivilWarUiText.T("AF_KINGDOM_CW_Core_OutbreakHistory", "{FACTION} establishes {REBEL}; the civil war breaks out", ("FACTION", name), ("REBEL", CivilWarWorld.KingdomName(rebelKingdom))));
-		PublishPoliticalResult(kingdom, state, faction, CivilWarWorld.FindClan(faction.LeaderClanId), faction.Id + ":war:outbreak", KingdomCivilWarTexts.Raw("KW_Raw_119") + name + KingdomCivilWarTexts.Raw("KW_Raw_120") + CivilWarWorld.KingdomName(rebelKingdom) + KingdomCivilWarTexts.Raw("KW_Raw_121") + CivilWarWorld.KingdomName(kingdom) + KingdomCivilWarTexts.Raw("KW_Raw_122"),
+		PublishPoliticalResult(kingdom, state, faction, CivilWarWorld.FindClan(faction.LeaderClanId), faction.Id + ":war:outbreak", KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.Raw("KW_Raw_119") + name + KingdomCivilWarTexts.W("KW_Raw_120") + CivilWarWorld.KingdomName(rebelKingdom) + KingdomCivilWarTexts.W("KW_Raw_121") + CivilWarWorld.KingdomName(kingdom) + KingdomCivilWarTexts.W("KW_Raw_122")),
 			displayText: CivilWarUiText.T("AF_KINGDOM_CW_Chronicle_Outbreak", "{FACTION} establishes {REBEL} and goes to war with {KINGDOM}; the civil war breaks out", ("FACTION", FactionDisplayName(faction, outbreakDemand)), ("REBEL", CivilWarWorld.KingdomName(rebelKingdom)), ("KINGDOM", CivilWarWorld.KingdomName(kingdom))));
 		Revision++;
 		if (faction.PlayerFollowPending) HasPendingFollowPrompt = true;
@@ -752,7 +752,7 @@ internal sealed partial class KingdomCivilWarOwner
 			? CivilWarEffectIds.RestoreDynasty : outcome?.EffectId;
 		bool applied = outcome != null && CivilWarEffects.TryApply(effectId, ctx, out reason);
 		string name = FactionName(faction, demand);
-		string text = applied ? name + KingdomCivilWarTexts.Raw("KW_Raw_124") + outcome.Name + "）：" + string.Join("；", ctx.Notes) : name + KingdomCivilWarTexts.Raw("KW_Raw_125") + (reason ?? KingdomCivilWarTexts.Raw("KW_Raw_123"));
+		string text = applied ? KingdomCivilWarTexts.Tidy(name + KingdomCivilWarTexts.Raw("KW_Raw_124") + outcome.Name + KingdomCivilWarTexts.CloseParenColon + string.Join(KingdomCivilWarTexts.Semicolon, ctx.Notes)) : name + KingdomCivilWarTexts.Raw("KW_Raw_125") + (reason ?? KingdomCivilWarTexts.Raw("KW_Raw_123"));
 		// Panel projection of the same fact. `outcome.Name` and `ctx.Notes` are raw rule text, so both render
 		// through their projections here; the raw `text` above keeps feeding the political-result material,
 		// the saved receipt and the AFEF facts.
@@ -901,7 +901,7 @@ internal sealed partial class KingdomCivilWarOwner
 		if (crown || state.Clans[recruiter.Clan.StringId].Side == KingdomCivilWarSide.Crown)
 		{
 			record.Side = KingdomCivilWarSide.Crown; record.FactionId = "";
-			message = CivilWarWorld.ClanName(target) + KingdomCivilWarTexts.Raw("KW_Raw_128");
+			message = KingdomCivilWarTexts.Tidy(CivilWarWorld.ClanName(target) + KingdomCivilWarTexts.W("KW_Raw_128"));
 			display = CivilWarUiText.T("AF_KINGDOM_CW_Chronicle_RecruitedCrown", "{CLAN} joins the crown faction.", ("CLAN", CivilWarWorld.ClanName(target)));
 		}
 		else
@@ -911,7 +911,7 @@ internal sealed partial class KingdomCivilWarOwner
 			record.Side = KingdomCivilWarSide.Opposition; record.FactionId = faction.Id;
 			AddGrievanceToFaction(state, faction, "demand_refused", 8f, 0f);
 			CivilWarDemandDef demand = CivilWarCatalog.FindDemand(faction.DemandId);
-			message = CivilWarWorld.ClanName(target) + KingdomCivilWarTexts.Raw("KW_Raw_130") + FactionName(faction, demand) + "。";
+			message = KingdomCivilWarTexts.Tidy(CivilWarWorld.ClanName(target) + KingdomCivilWarTexts.W("KW_Raw_130") + FactionName(faction, demand) + KingdomCivilWarTexts.Period);
 			display = CivilWarUiText.T("AF_KINGDOM_CW_Chronicle_RecruitedFaction", "{CLAN} joins {FACTION}.", ("CLAN", CivilWarWorld.ClanName(target)), ("FACTION", FactionDisplayName(faction, demand)));
 		}
 		record.SideSinceWeek = week; record.SideSinceDay = CivilWarWorld.CurrentDay();
@@ -1399,9 +1399,13 @@ internal sealed partial class KingdomCivilWarOwner
 
 	private static string FactionTag(CivilWarDemandDef demand)
 	{
+		// Chinese formats carry the "...led by" marker; English formats are "{leader}'s <tag>".
 		string name = demand?.FactionNameFormat ?? "";
-		int index = name.IndexOf(KingdomCivilWarTexts.Raw("KW_Raw_134"), StringComparison.Ordinal);
-		return index >= 0 ? name.Substring(index + 3) : KingdomCivilWarTexts.Raw("KW_Raw_135");
+		string marker = KingdomCivilWarTexts.RawSource("KW_Raw_134");
+		int index = name.IndexOf(marker, StringComparison.Ordinal);
+		if (index >= 0) return name.Substring(index + marker.Length);
+		const string leaderSlot = "{leader}'s ";
+		return name.StartsWith(leaderSlot, StringComparison.Ordinal) ? name.Substring(leaderSlot.Length) : KingdomCivilWarTexts.Raw("KW_Raw_135");
 	}
 
 	private static string FactionName(KingdomCivilWarFactionState faction, CivilWarDemandDef demand)
@@ -1829,6 +1833,7 @@ internal sealed partial class KingdomCivilWarOwner
 		public int GetStability(Kingdom kingdom) { return MyBehavior.GetKingdomStabilityValueForExternal(kingdom); }
 		public bool DiscontinueLandlessKingdom(Kingdom kingdom, string reason) { return MyBehavior.TryDiscontinueLandlessKingdomForExternal(kingdom, reason); }
 		public void MakeClansPeaceful(IEnumerable<Clan> clans, string reason) { MyBehavior.MakeCivilWarClansPeacefulForExternal(clans, reason); }
+		public void LeaveKingdomKeepingFiefs(Clan clan) { MyBehavior.LeaveKingdomKeepingFiefsForExternal(clan); }
 		public void QueueRebellion(Kingdom kingdom, Clan leader, List<Clan> followers, string factionId, bool startNow) { MyBehavior.QueueCivilWarRebellionForExternal(kingdom, leader, followers, factionId, startNow); }
 		public void ApplyPrestige(Kingdom kingdom, int delta, string reason) { TeamModuleServices.CivilWar.ApplyPrestigeDelta(kingdom == null ? "" : kingdom.StringId, delta, reason); }
 		public void RecordMaterial(Kingdom kingdom, int week, string text) { WriteMaterial(kingdom, week, text); }

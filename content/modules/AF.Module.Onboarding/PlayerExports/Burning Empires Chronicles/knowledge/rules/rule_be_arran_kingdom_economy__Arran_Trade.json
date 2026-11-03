@@ -1,0 +1,59 @@
+{
+  "Id": "be_arran_kingdom_economy",
+  "Keywords": [
+    "Arran Trade",
+    "Kura valley and upland produce"
+  ],
+  "RagShortTexts": [
+    "Gabala, Kura fields and upland herding provide different products.",
+    "Unequal garrison transport burdens cause local resentment."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gabala, Kura farming and upland herding produce different resources. Grain and pass exchange complement one another; unequal transport levies cause local resentment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gabala, Kura fields and upland herding provide different products. Traveling followers need real food from this production; valuables still require a buyer and exchange. Unequal garrison transport burdens cause local resentment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Unequal garrison transport burdens cause local resentment. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Gabala, Kura fields and upland herding provide different products."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gabala, Kura fields and upland herding provide different products. Households need meals and the means to keep producing after delivering goods. Unequal garrison transport burdens cause local resentment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Unequal garrison transport burdens cause local resentment. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Gabala, Kura fields and upland herding provide different products."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

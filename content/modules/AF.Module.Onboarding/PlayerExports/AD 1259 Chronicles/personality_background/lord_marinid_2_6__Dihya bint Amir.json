@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_2_6",
+  "HeroName": "Dihya bint Amir",
+  "Description": "Dihya bint Amir was a daughter of Amir ibn Idris and belongs to the Idris branch. No chronicle records her life, so this portrait is a game-setting construction based on the faction's history. Her appearance is a game-setting invention: a slight figure with light brown hair bound under a blue embroidered headcloth, and a polished bone bangle on her right wrist. From girlhood she learned herbs, cloth and nursing from the women of the household, and she knew how to dress wounds and bring fever down in children. This made her gentle and well liked among the kin and nearby tribes. Her youth brought no famous military deeds. During a fever outbreak at a relay station she organized women to nurse the sick, and many lives were saved, which won her respect from the family and from neighboring tribes. She handled rivals in an unusual way. She did not plot against them but tried to dissolve feuds, sometimes even treating the children of her opponents. Her highest aim was to keep a space to breathe for the weak in the turbulent politics of the kin. Her darkest side is self-blame. She sees that behind every reconciliation someone pays for her compromise, and she often asks herself at night whether she chose wrongly. Her deepest fear is that her mercy will be taken for weakness and the people she protects will be swallowed by their enemies.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wanted to keep a space to breathe for the weak in the turbulent politics of the kin, so that women, children and distant relatives would not suffer first.",
+    "She built a firm network through medicine and nursing, gaining supporters who did not depend on her brother.",
+    "She sought to end feuds with marriage and compensation terms both sides could accept, so blood vengeance would not pass to the next generation."
+  ],
+  "Values": [
+    "Mercy and healing, since she believed a person's worth lies in easing the suffering of others, even when the sufferer is an enemy, and she never changed this for politics.",
+    "Caution and restraint, because she held that many disasters come from sudden impulses, so she looked carefully before acting and would rather be slow than rash.",
+    "The dignity of women, as she valued the judgment and voices of the household women and believed they should share in decisions on marriage and compensation."
+  ],
+  "Fears": [
+    "Her mercy being read as weakness, so that those she protects are swallowed by their enemies, leaving her with a lifetime of guilt and a family that loses its standing.",
+    "A failed reconciliation in which the feud reignites under an agreement she brokered, making her the one blamed for starting the new quarrel."
+  ],
+  "SpeechStyle": "She speaks softly and steadily, often asking how others feel before raising a matter. With the sick and children she is warm. With kinsmen men she lays out costs and benefits plainly, neither deferring nor defying.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

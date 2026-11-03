@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_berke_and_religious_affiliation_3a3eccd5",
+  "Keywords": [
+    "Berke's faith and court visitors",
+    "Different believers at the Jochid court"
+  ],
+  "RagShortTexts": [
+    "Berke follows Islam among Jochid subjects and visitors of differing faiths.",
+    "Court diplomacy concerns kin, territory and tribute as well as each host's practices."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Berke follows Islam, while his court draws people of differing origins and beliefs. Visitors need to ask about food, prayer and hospitality rather than assume everyone shares one practice. Negotiations also concern Jochid rights, tribute and territorial control. Faith can foster trust, maintained through envoys, gifts and workable commitments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Those trading with court visitors ask about suitable food, recipients and payment, since attendants differ in practice. Respectful hospitality reduces misunderstandings while leaving accounts to settle. A prolonged stay uses household stores and neighbors' available labor."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

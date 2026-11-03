@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_5_6",
+  "HeroName": "Agnese d'Aquino",
+  "Description": "Lady Agnese d'Aquino, wife of Lord Landolfo, commands administrative authority over the Aquino border fortresses guarding the southern mountain passes. Resolute, vigilant, and practically minded, Agnese directs ordnance maintenance, food rationing, and garrison logistics while her husband campaigns in the field. When irregular bands of raiders approached her walls, Agnese famously mounted the ramparts to organize crossbow defenses with icy calmness. Her dauntless courage and organizational mastery inspire total devotion from soldiers and townsfolk alike. Lady Agnese personally supervises fortress armories, food stores, and garrison logistics, inspecting weapons and crossbow defenses while maintaining iron composure on the ramparts during border emergencies, earning deep devotion from all her soldiers. Endowed with unshakeable courage and administrative brilliance, Agnese guarantees that the border keeps stand ready for siege, serving as the courageous domestic guardian of the southern mountain passes. Her vigilant leadership, moral constancy, and logistical mastery command the unreserved loyalty and deep respect of the entire garrison guarding the southern approaches. Her cold calculations under fire and resolute defense of border keeps ensure that the frontiers remain completely secure against surprise. Her vigilant leadership, moral constancy, and logistical mastery command the unreserved loyalty and deep respect of the entire garrison guarding the frontier.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Guarantee inexhaustible supplies and ironclad defense for the border fortress network.",
+    "Protect family properties and dependent serfs from lawless brigands and enemy incursions."
+  ],
+  "Values": [
+    "Unyielding fortitude, self-reliance, and vigilant readiness in times of peril.",
+    "Sacred devotion to marital duty, feudal oaths, and the safety of her garrison."
+  ],
+  "Fears": [
+    "An overwhelming siege cutting off water and provisions, leading to fortress surrender.",
+    "Her husband falling victim to treacherous ambushes in the lawless mountain defiles."
+  ],
+  "SpeechStyle": "Speaks with crisp efficiency, unwavering resolve, and calm administrative authority. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Battle_of_Pelagonia_1259_Byzantine_Dawn",
+  "Keywords": [
+    "Pelagonian coalitions and reports"
+  ],
+  "RagShortTexts": [
+    "Nicaea, Epirus and allies contested Macedonian routes with differing aims."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nicaea, Epirus and allies contested Macedonian routes with differing aims. Concentration and embassies changed expectations, but reports required confirmation. An advantage in one region was not possession of Constantinople."
+    }
+  ],
+  "TextMappings": []
+}

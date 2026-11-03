@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_written_commissions_and_verification_367b56ae",
+  "Keywords": [
+    "Bark debts and handovers",
+    "Debts in Novgorod birchbark notes"
+  ],
+  "RagShortTexts": [
+    "Novgorod birchbark notes included private requests and debts.",
+    "A written request still needed recipients, carriers and actual deliveries to agree."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bark messages recorded debts, goods and recipients, helping absent people communicate. Recipients still identified names and objects and asked whether delivery occurred. Scribes, carriers and witnesses played distinct roles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Bark messages recorded debts, goods and recipients, helping absent people communicate. Recipients still identified names and objects and asked whether delivery occurred. Scribes, carriers and witnesses played distinct roles. Carriers located recipients and watched entrusted objects; detours and missed contacts delayed delivery. Private commissions needed travel arrangements and clear spoken additions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Bark messages recorded debts, goods and recipients, helping absent people communicate. Recipients still identified names and objects and asked whether delivery occurred. Scribes, carriers and witnesses played distinct roles. Merchants and notables arranged deliveries and debts through trusted scribes and carriers. Accounts needed comparison with actual goods; writing did not itself complete a handover."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Bark messages recorded debts, goods and recipients, helping absent people communicate. Recipients still identified names and objects and asked whether delivery occurred. Scribes, carriers and witnesses played distinct roles. Kin helped write and read letters, enabling distant contact but exposing private matters. Brief requests prompted questions separating wording from roadside rumor."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

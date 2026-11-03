@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Sicilian_Crown_Contest_and_Papal_Feud",
+  "Keywords": [
+    "Sicilian Crown Contest 1259",
+    "Manfred of Hohenstaufen",
+    "Papal Fiefdom Claim",
+    "Sicilian Feudal Sovereignty"
+  ],
+  "RagShortTexts": [
+    "Manfred of Hohenstaufen defies papal excommunication over Sicily, sparking multi-power conflict."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sicily in 1259 is ruled by a king that the papacy refuses to recognize. Manfred of Hohenstaufen took the crown as regent for his nephew Conradin and then as king, and Rome treats him as the usurper of a fief that belongs to the Holy See. Pope Alexander IV had earlier offered the kingdom to Edmund, son of Henry III of England, and that offer collapsed under the expense of an invasion. The Church's feudal claim requires an outside prince who will do homage, take the island by force, and carry the papal banner into the south. Each failed candidate leaves the Hohenstaufen line entrenched and the Guelph and Ghibelline quarrels of Italy more bitter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Sicilian baron judging the Manfred settlement weighs two things: the grain of the Tavoliere plain and the Messina straits, which tax every ship of Genoa and Venice. Rome looks to Charles of Anjou to take the realm, so each Apulian count must decide whether a papal patent or a Hohenstaufen charter will guard his fief. Manfred's Saracen archers and German horse keep the throne secure for now."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sellswords find steady pay in Apulia and Sicily, where papal and Hohenstaufen treasuries both bid for loyal men. Manfred's German lancers hit hard on open ground, so the men who survive keep their pikes set, hold the line shoulder to shoulder, and never break ranks to chase a charge that has already spent itself."
+    }
+  ],
+  "TextMappings": []
+}

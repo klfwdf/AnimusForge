@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v10",
+  "Keywords": [
+    "Recovered captives and household reunion"
+  ],
+  "RagShortTexts": [
+    "Theodosius recovered captives and goods in Britain, protecting more than weapons and walls."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Theodosius recovered captives and goods in Britain, protecting more than weapons and walls. Reunion and recovered animals shaped future subsistence. Identification and resettlement still followed a military success."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

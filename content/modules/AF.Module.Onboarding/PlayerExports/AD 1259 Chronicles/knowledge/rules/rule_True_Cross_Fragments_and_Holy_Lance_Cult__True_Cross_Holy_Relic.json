@@ -1,0 +1,41 @@
+{
+  "Id": "rule_True_Cross_Fragments_and_Holy_Lance_Cult",
+  "Keywords": [
+    "True Cross Holy Relic",
+    "Antioch Holy Lance Veneration",
+    "Crusader Reliquary Battle Standard",
+    "Hattin Relic Loss Memory"
+  ],
+  "RagShortTexts": [
+    "Commanders carried them into battle, and their presence gave the lines a rallying point.",
+    "Churches across Europe kept fragments, and rival rulers contested them as proof of divine favor."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fragments of the True Cross and the Holy Lance that pierced Christ's side were the most prized relics of the crusading era. At the siege of Antioch in 1098, a man named Peter Bartholomew reported that he had found the Lance in the church of St Peter, and the discovery lifted the starving army and inspired it to break the relief force that had gathered outside the walls. The primary relic was reportedly lost at the Horns of Hattin in 1187, but splinters of the True Cross, set in gold and crystal reliquaries called stauroteca, continued to travel with armies and bishops. Commanders carried them into battle, and their presence gave the lines a rallying point. Churches across Europe kept fragments, and rival rulers contested them as proof of divine favor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "When the chaplains raise a gilded cross along the line, thirsty spearmen find the strength to charge a barricade they had thought impossible. The men believe God turns arrows from those who march under the True Cross. Hold your place in the file, keep your shield up, and listen for the chaplain's words above the drums."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Ever since Empress Helena's excavation in Jerusalem, traditionally dated to about 326, reliquaries have proliferated across abbeys. Louis IX acquired fragments of the True Cross from the Latin emperor Baldwin II, and canonical authorities issue parchment seals to verify authenticity, but popular devotion looks solely to miraculous healings."
+    }
+  ],
+  "TextMappings": []
+}

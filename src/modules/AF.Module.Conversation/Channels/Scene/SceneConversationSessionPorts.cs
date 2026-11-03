@@ -98,8 +98,11 @@ internal sealed class SceneConversationSessionPorts
 		int personalizedAgentIndex = -1,
 		bool requireMemoryReceipt = false);
     internal PersistExtraFactToNamedHeroesCapability PersistExtraFactToNamedHeroes;
-    internal delegate bool PersistNpcSpeechToNamedHeroesCapability(int speakerAgentIndex, string speakerName, string response, List<NpcDataPacket> nearbyData, bool requireMemoryReceipt = false);
+    internal delegate bool PersistNpcSpeechToNamedHeroesCapability(int speakerAgentIndex, string speakerName, string response, List<NpcDataPacket> nearbyData, bool requireMemoryReceipt = false, int targetAgentIndex = -1, string targetName = null);
     internal PersistNpcSpeechToNamedHeroesCapability PersistNpcSpeechToNamedHeroes;
+    // Relay presentation (main thread): speaker -> addressee registration and its reset.
+    internal Action<int, int> RegisterRelaySpeechAddressee;
+    internal Action ClearRelaySpeechPresentation;
     internal delegate void PrepareAutoGroupParticipantsForIdleTimeoutCapability(List<NpcDataPacket> participants, string trailingSpeechText = null, string playerText = null, List<string> npcVisibleTexts = null, int distinctNpcSpeakerCount = 0);
     internal PrepareAutoGroupParticipantsForIdleTimeoutCapability PrepareAutoGroupParticipantsForIdleTimeout;
     internal delegate void PromotePersonalizedExtraFactInScenePrivateHistoryCapability(
@@ -114,7 +117,7 @@ internal sealed class SceneConversationSessionPorts
     internal RecordPlayerMessageCapability RecordPlayerMessage;
     internal delegate void RecordPlayerSpeechToMessageFeedCapability(string content);
     internal RecordPlayerSpeechToMessageFeedCapability RecordPlayerSpeechToMessageFeed;
-    internal delegate bool RecordResponseForAllNearbySafeCapability(List<NpcDataPacket> nearbyData, int speakerAgentIndex, string speakerName, string response, bool requireMemoryReceipt = false);
+    internal delegate bool RecordResponseForAllNearbySafeCapability(List<NpcDataPacket> nearbyData, int speakerAgentIndex, string speakerName, string response, bool requireMemoryReceipt = false, int targetAgentIndex = -1, string targetName = null);
     internal RecordResponseForAllNearbySafeCapability RecordResponseForAllNearbySafe;
     internal delegate void ReleaseSceneConversationConstraintsCapability(List<NpcDataPacket> participants, int fallbackAgentIndex = -1, bool stopAutoGroupSession = true, bool clearQueuedSpeech = true, bool forceFullAutonomyRelease = false);
     internal ReleaseSceneConversationConstraintsCapability ReleaseSceneConversationConstraints;

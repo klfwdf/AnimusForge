@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v3",
+  "Keywords": [
+    "摩尼教口手胸三封印"
+  ],
+  "RagShortTexts": [
+    "摩尼教以口、手和胸的封印概括言语饮食、行动与欲念的约束。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "摩尼教以口、手和胸的封印概括言语饮食、行动与欲念的约束。它们是规范生活的宗教比喻，不是刻在身体上便能生效的术式。严格遵守者与普通支持者的实际生活仍须区别。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

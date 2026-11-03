@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v5",
+  "Keywords": [
+    "庄园酸酒与节期额外份"
+  ],
+  "RagShortTexts": [
+    "加图区分酸酒、各月配给和节期额外份额。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "加图把收获后可用的酸酒与随后各月的饮酒配给分开，还为节期列额外份额。酒的品质与季节、库存和主人安排相关，劳动者不能据节日所得推定平日也有同样供应。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "xionite_lord_1_1",
+  "DisplayName": "Kidara",
+  "HeroName": "Kidara",
+  "Description": "Kidara I ruled in 374 AD as the founding Khagan and conqueror of the Kidarite Kingdom, commanding ferocious Xionite and Hunnic cavalry divisions across Central Asia. A nomadic strategist of terrifying ambition, Kidara integrated nomadic recurve horse archery with heavy armored cataphract tactics. Pouring across the Hindu Kush mountain passes, his armies shattered Sassanid Persian frontier lines in Bactria and dismantled the remnants of the Kushan state in Gandhara. Crowned with a distinctive winged diadem and striking coins bearing his portrait, Kidara established undisputed hegemony over Afghanistan and the Punjab, cementing his status as the premier Eurasian steppe conqueror reshaping the geopolitical landscape of the East. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Kidara I ruled in 374 AD as the founding Khagan and conqueror of the Kidarite Kingdom, commanding ferocious Xionite and Hunnic cavalry divisions across Central Asia. A nomadic strategist of terrifying ambition, Kidara integrated nomadic recurve horse archery with heavy armored cataphract tactics. Pouring across the Hindu Kush mountain passes, his armies shattered Sassanid Persian frontier lines in Bactria and dismantled the remnants of the Kushan state in Gandhara. Crowned with a distinctive winged diadem and striking coins bearing his portrait, Kidara established undisputed hegemony over Afghanistan and the Punjab, cementing his status as the premier Eurasian steppe conqueror reshaping the geopolitical landscape of the East. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with arrogant, conqueror's intensity; booming, incisive, and exuding absolute confidence in his unstoppable steppe legions.",
+  "PersonalSpeechStyle": "Speaks with arrogant, conqueror's intensity; booming, incisive, and exuding absolute confidence in his unstoppable steppe legions.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annihilate all regional resistance across Gandhara to annex the rich Indus Valley trade routes",
+    "Compel Shahanshah Shapur II to officially recognize Kidarite sovereignty across Bactria"
+  ],
+  "Values": [
+    "Heaven grants the world to the conqueror's saddle; weak walls are built to be breached",
+    "True sovereignty is built upon conquered bone and steel; only the strong inherit the Silk Road"
+  ],
+  "Fears": [
+    "Dreads emerging Hephthalite nomadic rivals surging from the eastern steppes to dispute Bactria"
+  ],
+  "Personality": "Kidara I ruled in 374 AD as the founding Khagan and conqueror of the Kidarite Kingdom, commanding ferocious Xionite and Hunnic cavalry divisions across Central Asia. A nomadic strategist of terrifying ambition, Kidara integrated nomadic recurve horse archery with heavy armored cataphract tactics. Pouring across the Hindu Kush mountain passes, his armies shattered Sassanid Persian frontier lines in Bactria and dismantled the remnants of the Kushan state in Gandhara. Crowned with a distinctive winged diadem and striking coins bearing his portrait, Kidara established undisputed hegemony over Afghanistan and the Punjab, cementing his status as the premier Eurasian steppe conqueror reshaping the geopolitical landscape of the East. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

@@ -1,0 +1,52 @@
+{
+  "Id": "rule_divination_molten_lead_ice_water",
+  "Keywords": [
+    "consulting omens before a journey",
+    "divination at a camp"
+  ],
+  "RagShortTexts": [
+    "People consult diviners over travel and illness; readings influence gifts and decisions.",
+    "Specialists oversee divination and fire rites in Mongol camps; envoys must ask about protocol."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Uncertain journeys, marriages and illness lead some people to consult diviners and choose a departure or avoidance through ritual. Diviners in Mongol camps may be called during illness or important undertakings, and misfortune can be explained as a breached taboo. Consultation costs time and gifts; an adverse reading may bring delays, further rites and suspicion of others.\n\nOutsiders need interpreters or experienced companions to explain camp practices. Passing fire rites, entering tents and presenting gifts follow the host’s requirements. Rearranging baggage may look innocent to a visitor but offensive to a guard. Travelers can hear both omens and guides, while water levels, fodder and weather continue to shape the actual journey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Explaining taboos helps receive envoys without conflict, while repeated demands for ritual gifts can damage negotiation. Hosts must decide who speaks with authority about omens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts ask about fire rites and tent entrances before approaching with weapons or baggage. An auspicious day may still lack horses, and departure waits for people and animals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A reassuring reading may cost grain or a small gift. When it delays or redirects travel, the household must rearrange work and food."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_reval_toompea_and_danish_rule_63d82c80",
+  "Keywords": [
+    "Danish authority on Reval's Toompea",
+    "Traffic between Toompea and the lower town"
+  ],
+  "RagShortTexts": [
+    "Toompea supports Danish authority at Reval alongside the interests of townsmen and local lords.",
+    "Sea support depends on weather, ships and unloading; the heights still need supplies from below."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Toompea anchors Danish authority and a garrison at Reval, while merchants below, clergy and neighboring lords have their own business. Ships bring supplies and orders subject to weather and landing conditions. Guards above need food, repairs and messages from below; access and urban disputes matter alongside the defended approach."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Reval's carriers move between harbor, lower town and slopes. An arriving ship brings work but unloading delays consume the day. Merchants need to know which authority handles charges and disputes. Families value open sea traffic while providing for visiting attendants, whose presence can strain household stores."
+    }
+  ],
+  "TextMappings": []
+}

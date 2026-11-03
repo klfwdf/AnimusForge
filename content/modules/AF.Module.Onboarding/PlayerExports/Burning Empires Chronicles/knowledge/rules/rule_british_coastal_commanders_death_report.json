@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v2",
+  "Keywords": [
+    "British coastal commander’s death report"
+  ],
+  "RagShortTexts": [
+    "News of Nectaridus’s death prompted changes in British command."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valentinian received reports while traveling that Nectaridus, count of the coast, had been killed in Britain. News prompted command changes and requests for troops, while further reports were needed. Receiving a warning was not restoring defense."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

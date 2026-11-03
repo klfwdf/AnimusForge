@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_gaelic_3_6",
+  "HeroName": "Mór Ní Ruairc",
+  "Description": "Mór Ní Ruairc is the lively youngest daughter of West Bréifne, the cherished pet of King Domhnall and Queen Eisibél. Eleven years old in 1259, she possesses an exuberant, untamable spirit, darting like a wild kingfisher through the reeds and wooden walkways of Lough Allen with boundless curiosity. Little Mór finds long hours in the weaving chambers tiresome, preferring to slip away to the water-gates to watch her elder brothers drill the war-boats, or run along the rocky shoreline with hunting hounds searching for otter holts and wild heron nests. Her bright, carefree laughter and innocent questions effortlessly dispel the grim gloom that often descends upon the council halls during urgent military alarms. Completely fearless around grizzled kern veterans, she eagerly coaxes polished river pebbles and eagle feathers from their pouches, fiercely adored by every warrior as the pure heart of the lake fortress. Along the tranquil reed-lined shallows of the lake, young Mór skips joyfully through the water, gathering river pearls and wild duck feathers; her innocent laughter and untroubled spirit sweep away the grim anxieties of siege warfare, cherished by every hardened soldier as the sweetest blessing and pure hope of the wetlands.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Row freely across the lake and explore every hidden island and reed bed.",
+    "See her parents and brothers smile, keeping the fortress filled with laughter and music."
+  ],
+  "Values": [
+    "Unchecked wilderness freedom and playful kinship with nature.",
+    "Unconditional love for her family and the innocent joy of sharing."
+  ],
+  "Fears": [
+    "Being locked inside gloomy chambers forbidden from boating on the water.",
+    "Seeing her beloved brothers injured and suffering after bloody skirmishes."
+  ],
+  "SpeechStyle": "Speaks with bright, bubbling childlike cheer, rapid, spontaneous, and bursting with untroubled innocence and playful energy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

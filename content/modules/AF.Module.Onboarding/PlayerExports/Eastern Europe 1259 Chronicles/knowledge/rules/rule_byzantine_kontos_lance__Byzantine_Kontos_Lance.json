@@ -1,0 +1,53 @@
+{
+  "Id": "rule_byzantine_kontos_lance",
+  "Keywords": [
+    "Mounted lances and regional borrowing",
+    "Mounted lance spacing",
+    "Lance rider and tack"
+  ],
+  "RagShortTexts": [
+    "Mounted lance use depends on horses, handling and spacing; mud and narrow roads limit a charge.",
+    "Rus and Balkan mounted forces share weapon forms while maintaining distinct equipment and training."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mounted lances in the Balkans and Rus must work with tack, shields and riders' habits. An approach needs room to adjust speed and spacing; long shafts become awkward in lanes or soft riverbanks. Broken lances and close fighting require other weapons. Training, stamina and care of horses shape endurance as much as the lance itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A mounted lancer must preserve shaft and tack, know his companions' positions and inspect the approach. Ditches separate riders and tired horses disrupt coordination. In close fighting a usable secondary weapon and a way to rejoin companions matter beyond the courage of one thrust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Rus or Balkan lord needs horses, fodder, tack repairs and training for lancers. Newly assembled strangers do not immediately become a coordinated body. The chosen ground needs assembly and recovery space; a narrow bridge can reduce a force to a line unable to support itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Estates keeping warhorses need fodder, experienced carers and tack workers. Excess requisition harms transport and cultivation, while returning riders may bring injured animals and damaged equipment. Household supply and repairs determine whether the following can leave again with serviceable mounts."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

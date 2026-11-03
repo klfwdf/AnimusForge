@@ -1,0 +1,53 @@
+{
+  "Id": "rule_kite_shield_rawhide_rim",
+  "Keywords": [
+    "Kite shields and material upkeep",
+    "Rus shield board and cover repairs",
+    "Shield grips and marching straps"
+  ],
+  "RagShortTexts": [
+    "Boards, covers and straps shape shield use; damp and splits need maintenance.",
+    "Rus shields differ in shape and grip; loads and friendly spacing affect endurance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Long and other wooden shields in Rus depend on boards, joints, covers and straps. Damaged edges and splits need repair, while damp affects weight and fittings. Covering one side does not protect every direction. Shield, spear and marching load must work together; a large shield can also catch neighbors or trees on narrow paths."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A shield user needs to lift, turn and see his footing. A loose strap can disable a sound board. Carrying it on the march frees hands but requires timely preparation. Close companions need room for shields and spears; damaged edges, splits and worn straps should be checked at rest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord needs boards, leather, straps and repair skills as well as new shields. Followings have different equipment habits, so sudden replacement affects cooperation. Craftsmen must be available during movement and defense, preventing an apparently sound shield failing through an old split or loose fitting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Woodworkers, leatherworkers and households maintain shields. Requisitioned dry wood and straps reduce reserves for carts and doors. Returning fighters may bring damage without money for repairs. Relatives and workshops bear the work, linking serviceable shields to local materials and labor."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

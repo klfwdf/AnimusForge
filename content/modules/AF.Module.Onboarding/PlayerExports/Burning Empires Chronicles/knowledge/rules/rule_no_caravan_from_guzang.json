@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v6",
+  "Keywords": [
+    "No caravan from Guzang"
+  ],
+  "RagShortTexts": [
+    "Fri-khwataw complained from Guzang that he was isolated and no caravan was leaving."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fri-khwataw complained from Guzang that he was isolated and no caravan was leaving. He had followed a partner to Dunhuang but returned after movement failed. Travel depended on companions, a passable route and reception at the next stage; both person and stock could be stranded."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

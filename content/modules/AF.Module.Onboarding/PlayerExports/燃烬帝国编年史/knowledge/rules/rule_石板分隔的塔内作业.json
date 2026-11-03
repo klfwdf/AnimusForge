@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v7",
+  "Keywords": [
+    "石板分隔的塔内作业"
+  ],
+  "RagShortTexts": [
+    "米德豪的内室用大石板分成较小区域，分别安排作业与储物。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "米德豪的内室用大石板分成较小区域，分别安排作业与储物。石板划出的边界使炉火、工具和库存不必全挤在同一处。共同围墙下仍可有不同工作空间，不能把塔内所有人都写成全天只负责守卫。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

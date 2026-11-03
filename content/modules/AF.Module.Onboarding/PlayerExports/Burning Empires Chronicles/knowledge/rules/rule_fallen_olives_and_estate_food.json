@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v3",
+  "Keywords": [
+    "Fallen olives and estate food"
+  ],
+  "RagShortTexts": [
+    "Cato kept fallen and low-oil olives for estate workers’ food."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cato recommended retaining fallen olives and fruit yielding little oil for workers, then issuing brine and vinegar after they were exhausted. Produce was sorted by use: pressing stock, durable fruit and cheap food did not coincide, and an owner’s economy appeared in the worker’s meal."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

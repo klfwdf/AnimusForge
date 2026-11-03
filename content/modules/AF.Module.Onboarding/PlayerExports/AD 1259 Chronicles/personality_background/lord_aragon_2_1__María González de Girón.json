@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_1",
+  "HeroName": "María González de Girón",
+  "Description": "Doña María González de Girón belongs to the supreme baronial aristocracy of Castile—the colossal House of Girón. Her marriage into the ruling dynasty of the County of Urgell formed a monumental geopolitical axis connecting the boundless wealth of the Castilian interior with the strategic Pyrenean foothill lordships of Catalonia. Endowed with royal composure, exceptional administrative acumen, and iron will, Doña María directs the high governance of Balaguer Castle and the Viscountcy of Àger while Count Àlvar I contends with the royal wrath of James I. Controlling manorial grain vaults, feudal muster payrolls, and sensitive diplomatic correspondence, she serves as the indispensable conduit linking Castilian grandees with the Catalan resistance. In the perilous climate of 1259, her farsighted statesmanship shields the House of Urgell from royal confiscation, solidifying her reputation as one of the most formidable noble matriarchs in the Iberian Peninsula. María managed the chancery and financial rolls of Urgell with the iron discipline of her Leonese Girón ancestry, displaying remarkable diplomatic acumen during disputes with the crown. Resolutely protecting every seam of revenue across the Viscountcy of Àger, she stood as one of the most formidable and politically influential noblewomen of the Pyrenean foothills.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Direct the finances and granary reserves of Urgell and Àger to ensure complete wartime solvency",
+    "Maintain the vital political alliance with the House of Girón to deter royal confiscation by James I",
+    "Safeguard the lives and legitimate hereditary succession of her children amidst royal hostility"
+  ],
+  "Values": [
+    "Aristocratic greatness rests upon strategic foresight, vast alliances, and unblemished noble honor",
+    "Fiercely defend ancient feudal immunities with calculated statecraft and boundless resources",
+    "Devout piety before God and benevolent justice toward loyal vassals and retainers"
+  ],
+  "Fears": [
+    "King James I mounting a massive siege of Balaguer Castle, stripping her house of the County of Urgell",
+    "Political collapse within her natal house of Girón leaving her household isolated against the crown"
+  ],
+  "SpeechStyle": "Steely, incisive, and unyielding; speaks with the commanding authority of a frontier matriarch defending her feudal dynasty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

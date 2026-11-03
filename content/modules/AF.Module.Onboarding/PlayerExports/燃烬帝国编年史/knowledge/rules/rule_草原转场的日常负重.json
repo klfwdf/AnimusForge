@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v3",
+  "Keywords": [
+    "草原转场的日常负重"
+  ],
+  "RagShortTexts": [
+    "阿兰家庭移动时，食物、用具和随行者共享车上空间。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿兰家庭移动时，食物、用具和随行者共享车上空间。武器再贵重也不能替代日常容器与遮蔽。负重安排影响行进和营中取用，不能把所有车都当成能随时投入战阵的空壳。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

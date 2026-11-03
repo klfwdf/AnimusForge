@@ -1,0 +1,52 @@
+{
+  "Id": "rule_laika_bear_hound_breeding_division",
+  "Keywords": [
+    "tracking dogs in a woodland hunt",
+    "feeding and handling hunting dogs"
+  ],
+  "RagShortTexts": [
+    "Hunting dogs track, warn or hold quarry and need food, training and handling.",
+    "Large animals injure dogs and people; a dog does not guarantee a safe hunt or journey."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Woodland hunting dogs help locate quarry through scent, pursuit and barking, with different temperaments and habits. Young dogs need feeding and familiarity with handlers and terrain; adults need strength before a hunt. A long pursuit can lose them, and injuries consume part of a hunt’s proceeds in food and care.\n\nAgainst bears and other large animals, dogs can distract or hold quarry but may be struck and injured. Hunters still face danger on arrival. Dogs, beaters and armed people must cooperate; one brave animal does not complete a hunt. Chasing livestock or another party’s quarry can provoke compensation and boundary disputes, affecting future hunting partnerships."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Noble kennels require feed, handlers and training alongside prestige. Failure to take quarry does not remove claims for a neighbour’s injured stock."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts distinguish warnings at animals, strangers or familiar scents. A strange hunting dog should not be allowed to scatter pack animals or draw people into the woods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Dogs take a share of household food and need care after injury. Borrowers should agree responsibility for loss or harm before dividing any game."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

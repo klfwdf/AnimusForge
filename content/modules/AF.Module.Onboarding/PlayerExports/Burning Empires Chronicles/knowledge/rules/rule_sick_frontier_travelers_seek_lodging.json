@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v6",
+  "Keywords": [
+    "Sick frontier travelers seek lodging"
+  ],
+  "RagShortTexts": [
+    "Cappadocian facilities received sick travelers with physicians, transport and escort."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Church reception facilities in Cappadocia accommodated sick travelers with physicians, lodging, transport and escort. Illness could interrupt a journey; people needed a way to reach care and might be unable to leave alone. Assistance required actual people, vehicles and buildings."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

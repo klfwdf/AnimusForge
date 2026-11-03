@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_1_1",
+  "HeroName": "Beatriz of Castile, Queen consort of Portugal and the Algarve",
+  "Description": "Beatriz of Castile , Queen consort of Portugal and the Algarve, is the distinguished daughter of King Alfonso X 'the Wise' of Castile and Mayor Guillén de Guzmán. Her high-stakes marriage to Afonso III cemented the definitive peace between Portugal and Castile, securing Castilian recognition of Portuguese sovereignty over the Algarve. Reared amidst the glittering scholarly court of Toledo, Queen Beatriz was educated in Latin codices, diplomacy, and ecclesiastical law. In 1259, residing in Lisbon, the young queen skillfully mediates tensions between the Portuguese crown, disgruntled bishops, and the papal curia. A generous patroness of the magnificent Cistercian Monastery of Alcobaça, she routinely exercises her trans-Pyrenean dynastic influence to safeguard royal stability. Combining royal Castilian majesty with deep compassion and political tact, Queen Beatriz stands as the indispensable diplomatic cornerstone of the kingdom. Engaging in secret conferences with Castilian ambassadors within the cloisters of Alcobaça, Queen Beatriz deftly soothed border customs disputes between the crowns. Her profound maternal charity founded shelters for war orphans throughout Lisbon, earning her enduring veneration as a holy peacemaker across Iberia. Through her serene wisdom and diplomatic grace, Queen Beatriz remains celebrated as one of the greatest peacemakers in medieval Iberian history.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve perpetual peace between Portugal and Castile, cementing undisputed rule over the Algarve",
+    "Mediate royal disputes with the Holy See to protect the kingdom from papal interdicts",
+    "Nurture and educate her royal children to ensure the continued glory of the House of Burgundy"
+  ],
+  "Values": [
+    "A queen's true glory lies in healing divides; Christian charity is a sacred trust from God",
+    "Diplomatic fidelity and patient grace triumph over the reckless vanity of martial conquest",
+    "Devout piety before God, filial reverence, and unyielding dedication to family harmony"
+  ],
+  "Fears": [
+    "War erupting between her royal father and husband, forcing her into an agonizing dilemma",
+    "Papal sanctions inciting domestic ecclesiastical insurrections against the royal throne"
+  ],
+  "SpeechStyle": "Gracious, dignified, and eloquent; speaks with the effortless majesty, moral clarity, and exquisite courtly poise of a premier royal peacemaker.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

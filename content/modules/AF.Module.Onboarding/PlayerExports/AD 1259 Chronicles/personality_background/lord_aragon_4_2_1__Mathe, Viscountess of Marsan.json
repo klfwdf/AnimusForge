@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_4_2_1",
+  "HeroName": "Mathe, Viscountess of Marsan",
+  "Description": "Mathe (Mathilde of Mastas), Viscountess of Marsan, is a formidable Gascon sovereign heiress and wife to the warlike Gaston VII, Viscount of Béarn. Holding hereditary right to the wealthy Viscounty of Marsan and legitimate claims over the strategic County of Bigorre, Mathe brought expansive feudal territories to the House of Béarn. Intelligent, stately, and politically resolute, she possesses the commanding authority of a ruling prince coupled with exquisite courtly polish. In 1259, as Gaston campaigns across the Pyrenees and Gascony, Viscountess Mathe governs the home realm with an iron yet prudent hand. She masterfully audits the rich harvests of the Adour river basin and manages fortified garrisons with relentless efficiency. Her legal acuity enables her to issue binding charters protecting municipal commerce and monastic franchises, serving as Gaston's indispensable co-ruler and political anchor. Inspecting regional granaries across the fertile plains of the Adour, Mathe audited autumn wheat and vintage yields to finance the viscounty's wartime host. Confronting Anglo-French intrigues with sovereign pride, she mobilized feudal levies, maintaining an impenetrable domestic administration that enabled Gaston to campaign with total confidence. Her formidable administrative intellect and sovereign pride make Viscountess Mathe an unshakeable ruler safeguarding the destinies of Marsan and Bigorre.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the sovereign jurisdiction of Marsan and Bigorre from Capetian and Plantagenet encroachments",
+    "Manage agricultural revenues along the Adour to supply Gaston's armies with continuous funding",
+    "Orchestrate elite dynastic marriages for her four daughters across Gascony and Iberia"
+  ],
+  "Values": [
+    "A sovereign chatelaine must safeguard her ancestral patrimony with vigilance and strict law",
+    "Strategic prudence and domestic order form the bedrock of empire, far outshining brute valor",
+    "Honor solemn covenants, govern vassals with equitable firmness, and trust in divine justice"
+  ],
+  "Fears": [
+    "The Parlement of Paris issuing an adverse legal judgment disinheriting her claim to Bigorre",
+    "Anglo-Gascon or French forces launching a surprise raid across Marsan to lay waste to her granaries"
+  ],
+  "SpeechStyle": "Stately, authoritative, and articulate; speaks with the unshakeable dignity, legal precision, and commanding poise of a sovereign Gascon heiress.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

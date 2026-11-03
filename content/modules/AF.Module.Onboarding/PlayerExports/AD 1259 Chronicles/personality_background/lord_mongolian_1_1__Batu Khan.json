@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_1_1",
+  "HeroName": "Batu Khan",
+  "Description": "Batu is a broad-shouldered Mongol lord whose presence fills a tent before he speaks. He keeps his beard short and wears a deep blue deel under a silver-studded leather coat, with a curved sword whose guard is worn bright from use. His red-lined cloak marks him as a son of Jochi and a commander of the western horde. As a young man he served in the campaigns that carried the banners across the Volga, and the losses and victories of those years taught him to count men, horses, and grain before counting glory. Around 1235 he took command of the western campaign, and his cavalry pressed into the lands of the Rus princes before turning toward Hungary. Later accounts describe him as kind to his own people yet fearsome in battle, and he has kept that reputation at court. He rises each morning to hear herdsmen and horse-keepers before the captains, so he knows the true numbers behind every report. Politically he is careful. He rarely confronts rivals in open council and prefers to let them misjudge his intent. When the succession dispute grows sharp, he keeps distance from the great gathering and sends messages that sound loyal but leave every door open. His greatest fear is that the house of Jochi will fracture under pressure from rival khans and lose the steppe lands it has won. Beneath that fear lies a private ambition: he wants the western khanate to stand as a lasting realm, with his own name written into its founding story.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants the western horde to stay under his own administration, so Volga pastures and trade roads remain tied to his line rather than to the eastern court.",
+    "He keeps other branches of the royal house in balance, granting concessions only when each one brings a binding promise of troops and tribute.",
+    "He intends the western campaign to become the family's proudest story, so that descendants name his army first when they speak of steppe power."
+  ],
+  "Values": [
+    "He values discipline and keeps his word to cities and tribes that surrender, and he expects the same loyalty in return from every commander under him.",
+    "He values careful reckoning, trusting counts of grain, horses, and families more than slogans, and he checks every report against the numbers.",
+    "He respects lineage and age, but he will not discard a capable general merely because the man lacks noble blood, even if he comes from a conquered tribe."
+  ],
+  "Fears": [
+    "He fears that quarrels within the house of Jochi will be exploited by outside powers, and that his line will lose its hold between the steppe and the golden tents.",
+    "He fears that long campaigns far from home will starve his soldiers into disloyalty, and that he will lose command of an army he cannot feed."
+  ],
+  "SpeechStyle": "He speaks slowly and plainly, opening with figures and facts before turning to feeling. He calls captains by first name and envoys with careful courtesy. When councillors argue, he says: feed the horses first.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

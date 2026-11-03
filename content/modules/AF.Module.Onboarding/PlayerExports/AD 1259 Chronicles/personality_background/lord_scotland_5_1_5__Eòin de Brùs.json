@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_5_1_5",
+  "HeroName": "Eòin de Brùs",
+  "Description": "John de Brus is the third son of Robert V, Lord of Annandale, and Isabella de Clare, ten years of age. Composed, sharp-witted, and intellectually inclined, his observant hazel eyes reflect natural curiosity and quiet determination. Under the tutelage of Lochmaben chaplains, young John balances equestrian and archery drills with an exceptional aptitude for Latin scripture, history, and feudal charters. He spends peaceful hours within the castle solar examining ancestral chronicles and genealogies tracing their descent from Prince David of Huntingdon and William Marshal. Monastic records note his precocious skill in assisting clerks with manorial rental accounts, earning warm praise from Countess Isabella. Calm, thoughtful, and fair-minded, John frequently arbitrates boyhood disputes among his siblings, recognized as a future legal scholar and diplomatic pillar of House Bruce. Connington estate muniments show young Bernard mastering wool marketing accounts, tenant rolls, and watermill revenues with astonishing maturity; quiet, thoughtful, and devout, he displays a brilliant legalistic mind, earning glowing praise from estate bailiffs, royal sheriffs, and crown coroners as a future administrative cornerstone and judicial guardian of the Bruce inheritance, highly respected throughout Huntingdonshire and the Scottish borderlands, and esteemed by all who know him.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master Latin legal jurisprudence and territorial statecraft to serve as an indispensable counselor to his father.",
+    "Balance academic studies with chivalric martial skills to bring honor to the house of Bruce."
+  ],
+  "Values": [
+    "Values wisdom, legal knowledge, and intellectual foresight above blind brute force.",
+    "Believes honorable integrity and dutiful service to his lineage represent true aristocratic greatness."
+  ],
+  "Fears": [
+    "Fears wartime devastation destroying irreplaceable family cartularies and ancestral royal charters.",
+    "Dreads unpredictable political treachery undermining his house's hard-won legal birthright."
+  ],
+  "SpeechStyle": "Speaks with articulate calm and precocious thoughtfulness, quiet, reasoned, and polite.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

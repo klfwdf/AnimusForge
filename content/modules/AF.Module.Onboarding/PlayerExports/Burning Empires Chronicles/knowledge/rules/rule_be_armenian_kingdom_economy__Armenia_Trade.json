@@ -1,0 +1,59 @@
+{
+  "Id": "be_armenian_kingdom_economy",
+  "Keywords": [
+    "Armenia Trade",
+    "Duin and Ararat grain and herds"
+  ],
+  "RagShortTexts": [
+    "Duin and the Ararat plain supply grain, livestock and estate resources.",
+    "Nakharar resources and manpower make levies negotiated."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Duin and the Ararat plain provide grain, animals, estates and mountain exchange. Nakharar houses control resources and manpower, making levies negotiated; garrisons add transport burdens along roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Duin and the Ararat plain supply grain, livestock and estate resources. Traveling followers need real food from this production; valuables still require a buyer and exchange. Nakharar resources and manpower make levies negotiated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Nakharar resources and manpower make levies negotiated. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Duin and the Ararat plain supply grain, livestock and estate resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Duin and the Ararat plain supply grain, livestock and estate resources. Households need meals and the means to keep producing after delivering goods. Nakharar resources and manpower make levies negotiated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Nakharar resources and manpower make levies negotiated. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Duin and the Ararat plain supply grain, livestock and estate resources."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

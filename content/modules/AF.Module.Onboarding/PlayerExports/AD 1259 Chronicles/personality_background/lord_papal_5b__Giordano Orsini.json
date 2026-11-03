@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_5b",
+  "HeroName": "Giordano Orsini",
+  "Description": "Lord Giordano Orsini is the loyal brother, principal military general, and trusted confidant of Cardinal Giovanni Gaetano, later created cardinal himself. Frequently serving as Senator of Rome and marshal of the papal forces, Giordano is a veteran of brutal urban street fighting, fortress defense, and mounted combat. Leading elite Orsini lances along the Tiber, he repeatedly smashed armed incursions by the rival Colonna, serving as the formidable martial arm protecting his brother's ascent. Serving as Senator of Rome and marshal of the papal forces, Lord Giordano excelled in street fighting, fortress defense, and mounted combat, repeatedly repelling Colonna assaults with terrifying ferocity as the indispensable military right hand of his brother. His strict command discipline, personal bravery under fire, and unswerving fraternal loyalty ensure that Giordano remains feared by every rival oligarch across the turbulent streets and fortified bridges of Rome. His seasoned vigilance, martial constancy, and logistical mastery command the total trust and unreserved loyalty of the entire Roman garrison defending the ancestral Orsini bastions. His fearless audacity under fire and ferocious swordsmanship ensure that his name echoes through the martial annals of the Roman Senate. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Smash Colonna forces in the field and on the streets, securing undisputed armed supremacy over Rome.",
+    "Guard and empower his brother's ascent to the papacy, expanding Orsini territorial fiefdoms across Italy."
+  ],
+  "Values": [
+    "Unbreakable fraternal solidarity, martial courage, and merciless vengeance against enemies.",
+    "Iron discipline in command and personal bravery at the vanguard of his heavy cavalry."
+  ],
+  "Fears": [
+    "Assassins striking down his brother Giovanni, robbing their house of its supreme strategic genius.",
+    "Mercenary mutiny compromising fortified bridges and towers along the Tiber at a critical hour."
+  ],
+  "SpeechStyle": "Speaks with a commanding martial baritone, blunt Roman directness, and fierce fraternal devotion. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

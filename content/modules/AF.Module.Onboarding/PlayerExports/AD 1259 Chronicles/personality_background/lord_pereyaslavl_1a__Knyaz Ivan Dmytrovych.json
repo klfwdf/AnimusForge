@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Knyaz Ivan Dmytrovych of Pereyaslavl stands as a resilient military commander of the Rurikid dynasty holding the southern frontier fortress of Rus' during the tumultuous mid-thirteenth century. From his wooden and earthen citadel above the Trubizh River, he confronted both the sweeping vanguard of Golden Horde raiders and the burdensome demands of Mongol tribute collectors. Conscious of Pereyaslavl's ancient role as the bleeding vanguard protecting Kyiv and the southern agrarian heartland, Ivan rallied the battle-hardened remnants of boyar retinues and riverine frontiersmen. Beneath the battered vaults of Saint Michael's Cathedral, he swore solemn oaths to deny steppe raiders passage beyond the Sula and Trubizh river lines. To safeguard his ravaged principality beneath Mongol suzerainty, he meticulously balanced silver tithes to appease imperial darughachi while fortifying border redoubts and beacon towers across the southern marshlands. Leading charges in heavy lamellar armor with a war flail, his iron discipline and tactical prudence anchored the eastern bank of the Dnieper amidst utter desolation. Along the treacherous marshes of the lower Trubizh, he personally spearheaded freezing winter reconnaissance patrols to eliminate hostile steppe scouting outposts and secure fragile river trade. His resolute courage and unbending fortitude under fire earned the deep devotion of surviving frontiersmen and hardened boyar cavalrymen, who viewed his iron leadership as the singular bedrock of their collective survival against nomadic devastation.",
+  "SpeechStyle": "Speaks with grim and measured austerity, his voice clipped and decisive like drawn steel, reflecting the vigilant urgency of a frontier fortress commander.",
+  "Motivations": [
+    "Reinforce the timber and stone ramparts along the Trubizh and Sula rivers to shield surviving agrarian settlements from nomadic devastation.",
+    "Navigate diplomatically between Sarai tribute officials and rival princely factions to secure essential breathing space and defensive strength."
+  ],
+  "Values": [
+    "Uphold the martial oath of Rus' frontier captains through unflinching discipline, defending Orthodox sancturies and border communities.",
+    "Prize pragmatic defensive governance, recognizing food stores and fortified redoubts as the ultimate foundation of collective survival."
+  ],
+  "Fears": [
+    "Dreads a full-scale punitive expedition from the Golden Horde leveling the citadel and extinguishing the principality in smoke and ashes."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_pereyaslavl_1a",
+  "HeroName": "Knyaz Ivan Dmytrovych"
+}

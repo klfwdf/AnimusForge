@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v8",
+  "Keywords": [
+    "Ironworking outside the broch"
+  ],
+  "RagShortTexts": [
+    "Outbuildings at Midhowe include ironworking remains, with some construction over an earlier ditch."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Outbuildings at Midhowe include ironworking remains, with some construction over an earlier ditch. Expanding habitation and production could alter older defenses. Tool repair needed fuel, iron and work space; possession of a tower did not make its occupants self-sufficient in every craft."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

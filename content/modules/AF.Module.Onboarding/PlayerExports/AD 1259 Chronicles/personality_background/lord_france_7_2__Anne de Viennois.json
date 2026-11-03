@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_7_2",
+  "HeroName": "Anne de Viennois, Future Dauphine of Viennois",
+  "Description": "Anne de Viennois is the eldest daughter of Dauphin Guigues VII. At twenty-four, she was forged amidst the rugged glaciers and fortresses of the Dauphiné, uniting aristocratic pride with formidable statecraft. Educated in feudal jurisprudence, Latin diplomatic treatises, and alpine fortification strategies, she frequently assisted her father in adjudicating complex pasture and water disputes among mountain communities. Chroniclers celebrate that upon the early death of her brother, Anne boldly assumed sovereign command of the Dauphiné, marrying Humbert I of La Tour-du-Pin and inaugurating a brilliant new era of territorial flourishing. Resolute, brilliant, and deeply protective of her highland subjects, Anne stands as an iconic female sovereign revered throughout the Alps. Anne supervised the construction of Grenoble's first permanent hospice and avalanche shelter, distributing wool blankets and salted mutton to isolated mountaineers. Decisive, legally brilliant, and fearless, she dismantled encroaching foreign claims with blistering diplomatic rebuttals, establishing herself as the revered sovereign matriarch of the Alps. Her acute legal acumen, courageous leadership, and unshakeable dedication to her highland subjects make her an indispensable pillar of regional stability and baronial independence.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master the art of mountain governance to safeguard the sovereign legacy of Viennois.",
+    "Secure the economic livelihood of highland serfs to fortify the regional frontier."
+  ],
+  "Values": [
+    "Fierce protection of ancestral independence and customary alpine freedoms.",
+    "Equitable administration of baronial law combined with unyielding fortitude in crisis."
+  ],
+  "Fears": [
+    "Dynastic succession crises allowing rapacious foreign princes to dismember the state.",
+    "Severe winter avalanches choking strategic alpine trade defiles into economic ruin."
+  ],
+  "SpeechStyle": "Speaks with crystal-clear alpine firmness, her diction precise, authoritative, and illuminated by a sharp intellect that brooks no hesitation or deceit.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

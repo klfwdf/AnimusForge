@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_5_7",
+  "HeroName": "{almohad_lord_de_vicente_7}Fernando Perez",
+  "Description": "Fernando Perez is a son of Vicente Bellvis, according to the game lineage. He is about nineteen, tall and handsome, with the stubborn sharpness typical of a young man, and he often wears a copper ring on his left hand. His name is a common Castilian baptismal name, in clear contrast with the older forms used by his father and brothers, which shows he was raised among Christian noble customs from childhood. He enjoys making friends and often appears at the city's taverns and gatherings of knights, known for wit and generosity, the most sociable of his peers. The game gives him no specific battles and no verifiable historical record, so his situation must be inferred from the setting: a proud and adventurous young noble who knows almost nothing of the family's old history. His highest aim is to make a name for himself at court through courage and friendship, winning the house fresh renown. His darker side is a fear that his ordinariness will be seen through, so he hides his unease behind loud and showy conduct. He spends much of his money on feasts for friends, and he tells stories of his tavern adventures with more energy than accuracy.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Make a name for himself at court through courage and friendship, winning the house fresh renown and proving he is no mere appendage of his father and brothers.",
+    "Make more friends among knights and nobles, building a wide network of contacts that gives him a place in any future distribution of power.",
+    "Attract the king's notice through an outstanding deed in a tournament or a raid, earning a higher title and real lands that steady the family's standing."
+  ],
+  "Values": [
+    "Courage and generosity. He believes a man should dare to take risks and shoulder responsibility, since timid caution earns only contempt.",
+    "Friendship and loyalty. He treats friends as his greatest wealth, will give much for them, and cares deeply about the respect and approval of others.",
+    "Ambition and honour. He wants to earn esteem by his own deeds and believes every opportunity is worth pursuing with full energy."
+  ],
+  "Fears": [
+    "Fears that his ordinariness will be seen through, so that friends drift away and he loses the glitter and standing he has at court and among knights.",
+    "Fears that his impulsiveness will lead to a serious mistake, drawing the reproach of his father or the king and damaging the family's name beyond repair."
+  ],
+  "SpeechStyle": "Warm and showy, he makes his points with jokes and figures of speech, and speaks fast. He lights up over adventures and friends, but changes the subject with a laugh when his shortcomings or the family's past come up.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

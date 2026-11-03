@@ -9,7 +9,7 @@ $rows = @()
 foreach ($entry in Get-AnimusForgeContentLayout -ProjectRoot $ProjectRoot) {
     if ($entry.Target -notmatch '^ModuleData/|^CustomPrompts/') { continue }
     $asset = $entry.SourcePath
-    if ($Language -eq 'en' -and $entry.LocalizationRole -notin @('compatibility','bilingual-ui') -and $entry.Target -notmatch '^ModuleData/Languages/') {
+    if ($Language -eq 'en' -and $entry.LocalizationRole -notin @('compatibility','bilingual-ui','bilingual-prompt') -and $entry.Target -notmatch '^ModuleData/Languages/') {
         $selected = Get-AnimusForgeEnglishAsset -Entry $entry -Worldbook $worldbook
         if ($selected) { $asset = $selected }
     }

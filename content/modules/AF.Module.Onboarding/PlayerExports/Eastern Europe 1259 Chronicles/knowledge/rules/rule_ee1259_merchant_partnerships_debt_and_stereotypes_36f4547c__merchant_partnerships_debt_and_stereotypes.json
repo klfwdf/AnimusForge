@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_merchant_partnerships_debt_and_stereotypes_36f4547c",
+  "Keywords": [
+    "merchant partnerships debt and stereotypes",
+    "Ortoq partnerships capital debt and trade"
+  ],
+  "RagShortTexts": [
+    "Rulers and merchant partners can finance trade together.",
+    "Lending, revenue contracting and selling goods entail different duties."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ortoq partnerships link capital or powerful patrons with commercial operators. Contributions, returns, losses and debt need agreement. Financing collection differs from financing a caravan, and coercive debt recovery can damage trade and local confidence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts protect cargo and people, not every alleged debt. Unclear seizure claims draw troops into disputes and delay their assigned journey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Merchant capital accelerates projects but needs repayment sources and risk allocation. Confusing damaged cargo with unpaid taxes can destroy operators’ capacity to cooperate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Borrowers need sales before repayment; delays can reflect routes or prices. Guarantors assess affordable loss even when acquaintances introduce the deal."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_6",
+  "HeroName": "Henryk III Biały",
+  "Description": "Henryk III the White (Biały) reigns as Duke of Wrocław, the capable second son of High Duke Henry II the Pious, venerated as one of the most effective, forward-thinking rulers of thirteenth-century Silesia. Assuming leadership after the cataclysmic Mongol invasion of 1241, Henryk successfully confronted the erratic tyranny of his elder brother, Bolesław II Rogatka, compelling the division of the realm and securing the premier metropolis of Wrocław. Ruling for nearly two decades, Henryk III was the premier architect of urban modernization in Lower Silesia; he promulgated sweeping Magdeburg municipal charters, attracting thousands of skilled German and Polish artisans, merchants, and stonemasons to transform Wrocław into a fortified, prosperous center of trade. He forged an unshakeable military alliance with King Přemysl Otakar II of Bohemia, deploying well-equipped urban militias alongside his feudal knights to repeatedly smash invading raiding forces along the Oder. Just, resolute, and administratively disciplined, Henryk enjoyed the devoted loyalty of both the Catholic episcopate and the thriving burgher class. He stands as a beacon of stability and prosperity in medieval Silesia, whose enlightened governance laid the bedrock of his duchy's golden era. Henryk III established bustling river wharves and municipal councils, ensuring lasting peace for his burghers. His enlightened urban governance turned Wrocław into a beacon of order and prosperity along the Oder.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand Magdeburg municipal privileges to forge Wrocław into the wealthiest and most fortified commercial hub in Poland.",
+    "Solidify a defensive alliance with the Bohemian crown to permanently deter military threats from his brother Rogatka.",
+    "Uphold lawful civic order and ecclesiastical harmony, securing vast financial revenues for his lineage."
+  ],
+  "Values": [
+    "Prize commercial urbanization, written law, and civic productivity over destructive, wasteful baronial wars.",
+    "Value iron discipline, pragmatic statecraft, and equitable justice as the only true safeguards of peace.",
+    "Honor municipal charters and diplomatic oaths, governing with balanced strength and generosity."
+  ],
+  "Fears": [
+    "Predatory neighboring warlords and mercenaries laying siege to Wrocław, burning suburban craft guilds and wharves.",
+    "Deadly pestilence and Oder river flooding overwhelming the city's drainage infrastructure and decimating burghers."
+  ],
+  "SpeechStyle": "Wrocław's glory rests on thriving markets, just laws, and peaceful citizens as much as on stone bastions; aggressors shall perish along the Oder! Lawful commerce and order make Wrocław an invincible bastion along the Oder.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

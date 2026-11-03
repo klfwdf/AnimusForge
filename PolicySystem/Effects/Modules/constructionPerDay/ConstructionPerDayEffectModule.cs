@@ -8,7 +8,7 @@ internal sealed class ConstructionPerDayPayload : NumericPolicyEffectPayload
 
 internal sealed class ConstructionPerDayEffectModule : NumericPolicyEffectModuleBase<ConstructionPerDayPayload>, IModelModifierPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "constructionPerDay",
 		order: 80,
 		legacyIds: new[] { "constructionPowerDailyDelta", "constructionSpeedPercent" },
@@ -32,7 +32,8 @@ internal sealed class ConstructionPerDayEffectModule : NumericPolicyEffectModule
 		playerDisplayName: PolicyCompatibilityTexts.Get("Module_constructionPerDay_playerDisplayName"),
 		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_constructionPerDay_editableUnderstandingPrompt", "Building construction power is affected only by explicit building construction or repairs, artisans, labor, building materials, engineering transport, construction organization, stoppages or damage to works. Development, prosperity, subsidies, tax exemptions, tax increases, general fiscal spending and reasonable elaboration of execution methods must not independently be interpreted as construction measures."),
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_constructionPerDay_editableEvaluationPrompt", "Judge fixed construction power added or removed directly per affected town or castle daily, without percentage conversion. Small-scale changes: ±20 to ±60; sustained expansion of construction resources: +60 to +150; major nationwide construction: +300 to +1000. Extreme mobilization, huge dedicated investment or a player's explicit demand for extreme intensity may reach 2 to 4 times this range, including more than +1000, only when execution paths and resource commitments are sufficiently clear. Use proportionate negatives only if the policy directly obstructs construction, causes labor loss or material shortages, or damages the construction system."),
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3h",
+  "HeroName": "Letizia di Alessandria",
+  "Description": "Letizia di Alessandria, from the patrician magistracy of Alessandria, was the consort of Filippo della Torre. Renowned for strategic acumen and diplomatic elegance, she brokered commercial pacts across southwestern Lombardy, serving as her husband's trusted political partner. Lady Letizia organized an efficient courier and intelligence network linking Alessandria with Milan, deploying patrician charm to defuse simmering border revolts against Filippo. Diffusing hostile diplomatic probes in Milanese salons with witty eloquence, she promoted transregional arbitration courts, contributing immensely to southwestern Lombard peace. Cultivating cross-regional harmony through courtly diplomacy and charity, Lady Letizia stood beside Filippo as an indispensable counselor of state. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement defensive treaties between Alessandria and Milan against western Savoyard threats.",
+    "Direct patrician charities in Milan, distributing bread to weavers to cement popular loyalty.",
+    "Streamline interstate administrative dispatches for Filippo, freeing him for grand strategy."
+  ],
+  "Values": [
+    "Believes the strongest alliances are forged through tangible mutual benefit and goodwill.",
+    "Views maternal culture and courtly poise as quiet instruments to thaw diplomatic freezes."
+  ],
+  "Fears": [
+    "Piedmontese cities reneging on treaties, leaving Milan's western march exposed.",
+    "Filippo succumbing to exhaustion, leaving an unstable regime to face predatory rivals."
+  ],
+  "SpeechStyle": "Speaks with engaging warmth and diplomatic polish, articulating complex statecraft with grace. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

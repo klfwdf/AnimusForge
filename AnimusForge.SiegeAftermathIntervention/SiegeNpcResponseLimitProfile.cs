@@ -16,7 +16,7 @@ public static class SiegeNpcResponseLimitProfile
 
     public const bool DefaultUnlimited = false;
 
-    public const string McmGroupName = "14. Siege Aftermath & Internal Unrest";
+    public const string McmGroupName = "{=AF_MCM_GcczSiege_Group}14. Siege Aftermath & Internal Unrest";
     public const string McmGroupNameEn = "14. Siege Aftermath & Internal Unrest";
     
     public static string GetMcmGroupName(bool isEnglish) => isEnglish ? McmGroupNameEn : McmGroupName;

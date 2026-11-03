@@ -31,6 +31,11 @@ internal sealed class LoreCandidateRetriever
 {
 	internal const int MentionTermHardCap = 32;
 	internal const int MentionQueryMaxChars = 80;
+	// Without a cross-encoder, a bare name query must clear this embedding cosine; below it the nearest rule is
+	// usually a different person/place with a similar-sounding name (offline: 8 world books, bekko-a25m).
+	internal const float NameQueryMinScore = 0.65f;
+	internal const int NameQueryMaxParts = 3;
+	internal const int NameQueryMaxChars = 24;
 
 	private readonly KnowledgeRuleIndex _index;
 	private readonly Action<string, string> _log;
@@ -50,6 +55,73 @@ internal sealed class LoreCandidateRetriever
 		catch
 		{
 		}
+	}
+
+	/// <summary>A bare entity mention (name, place, short noun) rather than a themed multi-term query.</summary>
+	internal static bool IsNameQuery(string text)
+	{
+		string normalized = NormalizeKeywordForCompare(text);
+		if (normalized.Length == 0 || normalized.Length > NameQueryMaxChars)
+		{
+			return false;
+		}
+		int parts = 1;
+		foreach (char c in normalized)
+		{
+			if (c == ' ' && ++parts > NameQueryMaxParts)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/// <summary>Name with quotes, interpuncts and whitespace removed; "" when too short to be a distinctive literal
+	/// (2 chars for CJK, 4 otherwise, so short Latin fragments like "an" never match by containment).</summary>
+	internal static string NormalizeNameLiteral(string text)
+	{
+		StringBuilder sb = new StringBuilder((text ?? "").Length);
+		bool cjk = false;
+		foreach (char c in text ?? "")
+		{
+			if (char.IsWhiteSpace(c) || "“”\"'‘’《》「」『』·・•".IndexOf(c) >= 0)
+			{
+				continue;
+			}
+			if (c >= '\u3400' && c <= '\u9fff')
+			{
+				cjk = true;
+			}
+			sb.Append(char.ToLowerInvariant(c));
+		}
+		return sb.Length >= (cjk ? 2 : 4) ? sb.ToString() : "";
+	}
+
+	/// <summary>True when the normalized name occurs literally inside one of the rule's keywords or short texts.</summary>
+	internal static bool RuleTextContainsName(LoreRule rule, string literal)
+	{
+		if (rule == null || string.IsNullOrEmpty(literal))
+		{
+			return false;
+		}
+		return ContainsLiteral(rule.Keywords, literal) || ContainsLiteral(rule.RagShortTexts, literal);
+	}
+
+	private static bool ContainsLiteral(List<string> texts, string literal)
+	{
+		if (texts == null)
+		{
+			return false;
+		}
+		for (int i = 0; i < texts.Count; i++)
+		{
+			string normalized = NormalizeNameLiteral(texts[i]);
+			if (normalized.Length > 0 && normalized.IndexOf(literal, StringComparison.Ordinal) >= 0)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/// <summary>Collapses runs of whitespace (incl. newlines) to one space and trims.</summary>
@@ -280,9 +352,31 @@ internal sealed class LoreCandidateRetriever
 					Log("LoreMatch", $"entity_query priority={num + 1} noun={QuoteJson(weightedKnowledgeInput.Text)} candidates=0");
 					continue;
 				}
-				rankedCandidates.Add(list3.Where((KnowledgeRuleScore x) => x?.Rule != null).ToList());
-				KnowledgeRuleScore best = rankedCandidates[num].FirstOrDefault();
-				Log("LoreMatch", $"entity_query priority={num + 1} noun={QuoteJson(weightedKnowledgeInput.Text)} candidates={rankedCandidates[num].Count} best={(best?.Rule?.Id ?? "(none)")} score={(best?.RawScore ?? 0f):0.000}");
+				List<KnowledgeRuleScore> candidates = list3.Where((KnowledgeRuleScore x) => x?.Rule != null).ToList();
+				KnowledgeRuleScore best = candidates.FirstOrDefault();
+				bool nameGated = !flag && IsNameQuery(weightedKnowledgeInput.Text);
+				int rescued = 0;
+				if (nameGated)
+				{
+					string literal = NormalizeNameLiteral(weightedKnowledgeInput.Text);
+					candidates = candidates.Where((KnowledgeRuleScore x) =>
+					{
+						if (x.RawScore >= NameQueryMinScore)
+						{
+							return true;
+						}
+						// A name the book only writes inside compound phrases ("瓦伦斯" in "瓦伦斯宗教整肃") scores low against
+						// the whole phrase; the literal containment still proves it is this entity, not a look-alike.
+						if (RuleTextContainsName(x.Rule, literal))
+						{
+							rescued++;
+							return true;
+						}
+						return false;
+					}).ToList();
+				}
+				rankedCandidates.Add(candidates);
+				Log("LoreMatch", $"entity_query priority={num + 1} noun={QuoteJson(weightedKnowledgeInput.Text)} candidates={candidates.Count} best={(best?.Rule?.Id ?? "(none)")} score={(best?.RawScore ?? 0f):0.000}" + (nameGated ? $" nameGate={NameQueryMinScore:0.00} literalRescued={rescued}" : ""));
 			}
 			int limit = KnowledgeRuleIndex.GetLoreInjectLimit(injectLimit);
 			HashSet<LoreRule> selectedRules = new HashSet<LoreRule>();

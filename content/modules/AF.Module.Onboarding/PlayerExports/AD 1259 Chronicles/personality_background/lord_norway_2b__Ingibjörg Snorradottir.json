@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_2b",
+  "HeroName": "Ingibjörg Snorradottir",
+  "Description": "Lady Ingibjörg Snorradóttir was an illustrious noblewoman of the Sturlungar dynasty, the beloved daughter of the immortal historian Snorri Sturluson, and former consort of Gissur Thorvaldsson. In 1259, living in dignified retirement amidst the volcanic valleys of western Iceland, Ingibjörg stood at the tragic nexus of Iceland's most devastating clan feuds. Steeped in the poetic traditions of her father, she dedicated her life to the preservation, collation, and illumination of ancient skaldic verses, mythological Eddas, and historical sagas. When political rivalries culminated in the murder of her father by her estranged husband's men under Norwegian royal orders, she refused to allow herself to be consumed by bitter vengeance, retreating into monastic contemplation and scholarly patronages. Her intellectual majesty, unblemished moral integrity, and serene endurance elevated her as a living monument of ancient Scandinavian literature and high culture. She financed scriptoriums that ensured the survival of Iceland's foundational literary treasures for future generations. Within her manor scriptorium, Lady Ingibjörg gathered and restored dozens of delicate vellum manuscripts containing mythological Eddas and historical sagas damaged during civil war raids. Through decades of serene monastic contemplation, her intellectual prestige and moral serenity influenced hot-blooded young chieftains to abandon destructive blood feuds. Her profound literary stewardship preserved the priceless cultural heritage of medieval Iceland, commanding the eternal reverence of northern scholars.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Collect and preserve her father Snorri Sturluson's Edda and kings' saga manuscripts against destruction in war.",
+    "Seek quiet prayer and copying in monasteries and secluded estates, distancing herself from violent clan vengeance.",
+    "Use literary learning to comfort younger girls in the family and pass on the ancestral Norse epic tradition."
+  ],
+  "Values": [
+    "Writing and history outlast land disputes; swords rust, while great sagas preserve memory across generations.",
+    "Keep an independent and unstained conscience amid blood feuds, preserving Sturlung dignity through forgiveness and endurance.",
+    "Revere God and learning, using writing as prayer and protecting wisdom and justice through Iceland's hardships."
+  ],
+  "Fears": [
+    "Violent raiders burning her father's unique parchment manuscripts and extinguishing irreplaceable northern epic memory.",
+    "Her final religious refuge becoming another battlefield of feuding families, destroying the last place where she can find peace."
+  ],
+  "SpeechStyle": "Speaks with melancholic elegance, literary grace, and poised reserve, carrying the intellectual heritage of her father Snorri Sturluson with quiet dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

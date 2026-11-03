@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_6_1",
+  "HeroName": "Elvira González Girón",
+  "Description": "Doña Elvira González Girón is a majestic grandee from the preeminent Castilian House of Girón, wife to Dom João Afonso Telo de Meneses. Bringing the immense prestige and extensive trans-border estates of her illustrious lineage, Doña Elvira serves as the indispensable diplomatic pillar of the House of Meneses. Educated in canon law, Latin literature, and courtly protocols, she commands deep respect in both the royal chanceries of Lisbon and Toledo. In 1259, residing within the fortified marcher lordship of Albuquerque, Elvira personally directs the administration of manorial rolls, customs charters, and judicial hearings. Her sharp political acumen successfully repels encroachments by rival barons, while her lavish endowments to frontier monasteries elevate her family's pious reputation. Imposing, brilliant, and regal in bearing, Countess Elvira stands as one of the most politically potent noblewomen in thirteenth-century Iberia. Presiding over seigneurial tribunals at Albuquerque with the majestic arrogance of the House of Girón, Countess Elvira commanded total deference from marcher barons. Her mastery of canon law and international courtly protocols made her one of the most formidable political noblewomen in the western Mediterranean. Her majestic aristocratic stature, legal brilliance, and political willpower make Countess Elvira an unshakeable ruler of the border lordships.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leverage the prestige of the House of Girón to anchor Meneses hegemony across both peninsular realms",
+    "Prudently govern the vast commercial revenues of Albuquerque, securing immense wealth",
+    "Arrange elite dynastic alliances for her children among royal lines to perpetuate familial greatness"
+  ],
+  "Values": [
+    "The glory of a supreme dynasty lies in commanding the helm of history; hesitation invites ruin",
+    "Noble blood and strategic matrimonial alliances are the true shields of dynastic greatness",
+    "Uphold familial honor without compromise, practice noble charity, and revere divine authority"
+  ],
+  "Fears": [
+    "Outbreak of war between Portugal and Castile reducing the marches of Albuquerque to ash",
+    "Royal paranoia orchestrated by envious rivals resulting in the forfeiture of their ancestral privileges"
+  ],
+  "SpeechStyle": "Regal, eloquent, and commanding; speaks with the effortless majesty, legal precision, and formidable political authority of a top-tier Iberian noblewoman.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v2",
+  "Keywords": [
+    "洪水打断哥特远征"
+  ],
+  "RagShortTexts": [
+    "大水使瓦伦斯停止一季进军并退回冬营。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦伦斯第二年计划进军，却受大水阻碍而退回冬营。帝国军队的数量无法消除河流限制。撤回并不必然是战败，渡河条件不足也能改变整季行动。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

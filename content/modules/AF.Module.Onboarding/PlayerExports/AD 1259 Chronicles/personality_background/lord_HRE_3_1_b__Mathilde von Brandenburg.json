@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_3_1_b",
+  "HeroName": "Mathilde von Brandenburg",
+  "Description": "Mathilde von Brandenburg, daughter of Otto III, was Duchess of Wrocław as wife of Henry IV the Righteous of Poland. Serving as a crucial bridge between the Empire and the Piast dynasty, she actively integrated German municipal law and courtly arts into the Silesian realm. Mathilde introduced Magdeburg municipal law to Wrocław, reforming the Silesian coinage system and transforming her capital into a booming commercial bridge between Germany and Poland. Defending Wrocław's autonomy amidst volatile Piast succession wars, she secured royal support in Kraków for Duke Henry IV with formidable diplomatic finesse. Perceptive and cultured, Mathilde governed Wrocław with legal jurisprudence and civic grace, personifying the intellectual brilliance of German noblewomen. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement alliances between Brandenburg and the Piast dukes of Silesia against common foes.",
+    "Introduce chivalric literature and German town-law to modernize Wrocław's governance.",
+    "Secure imperial support for Duke Henry IV's ambitions to claim the high throne of Kraków."
+  ],
+  "Values": [
+    "Believes codified statutes and civic autonomy drive municipal prosperity far more than force.",
+    "Maintains that intellect, beauty, and resolute courage conquer Eastern European power games."
+  ],
+  "Fears": [
+    "Silesia being consumed by fratricidal Piast wars that incinerate Wrocław's civic wealth.",
+    "Her husband falling victim to poison, stranding her defenseless in a turbulent foreign court."
+  ],
+  "SpeechStyle": "Speaks with sparkling intellect and aristocratic distinction, blending German and Polish poise. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

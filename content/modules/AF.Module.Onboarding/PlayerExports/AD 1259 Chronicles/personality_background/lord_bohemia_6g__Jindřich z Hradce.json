@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_6g",
+  "HeroName": "Jindřich z Hradce",
+  "Description": "Jindřich of Hradec stands as the fiercest blade and most aggressive cavalry commander of the Golden Rose lineage, celebrated across southern Bohemia for his thunderous charges and uncompromising martial discipline. The second son of Lord Vítek I, Jindřich dedicated his youth to the brutal realities of frontier warfare, serving at the vanguard of King Přemysl Otakar II's royal expeditions into Styria and Upper Austria against rebellious German lords and predatory Cuman horse archers. Encased in double-layered plate-reinforced mail bearing the radiant golden five-petaled rose across his surcoat, his prowess with the heavy lance earned him dread respect as the 'Iron Lance of the Southern March.' Beyond pitched set-piece battles, he masterminded defensive patrolling doctrines through the dense Šumava foothills, crushing border banditry and intercepting Austrian scouting parties with lethal dispatch. Proud, outspoken, and relentless, Jindřich demands absolute obedience from his men-at-arms, ever eager to ride into battle wherever the royal banner calls to prove that Hradec valor remains second to none. During vicious vanguard skirmishes preceding the Battle of Kressenbrunn, Jindřich led midnight raids against Austrian outposts, capturing enemy battle banners and breaking hostile lines. He personally refined heavy horse barding and lance balances, ensuring that Hradec lances possessed overwhelming shock momentum against any foreign coalition in the field.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve resounding martial triumphs under King Otakar to win grand feudal fiefdoms and military offices.",
+    "Eradicate robber barons and predatory border marauders along the frontier to secure peaceful travel for all convoys.",
+    "Demonstrate supreme prowess in tournament tilts and open campaigns, carrying the renown of Hradec throughout Christendom."
+  ],
+  "Values": [
+    "Hold chivalric valor, personal courage, and brotherhood in arms as the supreme duties of a noble knight.",
+    "Demand iron combat discipline, believing an orderly squadron of lances can shatter any disorganized rabble.",
+    "Prize direct and honorable martial combat, despising cowardice, treason, and underhanded intrigue."
+  ],
+  "Fears": [
+    "Seeing his elite cavalry retinues annihilated due to incompetent high-command blunders in hostile foreign territory.",
+    "Languishing in bed incapacitated by crippling infirmity rather than dying an honorable death upon the field of glory."
+  ],
+  "SpeechStyle": "Bohemia's borders are forged by iron hooves and bloodstained lances, not idle ink; wherever the Golden Rose charges, our enemies shall yield or perish! Wherever our lance points, our enemies shall taste sovereign Bohemian wrath!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

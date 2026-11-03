@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using RichExecutions.Core;
+using RichExecutions.Customization;
 using RichExecutions.Diagnostics;
 using SandBox.Conversation.MissionLogics;
 using TaleWorlds.CampaignSystem;
@@ -20,6 +21,14 @@ public sealed partial class TownExecutionMissionBehavior
         if (_initialized || _initializationFailed)
         {
             return _initialized;
+        }
+
+        // Waiting polls are O(1), at most twice a second. Do not rerun request
+        // validation, custom profile construction or host cleanup while walking.
+        if (_fieldCampPreparationStarted && !_fieldCampPreparationReady &&
+            !TryPrepareFieldCampCeremony())
+        {
+            return false;
         }
 
         var currentPlayer = _playerAgent ?? Mission.MainAgent ?? Agent.Main;
@@ -112,8 +121,24 @@ public sealed partial class TownExecutionMissionBehavior
             var missionEntryPosition = _playerAgent.Position;
             // Decoration agents need the exclusion set during scene construction.
             _conversationLogic = Mission.GetMissionBehavior<MissionConversationLogic>();
-            BuildRuntimeScene();
-            _conversationLogic?.DisableStartConversation(true);
+            if (Request.IsFieldCamp)
+            {
+                // Admission is evaluated exactly once, before reserving the camp.
+                // Later polls must not reject the reservation as a busy ceremony.
+                if (!TryPrepareFieldCampCeremony()) return false;
+                // Only ready commits the hidden pen copy and borrows arrived
+                // spectators. Before ready no runtime actor/prop exists.
+                NotifyFieldCampCeremonyStaged();
+            }
+
+            _buildingFieldCampScene = Request.IsFieldCamp;
+            try { BuildRuntimeScene(); }
+            finally { _buildingFieldCampScene = false; }
+            if (Request.IsFieldCamp && !_retainedFieldCampSite)
+                VengeanceIntegration.FieldCampCeremonyGeometryChanged?.Invoke(
+                    Request.SessionId, _fieldCampPreparationAreas ?? Array.Empty<FieldCampCeremonyArea>(), true);
+            if (Request.IsFieldCamp) BeginFieldCampActorEntry();
+            if (!Request.IsFieldCamp) _conversationLogic?.DisableStartConversation(true);
             Mission.FocusableObjectInformationProvider.AddInfoCallback(GetExecutionFocusText);
             _focusCallbackRegistered = true;
             _stateMachine.TransitionTo(ExecutionSessionState.WaitingForPlayer);
@@ -134,12 +159,13 @@ public sealed partial class TownExecutionMissionBehavior
                 $"entryDistanceBeforeEscort={entryDistanceBeforeEscort:0.00}m, " +
                 $"fullStage={_placement.SupportsFullStage}, raised={_stageSurfaceHeight > 0f}, " +
                 $"compatibilityFallback={_placement.IsCompatibilityFallback}, " +
-                $"crowd={_crowdAgents.Count}).");
+                $"crowd={_crowdAgents.Count}, borrowedCrowd={_borrowedCrowd.Count}).");
             return true;
         }
         catch (Exception exception)
         {
             RexLog.Error("Runtime execution-scene construction failed.", exception);
+            NotifyFieldCampCeremonyReleased();
             CancelSceneAndReturn(
                 ExecutionFailureReason.ScenePlacementFailed,
                 new TextObject(
@@ -184,7 +210,9 @@ public sealed partial class TownExecutionMissionBehavior
         _executionTeam = executionTeam;
         _victimTeam = victimTeam;
         SuspendExistingExecutionEscorts();
-        if (!TryResolveInitialExecutionerPosition(out _executionerPosition))
+        if (_retainedFieldCampSite && _executionerAgent?.IsActive() == true && _executionerStandbyPosition.IsValid)
+            _executionerPosition = _executionerStandbyPosition;
+        else if (!TryResolveInitialExecutionerPosition(out _executionerPosition))
         {
             throw new InvalidOperationException(
                 "The executioner waiting position is not safely navigable.");
@@ -210,7 +238,7 @@ public sealed partial class TownExecutionMissionBehavior
                 $"Session {Request.SessionId} could not establish the stoning prisoner's barrage protection; " +
                 "the scene remains open and posture maintenance will keep retrying.");
         }
-        var executionerCharacter = SelectExecutionerTroopForCurrentSite() ??
+        var executionerCharacter = (Request.IsFieldCamp ? GetCampRoleCharacter("executioner") : SelectExecutionerTroopForCurrentSite()) ??
                                    throw new InvalidOperationException(
                                        "The venue culture has no eligible executioner troop.");
         _executionerAgent = SpawnCharacter(
@@ -221,7 +249,8 @@ public sealed partial class TownExecutionMissionBehavior
             noWeapons: true,
             invulnerable: true,
             teamOverride: _executionTeam,
-            joinPlayerFormation: true);
+            joinPlayerFormation: true,
+                campRole: "executioner");
         if (!EnsureGeneratedAllyOnPlayerTeam(_executionerAgent, "executioner") ||
             _executionerAgent.Team != _executionTeam ||
             _victimTeam is null ||
@@ -364,8 +393,9 @@ public sealed partial class TownExecutionMissionBehavior
 
         var initialExecutionerPosition = _executionerPosition;
         Vec3 executionerWaitingPosition;
-        if (UsesStoningExecution() || UsesCrossbowExecution())
+        if (UsesStoningExecution() || UsesCrossbowExecution() || _retainedFieldCampSite)
         {
+            // Retained sites reset the same borrowed executioner at the same mark.
             // Stoning and crossbow executioners are born directly on their
             // authored action marks. Never run the generic waiting sampler or
             // introduce a visible second move before the sentence starts.
@@ -501,7 +531,8 @@ public sealed partial class TownExecutionMissionBehavior
                 clothingColor1Override: GetVictimClothingColor1(),
                 clothingColor2Override: GetVictimClothingColor2(),
                 fixedEquipment: true,
-                originOverride: new BasicBattleAgentOrigin(sourceCharacter));
+                originOverride: new BasicBattleAgentOrigin(sourceCharacter),
+                campRole: "victim");
             if (!HasUsableVictimVisuals(candidate, "original hero character"))
             {
                 RetireProvisionalVictimAgent(candidate, "its native visuals were unavailable");
@@ -565,10 +596,10 @@ public sealed partial class TownExecutionMissionBehavior
         Math.Max(18, Math.Min(90, (int)MathF.Round(Request.Victim.Age)));
 
     private uint GetVictimClothingColor1() =>
-        Request.Victim.MapFaction?.Color ?? Request.Venue.MapFaction.Color;
+        Request.Victim.MapFaction?.Color ?? Request.VenueColor1;
 
     private uint GetVictimClothingColor2() =>
-        Request.Victim.MapFaction?.Color2 ?? Request.Venue.MapFaction.Color2;
+        Request.Victim.MapFaction?.Color2 ?? Request.VenueColor2;
 
     private bool HasUsableVictimVisuals(Agent candidate, string role)
     {
@@ -585,6 +616,7 @@ public sealed partial class TownExecutionMissionBehavior
 
     private void RetireProvisionalVictimAgent(Agent agent, string reason)
     {
+        if (Request.IsFieldCamp && _borrowedCampActors.Contains(agent)) return;
         try
         {
             if (agent.IsActive())
@@ -825,7 +857,7 @@ public sealed partial class TownExecutionMissionBehavior
         }
         for (var index = 0; index < guardCount; index++)
         {
-            var guardCharacter = SelectMeleeGuardTroopForCurrentSite(index);
+            var guardCharacter = Request.IsFieldCamp ? GetCampRoleCharacter("guard:" + index) : SelectMeleeGuardTroopForCurrentSite(index);
             if (guardCharacter is null)
             {
                 throw new InvalidOperationException(
@@ -896,7 +928,8 @@ public sealed partial class TownExecutionMissionBehavior
                 invulnerable: true,
                 equipmentOverride: guardEquipment,
                 teamOverride: _executionTeam,
-                joinPlayerFormation: true);
+                joinPlayerFormation: true,
+                campRole: "guard:" + index);
             if (!EnsureGeneratedAllyOnPlayerTeam(guard, $"ceremony guard {index + 1}/{guardCount}"))
             {
                 throw new InvalidOperationException(
@@ -947,7 +980,7 @@ public sealed partial class TownExecutionMissionBehavior
                 {
                     RexLog.Warning(
                         $"Guard slot {index} found no non-consumable polearm in venue culture " +
-                        $"'{Request.Venue.Culture.StringId}'; falling back to a weapon-matched idle.");
+                        $"'{Request.VenueCulture?.StringId ?? "<none>"}'; falling back to a weapon-matched idle.");
                 }
 
                 if (!TryWieldGuardMeleeWeapon(guard, out meleeSlot))
@@ -1009,7 +1042,7 @@ public sealed partial class TownExecutionMissionBehavior
 
         for (var slot = 0; slot < CrossbowVolleyRightOffsetCandidates.Length; slot++)
         {
-            var character = SelectRangedGuardTroopForCurrentSite(slot) ??
+            var character = (Request.IsFieldCamp ? GetCampRoleCharacter("shooter:" + slot) : SelectRangedGuardTroopForCurrentSite(slot)) ??
                             throw new InvalidOperationException(
                                 $"The venue culture has no eligible regular crossbow-volley troop for slot {slot}.");
             var position = Vec3.Invalid;
@@ -1052,7 +1085,8 @@ public sealed partial class TownExecutionMissionBehavior
                 noWeapons: true,
                 invulnerable: true,
                 teamOverride: _executionTeam,
-                joinPlayerFormation: true);
+                joinPlayerFormation: true,
+                campRole: "shooter:" + slot);
             if (!EnsureGeneratedAllyOnPlayerTeam(
                     shooter,
                     $"crossbow volley shooter {slot + 1}/{CrossbowVolleyRightOffsetCandidates.Length}") ||
@@ -1868,7 +1902,8 @@ public sealed partial class TownExecutionMissionBehavior
 
     private void SpawnCrowd()
     {
-        if (_placement is null)
+        // A field camp has no townspeople; its own soldiers watch instead.
+        if (_placement is null || Request.IsFieldCamp)
         {
             return;
         }
@@ -1973,6 +2008,239 @@ public sealed partial class TownExecutionMissionBehavior
             RexLog.Info(
                 $"Session {Request.SessionId} spawned the full execution crowd " +
                 $"({_crowdAgents.Count}/{targetCount}).");
+        }
+    }
+
+    private FieldCampCeremonyArea[]? _fieldCampPreparationAreas;
+
+    private void BuildFieldCampPreparationAreas()
+    {
+        var areas = new List<FieldCampCeremonyArea>();
+        var bounds = new Dictionary<string, List<(MatrixFrame Frame, Vec3 Min, Vec3 Max)>>(StringComparer.Ordinal);
+        void Add(string key, ExecutionSiteResourceType type, Vec3 position, float yaw, float pitch, float roll, float scale)
+        {
+            var cacheKey = ((int)type).ToString() + ":" + key;
+            if (!bounds.TryGetValue(cacheKey, out var parts))
+            {
+                GameEntity? probe = null;
+                try
+                {
+                    if (type == ExecutionSiteResourceType.Prefab)
+                    {
+                        if (!GameEntity.PrefabExists(key)) return;
+                        probe = BannerlordApiCompatibility.InstantiatePrefab(Mission.Scene, key, false, MatrixFrame.Identity, false);
+                    }
+                    else
+                    {
+                        var mesh = MetaMesh.GetCopy(key, false, true);
+                        if (mesh is null || !mesh.IsValid) return;
+                        probe = GameEntity.CreateEmpty(Mission.Scene, false, false, false);
+                        probe?.AddMultiMesh(mesh);
+                    }
+                    if (probe is null) return;
+                    probe.SetVisibilityExcludeParents(false);
+                    probe.SetPhysicsState(false, true);
+                    parts = new List<(MatrixFrame Frame, Vec3 Min, Vec3 Max)>();
+                    if (type == ExecutionSiteResourceType.Prefab &&
+                        string.Equals(key, GallowsPrefab, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // The prefab root includes disabled compound geometry. Measure
+                        // the very same parts restored by the actual gallows builder.
+                        foreach (var part in probe.GetEntityAndChildren())
+                        {
+                            if (!string.Equals(part.Name, GallowsDeckPartName, StringComparison.OrdinalIgnoreCase) &&
+                                !string.Equals(part.Name, GallowsDeckCoverPartName, StringComparison.OrdinalIgnoreCase) &&
+                                !string.Equals(part.Name, GallowsStairsPartName, StringComparison.OrdinalIgnoreCase) &&
+                                !string.Equals(part.Name, GallowsStructuralBeamPartName, StringComparison.OrdinalIgnoreCase)) continue;
+                            var partFrame = part.GetGlobalFrame();
+                            var before = parts.Count;
+                            for (var componentIndex = 0; componentIndex < part.MultiMeshComponentCount; componentIndex++)
+                            {
+                                var metaMesh = part.GetMetaMesh(componentIndex);
+                                if (metaMesh is null || !metaMesh.IsValid) continue;
+                                var componentFrame = partFrame.TransformToParent(metaMesh.Frame);
+                                for (var meshIndex = 0; meshIndex < metaMesh.MeshCount; meshIndex++)
+                                {
+                                    var mesh = metaMesh.GetMeshAtIndex(meshIndex);
+                                    if (mesh is null) continue;
+                                    parts.Add((componentFrame.TransformToParent(mesh.GetLocalFrame()),
+                                        mesh.GetBoundingBoxMin(), mesh.GetBoundingBoxMax()));
+                                }
+                            }
+                            if (parts.Count == before)
+                            {
+                                var box = part.GetLocalBoundingBox();
+                                parts.Add((partFrame, box.min, box.max));
+                            }
+                        }
+                    }
+                    if (parts.Count == 0)
+                    {
+                        var box = probe.GetLocalBoundingBox();
+                        parts.Add((MatrixFrame.Identity, box.min, box.max));
+                    }
+                    bounds[cacheKey] = parts;
+                }
+                finally { probe?.Remove(0); }
+            }
+            var frame = _placement!.CreateFrame(position);
+            frame.rotation.RotateAboutUp(yaw * MathF.PI / 180f);
+            frame.rotation.RotateAboutSide(pitch * MathF.PI / 180f);
+            frame.rotation.RotateAboutForward(roll * MathF.PI / 180f);
+            frame.rotation.ApplyScaleLocal(MathF.Max(0.1f, MathF.Min(5f, scale)));
+            foreach (var part in parts)
+            {
+                var area = new FieldCampCeremonyArea(frame.TransformToParent(part.Frame), part.Min, part.Max);
+                if (float.IsNaN(area.Min.x) || float.IsInfinity(area.Min.x) ||
+                    float.IsNaN(area.Min.y) || float.IsInfinity(area.Min.y) ||
+                    float.IsNaN(area.Max.x) || float.IsInfinity(area.Max.x) ||
+                    float.IsNaN(area.Max.y) || float.IsInfinity(area.Max.y))
+                    throw new InvalidOperationException("Execution prop has invalid footprint bounds: " + key);
+                areas.Add(area);
+                RexLog.Info($"Session {Request.SessionId} prop footprint '{key}' at {position}: min={area.Min}, max={area.Max}; oriented containment.");
+            }
+        }
+        // This is the same complete stage used by BuildRuntimeScene, not a crowd circle.
+        if (!UsesGroundExecutionSite()) Add(GallowsPrefab, ExecutionSiteResourceType.Prefab, _placement!.Origin, 0f, 0f, 0f, 1f);
+        if (_visualProfile is not null)
+            foreach (var prop in _visualProfile.Props)
+            {
+                if (prop.IsIgnitionEffect) continue;
+                foreach (var key in prop.PrefabCandidates)
+                {
+                    if (!GameEntity.PrefabExists(key)) continue;
+                    Add(key, ExecutionSiteResourceType.Prefab,
+                        _placement!.Offset(prop.Offset.Right, prop.Offset.Forward, prop.Offset.Up),
+                        prop.YawDegrees, prop.PitchDegrees, prop.RollDegrees, prop.UniformScale);
+                    break;
+                }
+            }
+        if (_customSitePreset is not null)
+        {
+            var profileRoles = _visualProfile is null
+                ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                : new HashSet<string>(_visualProfile.Props.Select(prop => prop.RoleId), StringComparer.OrdinalIgnoreCase);
+            foreach (var piece in _customSitePreset.Pieces)
+            {
+                if (ExecutionSitePresetStore.IsObsoletePiece(piece) ||
+                    string.Equals(piece.RoleId, "site_stage_gallows", StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrWhiteSpace(piece.RoleId) && profileRoles.Contains(piece.RoleId!)) ||
+                    string.Equals(piece.RoleId, "impalement_base", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(piece.RoleId, "impalement_spike", StringComparison.OrdinalIgnoreCase)) continue;
+                var t = piece.Transform;
+                Add(piece.ResourceKey, piece.ResourceType, _placement!.Offset(t.X, t.Y, t.Z), t.Yaw, t.Pitch, t.Roll, t.Scale);
+            }
+        }
+        if (areas.Count == 0)
+        {
+            var p = _placement!.Origin.AsVec2;
+            areas.Add(new FieldCampCeremonyArea(p - new Vec2(2f, 2f), p + new Vec2(2f, 2f)));
+        }
+        _fieldCampPreparationRadius = 2f;
+        foreach (var area in areas)
+        {
+            _fieldCampPreparationRadius = MathF.Max(_fieldCampPreparationRadius,
+                MathF.Max(area.Min.Distance(_placement!.Origin.AsVec2), area.Max.Distance(_placement.Origin.AsVec2)) + 1f);
+        }
+        _fieldCampPreparationAreas = areas.ToArray();
+        RexLog.Info($"Session {Request.SessionId} measured {areas.Count} prop footprints; spectator marks are optional.");
+    }
+
+    private bool TryPrepareFieldCampCeremony()
+    {
+        if (!Request.IsFieldCamp || _fieldCampPreparationReady) return true;
+        if (_initializationFailed || _fieldCampCeremonyReleased || _placement is null) return false;
+        if (_fieldCampPreparationStarted &&
+            _initializationElapsed + 0.0001f < _nextFieldCampPreparationPollElapsed) return false;
+
+        try
+        {
+            if (!_fieldCampPreparationStarted)
+            {
+                // Old/standalone hosts without this optional admission hook keep
+                // their original behavior. New camp owners reserve only once.
+                if (VengeanceIntegration.FieldCampCeremonyAdmissionProbe is not null &&
+                    !VengeanceIntegration.CanStartFieldCampCeremony())
+                {
+                    CancelSceneAndReturn(ExecutionFailureReason.VenueUnavailable,
+                        new TextObject("{=REX_Error_FieldCamp_Unavailable}The field camp cannot host an execution right now."));
+                    return false;
+                }
+                _fieldCampPreparationStarted = true;
+                _fieldCampPreparationUsesHook = VengeanceIntegration.FieldCampCeremonyPreparation is not null;
+                _fieldCampPreparationStartElapsed = _initializationElapsed;
+            }
+            _nextFieldCampPreparationPollElapsed = _initializationElapsed + 0.5f;
+            // Measure once at confirmation; crowd/actor marks do not enlarge the prop footprint.
+            if (_fieldCampPreparationAreas is null) BuildFieldCampPreparationAreas();
+            var preparation = VengeanceIntegration.FieldCampCeremonyPreparation;
+            var state = preparation is null
+                ? (_fieldCampPreparationUsesHook ? FieldCampCeremonyReadiness.Failed : FieldCampCeremonyReadiness.Ready)
+                : preparation(Request.SessionId, Request.Victim, _placement.Origin, _placement.Forward, _fieldCampPreparationRadius, _fieldCampPreparationAreas!);
+            if (state == FieldCampCeremonyReadiness.Ready)
+            {
+                _fieldCampPreparationReady = true;
+                // Snapshot once. Borrowed actors never enter _spawnedAgents or
+                // _crowdAgents, whose teardown may fade/remove their contents.
+                var crowd = VengeanceIntegration.FieldCampCeremonyBorrowedCrowd?.Invoke(Request.SessionId);
+                if (crowd is not null)
+                    for (var i = 0; i < Math.Min(16, crowd.Count); i++)
+                    {
+                        var agent = crowd[i];
+                        if (agent is not null && agent.IsActive() && !ReferenceEquals(agent, _playerAgent) &&
+                            agent.Character != Request.Victim.CharacterObject && !_borrowedCrowd.Contains(agent))
+                            _borrowedCrowd.Add(agent);
+                    }
+                return true;
+            }
+            if (state == FieldCampCeremonyReadiness.Pending &&
+                _initializationElapsed - _fieldCampPreparationStartElapsed < FieldCampPreparationTimeoutSeconds)
+                return false;
+
+            RexLog.Warning($"Session {Request.SessionId} camp preparation failed or timed out; no runtime scene was built.");
+        }
+        catch (Exception exception)
+        {
+            RexLog.Error("The field-camp preparation hook failed; cancelling before scene construction.", exception);
+        }
+        NotifyFieldCampCeremonyReleased();
+        CancelSceneAndReturn(ExecutionFailureReason.ScenePlacementFailed,
+            new TextObject("{=REX_Error_FieldCamp_Unavailable}The field camp cannot host an execution right now."));
+        return false;
+    }
+
+    private void NotifyFieldCampCeremonyStaged()
+    {
+        if (_fieldCampCeremonyStaged || _placement is null) return;
+        // The once-only flag precedes the callback so partial failures do not
+        // repeatedly hide the condemned. A failure must prevent runtime build.
+        _fieldCampCeremonyStaged = true;
+        VengeanceIntegration.FieldCampCeremonyStaged?.Invoke(
+            Request.Victim, _placement.Origin, _placement.Forward);
+    }
+
+    private void NotifyFieldCampCeremonyReleased()
+    {
+        // Preparation already owns walkers even if staging/build never occurred.
+        if ((!_fieldCampPreparationStarted && !_fieldCampCeremonyStaged) || _fieldCampCeremonyReleased) return;
+        _fieldCampCeremonyReleased = true;
+        try
+        {
+            if (VengeanceIntegration.FieldCampCeremonyPreparationReleased is { } release)
+                release(Request.SessionId);
+            else
+                VengeanceIntegration.FieldCampCeremonyReleased?.Invoke();
+        }
+        catch (Exception exception)
+        {
+            RexLog.Error("The field-camp host could not release its spectators.", exception);
+        }
+        finally
+        {
+            // Only drop references. Returning, restoring and disposing these
+            // actors belongs exclusively to their camp owner, including cancel.
+            _borrowedCrowd.Clear();
+            _preparedSpeechCrowd = null;
         }
     }
 

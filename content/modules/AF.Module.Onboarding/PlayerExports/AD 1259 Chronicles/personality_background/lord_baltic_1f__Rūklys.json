@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_1f",
+  "HeroName": "Rūklys",
+  "Description": "Prince Rūklys is the high-born young son of King Mindaugas and Queen Morta, a legitimate heir to the royal crown of Lithuania whose youth was cast against the tragic zenith of his father's reign. Raised within the fortified timber palisades of Voruta Castle under his mother's loving preceptors, Rūklys learned Catholic catechism and Latin chancellery letters alongside horse-archery and broadsword dueling. Bright, spirited, and endowed with natural chivalric poise, the young prince commanded the fierce loyalty of the palace royal guards, who saw in him the noble future of a modern, Christian Lithuania. His succession rights were formally recognized under papal protection bulls, marking him as a crucial dynastic bridge intended to preserve the anointed crown into the next generation. Like a slender young birch standing against a howling arctic gale, Rūklys represents the fragile, noble promise of a kingdom perched upon the edge of tragedy. Rūklys trained tirelessly alongside battle-hardened huscarls, mastering spear drills and horseback ambush tactics in dense timberlands. His relentless determination forged him into an inspiring vanguard commander ready to champion his lineage in blood.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master knightly weapons and chancellery letters to become a warrior prince capable of defending his father's throne.",
+    "Protect his younger brother Rupeikis amidst perilous palace factions, preserving his mother's pious legacy.",
+    "Uphold the dignity of an anointed royal prince, confronting treachery with fearless dynastic pride."
+  ],
+  "Values": [
+    "Hold absolute loyalty to his royal father and kingdom as his highest law, ready to fight for his home.",
+    "Prize chivalric bravery, truthful speech, and honorable combat, despising cowardly backstabbing.",
+    "Revere holy baptismal vows, longing to see peace and enlightened civilization take root across Lithuania."
+  ],
+  "Fears": [
+    "Palace sentries betraying their oaths, allowing brutal assassins to slaughter him in his bedchamber.",
+    "His father falling in battle, leaving him and his brother helpless pawns to be butchered by usurpers."
+  ],
+  "SpeechStyle": "My father's blade subdued wild tribes; I too shall grip my spear to defend the royal crown of Mindaugas and the sacred forests of our fathers! Our spears are polished and our war-horns echo across the woods!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

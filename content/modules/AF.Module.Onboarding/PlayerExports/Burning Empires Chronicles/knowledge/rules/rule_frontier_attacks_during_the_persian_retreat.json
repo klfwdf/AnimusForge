@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v6",
+  "Keywords": [
+    "Frontier attacks during the Persian retreat"
+  ],
+  "RagShortTexts": [
+    "Roman withdrawal from Persia in 363 faced attacks, fatigue and shortages."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "During the Roman withdrawal from Persia in 363, Arab forces harassed the army. Fatigue, shortages and attacks combined, requiring protection of companions alongside the search for supplies. Earlier dealings with other leaders did not make every stretch of road safe."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

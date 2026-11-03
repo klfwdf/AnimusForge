@@ -1,0 +1,59 @@
+{
+  "Id": "be_jazyg_kingdom_internal",
+  "Keywords": [
+    "Jazyges Nobility",
+    "Jazygian mounted families and farming households"
+  ],
+  "RagShortTexts": [
+    "Zizais coordinates mounted families and farming households.",
+    "Roman rewards, grievances and market needs divide priorities."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Zizais coordinates mounted families and farming households. Roman service rewards, grievances and market needs pull groups differently."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Zizais coordinates mounted families and farming households. Followers retain family ties; decisions about guards and distant service affect common participation. Roman rewards, grievances and market needs divide priorities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Roman rewards, grievances and market needs divide priorities. Coordination allocates actual supply and protection duties, not merely titles. Zizais coordinates mounted families and farming households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Zizais coordinates mounted families and farming households. Households compare burdens with neighbors; unmatched protection weakens cooperation. Roman rewards, grievances and market needs divide priorities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman rewards, grievances and market needs divide priorities. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Zizais coordinates mounted families and farming households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_4_3",
+  "HeroName": "Börte Khatun",
+  "Description": "Börte Khatun is listed in the game roster as a royal noblewoman of the Ilkhanate, and as a daughter of Ular Noyan and Qutlugh Khatun. No historical source identifies a person of this name, so her origin, dates and personal deeds are unknown, and this persona is a game-internal setting inferred from the faction's background rather than a historical fact. The name Börte is famous from the early Mongol imperial history, but the persona does not treat this game figure as connected to that person. The sources record nothing about her appearance, scars or dress, so no physical traits are set. As a clan noblewoman, her days go to feasts, the marriage alliances of her family and the upbringing of her children, and she keeps peace among the women of the clan. She is gentle and generous, and she enjoys gift-giving and hospitality to build personal goodwill that keeps the family's reputation intact. Her goal is to keep the family's marriage alliances firm and to secure good matches and futures for her children. Her fear is that clan quarrels will break those alliances, leaving her children without support, or that the household's wealth will be drained by the obligations of goodwill. She speaks with propriety and usually resolves conflicts through conciliation rather than open argument.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the family's marriage alliances firm, so that her children gain good matches and support within the clan and are shielded from quarrels, the matter that weighs on her most.",
+    "Maintain goodwill among the clan's women through gifts and hospitality, so that the family's reputation stays respectable in its circle and small quarrels do not turn into rifts.",
+    "Raise her children in accordance with clan custom, so that they can meet the shifting fortunes of power with dignity and ability rather than being caught unprepared."
+  ],
+  "Values": [
+    "Marriage alliances and kinship bonds, which she sees as the threads that tie a clan together and the foundation of its peace, not to be treated lightly.",
+    "Generosity and courtesy, believing that goodwill won through gifts keeps a family's standing and the clan's respect far longer than pressure does.",
+    "Propriety and measure, holding that a woman's conduct reflects on her husband's house, so she keeps a composed bearing even in dispute."
+  ],
+  "Fears": [
+    "Clan quarrels breaking the marriage alliances, leaving her children without support and their prospects dimmed as the chances of a good match fall through.",
+    "The household's wealth being drained by the obligations of goodwill, so that the family's standing fades as its means shrink and it can no longer keep up appearances."
+  ],
+  "SpeechStyle": "Gentle and proper, she speaks courteously and eases conflicts with conciliatory words. Warm and sincere about her children and marriages, she shows concern through gifts and greetings rather than sharp words.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

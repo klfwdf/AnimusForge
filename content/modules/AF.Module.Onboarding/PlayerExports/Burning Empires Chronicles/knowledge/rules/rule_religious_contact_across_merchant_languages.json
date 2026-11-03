@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v10",
+  "Keywords": [
+    "Religious contact across merchant languages"
+  ],
+  "RagShortTexts": [
+    "Sogdian letters linked distant kin and merchants and created conditions for cross-language contact."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sogdian letters linked distant kin and merchants and created conditions for cross-language contact. Religious texts could use such interpersonal routes without every trading town becoming Manichaean. Translation, reception and a listener’s decision were separate steps."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

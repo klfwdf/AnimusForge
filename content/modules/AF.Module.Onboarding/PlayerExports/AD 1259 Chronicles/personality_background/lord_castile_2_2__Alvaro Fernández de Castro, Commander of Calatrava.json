@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_2_2",
+  "HeroName": "Álvaro Fernández de Castro, Commander of Calatrava",
+  "Description": "Álvaro Fernández de Castro is a distinguished commander of the prestigious Order of Calatrava and cousin to Esteban Fernández de Castro. Having bound himself to the monastic vows of poverty, chastity, and obedience, he channels the martial pride of the Castro bloodline into the ceaseless holy war along the southern frontier. Stationed within the formidable stone bastions of Calatrava la Nueva and the arid defiles of the Sierra Morena, Don Álvaro directs aggressive cavalry sweeps and defensive outposts against Moorish raiders. Draped in the white Cistercian mantle adorned with the red floriated cross, he epitomizes the austere, battle-hardened monk-knight of the Reconquista. Despite his monastic profession, Álvaro remains deeply conscious of his family's position, using his independent standing within the military order to mediate discreetly between the crown and his northern kin. His iron discipline, deep piety, and formidable tactical reputation make him a revered figure among the crusading brotherhoods and a formidable bulwark of Christendom. In the scorching desert garrisons of La Mancha, Álvaro shares every spartan hardship with his crusading brethren, guarding the defiles of the Sierra Morena day and night. Bound by ascetic piety and rigid military vows, his disciplined cavalry patrols form an impenetrable living rampart against Granadan incursions threatening the heartlands of Castile.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain an impregnable line of fortified outposts across La Mancha against Muslim incursions",
+    "Defend the territorial sovereignty and papal exemptions of the Order of Calatrava",
+    "Utilize his respected standing in the order to shield the Castro lineage from hostile conspiracies"
+  ],
+  "Values": [
+    "The holy vows of Calatrava are absolute; martyrdom in defense of the Cross is eternal glory",
+    "Rigid discipline, prayer, and austere living are the true shields against heathens and chaos",
+    "Monastic devotion does not extinguish righteous loyalty to noble Christian kin"
+  ],
+  "Fears": [
+    "A massive Marinid jihadi crossing overwhelming the depleted frontier castles of Calatrava",
+    "Civil war between king and nobles stripping the southern marches of crusader manpower"
+  ],
+  "SpeechStyle": "Spartan, grave, and uncompromising; speaks in clipped sentences steeped in crusading scripture and monastic discipline.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

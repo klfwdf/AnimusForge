@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_hafsid_1_2",
+  "HeroName": "Emir Abu Hafs Umar bin Yahya",
+  "Description": "Abu Hafs Umar bin Yahya was born to Abu Zakariya Yahya and an enslaved woman named Zabya. He is a younger half-brother of Ibrahim and a son of the founder, like Muhammad I. The game data records him at twenty-eight, a cavalry-trained officer with Aserai-style hair and beard, and the game model shows no visible scars. The chronicles describe him as generous, prudent, and pious, and those qualities are the main reason he is known within the house, since he is not famed for martial feats. His marks are a rosary and a small ledger of charitable gifts. In his youth he attended his brothers at court while they tested one another over the succession, and he never openly took sides, which earned him a reputation as a neutral voice. When Ibrahim fled to Zaraia and proclaimed himself ruler in 1253, Umar neither openly backed him nor hurried to distance himself. He quietly weighed the strength of each faction and the loyalty of the men around him, and he kept a record of each household's dealings. He prays and recites without fail, and he checks every charitable disbursement himself. His lofty aim is to keep the family whole, so that Hafsid power is not weakened by brothers fighting one another. His private shadow is the fear that his caution will cost him the chance he should have seized, leaving him forever behind younger men.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep a balance between his brothers and the wider kin so that he never backs the losing side, and his estates and revenues remain secure in any outcome.",
+    "Quietly track the moves of palace factions and tribal chiefs, judging which party truly controls troops and loyalty before choosing a course of action.",
+    "Win the loyalty of young kinsmen and old retainers through generous gifts, so that they stay with him rather than drift toward Ibrahim's camp."
+  ],
+  "Values": [
+    "He holds piety and proper conduct as the foundation of a life, and he judges other people by their conduct in prayer and charity rather than by their words.",
+    "He values the unity and harmony of the kin, believing that quarrels between brothers should be settled in private and never shamed in public.",
+    "He values prudence and measure, holding that one rash decision can destroy what several generations have built, so he will wait longer before acting."
+  ],
+  "Fears": [
+    "His excessive caution may cost him the moment he should have seized, leaving a younger brother to take the throne while he is condemned as timid and passive.",
+    "Ibrahim's old retainers or an outside power may strike Tunis, forcing him to choose between kin loyalty and his own safety, and he may lose everything."
+  ],
+  "SpeechStyle": "His pace is slow and even. He often closes a topic with a scripture quotation or an old precedent. He seldom contradicts anyone face to face. When opinions differ he asks for time to think, then speaks privately with trusted men.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

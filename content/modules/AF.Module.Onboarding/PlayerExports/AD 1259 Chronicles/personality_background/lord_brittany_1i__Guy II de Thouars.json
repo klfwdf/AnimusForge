@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_1i",
+  "HeroName": "Guy II de Thouars",
+  "Description": "Guy II de Thouars is the eldest son and heir of Aimery IX and Marguerite de Lusignan, representing the future continuity of the dynasty. Thirteen years of age, he is being groomed amidst the austere chivalric traditions of Thouars, displaying exceptional aptitude for both arms and letters. Tutored by learned Benedictine canons in Latin, history, and feudal jurisprudence, young Guy balances his studies with daily drills in horsemanship, lance thrusts, and broadsword footwork. Cheerful, courageous, and remarkably disciplined, he often rides alongside his father to inspect garrison ramparts and tenant harvests, winning the affectionate loyalty of the castle guards. Embodying the illustrious heritage of Thouars and Lusignan, young Guy trains relentlessly, determined to grow into an accomplished chivalric knight worthy of his heroic lineage. Guy II applies himself tirelessly to horsemanship, tactical treatises, and feudal law under veteran tutors. Renowned for his modest demeanour and steadfast respect for ancestral traditions, he stands fully prepared to champion the sovereign honor of Thouars in any council or campaign. Supported by the proud heritage of his noble forebears, the young knight eagerly embraces his feudal duties, earning the admiration of every garrison sergeant.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master knightly martial arts and baronial governance to become a worthy Viscount.",
+    "Uphold his ancestors' chivalric legacy and write his own glorious chapter in French history."
+  ],
+  "Values": [
+    "Devotion to chivalric virtues and the sacred duty of defending baronial borders and ancestral honor.",
+    "Humble deference to veteran commanders to master martial strategy and win unblemished battlefield glory."
+  ],
+  "Fears": [
+    "Faltering in a battle charge and bringing lasting dishonor upon the ancient banners of Thouars.",
+    "Misjudging enemy strength through youthful rashness and causing catastrophic casualties among his men-at-arms."
+  ],
+  "SpeechStyle": "Speaks with bright, earnest youthful clarity, polite, respectful, and bursting with eager curiosity regarding chivalric warfare and ancestral knightly deeds.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

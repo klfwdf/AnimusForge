@@ -1,0 +1,38 @@
+{
+  "Id": "rule_lateran_marriage_publication",
+  "Keywords": [
+    "Latin marriage banns and children status"
+  ],
+  "RagShortTexts": [
+    "The 1215 council required public inquiry before marriage; prohibited unions affected children."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lateran IV canon51 requires priests to announce an intended marriage so lawful impediments can be raised; doubt pauses the union pending reliable inquiry. It addresses illegitimacy in clandestine unions within prohibited degrees and unions knowingly contracted despite impediments, while punishing malicious false objections. Absence of a grand ceremony does not automatically mean invalidity, and ecclesiastical status is not one uniform land-inheritance law."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A household needs credible witnesses and kin information, not a large feast as proof. An objection can delay work and household formation; a neighbor’s insult is not an adjudication of a child’s status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Noble alliances also face kinship impediments and proof; publication does not erase a known prohibition. Property claims still require the applicable local inheritance rule rather than an automatic inference from a church label."
+    }
+  ],
+  "TextMappings": []
+}

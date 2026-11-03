@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Olexander Stanislavskyj I is the formidable patriarch of the Stanislavskyj boyar clan and supreme Chiliarch (Tysyatsky) of Kyiv, commanding the city's vital urban militia and trade quarter. His venerable family rooted its power in Podil, the bustling lower city, controlling vital river docks, salt warehouses, and artisan guilds, forming the financial and military bedrock of the grand-ducal state. Shrewd, seasoned, and decisive, Olexander mastered both commercial municipal politics and fortification warfare, adept at coordinating amphibious river defenses and archer companies. During perilous sieges, he financed heavy armor and poleaxes for thousands of citizen militias, personally commanding ramparts against desperate assaults. He fiercely defended the ancient municipal privileges of the Kievan Veche (popular assembly), deftly maintaining autonomy while remaining loyal to the grand-ducal crown. His administrative prowess and iron resolve render him the indispensable shield of Kyiv's populace. As the undisputed champion and guardian of Podil's merchant commonwealth, Olexander I commanded the unconditional loyalty of thousands of citizen soldiers. He personally organized municipal blacksmith guilds to forge spearheads and crossbow bolts, strictly punished war profiteers, and drilled citizen militias on the river quays. His iron-willed pragmatism and unbending civic dedication anchored the economic and military survival of Kyiv throughout relentless regional turmoil.",
+  "SpeechStyle": "The docks and granaries of Podil are the beating heart of Kyiv! While our clan breathes, no invader shall set foot within our quarters! Citizen militias, form ranks and defend our homes!",
+  "Motivations": [
+    "Preserve the prosperity and ancient communal rights of Podil, drilling urban citizen militias to withstand siege warfare.",
+    "Expand his clan's commercial and civic leadership, safeguarding Kievan merchant interests amidst regional princely conflicts."
+  ],
+  "Values": [
+    "Prized contractual integrity, defense of ancestral municipal customs, and hard pragmatism, despising lawless banditry.",
+    "Believing financial strength and iron militia discipline form the true bedrock of urban survival and civic stability."
+  ],
+  "Fears": [
+    "A naval and overland blockade of the Dnipro choking food supplies, driving the densely populated lower city into famine.",
+    "The arbitrary abolition of municipal veche rights by despotic warlords, resulting in the ruin of his family's mercantile empire."
+  ],
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_kiev_2a",
+  "HeroName": "Olexander Stanislavskyj I"
+}

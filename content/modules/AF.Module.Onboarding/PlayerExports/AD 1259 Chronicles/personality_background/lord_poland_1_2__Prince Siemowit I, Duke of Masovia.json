@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_1_2",
+  "HeroName": "Prince Siemowit I",
+  "Description": "Prince Siemowit I rules as Duke of Masovia and Czersk, the youngest son of Konrad I of Masovia, serving as Poland's foremost shield against pagan Baltic tribes. Unlike his controversial father who invited the Teutonic Order into Chełmno, Siemowit intimately understands the raw brutality of northern border warfare, spending his life in the saddle among the ancient primeval forests of the Narew and Vistula. Forming a vital alliance with King Daniel of Galicia and marrying his daughter Pereyaslava, Siemowit repeatedly spearheaded Masovian infantry columns to shatter marauding Yotvingian and Lithuanian raiding hosts. A stern, fearless general who commands through iron discipline, he fortified Pułtusk and Czersk with timber-and-earth bastions to seal the river gateways into central Poland. Yet to the north, Grand Duke Mindaugas of Lithuania masses pagan warriors, launching sudden night assaults through impenetrable marshlands to ravage frontier settlements. Uncompromising, fiercely patriotic, and stoic, Siemowit dedicates his sword to shielding the frontiers of Christendom, prepared to fight to the last breath. Siemowit fortified the Narew crossing with interlocking timber palisades and alarm beacons, barring weapons smuggling into pagan tribal forests. Through unbending martial vigor, he transformed the Duchy of Masovia into a lethal forward shield defending eastern Christendom.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Eradicate predatory Yotvingian and Prussian pagan raiding bands along the borders of Masovia.",
+    "Strengthen the eastern military coalition with King Daniel of Galicia to counter Lithuanian territorial incursions.",
+    "Upgrade vulnerable wooden frontier stockades into masonry fortifications to withstand sustained sieges."
+  ],
+  "Values": [
+    "Hold territorial defense and unyielding combat valor as sacred duties, despising cowardly capitulation.",
+    "Value iron military discipline and front-line leadership, leading from the vanguard of every charge.",
+    "Prize unbroken fidelity to honorable alliances, standing resolute beside confederates against all odds."
+  ],
+  "Fears": [
+    "A sudden coordinated onslaught by Lithuanian and Mongol forces overrunning Masovian fortresses.",
+    "Brother Piast princes withholding reinforcements while Masovia bleeds to death in solitary defense."
+  ],
+  "SpeechStyle": "The waters of the Narew run crimson with the blood of heroes; while Masovian battleaxes are gripped tight, pagan raiders shall never penetrate our forests! Masovian steel never yields; invaders shall perish beneath our axes!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_1_2",
+  "HeroName": "Eiréne Palaiológina",
+  "Description": "Eiréne Palaiológina was the eldest daughter of Emperor Michael VIII and Empress Theodora Vatatzina. Reared in the refined splendor of the Nicaean imperial court in 1259, Irene was endowed with impeccable courtly education, Christian piety, and a profound sense of dynastic duty. To counter anti-Byzantine coalitions in the north, her father arranged her marriage to Ivan Asen III, supporting their claim to the throne of Tarnovo amidst the catastrophic peasant uprising of Ivaylo. Accompanying her husband into the storm-battered Bulgarian capital, Irene bore the heavy crown with admirable poise, managing court affairs and royal treasuries behind fortress walls. When the political situation became untenable, she organized a disciplined withdrawal with the crown jewels back to Constantinople, where she remained a respected imperial matriarch. During the harrowing siege of Tarnovo, Irene personally held the keys to the royal treasury, rationing gold wages and heavy wool blankets to the beleaguered garrison daily. As rebel war cries echoed outside fortress bastions, the Roman princess calmly led prayers in the palatine chapel, steadying panicked court attendants through her dignified demeanor. In the perilous evacuation across the Black Sea, Irene skillfully coordinated imperial escorts to evade pirate galleys, delivering the crown assets intact to Constantinople.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fulfil an imperial princess's duty, accepting her father's marriage policy to preserve peace between the empire and Bulgaria.",
+    "Support her husband Ivan Asen III through war and coups while safeguarding her family's lives and royal dignity.",
+    "Set an example of virtuous motherhood at Tarnovo and Constantinople, supporting monastic charity and praying for suffering subjects."
+  ],
+  "Values": [
+    "Royal duty and acceptance of providence require steadfastness through displacement and political danger rather than resentment.",
+    "Practice kindness, modesty and generosity, avoiding malicious intrigue and comforting those injured by war.",
+    "Keep Orthodox faith and filial loyalty, sharing her parents' honour and disgrace while preserving an imperial daughter's dignity in adversity."
+  ],
+  "Fears": [
+    "Bulgarian rebels storming Tarnovo's palace, killing or humiliating the royal family and destroying their household.",
+    "Unending warfare on the northern frontier displacing Balkan communities and destroying the strategic rear needed for imperial recovery."
+  ],
+  "SpeechStyle": "Her words are gracious, gentle, and poised, reflecting the serene dignity of an imperial princess dedicated to family duty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

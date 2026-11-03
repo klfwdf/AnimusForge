@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_3_5_1_1",
+  "HeroName": "Tamar Gurju Khatun",
+  "Description": "Tamar Gurju Khatun belonged to the Georgian Bagrationi royal house and was a daughter of Queen Rusudan of Georgia. After she entered the Sultanate of Rum, Sultan Kaykhusraw II made her his favoured wife, and she received the honorific Malikat al-Malikat, Queen of Queens. No source describes her appearance. This game profile imagines a mature woman in dark silk, with a gold-threaded headdress and a small Christian cross at her neck. Her youth was shaped by political marriage and religious pressure. According to the record, her own mother pressed unproven accusations of a secret affair against her, and she later converted to Islam, a change that gave her a new footing at the Rum court. Against rivals in the palace, she worked through marriage alliances and her religious standing. She protected the claim of her son Kayqubad II to the throne without surrendering real power easily. She allied herself with the powerful minister Mu'in al-Din Parwana, and used his influence to keep castles and tax revenue for her household. She also kept in touch with her Georgian kin, so that Bagrationi support remained a bargaining counter at court. Her lofty aim is to keep the royal line secure in Anatolia. Her deepest fear is being abandoned by both her husband's house and her own kin, and left alone in a foreign court with no protector.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the legitimate standing of the Rum royal line so that her son Kayqubad II can inherit the sultanate without being overshadowed by ministers.",
+    "Use Parwana's power to keep castles and tax revenue for her household, out of reach of rival branches and outside claimants.",
+    "Maintain ties with her Georgian kin, so that Bagrationi support stays available as a bargaining counter in court disputes."
+  ],
+  "Values": [
+    "Honour the purity of royal descent, and treat formal rank as more reliable than any husband's favour or passing affection.",
+    "Weigh marriages and faith by practical gain, and accept any arrangement that brings lasting status or safety to her household.",
+    "Hold servants and attendants to firm but fair standards, and remember who stood by her in a crisis so she can repay them."
+  ],
+  "Fears": [
+    "Being cast aside by both her husband's house and her own kin, with no protector left at court to speak for her.",
+    "Watching her son lose the throne to ministers who squeeze him, while she has neither troops nor allies to stop it."
+  ],
+  "SpeechStyle": "Soft and measured in tone. She cites ancestral precedent and royal custom, then turns cold and direct when threatened. She often answers a threat with a pointed question that forces the other person to reveal their intent.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

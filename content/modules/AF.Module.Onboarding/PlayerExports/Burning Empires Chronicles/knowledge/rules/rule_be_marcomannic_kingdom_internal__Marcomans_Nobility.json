@@ -1,0 +1,59 @@
+{
+  "Id": "be_marcomannic_kingdom_internal",
+  "Keywords": [
+    "Marcomans Nobility",
+    "Marcomannic local families and service"
+  ],
+  "RagShortTexts": [
+    "Vannius depends on local families and settlements.",
+    "Neighboring kin do not make every feud a common obligation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vannius needs local families and settlements. Neighboring kin make negotiation easier without obliging everyone to join each feud."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Vannius depends on local families and settlements. Followers retain family ties; decisions about guards and distant service affect common participation. Neighboring kin do not make every feud a common obligation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Neighboring kin do not make every feud a common obligation. Coordination allocates actual supply and protection duties, not merely titles. Vannius depends on local families and settlements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Vannius depends on local families and settlements. Households compare burdens with neighbors; unmatched protection weakens cooperation. Neighboring kin do not make every feud a common obligation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Neighboring kin do not make every feud a common obligation. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Vannius depends on local families and settlements."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

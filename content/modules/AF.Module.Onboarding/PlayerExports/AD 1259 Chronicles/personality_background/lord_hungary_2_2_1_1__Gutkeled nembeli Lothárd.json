@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_2_1_1",
+  "HeroName": "Gutkeled nembeli Lothárd",
+  "Description": "Gutkeled nembeli Lothárd is the stalwart son of Pál and grandson of Miklós I, standing as an elite cavalry captain and bastion warden for the clan. Reared along the training grounds of Lake Balaton, he mastered the heavy lance charge and broadsword combat, earning high praise from his grandfather. Lothárd repeatedly commanded forward patrols in rugged mountain terrain, executing perilous scouting assignments and repelling marauding border raiders. While compassionate and approachable among his men-at-arms, his insistence on military discipline remains ironclad and unbending. In 1259, as mobilization orders echo across the counties for the western campaigns, Lothárd leads an elite heavy cavalry detachment to reinforce the Drava crossings, eager to uphold his lineage. Lothárd drilled cavalrymen relentlessly in close-order heavy lance charges while sharing camp rations and cold nights beside his men-at-arms. His unbending enforcement of military discipline turned his squadron into a cohesive, unstoppable shock vanguard along the Drava line. He resolved to uphold three generations of Gutkeled honor by meeting any invading column with immediate, ferocious counter-attacks. His unbending military discipline and personal courage inspired his heavy cavalrymen to stand fast against overwhelming odds in defense of ancestral domains.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win martial glory across the Drava and Alpine marches, exalting three generations of Gutkeled valor.",
+    "Maintain peak combat readiness, securing decisive victory in any frontline engagement."
+  ],
+  "Values": [
+    "Value authentic battlefield valor, chivalric honor, and strict obedience, scorning hesitation.",
+    "Prize brotherhood with fellow warriors, pledging his life to defend ancestral lands."
+  ],
+  "Fears": [
+    "Fears tactical errors from high command exposing his loyal squadron to hopeless encirclement.",
+    "Dreads outbreak of horse sickness in camp stables paralyzing cavalry readiness."
+  ],
+  "SpeechStyle": "The Drava rushes onward, and Gutkeled steel stands unbreakable! With lance in hand, no enemy shall ever pierce our perimeter! Chargers advance and lances strike; Gutkeled knights never retreat!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

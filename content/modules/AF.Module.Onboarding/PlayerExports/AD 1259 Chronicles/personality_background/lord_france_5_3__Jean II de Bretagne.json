@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_5_3",
+  "HeroName": "Jean II de Bretagne, Earl of Richmond and Future Duke",
+  "Description": "Jean II de Bretagne is the eldest son and heir of Duke Jean I and Blanche of Navarre, holding the English earldom of Richmond and the succession to the Duchy of Brittany. At twenty, he is an accomplished knight of courtly bearing and tactical prowess, educated between the ducal court of Nantes and the royal palace in Paris. His marriage to Princess Beatrice of England, daughter of King Henry III, elevated him into an international dynastic bridge linking the crowns of Plantagenet England and Capetian France. Blessed with substantial revenues from his vast Yorkshire honor of Richmond, Jean mastered heavy cavalry charges and naval logistics. Chroniclers record that he would join Saint Louis on the Eighth Crusade and fight valiantly during Prince Edward's expedition to the Holy Land, defending the citadel of Acre. Chivalrous, loyal, and cosmopolitan, Jean represents the glorious future of the House of Dreux. Within his English honor of Richmond, Jean II earned the unreserved respect of Yorkshire knights by drilling local levies with continental heavy crossbows and combined shock maneuvers. Direct, magnanimous, and true to his chivalric word, he preserved majestic composure amidst intense parliamentary tensions in London, preparing for crusader renown.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master amphibious warfare and siegecraft to achieve crusader renown in Outremer.",
+    "Secure the administrative stability of both his Breton inheritance and Richmond estates."
+  ],
+  "Values": [
+    "Chivalric integrity and strict observance of feudal homages sworn to both crowns.",
+    "Lavish generosity toward comrades-in-arms to inspire unshakeable martial fidelity."
+  ],
+  "Fears": [
+    "Outbreak of war between England and France forcing his dual allegiances into conflict.",
+    "Perishing from contagion or shipwreck before winning enduring honor on crusade."
+  ],
+  "SpeechStyle": "Speaks with clear princely authority, blending Parisian sophistication with the frank directness of an Anglo-Norman baron, projecting poise and tactical acumen.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_quadian_kingdom_military",
+  "Keywords": [
+    "Quadians Military",
+    "Quadian crossing guards and mountain withdrawal"
+  ],
+  "RagShortTexts": [
+    "Crossings and mountain retreat both need people.",
+    "Dependants and herds move slower than riders and need early warnings."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Crossing guards and mountain retreat both need people. Expeditions need a return before counterattack; slower dependants and herds require early messages for dispersed movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Crossings and mountain retreat both need people. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Dependants and herds move slower than riders and need early warnings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Dependants and herds move slower than riders and need early warnings. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Crossings and mountain retreat both need people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Crossings and mountain retreat both need people. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Dependants and herds move slower than riders and need early warnings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Dependants and herds move slower than riders and need early warnings. Repair, carrying and care also use people, while daily supply continues after troops pass. Crossings and mountain retreat both need people."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_B8_c",
+  "DisplayName": "Taurisicos",
+  "Description": "Taurisicos, resolute Iberian mountain chieftain and falcata warrior, bound by the sacred martial oath of Devotio to defend homeland and kinsmen to the death. A master of rugged mountain terrain, ambushes, and curved falcata shortswords, Guaran commands elite skirmishers and buckler-bearers. Navigating the brutal contest between Barcid dominance and Roman intervention, Guaran fiercely safeguards clan autonomy, protecting regional silver workings and fortified hill citadels with relentless tenacity and lethal close-quarters combat.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve clan sovereignty and fortified mountain hillforts against invading armies.",
+    "Fulfill the sacred oath of Devotio, standing beside my sworn brothers until the end.",
+    "Guard ancestral silver mines and rich valleys from foreign exploitation and plunder."
+  ],
+  "Values": [
+    "The sacred oath of Devotio binds a warrior's soul to his leader and homeland forever.",
+    "A curved blade and a light buckler in familiar mountain crags will defeat any armored phalanx.",
+    "Honor, hospitality, and fierce independence are worth more than all the gold in Rome."
+  ],
+  "Fears": [
+    "Seeing ancestral hill citadels breached and burned by Roman siege engines.",
+    "Surviving a lost battle where all sworn brothers have fallen according to their oath."
+  ],
+  "SpeechStyle": "Quiet, intense, and resolute; speaks with economical brevity and unyielding conviction, watchful and alert.",
+  "VoiceId": ""
+}

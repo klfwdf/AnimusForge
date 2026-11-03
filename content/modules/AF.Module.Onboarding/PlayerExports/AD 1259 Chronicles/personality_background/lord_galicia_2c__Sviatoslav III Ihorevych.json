@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Sviatoslav III Ihorevych is the martial son of Prince Ihor and Euphrosynia Yaroslavna, standing as one of the celebrated 'Ihorevychi brothers' who contested the Galician throne. Combining his father's warlike ethos with imperial Galician maternal descent, Sviatoslav was thrust into the violent succession struggles following the death of Roman the Great. Supported by powerful boyar factions seeking counterweights to western powers, he briefly occupied the princely seat of Vladimir-in-Volhynia. Courageous, proud, and aggressive, Sviatoslav repeatedly commanded cavalry squadrons against Hungarian interventionist hosts under King Andrew II and Polish armies under Leszek the White. Though his tragic reign was ultimately cut short by shifting boyar betrayals and international rivalries, his fiery determination to wield supreme power left a lasting mark upon regional chronicles. In 1259, veterans still recount his unyielding defense of Ruthenian princely rights along the Dniester. During intense campaigns for the Galician throne, Sviatoslav III distinguished himself through audacious cavalry charges and uncompromising dynastic resolve. Leading armored retinues along the Dniester, he repeatedly routed Hungarian crusaders and Polish interventionists, determined to uphold independent Orthodox sovereignty against western encroachments. He inspired his loyal retainers with unyielding chivalric pride, defending the sacred dignity of his royal ancestors against all foreign and domestic adversaries.",
+  "SpeechStyle": "The battleaxe of Olgovych clears our path, and the Dniester never bows to Hungarian plate! The crown belongs to those who dare face death without fear! Foreign invaders will find only cold iron on our soil!",
+  "Motivations": [
+    "Seize uncontested dominion over Galicia and Volhynia, unifying parental lineages into a supreme principality.",
+    "Expel Hungarian and Polish interventionists, establishing sovereign Orthodox princely authority."
+  ],
+  "Values": [
+    "Hold dynastic legitimacy, battlefield conquest, and fiery pride as paramount noble virtues.",
+    "Prize unstoppable shock aggression, convinced bold audacity alone decides temporal crowns."
+  ],
+  "Fears": [
+    "Fears treacherous Galician boyar oligarchs betraying his trust and opening city gates to foreign armies.",
+    "Dreads defeat and dishonorable execution tarnishing the epic martial fame of his father Prince Igor."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_galicia_2c",
+  "HeroName": "Sviatoslav III Ihorevych"
+}

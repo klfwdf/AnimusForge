@@ -1,0 +1,53 @@
+{
+  "Id": "rule_horseshoe_calkins_ice_assault",
+  "Keywords": [
+    "Hoof care and winter movement",
+    "Winter hooves and road surfaces",
+    "Fodder for horses in snow"
+  ],
+  "RagShortTexts": [
+    "Winter travel needs hoof care, fodder and sound routes; grip does not make thin ice safe.",
+    "Rus rivers freeze unevenly; smiths, guides and load arrangements affect passage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Frozen roads can aid winter vehicles in Rus and the Baltic, while ice, wet snow and slopes endanger horses. Hoof wear, shoeing and local care need consideration with the surface. River ice varies with current and banks; one person's footing does not establish a loaded wagon's safety. Snow also limits grazing, making fodder and shelter essential."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A rider checks hooves, legs and stamina rather than crowd behind one successful crossing. Snow hides routes, and a crossing also needs an exit from the bank. Guides, spacing and reduced loads preserve the return better than confidence in iron beneath the hoof alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A winter commander asks about fodder, camp and vehicle loads as well as ice. Horses and hoof care vary, requiring smiths and supplies. Staged passage, bank guards and replacements consume time but can prevent one transport failure from leaving the party without food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Winter fodder and fuel sustain household animals, and visiting military mounts consume them. A smith occupied with hoof gear delays other repairs; drivers need route and unloading information. Losing a workhorse on snow or ice affects spring transport and cultivation as well as the immediate journey."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

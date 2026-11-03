@@ -1,0 +1,43 @@
+{
+  "Id": "rule_punic_08",
+  "Name": "First Macedonian War and Balkan Balance of Power",
+  "Keywords": [
+    "rule_punic_08",
+    "First Macedonian War",
+    "Philip V Treaty",
+    "Aetolian League Coalition",
+    "Balkan Naval Front"
+  ],
+  "RagShortTexts": [
+    "King Philip V of Macedon allied with Hannibal in 215 BC; Rome allied with Aetolia to tie..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Seeking to expand westward into Illyria, King Philip V of Macedon signed a formal mutual-defense pact with Hannibal in 215 BC. Heavily engaged in Italy, Rome could not spare major legions; instead, Roman diplomats allied with the ferocious Aetolian League, Pergamon, and Sparta to wage proxy warfare against Philip in Greece. This ten-year Balkan conflict successfully prevented Philip from ever ferrying phalanxes to reinforce Hannibal in Italy, concluding with the Peace of Phoenice in 205 BC."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "We sailed small patrol squadrons in the Adriatic, keeping the Macedonian king's transports pinned in his harbors while the Greeks hacked at his northern borders."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Our Balkan diplomacy was a triumph of geopolitical balance. With minimal Roman blood spilled, our naval squadrons and Greek allies tied down the Antigonid king, ensuring Hannibal fought alone."
+    }
+  ],
+  "TextMappings": []
+}

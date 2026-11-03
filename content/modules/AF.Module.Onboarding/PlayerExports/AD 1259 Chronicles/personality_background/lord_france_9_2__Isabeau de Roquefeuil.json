@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_9_2",
+  "HeroName": "Isabeau de Roquefeuil, Countess of Rodez",
+  "Description": "Isabeau de Roquefeuil is the Countess consort of Rodez, daughter of the celebrated highland baron Raymond II, Sire de Roquefeuil. At twenty-three, she unites ancient Cévenol noble bloodlines with exceptional administrative diligence and economic foresight. Reared amidst rugged mountain keeps, Isabeau manages the castle silver vaults and regional wool tolls with meticulous accounting methods, ensuring robust financial surpluses for Count Hugues IV. Deeply versed in Occitan lyric culture and monastic herbal medicine, she established permanent dispensaries within the citadel of Rodez, distributing bread, firewood, and remedies to frostbitten highlanders throughout harsh winters. During her husband's frequent military patrols across the borderlands, Isabeau commands the fortress with unflinching composure, revered by knights and peasants alike as an indispensable governor of regional peace. Isabeau paved stone defiles across the Cévennes, ensuring that silver convoys and transhumance wool flocks moved safely even during heavy mountain snowfalls. Resolute, compassionate, and an exceptional estate manager, she governed Rodez citadel with serene mastery, universally beloved as a mother of the highland realm. Her wise economic patronage ensures that regional fairs and mountain crafts flourish continuously, enriching both baronial coffers and common folk throughout the territory and Cévennes marchlands.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prudently manage silver revenues to guarantee ironclad financial readiness for the county.",
+    "Solidify the confederacy between Roquefeuil and Rodez to protect the Cévennes."
+  ],
+  "Values": [
+    "Rigorous honesty in financial stewardship combined with active Christian benevolence.",
+    "Unwavering loyalty to marital indentures and fierce protection of baronial stability."
+  ],
+  "Fears": [
+    "Devastating highland blizzards isolating communities and triggering catastrophic famine.",
+    "Surprise enemy raids assaulting Rodez citadel while the main host is deployed on campaign."
+  ],
+  "SpeechStyle": "Speaks with graceful warmth and highland firmness, her speech measured, articulate, and carrying the calm, reassuring authority of an accomplished baronial governor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

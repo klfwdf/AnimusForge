@@ -1,0 +1,53 @@
+{
+  "Id": "rule_warhorse_chanfron_crinet",
+  "Keywords": [
+    "Horse protection and harness",
+    "Fitting protective horse equipment",
+    "Maintaining a protected warhorse"
+  ],
+  "RagShortTexts": [
+    "Horse protection needs fit and freedom of sense and movement; weight and rubbing matter.",
+    "Horse protection depends on wealth and supply, alongside fodder, rest and harness care."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wealthy cavalrymen may protect a horse's body or selected parts, with coverage, material and weight varying by equipment. Around the head and neck, eyes, ears, nostrils and bridle movement need clearance; loose fittings strike and tight ones chafe. Rus, steppe and western riders draw on different supplies. An expensive mount's equipment does not describe every rider's provision, and protection never removes care needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A rider leads and turns the horse and tests the reins after fitting protection, checking around eyes, ears and neck for contact. After sweating, fatigue or fright, movement and skin matter alongside visible damage to coverings. Adjusting equipment, watering and clearing wet areas at rest help the animal continue carrying rider and load."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord protecting valuable mounts budgets for fitting, repair, fodder and spare harness. More coverage increases carriage and care, especially on poor campaign roads. Limited money may be better spent maintaining healthy riding horses, saddles, bridles and pack animals than allowing costly protection to displace the force's means of continued movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Handlers feed, clean and inspect for sores, while leatherworkers and smiths must fit repairs to existing tack. Military demands for fodder and harness burden cultivation, transport and winter stores. Returned damaged fittings still need labor. Households need animals healthy enough for carts and fields, regardless of the decoration they carried away."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

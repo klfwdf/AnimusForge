@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_berke_war_chronology_correction_23a20885",
+  "Keywords": [
+    "Military supply demands from the khan court",
+    "Rus princes and military supply burdens"
+  ],
+  "RagShortTexts": [
+    "The khan's military demands could include people, mounts and transport.",
+    "Outside demands competed with local defense for food, animals and carriage."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Military needs at the khan's court could bring demands for people, mounts, food and transport. Rus princes weighed these against defense and production. Orders carried over long routes needed explanation, with deadlines, delivery points and available quantities shaping local arrangements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Military needs at the khan's court could bring demands for people, mounts, food and transport. Rus princes weighed these against defense and production. Orders carried over long routes needed explanation, with deadlines, delivery points and available quantities shaping local arrangements. Collectors needed orders, shares and transport while consuming supplies themselves. Force could secure payment but provoke concealment, flight or reduced production."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Military needs at the khan's court could bring demands for people, mounts, food and transport. Rus princes weighed these against defense and production. Orders carried over long routes needed explanation, with deadlines, delivery points and available quantities shaping local arrangements. Leaders balanced outside demands, retainers and stores. Carriers and those advancing payment needed recognized accounts, while delays damaged trust with both superiors and residents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Military needs at the khan's court could bring demands for people, mounts, food and transport. Rus princes weighed these against defense and production. Orders carried over long routes needed explanation, with deadlines, delivery points and available quantities shaping local arrangements. Grain, animals and labor payments affected food, farming and care. Unequal means made distribution a source of dispute with neighbors and local elites."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

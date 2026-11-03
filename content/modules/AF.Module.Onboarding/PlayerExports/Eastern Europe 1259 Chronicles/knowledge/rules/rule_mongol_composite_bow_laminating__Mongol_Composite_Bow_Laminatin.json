@@ -1,0 +1,53 @@
+{
+  "Id": "rule_mongol_composite_bow_laminating",
+  "Keywords": [
+    "Composite horn bows",
+    "Horn wood and sinew bow care",
+    "Bow glue and damp storage"
+  ],
+  "RagShortTexts": [
+    "Horn, wood, sinew and glue work together; bow making needs skilled preparation and drying.",
+    "Damp and damage affect bows; arrows and strings must suit the archer and weapon."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Steppe composite bows combine materials in working limbs, with coverings protecting bonded parts. Preparation and shaping require drying time; collected raw material cannot instantly replace a good bow. Rain, prolonged damp and impacts affect reliability, alongside strings, arrows and practice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A rider protects bow case, string and quiver and checks damage after wet travel. An unfamiliar bow needs suitable arrows and adaptation. Skilled repair matters; forcing a damaged weapon can turn a repairable loss into an unusable bow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander needs bowyers, materials and dry storage, with spare strings and finished arrows. Repairs and new manufacture take different time. Consecutive marching days must leave opportunities for maintenance and replacement, rather than assume raw stocks are ready weapons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Bowyers and households supply horn, sinew, wood and glue shared with other crafts. Dry storage and working time cost livelihoods. Urgent military demand depends on finished stocks and payment. A damaged bow returned home may need more than a replacement string."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

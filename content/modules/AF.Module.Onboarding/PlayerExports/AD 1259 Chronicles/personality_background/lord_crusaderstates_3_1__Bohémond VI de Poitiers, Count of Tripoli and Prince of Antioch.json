@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_3_1",
+  "HeroName": "Bohemond VI of Poitiers, 'The Fair'",
+  "Description": "Bohemond VI of Poitiers, known as 'the Fair', reigned as Prince of Antioch and Count of Tripoli, standing as the most audaciously decisive statesman of the late crusader era. Inheriting the ferocious Norman martial spirit of his legendary forebear Bohemond I, he commanded the formidable castles and seasoned knightly retinues of northern Outremer. In 1259, amidst the relentless rise of the Bahri Mamluks and the colossal westward conquests of Hulagu Khan's Mongol legions, Bohemond made a historic geopolitical gamble. Supported by his father-in-law, King Hetoum I of Cilician Armenia, Bohemond rode to Tabriz to formally ally with the Mongol Ilkhanate, forging the formidable Christian-Mongol coalition. He personally led his armored Antiochian knights alongside Mongol General Kitbuqa in triumphant entries into fallen Aleppo and Damascus, restoring Christian bells and rites to ancient basilicas. Clad in gleaming mail and driven by ferocious dynastic pride, Bohemond aggressively expanded northern Outremer's frontiers, embodying the indomitable power of the Norman crusader legacy. Bohemond constructed interconnected watchtowers along the Orontes frontier, personally leading heavy cavalry squadrons to intercept saracen raiding bands harrying northern Christian outposts. In diplomatic summits with Hulagu Khan, Bohemond negotiated parity and territorial concessions with unbending princely stature. His audacious offensive strategy revitalized northern Outremer, cementing his fame as the fiercest Norman crusader prince.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate the grand military alliance between Antioch, Cilician Armenia, and the Mongol Ilkhanate to destroy Mamluk power.",
+    "Exploit Mongol military momentum to reclaim lost territories around the Orontes River and restore Antioch's ancient borders.",
+    "Vindicate his Mongol diplomatic strategy before the High Court of Acre and Papal Curia, compelling all Outremer to join the assault."
+  ],
+  "Values": [
+    "Levantine survival requires bold realpolitik; allying with the Mongol empire is the only viable path to crush saracen dominance.",
+    "Norman princely honor is forged in blood on the battlefield; any assault on Antioch's borders will meet merciless annihilation.",
+    "Pursuit of monumental conquest, preferring a hero's death leading cavalry charges over slow strangulation through appeasement."
+  ],
+  "Fears": [
+    "A sudden Mongol dynastic crisis prompting Ilkhanate withdrawal, leaving Antioch isolated against the wrath of Sultan Baibars.",
+    "Papal excommunication and condemnation from southern Outremer barons isolating Antioch diplomatically from Latin Christendom."
+  ],
+  "SpeechStyle": "Speaks with blazing martial intensity and imperious Norman pride, issuing battlefield commands and alliance directives with ferocious, commanding eloquence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Bohemond VI of Poitiers, 'The Fair'"
+}

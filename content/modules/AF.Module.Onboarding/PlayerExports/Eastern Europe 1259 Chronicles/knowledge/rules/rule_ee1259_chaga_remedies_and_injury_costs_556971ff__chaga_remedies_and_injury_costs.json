@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_chaga_remedies_and_injury_costs_556971ff",
+  "Keywords": [
+    "Woodland remedies and care",
+    "Care and food for wounded Rus households"
+  ],
+  "RagShortTexts": [
+    "Rus families sought carers and available remedies for wounds.",
+    "Care, food and replacement labor cost resources alongside uncertain remedies."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Woodland households sought people familiar with remedies and care, prayed and asked kin for help. Gathering materials, watching patients and providing food, water and warmth took time. Recurring illness further strained labor and stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Woodland households sought people familiar with remedies and care, prayed and asked kin for help. Gathering materials, watching patients and providing food, water and warmth took time. Recurring illness further strained labor and stores. Wounded travelers needed carrying, watching and shelter, with return depending on injury and care. Remedies did not replace food and shelter, and companions shared loads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Woodland households sought people familiar with remedies and care, prayed and asked kin for help. Gathering materials, watching patients and providing food, water and warmth took time. Recurring illness further strained labor and stores. Supporting sick people required both supplies and labor and changed defense and farming. Care sustained relationships, while premature service could worsen losses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Woodland households sought people familiar with remedies and care, prayed and asked kin for help. Gathering materials, watching patients and providing food, water and warmth took time. Recurring illness further strained labor and stores. Care reduced household capacity for water, fuel and fields. Kin helped, and loans or substitute work brought immediate relief with obligations afterward."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

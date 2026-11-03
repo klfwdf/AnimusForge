@@ -379,6 +379,12 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+		// The field camp has no LocationCharacters and its camp life re-issues agent moves:
+		// lead/summon/follow would fight it, so camp orders use their own tags instead.
+		if (mission.GetMissionBehavior<FieldCampMissionLogic>() != null)
+		{
+			return true;
+		}
 		bool allowSetsOwnedSettlementSceneCommands = false;
 		try
 		{
@@ -1412,7 +1418,7 @@ public static class AIConfigHandler
 			return false;
 		}
 		string speaker = text.Substring(0, num).Trim();
-		return speaker.Equals(PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.OrdinalIgnoreCase) || speaker.Equals("NPC", StringComparison.OrdinalIgnoreCase) || speaker.Equals(PromptRetrievalTexts.Raw("Raw_a0c7716669b5"), StringComparison.OrdinalIgnoreCase) || speaker.Contains(PromptRetrievalTexts.Raw("Raw_74570c72706a"));
+		return IsAuxiliaryPlayerLabel(speaker) || speaker.Equals("NPC", StringComparison.OrdinalIgnoreCase) || speaker.Equals(PromptRetrievalTexts.Raw("Raw_a0c7716669b5"), StringComparison.OrdinalIgnoreCase) || speaker.Contains(PromptRetrievalTexts.Raw("Raw_74570c72706a"));
 	}
 
 	private static HashSet<string> BuildActionPostprocessLatestReplyEntryKeys(string latestReplyBlock)
@@ -1524,7 +1530,7 @@ public static class AIConfigHandler
 				{
 					continue;
 				}
-				if (text3.Equals(PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.OrdinalIgnoreCase) || text3.Equals(PromptRetrievalTexts.Raw("Raw_a0c7716669b5"), StringComparison.OrdinalIgnoreCase) || (text3.Contains(PromptRetrievalTexts.Raw("Raw_74570c72706a")) && text3.EndsWith(PromptRetrievalTexts.Raw("Raw_ccca74461399"), StringComparison.Ordinal)))
+				if (IsAuxiliaryPlayerLabel(text3) || text3.Equals(PromptRetrievalTexts.Raw("Raw_a0c7716669b5"), StringComparison.OrdinalIgnoreCase) || (text3.Contains(PromptRetrievalTexts.Raw("Raw_74570c72706a")) && text3.EndsWith(PromptRetrievalTexts.Raw("Raw_ccca74461399"), StringComparison.Ordinal)))
 				{
 					return NormalizeActionPostprocessDialogueText(text4);
 				}
@@ -2633,6 +2639,22 @@ public static class AIConfigHandler
 		}
 	}
 
+	// Player label of either language (stored Chinese history and English prompts).
+	private static bool IsAuxiliaryPlayerLabel(string value)
+	{
+		foreach (string label in PromptRetrievalTexts.RawVariants("Raw_991e63fe2920"))
+			if (string.Equals(value, label, StringComparison.OrdinalIgnoreCase)) return true;
+		return false;
+	}
+
+	// Chinese text has no word boundaries; in English a short name must not match inside another word.
+	// Runs once per auxiliary request; Regex.Replace uses the framework pattern cache.
+	private static string ReplaceAuxiliaryPlayerName(string text, string name, string label)
+	{
+		if (PromptLanguage.IsChinese) return text.Replace(name, label);
+		return Regex.Replace(text, "(?<![\\p{L}\\p{N}])" + Regex.Escape(name) + "(?![\\p{L}\\p{N}])", label.Replace("$", "$$"), RegexOptions.CultureInvariant);
+	}
+
 	private static string NormalizeAuxiliaryPlayerReferences(string text)
 	{
 		try
@@ -2647,7 +2669,7 @@ public static class AIConfigHandler
 			try
 			{
 				string text3 = (Hero.MainHero?.Name?.ToString() ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text3) && !string.Equals(text3, PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.Ordinal))
+				if (!string.IsNullOrWhiteSpace(text3) && !IsAuxiliaryPlayerLabel(text3))
 				{
 					hashSet.Add(text3);
 				}
@@ -2658,7 +2680,7 @@ public static class AIConfigHandler
 			try
 			{
 				string text4 = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text4) && !string.Equals(text4, PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.Ordinal))
+				if (!string.IsNullOrWhiteSpace(text4) && !IsAuxiliaryPlayerLabel(text4))
 				{
 					hashSet.Add(text4);
 				}
@@ -2668,7 +2690,7 @@ public static class AIConfigHandler
 			}
 			foreach (string item in hashSet.OrderByDescending((string x) => x.Length))
 			{
-				text2 = text2.Replace(item, PromptRetrievalTexts.Raw("Raw_991e63fe2920"));
+				text2 = ReplaceAuxiliaryPlayerName(text2, item, PromptRetrievalTexts.Raw("Raw_991e63fe2920"));
 			}
 			text2 = text2.Replace(PromptRetrievalTexts.Raw("Raw_bae7b44a81ad"), PromptRetrievalTexts.Raw("Raw_991e63fe2920")).Replace(PromptRetrievalTexts.Raw("Raw_279aac7cc1ae"), PromptRetrievalTexts.Raw("Raw_991e63fe2920"));
 			return ShoutNetwork.RestorePlayerPersonaRawNameReferencesForExternal(text2, rawPlayerPersonaNames);
@@ -3411,7 +3433,7 @@ public static class AIConfigHandler
 			return false;
 		}
 		string text2 = GetAuxiliaryHistorySpeakerPrefix(text);
-		return text2.Equals(PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.OrdinalIgnoreCase) || text2.Equals(PromptRetrievalTexts.Raw("Raw_a0c7716669b5"), StringComparison.OrdinalIgnoreCase) || text2.Equals("Player", StringComparison.OrdinalIgnoreCase) || text2.Equals("You", StringComparison.OrdinalIgnoreCase) || text2.EndsWith(" says to you", StringComparison.OrdinalIgnoreCase) || (text2.Contains(PromptRetrievalTexts.Raw("Raw_74570c72706a")) && text2.EndsWith(PromptRetrievalTexts.Raw("Raw_ccca74461399"), StringComparison.Ordinal));
+		return IsAuxiliaryPlayerLabel(text2) || text2.Equals(PromptRetrievalTexts.Raw("Raw_a0c7716669b5"), StringComparison.OrdinalIgnoreCase) || text2.Equals("Player", StringComparison.OrdinalIgnoreCase) || text2.Equals("You", StringComparison.OrdinalIgnoreCase) || text2.EndsWith(" says to you", StringComparison.OrdinalIgnoreCase) || (text2.Contains(PromptRetrievalTexts.Raw("Raw_74570c72706a")) && text2.EndsWith(PromptRetrievalTexts.Raw("Raw_ccca74461399"), StringComparison.Ordinal));
 	}
 
 	private static string GetAuxiliaryHistorySpeakerPrefix(string line)
@@ -5939,7 +5961,7 @@ public static class AIConfigHandler
 				return text2;
 			}
 			string text3 = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
-			if (string.IsNullOrWhiteSpace(text3) || string.Equals(text3, PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.Ordinal))
+			if (string.IsNullOrWhiteSpace(text3) || IsAuxiliaryPlayerLabel(text3))
 			{
 				return text2;
 			}
@@ -5948,7 +5970,8 @@ public static class AIConfigHandler
 			text2 = text2.Replace(PromptRetrievalTexts.Raw("Raw_6d7b96ecf184"), text4);
 			text2 = text2.Replace(PromptRetrievalTexts.Raw("Raw_60f2702d68c8"), text5);
 			text2 = text2.Replace(PromptRetrievalTexts.Raw("Raw_4c35ed8cec1d"), "__PLAYER_CLAN__");
-			text2 = text2.Replace(PromptRetrievalTexts.Raw("Raw_991e63fe2920"), text3);
+			// Guardrail files are per-language; only the Chinese player word is a substitution slot.
+			text2 = text2.Replace(PromptRetrievalTexts.RawSource("Raw_991e63fe2920"), text3);
 			text2 = text2.Replace("__PLAYER_CLAN__", PromptRetrievalTexts.Raw("Raw_4c35ed8cec1d"));
 			text2 = text2.Replace(text4, PromptRetrievalTexts.Raw("Raw_6d7b96ecf184"));
 			text2 = text2.Replace(text5, PromptRetrievalTexts.Raw("Raw_60f2702d68c8"));

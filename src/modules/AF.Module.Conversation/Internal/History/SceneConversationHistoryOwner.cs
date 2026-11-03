@@ -36,7 +36,7 @@ internal sealed class SceneConversationHistoryOwner {
     string speaker = string.Equals(line.Role, "user", StringComparison.OrdinalIgnoreCase) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0295") : line.SpeakerName ?? line.Role;
     output.Append(speaker);
     if (!string.IsNullOrWhiteSpace(line.TargetName)) output.Append(" → ").Append(line.TargetName);
-    output.Append("：").AppendLine(line.Content);
+    output.Append(ConversationRuntimeTexts.Colon).AppendLine(line.Content);
    }
    return output.ToString();
   }

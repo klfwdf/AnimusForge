@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Duchess Margaret von Rügen, daughter of Prince Jaromar II of Rügen, formed a crucial geopolitical bridge between the Slavic naval powers of Pomerania and the Duchy of Schleswig through her marriage to Duke Erik I Abelsøn. This Baltic alliance brought Rügen's feared amphibious fleets directly into the Danish civil wars. While her husband commanded land forces, Margaret coordinated naval logistical hubs and supply lines, hosting her father's amphibious war fleets in southern Jutlandic ports to outflank royal defenses prior to the triumph at Lohede. Blending Slavic maritime tenacity with Continental courtly grace, Duchess Margaret commanded deep loyalty from both German and Danish-speaking feudatories, standing as an indispensable maritime strategist behind Schleswig's golden era of autonomy. Constructing signal beacon networks and naval arsenals along the Schlei, Duchess Margaret coordinated amphibious crossbow squadrons to defend coastal waters, her Slavic seafaring boldness and sharp political intellect earning unswerving fidelity from German and Danish knights alike. Combining Pomeranian naval tenacity with Continental courtly grace, Margaret's logistical genius in harbor defense cemented an unshakeable bond between German knights and Baltic mariners, ensuring the maritime supremacy and military security of her household across the western Baltic Sea.",
+  "SpeechStyle": "Speaks with bright, salt-sprayed vigor and decisive clarity, her seafaring candor inspiring maritime crews.",
+  "Motivations": [
+    "Solidify the maritime alliance between Schleswig and Rügen, dominating western Baltic shipping and coastal defense.",
+    "Manage ducal treasury accounts and naval quartermaster logistics, ensuring home bastions remain unshakeable during foreign campaigns."
+  ],
+  "Values": [
+    "Believes naval dominance and mobile amphibious power are the keys to victory, scorning static continental defenses.",
+    "Treasures dynastic pacts and seafaring solidarity, fiercely defending the joint hegemony forged by her husband and father."
+  ],
+  "Fears": [
+    "Dreads combined Danish and Hanseatic naval blockades sealing the Schlei, cutting off Schleswig's maritime lifeline to Rügen."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_denmark_1_2_2_1",
+  "HeroName": "Margaret von Rügen"
+}

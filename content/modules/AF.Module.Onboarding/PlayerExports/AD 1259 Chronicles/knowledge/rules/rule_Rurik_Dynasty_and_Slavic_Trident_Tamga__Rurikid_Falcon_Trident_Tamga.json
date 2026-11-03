@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Rurik_Dynasty_and_Slavic_Trident_Tamga",
+  "Keywords": [
+    "Rurikid Falcon Trident Tamga",
+    "Rus Rota Succession System",
+    "Alexander Nevsky Survival Pragmatism",
+    "Daniel of Galicia Western Crown"
+  ],
+  "RagShortTexts": [
+    "Rurikid branches competed across Rus before the Mongol conquest.",
+    "Mongol power adds tribute and political pressures to older regional and dynastic divisions."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Rurikid princes ruled a network of Rus' lands through related but often competing branches. Political fragmentation had advanced well before the Mongol invasion: by the twelfth century, regional principalities and rival dynastic claims had weakened any single center, even while Kyiv retained symbolic importance. The campaigns of 1237–1240 devastated many lands and the fall of Kyiv in 1240 further changed the balance; they did not split a previously unified state for the first time. Under Mongol rule, khans issued yarlyks confirming princely authority and demanded tribute, shaping rival rulers' choices."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Khan's patents, known as yarlyks, decided who held the princely seats and settled succession disputes. Rurikid cousins travelled across the frozen steppe to Sarai with chests of sable furs, bidding against each other for the khan's favour. A prince who won a yarlyk gained the right to rule, and one who lost could find his lands handed to a rival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "The Orthodox Metropolitan of Kyiv, residing across northern towns, preserved ecclesiastical unity while the southern cities lay in ruin. Monks copied chronicles in their cells, and parish priests held the faithful together under Tatar overlordship. Counseling princes against fratricidal squabbling, the clergy warned that a divided Rus only eased tribute collection for the Horde's agents."
+    }
+  ],
+  "TextMappings": []
+}

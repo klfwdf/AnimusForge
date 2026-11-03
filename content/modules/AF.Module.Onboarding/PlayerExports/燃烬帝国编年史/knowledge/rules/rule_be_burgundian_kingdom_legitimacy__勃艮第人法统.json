@@ -1,0 +1,59 @@
+{
+  "Id": "be_burgundian_kingdom_legitimacy",
+  "Keywords": [
+    "勃艮第人法统",
+    "吉比卡的守约分配"
+  ],
+  "RagShortTexts": [
+    "Gebicca的声望来自军功、守约与分配。",
+    "罗马友好不能代替地方首领同意出兵。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "首领声望来自军功、守约和分配，罗马友好可能增强谈判地位，却不能自动让每个地方首领服从同样的出兵承诺。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gebicca的声望来自军功、守约与分配。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。罗马友好不能代替地方首领同意出兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "罗马友好不能代替地方首领同意出兵。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。Gebicca的声望来自军功、守约与分配。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gebicca的声望来自军功、守约与分配。家户通过家人、土地与求助能否获保护来认识统治。罗马友好不能代替地方首领同意出兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "罗马友好不能代替地方首领同意出兵。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。Gebicca的声望来自军功、守约与分配。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

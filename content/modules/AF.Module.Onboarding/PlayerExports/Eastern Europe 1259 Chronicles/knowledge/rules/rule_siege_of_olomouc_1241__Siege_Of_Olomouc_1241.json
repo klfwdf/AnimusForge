@@ -1,0 +1,52 @@
+{
+  "Id": "rule_siege_of_olomouc_1241",
+  "Keywords": [
+    "Moravian invasion reports",
+    "Moravian refugees and route reports"
+  ],
+  "RagShortTexts": [
+    "Moravia faced danger during the Mongol advance.",
+    "What a reporter saw and when they left affected the value of invasion news."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Moravia faced danger during the Mongol advance, and travelers carried news of roads, troops and damaged villages. Accounts of distant fighting often differed. Arranging refuge and escorts required asking which roads a reporter had used and what had actually been seen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Moravia faced danger during the Mongol advance, and travelers carried news of roads, troops and damaged villages. Accounts of distant fighting often differed. Arranging refuge and escorts required asking which roads a reporter had used and what had actually been seen. Scouts described routes and sight lines; darkness and woods obscured numbers. Commanders allowed time for reporting and checks rather than scattering everyone at each alarm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Moravia faced danger during the Mongol advance, and travelers carried news of roads, troops and damaged villages. Accounts of distant fighting often differed. Arranging refuge and escorts required asking which roads a reporter had used and what had actually been seen. Leaders compared sources and dates before mustering, evacuating or negotiating. Checking cost resources; both waiting too long and acting rashly carried risks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Moravia faced danger during the Mongol advance, and travelers carried news of roads, troops and damaged villages. Accounts of distant fighting often differed. Arranging refuge and escorts required asking which roads a reporter had used and what had actually been seen. Households heard news at markets, mills and kin's homes, often covering only a few roads. Rumors prompted hiding stores or leaving, and mistakes wasted working days."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_ere_kingdom_geopolitics",
+  "Keywords": [
+    "Eastern Roman Empire Frontiers",
+    "Constantinople to Antioch routes"
+  ],
+  "RagShortTexts": [
+    "Constantinople, Balkan roads and Antioch connect eastern theaters.",
+    "Danube and eastern fronts compete for mobile forces and transport."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Constantinople’s straits, Balkan roads and Antioch connect theaters. Danube defence and eastern supply compete for forces and transport; a transfer removes another reserve."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Constantinople, Balkan roads and Antioch connect eastern theaters. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Danube and eastern fronts compete for mobile forces and transport."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Danube and eastern fronts compete for mobile forces and transport. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Constantinople, Balkan roads and Antioch connect eastern theaters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Constantinople, Balkan roads and Antioch connect eastern theaters. Closed routes may separate families from goods, imposing costs on those remaining at home. Danube and eastern fronts compete for mobile forces and transport."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Danube and eastern fronts compete for mobile forces and transport. Cargo passes different carriers, making distant route changes become local shortages through delay. Constantinople, Balkan roads and Antioch connect eastern theaters."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

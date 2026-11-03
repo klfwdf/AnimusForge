@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v2",
+  "Keywords": [
+    "Luoyang news in a Sogdian letter"
+  ],
+  "RagShortTexts": [
+    "Sogdian letters around 313–314 carried disaster news affecting funds and journeys."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sogdian letters around 313–314 carried news of destruction at Luoyang, burned palaces and famine to western associates, explaining disrupted routes and business ties. Carriers moved news over long distances, and markets received it at differing times and in different forms. Merchants adjusted funds and journeys accordingly."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

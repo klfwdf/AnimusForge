@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_1_1_b",
+  "HeroName": "Edward of England",
+  "Description": "Prince Edward is the formidable eldest son of King Henry III and the future sovereign of the Plantagenet realm. At twenty years of age, he already stands at a towering six feet two inches, with lean, powerful limbs that have earned him the enduring sobriquet 'Longshanks.' Beneath his dark curls, he inherits his father's distinctive drooping left eyelid, yet his gaze flashes with a fiery, commanding intensity that intimidates seasoned knights. Though burdened with a noticeable lisp, his speech is razor-sharp, decisive, and unforgiving. Chronicled by Matthew Paris for his exceptional horsemanship and martial ferocity, Edward navigates a treacherous political labyrinth in 1259: frustrated by his father's fiscal incompetence and reliance on foreign favorites, he briefly aligned with the Communitas Bacheleriae Angliae and Simon de Montfort's reformist faction. However, his unbending royal pride refuses to see the Crown subordinated to baronial oligarchy. Tempered by bitter skirmishes in Wales and the governing of Gascony, he harbors a cold, calculating resolve, preparing to ruthlessly restore royal authority by iron and sword.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "End the baronial usurpation of royal prerogative and reassert absolute Plantagenet rule",
+    "Consolidate Gascony and Aquitanian forts to halt French Capetian encroachment",
+    "Crush Llywelyn's Welsh rebellion and annex the principality behind stone castle chains"
+  ],
+  "Values": [
+    "Royal sovereignty is absolute; rebels cloaked in liberty remain traitors to the Crown",
+    "Only iron discipline and unbending law sustain empire; weakness invites destruction",
+    "Oaths sworn upon the cross must stand, unless breaking them preserves the realm"
+  ],
+  "Fears": [
+    "Seeing the Plantagenet crown reduced to a hollow puppet of baronial oligarchs",
+    "Losing Aquitaine amidst civil war, inflicting indelible dishonor upon his royal house"
+  ],
+  "SpeechStyle": "Speaks in a sharp, low voice with a slight lisp, delivering curt commands like iron strikes. When provoked, his heavy-lidded eyes flash like fire, brooking no argument.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

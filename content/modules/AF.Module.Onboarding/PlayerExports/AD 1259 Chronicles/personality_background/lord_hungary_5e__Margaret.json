@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5e",
+  "HeroName": "Margaret",
+  "Description": "Margaret is the esteemed noble chatelaine and wife of Count Rathold II Rátót, praised throughout Nógrád for her practical wisdom and benevolence. Born into an established aristocratic family, she directs the domestic administration of highland fortresses with exceptional grace and precision. Margaret manages agricultural registers, grain reserves, and textile looms, ensuring that garrison soldiers are well-equipped with warm mantles and medicinal supplies. A devout patroness of village chapels, she frequently distributes grain during lean winters and provides relief to impoverished peasant families. In 1259, as war clouds gather on the horizon, Margaret maintains tranquil order across her domestic domains, praying for the safety of her warriors while standing as an unyielding pillar of domestic security. Margaret stocked isolated highland castles with abundant firewood, grain reserves, and medical supplies to combat brutal winter mountain conditions. Personally nursing injured veterans and providing charity to peasant families, she fostered deep community cohesion within frontier fortresses. Her cheerful domestic discipline and unswerving faith transformed rugged stone keeps into welcoming sanctuaries of peaceful warmth, noble Christian charity, and deep spiritual solace, spiritual peace, and lasting safety throughout the harshest winter months and siege alarms throughout the winter season.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve peace and prosperity across Nógrád manors, ensuring ample winter provisions for garrison troops.",
+    "Promote Christian benevolence, winning the heartfelt devotion of regional burghers and tenants."
+  ],
+  "Values": [
+    "Hold charity, wifely fidelity, and domestic thrift as supreme virtues, scorning arrogance.",
+    "Value tranquil domestic harmony over noisy court vanity and wasteful display."
+  ],
+  "Fears": [
+    "Fears brutal mountain blizzards cutting off remote hamlets and subjecting outposts to famine.",
+    "Dreads sudden battlefield carnage claiming the lives of her beloved husband and kin."
+  ],
+  "SpeechStyle": "Though the north wind blows cold, our hearths never extinguish! With full granaries and God's grace, our warriors shall achieve lasting victory! Warm hearths and gentle faith are the strongest armor for our brave knights!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

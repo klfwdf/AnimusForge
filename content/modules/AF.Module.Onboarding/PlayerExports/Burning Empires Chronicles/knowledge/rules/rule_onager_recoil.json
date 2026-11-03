@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v3",
+  "Keywords": [
+    "Onager recoil"
+  ],
+  "RagShortTexts": [
+    "Onagers shook strongly on discharge and needed firm support and working space."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The stone thrower called the onager shook violently when discharged and required firm support and working space. After transport to a wall, crews still had to set its support, inspect components and protect operators before repeated firing."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

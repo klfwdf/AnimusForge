@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v6",
+  "Keywords": [
+    "Water and firewood in a Roman household"
+  ],
+  "RagShortTexts": [
+    "A Roman feast depended on servants fetching water, chopping wood and handling tools."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In Plautus’s comedy a master orders water fetched and wood chopped, dismissing a complaint about a blunt axe. A hot feast depended on water, fuel and tool labor. The comic scene exposes domination rather than a uniform daily fuel allowance for every home."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_legnica_and_exaggerated_annihilation_878ab256",
+  "Keywords": [
+    "legnica and exaggerated annihilation",
+    "Legnica’s 1241 defeat and coalition coordination"
+  ],
+  "RagShortTexts": [
+    "Henry II died in defeat at Legnica in 1241.",
+    "Coalition cooperation and continuing supplies shape resistance."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Henry II died in defeat at Legnica in 1241. Invasion exposed the importance of coalition contact and support. Local forces and households then gathered survivors and restored provision, while authority over orders and posts became politically urgent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Legnica warns troops to arrange contact if leaders fall. Verified commands and rally points reduce confusion better than following the loudest signal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Coalitions need roles and support agreed beforehand. Blame alone restores no troops; horses and local support turn an alliance back into usable strength."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A lord’s death brings mourning, debts and renewed demands. Mutual help eases immediate distress, but cultivation still requires draft animals and seed."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

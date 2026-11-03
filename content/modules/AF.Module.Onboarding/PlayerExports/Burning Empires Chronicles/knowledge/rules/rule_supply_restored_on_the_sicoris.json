@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v4",
+  "Keywords": [
+    "Supply restored on the Sicoris"
+  ],
+  "RagShortTexts": [
+    "Light boats on the Sicoris helped restore a bridge, foraging and supply."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "On the Sicoris, the position gained with light boats enabled a bridge, the recovery of foragers and renewed supply. Boats, a defended foothold and the bridge formed successive steps toward restoring provisions rather than an isolated display of daring."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

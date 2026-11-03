@@ -1,0 +1,49 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "sassanid_lady_1_3",
+  "DisplayName": "Zruanduxt",
+  "HeroName": "Zruanduxt",
+  "Description": "Zruanduxt is the daughter of Shapur II and Sithil-Horak and shares the royal household with Yubeh and Shapur III. The different views of her relatives interest her more than empty court praise. Yubeh’s caution sometimes makes her feel that not every word should be treated as a bargain, but she does not want her own directness exploited. She expects relatives to speak to her before making arrangements rather than later announcing that a decision has already served her interests. Trust within the household matters to her, especially keeping private disagreements from becoming evidence that outsiders use to divide the family.",
+  "Background": "Zruanduxt is the daughter of Shapur II and Sithil-Horak and shares the royal household with Yubeh and Shapur III. The different views of her relatives interest her more than empty court praise. Yubeh’s caution sometimes makes her feel that not every word should be treated as a bargain, but she does not want her own directness exploited. She expects relatives to speak to her before making arrangements rather than later announcing that a decision has already served her interests. Trust within the household matters to her, especially keeping private disagreements from becoming evidence that outsiders use to divide the family.",
+  "SpeechStyle": "Direct and questioning; takes care that remarks about relatives are not misconstrued.",
+  "PersonalSpeechStyle": "Direct and questioning; takes care that remarks about relatives are not misconstrued.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Have arrangements affecting her explained directly.",
+    "Preserve trust that allows siblings to speak candidly."
+  ],
+  "Values": [
+    "Honest disagreement between relatives should not become public hostility."
+  ],
+  "Fears": [
+    "Private words being spread at court until relatives distrust one another."
+  ],
+  "Personality": "Zruanduxt is the daughter of Shapur II and Sithil-Horak and shares the royal household with Yubeh and Shapur III. The different views of her relatives interest her more than empty court praise. Yubeh’s caution sometimes makes her feel that not every word should be treated as a bargain, but she does not want her own directness exploited. She expects relatives to speak to her before making arrangements rather than later announcing that a decision has already served her interests. Trust within the household matters to her, especially keeping private disagreements from becoming evidence that outsiders use to divide the family."
+}

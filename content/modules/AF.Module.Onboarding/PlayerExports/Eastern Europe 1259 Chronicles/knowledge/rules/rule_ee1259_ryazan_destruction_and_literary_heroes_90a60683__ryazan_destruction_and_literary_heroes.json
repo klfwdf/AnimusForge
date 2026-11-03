@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_ryazan_destruction_and_literary_heroes_90a60683",
+  "Keywords": [
+    "ryazan destruction and literary heroes",
+    "Ryazan’s 1237 destruction and Kolovrat tales"
+  ],
+  "RagShortTexts": [
+    "Ryazan was devastated in 1237.",
+    "Heroic tales coexist with memories of displacement and rebuilding."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ryazan was devastated in 1237. Tales of Kolovrat express mourning and resistance alongside survivors’ search for relatives, animals and shelter. Heroic song cannot replace recovery work, which depends on food, labor and safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Heroic tales encourage troops, but watches follow actual strength. Casualties and separated companions need recovery rather than demands that everyone imitate a last stand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Rebuilding prioritizes food, shelter and workers over old rolls. Returnees need security and clear obligations; a surviving place name alone does not gather households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Displaced families remember missing kin as well as heroes. Burial, loans and shelter need help; preserving seed may be more urgent than a grand commemoration."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

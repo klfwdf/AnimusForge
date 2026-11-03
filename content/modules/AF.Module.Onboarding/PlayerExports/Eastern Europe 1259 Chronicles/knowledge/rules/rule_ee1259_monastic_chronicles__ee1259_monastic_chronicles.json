@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_monastic_chronicles",
+  "Keywords": [
+    "Caves Monastery copying and testimony",
+    "Copying materials at the Caves Monastery"
+  ],
+  "RagShortTexts": [
+    "The Caves Monastery kept memory through religious life, books and copying.",
+    "Copying needed materials, light and food; everyday writing also existed outside monasteries."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Religious life, books and copying made the Caves Monastery an important keeper of memory. Scribes needed parchment, ink and time, often relying on patrons for long books. Visitors, letters and speech supplied reports, interpreted through faith when describing disasters, good deeds and princes. Distant events might pass through several tellers, prompting questions about carrier and date."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Religious life, books and copying made the Caves Monastery an important keeper of memory. Scribes needed parchment, ink and time, often relying on patrons for long books. Visitors, letters and speech supplied reports, interpreted through faith when describing disasters, good deeds and princes. Distant events might pass through several tellers, prompting questions about carrier and date. Travelers asked writers for letters or records and supplied names, places and requests. Brief reports omitted events, prompting questions to returnees even after writing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Religious life, books and copying made the Caves Monastery an important keeper of memory. Scribes needed parchment, ink and time, often relying on patrons for long books. Visitors, letters and speech supplied reports, interpreted through faith when describing disasters, good deeds and princes. Distant events might pass through several tellers, prompting questions about carrier and date. Patronage preserved family memory and teaching at costs of material, scribes and custody. Writers had responsibilities and judgments, and patrons relied on relationships for service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Religious life, books and copying made the Caves Monastery an important keeper of memory. Scribes needed parchment, ink and time, often relying on patrons for long books. Visitors, letters and speech supplied reports, interpreted through faith when describing disasters, good deeds and princes. Distant events might pass through several tellers, prompting questions about carrier and date. Households used paid or friendly writing and reading, considering cost and privacy. Hearing books, letters and reading oneself differed; messages were compared with familiar reports."
+    }
+  ],
+  "TextMappings": []
+}

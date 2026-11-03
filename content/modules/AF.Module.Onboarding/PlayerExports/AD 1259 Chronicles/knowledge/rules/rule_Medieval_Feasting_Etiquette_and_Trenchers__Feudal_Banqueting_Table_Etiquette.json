@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Medieval_Feasting_Etiquette_and_Trenchers",
+  "Keywords": [
+    "Feudal Banqueting Table Etiquette",
+    "Stale Bread Trenchers Plate",
+    "Seated Above or Below the Salt",
+    "Peacock Presentation and Ewer Washing"
+  ],
+  "RagShortTexts": [
+    "A great hall feast displays rank through seating, service and food.",
+    "Kitchen labour and access to leftovers reveal different interests behind elite hospitality."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The great hall feast was the main stage for feudal hospitality and rank. Guests washed their fingers in rosewater before taking seats strictly ordered by status. Dignitaries sat above the salt near the dais lord, and squires sat below it. Food was served on thick slabs of bread, called trenchers, which had gone stale over several days. The trenchers soaked up gravy from roasted venison and the fat of boiled meats, so the bread was eaten along with the sauce. Every dish marked the host's wealth and the guest's place at the table. A lord who seated a visitor at the wrong end of the hall committed an insult that could last for years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Carvers and cupbearers performed their duties with ritual precision, and the host watched every movement as a sign of his household's discipline. When the meal ended, the sodden trenchers were swept into baskets and carried to the castle gate. There the paupers received them as lordly alms, a public display of charity that also reminded the crowd who held the bread."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A labourer helping at a great feast sees fuel, water, washing and wasted food behind the display at the high table. Bread soaked with gravy or a share of kitchen scraps can supplement a household's meal, but access depends on service and charity. A grand roast does not describe everyday diet, and it gives no assurance that the neighbouring poor will eat well."
+    }
+  ],
+  "TextMappings": []
+}

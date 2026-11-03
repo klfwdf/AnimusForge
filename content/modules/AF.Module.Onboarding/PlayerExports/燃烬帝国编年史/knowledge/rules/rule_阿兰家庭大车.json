@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v1",
+  "Keywords": [
+    "阿兰家庭大车"
+  ],
+  "RagShortTexts": [
+    "阿兰载家车运送家人和生活物资，难以持续跟上轻骑。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿兰家庭以大车承载居处用品，随牧草、水源和畜群移动。车辆装着的不只是武器，还有容器、遮蔽与家人；车轮、道路和随行者体力使它们难以一直跟上轻装骑手。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_dorpat_bishopric_and_routes_4e0ae9d0",
+  "Keywords": [
+    "Dorpat's bishop and river routes",
+    "Transfers on the Emajogi"
+  ],
+  "RagShortTexts": [
+    "Dorpat's bishopric links town and Emajogi traffic, requiring cooperation with residents and guards.",
+    "River cargo needs storage, carriage and recipients, facing delays from weather and disputes."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dorpat gathers episcopal business, cargo and guards beside the Emajogi, with valuable routes toward lakes and nearby settlements. Land, passage and maintenance require negotiation among powers; merchants need predictable arrangements. Cargo reception and dispute handling matter alongside open water routes to the town's standing. After the Sword Brothers captured the place in 1224, it became an episcopal center; the names Yuryev and Dorpat recall different allegiances to different visitors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Dorpat carriers need an agreed recipient, not merely a place to leave cargo ashore. Changing water or an absent buyer adds food and wage costs. Those working for church, guards and merchants need to know who pays, since one unpaid job can disrupt a family's winter purchases."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

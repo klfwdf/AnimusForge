@@ -1,0 +1,59 @@
+{
+  "Id": "be_wre_kingdom_internal",
+  "Keywords": [
+    "Western Roman Empire Nobility",
+    "Western officers officials and local burdens"
+  ],
+  "RagShortTexts": [
+    "Western emperor, officers, officials and urban elites have different duties.",
+    "Local levy capacity must be balanced with army supply demands."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Emperor, officers, officials, urban elites and landholders have different duties. Armies demand delivery while districts question household capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Western emperor, officers, officials and urban elites have different duties. Followers retain family ties; decisions about guards and distant service affect common participation. Local levy capacity must be balanced with army supply demands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Local levy capacity must be balanced with army supply demands. Coordination allocates actual supply and protection duties, not merely titles. Western emperor, officers, officials and urban elites have different duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Western emperor, officers, officials and urban elites have different duties. Households compare burdens with neighbors; unmatched protection weakens cooperation. Local levy capacity must be balanced with army supply demands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Local levy capacity must be balanced with army supply demands. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Western emperor, officers, officials and urban elites have different duties."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

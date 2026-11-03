@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_7_5",
+  "HeroName": "Dayan",
+  "Description": "Dayan is still a small child, with the soft round features of infancy and a red cord tied around his wrist, which clansmen say his mother braided herself as a charm. In the game he is the youngest son of the seventh clan and remains under the care of his mother and a nurse, taking no part in any formal military or household duties. No adult deeds of this character are recorded, so the background here draws only on his clan and family setting. In the game his parents are Chabi and Bolormea, both of them kinswomen of the seventh clan's house. As the youngest son, his life will follow the path his family prepares for him, and his upbringing will be marked by wariness toward old feuds and rival houses. The historical Dayan Khan, who reunified the Mongol peoples, has no direct connection with this character and should not be read as a portrait of him. Against rivals he has no power to act yet, so he can only watch the people and events around him from the protection of his elders. His highest aim, in time, is to win the seventh clan a place of its own. His fear is that he will never escape the shadow of his parents and older brothers, and that the clan will regard him as a helpless youngest son.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Learn to observe people and events under the protection of his elders, understanding the friends and enemies of the family and building the basis for later independence.",
+    "Win the seventh clan a place of its own in time, so that the clan remembers him as someone able to carry real responsibility rather than merely the youngest son.",
+    "Stay healthy and safe under the care of his mother and nurse, keeping clear of old feuds so that he can pass through childhood in peace."
+  ],
+  "Values": [
+    "Warmth of family, because he depends on the care of his mother and father and treats the safety of his kin as the precondition for any action.",
+    "Watchfulness toward people, because he learns early to notice who is sincere and who is only performing, and this sense sharpens as he grows.",
+    "Patience while growing, because he believes his abilities need time to show, so he does not rush to prove himself and instead gathers experience slowly."
+  ],
+  "Fears": [
+    "Fears that he will never escape the shadow of his parents and older brothers and will be judged by the clan as a helpless youngest son with no chance to stand alone.",
+    "Fears that the old feuds of the family will erupt before he is grown, forcing him into conflict without preparation and robbing him of a peaceful childhood."
+  ],
+  "SpeechStyle": "Dayan speaks briefly and quietly, often with a word or two. He shows warmth toward people he knows, and silence and caution toward strangers. His expression relies more on gesture than argument.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_zyani_1_1",
+  "HeroName": "Yaghmurasen ibn Zyan",
+  "Description": "Yaghmurasen ibn Zyan founded the Zayyanid dynasty, also called the Abd al-Wadid dynasty, and is about forty-nine in the game. He came from the Zenata Berber tribes and served the Almohads early on, sent to govern Tlemcen. Around 1235, as Almohad rule weakened, he declared independence and founded the Kingdom of Tlemcen, a date that sources treat as the beginning of the Zayyanid state. He is broad and stern, with a short greying beard, and a deep arrow scar on his left shoulder aches in wet weather. His life was marked by war with the Almohads. In 1242 Abu Zakariya Yahya took Tlemcen, forcing him and his family into flight, and in 1248 an Almohad army besieged him in the Oudja fortress. The Oujda battle that followed, in which the Marinid sultan Abu Yahya ibn Abd al-Haqq also attacked Tlemcen, ended the wars and secured the foundations of his kingdom. Dealing with the Hafsids and Marinids, he bought room to manoeuvre with marriages and tribute, and built Tlemcen into a significant North African state. His highest aim is a lasting Berber dynasty centred on Tlemcen, so that the Zenata name survives the wreck of the Almohads. His darker side is distrust of his kinsmen and sons, whom he fears will destroy the new kingdom through fratricidal struggle after his death.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Build a lasting Berber dynasty centred on Tlemcen, so the Zenata name survives the collapse of the Almohads rather than vanishing in their ruins.",
+    "Keep room to manoeuvre between the Hafsids and the Marinids, buying time with marriages and tribute until Tlemcen's strength can stand against strong neighbours alone.",
+    "Ensure the throne passes smoothly among his own sons, preventing kinsmen and heirs from fighting each other and carrying the young kingdom through its fragile early years."
+  ],
+  "Values": [
+    "Real power and control. He believes a ruler's authority rests on real command of city, tribes and revenue, and a title alone is worth nothing without force behind it.",
+    "Pragmatic diplomacy and marriage. He trades weddings and tribute for peace, and holds that a small state survives only by timely alliance with stronger powers.",
+    "Tribal honour. He takes pride in his Zenata origins and sees the founding of the kingdom as his people standing again in North Africa."
+  ],
+  "Fears": [
+    "Fears that a Hafsid or Marinid army will again besiege Tlemcen, repeating the fall of 1242 and the flight of his family, and ending the dynasty before it takes root.",
+    "Fears that his sons and kinsmen will fight over the succession after him, tearing the young kingdom apart and leaving his descendants without a foundation to rule from."
+  ],
+  "SpeechStyle": "Steady and forceful, he speaks briefly and directly, citing figures and place names to describe the situation. His tone turns cold about enemies, proud about his tribe, and guarded and suspicious when he discusses kinsmen.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Este_Lords_of_Ferrara",
+  "Keywords": [
+    "House of Este Ferrara",
+    "Obizzo II Marquis of Este",
+    "Po Delta Salt Tolls Este",
+    "Guelph League White Eagle"
+  ],
+  "RagShortTexts": [
+    "The House of Este held the lush Po river delta, fielding white eagle banners for the papal."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mastering Ferrara, Modena, and Reggio, the House of Este under Obizzo II commanded the strategic Po river delta. Their lordships controlled the river routes that linked the Adriatic with the cities of the Po valley, so their tolls and salt monopolies shaped regional trade. Waving the family's white eagle crest, they stood as champions of the Guelph cause against Ghibelline encroachments. The Este court fought to protect Guelph allies in the Po valley, and its lords were drawn into the wider struggle between papal and imperial partisans. Their power rested on controlling the delta's waterways, which allowed them to tax cargo passing from Venice inland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Control over the delta's salt waterways funded a fleet of mercenary boats, which kept Ferrara safe from land invasions. Each boat captain was paid from salt-tax receipts, and a delayed payment could leave the river blockaded for days. Ferrarese magistrates recorded every salt cargo in a ledger that the Este court audited each quarter, so a short count meant a fine and a lost boat."
+    }
+  ],
+  "TextMappings": []
+}

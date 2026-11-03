@@ -14,6 +14,19 @@ internal interface ISpeechPlaybackSink
     void AbortLines();
 }
 
+// Optional host audio. Standalone sinks do not implement this and retain the
+// original text clock; neither the receipt nor its owner can execute game actions.
+internal interface ISpeechPlaybackAudioSink
+{
+    bool IsAudioPending { get; }
+}
+
+internal abstract class ExecutionSpeechAudioReceipt
+{
+    internal abstract bool IsPending { get; }
+    internal abstract void Cancel();
+}
+
 /// <summary>
 /// Bounded, presentation-only playback of an immutable plan. Camera visibility
 /// never enters this clock. It cannot replace a plan after playback starts.
@@ -21,6 +34,10 @@ internal interface ISpeechPlaybackSink
 internal sealed class ExecutionSpeechPlayback
 {
     private const float ReadyTimeoutSeconds = 8f;
+    private const float MaxLineAudioExtensionSeconds = 12f;
+    private const float MaxPhaseAudioExtensionSeconds = 30f;
+    private float _lineAudioExtension;
+    private float _phaseAudioExtension;
     private readonly List<SpeechCue> _cues;
     private bool _awaitingMore;
     private readonly HashSet<(SpeechSpeaker Speaker, int Index)> _missingSpeakers = new();
@@ -134,7 +151,9 @@ internal sealed class ExecutionSpeechPlayback
                     Abort(sink);
                     return;
                 }
-                if (!cue.IsPause && !_lineRetired &&
+                var audioPending = !cue.IsPause && !_lineRetired &&
+                    sink is ISpeechPlaybackAudioSink audio && audio.IsAudioPending;
+                if (!cue.IsPause && !_lineRetired && !audioPending &&
                     _elapsed + remaining >= Math.Max(0f, duration - ExecutionSpeechTiming.FadeSeconds))
                 {
                     sink.FinishLine();
@@ -147,6 +166,19 @@ internal sealed class ExecutionSpeechPlayback
                     return;
                 }
                 remaining -= needed;
+                _elapsed = duration;
+                if (audioPending)
+                {
+                    var budget = Math.Min(MaxLineAudioExtensionSeconds - _lineAudioExtension,
+                        MaxPhaseAudioExtensionSeconds - _phaseAudioExtension);
+                    var held = Math.Min(remaining, Math.Max(0f, budget));
+                    _lineAudioExtension += held;
+                    _phaseAudioExtension += held;
+                    remaining -= held;
+                    if (held < budget) return;
+                    // A missing terminal event or slow service cannot hold execution forever.
+                    // FinishLine cancels only the receipt still owned by this cue.
+                }
                 if (!cue.IsPause && !_lineRetired) sink.FinishLine();
                 Advance();
                 if (remaining <= 0f)
@@ -178,6 +210,7 @@ internal sealed class ExecutionSpeechPlayback
     private void Advance()
     {
         _index++;
+        _lineAudioExtension = 0f;
         _elapsed = 0f;
         _cueStarted = false;
         _lineRetired = false;

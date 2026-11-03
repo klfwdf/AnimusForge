@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_3_1_2",
+  "HeroName": "Ioánnis Tarchaneiótis",
+  "Description": "Ioánnis Tarchaneiótis was one of the most formidable, incorruptible, and heroic military leaders of the late Byzantine era. As the younger son of Grand Domestic Nikephoros Tarchaneiotes and Maria Palaiologina, he was nephew to Emperor Michael VIII, yet chose the path of dangerous moral rectitude over courtly sycophancy. Renowned for his brilliant guerrilla generalship along the Anatolian marches in 1259, John repeatedly shattered Seljuk raiding columns through rapid mobility and alpine ambushes. However, when Michael VIII blinded child-emperor John IV and signed the Union of Lyons, John emerged as the defiant military champion of the Arsenite opposition, enduring arrest, demotion, and exile rather than compromise his Orthodox faith. Reinstated under Andronikos II as supreme commander in Asia Minor, he revolutionized frontier military administration, restoring lands to the peasant-soldier border guards (akritai) and curbing feudal extortion. Uncompromising, brilliant, and beloved by commoners, Tarchaneiotes stood as the incorruptible champion of the Roman frontier. Across eastern Anatolia, John Tarchaneiotes walked among akritai border communities, personally restoring confiscated land charters to peasant veterans, who pledged their lives to his banner. Sharing coarse barley bread in bivouacs, he engineered rockfall traps and pitch pits that annihilated encroaching Turcoman warbands in deep ravines. Indifferent to court slander and repeated imperial exile, John stood tall before the tribunals, defending Roman liberties with immortal heroic defiance.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Rebuild Anatolia's frontier farming militia, expel Seljuk raiders and protect Greek farming communities while recovering former lands.",
+    "Defend Orthodoxy and seek justice for the injured John IV and Patriarch Arsenios, refusing humiliating church-union concessions.",
+    "Punish nobles who seize military farms, restore frontier households' livelihoods and rebuild an honest, effective defence system."
+  ],
+  "Values": [
+    "Justice, faith and honour stand above a ruler's power; flattery and betrayal of conscience are disgraceful.",
+    "Care for soldiers and serve honestly, standing firm before the powerful and sharing the hardships of ordinary troops.",
+    "Keep true loyalty to ruler and country despite dismissal or exile, devoting his life to the eastern frontier."
+  ],
+  "Fears": [
+    "Religious hostility and suspicion causing the court to dismiss loyal frontier troops and dismantle Anatolia's militias, opening the east to Turkish conquest.",
+    "Rulers and courtiers neglecting suffering Anatolian Romans while pursuing Constantinopolitan luxury and factional conflict."
+  ],
+  "SpeechStyle": "His voice is resonant, upright, and uncompromising, radiating the unimpeachable moral authority of a commander who fears God alone.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

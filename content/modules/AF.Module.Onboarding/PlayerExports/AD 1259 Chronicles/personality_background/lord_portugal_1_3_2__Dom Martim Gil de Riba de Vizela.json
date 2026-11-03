@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_3_2",
+  "HeroName": "Dom Martim Gil de Riba de Vizela",
+  "Description": "Dom Martim Gil de Riba de Vizela is the eldest son and heir of Alferes-mor Gil Martins, standing as one of the most accomplished young cavalry commanders in Portugal. Raised in the saddle and trained from childhood in heavy lance charges, horsemanship, and swordplay, Don Martim Gil personifies the chivalric ideals of the Portuguese nobility. He gained valuable combat experience in counter-insurgency operations across the rugged serras of the Algarve, successfully routing elusive Moorish skirmishers. In 1259, serving as a senior lieutenant within the royal cavalry household, he is widely groomed to succeed his father as High Standard-Bearer of the realm. Chivalrous, fearless, and deeply respected by his men, he maintains peak combat readiness among his knightly retinue. Burning to win personal glory in holy warfare, young Martim Gil prepares to lead the royal vanguard into the next chapter of Portuguese history. Drilling his armored horsemen daily in precision lance charges, Martim Gil's lethal combat speed earned the unstinting praise of veteran frontier captains. Burning to follow in his father's illustrious footsteps, the young knight prepared to spearhead the royal vanguard across distant battlefields. His fearless horsemanship, combat prowess, and chivalric ambition establish young Martim Gil as a premier champion of the realm.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win martial renown on the battlefield to prove worthy of succeeding as royal High Standard-Bearer",
+    "Drill his heavy cavalry squadrons to execute devastating, coordinated lance charges in combat",
+    "Cultivate deep chivalric brotherhood with young noble houses to fortify his family's military prestige"
+  ],
+  "Values": [
+    "A knight's supreme honor is earned at the point of the lance; hesitation under fire brings eternal disgrace",
+    "Inviolable loyalty to the crown and comrades-in-arms is the sacred foundation of true nobility",
+    "Champion chivalric justice, defend the defenseless, and avenge dishonor without hesitation"
+  ],
+  "Fears": [
+    "Prolonged peacetime inactivity eroding his martial edge and depriving him of battlefield glory",
+    "Leading his cavalry squadron into a catastrophic ambush that tarnishes his family's martial honor"
+  ],
+  "SpeechStyle": "Resolute, energetic, and crisp; speaks with the vibrant confidence, chivalric passion, and commanding clarity of an accomplished young vanguard captain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

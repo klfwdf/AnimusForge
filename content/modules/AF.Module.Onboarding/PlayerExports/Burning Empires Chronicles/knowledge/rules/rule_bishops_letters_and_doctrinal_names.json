@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v6",
+  "Keywords": [
+    "Bishops letters and doctrinal names"
+  ],
+  "RagShortTexts": [
+    "Church self-names and hostile labels differed; visitors needed to learn episcopal ties."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Christian congregations used differing names for doctrinal positions, and a hostile label might not be believers’ own name. A visitor seeking worship asked who presided and which bishop recognized the group. Moving from another place could also bring different reception practices."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

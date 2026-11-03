@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z1",
+  "HeroName": "Stephanie of Barbaron",
+  "Description": "Stephanie of Baberon was the devoted consort of Grand Baron Constantine and the revered matriarch who bore King Hethum I, Sparapet Smbat, and Bishop John. Hailing from ancient Armenian lineage, she governed the vast domestic economy and household retinue of Baberon Castle with exceptional grace and administrative order. During turbulent decades of factional friction between the Rubenid and Hetoumid dynasties, Stephanie served as a gentle yet persuasive diplomat, smoothing ancestral grievances. She generously endowed mountain monasteries and manuscript scriptoria throughout the Taurus peaks, personally coordinating herbal dispensaries and charitable shelters for displaced refugees. In 1259, as geopolitical earthquakes rocked the Near East, Stephanie systematically organized grain depots and textile stores to sustain her husband and sons' statecraft. Celebrated for pious benevolence, unwavering fortitude, and familial loyalty, Stephanie was venerated as the venerable maternal soul of the Cilician royal house. Within Baberon Castle, Stephanie established well-regulated weaving halls and herbal distillation ateliers, maintaining vast reserves of linen dressings and medicinal salves for mountain garrisons. Whenever fierce winter blizzards sealed the high Taurus passes, she dispatched castle guards to distribute barley loaves and wool blankets to impoverished peasants in the valleys. Her serene moral authority repeatedly soothed heated dynastic council disputes, anchoring the familial harmony of the entire Hetoumid lineage.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve domestic prosperity and abundant reserves within Baberon Castle to anchor dynastic security during wartime.",
+    "Foster absolute harmony and mutual devotion among her royal sons and extended kinsmen across Cilicia.",
+    "Endow monastic sanctuaries and humanitarian hospices, securing divine protection and societal affection for the Hetoumid house."
+  ],
+  "Values": [
+    "Maternal virtue, austere modesty, and compassionate charity constitute the highest nobility of character.",
+    "Unwavering fidelity to Apostolic Christian rites and solemn familial vows.",
+    "Domestic harmony and quiet resilience form the ultimate fortress against historical turbulence."
+  ],
+  "Fears": [
+    "Mortal peril befalling her sons on distant diplomatic or military campaigns across Central Asia and Syria.",
+    "Hostile breach of mountain passes bringing sacrilegious devastation to consecrated sanctuaries and innocent subjects."
+  ],
+  "SpeechStyle": "Speaks with serene maternal dignity and aristocratic composure, managing domestic baronial estates and charitable endowments with quiet precision.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Stephanie of Barbaron"
+}

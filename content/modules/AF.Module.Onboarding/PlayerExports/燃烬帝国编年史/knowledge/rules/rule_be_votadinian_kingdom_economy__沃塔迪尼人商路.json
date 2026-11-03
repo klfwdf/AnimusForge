@@ -1,0 +1,59 @@
+{
+  "Id": "be_votadinian_kingdom_economy",
+  "Keywords": [
+    "沃塔迪尼人商路",
+    "科尔达农畜与罗马银器"
+  ],
+  "RagShortTexts": [
+    "Corda以农畜、工艺和罗马交换维持家户。",
+    "银器和货物不能替代下一季田地与畜群。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Corda附近家户以农畜、工艺与罗马方向交换为生，银器和货物能进入聚落，但下一季粮食仍靠田地和畜群。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Corda以农畜、工艺和罗马交换维持家户。随行者要从这些产出取得实际口粮；贵重货物还需有人接收并换成食物。银器和货物不能替代下一季田地与畜群。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "银器和货物不能替代下一季田地与畜群。掌握征集或分配的人也依赖下一季产出，临时多取会把损失留给继续供给的家户。Corda以农畜、工艺和罗马交换维持家户。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Corda以农畜、工艺和罗马交换维持家户。家户在交出物产后仍要留下吃食与可继续生产的本钱。银器和货物不能替代下一季田地与畜群。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "银器和货物不能替代下一季田地与畜群。交易双方要对交付地点、可接受货物和付款负责，延误会影响下一次采购。Corda以农畜、工艺和罗马交换维持家户。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

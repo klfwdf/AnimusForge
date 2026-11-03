@@ -26,7 +26,8 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 	internal const int PowerGap = 2;
 	internal const int GrievanceTrack = 220;
 	internal const int FactionRows = 4;
-	internal const int LedgerRows = 5;
+	// The ledger stacks up to six condition rows above the table; five clan rows ran into the footer.
+	internal const int LedgerRows = 4;
 	internal const int SideRows = 8;
 	internal const int OptionCardWidth = 420;
 	internal const int SupportTrack = OptionCardWidth - 40;
@@ -380,7 +381,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 		Col("*", "~",
 			T("@InteriorFormationConditionsText", "*", "28", 19, Ink2, heading: true)
 			+ Items("Conditions", "*", "~", "VerticalBottomToTop",
-				Row("*", "28",
+				Row("*", "24",
 					Box("9", "9", "@MarkColor", "VerticalAlignment='Center'")
 					+ T("@Name", "~", "*", 16, Brown, extra: "MarginLeft='8'")
 					+ T("@Value", "*", "*", 16, Ink2, extra: "IsVisible='@IsMet' MarginLeft='6' ClipContents='true'")
@@ -393,6 +394,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 		"IsVisible='@IsLedgerTab' MarginTop='10'");
 
 	// Clan table: name stretches; the other columns are fixed so header and rows line up.
+	// Rows are clipped to the table's share of the dossier so they can never paint over the footer.
 	private static string Table() => Col("*", "*",
 		Row("*", "32",
 			T("@TableTitle", "~", "*", 20, Ink, heading: true)
@@ -410,7 +412,7 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 				+ T("@GrievanceTitle", "300", "*", 15, "#5E4A32FF")
 				+ T("@InteriorTablePowerText", "90", "*", 15, "#5E4A32FF", "Right")
 				+ T("@InteriorTableRelationText", "100", "*", 15, "#5E4A32FF", "Right"), "MarginLeft='12' MarginRight='12'"))
-		+ Items("Rows", "*", "~", "VerticalBottomToTop", TableRow()), "MarginTop='10'");
+		+ Layer("*", "*", Items("Rows", "*", "~", "VerticalBottomToTop", TableRow()), "ClipContents='true'"), "MarginTop='10'");
 
 	private static string TableRow() => Layer("*", "36",
 		Box("*", "*", "@StripeColor")

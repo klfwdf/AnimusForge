@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v7",
+  "Keywords": [
+    "萨拉森称呼下的不同来客"
+  ],
+  "RagShortTexts": [
+    "萨拉森人是宽泛称呼，守卫仍须查问来客的任务与首领。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "罗马人以萨拉森人称呼多种阿拉伯边疆群体，来客可能是使者、牧人、向导或持械队伍。守卫要问清任务、去向和所从首领，同一宽泛称呼之下的人也可能彼此敌对。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3l",
+  "HeroName": "Raimondo della Torre",
+  "Description": "Raimondo della Torre, son of Pagano, served as Bishop of Como and Patriarch of Aquileia. As the Torriani clan's ecclesiastical pillar, he commanded vast prince-bishopric armies in Friuli and Istria, providing an invincible sanctuary for his exiled house following the disaster of Desio. Patriarch Raimondo marshaled formidable prince-bishopric cavalry across Friuli and erected coastal citadels in Istria, forging northeastern marches into an impregnable anti-Visconti redoubt. Repelling Venetian corsair incursions along Istrian beaches, he deployed heavy lancers to defend the secular domains of Aquileia, dominating northern Adriatic marches. Wielding pastoral crozier and heavy lance as one, Patriarch Raimondo transformed Aquileia into an invincible sanctuary to preserve the sovereign honor of his clan. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Marshal the ecclesiastical might of Aquileia to build an anti-Visconti bastion in Friuli.",
+    "Command patriarchal armies to check Venetian coastal expansion across Istria.",
+    "Organize a western coalition to march back into Milan and reclaim the ancestral Signoria."
+  ],
+  "Values": [
+    "Believes the pastoral crozier and knightly lance are inseparable instruments of divine justice.",
+    "Regards family survival and ecclesiastical authority as one, pursuing foes without mercy."
+  ],
+  "Fears": [
+    "Papal legates bribed by Visconti gold revoking his patriarchal bull and see.",
+    "German feudal feudatories and Italian burghers rebelling against his princely rule in Friuli."
+  ],
+  "SpeechStyle": "Speaks with apostolic majesty and martial thunder, projecting the might of a prince-patriarch. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

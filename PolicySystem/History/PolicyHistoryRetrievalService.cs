@@ -15,7 +15,7 @@ internal static class PolicyHistoryRetrievalService
 	internal const int CurrentHistoryLimit = 2;
 	internal const int HistoricalHistoryLimit = 1;
 	internal const int DocumentVectorCacheCapacity = 512;
-	internal const float MinimumSimilarity = 0.52f;
+	internal const float MinimumSimilarity = 0.40f;
 
 	private const int EnemySummarySoftBudget = 960;
 	private const int DialogueMentionQueryLimit = 4;
@@ -453,7 +453,7 @@ internal static class PolicyHistoryRetrievalService
 			ownerLabels.Add(string.IsNullOrWhiteSpace(ownerName)
 				|| string.Equals(ownerName.Trim(), ownerId, StringComparison.OrdinalIgnoreCase)
 					? ownerId
-					: ownerName.Trim() + "（" + ownerId + "）");
+					: ownerName.Trim() + PolicyCompatibilityTexts.OpenParen + ownerId + PolicyCompatibilityTexts.CloseParen);
 		}
 
 		List<string> terms = new List<string>();
@@ -494,7 +494,7 @@ internal static class PolicyHistoryRetrievalService
 		string ownerLabel = string.IsNullOrWhiteSpace(ownerId)
 			|| string.Equals(ownerName, ownerId, StringComparison.OrdinalIgnoreCase)
 				? ownerName
-				: ownerName + "（" + ownerId + "）";
+				: ownerName + PolicyCompatibilityTexts.OpenParen + ownerId + PolicyCompatibilityTexts.CloseParen;
 		string content = CompressCompleteText(
 			FirstNonEmpty(entry.PolicyContent, entry.ImpactSummary),
 			120,
@@ -542,7 +542,7 @@ internal static class PolicyHistoryRetrievalService
 		for (int i = 0; i < effects.Count; i++)
 		{
 			text.Append(PolicyGenerationPromptTexts.Get("HistoryModuleEffect", "Module effect ")).Append((i + 1).ToString(CultureInfo.InvariantCulture))
-				.Append('：').AppendLine(Limit(effects[i], effectChars));
+				.Append(PolicyCompatibilityTexts.Colon).AppendLine(Limit(effects[i], effectChars));
 		}
 		return Limit(text.ToString().TrimEnd(), DialogueDocumentMaxChars);
 	}
@@ -763,7 +763,7 @@ internal static class PolicyHistoryRetrievalService
 				: embedding.TryGetEmbedding(documentText, out vector) && vector != null && vector.Length > 0;
 		if (!embedded)
 		{
-			throw new InvalidOperationException("Policy history document embedding failed: " + entry.EntryId + "：" + (embedding?.LastError ?? "unknown"));
+			throw new InvalidOperationException("Policy history document embedding failed: " + entry.EntryId + ": " + (embedding?.LastError ?? "unknown"));
 		}
 		lock (VectorCacheLock)
 		{
@@ -900,7 +900,7 @@ internal static class PolicyHistoryRetrievalService
 		{
 			return;
 		}
-		prompt.Append('【').Append(title).AppendLine("】");
+		prompt.Append(PolicyCompatibilityTexts.OpenBracket).Append(title).AppendLine(PolicyCompatibilityTexts.CloseBracket);
 		foreach (NpcPolicyHistoryEntry entry in values)
 		{
 			string summary = CompressCompleteText(
@@ -932,7 +932,7 @@ internal static class PolicyHistoryRetrievalService
 			foreach (string effect in effects)
 			{
 				prompt.Append(PolicyGenerationPromptTexts.Get("HistoryModuleEffectEntry", "  - Module effect ")).Append((++effectIndex).ToString(CultureInfo.InvariantCulture))
-					.Append('：').AppendLine(Limit(effect, effectChars));
+					.Append(PolicyCompatibilityTexts.Colon).AppendLine(Limit(effect, effectChars));
 			}
 		}
 	}
@@ -942,7 +942,7 @@ internal static class PolicyHistoryRetrievalService
 		if (IsPlayerVassalPolicyEntry(entry))
 		{
 			string issuer = Limit(FirstNonEmpty(entry?.IssuerKingdomName, entry?.IssuerKingdomId), 30);
-			return string.IsNullOrWhiteSpace(issuer) ? PolicyGenerationPromptTexts.Get("HistorySuzerainPlayer", "suzerain player") : PolicyGenerationPromptTexts.Get("HistorySuzerainPlayerOpen", "suzerain player (") + issuer + "）";
+			return string.IsNullOrWhiteSpace(issuer) ? PolicyGenerationPromptTexts.Get("HistorySuzerainPlayer", "suzerain player") : PolicyGenerationPromptTexts.Get("HistorySuzerainPlayerOpen", "suzerain player (") + issuer + PolicyCompatibilityTexts.CloseParen;
 		}
 		return Limit(FirstNonEmpty(
 			entry?.OwnerKingdomName,

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_6_3_b",
+  "HeroName": "Gyda Guttormsdatter Haavarstad",
+  "Description": "Lady Gyda Guttormsdatter of Haavarstad was the esteemed noble matriarch of the founding Bolt dynasty and the devoted consort of Sir Gunnar Bolt. In 1259, Gyda directed the extensive domestic economy, agricultural reserves, and woolen textile manufactories of the expanding Bolt estates in Borgarsyssel. Carrying the prestigious bloodlines of ancient Viken nobility, she was a skilled administrative steward who expertly managed estate revenues to sustain her husband's cavalry muster. Known for her generous charity and thoughtful oversight, she personally visited tenant cottages during severe winters, distributing food and remitting rents for distressed families. Her wise, moral guidance molded the characters of her sons Jon and Tjostolf, instilling chivalric duty and administrative prudence within the next generation of Bolt barons. Her serene courtliness, domestic competence, and steadfast devotion to her family established her as an admired exemplar of medieval Norwegian noblewomanhood. Gyda merged fertile hereditary farmland and river fisheries from Haavarstad into the Bolt estates, introducing improved three-field crop rotations and advanced wool-carding techniques. At noble convocations in Viken, her dignified carriage and eloquent diplomacy earned the Bolt family universal respect among eastern Norwegian castellans. Her visionary estate management and steadfast support provided the indispensable economic foundation that enabled Gunnar to expand their regional influence.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Develop Havardstad fields and fisheries, using grain and wool revenues to finance Bolt expansion.",
+    "Build influence at Viken noble gatherings and marriages, creating a durable eastern alliance for the Bolt family.",
+    "Educate her children, preparing the eldest for frontier command and the youngest for law, administration and learned service."
+  ],
+  "Values": [
+    "Military power and strong estates must support one another; productive lands sustain the warriors who secure the family's future.",
+    "A noblewoman must keep calm judgement and counsel a recklessly ambitious husband, preserving the household's final safeguard.",
+    "Treat estate labourers and tenants well and improve mills and irrigation; cultivators' goodwill sustains lasting food and tax revenues."
+  ],
+  "Fears": [
+    "Long border wars reaching Havardstad and burning ancestral grain fields and wool workshops.",
+    "Her husband's ambition drawing him into a succession struggle and bringing a royal purge upon innocent children and the household."
+  ],
+  "SpeechStyle": "Speaks with composed domestic grace, gentle dignity, and hospitable warmth, overseeing clan affairs with quiet aristocratic wisdom.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Gyda Guttormsdatter Haavarstad"
+}

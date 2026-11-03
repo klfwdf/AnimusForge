@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_1d",
+  "HeroName": "Beatrice d'Este",
+  "Description": "Beatrice d'Este hails from the illustrious sovereign Este dynasty of Ferrara, noble consort to Nino Visconti (later wedded to Galeazzo I Visconti of Milan and commemorated in Dante's Purgatorio). Cultured and politically acute, she anchored cross-regional alliances connecting Gallura, Pisa, and the wealthy Po Valley lords. Reared in Ferrara, Beatrice brought the sovereign elegance and classical culture of the Este court to Gallura and Pisa, elevating the social standing of the Visconti across European noble houses. A generous patron of illuminated scriptoriums and troubadours, she repeatedly leveraged Este connections in Lombardy and the Curia to shield her husband Nino from venomous senatorial intrigues. Acutely aware that aristocratic blood was the sharpest currency in Christendom, this proud noblewoman defended her dynastic honor and maternal rights with calculating intelligence. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Harness Este martial power to shield Nino's sovereignty in Pisa and Gallura.",
+    "Defend her lineage's exalted standing and lawful inheritances among high princes."
+  ],
+  "Values": [
+    "Aristocratic grandeur must be sustained by flawless courtly rectitude.",
+    "Far-sighted calculation alone navigates the treacherous tempests of fortune."
+  ],
+  "Fears": [
+    "Her husband falling on the battlefield amidst savage Tuscan civil strife.",
+    "Her ancestral dowry and domains being pillaged by triumphant warlords."
+  ],
+  "SpeechStyle": "Speaks with sovereign aristocratic restraint and cultivated refinement, majestic in grace. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v5",
+  "Keywords": [
+    "Scope of Arab auxiliary service"
+  ],
+  "RagShortTexts": [
+    "A chief’s auxiliary service did not grant Rome a levy over every Arab household."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Specific chiefs could negotiate gifts and service without giving Roman commanders a levy over every Arab household. Leadership, tasks and supply promises limited cooperation. One neighboring force serving did not commit other groups to identical terms."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

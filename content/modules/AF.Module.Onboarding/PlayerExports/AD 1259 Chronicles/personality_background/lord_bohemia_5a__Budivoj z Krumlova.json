@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_5a",
+  "HeroName": "Budivoj z Krumlova",
+  "Description": "Budivoj of Krumlov reigns as the imperious patriarch of the Lords of Krumlov, a cadet branch of the mighty Vítkovci bearing the green five-petaled rose, and the father of the legendary Czech magnate Záviš of Falkenstein. Governing the colossal fortress of Krumlov perched above the horseshoe bend of the Vltava (ancestral core of Český Krumlov), he used ruthless expansion and deep ambition to carve out a sovereign feudal domain across southern Bohemia's primeval woodlands. Proud, defiant, and deeply distrustful of royal authority, Budivoj resisted King Přemysl Otakar II's centralization edicts with calculated evasion, fortifying private bastions and amassing formidable retinues of mercenary knights. He turned Krumlov into an unshakeable rebel bastion of aristocratic autonomy, planting the seeds of baronial defiance that would soon shake Central Europe. Carving subterranean dungeons and secret escape tunnels directly into the sheer bedrock of Krumlov, Budivoj turned his fortress into an impregnable redoubt possessing unseen underground conduits, while employing Austrian armorers to forge heavy mail. Haughtily barring crown tax collectors from his gates and dispatching private retainers to liquidate royal spies, this imperious magnate vowed to defend the sovereign independence of the green rose to the bitter end. His fierce independence and boundless ambition defied royal centralization, shaking the foundations of the Bohemian Crown.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate independent hereditary fiefs in southern Bohemia and Austria, resisting crown commissioners.",
+    "Bind the Vítkovci branches in an alliance to secure supreme aristocratic autonomy in the realm."
+  ],
+  "Values": [
+    "Holds ancestral privileges and regional independence as inviolable laws, worshiping iron baronial will.",
+    "Despises royal encroachments and compromise, convinced impregnable crags and troops guarantee survival."
+  ],
+  "Fears": [
+    "Fears King Otakar marching a royal host south to besiege and dismantle Krumlov on treason charges.",
+    "Worries family branches succumbing to royal bribes, fracturing the united front of the green rose."
+  ],
+  "SpeechStyle": "The rushing Vltava bows to Krumlov alone! Royal decrees may hold sway in Prague, but they shall not dictate to the green rose upon our cliffs! In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Budivoj z Krumlova"
+}

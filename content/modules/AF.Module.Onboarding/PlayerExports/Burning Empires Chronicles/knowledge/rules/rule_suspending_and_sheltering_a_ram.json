@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v4",
+  "Keywords": [
+    "Suspending and sheltering a ram"
+  ],
+  "RagShortTexts": [
+    "Rams required suspended timber, frames and coordinated effort under cover."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A battering ram struck repeatedly with a suspended timber, requiring coordinated effort and cover. Its head depended on the supporting frame, while defenders’ missiles threatened men close to the wall. Moving, setting and striking required different work, with repairs for damaged timber and ropes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

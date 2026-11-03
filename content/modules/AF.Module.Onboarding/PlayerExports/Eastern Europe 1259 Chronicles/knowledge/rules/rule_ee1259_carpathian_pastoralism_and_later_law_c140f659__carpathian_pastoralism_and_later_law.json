@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_carpathian_pastoralism_and_later_law_c140f659",
+  "Keywords": [
+    "carpathian pastoralism and later law",
+    "Carpathian seasonal herding dairy and pasture rights"
+  ],
+  "RagShortTexts": [
+    "Mountain herding adjusts pastures with the seasons.",
+    "Passes, land rights and household labor constrain movement."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Carpathian herding links seasonal pasture, dairy and passes. Animals and people need water, food and stops. High grass is not unrestricted access: permissions, young animals and carrying dairy products are part of movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops avoid scattering herds and check guides’ care duties. Borrowed pack animals need timely return or a household may miss its next pasture."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Dairy and pack demands follow seasons and herd capacity. Taking breeding animals reduces future returns; negotiated pasture and passage sustain ties better than treating all herders as guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Milking, processing, young stock and packing compete for labor. Exchanges with neighbors and recognized pasture access let households complete seasonal movement safely."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

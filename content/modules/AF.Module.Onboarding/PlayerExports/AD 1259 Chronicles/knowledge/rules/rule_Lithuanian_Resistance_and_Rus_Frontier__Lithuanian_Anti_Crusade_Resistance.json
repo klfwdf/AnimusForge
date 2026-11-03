@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Lithuanian_Resistance_and_Rus_Frontier",
+  "Keywords": [
+    "Lithuanian Anti Crusade Resistance",
+    "King Mindaugas Strategic Baptism",
+    "Rus Orthodox Frontier Defenses",
+    "Battle on the Ice Legacy"
+  ],
+  "RagShortTexts": [
+    "Concurrently, Grand Prince Alexander Nevsky of Novgorod guarded Orthodox Rus.",
+    "Every man in the line knows that a broken shield wall means the knights ride in among the wounded."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Confronted by relentless Teutonic pressure, Mindaugas forged the Lithuanian tribes into a centralised kingdom. He accepted Christian baptism in 1251 to secure a papal crown, while Samogitian pagans continued fierce frontier combat against the Order. The Lithuanian nobility weighed each concession to Rome against the risk of losing ancestral rites and rights. Concurrently, Grand Prince Alexander Nevsky of Novgorod guarded Orthodox Rus. His victory on Lake Peipus in 1242 halted the Livonian crusaders and secured the frontier, and it left Novgorod's boyars to bargain with the Horde and the German merchants for their own safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Boyars of Novgorod and Lithuanian kunigai understand that Teutonic conquest brings social subjugation. Mindaugas balances between Rome's cross and ancestral pagan rites, while Nevsky manages tributary subservience to the Golden Horde to ensure total focus against Latin crusaders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Samogitian woodsmen lure heavy knights into treacherous bogs, dragging them down with hooked poles and cleaving visors with broadaxes. Novgorodian militia hold the river crossings behind overlapping shields and fire composite recurve bows. Every man in the line knows that a broken shield wall means the knights ride in among the wounded."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hunters sacrifice mead and bread at forest shrines under the night sky. Latin monks claim our souls are damned, but the old sacred groves provided timber for our grandfathers, and our soil shall not yield to Teutonic spade or cross. Each winter the bailiff counts our hides and sheaves, and we still owe labour on the castle ditch before cutting our own fields."
+    }
+  ],
+  "TextMappings": []
+}

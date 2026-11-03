@@ -497,7 +497,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 				StableKey = "hero_event:" + HeroId(hero) + ":" + heroEventKey,
 				IsEvent = true,
 				Urgency = ClampFloat(100f - age * 4f, 60f, 100f),
-				FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0001") + LimitText(heroEventText, 320),
+				FactText = ConversationRuntimeTexts.Tidy(heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0001")) + (PromptLanguage.IsChinese ? "" : " ") + LimitText(heroEventText, 320),
 				IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0002")
 			});
 		}
@@ -517,7 +517,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 				Type = MotiveCare,
 				StableKey = "wounded:" + HeroId(hero),
 				Urgency = 72f,
-				FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0005"),
+				FactText = ConversationRuntimeTexts.Tidy(heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0005")),
 				IntentText = minor
 					? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0006")
 					: ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0007")
@@ -576,13 +576,13 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(role))
 			{
 				float roleUrgency = 35f;
-				string roleFact = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0016") + role + "。";
-				if (string.Equals(role, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0017"), StringComparison.Ordinal) && party.WoundedRatio >= 0.15f)
+				string roleFact = ConversationRuntimeTexts.Tidy(heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0016") + role) + ConversationRuntimeTexts.Period.TrimEnd();
+				if (ConversationRuntimeTexts.IsRaw(role, "AF_CONV_Runtime_0017") && party.WoundedRatio >= 0.15f)
 				{
 					roleUrgency = ClampFloat(45f + party.WoundedRatio * 35f, 45f, 70f);
 					roleFact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0018");
 				}
-				else if (string.Equals(role, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0019"), StringComparison.Ordinal) && party.BurdenRatio >= 0.75f)
+				else if (ConversationRuntimeTexts.IsRaw(role, "AF_CONV_Runtime_0019") && party.BurdenRatio >= 0.75f)
 				{
 					roleUrgency = ClampFloat(45f + party.BurdenRatio * 25f, 45f, 70f);
 					roleFact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0020");
@@ -607,7 +607,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotiveFamily,
 					StableKey = "family:" + HeroId(hero) + ":" + currentDay,
 					Urgency = ClampFloat(40f + Math.Max(0, personalTrust) * 0.2f, 40f, 60f),
-					FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0023"),
+					FactText = ConversationRuntimeTexts.Tidy(heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0023")),
 					IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0024")
 				});
 			}
@@ -618,7 +618,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotiveCare,
 					StableKey = "minor_care:" + HeroId(hero) + ":" + currentDay,
 					Urgency = ClampFloat(40f + personalTrust * 0.25f, 40f, 65f),
-					FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0025"),
+					FactText = ConversationRuntimeTexts.Tidy(heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0025")),
 					IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0026")
 				});
 			}
@@ -633,7 +633,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotiveRomanticInteraction,
 					StableKey = "romantic_interaction:" + HeroId(hero),
 					Urgency = ClampFloat(60f + Math.Max(0, privateRelation - 30) * 0.4f, 60f, 88f),
-					FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0027"),
+					FactText = ConversationRuntimeTexts.Tidy(heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0027")),
 					IntentText = AIConfigHandler.GetProactiveNpcRequestCompanionIntent(MotiveRomanticInteraction)
 				});
 			}
@@ -649,8 +649,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					StableKey = "emotion:" + HeroId(hero) + ":" + currentDay,
 					Urgency = emotionUrgency,
 					FactText = strained
-						? heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0028")
-						: heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0029"),
+						? ConversationRuntimeTexts.Tidy(heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0028"))
+						: ConversationRuntimeTexts.Tidy(heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0029")),
 					IntentText = strained
 						? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0030")
 						: ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0031")
@@ -675,14 +675,14 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			&& currentDay - memoryDay <= 120)
 		{
 			int age = Math.Max(0, currentDay - memoryDay);
-			string memoryDateSuffix = string.IsNullOrWhiteSpace(memoryDate) ? "" : ("（" + memoryDate + "）");
+			string memoryDateSuffix = string.IsNullOrWhiteSpace(memoryDate) ? "" : (ConversationRuntimeTexts.OpenParen + memoryDate + ConversationRuntimeTexts.CloseParen);
 			motives.Add(new CompanionChatMotive
 			{
 				Type = MotiveFollowUp,
 				StableKey = "followup:" + memoryKey,
 				IsEvent = true,
 				Urgency = ClampFloat(55f - age * 0.25f, 35f, 55f),
-				FactText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0032") + memoryDateSuffix + "：" + LimitText(memoryText, 320),
+				FactText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0032") + memoryDateSuffix + ConversationRuntimeTexts.Colon + LimitText(memoryText, 320),
 				IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0033")
 			});
 		}
@@ -692,7 +692,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			Type = MotiveCasual,
 			StableKey = "casual:" + HeroId(hero) + ":" + currentDay,
 			Urgency = 20f,
-			FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0034"),
+			FactText = ConversationRuntimeTexts.Tidy(heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0034")),
 			IntentText = minor
 				? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0035")
 				: ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0036")
@@ -705,11 +705,11 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		Hero hero = selected.Hero;
 		CompanionChatMotive motive = selected.Motive;
 		string heroName = HeroName(hero);
-		string fact = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0037") + heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0038") + heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0039")
+		string fact = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0037") + ConversationRuntimeTexts.Tidy(heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0038") + heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0039")) + (PromptLanguage.IsChinese ? "" : " ")
 			+ motive.FactText;
 		if (IsMinor(hero))
 		{
-			fact += " " + heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0040");
+			fact += " " + ConversationRuntimeTexts.Tidy(heroName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0040"));
 		}
 		string prompt = motive.IntentText + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0041");
 		int noticeDays = ClampInt(settings.CompanionProactiveChatNoticeLifetimeDays, 1, 30);

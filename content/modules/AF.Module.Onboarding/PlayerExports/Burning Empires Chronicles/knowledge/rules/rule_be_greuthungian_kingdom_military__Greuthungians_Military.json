@@ -1,0 +1,59 @@
+{
+  "Id": "be_greuthungian_kingdom_military",
+  "Keywords": [
+    "Greuthungians Military",
+    "Greuthungian two-front scouting and rear guards"
+  ],
+  "RagShortTexts": [
+    "Gothic riders, walkers, grain carts and families move differently.",
+    "Crossings and several fronts increase warning and supply burdens."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Riders, foot followers, carts and dependants move at different speeds, with crossings separating columns. Split steppe and port fronts make warning and supply essential."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gothic riders, walkers, grain carts and families move differently. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Crossings and several fronts increase warning and supply burdens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Crossings and several fronts increase warning and supply burdens. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Gothic riders, walkers, grain carts and families move differently."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gothic riders, walkers, grain carts and families move differently. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Crossings and several fronts increase warning and supply burdens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Crossings and several fronts increase warning and supply burdens. Repair, carrying and care also use people, while daily supply continues after troops pass. Gothic riders, walkers, grain carts and families move differently."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

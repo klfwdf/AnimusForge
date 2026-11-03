@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_5a",
+  "HeroName": "Cardinal Giovanni Gaetano Orsini",
+  "Description": "Cardinal Giovanni Gaetano Orsini stands as the supreme patriarch of the House of Orsini, cardinal-deacon of San Nicola in Carcere, and the future POPE NICHOLAS III. Dominating the colossal fortified complex of Monte Giordano beside the Tiber and controlling access to Castel Sant'Angelo, Giovanni wields colossal temporal and ecclesiastical power. Protector of the Franciscan Order and undisputed leader of the Roman Guelph nobility, he pairs formidable theological learning with masterly diplomatic statecraft, poised to seize the pontificate. Holding the fortified acropolis of Monte Giordano beside the Tiber, Cardinal Giovanni Gaetano directs the Roman Guelph barony and curial guard with masterly statecraft, controlling access to Castel Sant'Angelo as Christendom's most formidable papal candidate. With unshakeable strategic composure and immense financial reserves, Giovanni Gaetano steers the Curia toward his ultimate goal, determined to elevate the House of Orsini into the supreme rulers of the Catholic world. His towering statecraft, vast territorial influence, and theological gravitas enshrine Cardinal Giovanni Gaetano Orsini as one of the most brilliant and dominant statesmen in the history of the papacy. Lord Giovanni's unconquered political acumen remains the ultimate rallying symbol for every Guelph knight marching across central Italy and Rome. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Ascend the papal throne and establish Orsini hegemony over the Catholic Church and the Papal States.",
+    "Crush rival Colonna and Annibaldi factions, consolidating absolute control over Rome's senate and castles."
+  ],
+  "Values": [
+    "Orsini dynastic supremacy, absolute curial authority, and strategic patronization of the Franciscans.",
+    "Consummate realpolitik backed by immense financial reserves and private armored cavalry."
+  ],
+  "Fears": [
+    "Foreign monarchs imposing a curial puppet that strips the Orsini of their hereditary offices.",
+    "Popular insurrection in Rome seizing the Capitoline and confiscating his family's urban towers."
+  ],
+  "SpeechStyle": "Speaks with resonant baronial majesty, acute diplomatic cunning, and the commanding calm of a future pope. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

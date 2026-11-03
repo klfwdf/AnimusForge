@@ -1,0 +1,59 @@
+{
+  "Id": "be_antean_kingdom_economy",
+  "Keywords": [
+    "Anteans Trade",
+    "Sarum valley livelihoods"
+  ],
+  "RagShortTexts": [
+    "Sarum households depend on valley farming, herds and woodland goods.",
+    "Closed woodland routes interrupt iron and imported salt."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Households around Sarum depend on valley farming, herds and woodland products. Grain feeds families and assembled fighters; blocked woodland exchange makes iron and imported salt harder to replace."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sarum households depend on valley farming, herds and woodland goods. Traveling followers need real food from this production; valuables still require a buyer and exchange. Closed woodland routes interrupt iron and imported salt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Closed woodland routes interrupt iron and imported salt. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Sarum households depend on valley farming, herds and woodland goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Sarum households depend on valley farming, herds and woodland goods. Households need meals and the means to keep producing after delivering goods. Closed woodland routes interrupt iron and imported salt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Closed woodland routes interrupt iron and imported salt. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Sarum households depend on valley farming, herds and woodland goods."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

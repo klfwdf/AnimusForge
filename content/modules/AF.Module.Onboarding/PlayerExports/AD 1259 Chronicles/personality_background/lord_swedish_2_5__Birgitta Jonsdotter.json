@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_2_5",
+  "HeroName": "Birgitta Jonsdotter",
+  "Description": "Lady Birgitta Jonsdotter of Aspenäs, noble sister to Lord High Chancellor Knut Jonsson, witnessed firsthand her family's dramatic fall and triumphant resurrection to the pinnacle of Swedish governance. Imbued with acute political instinct and unwavering resilience, Birgitta directed the expansive domestic operations of Aspenäs Castle during her brother's tenure as Chief Justiciar and Regent. She managed estate revenues, audited bailiff accounts across multiple provinces, and untangled complex inheritance claims inherited from past confiscations. Literate in canonical charters and genealogical precedent, she negotiated land endowments with the chapters of Linköping and Varnhem, praised across the baronage as an astute manager of her household. Birgitta established a comprehensive archival chancery at Aspenäs, cataloging land muniments, tax ledgers, and diplomatic correspondence to provide irrefutable documentary evidence for her brother's legal arbitrations. Reticent and incorruptible, she guarded state secrets against rival factions with formidable discretion. Her strategic acumen and flawless administrative oversight made her the indispensable domestic anchor of her brother's regency. Her impeccable mastery of ancestral deeds and diplomatic registers provided the legal armor that shielded her family's lands from confiscation, ensuring that the restored fortunes of Aspenäs rested upon an unshakeable institutional foundation.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Oversee the revenues and treasury of Aspenäs to furnish an unshakeable economic foundation for her brother's regency.",
+    "Clarify and secure ancient land charters with the church, eliminating legal vulnerabilities left by past conflicts."
+  ],
+  "Values": [
+    "Believes meticulous fiscal accuracy and prudent discretion are the true safeguards of enduring noble dynasties.",
+    "Champions sibling solidarity and domestic order, dedicated to supporting her brother's monumental public office."
+  ],
+  "Fears": [
+    "Dreads rival court factions resurrecting ancient attainders to undermine her brother's regency and confiscate their estates."
+  ],
+  "SpeechStyle": "Speaks with measured deliberation and cool clarity, her lucid words reflecting a formidable administrative intellect.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

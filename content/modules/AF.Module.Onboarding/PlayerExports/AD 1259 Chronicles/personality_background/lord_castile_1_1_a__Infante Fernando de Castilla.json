@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_1_1_a",
+  "HeroName": "Infante Fernando de la Cerda, Crown Prince of Castile",
+  "Description": "Infante Fernando de la Cerda is the chivalrous eldest son and designated heir of Alfonso X and Queen Violante. Bearing the cognomen 'de la Cerda' from a bristle of hair present upon his chest at birth, he represents the brightest hope for the future stability of Castile and León. Married to Princess Blanche of France, daughter of Saint Louis, Fernando unites the royal bloodlines of Castile, Aragon, and the Capetian realm. In his father's frequent absences pursuing the imperial crown in the Holy Roman Empire, Fernando capably serves as regent of the realm, demonstrating remarkable administrative prudence and conciliation toward the disgruntled high nobility. Well-liked by urban councils and the crusading military orders, the young crown prince strives to repair the fiscal and political rifts caused by royal centralizing ordinances. Bound by chivalric vows to defend Christendom, he remains poised on the front lines of the Reconquista, determined to uphold his grandfather Ferdinand III's heroic heritage against emerging Marinid incursions. During his periods of regency, he travels ceaselessly between Burgos, Segovia, and Córdoba, convening regional Cortes to address baronial grievances with remarkable patience and chivalric dignity. Vigilantly monitoring the gathering military peril across the Strait of Gibraltar, Fernando stocks southern granaries, prepared body and soul to defend the Christian frontier.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Restore administrative harmony and fiscal stability in Castile during royal regencies",
+    "Defend the southern frontier against Moroccan Marinid invasions and Granadan raids",
+    "Secure the legitimate succession of the House of Burgundy-La Cerda across Iberia"
+  ],
+  "Values": [
+    "Chivalric honor, fealty, and duty to the realm eclipse personal ambitions of glory",
+    "A true monarch commands through fairness and martial courage, not fiscal tyranny",
+    "The sword of Castile must ever face the foes of the Cross on the frontier"
+  ],
+  "Fears": [
+    "A sudden Moorish invasion overwhelming vulnerable garrisons in southern Andalusia",
+    "Fratricidal factionalism among his royal relatives tearing the kingdom apart"
+  ],
+  "SpeechStyle": "Courteous, inspiring, and noble; speaks with youthful chivalric vigor, showing profound deference to veteran commanders and unwavering resolve.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

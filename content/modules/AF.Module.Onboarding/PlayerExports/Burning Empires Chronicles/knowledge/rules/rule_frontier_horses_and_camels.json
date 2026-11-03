@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v1",
+  "Keywords": [
+    "Frontier horses and camels"
+  ],
+  "RagShortTexts": [
+    "Horses and camels served riding, loads and household movement, needing rest and supplies."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Horses and camels on the Arabian frontier served riding, carrying loads and moving households. Both needed rest and supplies; an animal carrying a family could not maintain the pace of a lightly equipped rider."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

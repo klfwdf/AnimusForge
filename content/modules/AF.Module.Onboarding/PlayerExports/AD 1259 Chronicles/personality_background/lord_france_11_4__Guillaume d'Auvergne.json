@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_11_4",
+  "HeroName": "Guillaume d'Auvergne, Knight of the Highland Marches",
+  "Description": "Guillaume d'Auvergne is the valiant son of Count Robert V, rapidly emerging as a formidable lance captain among the highland chivalry. At nineteen, he possesses exceptional physical strength, endurance, and tactical boldness, trained in heavy armor combat across the frozen tiltyards of Montferrand. Passionately dedicated to martial arms, Guillaume frequently leads patrols through the treacherous valleys of the Cévennes to eradicate robber barons and highwaymen, keeping transit corridors open between northern France and Languedoc. Revering the crusader traditions of his royalist father, he lives alongside common troopers in camp, commanding immense loyalty from mountain crossbowmen and men-at-arms. Resolute and vigilant, Guillaume trains daily to defend the ancient basalt fortresses of his ancestors. His loyal service to the crown cemented his enduring reputation as a premier highland battle commander. He patrolled the basalt defiles and fortified watchtowers of Auvergne with disciplined mountain cavalry, suppressing highway brigandage and enforcing regional peace. When summoned by royal banner, his stalwart infantry contingent served as a dependable vanguard in royal campaigns. His relentless vigilance guarded the high mountain passes against unruly mercenaries and marauding bands across the Auvergne frontier. His iron discipline and battlefield bravery made his banner a feared symbol among rogue marauders.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master highland cavalry tactics and shock assault to win battlefield renown.",
+    "Defend every mountain pass of Auvergne with unyielding martial vigilance."
+  ],
+  "Values": [
+    "Chivalric courage and iron discipline as the core values of true knighthood.",
+    "Unshakable fidelity to the comital banner and resolute protection of his comrades."
+  ],
+  "Fears": [
+    "Leading his cavalry retinue into an ambush that brings dishonor to his house.",
+    "Garrison negligence allowing hostile forces to overrun a critical mountain keep."
+  ],
+  "SpeechStyle": "Speaks with robust military energy and youthful conviction, his speech direct, spirited, and carrying the vibrant confidence of a brave knight eager to distinguish his house in war.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_12_1",
+  "HeroName": "Gui de Dampierre, Count of Flanders",
+  "Description": "Gui de Dampierre is the reigning Count of Flanders and Lord of Dampierre, ruling as the primary military and administrative partner of his mother Margaret of Constantinople. At thirty-three, he governs the wealthiest urbanized march in northern Europe, commanding a powerful standing retinue of Genoese crossbowmen and dismounted men-at-arms. Navigating the treacherous factional rivalries between the patrician 'Leliaerts' favoring royal France and the fiercely independent guild 'Clauwaerts', Guy exerted firm baronial control. His marriage to Mahaut de Béthune added strategic southern fortresses and immense revenues to his house. Historical chronicles recount his epic later resistance against the annexations of Philip IV, which ultimately led to the legendary Flemish victory at Courtrai. Pragmatic, steely, and fiercely protective of his realm, Guy stands as the formidable warrior count of Flanders. Having endured capture and bloody civil war at Westkapelle, he governed Flanders through balancing the boisterous civic autonomy of Ghent and Bruges with Capetian suzerainty. Confronted by royal centralization, he forged vital commercial treaties with the English wool trade to preserve the economic vitality of his county. His diplomatic maneuvering kept the Flemish textile hearths supplied despite heavy French political pressure and commercial embargoes.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate baronial authority over the wealthy urban guilds of Ghent and Bruges.",
+    "Preserve the sovereign autonomy of Flanders between the rival powers of France and Germany."
+  ],
+  "Values": [
+    "Inviolate defense of Flemish sovereignty and baronial jurisdiction against outside powers.",
+    "Rigid military discipline coupled with prudent allocation of capital to defensive engineering."
+  ],
+  "Fears": [
+    "The French Crown using royal suzerainty to forcibly annex the County of Flanders.",
+    "Violent municipal uprisings seizing castle arsenals to slaughter the nobility."
+  ],
+  "SpeechStyle": "Speaks with deep, commanding resonance, his northern French phrasing sharp, authoritative, and weighed with the immense commercial and military power of Flanders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

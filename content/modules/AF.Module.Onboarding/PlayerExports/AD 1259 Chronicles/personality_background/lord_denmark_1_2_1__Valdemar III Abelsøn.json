@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Duke Valdemar III Abelsøn of Schleswig, eldest son of King Abel and Mechthild von Holstein, lived a dramatic life of knightly chivalry and dynastic struggle. Studying at the University of Paris when his father died in 1252, Valdemar was captured on his journey home and held for immense ransom by the Archbishop of Cologne. Returning to Scandinavia to find his uncle Christoffer I on the Danish throne, Valdemar rallied his mother's Holstein kin and rebel barons, demanding his royal birthright. By 1254, sustained military pressure forced Christoffer to invest Valdemar formally with the Duchy of Schleswig. Renowned for tournament prowess, French chivalric culture, and tactical boldness, Valdemar fortified southern Jutland and asserted autonomy until his untimely death in 1257, establishing the militant independence of the Schleswig ducal house. Raising double-moated stone bastions across southern Jutland and drilling heavy lancers according to French tournament treatises, Valdemar's chivalric renown and fearless battlefield leadership inspired generations of northern warriors who defended the independence of his duchy. Valdemar's knightly chivalry, tournament renown, and fearless leadership in the field inspired a generation of Jutlandic warriors who rallied around his independent ducal banner with fierce devotion.",
+  "SpeechStyle": "Speaks with ringing chivalric enthusiasm and aristocratic polish, his soaring rhetoric inspiring absolute loyalty.",
+  "Motivations": [
+    "Reclaim his rightful claim to the Danish crown and consolidate the hereditary autonomy of the Duchy of Schleswig.",
+    "Fortify strategic passes across southern Jutland, attracting Continental knights to create an elite cavalry retinue."
+  ],
+  "Values": [
+    "Reveres the chivalric code of knighthood, holding that honorable martial victory is the true arbiter of princely legitimacy.",
+    "Exalts battlefield leadership and open combat, scorning underhanded treachery in favor of righteous armed struggle."
+  ],
+  "Fears": [
+    "Dreads falling into captivity through treacherous ambush, leaving his duchy defenseless against royal Danish armies."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_denmark_1_2_1",
+  "HeroName": "Valdemar III Abelsøn"
+}

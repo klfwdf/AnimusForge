@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_3i",
+  "HeroName": "Peter I Csák, Master of the stewards",
+  "Description": "Historically renowned as the father of Matthew III Csák, the legendary 'Lord of the Váh' who ruled Upper Hungary as an uncrowned sovereign, Peter laid the foundations of that vast baronial empire. Energetic, calculating, and ruthlessly ambitious, Peter rose rapidly through the court of King Béla IV by displaying exceptional administrative mastery over royal revenues. While managing royal household logistics, he aggressively acquired strategically positioned castles across Transdanubia and the Váh river valley. In 1259, skillfully exploiting the deepening fissure between King Béla and Junior King Stephen, Peter positions his faction at the heart of state power, accumulating wealth and armored retinues to dominate the realm. Peter aggressively purchased strategic castles and fertile manors across Transdanubia and the Váh valley, leveraging his high court position to control crown revenues. He secretly recruited veteran German mercenary knights to reinforce clan garrisons across Upper Hungary. His formidable ambition and deep political foresight laid the groundwork for the vast territorial hegemony that his son Matthew III would later command over the realm.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Seize supreme offices including the Palatinate, establishing Clan Csák as the premier magnate dynasty.",
+    "Consolidate contiguous private domains along the Váh, forging an unassailable principality for his heirs."
+  ],
+  "Values": [
+    "Believe tangible power, strategic foresight, and boundless wealth alone dictate political survival.",
+    "Prize decisive action and subtle long-term maneuvering, capitalizing on every royal crisis."
+  ],
+  "Fears": [
+    "Fears a unified monarchy liquidating overmighty barons and confiscating newly acquired strongholds.",
+    "Dreads rival oligarchs like the Kőszegi or Gutkeled seizing court supremacy to check his ascent."
+  ],
+  "SpeechStyle": "The scepters of kings may waver, but castles and cold steel held firmly in hand never fail! Those who master timing shall command the future of Hungary! The Váh valley answers to our will; true power commands the future of Hungary!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

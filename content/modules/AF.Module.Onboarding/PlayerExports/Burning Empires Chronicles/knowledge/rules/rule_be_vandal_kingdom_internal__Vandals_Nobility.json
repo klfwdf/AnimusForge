@@ -1,0 +1,59 @@
+{
+  "Id": "be_vandal_kingdom_internal",
+  "Keywords": [
+    "Vandals Nobility",
+    "Hasding and Siling followings"
+  ],
+  "RagShortTexts": [
+    "Godigisel coordinates different chiefs and followings.",
+    "Hasding and Siling names do not make all interests identical."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Godigisel coordinates chiefs and groups. Hasding and Siling names do not make interests identical; union also needs delivered rewards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Godigisel coordinates different chiefs and followings. Followers retain family ties; decisions about guards and distant service affect common participation. Hasding and Siling names do not make all interests identical."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Hasding and Siling names do not make all interests identical. Coordination allocates actual supply and protection duties, not merely titles. Godigisel coordinates different chiefs and followings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Godigisel coordinates different chiefs and followings. Households compare burdens with neighbors; unmatched protection weakens cooperation. Hasding and Siling names do not make all interests identical."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Hasding and Siling names do not make all interests identical. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Godigisel coordinates different chiefs and followings."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

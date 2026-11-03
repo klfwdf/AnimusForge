@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_1_1_a",
+  "HeroName": "Edmund of England",
+  "Description": "Prince Edmund, known as 'Crouchback,' is the second surviving son of Henry III and Queen Eleanor. Sturdy, broad-shouldered, and bearing a slight spinal curvature (or named for the crusader's cross he vows to wear), he possesses an earnest, loyal countenance marked by steadfast devotion to his family. Since the tender age of nine, when Pope Innocent IV ceremoniously invested him with the crown of Sicily, Edmund has been the unwilling focal point of the kingdom's catastrophic financial crisis. Henry III's ruinous debts to fund the Sicilian venture ignited the baronial rebellion and the Provisions of Oxford. Bearing the stigma of a puppet king without a throne and ridiculed by London chroniclers, Edmund channels his frustrations into martial prowess, standing unshakeably by his elder brother Edward. He longs to purge the stain of the papal folly, eager to prove his worth on the battlefield and defend the Plantagenet crown against rebellious oligarchs.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Shield his father and brother Edward with unswerving military loyalty on the battlefield",
+    "Redeem the humiliation of the Sicilian affair by winning real lands and glory through arms",
+    "Train loyal knightly contingents to receive and reinforce Queen Eleanor's continental levies"
+  ],
+  "Values": [
+    "Fraternal bond and dynastic duty transcend all calculating intrigue; never betray family",
+    "A knight's worth is forged by valour in battle, not papal titles traded for coin",
+    "Loyalty and generosity to comrades form the bedrock of noble chivalric honour"
+  ],
+  "Fears": [
+    "Allowing the Sicilian debt disaster to bring down his father's realm and disgrace his line",
+    "Being captured by baronial rebels and used as a pawn to blackmail Prince Edward"
+  ],
+  "SpeechStyle": "Speaks in an earnest, resonant, and direct manner, scorning subtle court intrigue. His voice carries deep warmth for his brother Edward, but flares with indignation against disloyal barons.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

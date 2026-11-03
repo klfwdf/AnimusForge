@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_2f",
+  "HeroName": "Jiajak Jaqeli",
+  "Description": "Empress Jiajak Jaqeli was the noble daughter of Atabeg Beka I (Sargis II) of Samtskhe and the exalted consort of Emperor Alexios II Megas Komnenos of Trebizond. Her imperial marriage established an unshakeable geopolitical axis connecting the southern Caucasus with the Byzantine successor state on the Black Sea. Celebrated across Trebizond for pious benevolence and refined courtly wisdom, Empress Jiajak played an influential role in stabilizing imperial rule. She generously endowed maritime monasteries, patronizing scholars and sending illuminated Greek manuscripts and holy relics to shrines in Samtskhe. In 1259, as a gifted princess in Akhaltsikhe, Jiajak mastered Greek literature and international diplomacy, winning the deep pride of her royal house. Majestic, devout, and astute, Empress Jiajak was commemorated as the radiant bridge unifying Caucasian martial strength with Byzantine imperial splendor. In Trebizond's imperial palace, Empress Jiajak assisted Emperor Alexios II in organizing Pontic defenses, balancing fleet ledgers and maritime customs. She lavishly patronized the expansion of the mountain monastery of Panagia Soumela, presenting gold-threaded vestments and chalices venerated by Greek and Georgian clergy. When Anatolian warlords probed the Black Sea coastal approaches, Jiajak coordinated rapid reinforcements from her homeland in Samtskhe, holding the empire secure.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Solidify the imperial alliance between Samtskhe and the Empire of Trebizond, securing reciprocal military support and Black Sea commerce.",
+    "Endow Orthodox monasteries and scriptoria along the Pontic coast, fostering intellectual synergy between Byzantine and Georgian high culture.",
+    "Safeguard Black Sea trade corridors against predatory Anatolian warlords, defending Christian sovereignty in the region."
+  ],
+  "Values": [
+    "Cultural synergy, shared Apostolic faith, and dynastic alliances form an impenetrable shield against regional conquerors.",
+    "Christian compassion and imperial benevolence define true sovereignty; courtly prestige exists to shelter the faithful.",
+    "Unwavering loyalty to both her ancestral house in Samtskhe and the imperial throne of Trebizond, bridging two great civilizations."
+  ],
+  "Fears": [
+    "Hostile forces severing communications between Trebizond and the Caucasus, leaving the Pontic empire isolated to its doom.",
+    "Factional palace rebellions in Trebizond weakening the imperial crown and forfeiting the vital alliance with Samtskhe."
+  ],
+  "SpeechStyle": "Speaks with imperial majesty and refined diplomatic grace, addressing Trebizond imperial statecraft and Caucasian alliances with serene authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Jiajak Jaqeli"
+}

@@ -11,5 +11,6 @@
     <string id="gccz_npc_response_unlimited_hint" text="Only affects GCCZ town scenes. Removes the 1-10 response cap while each NPC still responds once and remains subject to population, queue, and cleanup safeguards." />
     <string id="gccz_npc_response_limit_name" text="NPC Response Limit" />
     <string id="gccz_npc_response_limit_hint" text="Applies when unlimited NPC responses are disabled. Limits ambient NPC replies per player utterance, GCCZ semantic action, or player attack event in an active town scene. The direct conversation partner is not counted. Range: 1-10." />
+    <string id="AF_MCM_GcczSiege_Group" text="14. Siege Aftermath &amp; Internal Unrest" />
   </strings>
 </base>

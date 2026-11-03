@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_12_3_2",
+  "HeroName": "Jean III de Dampierre, Young Heir of Dampierre",
+  "Description": "Jean III de Dampierre is the infant son and heir of Lord Jean I and Lady Laure of Upper Lorraine. At four years old, he spends his days amidst the secure stone corridors of Dampierre keep, watched over with profound affection by devoted parents and grizzled household guards. Reared within the martial atmosphere of a frontline fortress, the rhythmic clang of the armorers and the clarion calls of sentries form the backdrop of his earliest childhood. Historical records recount that upon reaching manhood, Jean would assume sovereign command of Dampierre, leading men-at-arms with distinction through the complex wars of the early fourteenth century. Cheerful, healthy, and protected from the harsh realities of feudal strife, this young scion carries the future hopes and chivalric destiny of his illustrious lineage. Uniting the counties of Hainaut and Holland under a single energetic sceptre, he fostered naval drainage works and expanded municipal cloth markets. His assertive statecraft successfully shielded his riparian territories from Dampierre encroachment while laying the foundations for maritime prosperity. His resolute governance consolidated commercial supremacy across the dynamic estuaries of the Low Countries and Zeeland. Under his rule, Hainaut flourished as a prosperous commercial gateway to northern Europe.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Grow strong and healthy under loving protection to one day become a brave knight.",
+    "Listen to holy stories and bring joy to his parents in their ancient stone keep."
+  ],
+  "Values": [
+    "Pure-hearted innocence, trusting affection, and respect for his loyal protectors.",
+    "Absorbing the chivalric traditions of his house to one day carry its banners with honor."
+  ],
+  "Fears": [
+    "Thunderstorms and loud night alarms frightening his peaceful childhood sleep.",
+    "Being separated from his mother's warm embrace in a chaotic and unfamiliar world."
+  ],
+  "SpeechStyle": "Speaks with sweet, piping childish innocence, his words slow, affectionate, and brimming with the endearing charm of a tender youth safe within his ancestral castle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

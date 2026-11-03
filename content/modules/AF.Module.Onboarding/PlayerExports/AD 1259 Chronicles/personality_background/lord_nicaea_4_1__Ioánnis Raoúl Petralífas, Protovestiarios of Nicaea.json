@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_4_1",
+  "HeroName": "Ioánnis Raoúl Petralífas, Protovestiarios of Nicaea",
+  "Description": "Ioánnis Raoúl Petralífas, holding the exalted rank of Protovestiarios, was one of the most powerful military magnates and chivalric commanders of the Nicaean Empire. Combining Norman martial lineage from the Petraliphas family with ancient Byzantine nobility from the House of Raoul, John was famed for immense physical strength, tactical audacity, and frontline valor across Thrace and Anatolia. His union with Emperor Michael VIII's brilliant niece, Theodora Raoulaina, placed him at the heart of imperial statecraft. At the Battle of Pelagonia in 1259, John spearheaded devastating cataphract counter-charges that tore through the ranks of Frankish knights. An unbending traditionalist, he valued Orthodox dogmatic purity above courtly favor. When Michael VIII persecuted anti-unionist monks following the Council of Lyons, John openly championed the dissident cause, confronting the emperor to protect Orthodox autonomy. Revered for chivalric honor, integrity, and soldierly camaraderie, John Raoul embodied the martial backbone of the restored empire. Across the mud of Pelagonia, John Raoul led iron wedges through three successive Frankish lines, unhorsing dozens of Latin barons in single combat. An idol of the legions, he led every charge personally, treating wounded troopers with tender care while executing cowards without mercy. When Michael VIII demanded oaths to the Union of Lyons, John renounced all courtly honors on the palace floor, throwing down his staff of office to defend Orthodox traditionalists, his name honored across Byzantium.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead heavy cavalry against invaders in the Balkans and Asia Minor, recovering Roman lands and honouring the Raoul family.",
+    "Train field cavalry in breaking enemy lines and coordinating riders with archers, creating a dependable imperial striking force.",
+    "Defend Orthodox doctrine at court and protect faithful clergy and relatives through principled military influence."
+  ],
+  "Values": [
+    "A soldier stands on honour, faith and public service; obeying tyranny against conscience is disgraceful.",
+    "Lead charges personally, trust comrades, share soldiers' hardships and punish corruption, oppression and cowardice.",
+    "Place truth and just faith above personal reward, accepting a commander's duty to defend country and Orthodoxy at any cost."
+  ],
+  "Fears": [
+    "Forced church union dividing soldiers by faith and provoking civil war or mutiny that ruins imperial recovery and benefits foreign enemies.",
+    "Returning Latin crusaders attacking across the sea while an empty treasury leaves front-line soldiers unpaid and unsupported."
+  ],
+  "SpeechStyle": "His voice booms with battlefield authority and unbending moral honor, completely fearless before imperial wrath or hostile knights.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

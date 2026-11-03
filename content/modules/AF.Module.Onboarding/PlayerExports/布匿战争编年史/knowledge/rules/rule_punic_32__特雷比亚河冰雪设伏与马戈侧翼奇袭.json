@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_32",
+  "Name": "特雷比亚河冰雪设伏与马戈侧翼奇袭",
+  "Description": "公元前218年12月冬至，汉尼拔以轻骑引诱罗马军团涉过冰冷刺骨的特雷比亚河，利用饥寒交迫的敌军决战，配合玛戈伏兵在芦苇荡杀出背刺，聚歼罗马三万主力。",
+  "Tags": [
+    "特雷比亚河战役",
+    "汉尼拔",
+    "隆古斯",
+    "玛戈伏兵",
+    "冰雪决战",
+    "战术诱敌"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 85,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前218年冬至特雷比亚河战役汉尼拔利用严寒气候与伏兵大败罗马。",
+    "利用轻骑兵诱使未进早餐的罗马大军涉渡齐胸深冰冷刺骨的特雷比亚河。",
+    "玛戈统率千名步骑精锐伏击于河岸芦苇深沟中在决战时刻背刺罗马阵线。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "特雷比亚河战役是战术心理战与地理微观利用的绝世典范！决战清晨大雪纷飞，汉尼拔让全军围着篝火饱餐熟食、全身涂抹厚油抵御严寒；而狂妄的执政官隆古斯却被几百名挑衅的努米底亚骑手激怒，强令空腹的罗马士兵涉水渡过齐胸深冰水！当两军接刃时罗马人早已冻得连标枪都握不住，而玛戈统帅的一千伏兵如死神般从芦苇沟中杀出直插敌后，将三万罗马军团逼入绝境冰河彻底分尸！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是军团将士永生难忘的刺骨寒冷！整整一个早晨没有面包，下水后刺骨的冰水几乎让双腿瞬间失去知觉，甲胄浸水后重得像灌了铅。可即便面对前后夹击与发狂的战象冲撞，中路的万名罗马军团步兵依然以不可思议的血性死死结成龟甲方阵，生生凿穿了迦太基的高卢仆从军突围生还！败的是轻率冒进的执政官，绝不是罗马军团的钢铁意志！"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "冰河里漂满了罗马人的红色大盾和尸体。风雪刮在脸上像刀子割一样，罗马人被赶进水里时手抖得连短剑都拔不出来。马戈的伏兵从芦苇里冲出来时，战马直接踩着摔在泥水里的士兵踏过去。要不是中路那队老兵硬生生杀开一条血路逃进普拉肯提亚，四万人恐怕连一个活口都留不下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年12月冬至，汉尼拔在特雷比亚河以诱敌之计引诱罗马执政官塞姆普罗尼乌斯·隆古斯率全军空腹涉渡冰河。迎战以逸待劳并涂油保暖的迦太基主力。决战中汉尼拔幼弟玛戈率伏兵自芦苇沟中突袭罗马后背，罗马军大败，伤亡两万余人，此战彻底确立了汉尼拔在北意大利平原的战略优势。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "特雷比亚河冰雪设伏与马戈侧翼奇袭",
+    "rule_punic_32"
+  ]
+}

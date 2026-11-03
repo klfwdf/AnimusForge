@@ -24,7 +24,8 @@ internal static class RequestPromptAuditChecks
         void Check(bool ok, string label) { checks++; if (!ok) failures.Add(label); }
         bool Han(string value) => Regex.IsMatch(value ?? "", @"[\u3400-\u9fff]");
         string root = Environment.GetEnvironmentVariable("AF_TEST_MODULE_ROOT");
-        bool english = (string)Invoke(product.GetType("AnimusForge.LlmPromptTexts", true), "Get", "AF_LLM_PROMPT_ContentLanguage", "zh-CN") == "en";
+        // Fixed prompt text follows the game language (PromptLanguage), not the installed content package.
+        bool english = !GameLanguageRequestChecks.IsChinese(product);
         var texts = product.GetType("AnimusForge.DiplomacyPromptTexts", true);
         Func<string,string,string> localize = (key, fallback) => (string)Invoke(texts,"Get",key,fallback);
         string date = "1084年夏季11天";
@@ -68,6 +69,8 @@ internal static class RequestPromptAuditChecks
         Check(dynamicDraft.Contains("旧政策正文 {NAME} $1"),"policy dynamic original context is not silently translated");
 
         object compat = product.GetType("AnimusForge.LlmApiCompat",true);
+        // The legacy civil-war marker is projected to the label of the current game language.
+        string civilWarLabel = english ? "[Civil war fact]" : (string)Invoke(product.GetType("AnimusForge.LlmSourceTexts",true),"Source","CivilWarFactLabel");
         var settings = product.GetType("AnimusForge.DuelSettings", true);
         string diplomacyPreference = JObject.Parse(File.ReadAllText(Path.Combine(root,"ModuleData/Defaults/CustomPrompts/WorldDiplomacyPrompt.json")))["Text"].Value<string>();
         string common = (string)Invoke(settings,"BuildWorldDiplomacyCommonContract",diplomacyPreference);
@@ -86,9 +89,15 @@ internal static class RequestPromptAuditChecks
         // These exact compatibility markers are consumed by the new diplomacy
         // contract validator. They retain their persisted/protocol identities;
         // all surrounding fixed prose still has to follow the package language.
+        // Contract markers are written in the current game language; "=" in the English edition keeps the Chinese identity.
         JObject compatibility;
         using (var stream = product.GetManifestResourceStream("AnimusForge.Diplomacy.PromptCompatibility.json"))
         using (var reader = new StreamReader(stream)) compatibility = JObject.Parse(reader.ReadToEnd());
+        if (english)
+            using (var stream = product.GetManifestResourceStream("AnimusForge.Diplomacy.PromptCompatibility.en.json"))
+            using (var reader = new StreamReader(stream))
+                foreach (var property in JObject.Parse(reader.ReadToEnd()).Properties())
+                    if ((string)property.Value != "=") compatibility[property.Name] = property.Value;
         string[] stableDiplomacyMarkers = Enumerable.Range(0,5)
             .Select(i => (string)compatibility["AF_DIP_Compatibility_" + i.ToString("000")]).ToArray();
         foreach (string endpoint in new[]{"https://audit.invalid/v1/chat/completions","https://audit.invalid/anthropic/v1/messages"})
@@ -107,7 +116,7 @@ internal static class RequestPromptAuditChecks
                 Check(!english || !Han(auditedWire),"actual "+pair.Item1+" fixed prose and AFEF prefixes follow package; exact protocol markers retained");
                 Check(input.ToString()==saved,"actual "+pair.Item1+" wire projection preserves request snapshot");
                 Check(!wire.Contains("AF_OUTPUT_LANGUAGE") && !wire.Contains("must reply in English"),"actual "+pair.Item1+" wire adds no reply-language lock");
-                if(pair.Item1=="policy") Check(wire.Contains("[AFEF NPC_ACTION]") && wire.Contains("[Civil war fact]") && wire.Contains("no inferred outcome"),"actual policy assembly preserves actor and fact semantics after fixed marker projection");
+                if(pair.Item1=="policy") Check(wire.Contains("[AFEF NPC_ACTION]") && wire.Contains(civilWarLabel) && wire.Contains("no inferred outcome"),"actual policy assembly preserves actor and fact semantics after fixed marker projection");
                 File.WriteAllText(Path.Combine(output,pair.Item1+(endpoint.Contains("anthropic")?"-anthropic":"-openai")+"-wire.json"),wire);
             }
         }
@@ -117,7 +126,7 @@ internal static class RequestPromptAuditChecks
         {
             var wire = (JObject)Invoke((Type)compat,"PrepareChatRequestPayload",endpoint,payload);
             string text = wire.ToString();
-            Check(!text.Contains("内战事实") && text.Contains("[Civil war fact]"),"fixed civil-war annotation is projected on both provider protocols");
+            Check(!text.Contains("[AFEF内战事实]") && text.Contains(civilWarLabel),"fixed civil-war annotation is projected in the game language on both provider protocols");
             Check(text.Contains("[AFEF PLAYER_ACTION]") && text.Contains("original 中文正文 {NAME} $1"),"wire keeps fact actor and opaque body");
             Check(payload.ToString()==before,"wire leaves player/history input object unchanged");
             Check(!text.Contains("must reply in English") && !text.Contains("AF_OUTPUT_LANGUAGE"),"no reply-language lock added");

@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Rostislav II Mstislavich stands as the venerable sovereign of the House of Rostislavich, ruling from the formidable stone kremlin of Smolensk along the upper Dnieper. Controlling the vital overland and riparian trade crossroads linking Novgorod, the Baltic, and southern Rus', he navigates a perilous geopolitical landscape caught between the tribute demands of the Golden Horde and predatory Lithuanian incursions. Rostislav upholds the historic German trade charters while fiercely defending Orthodox ecclesiastical autonomy centered at the Cathedral of the Dormition. His astute fiscal administration harnesses transit tariffs to maintain state granaries, reinforce stone bastions, and equip an elite corps of armored retainers. Renowned for diplomatic poise and stern resolve, he commands the deep loyalty of his boyars and burghers, anchoring the sovereign independence of Smolensk amidst gathering historical storms. Rostislav frequently inspects riparian defensive booms, maintaining strategic alliances with Vladimir-Suzdal to ensure that the ancient liberties and commercial wealth of the Upper Dnieper remain uncompromised. His farsighted statecraft and ironclad military discipline unite the Upper Dnieper fortresses into an unbreachable defensive bastion, ensuring that Smolensk stands tall through turbulent generations. By coordinating joint military strategies with allied boyars and regional princes, he shields the Upper Dnieper from devastation.",
+  "SpeechStyle": "The waters of the Dnieper bear witness to the eternal dignity of Smolensk. Though storms howl across the plains, we shall never surrender our ancestral ramparts or compromise our holy faith.",
+  "Motivations": [
+    "Defend the sovereign independence of Smolensk and secure vital Dnieper transit arteries against foreign encroachment.",
+    "Reconcile internal boyar factions and maintain a well-provisioned, disciplined garrison within the stone kremlin."
+  ],
+  "Values": [
+    "Adhere to Orthodox piety and ancestral oaths, considering the protection of his people the sacred duty of kingship.",
+    "Value diplomatic prudence, commercial law, and institutional stability to unify the citizenry."
+  ],
+  "Fears": [
+    "Dread simultaneous encirclement by Mongol and Lithuanian hosts cutting off lifeline supplies to the fortress.",
+    "Fear internal treason among corrupt boyars surrendering fortress gates to invading armies."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    }
+  ],
+  "HeroId": "lord_smolensk_1a",
+  "HeroName": "Rostislav II Mstislavich"
+}

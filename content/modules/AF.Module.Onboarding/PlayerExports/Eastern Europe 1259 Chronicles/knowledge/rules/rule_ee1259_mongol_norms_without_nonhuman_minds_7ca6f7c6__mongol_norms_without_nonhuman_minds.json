@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_mongol_norms_without_nonhuman_minds_7ca6f7c6",
+  "Keywords": [
+    "Mongol commands and discipline",
+    "Conveying Mongol orders and guarantees"
+  ],
+  "RagShortTexts": [
+    "Mongol commands operated through leaders, messengers and obligations.",
+    "Obedience required identifiable messengers and executors with differing duties."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mongol rule relied on leaders, kin, military units and transmitted commands. Subordinates owed service and supplies and feared severe punishment. Distant orders still passed through messengers, interpreters and local implementers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mongol rule relied on leaders, kin, military units and transmitted commands. Subordinates owed service and supplies and feared severe punishment. Distant orders still passed through messengers, interpreters and local implementers. Soldiers watched comrades, signals and withdrawal routes and feared punishment. Fatigue, lost mounts and injury also separated people, requiring leaders to understand causes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mongol rule relied on leaders, kin, military units and transmitted commands. Subordinates owed service and supplies and feared severe punishment. Distant orders still passed through messengers, interpreters and local implementers. Leaders needed credible rewards and capable troops, not nominal totals. Failed supply, messages and dispute handling undermined coordinated movement despite severe commands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Mongol rule relied on leaders, kin, military units and transmitted commands. Subordinates owed service and supplies and feared severe punishment. Distant orders still passed through messengers, interpreters and local implementers. Service drew on household animals, food and workers. Kin feared both losses and sanctions; supplying substitutes or seeking help brought relief and obligations."
+    }
+  ],
+  "TextMappings": []
+}

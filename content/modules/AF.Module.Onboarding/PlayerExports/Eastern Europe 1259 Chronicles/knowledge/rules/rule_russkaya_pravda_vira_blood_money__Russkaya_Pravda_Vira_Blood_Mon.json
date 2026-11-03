@@ -1,0 +1,52 @@
+{
+  "Id": "rule_russkaya_pravda_vira_blood_money",
+  "Keywords": [
+    "Rus compensation for homicide",
+    "vira and claims by kin"
+  ],
+  "RagShortTexts": [
+    "Rus law limits feud and sets monetary liabilities, with status and circumstances affecting cases.",
+    "Princely dues and kin claims differ, and payment needs property, witnesses and enforcement."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus law places killing, injury and property loss within a system of claims, limiting kin vengeance and using liabilities such as vira in certain cases. The victim’s status, circumstances and responsible party matter; compensation is not a single price for everyone. A payment owed to a prince differs from the needs of dependants deprived of a worker.\n\nCourts seek witnesses, oaths and connections between people and property, then need actual payment. Insufficient assets can draw kin and groups bearing shared obligations into the dispute. Private retaliation may turn one case into a lasting feud. Acceptance of payment does not end grief or the family’s need to arrange food, land and orphan care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Princes need enforceable judgments. Retainers escaping liability weaken authority; collected dues do not settle every need of the bereaved."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A soldier in a fatal quarrel still faces local kin. Leaving camp does not necessarily end claims; witnesses and the place of the incident matter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Bereaved households need advocates and immediate food and labour. Pursuing a claim costs working time, making neighbours’ help important."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Matryona is the venerable matriarch and spiritual anchor of the Kievan grand-ducal court, renowned across Rus' for her saintly piety, grace, and unstinting benevolence. Born of high noble lineage and having witnessed decades of dynastic turmoil and siege warfare, she faithfully supported her husband Volodymyr IV in his righteous struggle to preserve the realm. Throughout perilous crises, she dedicated vast portions of the ducal treasury to restore the Kyiv Caves Lavra and Saint Sophia Cathedral, establishing hospices for crippled veterans and shelters for war orphans. Possessing deep learning in Orthodox liturgy and chronicling, Matryona commissioned illuminated scripture manuscripts, safeguarding the intellectual and spiritual heritage of medieval Rus'. Her compassionate wisdom and serene fortitude earned universal reverence across all social strata, establishing her as an enduring beacon of Christian solace. Amidst the darkest horrors of siege warfare and devastating fires, Grand Duchess Matryona became a fountain of celestial hope for the impoverished citizens of Kyiv. She tirelessly organized relief dormitories within convent courtyards, personally ministering to wounded soldiers and ensuring that war orphans received warm clothing and Christian schooling. Her gentle voice and boundless generosity softened the harshest hearts, making her an enduring symbol of divine mercy throughout the southern principalities.",
+  "SpeechStyle": "Though fierce fires of war rage around our ramparts, the holy light of charity and faith never wanes. May heaven grant mercy and healing to the faithful people of Kyiv amidst every sorrow!",
+  "Motivations": [
+    "Comfort the war-torn populace of Kyiv through Christian charity, preserving holy relics, scriptures, and spiritual integrity.",
+    "Foster harmony between church and court, nurturing familial reconciliation to fortify the moral foundation of the realm."
+  ],
+  "Values": [
+    "Upholding divine mercy, self-sacrificing charity, and spiritual humility, repudiating ruthless political deceit and avarice.",
+    "Believing serene faith and selfless compassion overcome worldly sorrows, securing celestial peace in violent times."
+  ],
+  "Fears": [
+    "The sacrilegious plundering of the holy Caves Monastery, resulting in the slaughter of defenseless monks and nuns.",
+    "That relentless famine and devastation will leave the ancient city a depopulated charnel ground strewn with unburied dead."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_kiev_1b",
+  "HeroName": "Matryona"
+}

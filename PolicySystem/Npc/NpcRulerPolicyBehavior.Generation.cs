@@ -3008,7 +3008,7 @@ public sealed partial class NpcRulerPolicyBehavior
 			{
 				continue;
 			}
-			string value = target.Length == 0 ? compact : target + "：" + compact;
+			string value = target.Length == 0 ? compact : target + PolicyCompatibilityTexts.Colon + compact;
 			if (!entry.EffectSummaries.Contains(value, StringComparer.Ordinal))
 			{
 				entry.EffectSummaries.Add(value);
@@ -3209,7 +3209,7 @@ public sealed partial class NpcRulerPolicyBehavior
 		{
 			return;
 		}
-		sb.AppendLine(title + "：");
+		sb.AppendLine(title + PolicyCompatibilityTexts.Colon.TrimEnd());
 		foreach (NpcRulerPolicyRecord record in selected)
 		{
 			NpcRulerPolicyEffectDto effect = (record.Effects ?? new List<NpcRulerPolicyEffectDto>())
@@ -3221,7 +3221,7 @@ public sealed partial class NpcRulerPolicyBehavior
 			if (string.IsNullOrWhiteSpace(summary)) summary = Limit(FirstNonEmpty(record.PolicyDigest, record.ImpactSummary, PolicyGenerationPromptTexts.Get("NpcNoDigest", "no summary")), AgendaDialoguePolicySummaryChars);
 			string feedback = CompressCompleteText(record.FeedbackDigest, 30, AgendaDialoguePolicyFeedbackChars);
 			if (string.IsNullOrWhiteSpace(feedback)) feedback = Limit(FirstNonEmpty(record.FeedbackDigest, PolicyGenerationPromptTexts.Get("NpcUnclearFeedback", "feedback unclear")), AgendaDialoguePolicyFeedbackChars);
-			string line = "- 《" + Limit(FirstNonEmpty(record.PolicyName, PolicyGenerationPromptTexts.Get("NpcUnnamedPolicy", "unnamed policy")), AgendaDialoguePolicyNameChars) + "》"
+			string line = "- " + PolicyCompatibilityTexts.OpenTitleQuote + Limit(FirstNonEmpty(record.PolicyName, PolicyGenerationPromptTexts.Get("NpcUnnamedPolicy", "unnamed policy")), AgendaDialoguePolicyNameChars) + PolicyCompatibilityTexts.CloseTitleQuote
 				+ PolicyGenerationPromptTexts.Get("NpcDigestField", " | Summary: ") + summary
 				+ PolicyGenerationPromptTexts.Get("NpcEffectField", " | Effect: ") + BuildDialogueEffectSummary(effect)
 				+ PolicyGenerationPromptTexts.Get("NpcRemainingField", " | Remaining: ") + GetNpcPolicyEffectRemainingDays(effect).ToString(CultureInfo.InvariantCulture) + PolicyGenerationPromptTexts.Get("NpcDays", " days")
@@ -3562,7 +3562,7 @@ public sealed partial class NpcRulerPolicyBehavior
 	private static string BuildNpcPolicyReferenceQuery(NpcRulerPolicyBatchContext context)
 	{
 		NpcRulerPolicyKingdomContext target = RequireSingleNpcPolicyKingdomContext(context);
-		string identity = PolicyGenerationPromptTexts.Get("KingdomLabel", "Kingdom: ") + (target.KingdomName ?? string.Empty) + "（" + (target.KingdomId ?? string.Empty) + "）";
+		string identity = PolicyGenerationPromptTexts.Get("KingdomLabel", "Kingdom: ") + (target.KingdomName ?? string.Empty) + PolicyCompatibilityTexts.OpenParen + (target.KingdomId ?? string.Empty) + PolicyCompatibilityTexts.CloseParen;
 		return context.IsSuggestedPolicy
 			? identity + PolicyGenerationPromptTexts.Get("NpcAcceptedProposal", "\nPlayer policy proposal accepted by the ruler:\n") + (context.ProposalText ?? string.Empty)
 			: string.Join("\n", new[] { identity, target.CurrentWorldFacts, target.MechanicalFacts, target.KingdomStrategicProfile }
@@ -4112,7 +4112,7 @@ public sealed partial class NpcRulerPolicyBehavior
 					candidates.Add(BuildNpcPolicyTargetDirectoryCandidate(
 						clanHandle.Key,
 						"clan",
-						allowed.KingdomName + "：" + clanHandle.Value,
+						allowed.KingdomName + PolicyCompatibilityTexts.Colon + clanHandle.Value,
 						clanHandle.Key,
 						null,
 						0,
@@ -4597,7 +4597,7 @@ public sealed partial class NpcRulerPolicyBehavior
 	private static bool RequiresNpcMetricTargetPlan(string policyText)
 	{
 		string text = Compact(policyText ?? string.Empty);
-		bool hasMetric = NpcPolicyContainsAny(text, PolicyCompatibilityTexts.Get("Targets_Compat_4cfd3da9115f"), PolicyCompatibilityTexts.Get("Targets_Compat_cfab635d1c1b"), "hearth", PolicyCompatibilityTexts.Get("Module_militiaPerDay_playerDisplayName"), "militia");
+		bool hasMetric = NpcPolicyContainsAny(text, PolicyCompatibilityTexts.Get("Targets_Compat_4cfd3da9115f"), PolicyCompatibilityTexts.Get("Targets_Compat_cfab635d1c1b"), "hearth", PolicyCompatibilityTexts.Source("Module_militiaPerDay_playerDisplayName"), "militia");
 		return hasMetric && NpcPolicyContainsAny(text,
 			PolicyCompatibilityTexts.Get("Targets_Compat_8672864e9041"), PolicyCompatibilityTexts.Get("Targets_Compat_8b5f2a61b797"), PolicyCompatibilityTexts.Get("Targets_Compat_eea3b2d2f03b"), PolicyCompatibilityTexts.Get("Targets_Compat_477e3eac4043"), PolicyCompatibilityTexts.Get("Targets_Compat_ca715c0d8d83"), PolicyCompatibilityTexts.Get("Targets_Compat_4b77c3546823"), PolicyCompatibilityTexts.Get("Targets_Compat_1606ac42755a"), PolicyCompatibilityTexts.Get("Targets_Compat_5d1671517ac1"),
 			PolicyCompatibilityTexts.Get("Targets_Compat_e57d3dc19d83"), PolicyCompatibilityTexts.Get("Targets_Compat_30f5e365f11d"), PolicyCompatibilityTexts.Get("Targets_Compat_a39accd3595f"), PolicyCompatibilityTexts.Get("Targets_Compat_80c4751b0481"), PolicyCompatibilityTexts.Get("Targets_Compat_4c0b2b9f4253"), PolicyCompatibilityTexts.Get("Targets_Compat_47d524d0f1e0"), PolicyCompatibilityTexts.Get("Targets_Compat_a2e0be841cce"), PolicyCompatibilityTexts.Get("Targets_Compat_b4614ab230a5"), PolicyCompatibilityTexts.Get("Targets_Compat_19cd915c5a14"), PolicyCompatibilityTexts.Get("Targets_Compat_7ef93a55e5a1"),

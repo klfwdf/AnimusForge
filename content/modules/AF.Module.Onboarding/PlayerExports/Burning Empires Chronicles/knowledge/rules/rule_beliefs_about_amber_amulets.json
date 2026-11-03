@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v10",
+  "Keywords": [
+    "Beliefs about amber amulets"
+  ],
+  "RagShortTexts": [
+    "Amber amulets expressed care; patients still needed food, water, company and treatment."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Some people wore amber hoping to protect children or ease illness, and relatives might give it as a caring gift. Sick people still needed water, food and companionship, and families sought treatment. Possessing an amulet did not ensure recovery."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

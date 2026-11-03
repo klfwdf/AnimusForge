@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_8g",
+  "HeroName": "Ojíř z Lomnice",
+  "Description": "Ojíř of Lomnice stands as one of the most celebrated knights, royal diplomats, and marshals of medieval Bohemia, later appointed supreme burgrave of the royal fortress of Zvíkov and Prague Castle. A preeminent champion of the Silver Rose house of the Vítkovci, Ojíř won continental renown for his peerless prowess in heavy cavalry tournaments and ferocious shock charges across Styria, Carinthia, and Lower Austria under King Přemysl Otakar II. Beyond his extraordinary martial courage, he displayed brilliant diplomatic aptitude, acting as the king's plenipotentiary envoy in intricate negotiations with Hungarian Árpád monarchs and papal legates to settle turbulent marcher boundaries. Stern, magnetic, and just, he commanded boundless devotion from his Czech and Moravian cataphracts, who willingly charged the most bristling pike lines wherever Ojíř's silver rose banner led the assault. Honorable to the bone, proud of his chivalric oaths, and contemptuous of cowardly court treachery, he embodies the absolute pinnacle of Bohemian knightly virtues. He remains an indispensable martial pillar upholding the grand Central European imperium of the Iron and Golden King. As castellan of royal Zvíkov and premier knight of the realm, Ojíř shattered hostile ranks during winter campaigns across Styria with devastating cavalry charges. Unbeaten in tournament tilts and pitched warfare alike, his chivalric honor won the boundless admiration of lords and soldiers across Central Europe.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve immortal renown in King Otakar's grand imperial campaigns, elevating the Silver Rose to the heights of honor.",
+    "Defend Bohemian dominion over Styria and Austria through masterful diplomacy and decisive cavalry charges.",
+    "Serve as the ideal exemplar of chivalry, instilling discipline, honor, and fearlessness into rising generations of knights."
+  ],
+  "Values": [
+    "Regard feudal allegiance to the crown and chivalric vows as sacred obligations, preferring death to broken faith.",
+    "Prize direct, open combat and audacious courage, scorning dishonorable intrigue or cowardly ambuscades.",
+    "Cherish his men-at-arms, invariably leading from the front of the lance charge and guarding the retreat in crisis."
+  ],
+  "Fears": [
+    "Reckless royal strategic overexpansion provoking an overwhelming pan-European coalition that traps his valiant army.",
+    "Pusillanimous court diplomats surrendering hard-won frontier bastions, rendering the blood of fallen warriors in vain."
+  ],
+  "SpeechStyle": "A knight's glory rests on unbroken oaths, steel unsheathed only for justice and crown; while my silver rose flies, Bohemia's frontiers remain impregnable! For Bohemian glory and chivalric oaths, my lance charges without fear!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

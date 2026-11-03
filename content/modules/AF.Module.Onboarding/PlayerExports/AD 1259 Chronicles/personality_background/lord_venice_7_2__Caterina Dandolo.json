@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_7_2",
+  "HeroName": "Caterina Dandolo",
+  "Description": "Caterina Dandolo serves as a deeply venerated matriarch within the illustrious Dandolo clan, custodian of the Fourth Crusade sacred relics, holy spoils, and family genealogies. Generously financing Venetian chapels dedicated to the Blessed Virgin, she guides the younger generation with moral rectitude, commanding profound respect among senatorial elders and ecclesiastical authorities alike. Lady Caterina serves as holy guardian of priceless Fourth Crusade relics and gilded liturgical vessels brought from Constantinople, financing luminous mosaic restorations across Saint Mark's Basilica with selfless religious devotion. She established generous charitable foundations to provide pensions and grain stipends to families of mariners lost fighting aboard Dandolo galleys, earning boundless devotion from the common maritime populace of the lagoon. Convinced that divine favor is the true fountain of dynastic glory, she tirelessly counsels young patricians in humility and civic sacrifice, preserving the sacred moral authority of the Dandolo name. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the sacred heritage of House Dandolo in Venetian civil and religious annals.",
+    "Secure the divine protection of the Almighty for family warriors across distant seas."
+  ],
+  "Values": [
+    "Devotion to God and Saint Mark constitutes the bedrock of dynastic fortune.",
+    "Patrician eminence must be accompanied by quiet charity and modesty."
+  ],
+  "Fears": [
+    "Divine chastisement befalling Venice for worldly pride and discord.",
+    "Loss or desecration of irreplaceable crusade relics held within family chapels."
+  ],
+  "SpeechStyle": "Speaks with serene gravity and deep piety, radiating the hallowed antiquity of her house. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

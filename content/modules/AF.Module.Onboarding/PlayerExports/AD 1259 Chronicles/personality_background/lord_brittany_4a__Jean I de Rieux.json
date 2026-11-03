@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_4a",
+  "HeroName": "Jean I de Rieux, Sire of Rieux",
+  "Description": "Jean I de Rieux is the capable young Sire of Rieux, presiding over the strategic crossings of the lower Vilaine river in southern Brittany. Twenty-two years of age, he governs the heavily fortified castle of Rieux with mature composure and tactical acumen, commanding the paramount highway linking Nantes to Vannes. Jean excels in amphibious river patrols and mobile infantry maneuvers, establishing fortified toll-gates and watch-vessels that suppress riverine smuggling and banditry. Strictly disciplined and honorable, he protects merchant caravans and monastic pilgrims traversing the marchlands. Acclaimed across the duchy for his measured statesmanship, Jean tenaciously defends his customary baronial jurisdictions while maintaining prudent relations with Duke John I, celebrated as one of the most promising young lords in southern Brittany. Jean I prioritized the dredging of Rieux river quay and established maritime tolls that filled the castle treasury without burdening trade. His fair arbitration of fishing and forestry rights along the Vilaine established him as an unusually mature and reliable young magnate. His energetic administration of river docks and steady enforcement of customary port customs maintain peaceful prosperity along the entire lower course of the Vilaine. His steady command of castle defenses and courteous demeanor toward visiting dignitaries have made him a widely respected figure across southern Brittany.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure the water and land routes of the Vilaine, turning Rieux into a prosperous trading hub.",
+    "Govern with justice and valor to elevate House Rieux to premier status in Brittany."
+  ],
+  "Values": [
+    "Securing navigational tolls along the Vilaine and maintaining strict control of strategic waterways.",
+    "Prudent neutrality and baronial integrity amidst the factional rivalries of Brittany."
+  ],
+  "Fears": [
+    "Ducal or foreign forces seizing Rieux river checkpoints and severing the family's main revenues.",
+    "River pirates conspiring with disaffected vassals to undermine baronial order and safety."
+  ],
+  "SpeechStyle": "Speaks with crisp, calm authority and thoughtful precision, concise, courteous, and delivering administrative and military decisions with unshakeable resolve.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,108 @@
+{
+  "Id": "rule_punic_57",
+  "Name": "汉尼拔与腓力五世地中海东西攻守同盟",
+  "Description": "公元前215年，坎尼会战后马其顿国王腓力五世派使节深入意大利南端与汉尼拔订立盟约：马其顿出兵亚得里亚海东岸牵制罗马，战后双方平分霸权驱逐罗马。",
+  "Tags": [
+    "马其顿盟约",
+    "腓力五世",
+    "汉尼拔",
+    "东西瓜分条约",
+    "第一次马其顿战争",
+    "反罗同盟"
+  ],
+  "Category": "Political",
+  "DefaultPriority": 85,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前215年坎尼战后马其顿国王腓力五世遣使与汉尼拔缔结攻守同盟条约。",
+    "条约约定马其顿跨海出兵进攻罗马伊利里亚占领区战后两强平分地中海利益。",
+    "归途中载有条约副本的马其顿使团战船遭罗马战舰截获引爆第一次马其顿战争。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hellenic"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是亚历山大大帝帝国复兴的辉煌契机！罗马野蛮人早已将贪婪的魔爪伸向了亚得里亚海东岸，吞并伊利里亚、恫吓希腊各邦！腓力五世陛下顺天应人与当世第一统帅汉尼拔立下神圣盟誓：马其顿的长矛与迦太基的利剑东西并进！当汉尼拔踏平罗马城垣之日，亚得里亚海西岸的所有港口与希腊本土将重归马其顿王冠之下！"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这纸被我们截获的盟约将永远钉在背信弃义的耻辱柱上！当我们的巡逻舰队在卡拉布里亚外海捕获那艘伪装商船、搜出汉尼拔亲笔签名的羊皮纸时，全元老院倒吸一口凉气！腓力五世竟妄图趁火打劫肢解罗马！元老院当机立断：派出瓦莱里乌斯·莱维努斯统领大舰队与军团封锁布林迪西，哪怕在本土流尽最后一滴血，罗马也绝不让东方的长矛踏上意大利土地半步！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "汉尼拔统帅用无可比拟的外交远见构筑了扼杀罗马的宏大同盟网！从高卢波伊人、坎帕尼亚卡普阿，再到爱琴海霸主马其顿，整个文明世界都在联合起来反抗罗马强权的压迫！可恨的是使节在归途中竟因大意被罗马巡航船截获，泄露了机密，给罗马人在东线早早布置防线赢得了喘息之机。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前215年，坎尼会战后马其顿国王腓力五世派遣特使与汉尼拔缔结正式攻守同盟。双方约定马其顿在东线进攻罗马在伊利里亚的属地，战后迦太基主导西地中海、马其顿主导希腊与亚得里亚海东岸。使节在返程途中被罗马海军捕获，条约曝光导致罗马对马其顿正式宣战，揭开第一次马其顿战争序幕。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "汉尼拔与腓力五世地中海东西攻守同盟",
+    "rule_punic_57"
+  ]
+}

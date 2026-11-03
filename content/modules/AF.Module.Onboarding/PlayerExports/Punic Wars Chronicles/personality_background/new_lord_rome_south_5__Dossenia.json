@@ -1,8 +1,36 @@
 {
-  "Version": 1,
+  "SchemaVersion": 3,
   "HeroId": "new_lord_rome_south_5",
   "DisplayName": "Dossenia",
-  "Personality": "Dossenia, a prominent figure of the Sempronii, Regal, commanding, steeped in classical patrician gravitas; acute in political judgment and steadfast in preserving ancestral lineage. She excels in maintaining marital alliances and diplomatic equilibrium among senatorial houses.",
-  "Background": "Dossenia owes allegiance to the Roman Republic (SPQR), hailing from the noble house of Sempronii. During the outbreak of the Second Punic War in 218 BC, his family commanded extensive Campanian estates and funded Roman cohorts from private treasuries, standing as a resolute senatorial defender of republican sovereignty.",
+  "Description": "Dossenia, prominent patrician commander and magistrate of the Roman Republic, deeply rooted in ancestral civic duty and clan honor. Steeped in the unyielding code of the Mos Maiorum, Dossenia commands profound respect among senatorial elders and citizen assemblies. Amid the existential crisis of 218 BC as Hannibal's armies cross the Alps and threaten the heartland of Italy, Dossenia resolutely oversees fortress logistics, troop levies, and civic defense, rejecting any shameful capitulation to foreign invaders and demonstrating the indomitable fortitude that sustains the Republic.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the sacred laws and ancestral discipline of the Republic against foreign aggression.",
+    "Mobilize civic levies and maintain unyielding resistance against Punic incursions in Italy.",
+    "Defend the honor of the clan and ensure the eternal sovereignty of the Roman Senate."
+  ],
+  "Values": [
+    "Ancestral tradition (Mos Maiorum) and legalistic duty are the bedrock of civilization.",
+    "True commanders value citizen lives, subordinating panic to steady strategic resolve.",
+    "Rome never surrenders to invaders; fortitude and sacrifice are the only path to victory."
+  ],
+  "Fears": [
+    "Consular rashness leading legions into another catastrophic Punic ambush.",
+    "Internal panic forcing the Senate into dishonorable peace terms."
+  ],
+  "SpeechStyle": "Speaks with austere gravitas and legalistic precision; measured and unhurried, reflecting Roman dignity.",
   "VoiceId": ""
 }

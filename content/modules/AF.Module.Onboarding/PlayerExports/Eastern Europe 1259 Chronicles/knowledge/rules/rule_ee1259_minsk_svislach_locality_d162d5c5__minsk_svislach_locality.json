@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_minsk_svislach_locality_d162d5c5",
+  "Keywords": [
+    "Minsk beside the Svislach",
+    "Food and market journeys around Minsk"
+  ],
+  "RagShortTexts": [
+    "Minsk connects surrounding settlements through Svislach waterways and roads.",
+    "Food preparation, repairs and carriage share labor disrupted by wet roads and collections."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Minsk's Svislach and roads link urban exchange with surrounding fields, carrying food, tools and news. Local leaders need supplies and cooperation; households need usable routes and dispute settlement. Flooded tracks, broken carts and sudden demands delay deliveries, making continued cooperation valuable beyond a single collection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A family going to Minsk's market may combine grain sales, salt purchases, repairs and family messages. Absence costs fieldwork, and a bad road adds lodging. Sharing animals or entrusting goods saves effort if quantities, destinations and return plans are clear enough to avoid debt disputes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

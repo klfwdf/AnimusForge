@@ -16,7 +16,7 @@ internal sealed class KingdomStabilityEffectModule : NumericPolicyEffectModuleBa
 		"kingdomStabilityNextDayOnce"
 	};
 
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "kingdomStability",
 		order: 120,
 		legacyIds: Array.Empty<string>(),
@@ -42,7 +42,8 @@ internal sealed class KingdomStabilityEffectModule : NumericPolicyEffectModuleBa
 		playerDisplayName: PolicyCompatibilityTexts.Get("Module_kingdomStability_playerDisplayName"),
 		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_kingdomStability_editableUnderstandingPrompt", "Kingdom stability means national political structure and governing order. It is mainly affected by public confidence, fiscal prestige, vassal trust, royal legitimacy, war victories and defeats, noble interests, domestic fragmentation risk and decisive victories. Pure administrative or ordinary local numeric changes are usually not kingdom stability consequences; positive or negative direction requires direct political causality."),
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_kingdomStability_editableEvaluationPrompt", "Positive means improved stability; negative means greater unrest. Judge integer stability points. Clear changes to public confidence, fiscal prestige, vassal trust, royal legitimacy or fragmentation risk: ±4 to ±7; major reforms, nationwide mobilization, broad noble conflicts or severe political crises: ±7 to ±14; the verge of civil war, national survival, collapse of governance or decisive victory: ±14 to ±22. Settle only once on the game day after policy adoption; do not stack by town count."),
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

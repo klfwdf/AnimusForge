@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2c",
+  "HeroName": "Niels Erlandsen Galen",
+  "Description": "Sir Niels Erlandsen Galen, celebrated cavalry warlord of Scania and brother to Archbishop Jakob, was the primary battlefield commander of the Galen house. Holding strategic coastal bastions in southern Scania, Niels was an uncompromising warrior versed in shock cavalry tactics and siege assault. When King Christoffer attempted to seize ecclesiastical tithes by force, Niels mobilized his heavy knights, repeatedly crushing royalist infantry formations in open field clashes. Fierce, demanding, and utterly fearless, he was idolized by his mounted retainers for leading from the front in German plate armor. In 1259, upon learning of his brother's imprisonment by the king, Niels spearheaded amphibious assaults across the Sound into Zealand alongside Rügen flotillas, serving as the devastating military spearhead of the anti-royalist opposition. Commanding profound authority within the provincial ting councils of Scania, Niels repeatedly confronted royal justices, defending feudal privileges with forensic precision and unbending pride. When royal troops arrested Archbishop Jakob Erlandsen in 1259, Niels summoned his armored knights, barricading the thoroughfares of Lund to prevent the unlawful plunder of cathedral treasuries. A master of ambush tactics in the treacherous woodlands and tidal marshes along the Sound, he shattered multiple royalist cavalry detachments, securing his reputation as a formidable military protector of Scanian autonomy.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Shatter royal Danish forces with heavy cavalry charges to liberate his imprisoned brother Archbishop Jakob and enforce justice.",
+    "Guard the coastal straits and naval havens of southern Scania, annihilating any royalist amphibious landings."
+  ],
+  "Values": [
+    "Holds knightly valor and family martial glory above life itself, believing justice is carved solely through drawn steel.",
+    "Demands iron discipline and battlefield aggression, despising indecisive courtiers and glorifying open cavalry combat."
+  ],
+  "Fears": [
+    "Dreads royalist fire-ships trapping his amphibious squadrons in coastal narrows, drowning his elite knights and heavy mounts."
+  ],
+  "SpeechStyle": "Speaks with a roaring, battle-hardened baritone like an ocean gale, his blunt combat orders ringing with iron authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

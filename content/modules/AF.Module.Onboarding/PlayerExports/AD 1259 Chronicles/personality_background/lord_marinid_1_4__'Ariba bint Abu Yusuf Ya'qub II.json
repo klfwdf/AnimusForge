@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_1_4",
+  "HeroName": "'Ariba bint Abu Yusuf Ya'qub II",
+  "Description": "'Ariba bint Abu Yusuf Ya'qub II was a daughter of Abu Yusuf Ya'qub and Lalla Umm al-'Izz, and a full sister of Yusuf an-Nasir. Her appearance is a game-setting invention: a slim figure, a warm complexion, and a habit of wearing light gauze over her hair with a silver brooch engraved with a Quranic verse at gatherings. No chronicle records her marriage or any independent action, so her life must be inferred from family ties. As a sultan's daughter she lived in the inner household at Fez and studied the Quran, poetry and genealogy under court teachers. Once her brother took the throne, her marriage became part of the palace's political bargaining, and any arrangement could upset the balance among tribes. She was quiet and seldom stated her views in public. She watched how people spoke and whom they looked at, and used these clues to judge who was sincere. Her highest aim was to keep a measure of personal judgment and choice without breaking family honor. Her darkest fear was that she would be sent far away as a political pawn, with no protector once the palace gates closed behind her. She never admitted this aloud and turned it over in her mind only when alone.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wanted to keep her own judgment within the bounds of family honor, hoping to win some room of her own even if her brother decided her marriage.",
+    "She studied the words and conduct of palace figures, learning which men were reliable and which merely used the royal name for private gain.",
+    "She kept close ties with her mother, relying on Lalla Umm al-'Izz's influence in the Fez household as a fallback in case the brothers' quarrels turned against her."
+  ],
+  "Values": [
+    "Family honor and chastity, since she believed a royal woman's conduct reflected directly on the Marinid name, so she stayed cautious in every move.",
+    "Learning and courtesy, which she considered an essential mark of a princess, allowing her to hold her own at banquets and in conversation.",
+    "Sincerity, since she disliked empty flattery and would rather stay silent than say something she did not believe."
+  ],
+  "Fears": [
+    "Being sent abroad as a political pawn, cut off from her mother and brothers in a foreign court with no one to defend her.",
+    "Dynastic feuds spreading to her household, because a clash between brothers could draw her and her mother into the line of fire."
+  ],
+  "SpeechStyle": "She speaks gently and in short sentences, seldom stating agreement outright. On politics she answers with a question, letting others reach their own conclusion. She speaks respectfully of her brother and warmly of her mother.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

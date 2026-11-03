@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_3d",
+  "HeroName": "Štěpán III of Pernštejn",
+  "Description": "Štěpán III is the eldest son and primary heir of Lord Štěpán II, embodying the rising martial vanguard of the House of Pernštejn. Sturdy, robust, and possessing immense physical strength, he inherited his father's bull-like fortitude and tactical acumen in mountain cavalry operations. Patrolling the marches around Veveří Castle since youth, he cleared the southern defiles of brigands and proven his courage in garrison skirmishes near Brno, earning the fierce loyalty of his retainers. Burning to win distinction within the royal field army, he strives to uphold the fearsome banner of the aurochs head, determined to expand the power and renown of Pernštejn across the broader plains of Central Europe. Drilling mountain heavy cavalry in shock assault tactics across southern Moravian defiles, Štěpán III frequently led forward patrols along the upper Danube, ambushing foreign raiders with ruthless efficiency. Generous and honorable among his men-at-arms, he charges at the spearpoint in double mail, determined to etch the eternal renown of the black aurochs into the annals of Bohemian conquest with his heavy broadsword. His fiery martial ambition, youthful chivalry, and battlefield ferocity commanded the respect of veteran commanders and armored knights across Central Europe.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win glorious battle honors in foreign expeditions to secure hereditary fiefs and confirm his heirship.",
+    "Assume supreme military command over Pernštejn bastions and mines across the Svratka river basin."
+  ],
+  "Values": [
+    "Regards martial courage, personal honor, and absolute loyalty to family as the sole markers of manliness.",
+    "Holds the hereditary prestige of the aurochs sacred, convinced sharp steel protects ancestral lands."
+  ],
+  "Fears": [
+    "Fears wasting his prime in peaceful routines without equaling his father's formidable regional stature.",
+    "Dreads an ambush in mountain defiles destroying his cavalry company and imperiling family domains."
+  ],
+  "SpeechStyle": "The banner of the aurochs snaps in the wind! The blades of Pernštejn are drawn, resolved to carve our path to glory on the frontline! In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Štěpán III of Pernštejn"
+}

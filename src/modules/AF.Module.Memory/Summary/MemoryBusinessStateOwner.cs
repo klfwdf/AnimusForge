@@ -290,7 +290,7 @@ internal sealed partial class MemoryBusinessStateOwner
 		}
 		if (validObjectCount > 0)
 		{
-			error = MemoryTextResources.Raw("MEM_Raw_076") + BuildRequiredJsonFieldDescription(requiredPrimaryKeys, requiredSecondaryKeys) + "。";
+			error = MemoryTextResources.Raw("MEM_Raw_076") + BuildRequiredJsonFieldDescription(requiredPrimaryKeys, requiredSecondaryKeys) + MemoryTextResources.Period.TrimEnd();
 			return false;
 		}
 		if (parseFailureCount > 0)
@@ -467,7 +467,7 @@ internal sealed partial class MemoryBusinessStateOwner
 		{
 			detail = MemoryTextResources.Raw("MEM_Raw_080");
 		}
-		return LlmRetryPrompt.BuildFailureDetail(prefix + "：" + detail, content);
+		return LlmRetryPrompt.BuildFailureDetail(prefix + MemoryTextResources.Colon + detail, content);
 	}
 
 	internal static string CleanAIResponse(string input)
@@ -1161,6 +1161,15 @@ internal static bool ContainsIgnoreCase(string text, string token)
 		return text.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
+// Model replies may be written in either language; both editions of every token are matched.
+	private static readonly Lazy<string[]> ConfirmationTokens = new Lazy<string[]>(() =>
+	{
+		var tokens = new List<string>();
+		for (int id = 102; id <= 114; id++)
+			tokens.AddRange(MemoryTextResources.RawVariants("MEM_Raw_" + id.ToString("000", System.Globalization.CultureInfo.InvariantCulture)));
+		return tokens.ToArray();
+	});
+
 internal static bool IsNpcAskingForConfirmation(string npcText)
 	{
 		string text = StripActionTags(npcText ?? "").Trim();
@@ -1172,11 +1181,7 @@ internal static bool IsNpcAskingForConfirmation(string npcText)
 		{
 			return false;
 		}
-		string[] array = new string[13]
-		{
-			MemoryTextResources.Raw("MEM_Raw_102"), MemoryTextResources.Raw("MEM_Raw_103"), MemoryTextResources.Raw("MEM_Raw_104"), MemoryTextResources.Raw("MEM_Raw_105"), MemoryTextResources.Raw("MEM_Raw_106"), MemoryTextResources.Raw("MEM_Raw_107"), MemoryTextResources.Raw("MEM_Raw_108"), MemoryTextResources.Raw("MEM_Raw_109"), MemoryTextResources.Raw("MEM_Raw_110"), MemoryTextResources.Raw("MEM_Raw_111"),
-			MemoryTextResources.Raw("MEM_Raw_112"), MemoryTextResources.Raw("MEM_Raw_113"), MemoryTextResources.Raw("MEM_Raw_114")
-		};
+		string[] array = ConfirmationTokens.Value;
 		for (int i = 0; i < array.Length; i++)
 		{
 			if (ContainsIgnoreCase(text, array[i]))

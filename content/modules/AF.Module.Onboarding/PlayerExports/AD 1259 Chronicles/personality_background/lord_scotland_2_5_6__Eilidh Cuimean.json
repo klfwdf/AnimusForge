@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_5_6",
+  "HeroName": "Eilidh Cuimean",
+  "Description": "Eilidh Comyn is one of the younger daughters of the Earl and Countess of Buchan, five years of age and universally cherished within Slains Castle. Possessing innocent blue eyes and curls of light brown hair, she brings joyous warmth to the formidable granite halls overlooking the North Sea. Under the tender care of Countess Elizabeth and domestic chaplains, little Eilidh is learning Gaelic lullabies and simple Latin blessings. Rough garrison knights and coastal falconers delight in carving wooden playthings and gathering shells along the shore to win her happy laughter. Insulated from the venomous factional strife surrounding the Scottish regency, her childhood remains safe and tranquil. She trails playfully after her older sisters through sunlit castle solar rooms, offering a peaceful sanctuary of familial love amidst her father's weighty affairs of state. Whenever tempestuous gales howled around the granite turrets at eventide, little Eilidh would snuggle against her mother's velvet skirts, humming ancient Celtic lullabies; her joyful laughter brought radiant light into the austere great halls of Slains, prompting even the sternest veteran garrison knights to smile warmly upon their cherished little lady and offer quiet blessings for her happiness and health.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Gather colorful seashells and wild heather from the coastal bluffs to weave wreaths for her mother.",
+    "Learn her prayers obediently so she might soon be permitted to ride a small white pony."
+  ],
+  "Values": [
+    "Values familial love, gentle warmth, and the innocent joys of coastal nature and songs.",
+    "Loves small animals and responds with instinctive kindness toward the servants caring for her."
+  ],
+  "Fears": [
+    "Fears the howling North Sea gales battering the castle turrets on bitter winter nights.",
+    "Dreads loud, angry voices when turbulent baronial envoys arrive to confer with her father."
+  ],
+  "SpeechStyle": "Speaks with sweet, gentle childhood innocence, soft-voiced, affectionate, and bright.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

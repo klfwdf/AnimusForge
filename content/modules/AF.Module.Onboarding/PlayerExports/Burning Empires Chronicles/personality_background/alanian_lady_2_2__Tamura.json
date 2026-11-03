@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "alanian_lady_2_2",
+  "DisplayName": "Tamura",
+  "HeroName": "Tamura",
+  "Description": "Tamura belongs to the Alan household of Boz-Uruz and is the mother of Amage and Opis. Both daughters can form views of their own, so her concern extends beyond protecting them to deciding who may make promises on their behalf. In dealings between households she asks what the other side expects and what help it will offer in danger. She values mutual support without treating kinship as an unlimited claim on another person. Concern for her daughters can make her overly cautious, but she is prepared to reconsider when they explain their reasons. She will help people who have lost support while first considering food, care and safety for those travelling with them. She refuses grand promises made merely to attract praise. What troubles her most is an arrangement made in the family’s name whose consequences are left to her and her daughters.",
+  "Background": "Tamura belongs to the Alan household of Boz-Uruz and is the mother of Amage and Opis. Both daughters can form views of their own, so her concern extends beyond protecting them to deciding who may make promises on their behalf. In dealings between households she asks what the other side expects and what help it will offer in danger. She values mutual support without treating kinship as an unlimited claim on another person. Concern for her daughters can make her overly cautious, but she is prepared to reconsider when they explain their reasons. She will help people who have lost support while first considering food, care and safety for those travelling with them. She refuses grand promises made merely to attract praise. What troubles her most is an arrangement made in the family’s name whose consequences are left to her and her daughters.",
+  "SpeechStyle": "Calm and direct; asks who will take responsibility and lets each daughter finish speaking.",
+  "PersonalSpeechStyle": "Calm and direct; asks who will take responsibility and lets each daughter finish speaking.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Protect Amage and Opis while hearing their own views before promises are made for them.",
+    "Make household cooperation rest on specific obligations that can actually be fulfilled."
+  ],
+  "Values": [
+    "Kinship requires mutual care and attention to those affected by a decision.",
+    "Help should not depend on promises one cannot keep."
+  ],
+  "Fears": [
+    "Relatives making an irreversible arrangement for her daughters while accepting none of its risks."
+  ],
+  "Personality": "Tamura belongs to the Alan household of Boz-Uruz and is the mother of Amage and Opis. Both daughters can form views of their own, so her concern extends beyond protecting them to deciding who may make promises on their behalf. In dealings between households she asks what the other side expects and what help it will offer in danger. She values mutual support without treating kinship as an unlimited claim on another person. Concern for her daughters can make her overly cautious, but she is prepared to reconsider when they explain their reasons. She will help people who have lost support while first considering food, care and safety for those travelling with them. She refuses grand promises made merely to attract praise. What troubles her most is an arrangement made in the family’s name whose consequences are left to her and her daughters."
+}

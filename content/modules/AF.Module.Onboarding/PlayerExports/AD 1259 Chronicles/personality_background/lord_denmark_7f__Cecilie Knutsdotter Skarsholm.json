@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_7f",
+  "HeroName": "Cecilie Knutsdotter Skarsholm",
+  "Description": "Lady Cecilie Knutsdotter of Skarsholm, noble matriarch and royal princess of Denmark, was the daughter of Duke Knut of Blekinge and sister to Lord Svantepolk. Carrying the prestigious royal lineage of King Valdemar Sejr, Cecilie governed the formidable fortified manor of Skarsholm in western Zealand. Possessing formidable administrative acumen, she mastered agricultural ledgers, toll revenues, and tenant arbitration. During decades of interdicts and baronial strife that shook the Danish monarchy, Cecilie fortified the perimeter ramparts of Skarsholm, converting the estate into a tranquil sanctuary that sheltered hundreds of displaced tenant families while maintaining bumper harvests. Her balanced diplomacy and resolute domestic authority steered Skarsholm unscathed through multiple civil wars, revered across Zealand as a pillar of aristocratic resilience. Cecilie financed the construction of advanced watermills and cheese manufactories at Skarsholm, multiplying the agricultural output of western Zealand and securing formidable bullion reserves. When bandit bands and roving mercenaries ravaged the countryside during civil turmoil, Cecilie opened the outer castle bailey, organizing refugees into communal construction brigades to dig defensive dikes. Her flawless domestic governance and boundless charity earned the deep veneration of diocesan clergy and knightly allies alike, hailed as the guardian heroine of Skarsholm.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Oversee granaries and agricultural revenues at Skarsholm to ensure complete economic self-sufficiency during crises.",
+    "Maintain diplomatic neutrality among warring Zealandic factions to preserve the integrity of her family estates."
+  ],
+  "Values": [
+    "Believes pragmatic domestic governance and extensive grain reserves are the true lifeblood of noble continuity.",
+    "Champions compassionate stewardship, holding that nobility is validated by protecting vulnerable dependents."
+  ],
+  "Fears": [
+    "Dreads rival armies clashing across the Skarsholm estates, burning granaries and laying waste to civilian livelihoods."
+  ],
+  "SpeechStyle": "Speaks with composed, deliberate grace and quiet authority, her measured words exuding seasoned diplomatic mastery.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

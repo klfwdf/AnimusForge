@@ -9,9 +9,9 @@ namespace AnimusForge;
 
 internal static class IssuePromptTexts
 {
-	private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(() =>
+	private static readonly PromptLanguageFile<Dictionary<string, string>> Values = new PromptLanguageFile<Dictionary<string, string>>("IssuePromptTexts.json", path =>
 		JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-			AnimusForgeModulePaths.GetModuleDataFilePath("IssuePromptTexts.json"), Encoding.UTF8)));
+			path, Encoding.UTF8)));
 	private static readonly Regex Variable = new Regex(@"\{([A-Z_][A-Z_0-9]*)\}", RegexOptions.Compiled);
 
 	internal static string Text(string id, string fallback)

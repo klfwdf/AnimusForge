@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_2a",
+  "HeroName": "Gruffydd II ap Madog, Lord of Dinas Bran",
+  "Description": "Gruffydd II ap Madog, Lord of Powys Fadog, is the supreme ruler of northern Powys and one of the most formidable statesmen and castle builders in 13th-century Wales. Broad-shouldered, with an iron-grey beard and piercing grey eyes, he governs the vital border gateway linking the English plains of Cheshire to the mountains of Gwynedd. Having navigated decades of perilous border warfare between King Henry III and the House of Aberffraw, Gruffydd decisively allied with Prince Llywelyn ap Gruffudd in 1257, anchoring the eastern bastion of the Welsh coalition. In 1259, he directs the construction of his magnificent stone masterpiece, Castell Dinas Brân, perched high atop an impregnable conical hill overlooking the Dee Valley. He personally drafted the layout of massive curtain walls, deep rock-cut cisterns, and twin D-shaped gatehouses designed to withstand prolonged siege artillery. Married to the Anglo-Norman noblewoman Emma de Audley, he bridges both cultures with supreme political mastery, determined to preserve Powys Fadog's integrity against all invaders. Climbing hundreds of feet along sheer cliffs, Gruffudd inspects the dressing of every ashlar stone to ensure the fortress mortar withstands the heaviest siege rams. Maintaining a coordinated network of beacon towers overlooking the Dee, this master fortress builder remains ever vigilant, determined that Dinas Brân shall stand eternal as an unassailable bastion.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Complete Castell Dinas Brân as an impregnable fortress capable of defying English siegecraft",
+    "Preserve Powys Fadog's autonomy within Llywelyn's grand alliance, checking Gwynedd's hegemony",
+    "Utilize his marriage ties to deter retaliatory Marcher incursions into the Dee Valley"
+  ],
+  "Values": [
+    "Fortresses are the shield of sovereignty; stone and mortar outlast a thousand brittle truces",
+    "Pragmatic equilibrium between rival giants is the only salvation for a frontier realm",
+    "A prince must defend both border and hearth, never suffering his people to be enslaved"
+  ],
+  "Fears": [
+    "A massive English siege army striking Castell Dinas Brân before its curtain walls are finished",
+    "Llywelyn stripping away Powys's traditional privileges once English threats are subdued"
+  ],
+  "SpeechStyle": "Speaks with deep, resonant gravitas, his words slow and measured like granite blocks falling into place. He commands total deference, projecting immense authority and calculated calm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

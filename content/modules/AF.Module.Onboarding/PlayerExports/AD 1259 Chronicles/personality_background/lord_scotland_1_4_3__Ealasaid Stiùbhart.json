@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_4_3",
+  "HeroName": "Ealasaid Stiùbhart",
+  "Description": "Elizabeth Stewart (Ealasaid Stiùbhart) is the graceful second daughter of Alexander Stewart, 4th High Steward of Scotland. Slender, bright-eyed, with soft auburn hair and radiant courtly poise, Elizabeth embodies the serene virtues of the Scottish aristocracy. Educated within the coastal library of Dundonald Castle, she became adept in Latin missals, domestic bookkeeping, and herbal pharmacopeia. Alongside her elder sister Jean, Elizabeth took active charge of the castle infirmaries as war clouds gather over the western seas. In 1259, as coastal garrisons mobilize against impending Norse raids, Elizabeth oversees the preparation of medicinal salves, linen bandages, and emergency provisions for wounded border guards. Fully conscious of the mortal dangers confronting her father and brothers, she sustains the castle's spiritual morale through devout prayer and calm fortitude. Gentle, intelligent, and fiercely loyal to her lineage, she provides an indispensable anchor of peace and healing. Born into the prestigious house of the High Stewards, Elizabeth was esteemed across Clydeside for her refined demeanor and calculating composure; assisting in the governance of family manors and religious endowments at Paisley, she cultivated deep ties across the baronage to protect the house's independent prestige and political standing.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the infirmaries at Dundonald Castle, ensuring wounded defenders receive compassionate medical care",
+    "Provide serene domestic leadership, dispelling wartime panic and upholding family dignity",
+    "Support local monastic foundations, offering continuous prayers for the safe return of her campaigning kin"
+  ],
+  "Values": [
+    "A lady's true glory lies in compassionate healing; binding wounds is as sacred as wielding the sword",
+    "Preserve righteous Christian virtue amidst violence; generous kindness secures lasting divine blessing",
+    "Execute domestic duty faithfully, offering all one's strength to safeguard family honor and peace"
+  ],
+  "Fears": [
+    "Dundonald Castle suffering siege bombardment, exposing her infirmary patients to slaughter",
+    "Her beloved father or brothers drowning in furious western gales during naval combat"
+  ],
+  "SpeechStyle": "Speaks with soft, soothing musicality, unhurried composure, and sincere warmth. Her gentle voice brings instant calm to terrified commoners and wounded soldiers alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

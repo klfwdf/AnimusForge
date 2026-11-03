@@ -88,11 +88,11 @@ internal sealed partial class KingdomCivilWarOwner
 		KingdomCivilWarFactionState faction = FactionOfClan(state, clan);
 		string stance = record == null || record.Side == KingdomCivilWarSide.Middle ? KingdomCivilWarTexts.Prompt("KW_Prompt_050")
 			: record.Side == KingdomCivilWarSide.Crown ? KingdomCivilWarTexts.Prompt("KW_Prompt_051")
-			: faction == null ? KingdomCivilWarTexts.Prompt("KW_Prompt_052") : KingdomCivilWarTexts.Prompt("KW_Prompt_053") + FactionName(faction, CivilWarCatalog.FindDemand(faction.DemandId)) + "）";
+			: faction == null ? KingdomCivilWarTexts.Prompt("KW_Prompt_052") : KingdomCivilWarTexts.Prompt("KW_Prompt_053") + FactionName(faction, CivilWarCatalog.FindDemand(faction.DemandId)) + KingdomCivilWarTexts.CloseParen;
 		int relation = CivilWarWorld.Relation(clan.Leader, kingdom.Leader);
 		float factor = CivilWarFactionRules.JoinRelationFactor(relation);
 		var text = new StringBuilder(KingdomCivilWarTexts.Prompt("KW_Prompt_054")).Append(stance)
-			.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_055")).Append(relation).Append("（").Append(factor >= 0.95f ? KingdomCivilWarTexts.Prompt("KW_Prompt_056") : factor > 0.5f ? KingdomCivilWarTexts.Prompt("KW_Prompt_057") : KingdomCivilWarTexts.Prompt("KW_Prompt_058")).Append("）。");
+			.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_055")).Append(relation).Append(KingdomCivilWarTexts.OpenParen).Append(factor >= 0.95f ? KingdomCivilWarTexts.Prompt("KW_Prompt_056") : factor > 0.5f ? KingdomCivilWarTexts.Prompt("KW_Prompt_057") : KingdomCivilWarTexts.Prompt("KW_Prompt_058")).Append(KingdomCivilWarTexts.CloseParen).Append(KingdomCivilWarTexts.Period);
 		if (factor < 1f) text.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_059"));
 		if (clan.Leader != target) text.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_060"));
 		else if (faction != null && faction.LeaderClanId == clan.StringId) text.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_061"));

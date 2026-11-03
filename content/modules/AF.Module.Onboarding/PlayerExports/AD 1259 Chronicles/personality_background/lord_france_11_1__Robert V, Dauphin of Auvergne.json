@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_11_1",
+  "HeroName": "Robert V, Count of Auvergne and Boulogne",
+  "Description": "Robert V is the Count of Auvergne and Count of Boulogne, ruling from the rugged basalt plateaus of the Massif Central while holding critical maritime ports along the English Channel. At forty-eight, he commands both hardened highland cavalry and prosperous cross-channel merchant tolls, giving him exceptional strategic weight in the royal councils of France. A lifelong loyalist of King Louis IX, Robert campaigned alongside the monarch at Taillebourg and during the Seventh Crusade in Egypt, repeatedly displaying tactical firmness against rebel marcher lords. Perched atop the formidable volcanic crags of Montferrand, he modernized stone curtain walls and codified regional assizes to eliminate banditry across mountain passes. Stern, seasoned, and deeply honorable, Robert commands total obedience from his vassals as an unyielding sentinel guarding the central highlands of the realm. Commanding the rugged volcanic highlands of Auvergne and the maritime revenues of Boulogne, he held a pivotal strategic bridge in central France. He remained steadfastly devoted to Saint Louis, enforcing royal ordinances with scrupulous justice while zealously preserving his ancestral forest rights and mountain strongholds. His balanced counsel was regularly sought by both regional prelates and royal seneschals across the central valleys.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify the basalt passes of Auvergne to prevent incursions from English Aquitaine.",
+    "Manage maritime revenues from Boulogne to ensure the military solvency of his keeps."
+  ],
+  "Values": [
+    "Unshakeable fealty to the French Crown and the sacred honor of a crusader peer.",
+    "Impartial justice for his subjects combined with courageous leadership in battle."
+  ],
+  "Fears": [
+    "Anglo-Gascon armies scaling the volcanic passes to ravage the lands of Auvergne.",
+    "English naval blockades closing the port of Boulogne and severing vital revenues."
+  ],
+  "SpeechStyle": "Speaks with gravelly highland authority, his northern and southern French diction measured, blunt, and imbued with the seasoned confidence of a lifelong crusader captain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

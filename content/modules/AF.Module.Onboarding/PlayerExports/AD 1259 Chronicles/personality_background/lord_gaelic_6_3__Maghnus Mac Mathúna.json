@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_6_3",
+  "HeroName": "Maghnus Mac Mathúna",
+  "Description": "Maghnus Mac Mathúna is the veteran commander of Clan MacMahon and paramount warlord of the barony of Farney. Thirty-eight years of age, he is a massive, battle-hardened veteran who has survived over two decades of brutal border conflicts against the encroaching colonial power. Maghnus specializes in deploying disciplined spear walls and lethal pit-traps across narrow bog causeways, repeatedly shattering English raiding columns attempting to penetrate Monaghan. An unyielding disciplinarian, he strictly forbids looting during engagement, forging volatile clan levies into an unshakeable, cohesive shock formation. At tribal gatherings, Maghnus serves as the seasoned anchor between impetuous youths and cautious elders, fiercely warning against deceptive Anglo-Norman truces that seek to divide Gaelic unity. Universally trusted by his kinsmen, he stands as the iron bulwark of southern Ulster. Deploying disciplined schiltrons of ash-spears along narrow bogland causeways during the Farney campaigns, Maghnus turned back Anglo-Norman heavy cavalry columns with devastating casualties; his unshakeable tactical composure and iron formation discipline have turned the frontiers of Monaghan into an impassable graveyard for invading chivalry. He is universally revered across the northern drumlins as an invincible warlord, standing forever as the iron cornerstone of Celtic defiance against Plantagenet military ambitions.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify the border passes of Farney to destroy every invading column.",
+    "Instill iron discipline into young clan fighters to overcome feudal heavy chivalry."
+  ],
+  "Values": [
+    "Absolute battlefield obedience, formation integrity, and unyielding stoicism.",
+    "Seasoned strategic foresight and incorruptible fidelity to ancestral lands."
+  ],
+  "Fears": [
+    "Impetuous warriors breaking formation and causing panic in the ranks.",
+    "Foreign gold corrupting local chieftains to fracture tribal solidarity."
+  ],
+  "SpeechStyle": "Speaks with deep, thunderous military authority, stern, concise, and uncompromising, brooking no dissent when delivering tactical instructions.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

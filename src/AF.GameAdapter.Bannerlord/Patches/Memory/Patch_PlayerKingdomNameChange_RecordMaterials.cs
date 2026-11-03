@@ -224,7 +224,7 @@ internal static class Patch_PlayerKingdomNameChange_RecordMaterials
 
 			string text = CampaignTime.Now.ToString();
 
-			return string.IsNullOrWhiteSpace(text) ? (PromptComposerTexts.Raw("runtime_f495347d6acf") + GetCurrentGameDayIndexSafe() + PromptComposerTexts.Raw("runtime_ee6aacc31078")) : text.Trim();
+			return string.IsNullOrWhiteSpace(text) ? AdapterPromptCaptureTexts.PcapFormat("memory_capture_spaced_day", "Day {DAY}", ("DAY", GetCurrentGameDayIndexSafe())) : text.Trim();
 
 		}
 
@@ -232,7 +232,7 @@ internal static class Patch_PlayerKingdomNameChange_RecordMaterials
 
 		{
 
-			return PromptComposerTexts.Raw("runtime_f495347d6acf") + GetCurrentGameDayIndexSafe() + PromptComposerTexts.Raw("runtime_ee6aacc31078");
+			return AdapterPromptCaptureTexts.PcapFormat("memory_capture_spaced_day", "Day {DAY}", ("DAY", GetCurrentGameDayIndexSafe()));
 
 		}
 

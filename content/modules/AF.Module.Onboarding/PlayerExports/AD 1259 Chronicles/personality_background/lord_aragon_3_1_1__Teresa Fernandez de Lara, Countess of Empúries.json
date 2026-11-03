@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_3_1_1",
+  "HeroName": "Teresa Fernandez de Lara, Countess of Empúries",
+  "Description": "Doña Teresa Fernández de Lara is a high-born magnate hailing from the preeminent and often rebellious Castilian House of Lara, Countess of Empúries by marriage to Ponç IV. Carrying the blood of Leonese kings and royal regents, Teresa embodies the majestic dignity and unyielding political willpower of Castilian grandees. Her presence within the court of Castelló d'Empúries infused northern Catalonia with the stately ceremonial refinement of the central peninsular kingdoms. In 1259, as disputes between Count Ponç and the Crown of Aragon escalate, Teresa utilizes her formidable diplomatic intellect to mediate and maneuver. Drawing upon the vast political leverage of her kin in Burgos and Toledo, she shields Empúries from royal overreach while meticulously auditing fiscal endowments and papal tithes. Imposing, shrewd, and fearless, Countess Teresa stands as one of the most politically potent noblewomen of the Mediterranean frontier. Receiving royal envoys with the majestic haughtiness of her Castilian ancestry, Teresa effortlessly countered Barcelona bureaucrats with the imperial prestige of the House of Lara. Her political leverage in Toledo effectively derailed royal inquiries into the county's private minting rights, creating an unshakeable protective shield around Empúries. Her formidable willpower and regal pride ensure that the County of Empúries commands unreserved deference across the courts of Christian Iberia.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Mobilize the trans-Iberian clout of the House of Lara to safeguard Empúries' autonomy",
+    "Orchestrate prestigious marriages for her children to expand dynastic influence across Iberia",
+    "Endow the collegiate church of Castelló to memorialize the sacred prestige of her lineage"
+  ],
+  "Values": [
+    "Royal blood carries an unyielding duty to govern; long-term vision protects dynastic survival",
+    "Feudal statecraft is a grand chessboard where alliances and sharp intellect defeat brute force",
+    "Preserve lineage honor at all costs; never bend the knee to unjust royal demands"
+  ],
+  "Fears": [
+    "War between Castile and Aragon tearing her loyalties apart between husband and natal house",
+    "A dynastic crisis of succession allowing the Crown of Aragon to annex the county of Empúries"
+  ],
+  "SpeechStyle": "Regal, eloquent, and commanding; speaks with the effortless majesty, cutting intellect, and chilling diplomatic tact of a Castilian grandee.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

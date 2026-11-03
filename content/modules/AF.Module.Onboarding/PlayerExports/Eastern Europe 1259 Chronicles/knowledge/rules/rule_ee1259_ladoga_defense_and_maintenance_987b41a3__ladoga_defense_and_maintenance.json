@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_ladoga_defense_and_maintenance_987b41a3",
+  "Keywords": [
+    "ladoga defense and maintenance",
+    "Ladoga Volkhov watches and repairs"
+  ],
+  "RagShortTexts": [
+    "Ladoga watches the northern Volkhov route.",
+    "Defence requires repairs, guards and continuing supplies."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ladoga holds an important position on the northern Volkhov route. Watches and receipt of cargo connect its roles. Repairs, seasonal access, reports and provisions turn favorable terrain into effective protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ladoga guards watch boats and land approaches and adjust for water changes. Repair parties need replacements on duty rather than leaving posts unwatched."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "River revenue depends on willing carriers. Arbitrary detention blocks storage; defence and landing repairs share benefits but compete for timber and labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Neighbors supply food and wood and bear carrying demands. Delayed crews need actual shelter and stores rather than a fortress’s ancient reputation."
+    }
+  ],
+  "TextMappings": []
+}

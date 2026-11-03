@@ -1,0 +1,59 @@
+{
+  "Id": "be_thervingian_kingdom_legitimacy",
+  "Keywords": [
+    "Thervingians Legitimacy",
+    "Athanaric’s judicial recognition"
+  ],
+  "RagShortTexts": [
+    "Athanaric’s judicial standing requires local recognition.",
+    "Ancestral belief and household safety can require difficult choices."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Judicial standing requires recognition. Ancestral belief and household protection can conflict, and coercion does not remove food and reward disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Athanaric’s judicial standing requires local recognition. Military recognition also rests on rewards and relief; a title needs willing action. Ancestral belief and household safety can require difficult choices."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ancestral belief and household safety can require difficult choices. Nominal rights require local execution, with consent and supply both shaping authority. Athanaric’s judicial standing requires local recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Athanaric’s judicial standing requires local recognition. Households judge rule through protected families, land and responses to appeals. Ancestral belief and household safety can require difficult choices."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ancestral belief and household safety can require difficult choices. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Athanaric’s judicial standing requires local recognition."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

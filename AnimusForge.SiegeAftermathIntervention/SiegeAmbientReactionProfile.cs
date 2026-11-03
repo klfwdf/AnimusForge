@@ -15,10 +15,11 @@ public static class SiegeAmbientReactionProfile
 
     public const float RangeShoutAutoReplySpacingSeconds = 9.0f;
 
-    public const string DefaultSettlementName = "this captured settlement";
+    // Chinese-branch default; the English branch uses DefaultSettlementNameEn. The library table is the Chinese source.
+    public static string DefaultSettlementName => SiegeAftermathCompatibilityTexts.Raw("captured_settlement_fallback");
     public const string DefaultSettlementNameEn = "this captured settlement";
 
-    public const string DefaultFocusName = "nearby person";
+    public static readonly string DefaultFocusName = SiegeAftermathCompatibilityTexts.Raw("ambient_default_focus");
     public const string DefaultFocusNameEn = "nearby person";
 
     

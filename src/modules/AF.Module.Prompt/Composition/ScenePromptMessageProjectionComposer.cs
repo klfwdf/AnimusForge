@@ -198,7 +198,7 @@ internal static string FormatSceneRuleSection(string text)
 		{
 			continue;
 		}
-		bool startsNewBlock = PromptComposerTexts.StartsWith(trimmed, "rule_section_prefix") || string.Equals(trimmed, PromptComposerTexts.Raw("rule_section_note"), StringComparison.Ordinal);
+		bool startsNewBlock = PromptComposerTexts.StartsWith(trimmed, "rule_section_prefix") || PromptComposerTexts.IsRaw(trimmed, "rule_section_note");
 		if (startsNewBlock && current.Length > 0)
 		{
 			blocks.Add(current.ToString().Trim());
@@ -245,7 +245,7 @@ internal static string FormatSceneKnowledgeSection(string text)
 		{
 			continue;
 		}
-		if (string.Equals(trimmed, PromptComposerTexts.Raw("knowledge_section_recall_prefix"), StringComparison.Ordinal))
+		if (PromptComposerTexts.IsRaw(trimmed, "knowledge_section_recall_prefix"))
 		{
 			FlushCurrentBlock();
 			output.Add(trimmed);
@@ -288,12 +288,12 @@ internal static void SplitSceneExtraSections(string text, out string miscSection
 	{
 		string rawLine = lines[i] ?? "";
 		string trimmed = rawLine.Trim();
-		if (!inKnowledgeSection && (string.Equals(trimmed, PromptComposerTexts.Raw("knowledge_section_recall_prefix"), StringComparison.Ordinal) || PromptComposerTexts.StartsWith(trimmed, "knowledge_section_about_prefix") || PromptComposerTexts.StartsWith(trimmed, "knowledge_section_player_appearance")))
+		if (!inKnowledgeSection && (PromptComposerTexts.IsRaw(trimmed, "knowledge_section_recall_prefix") || PromptComposerTexts.StartsWith(trimmed, "knowledge_section_about_prefix") || PromptComposerTexts.StartsWith(trimmed, "knowledge_section_player_appearance")))
 		{
 			inRuleSection = false;
 			inKnowledgeSection = true;
 		}
-		else if (!inKnowledgeSection && (PromptComposerTexts.StartsWith(trimmed, "rule_section_prefix") || string.Equals(trimmed, PromptComposerTexts.Raw("rule_section_note"), StringComparison.Ordinal)))
+		else if (!inKnowledgeSection && (PromptComposerTexts.StartsWith(trimmed, "rule_section_prefix") || PromptComposerTexts.IsRaw(trimmed, "rule_section_note")))
 		{
 			inRuleSection = true;
 		}
@@ -573,7 +573,21 @@ internal static bool TryExtractReplyFormatInstruction(ref string prompt, out str
 		}
 		int num = text.IndexOfAny(new char[2] { ':', '：' });
 		string text2 = (num >= 0) ? text.Substring(0, num).Trim() : text;
-		return text2.Equals(PromptComposerTexts.Raw("postprocess_player_name_placeholder"), StringComparison.OrdinalIgnoreCase) || text2.Equals(PromptComposerTexts.Raw("retrieval_remainder_you"), StringComparison.OrdinalIgnoreCase) || text2.EndsWith(PromptComposerTexts.Raw("player_says_generic"), StringComparison.Ordinal) || text2.EndsWith(PromptComposerTexts.Raw("player_says_to_npc"), StringComparison.Ordinal);
+		return EqualsAnyRaw(text2, "postprocess_player_name_placeholder") || EqualsAnyRaw(text2, "retrieval_remainder_you") || EndsWithAnyRaw(text2, "player_says_generic") || EndsWithAnyRaw(text2, "player_says_to_npc");
+	}
+
+	private static bool EqualsAnyRaw(string value, string key)
+	{
+		foreach (string raw in PromptComposerTexts.RawVariants(key))
+			if (value.Equals(raw, StringComparison.OrdinalIgnoreCase)) return true;
+		return false;
+	}
+
+	private static bool EndsWithAnyRaw(string value, string key)
+	{
+		foreach (string raw in PromptComposerTexts.RawVariants(key))
+			if (value.EndsWith(raw, StringComparison.OrdinalIgnoreCase)) return true;
+		return false;
 	}
 
 	internal static string BuildSingleNpcSceneReplyInstruction(string npcName, bool hasMultiplePresentNpcs, string capturedPlayerName)
@@ -627,17 +641,18 @@ internal static string BuildSceneSingleNpcTaskSystemBlock(string npcName, bool h
 
 	internal static bool ContainsPlayerCraftedAfefInspectionSuffix(string extraFact)
 	{
-		return !string.IsNullOrWhiteSpace(extraFact)
-			&& extraFact.IndexOf(
-				PlayerCraftedAfefInspectionSuffix,
-				StringComparison.Ordinal) >= 0;
+		if (string.IsNullOrWhiteSpace(extraFact)) return false;
+		foreach (string suffix in PromptComposerTexts.RawVariants("history_afef_inspection_suffix"))
+			if (extraFact.IndexOf(suffix, StringComparison.Ordinal) >= 0) return true;
+		return false;
 	}
 
 	internal static string StripPlayerCraftedAfefInspectionSuffix(string extraFact)
 	{
-		return (extraFact ?? "").Replace(
-			PlayerCraftedAfefInspectionSuffix,
-			"");
+		string text = extraFact ?? "";
+		foreach (string suffix in PromptComposerTexts.RawVariants("history_afef_inspection_suffix"))
+			text = text.Replace(suffix, "");
+		return text;
 	}
 
 	internal static string NormalizeSceneExtraFactForHistory(string extraFact)
@@ -850,7 +865,8 @@ internal static string NormalizeSceneHistoryLineForLoreQuery(string line)
 		}
 		if (PromptComposerTexts.StartsWith(text, "scene_compat_079"))
 		{
-			text = text.Substring(PromptComposerTexts.Raw("scene_compat_079").Length).Trim();
+			foreach (string label in PromptComposerTexts.RawVariants("scene_compat_079"))
+				if (text.StartsWith(label, StringComparison.Ordinal)) { text = text.Substring(label.Length).Trim(); break; }
 		}
 		return text;
 	}

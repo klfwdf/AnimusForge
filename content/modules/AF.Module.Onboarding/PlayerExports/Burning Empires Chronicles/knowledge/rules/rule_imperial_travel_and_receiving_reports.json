@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v8",
+  "Keywords": [
+    "Imperial travel and receiving reports"
+  ],
+  "RagShortTexts": [
+    "Valentinian received British warnings while traveling, and envoys found Constantius at Caesarea."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valentinian received British warnings while traveling, and envoys found Constantius at Caesarea. Imperial business moved with the ruler; a capital was not necessarily the place of reception. An embassy had to reach the actual court."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

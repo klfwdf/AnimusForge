@@ -1,0 +1,53 @@
+{
+  "Id": "rule_fascines_sandbag_trench_filling",
+  "Keywords": [
+    "Fascines and siege labor",
+    "Transporting siege brushwood",
+    "Load bearing ditch crossings"
+  ],
+  "RagShortTexts": [
+    "Brushwood and timber aid ditch passage, limited by mud, load and defensive fire.",
+    "Ditch work consumes carriers, rope and animals, and completed passages still need repair."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ditches before Rus towns or Order castles obstruct rams, vehicles and attackers. Brushwood, branches and earth can improve a passage but may sink, disperse or shift in water. A route carrying men may not carry a heavy cart. Workers face missiles, making cover, relief and maintenance part of the task."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ditch workers carry loads into view of the walls and cannot easily dodge. Bundles shift while carts and animals need passage behind. Withdrawal and relief orders matter. The completed route needs observation for sinking and enough room to prevent supplies and engines blocking one another."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander compares filling, bridging and a different approach in materials and time. Cutting, binding, transport, cover and animals all consume resources. Haste may produce a passage unable to carry its load. Intended use and maintenance responsibility must be clear for sustained movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households supplying brushwood, timber, rope and transport lose fuel and cultivation resources. Laborers may remain in exposed ground after delivery. A prolonged siege combines food shortage, lost animals and missed fieldwork for those serving, making payment and a defined return important."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

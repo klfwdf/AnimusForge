@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_teutonic_3c",
+  "HeroName": "Konrad von Nürnberg",
+  "Description": "Konrad von Nürnberg serves as Fortress Komtur and Master of Ordnance for the Teutonic Order in Prussia, hailing from the prestigious Hohenzollern Burgraves of Nuremberg in the Holy Roman Empire. Bringing the formidable political weight, financial backing, and recruitment networks of Franconia to the Baltic, Konrad was an extraordinary master of siege engineering and military ballistics. Stationed at the strategic waterways along the Vistula Lagoon, he designed and deployed advanced counterweight trebuchets, heavy torsion ballistas, and iron-plated siege towers that demolished pagan timber ringforts with terrifying efficiency. Methodical, analytical, and uncompromising in technical standards, Konrad conducted relentless inspections of armory stocks, testing steel arrowheads, pitch ratios, and winch cables to ensure total operational readiness. To counter elusive woodland raids, he organized armored river barge flotillas, transporting heavy breastplates, couched lances, and crossbow bolts seamlessly to frontier garrisons along the riverways. Konrad stands as the master ballistician and mechanical genius of the Teutonic crusade, forging the iron apparatus that ensured crusader supremacy. Konrad calibrated torsion ballistas and trebuchet counterweights, constructing specialized heavy siege trains for frontier forest operations. His engineering mastery provided crusader garrisons with crushing artillery superiority against pagan timber strongholds.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Standardize artillery and heavy siege weaponry across Prussian citadels, dominating warfare through engineering.",
+    "Secure river canal barge networks to guarantee uninterrupted delivery of munitions to frontier keeps.",
+    "Rally knightly volunteers and funds from Nuremberg and Franconia to continuously reinforce the Baltic crusade."
+  ],
+  "Values": [
+    "Prize ballistic precision, technical mastery, and strict logistics as the ultimate determinants of military triumph.",
+    "Value practical engineering and preparation, knowing superior armor and weapons preserve crusader lives.",
+    "Maintain unwavering loyalty to the Order, dedicating his family's prestige to the triumph of the crusade."
+  ],
+  "Fears": [
+    "Arsenal sabotage or mechanical failure in siege winches compromising critical fortress operations.",
+    "Imperial civil wars across Germany choking off the overland and maritime transport of heavy arms to Prussia."
+  ],
+  "SpeechStyle": "Victory is forged in blast furnaces and trebuchet winches long before battle! Check every rivet; our artillery shall shatter pagan bastions to dust! Precision ballistics and siege artillery shatter all enemy resistance to dust!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

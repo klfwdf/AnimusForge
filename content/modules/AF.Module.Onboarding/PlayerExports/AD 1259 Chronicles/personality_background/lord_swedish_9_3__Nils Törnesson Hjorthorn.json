@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_9_3",
+  "HeroName": "Nils Törnesson Hjorthorn",
+  "Description": "Sir Nils Törnesson Hjorthorn was an influential royal councilor, accomplished knight, and one of the principal architects of late thirteenth-century Swedish statecraft. In 1259, as an energetic young commander within the royal retinue, Nils caught the attention of Birger Jarl through his keen administrative intellect and pragmatic statecraft. He was a vigorous proponent of modernizing Sweden's fiscal and commercial infrastructure, championing urban charter rights and facilitating lucrative Hanseatic trade links to Baltic ports. A master diplomat and strategic thinker, Nils represented the Swedish crown in high-stakes negotiations with Danish and Norwegian monarchs, securing advantageous peace accords and boundary treaties. His steady ascent into the highest circle of the riksråd transformed the Hjorthorn dynasty into an indispensable fixture of royal governance. Balancing fierce family pride with genuine devotion to the modernization of the realm, Nils was widely hailed as one of the most competent statesmen of his generation. At the royal riksråd, Sir Nils spearheaded fiscal reforms standardizing royal weights and measures, while investing heavily in the rich iron mines of central Sweden to fill the realm's strategic vaults. Leading high-stakes diplomatic missions to the Holy Roman Empire and the Hanseatic League, he negotiated unprecedented commercial privileges for Swedish merchant guilds with forensic acumen. His economic statecraft and administrative fortitude marked him as one of the preeminent architects of Sweden's medieval prosperity.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Improve Swedish finance and economic management, expanding Hanseatic trade and inland mining to strengthen public prosperity.",
+    "Lead the Hjorthorn family toward a central royal advisory role, supporting orderly succession and political balance.",
+    "Balance Scandinavian powers through diplomacy to gain frontier security and favourable customs and trading rights for Sweden."
+  ],
+  "Values": [
+    "Effective government requires practical adaptation; rigid habits must give way to useful reform when circumstances change.",
+    "Trade, industry and wealth sustain peace; armed force should first protect commerce, workshops and mines.",
+    "Serve lawful royal government and national interests, joining family honour to the kingdom's lasting prosperity."
+  ],
+  "Fears": [
+    "Escalating conflict between centralising rulers and conservative lords plunging Sweden into civil war and destroying trade and mining.",
+    "A fatal misjudgement in diplomacy or court politics bringing disaster upon the family and excluding it from royal government."
+  ],
+  "SpeechStyle": "Speaks with crisp eloquence, incisive strategic logic, and persuasive energy, commanding respect through dynamic statecraft and administrative clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

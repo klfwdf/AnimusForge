@@ -57,20 +57,20 @@ internal static class CoupOutcomeReport
         string process;
         bool hallReached = session.HallEntered || session.KingSubdued;
         bool gateReached = session.GateBreached || hallReached;
-        if (!session.SceneEntered && !gateReached) process = CoupSourceTexts.Get("ReportNoEntry");
+        if (!session.SceneEntered && !gateReached) process = CoupSourceTexts.Report("ReportNoEntry");
         else
         {
-            var parts = new System.Collections.Generic.List<string> { CoupSourceTexts.Get("ReportStreet") };
-            if (gateReached) parts.Add(CoupSourceTexts.Get("ReportGate"));
-            if (hallReached) parts.Add(CoupSourceTexts.Format("ReportHall", hallAllies));
-            if (session.KingSubdued) parts.Add(CoupSourceTexts.Get("ReportSubdued"));
-            process = string.Join(CoupSourceTexts.Get("ReportListSeparator"), parts) + CoupSourceTexts.Get("ReportSentenceEnd");
+            var parts = new System.Collections.Generic.List<string> { CoupSourceTexts.Report("ReportStreet") };
+            if (gateReached) parts.Add(CoupSourceTexts.Report("ReportGate"));
+            if (hallReached) parts.Add(CoupSourceTexts.ReportFormat("ReportHall", hallAllies));
+            if (session.KingSubdued) parts.Add(CoupSourceTexts.Report("ReportSubdued"));
+            process = string.Join(CoupSourceTexts.Report("ReportListSeparator"), parts) + CoupSourceTexts.Report("ReportSentenceEnd");
         }
-        string result = success ? CoupSourceTexts.Format(captured ? "ReportSuccessCaptured" : "ReportSuccessReleased", player, kingdom, town)
-            : CoupSourceTexts.Get(atWarWithOriginalKingdom ? "ReportFailureWar" : "ReportFailureNoWar");
-        return CoupSourceTexts.Format("ReportIntro", player, kingdom, town, king, allies) + "\n"
-            + CoupSourceTexts.Get("ReportProcessLabel") + process + "\n"
-            + CoupSourceTexts.Get("ReportResultLabel") + result + "\n"
-            + CoupSourceTexts.Format("ReportCasualties", alliedKilled, alliedWounded, defenderKilled, defenderWounded);
+        string result = success ? CoupSourceTexts.ReportFormat(captured ? "ReportSuccessCaptured" : "ReportSuccessReleased", player, kingdom, town)
+            : CoupSourceTexts.Report(atWarWithOriginalKingdom ? "ReportFailureWar" : "ReportFailureNoWar");
+        return CoupSourceTexts.ReportFormat("ReportIntro", player, kingdom, town, king, allies) + "\n"
+            + CoupSourceTexts.Report("ReportProcessLabel") + process + "\n"
+            + CoupSourceTexts.Report("ReportResultLabel") + result + "\n"
+            + CoupSourceTexts.ReportFormat("ReportCasualties", alliedKilled, alliedWounded, defenderKilled, defenderWounded);
     }
 }

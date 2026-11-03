@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_fur_quality_and_variable_bundles_a17f61b7",
+  "Keywords": [
+    "fur quality and variable bundles",
+    "Fur season condition and counting"
+  ],
+  "RagShortTexts": [
+    "Fur trading distinguishes species, season and damage.",
+    "Bundled pelts still require counting and quality inspection."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fur buyers examine coat, condition, season and dry keeping. Bundles ease transport but conceal inferior pelts. Inspection and agreement on payment by skin or bundle reduce mixing, shortages and disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Fur escorts guard against damp and loose bundles. Counting at both warehouse handovers locates losses better than relying on an outer mark."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Buyers and collectors specify acceptable quality. Equal counting of damaged and sound pelts provokes disputes; nominal numbers are not realized value."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Hunters prepare and store pelts before sale. Inspection delays a bargain but avoids chasing compensation after damaged goods have traveled away."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_sarmatian_kingdom_economy",
+  "Keywords": [
+    "Sarmatians Trade",
+    "Gelonus grain herds and metal exchange"
+  ],
+  "RagShortTexts": [
+    "Gelonus food, herds and forest-steppe exchange sustain Sarmatian households.",
+    "Drought and poor harvest weaken people, mounts and fighting power."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gelonus households rely on herds, grain and forest-steppe exchange. Mounts and armour cost resources; drought and poor harvest weaken riders and animals together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gelonus food, herds and forest-steppe exchange sustain Sarmatian households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Drought and poor harvest weaken people, mounts and fighting power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Drought and poor harvest weaken people, mounts and fighting power. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Gelonus food, herds and forest-steppe exchange sustain Sarmatian households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gelonus food, herds and forest-steppe exchange sustain Sarmatian households. Households need meals and the means to keep producing after delivering goods. Drought and poor harvest weaken people, mounts and fighting power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Drought and poor harvest weaken people, mounts and fighting power. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Gelonus food, herds and forest-steppe exchange sustain Sarmatian households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

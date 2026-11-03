@@ -1,0 +1,59 @@
+{
+  "Id": "be_maskut_kingdom_legitimacy",
+  "Keywords": [
+    "马斯库特人法统",
+    "萨纳特鲁克的牧地保护"
+  ],
+  "RagShortTexts": [
+    "牧地保护和兑现回报支持Sanatruk。",
+    "南方名义关系不能替代本地亲族认可。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "首领的承认与保护牧地、兑现回报相连，南方王廷的名义关系不能代替本地亲族的实际支持。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "牧地保护和兑现回报支持Sanatruk。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。南方名义关系不能替代本地亲族认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "南方名义关系不能替代本地亲族认可。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。牧地保护和兑现回报支持Sanatruk。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "牧地保护和兑现回报支持Sanatruk。家户通过家人、土地与求助能否获保护来认识统治。南方名义关系不能替代本地亲族认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "南方名义关系不能替代本地亲族认可。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。牧地保护和兑现回报支持Sanatruk。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

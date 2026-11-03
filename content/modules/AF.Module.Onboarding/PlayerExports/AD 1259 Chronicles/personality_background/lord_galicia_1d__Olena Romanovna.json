@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Olena Romanovna is the accomplished daughter of Roman the Great and sister to King Danylo, Duchess of Kuyavia through her marriage to Duke Casimir I. Her high-profile union represented a masterstroke of mid-thirteenth-century diplomacy, forging an enduring dynastic bridge between the Romanovych house and the Piast dynasty. At her ducal court in Inowrocław, Duchess Olena won widespread acclaim for her intellectual acumen, diplomatic poise, and generous monastic endowments. She expertly managed ducal revenues while maintaining uninterrupted intelligence networks linking Kuyavia and Galicia-Volhynia. Her subtle negotiations frequently aligned Polish and Ruthenian military interests against Teutonic expansionism and steppe incursions. In 1259, as dark rumors herald renewed Mongol devastation across the borderlands, Olena mobilizes diplomatic goodwill to forge mutual defense pacts for both realms. Residing at the Kuyavian court in Poland, Duchess Olena skillfully advanced the dynastic interests of Galicia-Volhynia amidst fractured Piast politics. Her sophisticated diplomatic maneuvers mediated truces among warring Polish dukes and solidified strategic pacts against the encroaching Teutonic Knights. Her influence bridged Latin Catholic Christendom and Orthodox Rus', earning her profound respect throughout Central European courts. She nurtured cultural and economic ties between the Polish dukedoms and Ruthenian principalities, securing lasting peace agreements that bolstered mutual border defenses against relentless raids.",
+  "SpeechStyle": "The waters of the Vistula and Dniester flow united, and the warriors of Poland and Rus' share one destiny! No savage storm shall sever our sacred alliance! Honorable alliances conquer storms where swords fail.",
+  "Motivations": [
+    "Cement the strategic alliance between Kuyavia and Galicia-Volhynia against Teutonic and Mongol aggression.",
+    "Elevate Romanovych royal prestige across Polish courts, securing sovereign domains for her children."
+  ],
+  "Values": [
+    "Prioritize diplomatic integrity, strategic vision, and realistic statecraft above petty feudal feuds.",
+    "Value refined noble composure, convinced prudent alliances achieve security better than rash wars."
+  ],
+  "Fears": [
+    "Fears internecine Polish feuds paralyzing mutual defense pacts and leaving Galicia unsupported.",
+    "Dreads Mongol cavalry sweeps penetrating Kuyavia and putting flourishing towns to the torch."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_galicia_1d",
+  "HeroName": "Olena Romanovna"
+}

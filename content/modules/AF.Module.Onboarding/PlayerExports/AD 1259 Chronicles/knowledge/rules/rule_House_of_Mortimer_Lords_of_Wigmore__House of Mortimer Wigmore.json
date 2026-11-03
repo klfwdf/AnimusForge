@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Mortimer_Lords_of_Wigmore",
+  "Keywords": [
+    "House of Mortimer Wigmore",
+    "Welsh Marcher Mortimers",
+    "Ludlow Wigmore Strongholds",
+    "Mortimer Border Lords"
+  ],
+  "RagShortTexts": [
+    "The Mortimers anchored the Welsh Marches from Wigmore and Ludlow, serving as England's."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Marcher lordships of Wigmore and Ludlow existed to hold a line the English crown could not hold alone. Lords of this march raised their own courts, levied their own dues and kept private garrisons that answered to no sheriff in the shires. Roger Mortimer's household fought a border war of raids and ambushes, where Welsh bands moved through forest and bog, struck, and vanished before a heavy column could form. Against that style the Mortimers built stone towers to shelter crossbowmen, and kept mounted men on the valley floors, where a disciplined charge could still break a loose warband. Mills, fairs and border rents paid for the armour, horses and spearmen that held the March."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Marcher lord read the border as a ledger of debts and oaths. Mortimer sealed letters binding the local barons to his service, and quarrels over castle wardship were settled in his hall rather than at Westminster. Every truce with a Welsh prince was framed to keep the bridges and mills under Mortimer control, since Wigmore and Ludlow drew their rents from the same valleys."
+    }
+  ],
+  "TextMappings": []
+}

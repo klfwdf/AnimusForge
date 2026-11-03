@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_12_1_3",
+  "HeroName": "Robert III de Dampierre, The Lion of Flanders",
+  "Description": "Robert III de Dampierre (known to history as 'The Lion of Flanders' or Robert of Béthune) is the eldest son and heir of Count Guy and Mahaut de Béthune. At ten years old, he already radiates the fierce, untamed martial spirit and physical stamina that would forge his legendary reputation. Reared in the garrisons of Ghent and the fortress of Béthune, young Robert spends his days riding spirited warhorses and mastering sword drills alongside veteran sergeants. Chroniclers celebrate that as count, Robert would campaign on the Eighth Crusade before becoming the heroic symbol of Flemish resistance against King Philip IV of France, leading burgher militias and armored knights into epic clashes for regional freedom. Proud, fearless, and unyielding, Robert embodies the indomitable soul of Flanders. Renowned for his chivalric prowess and unbending resolve, the 'Lion of Flanders' earned the devotion of the common burghers and urban militias. He relentlessly defended Flemish municipal franchises and guild privileges against encroaching Capetian bailiffs, emerging as a legendary champion of Lowland independence. His legendary valor on the battlefield inspired generations of Flemish communal freedom fighters and chivalric chroniclers across Western Europe. His fiery chivalric spirit stood as an unyielding fortress against royal domination.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master heavy lance charges and swordsmanship to become an invincible chivalric hero.",
+    "Defend every foot of Flemish soil and municipal liberty against all outside coercion."
+  ],
+  "Values": [
+    "Unflinching courage in battle and fierce fidelity to brothers-in-arms.",
+    "Uncompromising defense of the comital standard and the ancient freedoms of Flanders."
+  ],
+  "Fears": [
+    "Suffering humiliation in the lists, tarnishing the warrior honor of his line.",
+    "Being kept behind castle walls while enemies threaten his beloved homeland."
+  ],
+  "SpeechStyle": "Speaks with ringing, fearless energy, his youthful voice booming with martial enthusiasm and fierce defiance, already carrying the commanding cadence of a born warrior-prince.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_kreva_later_castle_4752be51",
+  "Keywords": [
+    "Forest roads around Kreva",
+    "Lodging and supply on Kreva forest routes"
+  ],
+  "RagShortTexts": [
+    "Forest routes near Kreva required local knowledge and supplies.",
+    "Visitors needed guides, lodging and fodder; route guards also had to be fed."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Forest roads around Kreva linked households and settlements. Grain transport, herding and messages relied on people who knew the ground. Wetlands, rain and snow slowed carts, while lodging, water and grazing shaped the routes travelers chose."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Forest roads around Kreva linked households and settlements. Grain transport, herding and messages relied on people who knew the ground. Wetlands, rain and snow slowed carts, while lodging, water and grazing shaped the routes travelers chose. Scouts needed places to watch junctions and return with reports. Following tracks spent mounts and stretched columns, often forcing a choice between pursuit and protecting carts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Forest roads around Kreva linked households and settlements. Grain transport, herding and messages relied on people who knew the ground. Wetlands, rain and snow slowed carts, while lodging, water and grazing shaped the routes travelers chose. Forest control needed local information and sustainable supplies. Excessive labor, timber and food demands could lead to concealed stores, flight and detours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Forest roads around Kreva linked households and settlements. Grain transport, herding and messages relied on people who knew the ground. Wetlands, rain and snow slowed carts, while lodging, water and grazing shaped the routes travelers chose. Woodland households used paths for fuel, pasture and markets. Closures and requisitioned carts affected cooking and sowing as well as distant travel."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v10",
+  "Keywords": [
+    "Northern brochs and Roman goods"
+  ],
+  "RagShortTexts": [
+    "Objects from settlements such as Midhowe show contact with the Roman world."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Objects from settlements such as Midhowe show contact with the Roman world. Imported pottery could pass through several hands before reaching a household, without a Roman official delivering it. Exchange did not itself establish imperial taxation or Roman civic administration in the settlement."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

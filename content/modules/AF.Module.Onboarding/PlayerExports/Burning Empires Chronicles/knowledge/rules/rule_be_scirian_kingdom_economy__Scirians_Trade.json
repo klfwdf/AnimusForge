@@ -1,0 +1,59 @@
+{
+  "Id": "be_scirian_kingdom_economy",
+  "Keywords": [
+    "Scirians Trade",
+    "Carsidava valley grain and herds"
+  ],
+  "RagShortTexts": [
+    "Carsidava lives from valley food, herds and neighboring exchange.",
+    "Supporting many followers for long weakens settlement reserves."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Carsidava households depend on valley fields, animals and neighboring exchange. Grain cushions sudden conflict, but prolonged support for many followers weakens settlements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Carsidava lives from valley food, herds and neighboring exchange. Traveling followers need real food from this production; valuables still require a buyer and exchange. Supporting many followers for long weakens settlement reserves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Supporting many followers for long weakens settlement reserves. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Carsidava lives from valley food, herds and neighboring exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Carsidava lives from valley food, herds and neighboring exchange. Households need meals and the means to keep producing after delivering goods. Supporting many followers for long weakens settlement reserves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Supporting many followers for long weakens settlement reserves. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Carsidava lives from valley food, herds and neighboring exchange."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

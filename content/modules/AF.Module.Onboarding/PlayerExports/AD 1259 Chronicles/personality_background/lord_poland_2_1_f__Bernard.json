@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_2_1_f",
+  "HeroName": "Bernard",
+  "Description": "Bernard the Lightsome (Zwinny) rules as Duke of Lwówek, the youthful and spirited third son of Duke Bolesław II Rogatka and Hedwig of Anhalt, renowned across Silesia for his extraordinary agility and knightly dash. Trained from boyhood in the grueling cavalry tilt-yards of Legnica, Bernard developed consummate mastery of light skirmishing, mounted archery, and rapid flanking maneuvers, possessing a natural tactical brilliance for mobility. While his elder brothers Henry V and Bolko focused on heavy castle ramparts and iron retinues, Bernard commanded swift reconnaissance squadrons of native and German outriders across the Jizera Mountains and the Bóbr river basin. His mobile detachments specialized in intercepting enemy supply wagons and ambushing trespassing raiding columns in forested defiles before they could strike urban settlements. Affable, charismatic, and generous to a fault, Bernard shuns stifling chancellery protocols, winning fierce devotion from young squires and common men-at-arms who gladly follow his daring lead. Like a swift mountain wind sweeping through Silesia, Bernard brings vibrant martial energy to the defense of his ancestral lands. Bernard trained a rapid cavalry scout squadron at Lwówek, mastering forest ambushes, reconnaissance patrols, and lightning night raids against hostile outposts. Generous, daring, and charismatic, he swore to rid the Silesian woodlands of predatory brigands and trespassers.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Establish total patrol dominance across the Jizera highlands, eliminating foreign scouts and mountain brigands.",
+    "Deploy lightning cavalry ambushes to relieve his elder brothers' fortresses and turn the tide of provincial campaigns.",
+    "Win championship honors in prestigious chivalric tourneys across Germany, carrying the fame of Lwówek far and wide."
+  ],
+  "Values": [
+    "Prize swift mobility, opportunistic timing, and fluid tactical adaptation over rigid defensive static lines.",
+    "Treasure open-hearted camaraderie in arms, distributing campaign spoils generously among his men.",
+    "Maintain fierce, warmhearted devotion to his brothers, standing by them through every dynastic storm."
+  ],
+  "Fears": [
+    "Being trapped in a catastrophic mountain defile ambush that wipes out his devoted squadron of young squires.",
+    "Being permanently chained to tedious chancellery accountancy, robbed of the open saddle and wild campaign life."
+  ],
+  "SpeechStyle": "Opportunity flies on eagle's wings! Heavy plate may stop a blow, but it cannot outrun the wind; follow my lance and strike before the foe can turn! Ride like the whirlwind! Follow my banner and strike before they turn!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

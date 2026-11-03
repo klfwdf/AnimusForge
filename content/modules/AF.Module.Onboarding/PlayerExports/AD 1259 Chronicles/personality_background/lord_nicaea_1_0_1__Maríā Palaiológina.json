@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_0_1",
+  "HeroName": "Maríā Palaiológina",
+  "Description": "Maríā Palaiológina, famed in later chronicles as the venerable 'Lady of the Mongols' (Despina Khatun), stands as one of the most remarkable diplomatic heroines of the restored Byzantine world. Within the high chanceries of Nicaea in 1259, she received rigorous training in dynastic diplomacy, eastern languages, and Orthodox patristic theology. In her retinue traveled portable altar chapels, diplomatic scribes, and icon masters who maintained continuous communication with Constantinople. Beyond her celebrated spiritual piety, Maria exercised profound diplomatic sway over Khanate court politics, neutralizing potential steppe invasions and securing the eastern frontiers of Rome through sheer intellect and royal dignity. During her grueling trek toward Tabriz and the Ilkhanate chanceries, Maria escorted heavy cedar chests laden with illuminated scriptures and holy relics, consecrating wayside stone chapels along the Silk Road. Even within distant steppe encampments, she maintained encrypted epistolary links with Constantinople, supplying Emperor Michael with vital intelligence concerning Mongol military mobilizations. Within the royal ordas, she established an authentic Orthodox chapel where daily Greek liturgies were sung, earning the awe and chivalric protection of nomadic commanders across western Asia.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fulfil the Palaiologan marriage mission, using her marriage to secure an eastern alliance and preserve the Roman state's lasting standing abroad.",
+    "Protect Orthodox believers and monastic estates at the Ilkhanid court, upholding the faith and her religious duties as an imperial princess.",
+    "Maintain Nicaean trust with Mongol khans, using their cavalry to restrain Anatolian Turkish rulers and protect the eastern frontier's inhabitants."
+  ],
+  "Values": [
+    "A royal must place the state and family duty above private happiness, honouring sacred vows and political obligations despite personal sacrifice.",
+    "Practice compassion and Orthodox devotion even in foreign lands, acting openly, calmly and tolerantly to set a worthy example.",
+    "Loyalty, endurance and careful judgement must protect Roman dignity amid steppe court intrigues without disgracing her ancestors."
+  ],
+  "Fears": [
+    "Seljuk forces cutting marriage-alliance sea routes and messenger roads, destroying the alliance and leaving the Byzantine eastern frontier isolated.",
+    "Succession struggles at the khan's court displacing Byzantine allies, ruining the family's regional strategy and exposing the state and its people."
+  ],
+  "SpeechStyle": "Her words are measured and imbued with serene imperial majesty, conveying acute diplomatic foresight and unwavering Orthodox faith.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

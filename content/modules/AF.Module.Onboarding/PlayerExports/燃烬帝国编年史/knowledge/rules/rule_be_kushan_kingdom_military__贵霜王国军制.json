@@ -1,0 +1,59 @@
+{
+  "Id": "be_kushan_kingdom_military",
+  "Keywords": [
+    "贵霜王国军制",
+    "贵霜双线护路"
+  ],
+  "RagShortTexts": [
+    "贵霜山谷骑兵、护送队与聚落守卫需不同供给。",
+    "波斯与Kidara两线战争分散可用兵力。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "山谷骑兵、护送队与聚落守卫需要不同粮运，贵霜同时面对波斯和Kidara时，无法在每条道路都留下同等兵力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "贵霜山谷骑兵、护送队与聚落守卫需不同供给。这些力量在路上仍受饮食、休息和负重限制，先锋速度不能代表全队。波斯与Kidara两线战争分散可用兵力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "波斯与Kidara两线战争分散可用兵力。可用兵力要连同供给、留守和撤离能力计算，集中一侧会减少另一侧预备。贵霜山谷骑兵、护送队与聚落守卫需不同供给。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "贵霜山谷骑兵、护送队与聚落守卫需不同供给。出战者来自家户，长期失去劳力或牲畜会减少下一次供役能力。波斯与Kidara两线战争分散可用兵力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "波斯与Kidara两线战争分散可用兵力。修器具、搬运和照护也消耗人手，军队经过后仍要维持日常供应。贵霜山谷骑兵、护送队与聚落守卫需不同供给。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

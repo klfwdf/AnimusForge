@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v10",
+  "Keywords": [
+    "阿里亚尼报酬与泄密"
+  ],
+  "RagShortTexts": [
+    "阿里亚尼因收取许诺和报酬、泄露罗马情况而被撤换。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿里亚尼因收取许诺和报酬、泄露罗马情况而被撤换。问题是信息渠道受利益影响，而非某一族群天生失信。换人之后仍须取得可信报告，处罚本身不能替代边情。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

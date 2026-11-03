@@ -1,0 +1,59 @@
+{
+  "Id": "be_greuthungian_kingdom_legitimacy",
+  "Keywords": [
+    "Greuthungians Legitimacy",
+    "Ermanaric’s deterrence and protection"
+  ],
+  "RagShortTexts": [
+    "Success, tribute and protection sustain Ermanaric’s standing.",
+    "Punishment without protection encourages alternative partners."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Experience, tribute and deterrence create royal standing. Without protection, punishment encourages alternative partners; delivered aid weighs more than nominal submission."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Success, tribute and protection sustain Ermanaric’s standing. Military recognition also rests on rewards and relief; a title needs willing action. Punishment without protection encourages alternative partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Punishment without protection encourages alternative partners. Nominal rights require local execution, with consent and supply both shaping authority. Success, tribute and protection sustain Ermanaric’s standing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Success, tribute and protection sustain Ermanaric’s standing. Households judge rule through protected families, land and responses to appeals. Punishment without protection encourages alternative partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Punishment without protection encourages alternative partners. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Success, tribute and protection sustain Ermanaric’s standing."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

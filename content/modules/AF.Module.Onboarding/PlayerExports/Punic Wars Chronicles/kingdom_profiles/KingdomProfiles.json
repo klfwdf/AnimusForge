@@ -293,6 +293,12 @@
       "LongTermStrategy": "Lock the Darial Gorge against nomadic steppe invasions; sustain dynastic alliances with Armenia; protect trans-Caucasian overland trade routes.",
       "Religion": "Cult of Armazi the Moon God & Kartlos Ancestor Rites",
       "Name": "The Kingdom of Kartli (Caucasian Iberia)"
+    },
+    "ingwafraujingaz": {
+      "NationalPersonality": "Hardy, seafaring, deeply superstitious; bound by blood feuds, ascetic in daily life yet fearless when braving oceanic gales and coastal raids.",
+      "LongTermStrategy": "Secure Jutland shipbuilding anchorages; monopolize Baltic amber export routes; repel inland Germanic tribal encroachment from the south.",
+      "Religion": "Njord Sea Cult, Nerthus & Bog Offerings",
+      "Name": "Ingwafraujingaz Confederacy"
     }
   }
 }

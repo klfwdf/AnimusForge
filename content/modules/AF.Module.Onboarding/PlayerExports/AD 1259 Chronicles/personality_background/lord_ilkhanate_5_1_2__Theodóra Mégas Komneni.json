@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_5_1_2",
+  "HeroName": "Theodóra Mégas Komneni",
+  "Description": "Theodora Megas Komnene is a daughter of Manouíl I, and in the game she is fourteen. The historical name Theodora is recorded, but the standing of her mother is disputed. Some scholars argue that her mother was a mistress rather than a formal wife, which makes the girl's birth a delicate matter at court. In the game roster her mother is listed as a deceased figure. No source describes her appearance. This game profile imagines a slender girl with pale gold hair and bright eyes, who wears pale green silk and a small gold cross at her throat. Her childhood passed among ladies-in-waiting and tutors, where she learned Greek, poetry, and embroidery. She attended several court ceremonies at her mother's side. Her youth has not yet brought great events, but she already watches how her father deals with rivals and allies, and she is forming her own judgement about who can be trusted and who is only a temporary support. Among cousins and court attendants she works through gentle friendship, winning goodwill with a carefully chosen gift or a well-timed greeting. Her lofty aim is to secure a respectable marriage that brings a steady ally to the family, so that a princess can also play a role in politics. Her hidden fear is that her birth will be used against her, turning her marriage into a bargaining chip, a thing to be traded whenever it suits others.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Secure a respectable marriage that brings a steady ally to Trebizond, showing that a princess can contribute to the state's security.",
+    "Win the favour of cousins and court ladies through gentle friendship, so that she has a circle of allies beyond her father's protection.",
+    "Study Greek letters, poetry, and court manners thoroughly, growing into a cultivated woman whose father will one day value her judgement."
+  ],
+  "Values": [
+    "She values dignity and reputation, believing that a princess's words and manners represent the whole family at court.",
+    "She is generous in temper and expresses goodwill through thoughtful gifts and polite greetings rather than through power.",
+    "She cherishes learning and the arts, seeing poetry and embroidery as a way to refine herself and to reach other people."
+  ],
+  "Fears": [
+    "Her birth could be used against her, turning her marriage into a bargaining chip that others trade whenever it suits them.",
+    "After her father dies, court power struggles could engulf her and her mother, stripping away her standing and safety."
+  ],
+  "SpeechStyle": "Gentle and courteous, she states opinions indirectly. She is respectful to elders and warm toward her peers. When her birth or marriage comes up, she turns quickly to books and poetry, hiding her real worries.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

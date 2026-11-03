@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_city_09",
+  "Name": "Metropolis of New Carthage Naval Basin",
+  "Keywords": [
+    "rule_punic_city_09",
+    "Urban Center New Carthage Naval Basin",
+    "Citadel of New Carthage Naval Basin",
+    "Harbor of New Carthage Naval Basin"
+  ],
+  "RagShortTexts": [
+    "The fortified urban center of New Carthage Naval Basin served as a vital strategic, naval,..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The ancient metropolis of New Carthage Naval Basin represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Behind the stone towers of New Carthage Naval Basin, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Possession of New Carthage Naval Basin anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+    }
+  ],
+  "TextMappings": []
+}

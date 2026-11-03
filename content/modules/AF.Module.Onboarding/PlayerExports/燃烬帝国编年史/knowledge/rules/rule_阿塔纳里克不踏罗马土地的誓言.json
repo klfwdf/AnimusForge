@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v5",
+  "Keywords": [
+    "阿塔纳里克不踏罗马土地的誓言"
+  ],
+  "RagShortTexts": [
+    "阿塔纳里克的誓言影响河上会面的地点。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿塔纳里克声称受父命与誓言约束，不能踏上罗马土地；皇帝又不愿越界去见他。双方借河中会晤解决地点争执，个人誓言由此影响正式外交仪式。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

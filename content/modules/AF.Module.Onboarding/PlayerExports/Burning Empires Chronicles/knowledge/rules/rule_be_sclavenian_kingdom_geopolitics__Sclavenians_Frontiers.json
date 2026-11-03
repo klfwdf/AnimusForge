@@ -1,0 +1,59 @@
+{
+  "Id": "be_sclavenian_kingdom_geopolitics",
+  "Keywords": [
+    "Sclavenians Frontiers",
+    "Sclavenian wetland crossings"
+  ],
+  "RagShortTexts": [
+    "Sclavenian woods and valleys connect through wetlands and crossings.",
+    "Water levels and local tracks affect passage."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Woodland and valley routes connect settlements, with wetlands and crossings changing access. Travelers depend on water levels and local tracks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sclavenian woods and valleys connect through wetlands and crossings. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Water levels and local tracks affect passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Water levels and local tracks affect passage. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Sclavenian woods and valleys connect through wetlands and crossings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Sclavenian woods and valleys connect through wetlands and crossings. Closed routes may separate families from goods, imposing costs on those remaining at home. Water levels and local tracks affect passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Water levels and local tracks affect passage. Cargo passes different carriers, making distant route changes become local shortages through delay. Sclavenian woods and valleys connect through wetlands and crossings."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

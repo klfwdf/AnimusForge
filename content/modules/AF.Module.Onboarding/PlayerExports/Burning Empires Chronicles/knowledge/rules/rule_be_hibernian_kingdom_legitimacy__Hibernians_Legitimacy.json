@@ -1,0 +1,59 @@
+{
+  "Id": "be_hibernian_kingdom_legitimacy",
+  "Keywords": [
+    "Hibernians Legitimacy",
+    "Niall’s high-kingship recognition"
+  ],
+  "RagShortTexts": [
+    "Niall’s high kingship depends on protection, shares and recognition.",
+    "Hostages and ransom directly affect kin safety."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "High kingship needs protection, distribution and recognition. Hostages and ransom affect family safety; broken promises make households reconsider cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Niall’s high kingship depends on protection, shares and recognition. Military recognition also rests on rewards and relief; a title needs willing action. Hostages and ransom directly affect kin safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Hostages and ransom directly affect kin safety. Nominal rights require local execution, with consent and supply both shaping authority. Niall’s high kingship depends on protection, shares and recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Niall’s high kingship depends on protection, shares and recognition. Households judge rule through protected families, land and responses to appeals. Hostages and ransom directly affect kin safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Hostages and ransom directly affect kin safety. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Niall’s high kingship depends on protection, shares and recognition."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

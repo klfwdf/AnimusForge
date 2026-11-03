@@ -1,0 +1,59 @@
+{
+  "Id": "be_antean_kingdom_geopolitics",
+  "Keywords": [
+    "Anteans Frontiers",
+    "Antean forest-steppe crossings"
+  ],
+  "RagShortTexts": [
+    "Sarum’s forest-steppe routes pass wetlands and crossings.",
+    "Woodland branches preserve settlement escape routes."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rivers and wetlands at the forest-steppe edge concentrate travel at crossings. Open ground admits cavalry while woodland branches retain escape routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sarum’s forest-steppe routes pass wetlands and crossings. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Woodland branches preserve settlement escape routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Woodland branches preserve settlement escape routes. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Sarum’s forest-steppe routes pass wetlands and crossings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Sarum’s forest-steppe routes pass wetlands and crossings. Closed routes may separate families from goods, imposing costs on those remaining at home. Woodland branches preserve settlement escape routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Woodland branches preserve settlement escape routes. Cargo passes different carriers, making distant route changes become local shortages through delay. Sarum’s forest-steppe routes pass wetlands and crossings."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

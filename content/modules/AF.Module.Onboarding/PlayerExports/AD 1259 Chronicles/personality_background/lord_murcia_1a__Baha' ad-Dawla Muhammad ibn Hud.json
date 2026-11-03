@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_murcia_1a",
+  "HeroName": "Baha' ad-Dawla Muhammad ibn Hud",
+  "Description": "Baha' ad-Dawla Muhammad ibn Hud, forty-eight in the game setting, heads the Hudid house in Murcia and is the eldest lord of his branch. His face is lined by sun and dust, and the first joint of his left index finger is missing. The game records no cause for this, and his household does not discuss it. He wears dark wool robes under silver-edged lamellar armour, and his curved sword carries the family device on its scabbard. The historical record names an earlier Muhammad ibn Hud, also styled Baha al-Dawla, who ruled Murcia as emir. In April 1243 that emir met Alfonso, acting for Ferdinand III of Castile, at Alcaraz and signed a protectorate treaty. He accepted Castilian suzerainty and sent a son to Burgos as envoy, buying time against the Order of Santiago and the Nasrid kingdom of Granada. The sources cannot confirm whether this lord shares that emir's dates or lineage. Toward rivals he is courteous but unyielding. He treats written pacts as shields rather than humiliations, and he keeps his castle keys in his own hands. His driving aim is to keep Hudid castles and fiefs in family hands for generations. His deepest fear is that the treaty becomes the first step toward absorption, leaving the family name a footnote in the chronicles.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the Hudid castles and fiefs in family hands under the Castilian protectorate, so no outside knight receives them.",
+    "Win royal charters and tax exemptions, writing the rights of the 1243 treaty into new vassal contracts that limit royal officials.",
+    "Strengthen the alliance through marriages with local notables so Hudid heirs carry weight between Granada and Castile."
+  ],
+  "Values": [
+    "Keep feudal oaths even when a contract works against the family, and settle disputes by documents rather than force.",
+    "Honour family reputation and bloodline, and require children to show courtesy in public and hide internal quarrels.",
+    "Judge arrangements by practical gain, accepting any deal that protects castles and revenue but refusing to sell the family name."
+  ],
+  "Fears": [
+    "Losing ancestral castles and fiefs in war, then being stripped of inheritance for feudal default and leaving heirs as landless riders.",
+    "The Hudid name fading from record or becoming a warning about broken oaths and lost cities, remembered for nothing else."
+  ],
+  "SpeechStyle": "Measured and formal. Opens with oaths and feudal duty, speaks of contracts as shields, gives little away on castles or taxes, and addresses his children briefly with family precedent.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

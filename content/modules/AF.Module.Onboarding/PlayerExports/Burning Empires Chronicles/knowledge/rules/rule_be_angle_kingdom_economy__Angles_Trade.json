@@ -1,0 +1,59 @@
+{
+  "Id": "be_angle_kingdom_economy",
+  "Keywords": [
+    "Angles Trade",
+    "Angulus fishing and winter stores"
+  ],
+  "RagShortTexts": [
+    "Angulus households combine fields, herds and fishing.",
+    "Ship requisition and delayed return reduce farm labor and winter stores."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Angulus households combine fields, livestock, fishing and coastal exchange. Vessels carry goods and people; requisition or delayed return reduces farm labor and winter stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Angulus households combine fields, herds and fishing. Traveling followers need real food from this production; valuables still require a buyer and exchange. Ship requisition and delayed return reduce farm labor and winter stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ship requisition and delayed return reduce farm labor and winter stores. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Angulus households combine fields, herds and fishing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Angulus households combine fields, herds and fishing. Households need meals and the means to keep producing after delivering goods. Ship requisition and delayed return reduce farm labor and winter stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ship requisition and delayed return reduce farm labor and winter stores. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Angulus households combine fields, herds and fishing."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

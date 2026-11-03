@@ -1,0 +1,52 @@
+{
+  "Id": "rule_beech_charcoal_kiln_carpathians",
+  "Keywords": [
+    "wood charcoal in mountain forests",
+    "tending a charcoal clamp"
+  ],
+  "RagShortTexts": [
+    "Charcoal making needs controlled air; excess fire gives ash and incomplete burning leaves wood.",
+    "Burners, carriers and smiths depend on woodland, dry storage and passable routes."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Charcoal burners in the Carpathian woods arrange suitable timber in a pile, covering it with earth and turf and regulating air through openings. Too much fire turns valuable wood to ash; wet timber or inadequate air leaves uncharred pieces. A clamp needs watching for wind changes, smoke and collapse, rather than simply being lit and abandoned.\n\nBeech and other available trees support this trade, subject to woodland rights, hauling distances and furnace demand. Charcoal is lighter than timber but brittle under pressure, and must be protected from residual fire and rain. A smith buys usable, dry pieces with few impurities. Cheap charcoal in the woods can lose its advantage through carrying costs, cartage and breakage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lords need furnace fuel and rents but also timber for buildings and firewood. Cutting permissions and responsibility for roads affect whether charcoal reaches smithies in time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Campaign smiths need charcoal for fittings and repairs; wet fuel and dust are poor supplies. Seizing a burner’s cart animals may prevent the next delivery altogether."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Burners need food while tending the fire. Households can share cutting, watching and cartage, but rain or a failed burn may leave a whole pile short of its expected grain value."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

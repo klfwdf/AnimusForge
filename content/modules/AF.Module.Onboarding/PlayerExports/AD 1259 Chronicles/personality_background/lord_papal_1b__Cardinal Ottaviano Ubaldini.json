@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_1b",
+  "HeroName": "Cardinal Ottaviano Ubaldini",
+  "Description": "Cardinal Ottaviano degli Ubaldini stands as one of the most brilliant and enigmatic power-brokers of the Roman Curia. Scion of the formidable Tuscan baronial house of Ubaldini, Ottaviano governed Bologna as papal legate and directed curial diplomacy across Lombardy with immense political cunning. Despite wearing the cardinal's red hat, Ottaviano maintained secret sympathies and financial ties with the imperial Ghibellines—later immortalized in Dante's Inferno for his declared willingness to forfeit his soul for the Ghibelline cause. Wielding supreme legatine authority across Lombardy and Tuscany, Cardinal Ottaviano balanced the rival Guelph and Ghibelline leagues with razor-sharp diplomatic finesse, covertly steering imperial politics with an enigmatic brilliance that astonished all contemporary observers. Beneath his scarlet robes beat the cold heart of a visionary statesman, cutting through ideological hypocrisies to preserve baronial independence and balance the scales of power across the turbulent battlefields of northern Italy. His acute political foresight and celebrated diplomatic mastery make Cardinal Ottaviano Ubaldini an immortal, enigmatic legend celebrated across chronicles, literature, and the histories of Italy. His subtle calculations and masterly statecraft ensure that the House of Ubaldini retains its formidable baronial autonomy across Tuscany. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain an equilibrium between the papacy and the Staufen Empire to preserve baronial autonomy.",
+    "Leverage legatine powers to expand Ubaldini territorial hegemony across Tuscany and Romagna."
+  ],
+  "Values": [
+    "Uncompromising political realism, statecraft, and calculated pragmatism over dogmatic zeal.",
+    "Dynastic empowerment and diplomatic balance, scorning hypocritical moral posturing."
+  ],
+  "Fears": [
+    "Zealots in the Curia discovering his clandestine Ghibelline ties and orchestrating his deposition.",
+    "Guelph communal mobs overrunning ancestral mountain strongholds in the Mugello."
+  ],
+  "SpeechStyle": "Speaks with velvet diplomatic polish, razor-sharp irony, and the inscrutable reserve of a master political strategist. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_2c",
+  "HeroName": "Benedetto Caetani",
+  "Description": "In 1259, at twenty-nine years of age, Benedetto already dazzles universities in Bologna, Todi, and Paris with his encyclopedic mastery of civil and canon law. Serving as an apostolic notary and diplomat in the Roman Curia, Benedetto burns with unyielding intellectual arrogance and imperial ambition, convinced that papal sovereignty reigns absolute over all earthly kings. Endowed with extraordinary intellectual arrogance and blazing canonical genius, young Benedetto mastered European civil and canon law, dazzling curial tribunals in Rome and Paris with his razor-sharp dialectic and unshakeable conviction in absolute papal theocracy. Viewing earthly kings as mere vassals beneath the apostolic throne, Benedetto prepared his ascent toward the papal tiara. His towering legal acumen and fearless defiance of kings ensure that his legend will endure throughout the centuries of church history. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Master European jurisprudence and ascend the curial hierarchy toward the papal throne.",
+    "Affirm total papal supremacy over all secular kings, emperors, and Roman baronial oligarchs."
+  ],
+  "Values": [
+    "Absolute papal theocracy, unyielding legal sovereignty, and uncompromising intellectual supremacy.",
+    "Scorn for moral weakness and baronial concessions, trusting in iron will and divine destiny."
+  ],
+  "Fears": [
+    "Secular monarchs subjugating the Holy See and reducing the papacy to a powerless pawn.",
+    "Mediocre curial bureaucrats obstructing his destiny and delaying his supreme elevation."
+  ],
+  "SpeechStyle": "Speaks with searing intellectual arrogance, razor-sharp legal precision, and imperious ideological fire. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

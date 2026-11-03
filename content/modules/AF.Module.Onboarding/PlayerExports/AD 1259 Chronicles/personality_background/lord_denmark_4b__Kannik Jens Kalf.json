@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_4b",
+  "HeroName": "Kannik Jens Kalf",
+  "Description": "Canon Jens Kalf of Ribe Cathedral, celebrated ecclesiastical jurist and doctor of canon law, served as the primary intellectual luminary of the Kalf dynasty. Having studied jurisprudence at the universities of Paris and Bologna, Jens mastered the Decretum Gratiani and Roman civil law, commanding profound respect throughout the Scandinavian church. When the apocalyptic quarrel between Archbishop Jakob Erlandsen and the Danish crown plunged the kingdom under papal interdict, Canon Jens navigated the schismatic storm with exceptional skill within the cathedral chapter of Ribe. Drafting diplomatic memorandums that defended ecclesiastical immunities without provoking the total secular closure of diocesan churches, he preserved sacramental ministrations across western Jutland. During bitter jurisdictional quarrels over tithes between the dioceses of Ribe and Schleswig, Canon Jens deployed precise citations of papal decretals before apostolic legates, successfully preserving the revenues of the Danish crown and Ribe Cathedral. An ardent champion of education, he established Latin grammar schools within the cathedral precincts, lecturing on theology and rhetoric to train literate jurists for the realm. Braving battlefield perils, Jens repeatedly rode between warring camps to deliver peace conciliations, his scholarly integrity and apostolic dedication commanding universal reverence across the kingdom.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Reconcile papal interdict mandates with royal realities to maintain worship and protect church lands in Ribe.",
+    "Deploy canonical jurisprudence to defend Kalf family endowments and charters across southwestern Jutland."
+  ],
+  "Values": [
+    "Believes canon law provides the divinely ordained framework to harmonize human discords and preserve spiritual order.",
+    "Upholds academic moderation and deliberate study, scorning destructive fanaticism in ecclesiastical administration."
+  ],
+  "Fears": [
+    "Dreads an irretrievable breakdown between church and state inciting riots that sack Ribe Cathedral archives."
+  ],
+  "SpeechStyle": "Speaks with articulate Latinate grace and scholastic poise, his reasoned arguments carrying quiet scholarly majesty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

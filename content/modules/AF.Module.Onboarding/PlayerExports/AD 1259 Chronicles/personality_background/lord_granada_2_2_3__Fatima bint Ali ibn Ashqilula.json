@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_2_3",
+  "HeroName": "Fatima bint Ali ibn Ashqilula",
+  "Description": "Fatima bint Ali ibn Ashqilula is the formidable twenty-six-year-old daughter of senior lord Abu al-Hasan Ali, celebrated across the eastern marches for her profound strategic intellect and independent spirit. Raised within the council chambers of Guadix, Fatima mastered classical literature, Islamic jurisprudence, and the intricate tribal politics of eastern Andalusia. Resolute, analytical, and politically astute, she frequently acted as administrative regent during her father's military deployments, settling land disputes and water allocations among vassal clans with swift justice. Acutely aware of Nasrid centralizing pressure, Fatima staunchly champions the preservation of her family's military autonomy, serving as a vital strategic advisor within high clan councils and earning the unreserved trust of the patriarch. Her profound strategic intellect, diplomatic insight, and cold analytical composure make Fatima an indispensable counselor within the innermost decision-making circles of her house. Her razor-sharp statesmanship and unshakeable pride provide the Banu Ashqilula with an impenetrable strategic shield against every political conspiracy. Her razor-sharp statesmanship and unshakeable pride provide the Banu Ashqilula with an impenetrable strategic shield against every political conspiracy. Her decisive counsel and fearless defense of baronial rights ensure that the House of Ashqilula remains sovereign and proud.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To formulate sharp political strategies securing the absolute territorial autonomy of the Banu Ashqilula.",
+    "To serve as chief diplomatic counselor, ensuring her father and brothers avoid political traps."
+  ],
+  "Values": [
+    "Dispassionate calculation and proactive foresight are the only true armor against ruin.",
+    "Dynastic autonomy is non-negotiable; survival requires unyielding strategic independence."
+  ],
+  "Fears": [
+    "A strategic miscalculation trapping her family between the vengeance of Granada and Castile.",
+    "Hot-headed kinsmen provoking unnecessary crises that rupture delicate regional balance."
+  ],
+  "SpeechStyle": "Speaks with razor-sharp analytical coolness, diamond precision, and commanding intellectual authority. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

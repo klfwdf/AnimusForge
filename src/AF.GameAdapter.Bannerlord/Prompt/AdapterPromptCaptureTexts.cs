@@ -10,20 +10,16 @@ namespace AnimusForge;
 
 internal static class AdapterPromptCaptureTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly PromptLanguageFile<Dictionary<string, string>> Values = new PromptLanguageFile<Dictionary<string, string>>("AdapterPromptCapture.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("AdapterPromptCapture.json"), Encoding.UTF8)));
-    private static readonly Lazy<Dictionary<string, string>> Compatibility = new Lazy<Dictionary<string, string>>(() =>
-    {
-        using (var stream = typeof(AdapterPromptCaptureTexts).Assembly.GetManifestResourceStream("AnimusForge.AdapterPromptCapture.Compatibility.json"))
-        using (var reader = new StreamReader(stream, Encoding.UTF8))
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-    });
+            path, Encoding.UTF8)));
+    private static readonly BilingualTextTable Compatibility =
+        BilingualTextTable.FromEmbedded(typeof(AdapterPromptCaptureTexts).Assembly, "AnimusForge.AdapterPromptCapture.Compatibility.json");
     private static readonly Regex Placeholder = new Regex(@"\{([A-Z_]+)\}", RegexOptions.Compiled);
     private static readonly Lazy<Dictionary<string, string>> ProjectionKeys = new Lazy<Dictionary<string, string>>(() =>
     {
         var result = new Dictionary<string, string>(StringComparer.Ordinal);
-        foreach (var entry in Compatibility.Value)
+        foreach (var entry in Compatibility.ChineseEntries)
             if (entry.Key.StartsWith("Project_", StringComparison.Ordinal)) result[entry.Value] = entry.Key;
             else if (entry.Key.StartsWith("Alias_Project_", StringComparison.Ordinal)) result[entry.Value] = entry.Key.Substring("Alias_".Length);
         return result;
@@ -32,7 +28,11 @@ internal static class AdapterPromptCaptureTexts
     internal static string PcapText(string key) => Values.Value[key];
     internal static string PcapText(string key, string englishFallback)
         => Values.Value.TryGetValue(key, out string text) ? text : englishFallback;
-    internal static string PcapCompat(string key) => Compatibility.Value[key];
+    internal static string PcapCompat(string key) => Compatibility.Get(key);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string PcapCompatSource(string key) => Compatibility.Chinese(key);
+    internal static string[] PcapCompatVariants(string key) => Compatibility.Variants(key);
+    internal static bool IsPcapCompat(string value, string key) => Compatibility.Is(value, key);
     internal static string PcapProjectKnown(string value)
         => value != null && ProjectionKeys.Value.TryGetValue(value, out string key) ? Values.Value[key] : value;
     internal static string PcapFormat(string key, string englishFallback, params (string Name, object Value)[] variables)

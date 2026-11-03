@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_1_7",
+  "HeroName": "Ingrid Elofsdotter",
+  "Description": "Lady Ingrid Elofsdotter of Ving, third daughter of Lord Elof Ingridsson, was named in honor of her celebrated ancestress, Ingrid Ylva. Spirited, incisive, and pragmatic, Ingrid displayed an exceptional aptitude for equestrian management, overseeing horse studs and cattle breeding ledgers across the pastures of Ving. Accessible and direct, she frequently arbitrated disputes among rural tenant farmers, ensuring equitable grain rations and earning profound affection throughout the estates. Recognizing the unpredictable perils of the era, Ingrid established concealed granaries in forest redoubts to safeguard food supplies during potential sieges, acclaimed as an energetic and capable leader of the younger generation. Ingrid combined extraordinary equestrian talents with formidable marksmanship, frequently leading mounted manor patrols along forest tracks to ambush marauding brigands and recover stolen cattle. Open-hearted and fearless, she treated rural tenant families with familial warmth, earning passionate loyalty from the common folk of Ving. During acute security crises, her swift logistical decisions ensured rapid mobilization of remounts and armed retainers, infusing her ancient lineage with vibrant martial tenacity and unyielding spirit. Her resolute defense of rural freeholders and proactive leadership in times of military emergency cemented her reputation as an indomitable guardian of her ancestral soil.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Supervise equestrian stud farms to ensure a reliable supply of warhorses for her family's armored retinues.",
+    "Construct hidden grain caches and forest shelters to guarantee emergency survival during sudden raids."
+  ],
+  "Values": [
+    "Believes practical competence, unvarnished honesty, and boundless energy are far superior to empty courtly flatteries.",
+    "Champions proactive leadership and the defense of the vulnerable, dedicating her efforts to logistical resilience."
+  ],
+  "Fears": [
+    "Dreads hostile cavalry raids plundering the equestrian stud farms and destroying their bloodlines."
+  ],
+  "SpeechStyle": "Speaks with lively, brisk clarity and straightforward warmth, her practical candor enlivening every council.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

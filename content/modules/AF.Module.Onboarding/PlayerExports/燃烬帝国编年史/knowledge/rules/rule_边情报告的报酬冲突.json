@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v10",
+  "Keywords": [
+    "边情报告的报酬冲突"
+  ],
+  "RagShortTexts": [
+    "阿里亚尼因报酬诱惑而泄露罗马军情。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿里亚尼受派远行报告邻近动向，却因接受对方礼物而泄露罗马信息。能穿行边界的人既是消息渠道，也可能受到两方利益拉扯。报告的职位名称不能代替对其接触、报酬和所见的核对。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

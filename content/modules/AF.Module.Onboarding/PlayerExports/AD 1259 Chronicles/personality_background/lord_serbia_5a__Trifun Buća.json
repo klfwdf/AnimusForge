@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_5a",
+  "HeroName": "Trifun Buća",
+  "Description": "Trifun Buća, aged forty-nine in 1259, is the eminent patriarch of the patrician Buća family of Kotor, serving as royal financial chancellor to King Stefan Uroš I and Master of the Royal Mint at Brskovo. Controlling the lucrative trade conduits channeling Serbian silver to Venice, Ragusa, and the Levant, Trifun is a master of Mediterranean credit letters, bullion assaying, and merchant banking. He orchestrated the standardization of the high-grade Serbian silver groschen, transforming royal mining revenues into an internationally coveted currency. In 1259, shuttling between the coastal palaces of Kotor and the smelters of Brskovo, Trifun oversees silver ingots and minting dies with relentless precision, providing the indispensable fiscal bedrock that fuels the armies of the Nemanjić crown. Trifun Buća inspects the glowing furnaces of Brskovo mint with meticulous care, weighing every silver groschen to verify assay purity. Mastering Venetian banking laws and papal credit letters, he utilizes commercial liquidity to secure siege armaments and food during crises. Commanding the financial lifeblood of Serbia, this astute maritime banker provides the golden bedrock ensuring Nemanjić prosperity. Mastering bullion assaying and Mediterranean credit networks, Trifun Buća provides the financial foundation of King Uroš's realm. His relentless integrity and commercial genius ensure that Serbian silver groschen remain the most trusted currency throughout the Levant.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with articulate financial mastery and aristocratic composure, precise and persuasive, commanding immediate respect.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

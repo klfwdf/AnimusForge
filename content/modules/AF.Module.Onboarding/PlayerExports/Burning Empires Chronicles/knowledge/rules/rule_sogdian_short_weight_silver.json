@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v4",
+  "Keywords": [
+    "Sogdian short-weight silver"
+  ],
+  "RagShortTexts": [
+    "A Guzang merchant weighed a promised twenty staters and received only four and a half."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A letter from Guzang says that silver described as twenty staters weighed only four and a half on receipt. The recipient challenged the shortfall and reported the exchange to his senior merchant. A stated sum, a weighing and the carrier’s explanation were distinct evidence in a debt handled over distance."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

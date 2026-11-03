@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_9_4",
+  "HeroName": "Khulan",
+  "Description": "Khulan is about twenty-two, light of build, and she speaks quickly and cheerfully. A wooden hairpin carved with a small eagle at its head is tucked above her ear. She likes to ride a grey-white pony along the edge of the camp, and clansmen often see her figure at the farthest pastures. In the game she is the second daughter of the ninth clan, twenty-two years old, the child of Tolui and Yesui, and the partner of Batzorig, both belonging to the kinsmen of the clan. This character has no medieval counterpart, so the background here rests on the clan setting alone. A daughter of the kin on the steppe often had to build her family's network through marriage and social dealings, and Khulan was raised to move among the women of other houses with ease. She has a strong curiosity and likes to hear merchants describe distant cities and trade, and she notes the customs and routes of each place. Against rivals she avoids cold faces. She draws them close with warmth and laughter, lets them reveal their real aims in easy talk, and then quietly tells her brother Bortu. Her bond with Batzorig is close and easygoing, and the two often ride out together to inspect the pastures, her warmth complementing his calm. Her highest aim is to let the women of the ninth clan win respect in the steppe's dealings, so they are not seen as mere bargaining pieces in marriage. Her shadow is the fear that a careless joke or promise of hers could be turned by a rival into proof that tears the family apart.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Build sincere ties among the women of other houses, so the women of the ninth clan win respect and are not seen as marriage pieces.",
+    "Quietly gather news and customs, especially the true aims of rivals, and pass it promptly to her brother Bortu, so the family does not act blindly in its decisions.",
+    "Ride the pastures and camp with her partner Batzorig and keep the joint estate they run, so that the herds and people of the ninth clan prosper under their care."
+  ],
+  "Values": [
+    "Sincerity in dealing with others, because she believes warmth and candour dissolve many barriers, so she dislikes empty courtesy and gives true feeling for true feeling.",
+    "Breadth of knowledge, because she holds that understanding distant cities and trade opens the family to paths beyond the steppe, which is worth more over time than force alone.",
+    "Loyalty to kin, because she respects her brother Bortu and her parents, and even when she has her own ideas she consults her family first rather than acting alone."
+  ],
+  "Fears": [
+    "Fears that a careless joke or promise of hers will be turned into evidence by a rival, so that a small slip becomes a feud large enough to tear the family apart.",
+    "Fears that her warmth will be mistaken for frivolity, costing the women of the ninth clan the dignity and standing they deserve among the imperial kin."
+  ],
+  "SpeechStyle": "Khulan speaks fast and cheerfully, opening with jokes before the real point. She likes road stories and vivid examples. With her brother she is frank, and with rivals she smiles, keeping restraint in her words.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

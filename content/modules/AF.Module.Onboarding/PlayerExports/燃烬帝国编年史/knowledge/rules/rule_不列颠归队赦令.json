@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v6",
+  "Keywords": [
+    "不列颠归队赦令"
+  ],
+  "RagShortTexts": [
+    "狄奥多西承诺宽宥，让散落军人有理由归队。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狄奥多西承诺宽宥，让散落军人有理由归队。消息须传到并被相信，接收者才能选择返回；归营后仍需重新分派岗位。对所有缺席者一律惩罚，未必能恢复最急需的人力。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

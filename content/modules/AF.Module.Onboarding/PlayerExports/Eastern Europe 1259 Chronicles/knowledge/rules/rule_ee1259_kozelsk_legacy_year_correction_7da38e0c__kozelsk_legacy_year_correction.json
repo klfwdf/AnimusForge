@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_kozelsk_legacy_year_correction_7da38e0c",
+  "Keywords": [
+    "Memory of Kozelsk defense",
+    "Kozelsk survivors and remembrance"
+  ],
+  "RagShortTexts": [
+    "Kozelsk resisted Mongol troops in 1238 and suffered devastation.",
+    "Loss of kin, burial and return shaped households beyond a distant title."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kozelsk resisted Mongol troops in 1238 and suffered devastation. Survivors and neighboring households remembered lost kin. Accounts traveled through returnees and carriers, while restoring life required land, workers and usable animals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kozelsk resisted Mongol troops in 1238 and suffered devastation. Survivors and neighboring households remembered lost kin. Accounts traveled through returnees and carriers, while restoring life required land, workers and usable animals. Returnees found units, treated wounds and sought food while watches might continue. Those without mounts or weapons needed support to serve again, beyond a muster order."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Kozelsk resisted Mongol troops in 1238 and suffered devastation. Survivors and neighboring households remembered lost kin. Accounts traveled through returnees and carriers, while restoring life required land, workers and usable animals. Lords needed income and households able to remain and farm. Relief, seed and roads required resources; collecting all arrears too soon could drive more people away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Kozelsk resisted Mongol troops in 1238 and suffered devastation. Survivors and neighboring households remembered lost kin. Accounts traveled through returnees and carriers, while restoring life required land, workers and usable animals. Returnees sought shelter, repaired tools, obtained seed and contacted kin. Wounds and lost animals made farming difficult without shared work or loans that created new obligations."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

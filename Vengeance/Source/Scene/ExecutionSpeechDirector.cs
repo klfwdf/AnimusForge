@@ -20,7 +20,7 @@ namespace RichExecutions.Scene;
 /// Captures facts once on the mission thread, freezes a presentation plan and
 /// binds its roles to this mission's actors. No speech provider owns game actions.
 /// </summary>
-internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
+internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink, ISpeechPlaybackAudioSink
 {
     private readonly ISpeechPlanProvider _provider;
     private ExecutionSpeechPlayback? _playback;
@@ -34,9 +34,11 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
     private bool _reactionPlayed;
     private ExecutionRequest? _recordingRequest;
     private int _shownSequence;
+    private ExecutionSpeechAudioReceipt? _audioReceipt;
 
     // Presentation evidence only. Hosts may record it; observers never own execution.
     internal static Action<ExecutionRequest, int, SpeechCue, Agent, IReadOnlyList<Agent>>? LineShown { get; set; }
+    internal static Func<ExecutionRequest, int, SpeechCue, Agent, ExecutionSpeechAudioReceipt?>? AudioForShownLine { get; set; }
 
     internal ExecutionSpeechDirector(ISpeechPlanProvider? provider = null)
     {
@@ -233,7 +235,7 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
         return new SpeechContext(request.SessionId, request.Victim.Name.ToString(),
             request.Executor.Name.ToString(), request.Charge.GetName().ToString(),
             request.Method.GetName().ToString(), request.Method.StringId, request.Charge.StringId,
-            request.Venue.Name.ToString(), evidencePlace, request.Evidence, request.Tone,
+            request.VenueName.ToString(), evidencePlace, request.Evidence, request.Tone,
             request.LegitimacyTier, valor, honor, relation, crowdCount);
     }
 
@@ -250,12 +252,14 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
 
     internal void FinishCurrentPhase()
     {
+        CancelLineAudio();
         _playback?.Complete();
         if (!_aborted) _playback = new ExecutionSpeechPlayback(awaitingMore: true);
     }
 
     internal void Abort()
     {
+        CancelLineAudio();
         _aborted = true;
         _playback?.Abort(this);
         _view?.AbortLines();
@@ -279,17 +283,26 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
             (cue.Phase == ExecutionSpeechPhase.Aftermath || controller?.HasReachedLethalFrame == true)) return false;
         var shown = ExecutionSpeechBubbleBridge.TryShow(speaker!, cue.Text, cue.DurationSeconds);
         if (!shown) return false;
-        if (_recordingRequest != null && LineShown != null)
+        var sequence = ++_shownSequence;
+        CancelLineAudio();
+        if (_recordingRequest != null)
         {
-            try
+            if (LineShown != null)
             {
-                var witnesses = new List<Agent>(_crowd.Count + 2);
-                if (IsActive(_victim)) witnesses.Add(_victim!);
-                if (IsActive(_executioner)) witnesses.Add(_executioner!);
-                witnesses.AddRange(_crowd.Where(IsActive));
-                LineShown?.Invoke(_recordingRequest, ++_shownSequence, cue, speaker!, witnesses);
+                try
+                {
+                    var witnesses = new List<Agent>(_crowd.Count + 2);
+                    if (IsActive(_victim)) witnesses.Add(_victim!);
+                    if (IsActive(_executioner)) witnesses.Add(_executioner!);
+                    witnesses.AddRange(_crowd.Where(IsActive));
+                    LineShown.Invoke(_recordingRequest, sequence, cue, speaker!, witnesses);
+                }
+                catch (Exception exception) { RexLog.Warning("Speech recording failed: " + exception.Message); }
             }
-            catch (Exception exception) { RexLog.Warning("Speech recording failed: " + exception.Message); }
+            // Recording failure must not mute an already-visible line, and an
+            // optional audio host must never replace the bubble/history path.
+            try { _audioReceipt = AudioForShownLine?.Invoke(_recordingRequest, sequence, cue, speaker!); }
+            catch (Exception exception) { RexLog.Warning("Speech audio unavailable: " + exception.Message); }
         }
         EchoToMessageLog(cue);
         TryPlayReaction(cue, speaker!);
@@ -334,12 +347,21 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
         _ => new TextObject("{=REX_Speech_Speaker_Crowd}A voice in the crowd").ToString()
     };
 
-    void ISpeechPlaybackSink.FinishLine()
+    bool ISpeechPlaybackAudioSink.IsAudioPending => _audioReceipt?.IsPending == true;
+
+    private void CancelLineAudio()
     {
+        var receipt = _audioReceipt;
+        _audioReceipt = null;
+        try { receipt?.Cancel(); }
+        catch (Exception exception) { RexLog.Warning("Speech audio cancellation failed: " + exception.Message); }
     }
+
+    void ISpeechPlaybackSink.FinishLine() => CancelLineAudio();
 
     void ISpeechPlaybackSink.AbortLines()
     {
+        CancelLineAudio();
         ExecutionSpeechBubbleBridge.Clear();
     }
 

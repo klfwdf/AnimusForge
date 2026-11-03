@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v8",
+  "Keywords": [
+    "琥珀燃烧与熏香说"
+  ],
+  "RagShortTexts": [
+    "琥珀受热会燃烧并散出气味，古代记述也谈到将它当作熏香或燃料。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "琥珀受热会燃烧并散出气味，古代记述也谈到将它当作熏香或燃料。昂贵饰物与可燃原料是同一材料的不同用途；焚烧后不能再雕成完整珠饰，使用选择取决于持有者的需要与价格。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_2_0_2_1",
+  "HeroName": "Isabella de la Roche, Lady of Karytaina",
+  "Description": "Isabella de la Roche, aged thirty-two in 1259, is the daughter of Guy I de la Roche, Lord of Athens and Thebes, and the long-suffering wife of Geoffroi de Bruyéres. Cultured, dignified, and possessed of deep political insight, she was wed to bind the Burgundian lords of Athens with the baronial houses of Morea. Despite her husband's notorious infidelities and reckless escapades, Isabella managed the domestic affairs of Karytaina with unwavering grace and tenacity. As Geoffroi departs for the northern war against Nicaea, Isabella watches from the battlements above the Alpheios, fearfully anticipating the geopolitical disaster that this ill-conceived crusade may unleash upon their young realm. In the tranquil courtyards of Karytaina, Isabella cultivates delicate gardens and embroiders fine silks to soothe the loneliness of high mountain exile. Meeting her husband's erratic escapades with immense forbearance, she maintains the castle's administrative harmony and comforts knightly households. Her poise and noble grace make her an invaluable spiritual anchor amidst the rugged crags of the Peloponnese. Balancing the expectations of Athenian ducal courtliness with the rugged realities of Morean warfare, Isabella remains a paragon of patience. Her steadfast composure amidst constant martial alarms shields her household and children from the cruel uncertainties of frontier war.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with refined Burgundian courtesy and understated poignancy, veiling private sorrow behind serene aristocratic poise.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

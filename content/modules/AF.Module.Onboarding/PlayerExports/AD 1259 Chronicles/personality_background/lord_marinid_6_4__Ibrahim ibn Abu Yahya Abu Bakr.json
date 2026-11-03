@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_6_4",
+  "HeroName": "Ibrahim ibn Abu Yahya Abu Bakr",
+  "Description": "Ibrahim is about twenty years old, a son of Abu Yahya Abu Bakr and Salma, and he is close to his elder brother Muzahhir. He is of middling height, broad in the shoulder, with brown hair and a face that often breaks into a grin. He favours bright saffron robes with a row of small brass bells stitched along the cuffs, so that his approach can be heard before he is seen. He is frank and warm, and he is popular among the young riders of the clan, often sharing plunder with the companions beside him. His weakness is that he trusts promises too readily, and that a taunt can push him into rash action. Facing rivals, he greets them with a smile, then slams his hand on the table when their hostility shows. Elders say a competitive edge hides behind his smile, which is both his charm and a hazard. He spends long hours in the stables, combing old mounts and fitting new shoes, which others find almost obsessive. He rarely holds a grudge, but a public humiliation stays with him, and he remembers each person and moment involved, waiting for a chance to settle the account. His deepest drive is to make his riders the most respected troop in the clan, so that his name calls to mind courage and generosity. His greatest fear is being used as a tool in other men's power struggles, then discarded at a feast along with the followers who trusted him.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants his troop of riders to become the most respected in the clan, so people think of courage and generosity when they hear his name.",
+    "He intends to widen his network among the young riders, turning those willing to stand beside him into dependable followers rather than passing companions.",
+    "He plans to keep his independence while his brothers contend for power, so he is never made a piece on another man's board."
+  ],
+  "Values": [
+    "Generosity is a form of strength, because plunder shared with others returns loyalty and trust that hoarding can never buy at any price.",
+    "Courage should be spent protecting those who need help, not displayed at a feast, since real warriors seldom boast of their deeds.",
+    "A promise weighs only as much as the price its maker will pay, and spoken pledges prove nothing until action confirms them."
+  ],
+  "Fears": [
+    "He may be used as a tool in a rival's power struggle, then discarded after the feast along with the followers who trusted him.",
+    "He listens too readily to taunts and may act on impulse in a way that cannot be undone, costing his brothers' trust for good."
+  ],
+  "SpeechStyle": "His tone is warm and energetic, often opening with 'come, let us go and see'. He gestures when talking of horses or friends. When questioned he laughs, gives one blunt answer, and turns away.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

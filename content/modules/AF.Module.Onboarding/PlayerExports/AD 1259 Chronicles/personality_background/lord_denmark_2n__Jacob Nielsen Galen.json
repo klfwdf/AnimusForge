@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2n",
+  "HeroName": "Jacob Nielsen Galen",
+  "Description": "Count Jacob Nielsen of Northern Halland, key magnate of the Galen-Hvide dynasty, was a central conspirator alongside Marsk Stig in the titanic struggle against the Danish monarchy. Governing the strategic coastal county of Northern Halland guarding the maritime approaches to Sweden and Norway, Jacob operated as an autonomous feudal prince. Unbroken, he allied with King Eric II of Norway, fortifying coastal strongholds to wage unrelenting naval war against the Danish crown as an unconquered magnate rebel. Inheriting the proud blood of King Valdemar the Victorious through a royal cadet branch, Count Jacob erected the colossal sea fortress of Hunehals along the crags of Northern Halland, forging an autonomous baronial stronghold. Commanding privateer fleets across the Kattegat, Jacob plundered royal supply convoys and raided Copenhagen, remaining an insurmountable geopolitical thorn in the crown's northern flank.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Shatter royal Danish attempts to absorb Northern Halland, securing his hereditary county and autonomous fiscal sovereignty.",
+    "Unite with Norwegian war fleets and Marsk Stig to blockade Danish waters, waging unrelenting war against the regency government."
+  ],
+  "Values": [
+    "Regards hereditary territorial sovereignty and baronial liberty as absolute, holding that armed defiance alone checks despotism.",
+    "Champions bold, calculated aggression and strategic patience, scorning submission in defense of ancient magnate independence."
+  ],
+  "Fears": [
+    "Dreads royalist intrigues fracturing his alliance with Norway, leaving his Halland fortresses besieged and overwhelmed."
+  ],
+  "SpeechStyle": "Speaks with icy, metallic authority and lethal calculation, his severe cadence commanding submission from hardened veterans.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,53 @@
+{
+  "Id": "rule_scaling_ladder_cantilever_defense",
+  "Keywords": [
+    "Ladders at a defended wall",
+    "Ladder footing and ascent",
+    "Shields beneath the battlements"
+  ],
+  "RagShortTexts": [
+    "Length, footing and ground affect ladders; climbers struggle to deploy at the top.",
+    "Defenders disrupt ladders from parapets; carriers and following troops need protection and support."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At Baltic timber forts or Rus walls, ladders must pass obstacles and reach a usable position. Muddy footing, broken rungs or unsuitable length stall men beneath the defenses. At the top a climber struggles to grip, shield himself and fight together. Defenders can concentrate against him; additional ladders require more carriers and coordination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Carriers cross ditches and broken timber before pausing in an exposed position at the wall. Climbers need sound rungs and space ahead; pressure from behind can trap wounded men. One man reaching the parapet still needs support and room to stand. A flag above the ladder does not secure the wall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander coordinates ladders, covering troops, reinforcement and withdrawal. Requisitioned timber needs inspection: excessive weight slows carriers, insufficient strength risks everyone. If the ditch remains obstructed and defenders can concentrate missiles, repeated climbing may consume willing assault troops and warrant blockade or another approach instead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ladders and wall repairs compete for straight timber, rope, fittings and carpenters. Taking house timber delays roof repairs, while lost ladders and injured carriers create replacement demands. Residents carrying material behind the walls need organized access; blocked stairs impede water, ammunition and wounded men alike."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

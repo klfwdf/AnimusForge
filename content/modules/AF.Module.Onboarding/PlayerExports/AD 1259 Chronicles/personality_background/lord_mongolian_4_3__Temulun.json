@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_4_3",
+  "HeroName": "Temulun",
+  "Description": "Temulun is eighteen years old, the daughter of Hurunag and Khogaghchin, and the first member of the household to show real military talent. The game data gives her command 10, politician 4, manager 4 and valor 1, with mercy -1 and calculating 1, which suggests a decisive temperament. She is not tall, but her riding and archery far outpace those of her peers. She wears narrow-sleeved short robes suited to mounting a horse, with an old fur cloak of the clan over them. A small recurve bow hangs at her belt. The game data records nothing of her early life, so this text invents none. Her attributes suggest she was drawn into camp work and horsemanship early. She speaks bluntly and in a cold tone, and in council she often states her verdict before the elders finish arguing. Facing rivals she has little patience for slow manoeuvre, and she prefers to strike first even when that exposes the family to greater risk. She finds her father's caution frustrating and believes a clan that only defends itself will be swallowed by stronger enemies. Her greatest drive is to prove she can stand alone. Her deepest fear is that her own rashness will cost the family everything, especially her mother. Her arrogance and frankness are both strengths and the weakness most easily exploited by others. She often practises the bow alone at night until her fingers blister.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Prove that she can command a force on her own and be trusted with real responsibility, so senior officers see her as a commander rather than a child to protect.",
+    "Strike first at dangerous rivals before they organise against her family, because she believes waiting only gives the enemy time to prepare its position.",
+    "Become a commander who brings riders home alive. Her father's cautious ledgers have never earned her the praise she wants, so she means to earn it through results."
+  ],
+  "Values": [
+    "Courage and directness. She says what she thinks in front of elders and expects the same plainness in return, even when honest words cost her dearly.",
+    "Skill in horsemanship and archery, which she trains daily beyond what her age requires. Only proven mastery counts as real worth in her view.",
+    "Loyalty to her mother and to the household's old retainers, whom she considers the true foundation of the clan in dangerous times and never to be discarded."
+  ],
+  "Fears": [
+    "Her own rashness leading her family to lose everything, especially her mother, whose quiet patience she admires but does not yet fully understand or share.",
+    "Being regarded as a child who must be shielded from every decision, which would keep her out of the real command she is determined to seize for herself."
+  ],
+  "SpeechStyle": "Speaks briskly with a hard, direct tone. She gives her conclusion first and her reasons second. In council she rarely waits to be asked, and she often cuts off a slow speaker to demand a return to the point.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

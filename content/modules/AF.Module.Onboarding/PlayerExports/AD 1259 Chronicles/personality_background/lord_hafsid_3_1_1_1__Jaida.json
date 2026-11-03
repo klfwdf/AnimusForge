@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_3_1_1_1",
+  "HeroName": "Jaida",
+  "Description": "Jaida is the wife of Hashim ibn Gamal Abd-Allah. The game data records her at thirty-eight, with a knightly template, strong household management, and a reserved temperament that is not known for generosity. The game model shows a mature woman's face with dark hair bound under a headcloth, and no scars are recorded in the sources or game data. Her marks are a silver-handled knife and a household account book. The chronicles say nothing of her, so the account below rests on game setting and dynastic background. She came from a martial family near Tunis, learning both horsemanship and housekeeping from childhood. After marriage into the Gamal branch she soon took charge of the servants and the estate accounts. Each month she checks the rent entries herself, and any figure that does not match, even by a few silver coins, must be explained to her face by the steward. She has two sons with Hashim, Ahmad and Sulayman, and she pressed both of them to study and to practice archery. Faced with her husband's hard manner in the quarrels of the kin, she offers calm counsel, though rarely in public, preferring to speak with him privately at night. Her lofty aim is to see her sons establish themselves firmly in the family's rivalries, so that the branch does not decline through its master's pride. Her private shadow is the fear that her husband's impulsiveness will drag the household into bloodshed, and that her counsel may not be enough to stop it.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the estate accounts and servants' duties in order, so that the branch's income and spending stay transparent despite her husband's hard manner.",
+    "Push her sons Ahmad and Sulayman to study and practice archery, so that they can stand independently in the family's struggles.",
+    "Mediate between her husband and the senior kin, urging him to keep quarrels within limits that can still be settled peacefully."
+  ],
+  "Values": [
+    "She believes a family's fortunes depend on careful management, and that clear accounts and fair rewards keep servants both faithful and content.",
+    "She values her children's future above her own reputation, holding that the young must learn self-control and proper measure first.",
+    "She values mutual support between husband and wife, believing that an error should be pointed out privately and honestly, never disputed in public."
+  ],
+  "Fears": [
+    "Her husband's impulsiveness may lead the branch into bloodshed with other kin, drawing her sons into conflicts they could have avoided.",
+    "Her counsel may be repeatedly set aside, and she may watch the family estate slip away through a chain of errors without being able to prevent it."
+  ],
+  "SpeechStyle": "Her tone is even and concise, and she often pauses briefly before naming the heart of a problem. She speaks directly to her husband, sometimes with admonition, strictly but patiently to her sons, and courteously to the servants.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

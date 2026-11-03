@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_5_4",
+  "HeroName": "Håkan Tunason",
+  "Description": "Sir Håkan Tunason of Vinsarp, paramount knight banneret and martial heir of the Vinstorpa dynasty, was the eldest son of Sir Tune. Rigorously trained in heavy cavalry shock tactics and frontier warfare, Håkan commanded the mounted vanguard of his household with celebrated valor. Leading patrols across the rugged border defiles of West Götaland, he repeatedly shattered invading Norwegian raiding parties and lawless brigands in hand-to-hand combat, winning the passionate loyalty of his armored retainers. Strict in discipline yet fiercely protective of his men, he fortified border outposts and timber blockhouses surrounding Vinsarp, acclaimed across the western marches as an indomitable champion of his house. Sir Håkan enforced iron discipline across his border commands, personally inspecting marksmanship and cavalry charges to ensure his household retainers could match superior forces in open battle. In violent clashes against Norwegian raiding parties, Håkan led from the front, breaking enemy lines with thunderous lance charges and slaying hostile captains in close combat. Honorable, fearless, and deeply devoted to his warriors, he commanded unconditional loyalty, acclaimed across West Götaland as an impenetrable shield of the western borderlands. His legendary battlefield courage and tactical vigilance preserved the western borderlands against devastating border skirmishes and pillaging raids.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Command heavy shock cavalry to secure western frontier defiles against foreign raiders and protect civilian hamlets.",
+    "Forge a fearsome martial reputation on the battlefield to elevate the military authority of the Vinstorpa lineage."
+  ],
+  "Values": [
+    "Reveres knightly battlefield courage and uncompromising fealty, believing that sharp steel guarantees security.",
+    "Champions transparent honor and soldierly brotherhood, scorning treacherous intrigue in favor of direct combat."
+  ],
+  "Fears": [
+    "Dreads border outposts being overrun by surprise attacks, permitting hostile cavalry to ravage the lands of Vinsarp."
+  ],
+  "SpeechStyle": "Speaks with booming, trumpet-like martial force, his concise battlefield orders brooking no hesitation.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -679,7 +679,7 @@ internal static class ConfiguredChatApplicationAdapter
 		{
 			stringBuilder.Append(LlmSourceTexts.Get("ErrorMessageRequestFailed"));
 		}
-		stringBuilder.Append("（HTTP ").Append(text).Append("）");
+		stringBuilder.Append(LlmSourceTexts.Get("ErrorMessageHttpPrefix")).Append(text).Append(LlmSourceTexts.Get("ErrorMessageHttpSuffix"));
 		if (retryAfterSeconds.HasValue)
 		{
 			stringBuilder.Append(LlmSourceTexts.Get("ErrorMessageRetryAfterPrefix")).Append(retryAfterSeconds.Value).Append(LlmSourceTexts.Get("ErrorMessageRetryAfterSuffix"));

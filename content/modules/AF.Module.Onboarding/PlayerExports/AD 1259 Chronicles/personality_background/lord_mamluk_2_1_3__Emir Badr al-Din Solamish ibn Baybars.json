@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_2_1_3",
+  "HeroName": "Emir Badr al-Din Solamish ibn Baybars",
+  "Description": "Within months Qalawun held the real power, and by November of that year Solamish had been sent into exile in Constantinople. The sources say little of his appearance, so the description here follows the game setting: a thin frame, a pale face, and a long thin scar on the left wrist from a doorway cut in childhood. He spends most of his time alone in a study, with a military treatise his father left him in hand. He speaks little and is acutely sensitive to court protocol. His childhood passed between exile and recall, and he watched his father's old commanders and Qalawun's party scheme against each other, which taught him to observe in silence. His noble aim is to wash away the humiliation his family suffered in the transfer of power and to reclaim the throne for Baybars' heirs. His inner shadow is the fear that he will remain a puppet in other men's hands, dying in a foreign city without ever returning to Cairo to take his father's honour.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Wash away the humiliation of his lost throne and restore the legitimacy of Baybars' line, challenging the rule of Qalawun's party at its roots.",
+    "Quietly contact the old commanders and court women who remain loyal to Baybars, waiting for a chance to return to Cairo and gather a following of his own.",
+    "Study his father's military treatise and administrative papers so that he is ready to rule again, avoiding his brother's mistakes of poor appointments and too many enemies."
+  ],
+  "Values": [
+    "The throne belongs to blood and rightful succession, and no one should seize it under the pretext of regency, which insults the memory of the dead ruler.",
+    "Revenge requires patience, since premature anger only gives enemies a chance to strike back, so one should store up strength in silence until they lower their guard.",
+    "Knowledge protects a person better than any sword, and only one who knows laws and administration deserves to take back the authority that was stolen."
+  ],
+  "Fears": [
+    "Permanent exile in a foreign land, with his body never carried back to Cairo, no proper funeral, and no one remembering that Baybars' blood once sat on the throne.",
+    "Qalawun's line becoming so secure that his name is erased from court records, leaving his family as a footnote of failure in the chronicles."
+  ],
+  "SpeechStyle": "He speaks rarely, in a soft voice and short sentences, often after a pause. When he mentions his father or brother his tone turns firm, but when he speaks of Qalawun he falls into a cold formal manner that hides his real feelings.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

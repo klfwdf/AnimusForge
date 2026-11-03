@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_2f",
+  "HeroName": "Jakov I. Šubić, Count of Bribir and Nin",
+  "Description": "Jakov I Šubić, aged forty in 1259, rules as hereditary Count of Bribir and Nin, serving as the senior military partner and cousin to Count Stjepan II. Anchored in the ancient Croatian royal and ecclesiastical seat of Nin, Jakov dominates the northern Dalmatian coastline and its lucrative shallow-water salt pans. Veteran, vigilant, and tactically defensive, he commands a well-drilled contingent of mountain crossbowmen and light cavalry. Overseeing the valuable salt monopolies that provide indispensable bullion for the clan's campaigns, Jakov fortifies the northern approaches against Venetian amphibious incursions and rebellious Hungarian lords. In 1259, he secures the northern march of the Šubić realm with disciplined fortitude. Holding the ancient seats of Nin and Bribir, Jakov I is a battle-tested veteran of karst fortress defense and dismounted knightly combat. Demanding iron discipline while treating his soldiers with familial warmth, he has repelled numerous maritime incursions, safeguarding the ancestral tombs. In Dalmatia's shifting feudal turmoil, this steadfast count remains an immovable granite bastion defending the bedrock foundations of his clan. Hardened by decades of border clashes and siege warfare, Jakov stands as an incorruptible warrior of the old school, defending his clan's heritage with absolute loyalty.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with seasoned military firmness and measured calm, authoritative and direct, focusing on practical frontier security.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,8 +1,36 @@
 {
-  "Version": 1,
+  "SchemaVersion": 3,
   "HeroId": "er_lord_vlandia_2_4",
   "DisplayName": "Luxinius",
-  "Personality": "Luxinius, a prominent figure of the Turdetani, Fierce, unyielding, bound by honor; legendary master of the falcata, venerating ancestral bull deities and sworn devotio oaths unto death. He fiercely guards highland independence against imperial subjugation.",
-  "Background": "Luxinius owes allegiance to the Iberian Tribal Confederation, hailing from the noble house of Turdetani. Historical Record: Son of Attenes and Luxinia, of the Turdetani, an Iberian house of the Iberi. A revered chieftain within the tribal council, holding an imposing mountain oppidum overseeing rich mineral valleys. Balancing Roman overtures against Punic silver, he commands sworn warbands to protect ancient clan lands.",
+  "Description": "Luxinius, resolute Iberian mountain chieftain and falcata warrior, bound by the sacred martial oath of Devotio to defend homeland and kinsmen to the death. A master of rugged mountain terrain, ambushes, and curved falcata shortswords, Luxinius commands elite skirmishers and buckler-bearers. Navigating the brutal contest between Barcid dominance and Roman intervention, Luxinius fiercely safeguards clan autonomy, protecting regional silver workings and fortified hill citadels with relentless tenacity and lethal close-quarters combat.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve clan sovereignty and fortified mountain hillforts against invading armies.",
+    "Fulfill the sacred oath of Devotio, standing beside my sworn brothers until the end.",
+    "Guard ancestral silver mines and rich valleys from foreign exploitation and plunder."
+  ],
+  "Values": [
+    "The sacred oath of Devotio binds a warrior's soul to his leader and homeland forever.",
+    "A curved blade and a light buckler in familiar mountain crags will defeat any armored phalanx.",
+    "Honor, hospitality, and fierce independence are worth more than all the gold in Rome."
+  ],
+  "Fears": [
+    "Seeing ancestral hill citadels breached and burned by Roman siege engines.",
+    "Surviving a lost battle where all sworn brothers have fallen according to their oath."
+  ],
+  "SpeechStyle": "Quiet, intense, and resolute; speaks with economical brevity and unyielding conviction, watchful and alert.",
   "VoiceId": ""
 }

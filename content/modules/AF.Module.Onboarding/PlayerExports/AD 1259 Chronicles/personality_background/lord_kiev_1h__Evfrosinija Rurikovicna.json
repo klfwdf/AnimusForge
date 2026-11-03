@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Evfrosinija Rurikovicna is an ascetic royal princess-nun of the Kievan grand-ducal house, deeply venerated across the Dnipro lands for her transcendent piety and selfless healing. Deeply affected in her youth by the horrors of fratricidal war, she renounced palace luxuries to dedicate her earthly life to solitary monastic prayer and charitable service. Near the hallowed walls of Saint Michael's Golden-Domed Monastery, she established an herbal infirmary and hospice, personally tending to wounded warriors and plague-stricken refugees. Versed in ancient Greek and Slavonic medical treatises, her healing arts and miraculous compassion brought comfort to thousands of suffering souls throughout southern Rus'. Though detached from secular politics, reigning princes and battle-hardened boyars revered her absolute integrity, frequently seeking her intercession to mediate bitter disputes. Her saintly humility and boundless charity remain an immortal source of divine hope across the war-weary principalities. Surrounded by the whispering pines of the Golden-Domed Monastery, Princess-nun Evfrosinija transformed solitary asceticism into an inexhaustible wellspring of healing for mankind. Her meticulously prepared herbal balms cured infected wounds and eased severe camp fevers, while her gentle prayers brought divine comfort to the dying. She stood as an untarnished beacon of heavenly mercy, guiding countless broken souls through the darkest agonies of war.",
+  "SpeechStyle": "Worldly empires perish, but love and mercy for the afflicted endure in heaven. Lay down hatred and pride, so that divine grace may bring peace to our wounded land!",
+  "Motivations": [
+    "Heal wounded defenders and diseased refugees through herbal medicine and prayer, saving lives amidst war and epidemic.",
+    "Protect vulnerable orphans and widows in monastic sanctuaries, spreading divine mercy to purge hatred from the world."
+  ],
+  "Values": [
+    "Embracing ascetic humility, relentless healing, and absolute surrender to divine will, rejecting worldly wealth and ambition.",
+    "Cherishing selfless benevolence and serene contemplation, believing true healing stems from boundless Christian love."
+  ],
+  "Fears": [
+    "The fiery destruction of monastic infirmaries, leaving scores of critically wounded victims to perish without care.",
+    "That untamed hatred will eradicate human conscience entirely, transforming society into a brutal wasteland devoid of pity."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_kiev_1h",
+  "HeroName": "Evfrosinija Rurikovicna"
+}

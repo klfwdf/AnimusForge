@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_7_1",
+  "HeroName": "Orlando 'Goffredo II' Grifeo",
+  "Description": "Orlando Grifeo, celebrated in family annals as Goffredo II, stands as a senior patriarch of the illustrious Norman-Byzantine House of Grifeo, lords of Partanna since the conquest of Great Count Roger I in 1091. Commanding the fertile grain basins and olive groves of the Val di Mazara in western Sicily, Orlando exercises immense judicial authority. Serving as an imperial justiciar and magistrate in royal tribunals, he is revered across the island for encyclopedic mastery of Norman law and impartial arbitration between Latin, Greek, and Saracen communities. Senior magistrate Orlando Grifeo dispensed justice in royal tribunals for decades, drawing upon exhaustive mastery of ancient Norman jurisprudence and Byzantine statutes to peacefully arbitrate violent land feuds between Latin, Greek, and Saracen communities across western Sicily. Viewing the rise and fall of Italian princes with philosophical detachment, Orlando preserved the sanctity of feudal treaties through impartial justice, earning the universal veneration of Sicilian barons, prelates, and freemen alike. His encyclopedic legal mastery, cold strategic calculation, and vast feudal influence make Orlando Grifeo an indispensable judicial titan steering the kingdom through dangerous political tides. His brilliant legal statecraft and unshakeable judicial composure enshrine Orlando as an immortal legend of medieval southern European jurisprudence. His battlefield valor, strategic vigilance, and unswerving feudal honor inspire all who serve his house.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the hereditary jurisdictions of Partanna and secure Grifeo prosperity across western Sicily.",
+    "Preserve intercommunal harmony between Greeks, Latins, and Saracens against foreign provocation."
+  ],
+  "Values": [
+    "Impartial justice, Norman legal custom, and unwavering respect for long-established traditions.",
+    "Prudent political moderation, stability, and deep aversion to reckless court gambles."
+  ],
+  "Fears": [
+    "Fanatical foreign invaders devastating Sicily's rich multicultural civilization and tolerant laws.",
+    "Agrarian insurrections or communal blood-feuds ravaging the productive estates of Partanna."
+  ],
+  "SpeechStyle": "Speaks with deliberate judicial gravitas, antique Norman formality, and measured baronial courtesy. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

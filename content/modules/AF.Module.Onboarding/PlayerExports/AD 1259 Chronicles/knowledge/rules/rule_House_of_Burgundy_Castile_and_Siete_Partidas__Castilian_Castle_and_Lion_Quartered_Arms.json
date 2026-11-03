@@ -1,0 +1,18 @@
+{
+  "Id": "rule_House_of_Burgundy_Castile_and_Siete_Partidas",
+  "Keywords": [
+    "Alfonso’s patronage of legal learning"
+  ],
+  "RagShortTexts": [
+    "Castilian royal legal projects employed translators, jurists and copyists."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Castilian royal legal projects employed translators, jurists and copyists. Patronage brought Roman and canon learning into the vernacular and made magnates attentive to royal jurisdiction. Participation in writing did not establish identical practice in every town."
+    }
+  ],
+  "TextMappings": []
+}

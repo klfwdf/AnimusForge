@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_polish_invasion_spanning_the_year_boundary_5e6fa3da",
+  "Keywords": [
+    "Lesser Poland facing steppe forces",
+    "Eastern approaches and refuge in Lesser Poland"
+  ],
+  "RagShortTexts": [
+    "Steppe forces made Lesser Poland watch eastern roads and crossings.",
+    "Defense, moved stores and refugee reception each needed labor and food."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Movements of steppe forces made Lesser Polish princes and inhabitants watch eastern roads, crossings and refuge posts. Envoys' and refugees' news could be delayed. Defense, moving stores and receiving displaced households each required labor and food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Movements of steppe forces made Lesser Polish princes and inhabitants watch eastern roads, crossings and refuge posts. Envoys' and refugees' news could be delayed. Defense, moving stores and receiving displaced households each required labor and food. Scouts described routes and sight lines; darkness and woods obscured numbers. Commanders allowed time for reporting and checks rather than scattering everyone at each alarm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Movements of steppe forces made Lesser Polish princes and inhabitants watch eastern roads, crossings and refuge posts. Envoys' and refugees' news could be delayed. Defense, moving stores and receiving displaced households each required labor and food. Leaders compared sources and dates before mustering, evacuating or negotiating. Checking cost resources; both waiting too long and acting rashly carried risks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Movements of steppe forces made Lesser Polish princes and inhabitants watch eastern roads, crossings and refuge posts. Envoys' and refugees' news could be delayed. Defense, moving stores and receiving displaced households each required labor and food. Households heard news at markets, mills and kin's homes, often covering only a few roads. Rumors prompted hiding stores or leaving, and mistakes wasted working days."
+    }
+  ],
+  "TextMappings": []
+}

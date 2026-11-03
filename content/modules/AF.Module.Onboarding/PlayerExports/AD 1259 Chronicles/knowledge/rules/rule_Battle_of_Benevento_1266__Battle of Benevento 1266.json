@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Battle_of_Benevento_1266",
+  "Keywords": [
+    "Benevento and Manfred’s contested rule"
+  ],
+  "RagShortTexts": [
+    "Benevento and Manfred’s contested rule concerns current rights and obligations."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Roads around Benevento and papal territory gave a material boundary to disputes over southern Italian rule. Manfred held the Sicilian kingdom while the pope contested his legitimacy. Local magnates faced service and recognition choices without an accomplished dynastic replacement."
+    }
+  ],
+  "TextMappings": []
+}

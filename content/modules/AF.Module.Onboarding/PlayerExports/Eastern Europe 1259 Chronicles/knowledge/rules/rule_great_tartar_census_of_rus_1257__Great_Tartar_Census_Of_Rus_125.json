@@ -1,0 +1,52 @@
+{
+  "Id": "rule_great_tartar_census_of_rus_1257",
+  "Keywords": [
+    "Rus household registration in 1257",
+    "tribute assessment in northeastern lands"
+  ],
+  "RagShortTexts": [
+    "Mongol household registration reached northeastern Rus in 1257 for tribute and service.",
+    "Collectors needed local assistance, while households disputed how burdens were shared."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1257 northeastern Rus faced household registration by Mongol officials to organise tribute and other duties. Identifying a household required people who knew residences, explained circumstances and conveyed demands. Princes and influential locals faced pressure from outside while deciding how to distribute burdens. Some witnessed writing and enumeration; others saw only collectors. Knowledge of a neighbouring village did not provide a view of implementation across every land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A prince agreeing to deliveries needs an account of inhabitants and existing duties. Favouring close supporters while shifting additions onto weaker people turns registration into internal conflict. Clear handover and shares can limit repeated collection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts need shelter, mounts and provisions. Guards must distinguish authorised service from private seizure. Repeated additions along a route encourage villages ahead to conceal resources or leave."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households ask what follows a recorded name and whether relatives can help when labour is lacking. Grain, service and animals are not freely interchangeable. Recognition of previous deliveries prevents each new arrival demanding payment again."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

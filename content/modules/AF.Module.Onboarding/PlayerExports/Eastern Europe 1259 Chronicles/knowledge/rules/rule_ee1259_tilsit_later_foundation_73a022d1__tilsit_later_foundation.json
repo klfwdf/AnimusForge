@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_tilsit_later_foundation_73a022d1",
+  "Keywords": [
+    "Tilse Nemunas riverside",
+    "Fishing and landings near the Tilse mouth"
+  ],
+  "RagShortTexts": [
+    "Tilse and Nemunas waterways shaped fishing, landings and carriage.",
+    "Rising water changed bank routes; stopping parties needed water, fodder and local consent."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Water and bank routes near the Tilse and Nemunas shaped fishing, landing and carriage, affected by rising water. A party stopping there needed reliable water, fodder and someone able to negotiate with residents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Water and bank routes near the Tilse and Nemunas shaped fishing, landing and carriage, affected by rising water. A party stopping there needed reliable water, fodder and someone able to negotiate with residents. River guards watched vessels, bank access and night landings. Escorts protected goods while allowing crews to rest, often needing local boatmen in unfamiliar water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Water and bank routes near the Tilse and Nemunas shaped fishing, landing and carriage, affected by rising water. A party stopping there needed reliable water, fodder and someone able to negotiate with residents. Post income depended on continuing traffic; excessive demands encouraged detours. Garrisons and river works needed resources, while households' supply varied seasonally."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Water and bank routes near the Tilse and Nemunas shaped fishing, landing and carriage, affected by rising water. A party stopping there needed reliable water, fodder and someone able to negotiate with residents. Riverside households fished, carried goods and traveled with boats also wanted by guards. Bad water required repairs, provisions and waiting for weather."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

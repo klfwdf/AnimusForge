@@ -1,0 +1,39 @@
+{
+  "Id": "rule_Feast_of_Corpus_Christi_and_Bolsena_Miracle",
+  "Keywords": [
+    "Feast of Corpus Christi Institution",
+    "Miracle of Bolsena Bleeding Host",
+    "Thomas Aquinas Liturgical Hymns",
+    "Monstrance Eucharistic Civic Procession"
+  ],
+  "RagShortTexts": [
+    "Local Eucharistic observances in Liège required clergy, funds and time."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Liège region had local initiatives and observances honoring the Eucharist, promoted by Juliana of Cornillon. Bishops and clergy arranged dates, worship and expenses, while other dioceses followed their own practices. Eucharistic devotion could inspire sermons and gifts; organizing an observance still required people, candles and time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Clergy arranging a local Eucharistic observance consulted their bishop and fellow clergy over dates, prayers and participation. Candles, vestments, singing and a place required preparation, paid for through donations or church resources. Conflicts with work, markets or other worship also needed discussion with the congregation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Households hearing of a local Eucharistic observance asked when it would take place and what work must pause. Candles, clothing and attendance cost money and time alongside harvest and household needs. If worship coincided with sowing or reaping, someone had to tend fields while others accompanied children and elders."
+    }
+  ],
+  "TextMappings": []
+}

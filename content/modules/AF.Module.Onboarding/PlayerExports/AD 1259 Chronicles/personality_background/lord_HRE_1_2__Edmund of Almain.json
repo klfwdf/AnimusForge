@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_1_2",
+  "HeroName": "Edmund of Almain",
+  "Description": "Edmund of Almain, 2nd Earl of Cornwall, son of King Richard and Queen Sanchia, inherited immense wealth from Cornwall's tin mines. Renowned as a pious benefactor and Regent of England during Edward I's campaigns, he anchored royal governance with unshakeable fiscal discipline. Edmund reformed mining statutes across Cornwall and fortified Tintagel, funneling tin bullion into monastic endowments and national treasuries to make his earldom England's richest realm. As Regent of England, he purged judicial corruption and standardized land measures, establishing perpetual endowments at Ashridge that anchored royal law across the realm. Possessing boundless wealth, Earl Edmund governed as an incorruptible Regent, sustaining England's Golden Age through saintly public service and royal law. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage Cornwall's tin mines to finance King Edward I's royal campaigns with liquid bullion.",
+    "Found Ashridge Priory to enshrine the relic of the Holy Blood for his dynasty's salvation.",
+    "Govern England as Regent with incorruptible justice, punishing judicial corruption."
+  ],
+  "Values": [
+    "Believes vast wealth is a sacred trust from God, meant to sustain public justice and order.",
+    "Holds feudal fidelity to the Plantagenet crown as his immutable duty, serving as Regent."
+  ],
+  "Fears": [
+    "Dying without surviving issue, resulting in the extinction of his sovereign earldom.",
+    "Judicial corruption undermining the rule of law painstakingly forged under King Edward."
+  ],
+  "SpeechStyle": "Speaks with juristic gravitas and fiscal precision, commanding absolute administrative respect. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

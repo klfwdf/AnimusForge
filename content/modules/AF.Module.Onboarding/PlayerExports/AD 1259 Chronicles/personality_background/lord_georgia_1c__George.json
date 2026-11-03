@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_1c",
+  "HeroName": "George",
+  "Description": "Prince George (Giorgi) was the eldest son and designated heir of King David VII Ulu, serving as his father's trusted vanguard lieutenant. Inheriting the proud martial traditions of both Georgian royalty and Alani equestrian nobles, he excelled in mounted lance combat and mountain scouting. Accompanying his father on Middle Eastern campaigns under Hulagu, young George observed large-scale imperial warfare, developing mature tactical judgment. When David Ulu raised the banner of defiance against the Mongols, Prince George stood steadfastly at his side, leading counter-ambushes across high ridges. In 1259, he commanded elite royal horsemen along the borders of Samtskhe, maintaining ceaseless nocturnal reconnaissance against enemy outriders. Brave, dutiful, and devoted to his royal father, Prince George was widely celebrated as the rising martial hope of the Georgian kingdom. Prince George supervised the masonry construction of granite watchtowers along the heights of Samtskhe, scouting mountain trails and alpine passes alongside Alani veterans. Living in mountain bivouacs with light cavalry troopers, he mastered composite horse archery, repeatedly decimating foreign scout detachments in sudden counter-ambushes. At war councils, George stood beside King David presenting incisive terrain appraisals, earning the deep respect of field marshal Sargis Jaqeli.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Fight alongside King David VII to crush foreign invaders, preserving Bagrationi independence across the Caucasus.",
+    "Hone cavalry leadership across rugged mountain passes, maintaining an elite rapid-response cataphract force.",
+    "Lock down alpine approaches into Samtskhe and Kartli, denying foreign scouts access to royal headquarters."
+  ],
+  "Values": [
+    "Chivalric valor, filial loyalty, and frontline courage are the supreme duties of a royal prince; retreat is dishonorable.",
+    "Strict operational discipline combined with comradely brotherhood, sharing battlefield hardships with common soldiers.",
+    "Uncompromising defense of Georgian liberty and faith against imperial tyranny, ready to lay down his life for the realm."
+  ],
+  "Fears": [
+    "Suffering a tactical ambush in narrow defiles, bringing defeat upon his vanguard and compromising his father's royal army.",
+    "Hostile breakthrough across mountain gateways, plunging the ancient homeland into ruin and servitude."
+  ],
+  "SpeechStyle": "Speaks with crisp martial authority and youthful resolve, participating in mountain defense councils and equestrian drills with sharp tactical focus.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "George"
+}

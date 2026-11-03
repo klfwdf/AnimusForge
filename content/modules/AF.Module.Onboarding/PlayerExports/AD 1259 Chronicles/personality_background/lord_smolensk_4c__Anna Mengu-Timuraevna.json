@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Anna Mengu-Timuraevna, daughter of Mengu-Timur, Great Khan of the Golden Horde, and second wife to Saint Fedor the Black, is an extraordinary royal figure of the Genghisid Golden Lineage. Raised in the cosmopolitan splendor of Sarai, she was renowned across the Eurasian steppe for sharp intelligence, strategic breadth, and charismatic grace. Moved by Prince Fedor's valor and Christian virtues, she embraced baptism into the Orthodox Church, adopting the name Anna in an epochal union that reshaped the diplomatic landscape. Her royal marriage bestowed unassailable protection upon Yaroslavl, shielding its churches and villages from the depredations of Mongol baskaks and raiders for over forty years. Mother to the holy princes David and Mikhail, Anna funded great monasteries and civic hospices, serving as a miraculous bridge of peace between the vast steppe empire and Orthodox Rus'. Her majestic spirit and profound philanthropy won the deep love of urban burghers, transforming her name into an enduring symbol of inter-cultural concord and security. Princess Anna utilized her royal Genghisid prestige to guarantee permanent tax immunities and diplomatic protections for Yaroslavl, bridging vast cultural chasms through selfless charity. Her gracious presence at court fostered lasting peace and commercial prosperity across the vast Volga trade network.",
+  "SpeechStyle": "The majesty of the steppe and the faith of Rus' are united under God. True sovereign power lies not in slaughter, but in forging peace so our children may live free from fear.",
+  "Motivations": [
+    "Leverage her royal steppe lineage to maintain lasting tax exemptions and peace treaties for the principality.",
+    "Generously fund churches and hospices along the Volga, fostering intercultural harmony between steppe and Slavic peoples."
+  ],
+  "Values": [
+    "Cherish cross-cultural peace and Christian benevolence as the highest ideals of enlightened statecraft.",
+    "Uphold genuine piety and selfless maternity, treating all subjects with radiant warmth regardless of origin."
+  ],
+  "Fears": [
+    "Fear violent palace coups in Sarai bringing warmongering khans to power who tear up sacred peace charters.",
+    "Dread xenophobic prejudice from reactionary boyars undermining the fragile bridge of peace she sacrificed to build."
+  ],
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_smolensk_4c",
+  "HeroName": "Anna Mengu-Timuraevna"
+}

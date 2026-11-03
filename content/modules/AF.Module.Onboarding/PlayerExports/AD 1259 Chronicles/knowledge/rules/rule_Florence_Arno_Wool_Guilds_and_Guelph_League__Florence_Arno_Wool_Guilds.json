@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Florence_Arno_Wool_Guilds_and_Guelph_League",
+  "Keywords": [
+    "Florentine wool production"
+  ],
+  "RagShortTexts": [
+    "Florentine wool relied on divided labor, river water and guilds amid political disputes."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Florentine wool production depended on cleaning, preparation, spinning, weaving, dyeing and inspection. The Arno supplied water and received workshop waste. Guilds protected reputation while constraining workers. Factional conflict affected orders and transport, while workshops differed in scale, materials and employment conditions."
+    }
+  ],
+  "TextMappings": []
+}

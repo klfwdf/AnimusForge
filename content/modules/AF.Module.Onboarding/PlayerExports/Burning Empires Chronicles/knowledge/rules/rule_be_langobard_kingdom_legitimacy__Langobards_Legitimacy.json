@@ -1,0 +1,59 @@
+{
+  "Id": "be_langobard_kingdom_legitimacy",
+  "Keywords": [
+    "Langobards Legitimacy",
+    "Agelmund’s religious and protective standing"
+  ],
+  "RagShortTexts": [
+    "Reputation, oaths and distribution support Agelmund.",
+    "Unprotected settlements cause households to question royal patronage."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Reputation, oaths and distribution win recognition. Religious custom connects kin, but unprotected settlements cause doubts about royal patronage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Reputation, oaths and distribution support Agelmund. Military recognition also rests on rewards and relief; a title needs willing action. Unprotected settlements cause households to question royal patronage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Unprotected settlements cause households to question royal patronage. Nominal rights require local execution, with consent and supply both shaping authority. Reputation, oaths and distribution support Agelmund."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Reputation, oaths and distribution support Agelmund. Households judge rule through protected families, land and responses to appeals. Unprotected settlements cause households to question royal patronage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Unprotected settlements cause households to question royal patronage. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Reputation, oaths and distribution support Agelmund."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

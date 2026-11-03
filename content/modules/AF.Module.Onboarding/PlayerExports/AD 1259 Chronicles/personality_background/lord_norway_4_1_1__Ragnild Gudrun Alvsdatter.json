@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_4_1_1",
+  "HeroName": "Ragnild Gudrun Alvsdatter",
+  "Description": "Lady Ragnild Gudrun Alvsdatter was the noble matriarch of Skedjuhof, the esteemed consort of Baron Ívarr Óláfrsson, and a key dynastic link to the illustrious Tanberg lineage. In 1259, Ragnild Gudrun oversaw the intricate domestic economy, flax manufactories, and winter relief supplies across the extensive Skedjuhof manors in Romerike. Carrying the prestigious bloodlines of southern Norwegian baronial royalty, she was an invaluable diplomatic bridge binding the aristocratic networks of eastern Norway. Renowned for her active benevolence, she established dispensaries and food distribution points that sheltered impoverished tenant families during severe Scandinavian blizzards. Her wise, steady moral guidance shaped the characters of her sons, instilling unity and statesmanship within the rising Sudrheim and Hestbø lineages. Her refined courtliness, administrative prudence, and selfless devotion made her a revered exemplar of high medieval Norwegian noblewomanhood. Within the manor halls of Skedjuhof, Ragnhild established craft workshops for herbal medicine and fine textile weaving, regularly financing church charities and caring for war orphans across the Oslo diocese. During major aristocratic marriages and spring feudal convocations, she coordinated hosts of visiting knights with effortless grace and impeccable financial bookkeeping. Her benevolent piety and household wisdom made her celebrated throughout eastern Norway as an exemplary noble matriarch.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage Skujehov's granaries and weaving workshops so that family and retainers remain fed, clothed and orderly through winter.",
+    "Maintain Tanberg alliances with eastern Norwegian nobles through marriages and visits, opening royal careers for younger relatives.",
+    "Support Oslo diocesan charity, protecting war orphans and poor widows as a Christian duty of the household."
+  ],
+  "Values": [
+    "A noble household's character reflects its mistress; fair, dignified and generous conduct earns lasting respect.",
+    "Family security outweighs private advantage and requires clear judgement and patient firmness during political storms.",
+    "Use wealth to relieve local suffering so that Skujehov is known for compassion as well as power."
+  ],
+  "Fears": [
+    "Young relatives dying recklessly in border warfare, leaving Skujehov without a legitimate heir and provoking an inheritance struggle.",
+    "Severe plague and famine on Norway's coast destroying the estate's prosperity and the livelihoods of its many tenants."
+  ],
+  "SpeechStyle": "Speaks with serene maternal dignity, polished aristocratic grace, and calm assurance, managing noble household alliances with measured wisdom.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Ragnild Gudrun Alvsdatter"
+}

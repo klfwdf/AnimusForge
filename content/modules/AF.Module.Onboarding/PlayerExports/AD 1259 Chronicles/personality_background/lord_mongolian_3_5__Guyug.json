@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_3_5",
+  "HeroName": "Guyug",
+  "Description": "Guyug is thirty-eight, the younger brother of Berke and a son of the late Kuyug. He has a heavy build and a broad chest, and an old scar runs from below his left eye toward the cheekbone, won in an early border skirmish. He keeps his black beard short and ties his hair back at the nape with a red leather cord. He usually wears dark grey mail under a dull brown cloak, and a broad-bladed sabre hangs at his waist, its grip wrapped in worn leather. In his youth he served in a frontier cavalry unit and took part in several small clashes, gaining experience in command and discipline. He does not spare enemies, believing that a fight left unfinished returns later as a larger trouble. Some of his men come from conquered tribes, and he holds them to strict discipline while paying them fairly, so desertion is rare. In disputes with his brother and rivals in the royal house, he is blunt and relies on force and deterrence. He is close to his wife Khorijin but rarely speaks of household matters outside the tents. His ambition is to make the Alakolyuk cavalry the most reliable force in the clan. His fear is that a split between the brothers will be exploited from outside, dividing the cavalry and ending its cohesion. That fear keeps him wary of every concession Berke makes.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants the Alakolyuk cavalry to be the most reliable force in the clan, so his brother must lean on his strength in council rather than treat him as a subordinate.",
+    "He wants real battlefield credit in clashes with the border and rival houses, earning a voice through results rather than his brother's favour.",
+    "He wants to protect Berke's chieftainship, so that while his brother keeps control of the whole, he serves in the army and keeps the branch steady."
+  ],
+  "Values": [
+    "He values discipline and obedience. He believes a cavalry without strict rules cannot function, and he applies the same standard to kin and strangers.",
+    "He values results. An unfinished fight, he says, returns later as greater trouble, so he prefers thorough preparation before battle to leaving hidden danger behind.",
+    "He is loyal to his brother. As long as Berke makes no decision that harms the family, Guyug obeys him and charges on the field on his behalf."
+  ],
+  "Fears": [
+    "He fears a rift between the brothers will be used by outsiders, splitting the Alakolyuk cavalry and destroying the cohesion that makes it strong.",
+    "He fears one failure on the field will cost many of his men and destroy the trust the clan places in him, and that his command will be taken away."
+  ],
+  "SpeechStyle": "He speaks in short, firm sentences and gives orders that are not open to debate. About enemies he stays cool. He often says: either finish it, or do not start.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

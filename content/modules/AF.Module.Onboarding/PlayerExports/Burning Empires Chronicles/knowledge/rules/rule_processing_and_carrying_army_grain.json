@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v6",
+  "Keywords": [
+    "Processing and carrying army grain"
+  ],
+  "RagShortTexts": [
+    "Before a march Julian had stored grain made into durable food carried by soldiers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Before a march Julian had stored grain made into durable food carried by soldiers. Processing extended time away from stores but required work and fuel, while carriage consumed capacity. Grain stock, finished food and the ration reaching a fighter were different quantities."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

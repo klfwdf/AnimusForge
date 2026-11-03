@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_6e",
+  "HeroName": "Peder Jonsøn Rane",
+  "Description": "Sir Peder Jonsøn Rane of Zealand, youngest son of Sir Jon Ranesøn, was a vibrant and perceptive young knight of the Rane household. Educated in courtly protocol and administrative scribal duties within the royal retinue at Copenhagen, Peder gained early familiarity with high politics. However, as the bitter feud between King Eric V and the baronial coalition led by Marshal Stig erupted into open violence, Peder was inescapably drawn into the maelstrom by his older brother Rane. Demonstrating astute wariness under mounting peril, Peder managed clandestine dispatch lines, coordinated equestrian remounts, and secured safe havens across the Great Belt, fighting to shield his kinship network from total monarchical proscription. During his service at the royal court in Copenhagen, Peder compiled secret records of crown decrees and court dispatches, warning his family of gathering political storms. When the kingdom plunged into martial law following the Finderup regicide, Peder donned coarse fisherman's wool, braving tempestuous seas in an open boat across the Great Belt to smuggle land deeds and younger siblings to safety. His unwavering resilience and selfless courage in the shadow of the executioner's axe preserved his lineage, remembered in regional lore as a heroic savior of his blood.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve escape routes and safe houses across the Great Belt to protect his kinsmen from lethal royal retribution.",
+    "Safeguard family land deeds and movable bullion in secret caches to ensure the eventual restoration of their name."
+  ],
+  "Values": [
+    "Believes preserving family bloodlines through covert prudence is far nobler than rushing into futile destruction.",
+    "Reveres inviolable kin loyalty and steadfast secrecy, enduring severe adversity to preserve his heritage."
+  ],
+  "Fears": [
+    "Dreads royal bounty hunters discovering their secluded sanctuaries and dragging his entire kin to the scaffold."
+  ],
+  "SpeechStyle": "Speaks in guarded, rapid cadences with watchful restraint, his youthful intensity tempered by hardened resolve.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

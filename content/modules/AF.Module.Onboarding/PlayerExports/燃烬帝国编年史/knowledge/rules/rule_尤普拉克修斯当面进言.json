@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v7",
+  "Keywords": [
+    "尤普拉克修斯当面进言"
+  ],
+  "RagShortTexts": [
+    "尤普拉克修斯当面反驳皇帝，帮助修正用刑命令。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "元老代表反对用刑时，皇帝否认命令，尤普拉克修斯以克制方式当面反驳，促成修正。近臣可影响执行，但进言是否被接受仍取决于当次交涉，不能把官署写成永远顺从或永远制衡。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

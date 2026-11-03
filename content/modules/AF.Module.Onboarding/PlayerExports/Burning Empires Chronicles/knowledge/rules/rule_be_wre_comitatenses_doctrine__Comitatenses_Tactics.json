@@ -1,0 +1,38 @@
+{
+  "Id": "be_wre_comitatenses_doctrine",
+  "Keywords": [
+    "Roman field army assembly and coordination"
+  ],
+  "RagShortTexts": [
+    "Roman field armies brought infantry, cavalry and supplies together for particular ground."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Roman field armies concentrated infantry, cavalry and other troops for campaigns and substantial threats. Units differed in tasks, equipment and experience. Marches required camps, provisions and road security. In battle, commanders needed mutual support between arms and room to transmit orders and regroup."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A soldier kept up with the unit, received rations in camp and checked weapons. In contact, standards, audible commands and spacing mattered alongside fighting skill. A retreating flank or congested road could undermine the original deployment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Assembling a field army required men, provisions and transport together, rather than a head count alone. At Strasbourg in 357, pressure on units, reinforcement and continued resistance all affected the result. Commanders needed ways to handle local disorder rather than one formation for every terrain."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

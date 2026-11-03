@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_7b",
+  "HeroName": "John I de Brienne, Count of Eu",
+  "Description": "John I de Brienne was the eldest son and heir of Alphonse de Brienne, Grand Chamberlain of France, and Countess Marie de Lusignan, succeeding as Count of Eu. Educated in the royal court of Paris and the coastal fortresses of Normandy, he was trained in heavy shock cavalry and naval warfare tactics. Carrying the blood of Jerusalem's kings and the royal house of León, John burned with chivalric ambition to emulate his grandfather's crusading fame. In 1259, as reports of Mamluk advances reached France, young John actively assisted his father in mustering transport vessels and armored retinues in Normandy. He personally led naval patrols securing the English Channel against rogue privateers, ensuring safe communications for royal supply lines. Bold, high-spirited, and visionary, John pledged his sword to future crusades, standing as a premier champion of Frankish chivalry. John I de Brienne was widely celebrated among French chivalric circles for ferocious martial skill, having earned knightly laurels in frontier campaigns across Normandy and Aquitaine. Within the County of Eu, he established tourney grounds and archery ranges, personally patronizing impoverished yet valiant squires to raise disciplined companies of heavy knights. In 1259, John conferred frequently with Templar masters in Paris, preparing his bannerets to embark for Outremer upon royal summons. His uncompromising integrity and tactical mastery marked him as a preeminent crusading commander.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve renown on European and Levantine battlefields, validating his royal Brienne heritage through chivalric feats of arms.",
+    "Command elite Norman cavalry retinues beside his father, defending the County of Eu while preparing for eastern deployments.",
+    "Master combined naval-cavalry operations to lead vanguard assaults in future general crusades relieving the Holy Land."
+  ],
+  "Values": [
+    "Chivalric honor is won through battlefield courage; retreating before the enemies of the Cross is an indelible disgrace.",
+    "Upholding feudal covenants and pious faith with absolute transparency, despising petty intrigue that tarnishes noble houses.",
+    "Sharing military hardships with his men, leading from the front to forge an unbreakable fighting spirit in his regiment."
+  ],
+  "Fears": [
+    "Perishing in a sudden Channel storm before having the opportunity to lead his crusader host into battle in the Holy Land.",
+    "Outremer falling entirely before western armies can mobilize, denying him the sacred duty of reclaiming his ancestral throne."
+  ],
+  "SpeechStyle": "Speaks with crisp martial authority and spirited princely ambition, reviewing naval squadrons and crusading logistics with energetic precision.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "John I de Brienne, Count of Eu"
+}

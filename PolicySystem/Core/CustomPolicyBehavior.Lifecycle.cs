@@ -953,7 +953,7 @@ public sealed partial class CustomPolicyBehavior
 			string scope = BuildLocalPolicyAgendaScopeText(item.Fiefs);
 			string effects = LimitDisplayChars(BuildLocalPolicyAgendaEffectText(record), KingdomAgendaLocalPolicyEffectChars);
 			string feedback = LimitDisplayChars(CleanPolicyDisplayText(FirstNonEmpty(record.PublicFeedback, PolicyGenerationPromptTexts.Get("NpcUnclearFeedback", "feedback unclear"))), KingdomAgendaLocalPolicyFeedbackChars);
-			string line = "- 《" + LimitDisplayChars(FirstNonEmpty(record.PolicyName, PolicyGenerationPromptTexts.Get("LocalAgendaUnnamed", "unnamed local policy")), KingdomAgendaLocalPolicyNameChars) + "》"
+			string line = "- " + PolicyCompatibilityTexts.OpenTitleQuote + LimitDisplayChars(FirstNonEmpty(record.PolicyName, PolicyGenerationPromptTexts.Get("LocalAgendaUnnamed", "unnamed local policy")), KingdomAgendaLocalPolicyNameChars) + PolicyCompatibilityTexts.CloseTitleQuote
 				+ PolicyGenerationPromptTexts.Get("NpcDigestField", " | Summary: ") + summary
 				+ PolicyGenerationPromptTexts.Get("LocalAgendaScope", " | Scope: ") + scope
 				+ PolicyGenerationPromptTexts.Get("LocalAgendaDaily", " | Daily: ") + effects
@@ -1991,7 +1991,7 @@ public sealed partial class CustomPolicyBehavior
 		}
 		catch (Exception ex)
 		{
-			failureReason = "Failed to set AF policy agenda review time of " + reviewDays.ToString("0.#", CultureInfo.InvariantCulture) + " days：" + ex.Message;
+			failureReason = "Failed to set AF policy agenda review time of " + reviewDays.ToString("0.#", CultureInfo.InvariantCulture) + " days: " + ex.Message;
 			return false;
 		}
 	}

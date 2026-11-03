@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Villehardouin_and_Morea_Chivalry",
+  "Keywords": [
+    "House of Villehardouin Cross Flory Sable",
+    "Principality of Achaea Frankish Chivalry",
+    "Guillaume II Defeat at Pelagonia",
+    "Chronicle of the Morea Feudal Lore"
+  ],
+  "RagShortTexts": [
+    "Guillaume's ransom bound him to surrender Mystras, Monemvasia and Maina to Michael VIII.",
+    "Oil presses ran through the autumn, and each family paid a fixed measure at the lord's press."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Villehardouin lords came from Champagne and won the Principality of Achaea in the Peloponnese after the Fourth Crusade. Its princes governed the Morea from fortified towns and mountain castles, with Mystras as the seat of a court that prized chivalry and feudal ceremony. The Chronicle of the Morea, a verse history of the principality, preserves the court's ideals of arms, oath and lordship. Prince Guillaume II lost his freedom at the battle of Pelagonia in 1259, when Nicaean forces captured him and his army. His capture ended Frankish dominance in southern Greece, because the ransom required him to surrender key fortresses and prompted his household to seek help from Angevin protectors in the west."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Guillaume's ransom bound him to surrender Mystras, Monemvasia and Maina to Michael VIII. Those fortresses had defended the Frankish lordships for decades, and their loss meant that the barons had to reorganise their fiefs and their garrisons while the prince sought help from Angevin kinsmen in Naples and Sicily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Greek olive farmers delivered customary tithes to Frankish castellans in exchange for coastal anti-corsair patrols, living under a mixed Franco-Byzantine rural feudal balance. Oil presses ran through the autumn, and each family paid a fixed measure at the lord's press. Villagers kept their Greek saints, while sergeants watched the coast road."
+    }
+  ],
+  "TextMappings": []
+}

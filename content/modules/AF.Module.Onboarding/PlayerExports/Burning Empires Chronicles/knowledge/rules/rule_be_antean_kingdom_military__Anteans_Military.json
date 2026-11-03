@@ -1,0 +1,59 @@
+{
+  "Id": "be_antean_kingdom_military",
+  "Keywords": [
+    "Anteans Military",
+    "Antean woodland foot fighting"
+  ],
+  "RagShortTexts": [
+    "Woods, rivers and warnings help foot fighters avoid cavalry advantages.",
+    "Pursuit lengthens supply, messages and routes home."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Banks, woods and warnings help foot fighters avoid cavalry advantages. Pursuit lengthens supply and messages; people who know exits help fighters return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Woods, rivers and warnings help foot fighters avoid cavalry advantages. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Pursuit lengthens supply, messages and routes home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Pursuit lengthens supply, messages and routes home. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Woods, rivers and warnings help foot fighters avoid cavalry advantages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Woods, rivers and warnings help foot fighters avoid cavalry advantages. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Pursuit lengthens supply, messages and routes home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Pursuit lengthens supply, messages and routes home. Repair, carrying and care also use people, while daily supply continues after troops pass. Woods, rivers and warnings help foot fighters avoid cavalry advantages."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

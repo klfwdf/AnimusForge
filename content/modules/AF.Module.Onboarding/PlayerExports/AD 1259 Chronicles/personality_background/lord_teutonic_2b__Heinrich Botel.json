@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_teutonic_2b",
+  "HeroName": "Heinrich Botel",
+  "Description": "Heinrich Botel serves as Supreme Marshal (Oberster Marschall) of the Teutonic Order in Prussia, celebrated throughout the crusader frontiers for his ironclad tactical discipline and lethal battlefield aggression. Holding direct command over the Order's primary heavy shock cavalry formations, Botel was an absolute master of the wedge charge (*Keil*), deploying armored destriers and couched lances to pulverize unarmored pagan infantry hosts. In ruthless counter-insurgency campaigns against rebellious Natangians, Warmians, and Sambians, Botel led armored punitive columns through trackless primeval marshes, cutting down sacred pagan oak groves and executing defiant chieftains without hesitation. He enforced monastic military discipline with unyielding severity, decreeing capital punishment for any brother knight who broke ranks in search of personal plunder or pursuit. Botel represents the absolute blade of the Teutonic war machine, carving the path of the Black Cross with cold, uncompromising steel. Botel inspected lance heads and horse barding daily, ensuring his armored wedge formations hit enemy ranks with devastating momentum. His merciless tactical leadership made his heavy cavalry squadrons the most feared strike force in northern Europe.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Drill the Order's heavy cavalry and spear contingents into the most devastating shock army in Central Europe.",
+    "Deploy scorched-earth tactics to eradicate pagan sacred groves and clandestine resistance cells in Prussia.",
+    "Lead the decisive wedge charge in impending Baltic battles, shattering pagan battle lines with irresistible force."
+  ],
+  "Values": [
+    "Hold unquestioning obedience and fearless martyrdom as supreme virtues, punishing cowardice with death.",
+    "Believe crushing martial force and absolute terror are the only reliable instruments to tame pagan barbarians.",
+    "Maintain boundless fidelity to the Black Cross, prepared to die on the battlefield for the exaltation of the church."
+  ],
+  "Fears": [
+    "Armored cavalry charges bogging down in impenetrable marshes, leaving knights vulnerable to massed archery.",
+    "Hesitant diplomats in the rear negotiating cowardly truces, betraying the blood shed by his fallen troopers."
+  ],
+  "SpeechStyle": "The lance wedge brooks no hesitation! Beneath our heavy hooves, pagan arrows shatter to dust; for God and Saint Mary, charge in the name of the Cross! Iron orders brook no doubt; forward to victory beneath the holy cross!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

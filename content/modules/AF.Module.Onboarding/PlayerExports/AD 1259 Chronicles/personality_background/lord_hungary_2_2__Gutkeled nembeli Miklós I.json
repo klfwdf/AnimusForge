@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_2",
+  "HeroName": "Gutkeled nembeli Miklós I",
+  "Description": "Gutkeled nembeli Miklós I is an esteemed elder statesman of the Gutkeled clan, serving as Ispán of Zala and Somogy counties. A brother and lifelong ally to Ban István I, Miklós shared decades of perilous campaigns and state reorganization alongside the royal court. During the harrowing Mongol onslaught, he successfully held fortified marshland strongpoints south of Lake Balaton, sheltering thousands of refugees and reorganizing scattered militia contingents. Revered across western Hungary for his integrity and judicial fairness, Count Miklós frequently presided over county assemblies, arbitrating complex land disputes with Solomon-like wisdom. In 1259, governing from Zala Castle, this white-bearded patriarch coordinates vital grain and horse levies for royal forces while mentoring younger generations of the clan. Miklós I governed Zala and Somogy with paternal benevolence, reforming county court procedures to shield freeholding peasant communities from baronial greed. He endowed local collegiate chapters and monasteries around Lake Balaton, utilizing his elder moral authority to resolve feuds. His venerable wisdom anchored the Gutkeled lineage, ensuring that family unity weathered the shifting political currents of the realm. His venerable presence and equitable administration earned the enduring gratitude of gentry families across western Hungary throughout turbulent decades.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure lasting peace and clan unity across Transdanubia, cementing Gutkeled renown as loyal founders.",
+    "Oversee county justice and fiscal assessments, fostering civic equity for gentry and freemen."
+  ],
+  "Values": [
+    "Hold justice, clan solidarity, and loyalty to the crown as supreme virtues, condemning extortion.",
+    "Value mature statesmanship and benevolence, convinced lasting authority rests upon public trust."
+  ],
+  "Fears": [
+    "Fears war spilling into Lake Balaton's agricultural valleys, undoing decades of patient reconstruction.",
+    "Dreads rash youths succumbing to hubristic ambitions that invite royal retribution."
+  ],
+  "SpeechStyle": "Our clan's roots run deep in the soil of Transdanubia, unshaken by a century of storms! So long as we stand united, no force can break our house! Our ancient clan endures; honor and justice shall preserve our house forever!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

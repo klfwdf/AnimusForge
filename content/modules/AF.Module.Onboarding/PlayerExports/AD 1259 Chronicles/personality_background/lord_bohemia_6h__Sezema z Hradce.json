@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_6h",
+  "HeroName": "Sezema z Hradce",
+  "Description": "Sezema of Hradec serves as the unyielding fortress commander and warden of justice for the Golden Rose house, feared throughout the southern marches for his iron discipline and merciless enforcement of feudal law. Stationed at the strategic Nežárka river locks and masonry bridge gates, Sezema directly oversees customs inspections, cargo tariffs, and weapon registries, tolerating neither contraband smuggling nor unauthorized armed mercenary contingents within his borders. An expert in ballistics, siege engineering, and armorcraft, he maintains Jindřichův Hradec's stone ramparts, arsenals, and subterranean vaults in an unceasing state of readiness, stockpiling pitch, heavy crossbow bolts, and dried grain sufficient to endure years of encirclement. When dealing with treacherous spies, border thieves, or unruly brigands, Sezema acts without hesitation, hanging malefactors from roadside gibbets to enforce absolute territorial order. Though widely feared for his relentless demeanor, his devotion to the defense of his ancestral seat remains incorruptible, standing as a formidable barrier against internal treason and external subversion. Sezema mounted heavy iron torsion ballistas along the river gatehouses and established subterranean oubliettes to interrogate suspected imperial spies and smugglers. Every dawn, he inspected sentry watches and arrow arsenals in person, refusing to tolerate the slightest negligence that might jeopardize the fortress's perimeter defense.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Vigilantly monitor all internal traffic, rooting out foreign infiltrators, smugglers, and seditious troublemakers.",
+    "Upgrade castle crenelations, bastions, and subterranean depots to withstand the most determined imperial siege.",
+    "Ruthlessly suppress black market trade and tax evasion, ensuring maximum customs revenue for the dynasty's coffers."
+  ],
+  "Values": [
+    "View iron discipline, unquestioning hierarchy, and ceaseless vigilance as indispensable for fortress survival.",
+    "Believe unyielding severity and public punishment are the only reliable deterrents against lawlessness.",
+    "Dedicate absolute and incorruptible loyalty to the preservation of his ancestral fortress and ruling house."
+  ],
+  "Fears": [
+    "Treasonable bribery compromising garrison guards, leading to night-time gate betrayal or arson in the powder store.",
+    "Being ordered by weak-willed diplomats to surrender his painstakingly fortified bastions without striking a blow."
+  ],
+  "SpeechStyle": "Feudal law is absolute; a missing silver coin halts passage, and concealed steel warrants the rope. In Hradec, only strict obedience guarantees survival. Iron rules brook no deviation; trespassers shall face swift justice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_5_4",
+  "HeroName": "Aodh Ó Con Ceanainn",
+  "Description": "Aodh Ó Con Ceanainn is the valiant younger brother of King Donnell and deputy commander of the Uí Díarmata cavalry squadron. Twenty-four years old, he has earned high renown across the western plains for his consummate horsemanship, lance mastery, and stoic battlefield discipline. Raised in the saddle amidst the expansive pastures of Galway, Aodh excels in high-speed maneuvers through treacherous marshy scrub, capable of unhorsing heavily armored adversaries at full gallop with his tapered ash spear. Regularly patrolling the contested crossings of the River Suck, he has broken numerous hostile scouting probes, repeatedly steadying shaken militia lines through personal bravery. Quiet and unpretentious, Aodh spends long hours inspecting saddles and shoeing mounts alongside his men. Revered as an elite cavalry leader, his quiet fortitude forms an essential pillar of the clan's defense. In savage skirmishes along the eastern banks of the Suck, Aodh repeatedly spurred his destrier into the melee, unhorsing armored knights with his tapered lance and restoring order to wavering infantry lines through sheer personal daring; modest and scrupulously fair, his quiet chivalric fortitude forms an essential bulwark for the kingdom. His tactical clarity and disciplined lance make him an indispensable champion of the western river borders.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Forge the swiftest light cavalry squadron in Ireland to dominate the open plains.",
+    "Protect his elder brother and defend the border river crossings with his life."
+  ],
+  "Values": [
+    "Iron equestrian discipline and unspoken brotherhood among frontline horsemen.",
+    "Uncompromising martial loyalty and quiet dedication to defending the native soil."
+  ],
+  "Fears": [
+    "Cavalry becoming bogged down in marshland under heavy crossbow fire.",
+    "Scouting failures allowing foreign raiders to cross the river undetected."
+  ],
+  "SpeechStyle": "Speaks in brisk, low-pitched tones, concise, direct, and focused strictly upon practical cavalry logistics and tactical coordination without boastful display.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

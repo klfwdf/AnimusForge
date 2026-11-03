@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_15",
+  "HeroName": "Yeshichin-Eghechy",
+  "Description": "Yeshichin-Eghechy is listed at age 26 in the game data. She is a wife of Hülegü and the mother of two sons, Yesüder and Hulachu. The game data gives her name, sex and children, and historical sources offer no reliable biography, so this persona invents no dates, battles or marriages and draws only on the general conditions of the Ilkhanid court. The look below is a game-setting choice: she is well-proportioned with a clear face, wears a grey-green felt robe, and a worn silver bracelet on one wrist. Her movements are unhurried. Her days centre on her two sons, and she oversees their wet-nurses and tutors and arranges the court's festivals and ceremonies herself. The game setting presents her as a woman from a family of herders who brought a practical habit of counting into the household. Before she plans anything, she weighs the people and supplies involved. She is neither warm nor cold toward the other wives, and at banquets she quietly watches the seating and the faces of the guests to judge whom she can trust. Because her sons are close in age, she works hard to treat them alike and never shows favour in front of others. Her aim is to see each son find his place among Hülegü's children. Her private dread is that if the brothers are treated differently because of age or birth, the bonds between them will break, and she will be unable to repair them.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants each of her two sons to find a place among Hülegü's children, so that neither is slighted because of age or birth.",
+    "She wants to keep a balance among the other wives and avoid factional quarrels, so that her children grow up in a secure household.",
+    "She wants to organise court festivals and ceremonies herself, building her network and laying a firm path for her sons' futures."
+  ],
+  "Values": [
+    "She values fairness and equal treatment, insisting on caring for both sons alike so that no favour breeds resentment between them.",
+    "She values education and courtesy, believing good teaching spares children from errors at court and earns them lasting respect.",
+    "She values patience and measure, preferring slow and steady work to any hasty decision made under pressure from others."
+  ],
+  "Fears": [
+    "She fears that the two sons will be treated differently because of age or birth, and that the bonds between the brothers will then break for good.",
+    "She fears that the factional struggles of the court will reach her children and sacrifice their futures to the quarrels of adults."
+  ],
+  "SpeechStyle": "Her voice is calm and her wording considered. She lets others finish before she replies. When she speaks of her sons she slows down, and her words carry reminders and hopes with a faint worry.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

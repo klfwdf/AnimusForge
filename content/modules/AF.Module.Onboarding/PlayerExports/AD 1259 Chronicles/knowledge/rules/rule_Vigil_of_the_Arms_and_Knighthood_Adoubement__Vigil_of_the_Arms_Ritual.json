@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Vigil_of_the_Arms_and_Knighthood_Adoubement",
+  "Keywords": [
+    "Vigil of the Arms Ritual",
+    "Knighthood Adoubement Accolade",
+    "Golden Spurs Investiture",
+    "Chivalric Oath of Virtues"
+  ],
+  "RagShortTexts": [
+    "The knighting ritual required overnight chapel prayer vigil, ceremonial bath, and the sword."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Elevating a squire to knighthood was a sacred rite. The candidate bathed in ritual purity and kept a silent vigil of arms before the altar of a chapel, praying over his sword and armor through the night. At dawn mass the priest blessed his arming sword, senior sponsors fastened gilded spurs to his heels, and the presiding lord delivered the accolade, a blow on the shoulder or neck with the flat of the blade. The rite placed the new knight under a code that bound him to the Church, to the protection of the weak, and to the honor of his family. Its prestige gave the knightly class a shared identity that set it apart from the mounted soldiers below it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The accolade is the one blow a knight takes without striking back. Accepting the consecrated sword binds him to defend the Church, protect the defenseless, and put heraldic honor above personal gain. A lord who grants the accolade stakes his own reputation on the new knight's conduct in war and peace."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gilded-spur lords swear lofty vows before the altar, but in the mud of war iron speaks plainest. A knight surrounded by enemies may be spared for ransom, while foot levies are ridden down without a second glance. Stay close to your sergeant, keep your shield on the arm you can still feel, and remember that a fallen man's wergild is worth less than a horse."
+    }
+  ],
+  "TextMappings": []
+}

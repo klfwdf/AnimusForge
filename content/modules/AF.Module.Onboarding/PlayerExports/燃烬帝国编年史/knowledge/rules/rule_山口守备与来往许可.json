@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v10",
+  "Keywords": [
+    "山口守备与来往许可"
+  ],
+  "RagShortTexts": [
+    "狭路与入口防护使过境者无法随意展开队伍，也给守方一个交涉位置。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狭路与入口防护使过境者无法随意展开队伍，也给守方一个交涉位置。持械来客、商队与迁移家庭各有不同需求：前者关乎安全，后两者还须安排牲畜与供给。让一支使团通过不代表允许整支军队进入。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

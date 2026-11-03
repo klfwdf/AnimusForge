@@ -1,0 +1,59 @@
+{
+  "Id": "be_saxon_kingdom_economy",
+  "Keywords": [
+    "Saxons Trade",
+    "Saxon coastal fishing and ship timber"
+  ],
+  "RagShortTexts": [
+    "Tulifurdum farming, fishing and estuary exchange feed crews.",
+    "Lost vessels and long voyages also damage household transport and farming."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tulifurdum farming, herding, fishing and estuary exchange sustain crews. Vessels and repair materials are valuable household assets; long voyages remove workers from fields and fishing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Tulifurdum farming, fishing and estuary exchange feed crews. Traveling followers need real food from this production; valuables still require a buyer and exchange. Lost vessels and long voyages also damage household transport and farming."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lost vessels and long voyages also damage household transport and farming. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Tulifurdum farming, fishing and estuary exchange feed crews."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Tulifurdum farming, fishing and estuary exchange feed crews. Households need meals and the means to keep producing after delivering goods. Lost vessels and long voyages also damage household transport and farming."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lost vessels and long voyages also damage household transport and farming. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Tulifurdum farming, fishing and estuary exchange feed crews."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

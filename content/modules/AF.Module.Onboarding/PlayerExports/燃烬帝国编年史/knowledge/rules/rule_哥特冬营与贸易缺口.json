@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v5",
+  "Keywords": [
+    "哥特冬营与贸易缺口"
+  ],
+  "RagShortTexts": [
+    "战役与贸易中断让哥特居民缺少必需品，停战因而有家庭层面的价值。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "战役与贸易中断让哥特居民缺少必需品，停战因而有家庭层面的价值。车队能搬走库存，却不能创造已经短缺的货物。长时间离开市场的负担不只落在战士身上。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

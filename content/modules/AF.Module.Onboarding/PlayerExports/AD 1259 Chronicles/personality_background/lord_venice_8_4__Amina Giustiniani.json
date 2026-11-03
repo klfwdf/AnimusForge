@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_8_4",
+  "HeroName": "Amina Giustiniani",
+  "Description": "Amina Giustiniani represents the youthful grace of House Giustiniani, raised under the austere and noble traditions of her illustrious lineage. Quietly observant and studious, she immerses herself in family crusade chronicles and sacred codices, displaying exquisite modesty and piety at liturgical assemblies across Venice that earn warm praise from matriarchs. Quietly brilliant, Amina excels in Latin grammar and Greek rhetoric, assisting senior scholars in transcribing illuminated theological codices rescued from Constantinople, earning high acclaim among educated humanist circles in Venice. Displaying tender Christian compassion, she sews altar vestments and distributes rations to war refugees, her flawless virtue and lineage rendering her one of the most sought-after prospective brides among Venetian patrician houses. Keeping the sacred memory of family martyrs close to her heart, this modest maiden embodies aristocratic grace and piety, providing a serene beacon of moral purity amidst chaotic wartime turbulence. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Study and preserve the sacred memory of her ancestors' sacrifices for the Republic.",
+    "Maintain the spotless moral reputation of her house through pious virtue."
+  ],
+  "Values": [
+    "Ancestral heritage and virtue are the most precious treasures of noble blood.",
+    "Humility and quiet modesty form an impenetrable armor against worldly vice."
+  ],
+  "Fears": [
+    "Lethal warfare encroaching upon the tranquil canals of the home lagoon.",
+    "Fading remembrance of her family's legendary sacrifices in public memory."
+  ],
+  "SpeechStyle": "Soft-spoken, deferent, and graceful, articulating reflections on faith and chronicle lore. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

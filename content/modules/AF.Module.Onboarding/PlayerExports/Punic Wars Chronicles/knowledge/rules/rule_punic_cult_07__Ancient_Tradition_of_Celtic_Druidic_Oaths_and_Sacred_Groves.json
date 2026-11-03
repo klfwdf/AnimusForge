@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_cult_07",
+  "Name": "Ancient Tradition of Celtic Druidic Oaths and Sacred Groves",
+  "Keywords": [
+    "rule_punic_cult_07",
+    "Sacred Code of Celtic Druidic Oaths and Sacred Groves",
+    "Civic Rites Celtic Druidic Oaths and Sacred Groves",
+    "Ancestral Law Celtic Druidic Oaths and Sacred Groves"
+  ],
+  "RagShortTexts": [
+    "The institutional tradition of Celtic Druidic Oaths and Sacred Groves defined social..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The social order of antiquity was rooted in Celtic Druidic Oaths and Sacred Groves. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Without Celtic Druidic Oaths and Sacred Groves, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "From childhood our elders taught us to revere Celtic Druidic Oaths and Sacred Groves. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+    }
+  ],
+  "TextMappings": []
+}

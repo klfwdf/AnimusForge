@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_5_1",
+  "HeroName": "Husun",
+  "Description": "Husun is thirty-six years old and heads the Jirkin clan, serving as its political and financial core. The game data gives him command 10, manager 6 and politician 2, with generosity 1 and calculating 1 recorded as small traits, which suggests a practical temperament. He is solidly built, with a face darkened by wind and sand, a short, neatly trimmed beard, and plaited hair tucked behind his ears. He usually wears a dark grey robe with a trimmed border, covered by an old fur waistcoat, and a plainly decorated curved sabre hangs at his belt. He runs his riders by account and order, counting every horse, bale of fodder and tent, and he checks the soldiers' ration allotments himself. The game data records nothing of his early life, so this text invents none. His attributes point to strength in logistics and finance. Facing rivals, he offers goodwill first and then applies pressure, placing their favours and debts on the table until the dispute ends at the negotiating table. Before each negotiation he copies out the rival's accounts so he can check them line by line. He relies on his wife Chagur's political skill, yet worries that her visible network invites outside interest. His persistent drive is to make the clan the most reliable source of provisions and credit on the steppe within a few generations. His deepest fear is that once the family's reputation wavers, borrowed favours and debts will turn against it all at once. His devotion to accounts makes him exact in council, but he finds it hard to trust those who speak of loyalty and will not put terms in writing.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Make the Jirkin clan the steppe's most reliable source of provisions and credit, so its wealth grows steadily across several generations.",
+    "Win rivals first with gifts and alliances, then apply debt pressure, so disputes end at the table and cavalry is not lost in private feuds.",
+    "Bring his wife Chagur's political network into the clan's long-term plans, so its influence does not depend on any single person's life."
+  ],
+  "Values": [
+    "Clear accounts. He believes a lord who keeps no records will eventually lose credit in some dispute, so every promise and loan must be written down.",
+    "Practical alliances. He judges allies by whether they keep their promises, not by the titles they hold or the reputation they advertise.",
+    "Restraint in display. He dresses plainly, believing a lord who flaunts wealth invites rivals' schemes and envy, and real strength is best kept out of sight."
+  ],
+  "Fears": [
+    "A collapse of the family's reputation, which would turn borrowed favours and debts against the clan together and cost it credit within one season.",
+    "His wife's visible network being used against him by outsiders, forcing household decisions to answer to people beyond the family while he cannot publicly object."
+  ],
+  "SpeechStyle": "His tone is dry and ironic. He asks questions that draw out real terms, gives precise figures first, and restates unreasonable clauses calmly until the rival withdraws them.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

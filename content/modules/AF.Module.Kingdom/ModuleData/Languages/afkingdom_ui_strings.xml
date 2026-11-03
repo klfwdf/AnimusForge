@@ -106,7 +106,7 @@
     <string id="AF_KINGDOM_CW_Note_PledgeNoPeace" text="The king pledges not to make peace with {B} for {A} weeks." />
     <string id="AF_KINGDOM_CW_Note_PolicyRevoked" text="Policy revoked: {A}." />
     <string id="AF_KINGDOM_CW_Note_RedressPaid" text="The king pays {A} {B} denars in redress." />
-    <string id="AF_KINGDOM_CW_Note_PrivilegesGranted" text="The king recognizes the fief privileges of {A} and its peer clans." />
+    <string id="AF_KINGDOM_CW_Note_PrivilegesGranted" text="{A} and its fellow clans leave the kingdom with their fiefs." />
     <string id="AF_KINGDOM_CW_Note_Abdicated" text="The king abdicates; {A} succeeds." />
     <string id="AF_KINGDOM_CW_Note_ThroneSeized" text="{A} seizes the throne." />
     <string id="AF_KINGDOM_CW_Note_Seceded" text="{A} is recognized and secedes from {B}." />

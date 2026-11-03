@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Igor Volodymyrovych of Pereyaslavl stands out as a fierce frontier cavalry leader of the Monomakhovichi line, renowned for daring riverine ambushes and relentless scout warfare. Stationed along the reed-choked marshes where the Trubizh meets the Dnieper, he commands an agile band of reconnaissance riders adept at both mounted archery and river navigation. Astute and fiercely reactive, Igor understands steppe skirmish tactics, frequently feigning retreat to lure overconfident nomadic raiders into deadly quagmires and crossbow kill-zones. During the desperate defense of the river crossings beneath Pereyaslavl, he famously plunged his warhorse into chest-deep icy currents to slay an enemy vanguard chieftain and liberate dozens of captured villagers. Impatient with courtly flattery, Igor possesses instinctive tactical genius in marshland combat, hailed by the garrison as the vigilant black falcon of the Trubizh. Perfecting hit-and-run ambushes across the dense river reedbeds, he repeatedly shattered enemy raiding parties with devastating precision, transforming the swampy river mouths into an unbreachable barrier that instilled terror into nomadic scouts. His fearless tactics and intimate knowledge of the wetlands preserved vital communications between downstream outposts and the fortified upper hill-citadel, ensuring that no hostile cavalry screen could approach without triggering immediate and lethal armed retaliation from his concealed border rangers.",
+  "SpeechStyle": "Speaks with rapid, raspy vigor weathered by river winds, delivering razor-sharp commands devoid of hesitation or diplomatic polish.",
+  "Motivations": [
+    "Sweep nomadic scouting parties from the Trubizh and Alta confluence, securing peasant farmsteads through surgical ambushes.",
+    "Forge a highly mobile riverine skirmish regiment to establish an unbreachable early-warning screen along the southern marshes."
+  ],
+  "Values": [
+    "Values swift battlefield aggression and unyielding valor, despising hesitation and trusting steel as the ultimate protector of Rus'.",
+    "Treasures fierce fraternal loyalty among his riders, sharing rations in the mud and never abandoning a wounded brother-in-arms."
+  ],
+  "Fears": [
+    "Dreads leading his riders into an overwhelming nomadic encirclement that leaves Pereyaslavl's southern river approaches defenseless."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_pereyaslavl_1e",
+  "HeroName": "Igor Volodymyrovych"
+}

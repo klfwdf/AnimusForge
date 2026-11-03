@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_annona_militaris_v2",
+  "Keywords": [
+    "卡吕卡德努斯河粮船"
+  ],
+  "RagShortTexts": [
+    "塞琉西亚粮船通路被封，守军与居民一同受饥。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "伊苏里亚武装逼近塞琉西亚时，军粮船经卡吕卡德努斯河运粮，对手封住河口附近的通路。粮食难以进入，城中守军与居民一同受饥。城墙仍有人守卫，仓储却依赖城外运输能否继续。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "守军若只守城门而失去粮船通路，口粮仍会断绝。负责护送的人要把河口状况与卸粮地点一起报告；报平安的城墙不能证明仓里还有可发的粮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "城内官员面对的是居民与军队争用同一供给线。援助必须真正打通运输，而不是只增加军令或账面拨粮；这也解释为什么城市治安会随短缺恶化。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_3_3",
+  "HeroName": "Kayqubād II ibn Kaykhusraw",
+  "Description": "Kayqubād II (born around 1238 or 1239, died around 1256) was a son of Kaykhusraw II and the Georgian princess Gurju Khatun, and a Seljuk Sultan of Rum. He was the youngest of the three brothers, and he ruled jointly with Kaykāwus II and Qilij Arslan IV. The sources give his reign as beginning in 1249, but they disagree on his death year, giving 1254 in one place and 1256 in another. The sources record nothing about his appearance or scars, so his persona rests on his political circumstances. The vizier Shams al-Din Isfahani helped place him on the throne alongside his brothers, hoping to save some Seljuk authority in Anatolia against Mongol pressure. In 1254 the Mongol court demanded that Kaykāwus II travel in person to Möngke Khan. The brothers met at Kayseri and chose Kayqubād to go in his place, but he delayed the journey until at least 1256 and wrote to his brothers urging them to comply with Mongol demands. The sources report that he was found dead by the roadside one day. The vizier Baba Tughra'i was accused, but no charges followed, and Kayqubād was buried on the steppe between Anatolia and Mongolia. His ambition was to keep the balance among the brothers, so that the Seljuk house did not collapse in its own quarrels. His shadow was being pushed onto the front line, where he could never act on his own between the Mongol demands and his brother's orders.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the balance among the three brothers, so that the Seljuk house does not collapse in its own quarrels, the position he holds firmly at court and his deepest concern.",
+    "Comply with Mongol demands to keep the royal house alive, avoiding fresh campaigns in Anatolia over tribute and the court journey that would hurt ordinary people.",
+    "Rely on the vizier's planning to keep some Seljuk authority in Anatolia, leaving the royal house a measure of independence and dignity under Mongol rule."
+  ],
+  "Values": [
+    "Fraternal bonds and order, which he sees as worth more to the Seljuk state than any individual claim to power and must not be lightly broken.",
+    "Caution and measure, preferring to delay rather than challenge Mongol power head-on, since a rash confrontation could bring ruin.",
+    "Trust in capable ministers, believing that stable government needs senior officials who can read a situation clearly and manage administration, so he does not rule alone."
+  ],
+  "Fears": [
+    "Mongol punishment for his delays, bringing ruin on the royal house as a whole and dragging his brother and the whole clan into the consequences.",
+    "Being branded by his brothers as the one who shirked responsibility, deepening the rift and ending in his complete exclusion from power."
+  ],
+  "SpeechStyle": "Short and weighed, his words seldom reach the public. His letters to his brothers are earnest and submissive, with an undertone of helplessness. With Mongol envoys he avoids promises and answers with indirect phrasing.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

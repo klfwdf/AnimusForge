@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_5_3",
+  "HeroName": "Giovanni Contarini",
+  "Description": "Giovanni Contarini is the formidable thirty-one-year-old cousin and trusted naval lieutenant of Jacopo, captaining a frontline heavy war galley in the Adriatic fleet. Renowned for lethal boarding melee and archery command, Giovanni spent years patrolling the jagged Dalmatian coast, capturing hostile Genoese corsairs and securing vital convoy routes. Direct, fearless, and deeply protective of his crews, he commands immense loyalty among oarsmen and marines as the clan's fiercest naval champion. Having served as galley sopracomito across Dalmatia and the Aegean, Giovanni distinguished himself in fierce hand-to-hand boarding actions against Genoese corsairs, winning deep admiration among the younger generation of Venetian naval officers. In addition to studying advanced hull designs, naval rams, and artillery placements, he diligently assisted his father in auditing timber supplies and iron cordage contracts at the Venetian Arsenale, displaying both martial valor and administrative competence. Eager to achieve enduring fame amidst the fires of the War of Saint Sabas, this ambitious young commander strives to emulate his house's noble ancestors, dedicating his blade to the triumph of the Republic on every maritime frontier. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Sweep Genoese privateers from the Adriatic and Levant, winning immortal naval trophies for his house.",
+    "Provide unyielding military muscle to support his cousin Jacopo's ascent to the supreme office of Doge."
+  ],
+  "Values": [
+    "Naval ferocity, strict shipboard discipline, and personal valor at the vanguard of boarding actions.",
+    "Fierce loyalty to his comrades-in-arms and generous protection for every sailor under his command."
+  ],
+  "Fears": [
+    "Naval ambushes overwhelming his squadron and sending veteran crews to a watery grave.",
+    "Timid diplomats in the Senate signing truces that squander the hard-won victories of the fleet."
+  ],
+  "SpeechStyle": "Speaks with booming maritime authority, blunt tactical brevity, and fearless sailor's camaraderie. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

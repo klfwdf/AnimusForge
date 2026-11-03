@@ -1,0 +1,38 @@
+{
+  "Id": "be_battle_amida_siege_record_v6",
+  "Keywords": [
+    "Amida siege mound collapse"
+  ],
+  "RagShortTexts": [
+    "Earthworks and collapses at Amida changed heights and consumed labor."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Late in the siege of Amida, the attackers raised earthworks toward the walls and defenders answered with their own construction. Collapsing earth and defensive structures changed heights and access. Moving soil, strengthening works and clearing debris required sustained labor; a local failure could place a whole sector under new pressure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Moving earth, watching and fighting competed for the same manpower. Changed ground could invalidate earlier observation and missile positions; soldiers needed to assess the new access instead of relying on yesterday’s arrangement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Commanders had to treat earthworks as a labor and supply commitment. More fill outside did not automatically mean entry, and a collapse required assessment of what access it actually created."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

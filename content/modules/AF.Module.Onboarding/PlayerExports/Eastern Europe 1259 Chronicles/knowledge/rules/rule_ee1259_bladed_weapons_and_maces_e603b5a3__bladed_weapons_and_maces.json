@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_bladed_weapons_and_maces_e603b5a3",
+  "Keywords": [
+    "bladed weapons and maces",
+    "Blades maces grips and repairs"
+  ],
+  "RagShortTexts": [
+    "Blades and maces differ in reach and handling.",
+    "Grips, edges and weapon fittings require inspection."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Knives, swords and maces serve different situations according to reach, protection and practice. Chipped edges, cracked shafts and loose fittings impair use. Acquiring another weapon also requires time to learn its balance and maintain it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A missed mace swing requires recovery; blades can catch against shields or shafts. An unfamiliar heavy weapon tires the hand. Checking the grip matters more than boasting about superiority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Equipping followers requires spare shafts, sharpening and repair labor. Replacing every weapon alike adds training and material costs; existing skills and available craftsmen matter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A smith checks cracks and fittings, not just polish. A household knife also serves daily cutting; excessive weight or difficult repairs can turn martial display into a practical burden."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

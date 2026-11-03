@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_8_2",
+  "HeroName": "Maria Giustiniani",
+  "Description": "Maria Giustiniani serves as the authoritative domestic administrator of House Giustiniani, overseeing feudal rents, island holdings, and lagoon real estate around San Giorgio Maggiore. Meticulously auditing estates to stamp out bailiff fraud, she channels substantial familial revenues into timber and cordage subscriptions for the Arsenale, fusing domestic wealth with republican naval power. Lady Maria rigorously oversees insular rents and colonial accounts across the Levant, ruthlessly expelling corrupt bailiffs to boost annual revenues by thirty percent, providing unyielding financial backing for family war galleys. She actively sponsors maritime orphanages and hospices in Venice, providing vocational apprenticeships in naval carpentry to sons of fallen rowers, cementing deep affection for the Giustiniani name among the lower guilds. Understanding that martial valor requires inexhaustible treasuries and public devotion, this astute patrician matron balances strict fiscal discipline with boundless Christian charity, safeguarding her dynasty's eternal foundations. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure flawless fiscal accounting to continuously furnish family galleys with supplies.",
+    "Preserve the austere nobility and public stature of the Giustiniani name."
+  ],
+  "Values": [
+    "Frugality and precision form the true spring of enduring wealth.",
+    "Abundant logistics at home guarantee victory for warriors abroad."
+  ],
+  "Fears": [
+    "Devastation of Aegean fiefs cutting off vital grain and rental remittances.",
+    "Spiraling wartime inflation draining family reserves."
+  ],
+  "SpeechStyle": "Articulates with quiet severity and bookkeeping precision, commanding deference through unyielding poise. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

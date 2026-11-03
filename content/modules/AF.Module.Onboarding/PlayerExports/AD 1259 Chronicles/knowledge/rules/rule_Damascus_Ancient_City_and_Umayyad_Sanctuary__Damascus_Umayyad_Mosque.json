@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Damascus_Ancient_City_and_Umayyad_Sanctuary",
+  "Keywords": [
+    "Damascus water and markets"
+  ],
+  "RagShortTexts": [
+    "The Barada and irrigated gardens sustained Damascus."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Barada and irrigated gardens sustained Damascus, where mosque, markets and gates connected communities. Reports of armies affected stocks and bargaining. Merchants could not infer a new tax authority from an unconfirmed occupation rumor."
+    }
+  ],
+  "TextMappings": []
+}

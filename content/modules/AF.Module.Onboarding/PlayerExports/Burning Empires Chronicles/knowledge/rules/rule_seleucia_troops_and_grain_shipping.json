@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v8",
+  "Keywords": [
+    "Seleucia troops and grain shipping"
+  ],
+  "RagShortTexts": [
+    "Troops near Seleucia could check attackers while river supplies were still cut."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Troops near Seleucia could check attackers while river supplies were still cut. Civilians and soldiers depended on grain boats, and more troops also meant more mouths. Holding walls, protecting unloading access and filling stores were separate achievements."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

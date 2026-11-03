@@ -1,0 +1,59 @@
+{
+  "Id": "be_vandal_kingdom_economy",
+  "Keywords": [
+    "Vandals Trade",
+    "Carrodunum farming and woodland goods"
+  ],
+  "RagShortTexts": [
+    "Carrodunum farming, herds, woodland and exchange sustain Vandal households.",
+    "Long absence makes prizes poor compensation for lost harvest."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Carrodunum households rely on food, herds, woodland and exchange. Mounts and dependants need guards; long absence makes prizes poor compensation for harvest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Carrodunum farming, herds, woodland and exchange sustain Vandal households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Long absence makes prizes poor compensation for lost harvest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Long absence makes prizes poor compensation for lost harvest. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Carrodunum farming, herds, woodland and exchange sustain Vandal households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Carrodunum farming, herds, woodland and exchange sustain Vandal households. Households need meals and the means to keep producing after delivering goods. Long absence makes prizes poor compensation for lost harvest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Long absence makes prizes poor compensation for lost harvest. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Carrodunum farming, herds, woodland and exchange sustain Vandal households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

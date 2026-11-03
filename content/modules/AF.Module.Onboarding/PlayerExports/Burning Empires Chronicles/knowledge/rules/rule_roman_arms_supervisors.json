@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v1",
+  "Keywords": [
+    "Roman arms supervisors"
+  ],
+  "RagShortTexts": [
+    "Two officers named by Montius supervised arms manufacture."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Two officers named by Montius supervised arms manufacture. Office connected a person to a task; names alone did not identify them. Rank, location and duty mattered when finding an official, lest unrelated namesakes be substituted."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

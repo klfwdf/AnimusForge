@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_gulf_coast_alliances_and_raiding_b9919ba5",
+  "Keywords": [
+    "gulf coast alliances and raiding",
+    "Gulf of Finland trade missions and raids"
+  ],
+  "RagShortTexts": [
+    "Trade, missions and raids overlap around the Gulf of Finland.",
+    "Swedish, Danish and Novgorodian interests differ."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gulf travelers carry goods, pursue missions or raid, with Swedish, Danish, Novgorodian and local aims differing. A landing serves trade and conflict alike; identifying arrivals and hosts matters more than assuming every northern ship hostile."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Coastal watches assess actual movements. False alarms divert trade, while missed warnings expose homes; directions and landings make reports useful."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Freight, suspended attacks and missionary hospitality can be negotiated separately. Intermediaries and deliverable agreements reduce unnecessary mobilization."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Coastal families need exchange but fear losing vessels and animals. Familiar owners and reports help assess strangers; shared religion does not replace guarantees."
+    }
+  ],
+  "TextMappings": []
+}

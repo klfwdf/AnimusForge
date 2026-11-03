@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_5_3",
+  "HeroName": "Helena Tunadotter Vinstorp",
+  "Description": "Lady Helena Tunadotter of Vinstorp, eldest daughter of Sir Tune of Vinsarp, was an influential noblewoman within the Westgothic aristocracy. Educated in courtly etiquette, dynastic genealogies, and domestic administration at Vinsarp Castle, Helena combined refined poise with the resolute spirit of her father. She assisted in governing domestic textile looms and audit ledgers while actively participating in high-level marital diplomacy with regional magnates. Perceptive and discreet, she analyzed factional alignments at regional tings, providing invaluable political intelligence to her father and brothers. Celebrated for her intelligence and courtly decorum, Helena stood as a vital diplomatic linchpin for the ascending Vinstorpa dynasty. Helena mastered ancient Nordic lore and imperial feudal jurisprudence, expertly assisting her father in complex land arbitrations and repelling encroachments by citing royal charters before provincial courts. She cultivated courtly refinement within Vinsarp Castle, creating hospitable hospices for traveling scholars and prelates and turning the western fortress into an intellectual crossroad. Her dignified poise, perceptive intellect, and steadfast filial devotion won the deep reverence of West Götaland nobility, celebrated as the jewel of the Vinstorpa house. Her diplomatic acumen proved invaluable in mediating regional land boundaries, securing peaceful coexistence between neighboring noble lineages.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Direct estate ledgers and textile workshops to generate steady bullion reserves for her family's martial enterprises.",
+    "Formulate strategic marriage alliances with prominent judicial and military houses to advance Vinstorpa influence."
+  ],
+  "Values": [
+    "Believes long-term strategic foresight and dynastic honor far surpass transient courtly flattery.",
+    "Champions courtly discretion and unwavering filial devotion, dedicating her life to elevating her family's name."
+  ],
+  "Fears": [
+    "Dreads disastrous political alliances entangling Vinsarp in catastrophic wars and inviting the destruction of her home."
+  ],
+  "SpeechStyle": "Speaks with soft courtly modulation and refined clarity, her articulate words reflecting deep diplomatic acumen.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_1_6",
+  "HeroName": "Marino Boccanegra",
+  "Description": "Marino Boccanegra commands the commercial arm of House Boccanegra, directing heavily armed trading convoys across the Black Sea and Levant laden with cloths and ironware. A pioneer in laying the foundations for the Caffa emporium in Crimea, his lucrative maritime ventures provide essential specie that funds the construction of state war galleys. Marino sailed heavily armed carracks into the Black Sea, establishing the fortified trading depot of Caffa in Crimea that opened vast conduits for furs, wax, and grains from the Eurasian steppes. Master of complex maritime partnership contracts and bottomry bonds, he repeatedly slipped fast blockade-runners past Venetian patrols in the Aegean, delivering high-value silks and spices to Genoese quays. Convinced that Genoa's imperial destiny lay in the Pontic trade, he funneled massive commercial profits into state dockyards to ensure naval escorts could permanently protect deep-sea merchant syndicates. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Open the trade routes of the Black Sea to establish Genoese colonial dominance.",
+    "Funnel vast commercial surpluses into the state arsenal to build an invincible navy."
+  ],
+  "Values": [
+    "Commercial specie and iron cannon form the twin instruments of maritime empire.",
+    "Astute foresight generates more lasting power than blind martial bravado."
+  ],
+  "Fears": [
+    "Total closure of the Bosporus straits or Black Sea ports by hostile powers.",
+    "Catastrophic sack of overseas trading posts liquidating family trading capitals."
+  ],
+  "SpeechStyle": "Calculated and articulate, balancing naval strategy with profit margins and shipyard outputs. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

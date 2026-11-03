@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_1",
+  "HeroName": "Angelo I Sanudo, Duke of Naxos",
+  "Description": "Angelo I Sanudo, aged sixty-four in 1259, is the second Duke of Naxos and master of the Duchy of the Archipelago. Eldest son of Marco Sanudo, he governs a maritime empire comprising Naxos, Paros, Melos, Santorini, and dozens of Cycladic isles. Mastering the delicate art of Venetian commerce and Frankish feudalism, Angelo balances nominal homage to the Latin Emperor with fierce autonomy from the Venetian Senate and the Prince of Achaea. From his towering citadel in Naxos town, he controls the vital sea lanes, exporting wine, olive oil, and Parian marble across the Mediterranean. In 1259, as Nicaean fleets and privateers contest the Aegean waters, the aging duke deploys his galleys with consummate skill, determined to preserve his family's maritime dynasty against Byzantine reconquest. Seated upon the white marble throne of Naxos, Duke Angelo commands the Aegean like a vigilant maritime sovereign. His swift galley patrols glide across turquoise waters, safeguarding international merchant convoys from pirate ambushes. Even when facing aggressive Nicaean naval squadrons, the veteran duke maneuvers his fleet with masterly calm, securing his island realm with gold, stone, and anchor. From his imposing rock castle high above the Aegean waves, Duke Angelo steers the Archipelago through treacherous geopolitical shoals. His shrewd statecraft and naval might guarantee that the Sanudo dynasty remains the unquestioned sovereign of the Cyclades.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with the seasoned gravitas of a Venetian naval commander, calm and sharp, balancing mercantile profit with feudal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

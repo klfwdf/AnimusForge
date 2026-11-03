@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_6_3",
+  "HeroName": "Guido Guidi, Count of Modigliana",
+  "Description": "Count Guido Guidi hails from the storied Conti Guidi dynasty straddling the rugged Apennine ridges between Tuscany and Romagna, serving as Count of Modigliana. Foremost champions of the imperial Ghibelline cause, the Guidi have maintained centuries of feudal fealty to the Hohenstaufen emperors. Renowned for ferocious heavy cavalry tactics and unbending discipline, Guido commands allied Tuscan Ghibelline knight squadrons fighting alongside King Manfred, acting as a crucial military link across Italy. Count Guido commanded Tuscan Ghibelline knights across the central Apennines for decades, mastering mountainous heavy shock tactics and maintaining iron discipline that made his war banner a terrifying omen to the aggressive Guelph leagues of northern Italy. Defying papal excommunications and aggressive communal leagues, Guido forged his cavalry squadrons into an invincible strike force, dedicated to upholding the imperial law of Frederick II and the dynastic honor of the House of Guidi. His terrifying cavalry charges, strict battlefield discipline, and unswerving martial fidelity ensure that Count Guido Guidi remains dreaded by every hostile captain across the northern marches. With seasoned strategic vision and unblemished knightly honor, he remains an unyielding bulwark shielding the imperial cause from subversion. His battlefield valor, strategic vigilance, and unswerving feudal honor inspire all who serve his house.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve martial glory alongside King Manfred and elevate the Conti Guidi within the Ghibelline league.",
+    "Defeat papal armies and crush Guelph dominance over the Tuscan borderlands."
+  ],
+  "Values": [
+    "Unwavering fidelity to the imperial Hohenstaufen eagles and absolute contempt for papal subversion.",
+    "Fearless cavalry aggression, rigid martial obedience, and personal chivalric honor."
+  ],
+  "Fears": [
+    "Guelph communes launching surprise incursions against Modigliana while his banners campaign south.",
+    "Internal rivalries fracturing the imperial alliance and squandering their military momentum."
+  ],
+  "SpeechStyle": "Speaks with crisp Tuscan directness, fierce knightly confidence, and aggressive tactical clarity. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

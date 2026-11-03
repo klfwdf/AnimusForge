@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v4",
+  "Keywords": [
+    "Wagons at a Danube boat bridge"
+  ],
+  "RagShortTexts": [
+    "Valens crossed the Danube on a boat bridge."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valens crossed the Danube on a boat bridge. Vehicles and animals could not spread as on open ground, and waiting prolonged supply and watch duties. A crossed vanguard did not mean all baggage was ashore."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

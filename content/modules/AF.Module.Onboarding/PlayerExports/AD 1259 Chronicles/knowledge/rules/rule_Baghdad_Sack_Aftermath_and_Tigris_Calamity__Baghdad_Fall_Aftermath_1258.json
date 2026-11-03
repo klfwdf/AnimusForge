@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Baghdad_Sack_Aftermath_and_Tigris_Calamity",
+  "Keywords": [
+    "Baghdad Fall Aftermath 1258",
+    "House of Wisdom Destruction",
+    "Abbasid Caliphate Extinction",
+    "Tigris Ink and Blood River"
+  ],
+  "RagShortTexts": [
+    "Baghdad's fall in 1258 disrupted homes, institutions and learned communities.",
+    "Arabic and Persian scholarship survived; later ink-black river stories require caution."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In February 1258 Hulagu Khan's army broke into Baghdad after a siege, and the sack killed many inhabitants; medieval totals vary and cannot be treated as a count. Caliph al-Musta'sim was killed, ending Abbasid rule from Baghdad, which had begun in 762. The city lost people, buildings, collections and institutions, but no single library can stand for all learning in the Arabic- and Persian-speaking world. The canal network and cultivated lands also suffered damage, though the pace and extent of later decline varied across Iraq. Chroniclers told of the Tigris running black with ink and red with blood; these are vivid accounts of catastrophe, not measurements of every manuscript or death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Baghdad’s fall devastated scholars, copyists and the households supporting them. People fleeing the city needed lodging, books and patronage; a few carried manuscripts might sustain teaching elsewhere. Reports of ruined libraries troubled distant scholars, while survivors often knew only the part they had witnessed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The caliph’s death at Baghdad in 1258 changed the circumstances facing rulers and envoys. Mongol authorities, local notables and neighboring courts had different demands, involving taxation, trade and religious standing. Distant reports were incomplete, and envoys needed to establish who could accept commitments."
+    }
+  ],
+  "TextMappings": []
+}

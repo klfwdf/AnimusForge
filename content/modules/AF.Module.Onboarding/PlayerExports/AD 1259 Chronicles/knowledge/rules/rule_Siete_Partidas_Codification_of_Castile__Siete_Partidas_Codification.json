@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Siete_Partidas_Codification_of_Castile",
+  "Keywords": [
+    "Partidas compilation and local custom"
+  ],
+  "RagShortTexts": [
+    "Alfonso X’s court began compiling the Partidas around 1256."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alfonso X’s court began compiling the Partidas around 1256, bringing Roman and canon law into Castilian legal writing. In 1259 the project remained in compilation alongside local customs, privileges and other laws. Jurists could discuss drafts without treating them as a completed code promulgated throughout the realm."
+    }
+  ],
+  "TextMappings": []
+}

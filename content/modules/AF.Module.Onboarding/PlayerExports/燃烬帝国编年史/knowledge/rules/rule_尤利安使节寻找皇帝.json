@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v5",
+  "Keywords": [
+    "尤利安使节寻找皇帝"
+  ],
+  "RagShortTexts": [
+    "使节越海后仍须赴凯撒利亚寻找君士坦提乌斯。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "尤利安使节越过博斯普鲁斯后还得继续赶往卡帕多西亚凯撒利亚，才能见到君士坦提乌斯。皇帝不总在固定宫殿等信，消息路线随行在变化。使者需要查清驻地，而地方官的留阻又能使原先所知过时。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

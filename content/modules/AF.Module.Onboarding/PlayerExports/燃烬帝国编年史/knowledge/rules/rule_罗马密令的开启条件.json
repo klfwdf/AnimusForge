@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v7",
+  "Keywords": [
+    "罗马密令的开启条件"
+  ],
+  "RagShortTexts": [
+    "菲拉格里乌斯须等指定人物越境才拆读密令。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "菲拉格里乌斯持有尤利安签署的纸，但只许在瓦多马里乌斯越到莱茵西岸时打开。带着文书与已经能执行其内容并非一回事；他必须识别人、确认地点，再使用那项委任。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

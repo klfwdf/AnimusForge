@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_4_2",
+  "HeroName": "Gastó VII de Montcada, Viscount of Béarn",
+  "Description": "Gastó VII de Montcada, Viscount of Béarn , celebrated across Europe as the 'Lion of Béarn,' is one of the most formidable, defiant, and legendary warlords of the Middle Ages. Sovereign ruler of Béarn, Marsan, Gabardan, and claimant to the County of Bigorre, he built a fiercely autonomous Pyrenean principality straddling France and Iberia. A military titan of boundless daring, Don Gastó fought the English crown to a standstill during the Gascon wars against Simon de Montfort and King Henry III, playing England, France, and Aragon off against each other with masterful defiance. In 1259, governing from the formidable citadels of Oloron and Pau, he controls every vital alpine pass connecting the Atlantic with the Mediterranean. Commanding thousands of lethal Pyrenean crossbowmen and heavy knights, he repeatedly forced concessions from both Louis IX of France and James I of Aragon. Haughty, fearless, and utterly uncompromising, Gaston VII personifies the supreme zenith of independent feudal lordship. Holding court within the vaulted fortress of Oloron, Gaston VII laughed in the faces of English and French envoys seeking to intimidate him. Riding out in heavy plate to inspect mountain garrisons, a single blast of his war horns mobilized thousands of Gascon crossbowmen, leaving kings trembling at the name of Béarn. Fearless, proud, and defiant unto the end, Gaston VII commands universal awe as the unconquered Lion of the Pyrenean crags.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the sovereign independence of Béarn against the encroaching crowns of France, England, and Aragon",
+    "Lock down the Pyrenean mountain passes to command lucrative transit tolls across the frontier",
+    "Transform Béarn into an impregnable, autonomous principality courted by all European powers"
+  ],
+  "Values": [
+    "Sovereignty is carved with the broadsword and fortified behind stone crags; kneeling is for serfs",
+    "Might dictates terms; the will of the defiant warlord is the supreme law of the mountains",
+    "Fearless audacity, relentless pursuit of ambition, and total destruction of enemies"
+  ],
+  "Fears": [
+    "England and France uniting in an anti-Béarn pact to launch a coordinated two-front invasion",
+    "Lack of a surviving male heir causing his vast Pyrenean realm to be partitioned by foreign houses"
+  ],
+  "SpeechStyle": "Thunderous, haughty, and fiercely arrogant; speaks with the unyielding swagger, titanic presence, and indomitable authority of an unconquered alpine sovereign.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

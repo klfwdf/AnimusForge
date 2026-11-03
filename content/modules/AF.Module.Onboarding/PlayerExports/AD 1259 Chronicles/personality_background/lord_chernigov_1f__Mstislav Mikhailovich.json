@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_chernigov_1f",
+  "Description": "Prince Mstislav Mikhailovich is the third son of Saint Mikhail, ruling as the hereditary Prince of Karachev and Kozelsk along the Upper Oka marches. His domain held immense geopolitical importance, anchoring the northeastern approaches between Smolensk, Moscow, and Ryazan, shielding the realm against steppe outflanking raids. Inheriting the legendary defiant spirit of Kozelsk—hailed in chronicles as the 'Evil City' for its desperate 1238 defense—Mstislav fortified Karachev with concentric earthworks and timber bastions. While projecting diplomatic compliance toward Sarai to buy precious preparation time, he secretly manufactured heavy chainmail, poleaxes, and crossbows, drilling elite citizen infantry. Austere, disciplined, and resolute, Mstislav repeatedly ambushed raiding scouts within the Upper Oka dense woodlands, earning deep loyalty from yeomen and artisans. He stands as an unshakeable guardian sentinel holding the northeastern marches of the Olgovychi dynasty. Defending the frontier redoubts of Karachev and Kozelsk, Prince Mstislav imbued his retinues with the ferocious defiance of ancient heroes. Mastering woodland trench warfare and heavy infantry tactics, he erected an impenetrable defensive barrier along the Upper Oka that turned back nomad raiders time and again. His iron vigilance secured the vulnerable northeastern flank of the realm. His unyielding fortitude guaranteed the security of thousands of vulnerable peasant homesteads across the frontier.",
+  "SpeechStyle": "Every span of soil around Kozelsk was bought with martyr's blood! If any invader wishes to cross Karachev, our battleaxes shall answer them! Form the shield wall and yield not an inch!",
+  "Motivations": [
+    "Transform Karachev and Kozelsk into an impenetrable bulwark, blocking nomad flanking routes along the Upper Oka.",
+    "Stockpile weapons and grain while secretly drilling citizen infantry, preparing to strike back alongside allied princes."
+  ],
+  "Values": [
+    "Prized defiant courage, strict military discipline, and protection of hearth and kin, despising subservience and cowardice.",
+    "Believing impregnable defenses coupled with lethal ambush readiness guarantee survival against vastly superior conquerors."
+  ],
+  "Fears": [
+    "Coordinated fire and water deprivation assaults upon Karachev's outposts, stranding defenders without provisions.",
+    "Imperial informants uncovering his covert armaments manufacturing, triggering devastating punitive raids upon his realm."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "HeroName": "Mstislav Mikhailovich"
+}

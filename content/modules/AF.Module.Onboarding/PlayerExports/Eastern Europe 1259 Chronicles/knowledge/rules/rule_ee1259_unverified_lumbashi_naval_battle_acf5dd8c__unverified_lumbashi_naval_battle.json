@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_unverified_lumbashi_naval_battle_acf5dd8c",
+  "Keywords": [
+    "Baltic vessels facing danger",
+    "Shelter and damaged craft in the Baltic"
+  ],
+  "RagShortTexts": [
+    "Baltic vessels watched winds, shoals and armed encounters.",
+    "Damaged vessels needed landfall and repairs while crews and cargo still needed support."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Baltic coastal vessels watched wind, shallows and possible armed encounters. Crews chose between pursuit, avoidance and landings. Cargo and passenger vessels differed in speed, draught and acceptable risk."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Baltic coastal vessels watched wind, shallows and possible armed encounters. Crews chose between pursuit, avoidance and landings. Cargo and passenger vessels differed in speed, draught and acceptable risk. Crews, guards and passengers shared space. Armed encounters prompted choices of avoidance or landing; pursuit spent strength and could leave familiar channels."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Baltic coastal vessels watched wind, shallows and possible armed encounters. Crews chose between pursuit, avoidance and landings. Cargo and passenger vessels differed in speed, draught and acceptable risk. Coastal power required crews, repair materials and hosts. Raid proceeds could be offset by trade reprisals, while lost ships and people reduced later voyages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Baltic coastal vessels watched wind, shallows and possible armed encounters. Crews chose between pursuit, avoidance and landings. Cargo and passenger vessels differed in speed, draught and acceptable risk. Fishing and travel required weather, while those at home prepared food, repaired nets and tended animals. Losing a boat removed both property and a means of future food."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

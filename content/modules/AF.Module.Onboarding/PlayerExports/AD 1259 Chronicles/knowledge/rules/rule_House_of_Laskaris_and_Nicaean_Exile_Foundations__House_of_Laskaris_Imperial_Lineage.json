@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Laskaris_and_Nicaean_Exile_Foundations",
+  "Keywords": [
+    "House of Laskaris Imperial Lineage",
+    "Theodore I Nicaean Exile Realm",
+    "Anti Latin and Seljuk Resistance",
+    "Tragic Blinding of John IV"
+  ],
+  "RagShortTexts": [
+    "Laskarid authority developed in the Nicaean response to the Latin conquest of 1204.",
+    "Vatatzes's egg-crown story praises prudence without explaining all imperial finance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After Constantinople fell in 1204, Theodore I Laskaris established a rival Byzantine court at Nicaea. By 1259 the Laskarid dynasty has ruled there for generations, taxing Anatolian agriculture, maintaining garrisons and seeking allies against Seljuk and Latin rivals. John IV is still a child, and Michael Palaiologos has emerged as a leading court figure and co-emperor, sharpening questions of succession and authority. Nicaean leaders continue to look toward Constantinople, but the city remains under Latin rule. Michael has not yet recovered it, and the exile has not ended. Court officials balance frontier defence, revenue and political loyalty while the outcome of the struggle remains unknown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "The story of Vatatzes buying a crown with proceeds from an estate's egg sales praises prudent imperial housekeeping. A learned speaker should identify it as an exemplary court anecdote, rather than a complete account of Nicaean finance. Monastic charters and estate records reveal other obligations, and admiration for a ruler's piety need not settle a dispute over a monastery's dues."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A Nicaean veteran recalls provisions under Vatatzes, but service now reflects frontier needs. Garrisons need supplies as Michael Palaiologos strengthens his position alongside the young emperor. A soldier may complain of late rations, but cannot describe a later shortage as the result of the capital struggle. His judgement comes from food in hand and the state of the wall, not hindsight."
+    }
+  ],
+  "TextMappings": []
+}

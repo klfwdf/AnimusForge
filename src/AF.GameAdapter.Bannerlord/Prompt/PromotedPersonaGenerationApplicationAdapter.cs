@@ -33,7 +33,8 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
                 if (string.IsNullOrWhiteSpace(heroId) || !ReferenceEquals(_findHero(heroId), hero)) return false;
                 var lease = _reservations.TryBegin(heroId, true, out _);
                 if (lease == null) return false;
-                work = new NpcPersonaGenerationWork { Id = heroId, Reservation = lease };
+                var settings = DuelSettings.GetSettings();
+                work = new NpcPersonaGenerationWork { Id = heroId, Reservation = lease, ExpandedPersonaEnabled = settings?.EnableExpandedNpcPersona != false };
                 work.OriginalDescription = _persona.GetNpcPersonaDescription(hero);
                 var original = _persona.GetNpcPersonaProfile(hero, false);
                 work.OriginalTraits = NpcPersonaGenerationApplicationAdapter.CloneTraits(original?.Traits);
@@ -50,7 +51,7 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
 		joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + AdapterPromptCaptureTexts.PcapText("persona_generation_52")) : joinEventFact.Trim();
 		history = string.IsNullOrWhiteSpace(dialogueHistory) ? AdapterPromptCaptureTexts.PcapText("promoted_no_prejoin_history") : dialogueHistory.Trim();
 		equipment = string.IsNullOrWhiteSpace(equipmentSummary) ? AdapterPromptCaptureTexts.PcapText("persona_generation_53") : equipmentSummary.Trim();
-			NpcPersonaPrompt prompt = NpcPersonaTextRules.BuildPromoted(name,fullName,troopName,troopId,culture,scene,joinFact,history,equipment,PersonaGenerationFactCaptureAdapter.BuildPromotedNonHeroCompanionFactsForPersonaGeneration(hero,name,fullName,troopName,troopId,culture,scene,joinFact,equipment),DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements);
+			NpcPersonaPrompt prompt = NpcPersonaTextRules.BuildPromoted(name,fullName,troopName,troopId,culture,scene,joinFact,history,equipment,PersonaGenerationFactCaptureAdapter.BuildPromotedNonHeroCompanionFactsForPersonaGeneration(hero,name,fullName,troopName,troopId,culture,scene,joinFact,equipment),settings?.NpcPersonaGenerationRequirements,work.ExpandedPersonaEnabled);
                 work.Response = ConfiguredChatApplicationAdapter.CallAuxiliaryGatewayDetailed(prompt.System, prompt.User, "PromotedCompanionPersona", 0, forceThinkingDisabled: false);
                 return true;
             }).ConfigureAwait(false);
@@ -74,7 +75,8 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
 			{
                     NpcPersonaProfile prof = _persona.GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
                     prof.Description = NpcPersonaProfilePolicy.NormalizeGenerated(generated.Description);
-					NpcPersonaGenerationApplicationAdapter.ApplyGeneratedExtras(prof, prof, generated, overwriteExisting: false);
+					NpcPersonaGenerationApplicationAdapter.ApplyGeneratedExtras(prof, prof, generated, overwriteExisting: false,
+                        expandedPersonaEnabled: work.ExpandedPersonaEnabled && DuelSettings.GetSettings()?.EnableExpandedNpcPersona != false);
 					prof.SchemaVersion = Math.Max(prof.SchemaVersion, 3);
 				_persona.SaveNpcPersonaProfile(hero, prof);
                 personaSaved = !string.IsNullOrWhiteSpace(prof.Description);

@@ -10,15 +10,11 @@ namespace AnimusForge;
 
 internal static class AdapterSceneTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly PromptLanguageFile<Dictionary<string, string>> Values = new PromptLanguageFile<Dictionary<string, string>>("AdapterSceneTexts.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("AdapterSceneTexts.json"), Encoding.UTF8)));
-    private static readonly Lazy<Dictionary<string, string>> Compatibility = new Lazy<Dictionary<string, string>>(() =>
-    {
-        using (var stream = typeof(AdapterSceneTexts).Assembly.GetManifestResourceStream("AnimusForge.Adapter.SceneCompatibility.json"))
-        using (var reader = new StreamReader(stream, Encoding.UTF8))
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-    });
+            path, Encoding.UTF8)));
+    private static readonly BilingualTextTable Compatibility =
+        BilingualTextTable.FromEmbedded(typeof(AdapterSceneTexts).Assembly, "AnimusForge.Adapter.SceneCompatibility.json");
     private static readonly Regex Placeholder = new Regex(@"\{([A-Z_]+)\}", RegexOptions.Compiled);
     private static readonly (string Key, string English)[] SceneLabels =
     {
@@ -37,19 +33,39 @@ internal static class AdapterSceneTexts
     private static readonly Lazy<Dictionary<string, string>> LabelKeys = new Lazy<Dictionary<string, string>>(() =>
     {
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var label in SceneLabels) result[Raw(label.Key)] = label.Key;
+        foreach (var label in SceneLabels)
+            foreach (string variant in RawVariants(label.Key)) result[variant] = label.Key;
         return result;
     });
     private static readonly Lazy<Dictionary<string, string>> LabelAliases = new Lazy<Dictionary<string, string>>(() =>
     {
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var label in SceneLabels) result[label.English] = Raw(label.Key);
+        foreach (var label in SceneLabels) result[label.English] = RawSource(label.Key);
         return result;
     });
 
     internal static string Get(string key, string englishFallback = "")
         => Values.Value.TryGetValue(key, out string text) ? text : englishFallback;
-    internal static string Raw(string key) => Compatibility.Value[key];
+    internal static string Raw(string key) => Compatibility.Get(key);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string RawSource(string key) => Compatibility.Chinese(key);
+    internal static string[] RawVariants(string key) => Compatibility.Variants(key);
+    internal static bool IsRaw(string value, string key) => Compatibility.Is(value, key);
+    /// <summary>Current-language value padded for word concatenation; see <see cref="AdapterRecordTexts.Pad"/>.</summary>
+    internal static string W(string key) => AdapterRecordTexts.Pad(Compatibility.Get(key));
+    internal static bool EqualsRaw(string value, string key, StringComparison comparison)
+    {
+        foreach (string variant in Compatibility.Variants(key))
+            if (string.Equals(value, variant, comparison)) return true;
+        return false;
+    }
+    internal static bool ContainsRaw(string text, string key, StringComparison comparison)
+    {
+        if (string.IsNullOrEmpty(text)) return false;
+        foreach (string variant in Compatibility.Variants(key))
+            if (variant.Length > 0 && text.IndexOf(variant, comparison) >= 0) return true;
+        return false;
+    }
     internal static string ProjectLabelForPrompt(string value)
         => value != null && LabelKeys.Value.TryGetValue(value.Trim(), out string key) ? Get(key) : value;
     internal static string ResolveRawLabel(string value)

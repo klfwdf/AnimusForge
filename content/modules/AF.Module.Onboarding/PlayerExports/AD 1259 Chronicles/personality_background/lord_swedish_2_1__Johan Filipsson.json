@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_2_1",
+  "HeroName": "Johan Filipsson",
+  "Description": "Lord Johan Filipsson of Aspenäs, supreme magnate of Östergötland, was the great-grandson of the celebrated Jarl Birger Brosa. Inheriting the proud lineage and sprawling manors of the old Folkung baronial faction, Johan governed the moated citadel of Aspenäs, commanding rich agricultural lands, timber concessions, and iron furnaces. An unbending champion of traditional feudal liberties, Johan vehemently resisted the centralizing policies of Birger Jarl and Magnus Ladulås, denouncing royal cavalry statutes as tyrannical encroachments upon baronial sovereignty. Johan transformed the fortress of Aspenäs into an unassailable bastion, outfitting stone towers with heavy ballistas and retaining veteran German crossbowmen alongside rebellious native knights. He viewed King Magnus's royal cavalry ordinances as an intolerable tyrannical assault upon ancestral noble rights, fiercely defying crown mandates at regional assemblies. Though ultimately captured and executed, Johan Filipsson's unyielding defiance immortalized him as an iconic symbol of baronial resistance against autocratic centralization. His tragic death cemented the reputation of the Folkung barons as unyielding champions of ancient provincial independence.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Unite the baronial league across Götaland to overthrow royal autocracy and restore customary aristocratic autonomy.",
+    "Fortify the citadel of Aspenäs and expand iron forges to maintain an independent army against crown exactions."
+  ],
+  "Values": [
+    "Reveres ancient baronial liberties and dynastic honor, holding that proud lords must resist royal tyranny to the death.",
+    "Champions martial defiance and unbreakable fraternal oaths, scorning cowardly subservience to centralizing crowns."
+  ],
+  "Fears": [
+    "Dreads royal heavy cavalry overrunning his fortress and leading his entire lineage to the scaffold."
+  ],
+  "SpeechStyle": "Speaks with defiant, thunderous baritone swagger, his haughty words scorning royal authority with bitter pride.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v2",
+  "Keywords": [
+    "不列颠海防长官败报"
+  ],
+  "RagShortTexts": [
+    "内克塔里杜斯阵亡的败报促使皇帝重新安排不列颠指挥。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦伦提尼安赶路时收到不列颠败报，得知海岸长官内克塔里杜斯阵亡。消息促使宫廷更换指挥者并寻求增兵，皇帝却仍需后续报告才能了解岛上形势。接报与已经恢复防务是不同阶段。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

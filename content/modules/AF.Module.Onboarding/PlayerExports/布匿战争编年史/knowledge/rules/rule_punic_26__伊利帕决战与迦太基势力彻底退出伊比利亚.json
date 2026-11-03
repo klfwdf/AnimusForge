@@ -1,0 +1,106 @@
+{
+  "Id": "rule_punic_26",
+  "Name": "伊利帕决战与迦太基势力彻底终结",
+  "Description": "公元前206年，大西庇阿在伊利帕战役中以天才般的战术变阵粉碎玛戈与哈斯德鲁拔·吉斯戈的七万大军，以少胜多歼灭敌军主力，终结迦太基在伊比利亚的百年霸业。",
+  "Tags": [
+    "伊利帕战役",
+    "大西庇阿",
+    "哈斯德鲁拔·吉斯戈",
+    "玛戈·巴卡",
+    "战术欺骗",
+    "西班牙战局终结"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 90,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前206年大西庇阿在伊利帕以精妙的反常变阵彻底歼灭迦太基主力。",
+    "罗马精锐步兵置于两翼快速前插合围并包抄迦太基薄弱的盟友两翼。",
+    "此役彻底终结了迦太基在伊比利亚长达一个世纪的军事殖民霸权。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 95,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊利帕战役是军事艺术史上的神迹！西庇阿将军连续数日清晨以罗马人在中、西班牙人在两侧的阵型列队引而不战，诱使敌军形成思维定式。决战清晨，将军拂晓造饭，突将精锐罗马老兵调至两翼，西班牙同盟军压在中路且滞后行进！当敌军飢肠辘辘出阵时，迦太基薄弱的两翼被我们的精锐如摧枯拉朽般粉碎，战象被重击惊回自踏中军！七万敌军灰飞烟灭，西班牙永远归属于罗马！"
+    },
+    {
+      "Priority": 92,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "天亡迦太基！吉斯戈与玛戈集中了半岛所能搜刮的全部七万步骑与三十二头战象，数量本远超罗马军！但那该死的暴雨和西庇阿的妖魔战术彻底打乱了阵脚。士兵们未进早餐便在烈日下拉锯，战象在罗马标枪手打击下彻底发狂冲乱了自家中军。七万人惨遭屠戮，吉斯戈逃往加迪尔，玛戈浮海南下，哈米尔卡与巴卡家族耗费数十年打下的西班牙帝国，在这一天化为了乌有！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在伊利帕的大平原上，天地都在战象的悲鸣与战马的嘶鸣中颤抖！阿卢西乌斯等部族王子率领我们骑兵在两侧掩护，亲眼见证了罗马方阵以令人恐怖的纪律席卷两翼。那一战之后，西班牙平原上再也看不到任何一面迦太基战旗，但所有酋长的心中都在颤抖——旧的主人逃走了，新的铁血主人已经登基了！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前206年，大西庇阿在西班牙伊利帕（今塞维利亚附近）与迦太基联军展开决战。西庇阿在决战当天清晨突然颠倒军团部署，将精锐罗马军团部署于两翼，盟军置于中路并延迟接敌，以两翼钳形突击合围并击溃迦太基全军。此役标志着迦太基在伊比利亚半岛的统治彻底走向终结。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "伊利帕决战与迦太基势力彻底终结",
+    "rule_punic_26"
+  ]
+}

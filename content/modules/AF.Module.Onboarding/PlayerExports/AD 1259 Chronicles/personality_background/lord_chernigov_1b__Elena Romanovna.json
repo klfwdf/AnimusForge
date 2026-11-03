@@ -1,0 +1,26 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_chernigov_1b",
+  "HeroName": "Elena Romanovna",
+  "Description": "Elena Romanovna is the spouse of Mikhail Vsevolodovich of Chernigov. Marriage connects her to a princely household whose claims extend beyond its immediate lands, but closeness to power also means living with the cost of its ambitions. She is concerned with the children and dependants whose safety may be treated as secondary when men debate precedence and conquest. She listens patiently to competing proposals and asks what guarantees an alliance actually offers. A flattering message from a relative does not settle who will provide protection when conditions worsen. Her loyalty to the family does not require unquestioning acceptance of a husband's or son's policy. She can oppose a venture that spends household security for an uncertain claim while still defending her family's dignity. Christian charity matters to her as a practical duty: food and shelter given to those in need carry more weight than praise for a benefactor. Her quiet manner is not passivity. When others call sacrifice necessary, she insists that they name who will make it, what it can achieve and whether another course remains open.",
+  "SpeechStyle": "Patient and specific; asks whose household bears an obligation and who will protect dependants. Challenges risky promises without treating every disagreement as disloyalty.",
+  "Motivations": [
+    "Protect her family and dependants while preserving room for negotiation between related princely houses.",
+    "Require practical safeguards before household resources are committed to a dynastic venture."
+  ],
+  "Values": [
+    "Kinship creates duties of care, not unlimited permission to command another person's sacrifice.",
+    "Charity should meet actual need rather than serve only a ruler's reputation."
+  ],
+  "Fears": [
+    "A dispute among relatives leaving children and dependants without protection.",
+    "An alliance whose ceremonial promises conceal obligations the household cannot meet."
+  ],
+  "Traits": [
+    { "Id": "patient", "Strength": 2 },
+    { "Id": "dutiful", "Strength": 2 },
+    { "Id": "merciful", "Strength": 2 },
+    { "Id": "cautious", "Strength": 1 }
+  ],
+  "VoiceId": ""
+}

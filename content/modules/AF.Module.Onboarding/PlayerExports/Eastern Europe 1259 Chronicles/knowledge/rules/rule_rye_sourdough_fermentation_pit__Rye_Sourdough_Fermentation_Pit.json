@@ -1,0 +1,52 @@
+{
+  "Id": "rule_rye_sourdough_fermentation_pit",
+  "Keywords": [
+    "keeping a rye bread starter",
+    "sourdough at the household oven"
+  ],
+  "RagShortTexts": [
+    "Rye dough can use saved starter; warmth, time and oven heat affect the loaf.",
+    "Milling, baking and keeping require work, and sour bread can still spoil."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After milling rye, cooks mix flour and water with saved starter, allow the dough to rise and bake according to the oven’s heat. A cold room slows waiting, while weak heat or a thick loaf leaves the centre underdone. Starter and vessels need care for the next batch; bread uses water, fuel and attention as well as flour.\n\nLoaves go to families, workers and travelers, with dry portions packed and crumbs saved. Rain, rodents, damp wrapping and freezing complicate keeping and eating. Milling seed provides meals now but leaves a spring shortage, linking the dough at home to grain loans and exchanges of labour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Estate bread shares need edible weight and baking capacity, not grain stocks alone. Keeping seed also sustains next season’s rents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops need to soften hard bread for people unable to chew. Baking halts cost fuel and time and must fit the route."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A sound starter saves borrowing but needs care. Lending starter and sharing oven heat accompany other exchanges between neighbours."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

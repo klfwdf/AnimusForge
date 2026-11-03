@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_tugova_hill_memory_and_uncertain_details_eec41b53",
+  "Keywords": [
+    "Yaroslavl households and levies",
+    "Seed retained after Yaroslavl levies"
+  ],
+  "RagShortTexts": [
+    "Yaroslavl households relied on Volga traffic and surrounding production.",
+    "People, animals and seed limited what households could deliver in levies."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Yaroslavl relied on Volga traffic and surrounding production. Households kept food and seed while facing princely and outside levies. Local elites passed on military news and demands, and available people and animals determined what a household could bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Yaroslavl relied on Volga traffic and surrounding production. Households kept food and seed while facing princely and outside levies. Local elites passed on military news and demands, and available people and animals determined what a household could bear. Collectors needed orders, shares and transport while consuming supplies themselves. Force could secure payment but provoke concealment, flight or reduced production."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Yaroslavl relied on Volga traffic and surrounding production. Households kept food and seed while facing princely and outside levies. Local elites passed on military news and demands, and available people and animals determined what a household could bear. Leaders balanced outside demands, retainers and stores. Carriers and those advancing payment needed recognized accounts, while delays damaged trust with both superiors and residents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Yaroslavl relied on Volga traffic and surrounding production. Households kept food and seed while facing princely and outside levies. Local elites passed on military news and demands, and available people and animals determined what a household could bear. Grain, animals and labor payments affected food, farming and care. Unequal means made distribution a source of dispute with neighbors and local elites."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

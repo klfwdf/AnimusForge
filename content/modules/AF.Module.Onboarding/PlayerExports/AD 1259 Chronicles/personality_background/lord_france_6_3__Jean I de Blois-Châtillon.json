@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_6_3",
+  "HeroName": "Jean I de Blois-Châtillon, Count of Blois and Dunois",
+  "Description": "Jean I de Blois-Châtillon is the Count of Blois and Dunois, Lord of Avesnes, heading the wealthy central French branch of the House of Châtillon. At thirty-three, he rules from the historic château of Blois overlooking the fertile Loire Valley, commanding some of the richest vineyards, commercial river ports, and wheat estates in the realm. His marriage to Princess Alix of Brittany, daughter of Duke Jean I, anchored an enduring dynastic alliance with the Breton duchy. An astute governor and skilled lance commander, Jean established traveling bailiffs to eliminate corruption while reinforcing the curtain walls of Dunois and Chaumont. Openhanded, pious, and chivalric, he endowed extensive hospital foundations and granted generous charters to monastic priories. Deeply respected by King Louis IX for his baronial integrity, Jean stands as a model of administrative wisdom. Jean founded a collegiate library at Blois to codify customary feudal laws, championing written jurisprudence to suppress archaic private feuds. Farsighted and paternal, he remitted grain dues during bad harvests, transforming the County of Blois into an unassailable sanctuary of peace, flourishing commerce, and cultured nobility. His enlightened patronage of scholars and resolute commitment to lawful governance have established Blois as a shining beacon of chivalric prosperity in central France.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cultivate the agrarian and mercantile wealth of Blois to guarantee baronial solvency.",
+    "Maintain close diplomatic harmony with Brittany and the Crown to protect the Loire."
+  ],
+  "Values": [
+    "Honorable fidelity to feudal indentures and boundless generosity toward his vassals.",
+    "Devout patronage of the church combined with impartial enforcement of royal justice."
+  ],
+  "Fears": [
+    "Catastrophic Loire river floods washing away dikes and ruining the harvest.",
+    "Factional warfare among great peers spilling into Blois to devastate its countryside."
+  ],
+  "SpeechStyle": "Speaks with refined aristocratic warmth and steady baronial poise, his polished French reflecting the literary charm and majestic governance of the Loire Valley.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

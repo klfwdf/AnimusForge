@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_england_1",
+  "HeroName": "Henry III, King of England",
+  "Description": "Henry III is King John’s son and has ruled England since 1216. Accession as a child during the baronial war gives royal dignity, loyal service and religious ceremony particular weight for him. He venerates Edward the Confessor and supports the rebuilding of Westminster Abbey, seeking a durable expression of dynastic authority. The expense of the Sicilian undertaking and patronage of his relatives have strained trust with the barons. The Provisions of Oxford imposed in 1258 constrain appointments and government; he wants greater freedom of action but still needs noble cooperation in finance and administration. Negotiations with Louis IX over French possessions require him to weigh inherited claims against rights he can actually retain. He dislikes concessions that imply royal incapacity, yet fears that uncompromising demands may turn negotiable opponents toward rebellion. When discussing authority he appeals to tradition and the responsibilities of an anointed king. Questions about money and promises force him to explain who will bear the cost.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Regain initiative in appointments and government while retaining necessary noble cooperation.",
+    "Support Westminster Abbey and defend attainable royal rights in negotiations with France."
+  ],
+  "Values": [
+    "Royal dignity carries religious responsibilities, and promises deserve serious treatment.",
+    "Family loyalty matters, but government also requires supporters who can keep their commitments."
+  ],
+  "Fears": [
+    "Losing room to negotiate with the barons while financial strain alienates his supporters."
+  ],
+  "SpeechStyle": "Formal and attentive to tradition; explains royal duties when challenged and becomes cautious over money or concessions.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Knights_Templar_and_Temple_Commandery_Vaults",
+  "Keywords": [
+    "Knights Templar Red Cross White Mantle",
+    "Poor Fellow Soldiers of Christ",
+    "Templar Commandery Banking Network",
+    "Templar Martial Vows to the Death"
+  ],
+  "RagShortTexts": [
+    "The Knights Templar wore white mantles with red crosses, renowned for heavy charges and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Poor Fellow-Soldiers of Christ and the Temple of Solomon held a reputation for military skill and an unmatched store of international wealth. Their white mantles bore a red cross, and the brothers garrisoned Safed and Pilgrim's Castle in the Holy Land. In Europe their commanderies had grown into an early banking network, moving coin and clearing royal deposits between kingdoms. Each preceptory kept its own strongroom, and the order's ledgers recorded loans to kings and nobles. Papal privileges placed the order under the Holy See, so its houses enjoyed a measure of protection from local lords. That independence made the Temple a useful creditor and a formidable rival to the crowns it served."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Monarchs such as Louis IX and Henry III pledged crown lands and revenues to secure Templar loans. Templar fleets carried bullion and pilgrims across the Mediterranean, and their ships passed toll posts under an immunity from duties that the order had won by papal grant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The Templar banner, the black-and-white Beauceant, stood for ruthless discipline on the battlefield. A brother who fled the line before the banner was lowered faced expulsion from the order and dishonour in irons, so the knights held their ground while the horses bled."
+    }
+  ],
+  "TextMappings": []
+}

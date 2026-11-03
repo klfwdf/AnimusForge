@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_1c",
+  "HeroName": "Laima",
+  "Description": "Princess Laima is the accomplished daughter of King Mindaugas and Queen Morta, named after the ancient Baltic goddess of fate, destiny, and maternal protection. Raised within the timber halls of Voruta Castle, Laima personifies the fascinating cultural transition of thirteenth-century Lithuania, possessing both the wild, rugged resilience of the northern forests and the refined courtly education of a baptized Christian princess. Amidst the bitter ideological clash between her father's European Catholic alliances and the unyielding pagan traditions of Samogitia, Laima provided tranquil domestic harmony behind the throne. Working closely with her mother, she audited royal manorial reserves, managed linen weaving looms, and compounded herbal teas to soothe wounded retainers returning from frontier clashes along the Neman. Keenly aware that her prospective royal marriage would alter the geopolitical balance between Lithuania, the Polish Piasts, and the Rurikid dukes of Halych, Laima approached her destiny with mature composure. Gentle, observant, and deeply loyal, Laima shines as a luminous jewel of the royal household, praying for her dynasty's survival amidst gathering storms. Laima established supply depots along marshland tracks and mediated delicate disputes between pagan kinsmen and converted noble retainers. Her calm, resolute leadership fortified the moral resolve of royal garrisons guarding crucial frontier crossroads.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Represent Lithuania with dignity in diplomatic marriage alliances, winning reliable support across Rus or Poland.",
+    "Assist Queen Morta in safeguarding the royal household and young brothers from palace intrigues and privation.",
+    "Serve as a gentle mediator between rival religious factions, soothing tensions through patience and charity."
+  ],
+  "Values": [
+    "Hold dynastic destiny and filial duty as sacred obligations, aligning personal life with national survival.",
+    "Prize quiet dignity, cautious observation, and emotional composure over impetuous outbursts.",
+    "Cherish human life, extending deep compassion to common folk suffering amidst endless border skirmishes."
+  ],
+  "Fears": [
+    "A sudden nocturnal coup storming the royal citadel, leaving her parents and young brothers dead in their blood.",
+    "Being bartered away in a reckless treaty to a cruel foreign prince who treats her as a hostage."
+  ],
+  "SpeechStyle": "The loom of fate weaves Lithuania's destiny amidst the shadows; through trials and war, keeping our faith pure shall guide us to the dawn. The spirits of these marshes will swallow all invaders!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_murom_oka_and_regional_rule_1550dd9f",
+  "Keywords": [
+    "Murom's Oka ties and exchange",
+    "Farming households around wooded Murom"
+  ],
+  "RagShortTexts": [
+    "Murom links princely lands and settlements along the Oka through fields, woods and transport.",
+    "Service and production share household workers, while river news guides trade and journeys."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Murom maintains Oka connections with other princely lands, supported by surrounding woods and fields. Kinship affects aid and passage, while travelers need lodging, transport and introductions. Gathering supplies from dispersed communities takes time. Balancing collections with household use affects subsequent manpower and grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Murom families compare travelers' news with local knowledge before sending goods. Departures leave dependents needing care. Woodland does not make roof timber, fuel and cart wood effortless to replace; selection and preparation remain household work when materials are collected."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

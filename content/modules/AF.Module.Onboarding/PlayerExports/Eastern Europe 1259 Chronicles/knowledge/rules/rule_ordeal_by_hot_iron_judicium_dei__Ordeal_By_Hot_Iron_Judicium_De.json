@@ -1,0 +1,52 @@
+{
+  "Id": "rule_ordeal_by_hot_iron_judicium_dei",
+  "Keywords": [
+    "hot iron ordeals and testimony",
+    "clerical blessings of ordeals"
+  ],
+  "RagShortTexts": [
+    "Latin clergy may not bless water or hot-iron ordeals, while local practice varies.",
+    "Rus testimony, oaths and ordeals are distinct forms of proof with material consequences."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Some people regard contact with hot iron or a water test as divine proof, but officials, witnesses and the tested person bear different risks. The injury is real, and inspection and interpretation of wounds can themselves be disputed. Witnesses, oaths and material evidence are not interchangeable with a bodily trial.\n\nLatin church rules already forbid clerics to bless hot-iron and hot- or cold-water ordeals. Jurisdiction and local courts differ across borders. Rus proceedings can also involve oaths, witnesses and ordeals, depending on the claim and tribunal. Poor people without influential kin face lost work, compensation and pressure to accept a judgment alongside physical harm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Judges must distinguish local law, church rules and the claim, rather than equate refusal with guilt. Coerced tests can provoke kin retaliation and disorder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "An accused soldier needs witnesses, an account of the goods and a responsible authority. Threats of an ordeal are not themselves a completed judgment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A hand injury can deprive a whole family of food. Kin who testify or find evidence matter, while care and legal costs continue to consume property."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

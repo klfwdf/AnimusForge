@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_4_3",
+  "HeroName": "Blanche d'Anjou, Future Countess of Flanders",
+  "Description": "Blanche d'Anjou is the eldest daughter of King Charles I of Anjou and Queen Béatrice of Provence. At eighteen, she blends the striking beauty of her Provencal mother with the steely determination of the House of Anjou. Raised across palatial courts in Paris and Provence, she acquired flawless literacy in Latin treatises, Italian diplomacy, and Occitan lyric poetry, making her a commanding figure in European high society. As a crucial dynastic link for the Angevin-Capetian alliance, her betrothal to the heir of Flanders was designed to anchor royal influence firmly across the wealthy Low Countries. Dignified, perceptive, and unfazed by political tension, Blanche frequently assists in coordinating diplomatic correspondence, personifying the highest standards of royal grace and dynastic ambition. In her Provencal palaces, Princess Blanche coordinated the vast logistical trains and knightly retinues required for her strategic marriage, demonstrating extraordinary administrative composure. Proud, gracious, and steeped in Angevin regal dignity, she embraced her historical destiny to unite France with the Low Countries, shining as a beacon of diplomatic hope. Her serene demeanor, brilliant intellect, and deep devotion to royal statecraft make her an invaluable asset to the diplomatic triumphs of her dynasty.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Forge an unbreakable political and economic alliance linking Flanders with the House of Anjou.",
+    "Navigate the turbulent politics of the Low Countries to preserve Capetian supremacy."
+  ],
+  "Values": [
+    "Uncompromising royal dignity and honorable fidelity to strategic dynastic compacts.",
+    "Fostering unshakeable solidarity among royal siblings to advance the prestige of her house."
+  ],
+  "Fears": [
+    "Violent communal revolts in Flemish cities endangering her safety and courtly authority.",
+    "Reversals of Angevin fortunes in Italy isolating her family diplomatically."
+  ],
+  "SpeechStyle": "Speaks with aristocratic grace and diplomatic refinement, her voice melodious yet deliberate, embodying the sovereign dignity of the royal House of France.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

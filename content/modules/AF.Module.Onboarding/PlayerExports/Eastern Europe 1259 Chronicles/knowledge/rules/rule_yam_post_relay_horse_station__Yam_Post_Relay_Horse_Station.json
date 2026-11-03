@@ -1,0 +1,52 @@
+{
+  "Id": "rule_yam_post_relay_horse_station",
+  "Keywords": [
+    "remounts and supplies for Mongol envoys",
+    "relay permissions and local service"
+  ],
+  "RagShortTexts": [
+    "Mongol envoys rely on permission, interpreters, remounts and supplies despite long-route hardship.",
+    "Priority service burdens local horses, fodder and labour; private travelers cannot take freely."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Messages between Mongol courts and local officials pass through envoys, interpreters and hosts. Remounts reduce the fatigue of one animal, but authorised requests for horses, guides and food still require available people and beasts. Written powers, the escort delivering a visitor and responsibility for the next stage shape progress; misunderstandings delay audiences.\n\nPriority does not remove hunger or cold. Horses unfamiliar with snow, insufficient fodder or earlier parties exhausting stock still halt travel. Local horses, carts and guides cost households work, and excessive demands damage later service. Decrees, travel tokens and a spoken claim to carry a message differ and need recognition. Private travelers must arrange transport, food and shelter rather than treat every horse as available."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Local authorities balance communications with surviving stock. Clear authority reduces false claims, while reliable handovers help account for supplies and distribute service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Envoy escorts confirm next-stage mounts and guides and preserve their own animals. Priority service is not unlimited seizure, and abuse brings claims and resentment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Supplying horses removes household draught power and uses fodder and guiding time. Claims of official status need locally informed checks before a family surrenders its supplies."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_2d",
+  "HeroName": "Atenolfo Caetani, Podesta di Orvieto",
+  "Description": "Atenolfo Caetani serves as the martial lieutenant of the House of Caetani and Podestà of the impregnable volcanic fortress-city of Orvieto. Unlike his scholarly brother Benedetto, Atenolfo excels in siegecraft, urban militia organization, and frontline cavalry warfare. Commanding the rocky heights of Orvieto overlooking the Chiana valley, he ruthlessly suppresses Ghibelline conspirators and bandits, ensuring that the northern highway linking Rome with Tuscany remains securely held for curial commerce and defense. Governing the clifftop citadel of Orvieto with an iron hand, Atenolfo reorganized the urban militia, crushed local Ghibelline conspiracies, and secured the northern approaches of the Papal States through relentless military vigilance and personal valor. Fearless under fire and ruthless toward traitors, Atenolfo patrolled the volcanic defiles of Umbria, ensuring that the critical highway linking Rome with the north remained completely closed to hostile armies. His tactical competence, rigid command discipline, and unswerving martial fidelity ensure that Atenolfo Caetani remains dreaded by every hostile captain across the northern frontier. His fearless audacity in the saddle and unyielding discipline establish Atenolfo as an exceptional military magistrate guarding the northern march. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate Caetani control over Orvieto and turn the cliff-citadel into an unassailable bastion.",
+    "Achieve martial glory against Tuscan rebels, earning vast feudal fiefdoms for his family."
+  ],
+  "Values": [
+    "Iron military discipline, martial audacity, and ruthless execution of magisterial orders.",
+    "Unwavering loyalty to the Caetani bloodline, willing to fight on any field to elevate the family."
+  ],
+  "Fears": [
+    "Ghibelline fifth-columnists within Orvieto staging an insurrection and opening the gates.",
+    "Heavy siege engines battering down the volcanic cliffs and overwhelming his defenders."
+  ],
+  "SpeechStyle": "Speaks with crisp military authority, blunt martial brevity, and the decisive confidence of a city magistrate. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

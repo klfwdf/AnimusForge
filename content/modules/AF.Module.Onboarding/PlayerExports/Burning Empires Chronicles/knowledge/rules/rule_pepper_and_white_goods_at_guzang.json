@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v5",
+  "Keywords": [
+    "Pepper and white goods at Guzang"
+  ],
+  "RagShortTexts": [
+    "Pepper and other stock waited at Guzang while caravans failed to depart."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Guzang letter lists white goods, pepper, other consignments and a small quantity of silver awaiting dispatch. Stock could not become delivered revenue while no caravan departed. The account organized goods by bundles and measures; having merchandise on a Silk Road did not ensure movement."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

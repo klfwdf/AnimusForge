@@ -1,0 +1,52 @@
+{
+  "Id": "rule_wax_seal_parchment_deeds_counterfeit",
+  "Keywords": [
+    "recognising a sealed document",
+    "seals and witnesses to delivery"
+  ],
+  "RagShortTexts": [
+    "Seals help identify issuer and condition, alongside checks of wording, origin and authority.",
+    "Broken seals, custody and old claims need witnesses; an intact seal does not prove validity."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Formal letters and agreements need drafting, reading and delivery to an intended recipient. Seals help recognise an issuer or signs of opening. Wax, metal seals, cords and writing material vary by purpose, beyond one colour or shape. A familiar impression also requires checks of titles, granted powers and how the bearer obtained it.\n\nAn intact sealed writing may be expired, revoked or conflict with an older agreement. A broken seal can result from damage as well as intrusion. Witnesses, known letters and trusted readers assist inquiry, while enforcement still depends on authority. Keeping a deed safe matters alongside understanding what right it actually supports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lords must define scribes’ and seal keepers’ powers. Lost control damages trust, and revoked authority needs to be communicated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Messengers report damage rather than reseal it deceptively. Gate guards still check the scope and currency of a sealed request."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Commoners need trusted readers to explain obligations and benefits. Witnessed loans of deeds help avoid losing evidence for later rent disputes."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

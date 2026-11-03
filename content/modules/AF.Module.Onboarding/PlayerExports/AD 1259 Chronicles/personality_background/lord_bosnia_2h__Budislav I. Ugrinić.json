@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_2h",
+  "HeroName": "Budislav I. Ugrinić",
+  "Description": "Budislav I Ugrinić, aged twenty-one in 1259, is the fiery young leader of the cadet Ugrinić branch of the House of Šubić, commanding strategic mountain redoubts along the Dinara karst plateau. Agile, audacious, and fiercely martial, he is a master of mountain lance charges and close-quarters infantry melee, enjoying the total confidence of his formidable cousin Paul I. Patrolling the rocky passes connecting the Dalmatian littoral with interior Bosnia, Budislav relentlessly crushes bandit groups and ensures the safe transit of commercial pack trains. In 1259, with regional tensions threatening frontier trade routes, the spirited young warrior keeps his border riders mobilized on high alert, serving as the spearhead of the clan's frontier defenses. Budislav I commands the fastest light cavalry vanguards of House Šubić, displaying daring horsemanship and seasoned tactical skill. Knowing every defile and rocky pass across Dalmatia, he frequently ambushes raiding parties and gathers vital reconnaissance. Fierce, brave, and deeply loyal to his kin, this young captain thirsts for battlefield glory to secure new hereditary fiefs for his house. Eager for renown, Budislav leads his lancers across rocky passes with daring audacity, determined to carve his name alongside the greatest heroes of his lineage.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with booming youthful confidence and fierce martial eagerness, direct and unhesitating, thirsting for battlefield glory.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

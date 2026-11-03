@@ -1,0 +1,53 @@
+{
+  "Id": "rule_mangudai_feigned_retreat_trap",
+  "Keywords": [
+    "Feigned retreat and pursuit risks",
+    "Rallying after a feigned retreat",
+    "Pursuit beyond friendly support"
+  ],
+  "RagShortTexts": [
+    "Feigned withdrawal needs communication and a rally point; pursuit can separate support.",
+    "Mounts, terrain and rearward pace shape a return; a feint may become uncontrolled flight."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Steppe withdrawal can tempt opponents to leave companions and positions, exposing pursuit to returning riders or another force. Those withdrawing need to know when and where to rally. Horses, visibility and terrain affect communication. Disorder or a confined route can turn an intended feint into genuine flight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A fighter seeing retreating riders must still know where support remains. Tired mounts, infantry and wagons cannot all keep pace. Beyond sight of the original position, the return may be blocked. A withdrawing rider needs a rally signal and strength to turn rather than simply ride away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander needs positions, communication and a rally arrangement rather than reliance on enemy eagerness. Reserves, ground and remounts need room. Followers who distrust orders may interpret the plan as abandonment. Resisting a feint likewise requires limits on pursuit and mutually supporting bodies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Riders leaving a field may move faster than dependants, stores and herds. Nearby households unable to judge events may flee and abandon crops. Requisitioned guides and drivers need a destination and assistance, not a rally plan known only to the vanguard."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_3_3_b",
+  "HeroName": "Constance de Toulouse",
+  "Description": "Constance of Toulouse is the venerated senior matriarch of the Navarrese nobility, commanding universal reverence at sixty-one years of age. Originating from the grand House of Toulouse in Languedoc, Constance survived the harrowing cataclysms of the Albigensian Crusade before marrying into the Navarrese House of Jiménez. Over decades of turbulent Peninsular politics, she introduced advanced Occitan agricultural terraces, irrigation methods, and weaving arts to the Ebro basin. Possessing an encyclopedic memory of half a century of Capetian, Aragonese, and Castilian treaties, Lady Constance serves as a living chronicle and supreme diplomatic elder. Serene, authoritative, and deeply wise, her sobering counsel has repeatedly restrained rash young warlords from suicidal border confrontations, universally revered as an immortal bridge across the Pyrenees. Her half-century of tragic historical experience, encyclopedic memory of treaties, and maternal wisdom establish Constance of Toulouse as a revered elder guiding the realm through tempests. Her profound insight and gentle authority calm the fiery passions of youthful barons, preserving the life of the nation. Her profound historical insight, gentle authority, and vast diplomatic experience calm the fiery passions of youthful barons, preserving peace and ancestral heritage across the Pyrenean borderlands.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To guide younger generations with historical wisdom, preventing Navarre from suffering Languedoc's tragic fate.",
+    "To safeguard the prosperity, agricultural wealth, and peace of her people through prudent council."
+  ],
+  "Values": [
+    "Blind ideological fanaticism brings devastation; calm reason and pragmatic patience preserve life.",
+    "Enduring historical cataclysms to pass on the torch of civilization is the highest heroism."
+  ],
+  "Fears": [
+    "War between France and Spain turning the tranquil valleys of Navarre into a slaughterhouse.",
+    "Arrogant young nobles repeating the disastrous errors that destroyed the independence of Toulouse."
+  ],
+  "SpeechStyle": "Speaks with slow, gravelly deliberation, profound historical depth, and unshakeable matriarchal gravitas. She speaks with serene courtly poise, gentle articulation, and gracious royal dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v1",
+  "Keywords": [
+    "普林尼的琥珀海岸记载"
+  ],
+  "RagShortTexts": [
+    "普林尼转述北海岸居民拾取被浪推上岸的琥珀，再售给邻近人群。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "普林尼转述北海岸居民拾取被浪推上岸的琥珀，再售给邻近人群。采集地与罗马奢侈品市场之间隔着许多经手人，岸边拥有原料并不等于采集者能得到远方首饰的售价。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

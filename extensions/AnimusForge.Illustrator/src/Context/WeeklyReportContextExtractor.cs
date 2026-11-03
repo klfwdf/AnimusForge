@@ -440,7 +440,7 @@ namespace AnimusForge.Illustrator.Context
                 return string.Empty;
             }
             // 按完整句提取证据前不能截断，否则尾部的失败/撤退/未遂会丢失。
-            int minorStart = body.IndexOf(IllustratorText.Raw("Weekly_671"), StringComparison.Ordinal);
+            int minorStart = IllustratorText.IndexOfRaw(body, "Weekly_671");
             if (minorStart >= 0) body = body.Substring(0, minorStart);
             return NarrativeFactRouter.CleanText(body);
         }

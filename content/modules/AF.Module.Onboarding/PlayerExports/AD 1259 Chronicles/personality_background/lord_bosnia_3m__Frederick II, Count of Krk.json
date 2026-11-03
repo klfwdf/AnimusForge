@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_3m",
+  "HeroName": "Frederick II, Count of Krk",
+  "Description": "Frederick II, Count of Krk, aged five in 1259, is the promising young grandson of Count Jerindo I and heir to the comital mantle of Krk and Modruš. Handsome, serious-minded, and quick-witted, he inherits the maritime statecraft of his grandfather and the martial valor of his father. Instructed by castle chaplains in Glagolitic script and Latin fundamentals, five-year-old Frederick rides his pony with natural balance across the inner parade grounds. Serious yet affable, the young lord commands affection from knights and elders alike. In 1259, sheltered behind the impregnable stone ramparts of Krk, Frederick II grows in wisdom and strength. Frederick II, carrying the hereditary title of Count of Krk at age five, is carefully tutored in feudal statecraft and chivalric duty by veteran squires. His bright eyes already reveal the calm intellect of a future dynastic leader, listening to divine liturgy and naval reports with remarkable focus. Surrounded by the surging waves of the Adriatic, young Frederick represents the bright dawn of his house, carrying all the seafaring hopes of House Frankopan. Reared with solemn respect for feudal tradition, young Count Frederick embraces his highborn calling, his bright mind prepared to lead his people into a glorious future.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Articulates with courteous princely composure, clear and respectful, displaying remarkable manners and dignity for his age.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

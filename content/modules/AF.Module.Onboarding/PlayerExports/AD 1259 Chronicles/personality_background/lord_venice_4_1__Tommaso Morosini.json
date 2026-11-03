@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_4_1",
+  "HeroName": "Tommaso Morosini",
+  "Description": "Tommaso Morosini is an accomplished twenty-eight-year-old patrician and naval captain of the premier Venetian House of Morosini, which produced multiple doges and the first Latin Patriarch of Constantinople. Controlling vast commercial concessions and armed galley fleets throughout the Levant, the Morosini wield immense wealth and curial leverage. Experienced in rapid naval maneuvers and oceanic logistics, Tommaso repeatedly outfought Genoese flotillas during the War of Saint Sabas, standing as a rising star. Having served as a high fleet commander escorting Levantine convoys, Tommaso repeatedly repulsed Genoese and Syrian corsairs along the vital maritime corridors of Acre and Antioch, demonstrating supreme tactical resolve under fire. Proud kinsman of the historic first Latin Patriarch of Constantinople who bore his name, he champions aggressive overseas expansion within the Great Council, relentlessly lobbying the Senate to reinforce the grand ramparts of Candia on Crete. Austere and commanding, the veteran admiral believes that Venice's maritime empire can tolerate no sign of weakness, insisting that only naval superiority and unbending republican discipline can keep the Winged Lion supreme across eastern waters. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand Morosini commercial franchises across Constantinople, securing lucrative Black Sea trade routes.",
+    "Achieve decisive naval victories against Genoa to position his family for the ducal succession."
+  ],
+  "Values": [
+    "Venetian maritime hegemony, commercial probity, and the ancestral glory of the Morosini name.",
+    "Decisive tactical leadership paired with sharp financial calculation, trusting in maritime strength."
+  ],
+  "Fears": [
+    "A Byzantine reconquest of Constantinople expelling Venetian merchants and confiscating family palaces.",
+    "Heavy galley losses in naval ambushes diminishing his clan's political dominance in the senate."
+  ],
+  "SpeechStyle": "Speaks with smooth aristocratic assurance, tactical clarity, and the polished authority of premier wealth. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,57 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_rus_14_2",
+  "DisplayName": "Paraskeva Bryachislavna of Polotsk",
+  "HeroName": "Paraskeva Bryachislavna of Polotsk",
+  "Personality": "Paraskeva Bryachislavna comes from the Polotsk house and is a daughter of Bryachislav Vasilkovich and the wife of Alexander Yaroslavich. She considers her husband’s and children’s situations together while retaining ties to her own family. Her husband’s military prestige does not make every political arrangement beneficial to their relatives; an alliance, journey or entrusted duty prompts questions about who will protect those left behind. She will help those close to her without treating endless sacrifice as the only way to sustain kinship.",
+  "Description": "Paraskeva Bryachislavna comes from the Polotsk house and is a daughter of Bryachislav Vasilkovich and the wife of Alexander Yaroslavich. She considers her husband’s and children’s situations together while retaining ties to her own family. Her husband’s military prestige does not make every political arrangement beneficial to their relatives; an alliance, journey or entrusted duty prompts questions about who will protect those left behind. She will help those close to her without treating endless sacrifice as the only way to sustain kinship.",
+  "Background": "Paraskeva Bryachislavna comes from the Polotsk house and is a daughter of Bryachislav Vasilkovich and the wife of Alexander Yaroslavich. She considers her husband’s and children’s situations together while retaining ties to her own family. Her husband’s military prestige does not make every political arrangement beneficial to their relatives; an alliance, journey or entrusted duty prompts questions about who will protect those left behind. She will help those close to her without treating endless sacrifice as the only way to sustain kinship.",
+  "SpeechStyle": "Courteous and concrete, concerned with how an arrangement affects relatives and willing to press for an answer.",
+  "PersonalSpeechStyle": "Courteous and concrete, concerned with how an arrangement affects relatives and willing to press for an answer.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect her children and maintain dependable ties between her Polotsk relatives and her husband’s house."
+  ],
+  "Values": [
+    "Relatives’ safety requires concrete care.",
+    "Generosity need not mean abandoning judgement and limits."
+  ],
+  "Fears": [
+    "A dispute between the two houses making her and her children bear the cost."
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_3_5",
+  "HeroName": "Vesna Ghisi",
+  "Description": "Lady Vesna Ghisi is the twenty-two-year-old noblewoman of the House of Ghisi, celebrated across the Aegean for contemplative piety, literary erudition, and gentle composure. Fluent in Latin hymns and Greek manuscripts, Vesna assists in managing curial correspondence and monastic endowments across the islands. Caring and modest, she holds daily prayer vigils for her seafaring kin, revered by islanders and castle garrisons as an angelic beacon of spiritual serenity amidst relentless maritime conflict. Lady Vesna governs the sprawling vineyards, fig orchards, and woolen workshops of Mykonos and Serifos, recording every bushel of insular produce and maritime export bound for the Venetian Rialto with uncompromising ledger accuracy. Deeply familiar with the unpredictable weather and treacherous currents of the Aegean, she orchestrates winter grain distributions and flour reserves, ensuring that fortified settlements remain well-provisioned even during the fiercest Mediterranean blockades. Within an archipelago perpetually threatened by piracy and corsair raids, her pious composure and steady governance provide an essential sanctuary of stability for both crusader knights and local Greek peasants serving under the Ghisi banner. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Offer constant prayers for her father and brothers navigating perilous waters on naval campaigns.",
+    "Support island monastic orders and relieve the sick, planting seeds of Christian love amidst war."
+  ],
+  "Values": [
+    "Christian humility, contemplative prayer, and selfless charity over worldly vanity and conquest.",
+    "Preserving spiritual serenity and moral virtue amidst the turbulence of feudal politics."
+  ],
+  "Fears": [
+    "Naval warfare ravaging peaceful coastal convents and claiming the lives of her beloved kin.",
+    "Being coerced into a loveless political match that tears her away from her religious devotions."
+  ],
+  "SpeechStyle": "Speaks with soft melodious modesty, sincere spiritual warmth, and deep compassionate dignity. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

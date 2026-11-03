@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_3_1_1",
+  "HeroName": "Sibylla of Armenia, Princess of Antioch",
+  "Description": "Sibylla of Armenia, the eldest daughter of King Hetoum I of Cilician Armenia, reigned as Princess of Antioch and Countess of Tripoli beside Bohemond VI. Her marriage cemented the vital trans-Taurus military alliance between the fiercely independent Armenian mountain kingdom and the Norman Frankish principality. Reared within the cosmopolitan royal palaces of Sis and Tarsus, Sibylla was fluent in Armenian, French, Greek, and Persian, mastering the complex diplomatic tapestry of the Near East. In 1259, she played an instrumental role alongside her father and husband in engineering the strategic alignment between the Christian states and the Mongol Ilkhanate. While Bohemond commanded knightly squadrons on distant Syrian campaigns, Sibylla governed Antioch's domestic administration, regulating granaries and municipal defenses with consummate poise. A devout patroness who fostered harmony between Latin Catholicism and the Armenian Apostolic Church, she was celebrated as the wise matriarch of the northern crusader realm. Within the royal palace of Antioch, Sibylla established hospices for wounded veterans from northern campaigns and directed municipal granaries to prevent famine. While Bohemond campaigned in Syria, Sibylla pacified doctrinal tensions among regional clergy, maintaining political harmony across the principality. Her royal wisdom and benevolent charity anchored the northern Christian coalition throughout seasons of relentless conflict.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the indissoluble defensive union between Cilician Armenia and Antioch, securing mountain passes into Syria.",
+    "Act as a premier diplomatic conduit between the Ilkhanate court and Antioch to maintain coordinated military pressure on Egypt.",
+    "Oversee emergency granaries and monastic hospices in Antioch, shielding Armenian and Latin populations from wartime devastation."
+  ],
+  "Values": [
+    "Christian survival demands theological reconciliation; Frankish and Armenian believers must stand united against saracen conquest.",
+    "Supporting her husband with acute geopolitical wisdom and administrative stability to navigate unprecedented historical crises.",
+    "Compassionate governance that transforms royal prerogative into practical sanctuary and benevolent charity for the populace."
+  ],
+  "Fears": [
+    "Mamluk armies bypassing Antioch to devastate the Armenian homeland in Cilicia, burning the ancestral royal capital of Sis.",
+    "The fall of Antioch to a sudden saracen siege, resulting in the captivity or execution of her noble children by Cairo's emirs."
+  ],
+  "SpeechStyle": "Speaks with majestic Levantine grace and profound diplomatic acuity, articulating complex geopolitical treaties and royal strategies with composed elegance.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Sibylla of Armenia, Princess of Antioch"
+}

@@ -1,0 +1,53 @@
+{
+  "Id": "rule_caltrops_pitfall_area_denial",
+  "Keywords": [
+    "Caltrops and movement obstacles",
+    "Caltrop road warning",
+    "Obstacle marking and friendly passage"
+  ],
+  "RagShortTexts": [
+    "Caltrops injure feet and obstruct passage, requiring precautions against friendly movement.",
+    "Road obstacles need guards and marking; mud and clearance change their effect."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Caltrop points make a road hazardous to horses and pedestrians. Around Rus crossings or fort approaches, obstacles must leave provision for food carts, messengers and withdrawal. Mud can conceal points while slowing clearance. Guards matter: an opponent with time may detour or clear a passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Road guards need to know obstacle boundaries and reserved passages and explain them at relief. A pursuit or night withdrawal into friendly caltrops can block those behind as well as injure mounts. Encountering obstacles calls for checking detours and clearance rather than trusting rumor about the ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A leader needs iron, transport and guards for caltrops and must inform carriers and messengers. Closing a road may delay enemy riders or sever friendly markets and withdrawal. Reserved passages and responsibility for removal let obstacles work with strongpoints and infantry warning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villagers and drivers need to know where animals can still pass. Iron left in mud or grass after fighting injures workers and livestock, and removal consumes labor. When a lord closes a road without arranging clearance, roadside households bear the costs of restoring markets and cultivation."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

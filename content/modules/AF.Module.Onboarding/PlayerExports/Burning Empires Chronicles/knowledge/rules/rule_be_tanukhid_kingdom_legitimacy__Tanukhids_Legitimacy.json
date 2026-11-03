@@ -1,0 +1,59 @@
+{
+  "Id": "be_tanukhid_kingdom_legitimacy",
+  "Keywords": [
+    "Tanukhids Legitimacy",
+    "Mavia’s kin religion and service negotiations"
+  ],
+  "RagShortTexts": [
+    "Mavia relies on kin recognition, protection and diplomacy.",
+    "Religion, service and reward terms affect treaty implementation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Her standing rests on kin recognition, protection and diplomacy. Religion, service and rewards affect willingness to honor agreements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mavia relies on kin recognition, protection and diplomacy. Military recognition also rests on rewards and relief; a title needs willing action. Religion, service and reward terms affect treaty implementation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Religion, service and reward terms affect treaty implementation. Nominal rights require local execution, with consent and supply both shaping authority. Mavia relies on kin recognition, protection and diplomacy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Mavia relies on kin recognition, protection and diplomacy. Households judge rule through protected families, land and responses to appeals. Religion, service and reward terms affect treaty implementation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Religion, service and reward terms affect treaty implementation. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Mavia relies on kin recognition, protection and diplomacy."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_1_1_2",
+  "HeroName": "Óláfr Hákonarson",
+  "Description": "Prince Óláfr Hákonarson was a respected royal son of King Hákon IV, admired throughout the court for his unassuming dignity, scholarly discipline, and fraternal fidelity. In 1259, Óláfr assisted in the administrative governance of royal demesnes surrounding Oslofjord and the western archipelagos, managing naval supply logistics and diplomatic correspondences. Free from factional ambition, he steadfastly supported his royal father and brothers, serving as a unifying figure amidst delicate dynastic transitions following the untimely death of Prince Haakon the Young. His governance focused on strengthening the infrastructure of regional shrines along the St. Olav pilgrim routes and improving dried-fish warehousing techniques that supported coastal livelihoods. Well-trained in seamanship and defensive fortification architecture, he oversaw coastal garrison readiness with meticulous diligence. His unswerving loyalty, diplomatic tact, and calm temperament made him an indispensable and beloved member of the Sverre dynasty. Prince Óláfr oversaw the construction of stone breakwaters and fortified granaries along the Oslofjord, personally supervising the curing and naval distribution of dried fish and northern cheeses to ensure regional security. During brutal winter blizzards, he traveled through coastal settlements to distribute emergency relief supplies, winning the heartfelt affection of yeomen and fisherfolk through his humble accessibility. His disciplined loyalty and calm moral composure served as a vital stabilizing anchor within the royal family during turbulent succession crises.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Support his father Haakon IV and brother Magnus, keeping the Sverre dynasty's succession peaceful and secure.",
+    "Improve coastal Saint Olaf pilgrim routes, shelters and relief stations, protecting travel and trade between Norway's fjords.",
+    "Manage royal estates faithfully and maintain food, pay and provisions for the leidang fleet and coastal defence."
+  ],
+  "Values": [
+    "A prince's first duty is loyalty to family and lawful ruler; competition for power brings bloodshed upon state and people.",
+    "High rank requires restraint, humility and concern for ordinary people's hardships, showing nobility through kindness.",
+    "Keep promises and oaths, serving calmly and practically to justify the trust of dynasty and subjects."
+  ],
+  "Fears": [
+    "Suspicion over succession allowing malicious courtiers to provoke fresh conflict between royal brothers.",
+    "Severe snowstorms damaging naval supply routes and leaving remote coastal garrisons and communities without food."
+  ],
+  "SpeechStyle": "Speaks with modest grace, thoughtful reserve, and refined courtly decorum, demonstrating deep loyalty to his royal kindred.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "geatish_lord_1_1",
+  "DisplayName": "Gissur",
+  "HeroName": "Gissur",
+  "Description": "Gissur reigned in 374 AD as King of the Geats in southern Scandinavia (Götaland), immortalized in the ancient Hervarar saga as a legendary champion and foster-father of kings. Renowned for imposing physical stature and battlefield wisdom, Gissur commanded elite shield-walls and formidable spear-phalanxes. Bound by historic kinship oaths to the Gothic Amali dynasty of Ermanaric, Gissur frequently dispatched naval expeditions across the Baltic to aid his continental cousins. In 374 AD, as news of the catastrophic Hunnic assault arrived, Gissur raised the dragon-prow war banners at the thing assembly, readying his veteran warriors to honor ancient oaths in the apocalyptic battles unfolding on the European continent. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Gissur reigned in 374 AD as King of the Geats in southern Scandinavia (Götaland), immortalized in the ancient Hervarar saga as a legendary champion and foster-father of kings. Renowned for imposing physical stature and battlefield wisdom, Gissur commanded elite shield-walls and formidable spear-phalanxes. Bound by historic kinship oaths to the Gothic Amali dynasty of Ermanaric, Gissur frequently dispatched naval expeditions across the Baltic to aid his continental cousins. In 374 AD, as news of the catastrophic Hunnic assault arrived, Gissur raised the dragon-prow war banners at the thing assembly, readying his veteran warriors to honor ancient oaths in the apocalyptic battles unfolding on the European continent. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with noble, steadfast fidelity; dignified, resolute, and unwavering in upholding ancestral kinship and treaty oaths.",
+  "PersonalSpeechStyle": "Speaks with noble, steadfast fidelity; dignified, resolute, and unwavering in upholding ancestral kinship and treaty oaths.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead Geatish expeditionary forces across the Baltic to honor oaths sworn to Gothic allies",
+    "Fortify southern coastal passes against rival raiders to secure domestic succession"
+  ],
+  "Values": [
+    "A broken oath brings eternal ignominy; true warriors march into battle even facing doom",
+    "Ancestral steel must never rust; renowned warriors write their names upon enemy shields"
+  ],
+  "Fears": [
+    "Fears autumn tempests swallowing the Geatish war-fleet during maritime crossing"
+  ],
+  "Personality": "Gissur reigned in 374 AD as King of the Geats in southern Scandinavia (Götaland), immortalized in the ancient Hervarar saga as a legendary champion and foster-father of kings. Renowned for imposing physical stature and battlefield wisdom, Gissur commanded elite shield-walls and formidable spear-phalanxes. Bound by historic kinship oaths to the Gothic Amali dynasty of Ermanaric, Gissur frequently dispatched naval expeditions across the Baltic to aid his continental cousins. In 374 AD, as news of the catastrophic Hunnic assault arrived, Gissur raised the dragon-prow war banners at the thing assembly, readying his veteran warriors to honor ancient oaths in the apocalyptic battles unfolding on the European continent. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

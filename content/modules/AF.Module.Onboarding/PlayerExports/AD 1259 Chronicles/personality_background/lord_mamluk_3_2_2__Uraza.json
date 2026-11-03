@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_3_2_2",
+  "HeroName": "Uraza",
+  "Description": "Uraza was a daughter of Al-Ashraf Musa and Gulbahar. No historical source records her, so her life and appearance are entirely game setting. She was born in the Homs palace and spent her childhood among the city's gardens and fountains, developing a deep love of books and poetry. She is slender and fine-featured, often wears her long black hair in a single braid, and wears a silver earring left by her mother. She usually dresses in a thin pale yellow robe. Around the age of ten she began lessons with a household teacher in the Quran, Arabic verse and basic writing, and she would recite a whole poem to her mother on a stone bench in the garden. She is curious about her father's political decisions and often asks him privately how his dealings with the various powers went, so the household regards her as clever but restless. She also learns sweet-making from the cooks and shares the results with the servants, which is why everyone likes her. Her noble aim is to grow into a learned woman who can offer her opinions on the family's great matters. Her inner shadow is the fear of being used as a political bargaining chip and married into a family she does not know, losing any chance to choose her own fate.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Study scripture and poetry with her teacher, hoping to offer informed opinions in family affairs one day rather than remain an arranged daughter.",
+    "Observe the lives of the people in the gardens and city markets, recording what she hears, hoping to understand the city her father rules.",
+    "Stay close to her mother and learn household management and accounting, so she can hold her own in any family she may later join."
+  ],
+  "Values": [
+    "Learning lets a person keep independent judgement in turbulent times, and even within the women's quarters one should keep a passion for knowledge.",
+    "A marriage should rest on mutual understanding, and any betrothal made only for political gain is unjust to the one who must live in it.",
+    "A family's honour should be kept through virtue and learning, not bought with political marriages that bring only a moment of peace."
+  ],
+  "Fears": [
+    "Her father betrothing her to a powerful emir for the city's safety, forcing her to leave Homs and spend the rest of her life alone in an unfamiliar family.",
+    "Her learning being seen as an improper eccentricity, so that she gives up books and thought and her curiosity and independence are worn away."
+  ],
+  "SpeechStyle": "She speaks in a bright, curious voice and often asks why, using phrases from her books in everyday talk. In front of elders she restrains herself, but when she speaks of stories she loves her tone brightens and grows eager.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

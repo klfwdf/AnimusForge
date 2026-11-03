@@ -1,0 +1,42 @@
+{
+  "Id": "rule_House_of_Champagne_and_Troyes_Fairs",
+  "Keywords": [
+    "House of Champagne Counts",
+    "Blois Champagne Lineage",
+    "Troyes Provins Fair Revenues",
+    "Champagne Chivalry and Navarre"
+  ],
+  "RagShortTexts": [
+    "Letters of fair credit, sealed by Champagne wardens, carried enforcement across the Latin West.",
+    "French kings and the Roman curia both relied on those wardens to collect debts owed to their envoys."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Governing the rich eastern plains, the House of Champagne hosted the international fairs of Troyes and Provins, which drew merchants from Flanders, Italy, and the German lands. The fairs ran on a year-long cycle of six, so cloth buyers and money changers could move from one town to the next without leaving the count's peace. Each fair had its own wardens, who enforced standard weights, measures, and debt contracts across the circuit. Thibaut IV, renowned as both troubadour and monarch, secured the crown of Navarre in 1234, turning the dynasty into an economic and chivalric powerhouse. The count's courts and customs linked Flemish cloth with Italian banking, so a bad debt in Lombardy could still be pursued in the fair courts of Troyes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Letters of fair credit, sealed by Champagne wardens, carried enforcement across the Latin West. French kings and the Roman curia both relied on those wardens to collect debts owed to their envoys. Any lord who fell out with the count could find his bills of exchange frozen at the next fair."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "notable",
+          "townsfolk"
+        ]
+      },
+      "Content": "At the opening of Troyes market bells, silver coin flows across counting benches. Paying fair tolls guarantees armed escorts against highway robbers. Fair clerks recorded each bargain in ledgers, and merchants settled debts on fixed fair dates so that obligations could move between cities. Cloth bales, spices and furs were weighed and sealed before they left the fair."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "rule_London_Thames_Wharves_and_White_Tower_Citadel",
+  "Keywords": [
+    "London wharves and royal fortress"
+  ],
+  "RagShortTexts": [
+    "Thames wharves handled grain, wine and wool, while the Tower embodied royal force."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Thames wharves handled grain, wine and wool, while the Tower embodied royal force. Merchants and court needed one another and disputed requisition and privilege. London’s money and manpower mattered in the reform struggle."
+    }
+  ],
+  "TextMappings": []
+}

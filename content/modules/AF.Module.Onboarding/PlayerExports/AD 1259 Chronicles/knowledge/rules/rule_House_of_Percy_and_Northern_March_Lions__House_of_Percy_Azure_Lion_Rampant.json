@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Percy_and_Northern_March_Lions",
+  "Keywords": [
+    "House of Percy Azure Lion Rampant",
+    "Northumberland Border Marches",
+    "Alnwick Castle Stone Redoubt",
+    "First Bulwark Against Scottish Raids"
+  ],
+  "RagShortTexts": [
+    "The House of Percy guarded the Northumbrian border from Alnwick, holding the Scottish frontier."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Northumberland was a country of moor, peat and bare fell, and the Percy barony had to hold its frontier largely with its own resources. Alnwick Castle anchored that defence, its curtain walls and towers built to outlast a siege while retainers mustered for the border. The Scots raided by speed and surprise, driving cattle across the Tweed and vanishing into the hills before any royal army could march north, so the Percys kept horsemen and foot ready at the fords. Their revenue came from border manors whose tenants owed service in war, and the barony's strength lay in its ability to summon men quickly. A frontier castle had to hold until relief came, which meant that stored grain, dry powder and a vigilant watch mattered more than grand halls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Under Marcher privilege the Percy wardens judged border disputes without royal justices. Reprisal raids went out under the baronial seal, and the Tweed fords were guarded to protect the tolls that fed the household. Every truce was weighed first by its effect on Percy harvests and on how many fighting men the barony could feed through winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Northumbrian sentries stand the night in mail hauberks, eyes on the moor for the glint of a Scottish spear. Winter wind cuts through the arrow-slits of Alnwick, and a man caught dozing on watch answers to the warden. The watchword changes at every relief, and the destriers stand saddled in the stable, ready to bring the whole line to its feet at the first beacon flare."
+    }
+  ],
+  "TextMappings": []
+}

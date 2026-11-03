@@ -1,0 +1,52 @@
+{
+  "Id": "rule_shearling_alum_tanning_fur_coat",
+  "Keywords": [
+    "mending and drying sheepskin coats",
+    "warmth from fleece-lined clothing"
+  ],
+  "RagShortTexts": [
+    "Sheepskin clothing needs dressing, sewing and dry keeping; seams and wetness affect use.",
+    "Skin quality varies by means, while fit and shelter from wind matter in practice."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sheepskins retaining fleece can become warm coats after dressing, cutting and sewing shoulders, sleeves and stressed areas. Thickness, old wounds and usable area vary, so equal numbers of skins do not make equal garments. Herders, dressers and sewers each contribute labour and cost beyond fleece thickness.\n\nOpen collars, cuffs and seams admit wind, while soaked skins grow heavy and take time to dry. Poor people repeatedly mend old clothing and join small pieces; wealthy owners can choose better skins and keep replacements. Insects, damp and crushing in storage damage garments, making inspection before winter useful."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Retainers need suitable sizes and garments for their work. Repair materials help prevent a small split growing during distant travel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Riding, packs and armour wear shoulders and backs. Wet weather requires drying opportunities and shelter arranged before a night watch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Passing an old coat to a child needs altered sleeves and seams. Lending a coat commits winter resources, and damaged returns strain family ties."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

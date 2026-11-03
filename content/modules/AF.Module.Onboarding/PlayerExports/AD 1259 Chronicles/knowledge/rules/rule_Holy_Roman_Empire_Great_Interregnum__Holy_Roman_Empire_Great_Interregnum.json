@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Holy_Roman_Empire_Great_Interregnum",
+  "Keywords": [
+    "Holy Roman Empire Great Interregnum",
+    "Imperial Dual Election Crisis",
+    "Hohenstaufen Line Extinction",
+    "Richard of Cornwall Alfonso X Rivalry"
+  ],
+  "RagShortTexts": [
+    "The rival election of 1257 divides supporters of Richard of Cornwall and Alfonso X.",
+    "Princes, towns and local rights remain important without an uncontested imperial ruler."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Conrad IV's death in 1254 left the Empire without a working emperor, and the years that follow are called the Great Interregnum. In 1257 rival electors split their votes between Richard of Cornwall and Alfonso X of Castile, and neither candidate could muster enough German revenue or troops to hold the crown. Richard visited Germany only briefly. Alfonso never travelled to Germany at all, so his claim was argued by envoys and bought with silver. Without a court to hear appeals, princes and free cities formed their own leagues to keep trade roads open and punish raiders. The Imperial Diet still met to negotiate, yet every decision depended on which lord could bring the most armed men to the hearing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "With no emperor to restrain them, every count and bishop ran his castle and toll bridge like a small kingdom. Electors accepted gold from London and Toledo, yet none wanted a ruler strong enough to revoke their coinage or mining rights. Sealed letters passed between electoral courts, each pact aimed at keeping the strongest neighbor weakest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A man-at-arms on the Rhine road rarely knows which lord pays his wages. Robber-knight castles line the Rhine, and their garrisons demand passage money from every barge. Mercenaries sign on for a single campaign and walk away when the chest runs dry. Sentries demand the password before lifting the gate, and a wrong answer can bring a crossbow bolt from the wall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "When the imperial throne is vacant, peasant granaries are looted twice over. Mainz bailiffs seize the rye on Monday, and Bavarian mercenaries take the cattle on Wednesday. The harvest is divided among the bailiff, the mercenary captains, and the lord's men-at-arms, and no court hears our complaints. We pay the tithe and still starve in winter. We pray for an Emperor to restore the law."
+    }
+  ],
+  "TextMappings": []
+}

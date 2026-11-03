@@ -1,0 +1,53 @@
+{
+  "Id": "rule_sally_port_night_raid_disruption",
+  "Keywords": [
+    "Night sorties from a fortress",
+    "Covering a sortie's return",
+    "Recognizing returning men at a gate"
+  ],
+  "RagShortTexts": [
+    "Sorties can disrupt siege works and transport; safe return and gate recognition matter equally.",
+    "Darkness conceals movement but confuses recognition; local guides still need support from the walls."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Garrisons in Baltic forts and Rus strongholds can leave gates or accessible passages to disrupt nearby works or recover supplies. Darkness hides movement but obscures ditches, barriers and friendly troops. Beyond support from the walls, a party risks interception. Gatekeepers need a way to receive it without losing control of the entrance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men on a night sortie need an assembly point, a known return passage and agreed recognition. Pursuing beyond familiar ground can leave them unable to find the entrance or recover wounded companions. Carrying supplies occupies fighting hands. Returning together preserves a garrison more reliably than dragging home another sack of loot."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A castellan must retain wall and gate guards and judge whether a target merits risking trained men. Disrupting equipment may buy repair time, while repeated use of one route invites ambush. Someone must govern wounded recovery and closure of the gate. Each lost veteran increases the burden on the next watch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Drivers and artisans may retrieve timber, arrows or casualties without knowing military calls. They need guidance outside and a clear passage home. Shouting and fire after a sortie can make residents fear the fortress is lost. Reliable messages help households clear streets for the wounded instead of scattering in confusion."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

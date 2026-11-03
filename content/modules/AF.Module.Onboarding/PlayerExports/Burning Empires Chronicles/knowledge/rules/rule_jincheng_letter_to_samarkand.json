@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v1",
+  "Keywords": [
+    "Jincheng letter to Samarkand"
+  ],
+  "RagShortTexts": [
+    "Nanai-vandak wrote from Jincheng to his associates in Samarkand."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nanai-vandak wrote from Jincheng to his associates in Samarkand. His letter combined news of devastated Chinese cities with instructions about money held at home, linking a distant agent to a local account. A carried letter gave recipients reports to assess, not the ability to inspect every event themselves."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

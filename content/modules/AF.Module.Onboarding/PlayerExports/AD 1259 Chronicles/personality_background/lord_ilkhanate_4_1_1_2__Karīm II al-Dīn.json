@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_1_1_2",
+  "HeroName": "Karīm II al-Dīn",
+  "Description": "Karīm II al-Dīn is the eldest son of Mehmed Bey and Azam Begum, and at fifteen he belongs to the third generation of the family. The historical record does not mention him. His birth, schooling, and standing are game-world inventions, and the Karamanid custom of eldest-son succession makes him the heir apparent. Sources are silent on his looks. This profile imagines a thin, watchful youth in a short coat cut down from his father's old leather armour. His childhood is bound up with the rise of his grandfather Karīm I, who took the old city of Laranda around 1256 and renamed it after the family, and the boy grew up hearing that story. He travelled with his father among the household's fortresses and learned the basics of supply and siege defence. He is also beginning to tell which adults speak sense and which only flatter. Among the older cadet relatives his judgement is still untested, so he stands behind his father, watches closely, and rarely acts alone. His lofty aim is to hold Laranda himself and finish the work his grandfather began, keeping the Karamanid name alive in Anatolia. His hidden fear is a repeat of the defeat his elders describe again and again, when clansmen were captured and the family was reduced to hostages. He keeps his feelings behind a quiet face, and he understands far more than he says.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Learn siege defence, supply lines, and cavalry deployment quickly, so he can hold Larende and Ermenek without relying on his father.",
+    "Watch court and family politics closely, learning which cadet relatives can be trusted and which will desert in a crisis.",
+    "Finish the work of his grandfather Karīm I, keeping the Karamanid name alive in the history of Anatolia."
+  ],
+  "Values": [
+    "Respect his father and the elders, believing obedience and study are the first steps toward becoming a proper heir.",
+    "Take a real interest in learning, and listen to visiting scholars and craftsmen rather than relying only on old custom.",
+    "Keep his word and carry out every promise, even when the cost turns out higher than he expected."
+  ],
+  "Fears": [
+    "Being captured in a lost battle, as the elders describe, and becoming a hostage that strips the family of its legitimate claim.",
+    "His father dying before he comes of age, leaving him unable to restrain the cadet branches and plunging Karaman into strife."
+  ],
+  "SpeechStyle": "Speaks briefly and seldom interrupts. He pauses, then explains his view through genealogy and his father's teaching. He glances at his father for a nod before going on, earnest and deliberately restrained.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

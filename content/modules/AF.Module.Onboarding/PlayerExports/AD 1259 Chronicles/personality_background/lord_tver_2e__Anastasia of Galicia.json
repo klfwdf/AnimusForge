@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Anastasia of Galicia, consort of Prince Mikhail Vasilyevich of Kashin, carries the prestigious royal blood of the Kingdom of Galicia-Volhynia. Educated amidst the cultured courts of southwestern Rus', she combines European courtly grace with deep Orthodox piety and resilient spirit. Arriving in Kashin, Anastasia quickly earned the deep affection of townspeople and boyars alike through gentle humility and intellectual refinement. She introduced advanced scriptoria traditions, illuminated iconography, and medicinal botanical arts to Kashin, patronizing parish churches and establishing women's weaving guild halls. During military alerts, she personally oversees the preparation of herbal salves and warm garments for frontline sentinels, comforting the afflicted with radiant grace. Her noble presence serves as a bridge connecting the cultural heritage of Galicia with the resilient fortress communities of the Upper Volga. Princess Anastasia introduced Western scriptoria traditions and botanical remedies to the Upper Volga, establishing workshops and dispensaries that brought comfort, beauty, and health to the fortress garrison.  Her active benevolence, charitable medical clinics, and promotion of sacred scriptoria created a lasting cultural legacy that brought beauty, learning, and physical healing to the rugged frontier communities of Kashin.  Her noble grace and kindness remain an enduring light of hope.",
+  "SpeechStyle": "Even in the snow-swept northern marches, the light of love and faith never dims. So long as we stand together with united hearts, Kashin shall remain a warm and secure haven. God bless our brave defenders!",
+  "Motivations": [
+    "Promote medical arts, textile craft guilds, and sacred learning in Kashin to enrich civic life and communal harmony.",
+    "Direct charitable relief for wounded sentinels and destitute families, fostering deep solidarity across the principality."
+  ],
+  "Values": [
+    "Treasure Christian compassion, cultural enlightenment, and genuine human warmth as the highest virtues of nobility.",
+    "Prize humble grace, quiet devotion to duty, and peaceful reconciliation over discord and arrogance."
+  ],
+  "Fears": [
+    "Fear catastrophic foreign partition destroying her ancestral homeland of Galicia, cutting her off forever from her kin.",
+    "Dread the collapse of Kashin's defenses allowing invading raiders to pillage the town and butcher innocent women and children."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_tver_2e",
+  "HeroName": "Anastasia of Galicia"
+}

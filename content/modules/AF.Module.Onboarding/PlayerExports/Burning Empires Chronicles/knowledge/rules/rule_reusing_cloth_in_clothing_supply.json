@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v10",
+  "Keywords": [
+    "Reusing cloth in clothing supply"
+  ],
+  "RagShortTexts": [
+    "Cato required old clothing returned when replacements were issued, allowing reuse."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cato required old clothing returned when replacements were issued, allowing reuse. Clothing depended on repair and replacement as well as production. Reclaimed cloth had further uses, without one old estate rule becoming a universal military allowance."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

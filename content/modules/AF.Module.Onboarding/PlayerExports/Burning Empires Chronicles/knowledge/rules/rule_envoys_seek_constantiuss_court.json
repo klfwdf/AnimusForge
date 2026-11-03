@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v5",
+  "Keywords": [
+    "Envoys seek Constantius’s court"
+  ],
+  "RagShortTexts": [
+    "After crossing the Bosphorus, envoys still had to find Constantius at Caesarea."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After crossing the Bosphorus, Julian’s envoys still had to reach Caesarea in Cappadocia to find Constantius. An emperor did not always await letters in one palace: the destination moved with the court, and official delays could make earlier information obsolete."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

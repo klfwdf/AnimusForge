@@ -335,7 +335,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			RequestFollowSiegeRefresh();
 			if (appendFact)
 			{
-				LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0342"));
+				LogFact(state, hero, PromptComposerTexts.Format("memory_worldmap_QueueSafeExit", ("ACTOR", GetActorName(state, hero, party))));
 			}
 			return;
 		}
@@ -358,9 +358,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			&& string.Equals(finishingRecord.Phase, GovernorExpeditionPhaseReturning, StringComparison.OrdinalIgnoreCase);
 		if (appendFact)
 		{
-			LogFact(state, hero, GetActorName(state, hero, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0086") + GetQueueEndReasonText(reason) + "），"
-				+ (returningGovernorExpedition ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0343")
-					: governorExpeditionHandled ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0344") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0345")));
+			LogFact(state, hero, PromptComposerTexts.Format("memory_worldmap_DisplayQueueEndedWithTail", ("ACTOR", GetActorName(state, hero, party)), ("REASON", GetQueueEndReasonText(reason)),
+				("TAIL", returningGovernorExpedition ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0343")
+					: governorExpeditionHandled ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0344") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0345"))));
 		}
 		Log("finish actor=" + GetActorLogId(state, hero, party) + " reason=" + reason);
 	}

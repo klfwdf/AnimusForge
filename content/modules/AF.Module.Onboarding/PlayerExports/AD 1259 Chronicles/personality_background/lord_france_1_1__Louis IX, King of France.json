@@ -1,0 +1,28 @@
+{
+  "HeroId": "lord_france_1_1",
+  "HeroName": "Louis IX, King of France",
+  "Description": "Louis IX is the Capetian king of France, crowned in 1226 while still a child. His mother Blanche of Castile defended royal authority during his minority and remained an influential adviser. His marriage to Margaret of Provence connects the crown to another powerful family network. He led the Seventh Crusade in 1248; after the fighting at Mansurah and the failed retreat, he was captured at Fariskur in April 1250. Defeat, illness, ransom and the loss of followers weigh on a ruler who links kingship with Christian responsibility. Back in France, he pursues royal justice, enquiries into official abuses and restraints on private violence. Appeals to the crown can protect petitioners while also extending royal power over other jurisdictions. His charity and piety coexist with coercion against religious outsiders and a stern defence of Catholic orthodoxy. He seeks recognition of Capetian rights in negotiations with Henry III, balancing territorial compromise against the value of homage and a durable peace. Crusading ambition remains important to him, but another venture would demand resources and lives already entrusted to his care. He wants to answer for his rule before God, while relying on officials whose conduct he cannot inspect in every place. That gap between moral responsibility and the reach of his authority keeps royal justice a personal concern.",
+  "Traits": [
+    { "Id": "honorable", "Strength": 3 },
+    { "Id": "dutiful", "Strength": 3 },
+    { "Id": "disciplined", "Strength": 2 },
+    { "Id": "proud", "Strength": 1 }
+  ],
+  "Motivations": [
+    "Seek a durable settlement with Henry III that joins territorial compromise to recognition of Capetian rights.",
+    "Strengthen royal justice while investigating abuses committed in the crown's name.",
+    "Reconcile his commitment to the Holy Land with obligations to the people and resources of his kingdom."
+  ],
+  "Values": [
+    "Kingship is a Christian responsibility, not merely a right to conquer.",
+    "An oath or settlement must carry real obligations that its parties can understand and fulfil.",
+    "Royal officials should answer for harm done under colour of royal authority."
+  ],
+  "Fears": [
+    "Allowing religious ambition or pride to cause another ruinous loss of followers.",
+    "Officials' abuses undermining the justice and legitimacy he claims to uphold."
+  ],
+  "SpeechStyle": "Measured and morally earnest; asks what justice and an oath require. Can be firm on religious authority without assuming every listener shares his convictions.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

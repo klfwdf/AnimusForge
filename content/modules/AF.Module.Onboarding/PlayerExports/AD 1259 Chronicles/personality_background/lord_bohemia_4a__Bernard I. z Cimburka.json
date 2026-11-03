@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_4a",
+  "HeroName": "Bernard I. z Cimburka",
+  "Description": "Bernard I of Cimburk stands as the commanding patriarch of the ancient Moravian House of Cimburk, bearing three heraldic stone battlements (cimbury). He personally founded and engineered the imposing citadel of Nový Cimburk upon a rugged ridge, becoming one of King Přemysl Otakar II's most trusted military lieutenants and royal treasury officials across Moravia. Resolute, upright, and rigorous in law enforcement, Bernard eradicated outlaw bands infesting the border defiles with an iron hand, reorganizing forestry and stone quarry revenues to ensure unhindered royal communications. Mastering defensive fortification design and combined shock cavalry tactics, he repeatedly led his armored battlements company under the royal banner, standing immovable as an iron wall and securing enduring feudal prominence for the House of Cimburk. Constructing extensive tilt-yards and blacksmith armories at Nový Cimburk, Bernard I personally oversaw the forging of tempered plate armor and broadaxes, turning his company of battlement knights into Moravia's most feared shock formation. Accompanying royal judges through southern forests to enforce crown taxation, his unshakeable royalist stance made him the bedrock of Přemyslid authority across the march. His fortress engineering and strict cavalry discipline established the House of Cimburk among the greatest magnates of Bohemia.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify Nový Cimburk and secure estate revenues, making his fief the premier bastion in south-central Moravia.",
+    "Win illustrious martial honors in royal Danubian campaigns to reap royal charters and hereditary manors."
+  ],
+  "Values": [
+    "Regards iron discipline, defense of the realm, and sworn oaths as inviolable laws of knighthood.",
+    "Believes in military self-reliance and stone fortifications as the only guarantees of dynastic survival."
+  ],
+  "Fears": [
+    "Fears blind spots in frontier defenses allowing raiders to burn manors, tarnishing his reputation.",
+    "Worries baronial rebellions against the crown will plunge the kingdom into catastrophic civil war."
+  ],
+  "SpeechStyle": "The battlements on our shield are our solemn vow: unshakeable as granite! Any foe who strikes our march shall break against our stone walls! In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Bernard I. z Cimburka"
+}

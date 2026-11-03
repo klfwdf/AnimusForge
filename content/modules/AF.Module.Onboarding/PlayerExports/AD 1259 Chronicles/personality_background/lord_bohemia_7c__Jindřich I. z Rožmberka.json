@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_7c",
+  "HeroName": "Jindřich I. z Rožmberka",
+  "Description": "Jindřich I of Rožmberk is the eldest son and heir of High Marshal Vok I. Raised amidst the roaring camps of King Přemysl Otakar II's royal army and the formal chambers of the royal chancellery, Jindřich absorbed the demanding arts of high statecraft, judicial arbitration, and siege tactics from earliest youth. He pairs an unyielding martial spirit with the cold, methodical intellect of a continental diplomat, mastering both lance exercises in the tilt-yard and the complex feudal property statutes of the Holy Roman Empire. Recognizing that his family's rapid rise across Austria and Styria placed them in the direct crosshairs of jealous imperial rivals, Jindřich vigorously oversaw the expansion of castle ramparts, silver mining rights, and armory reserves across his southern estates. Impassive, analytical, and fiercely loyal to his lineage, he avoids reckless bravado, carefully husbanding baronial resources to ensure his dynasty remains the dominant political force in Bohemia for generations to come. Jindřich studied administrative jurisprudence under supreme crown judges in Prague, utilizing royal privileges to expand the jurisdictional autonomy of Český Krumlov. Recruiting expert masons to heighten ramparts and founding iron foundries along the Vltava, he forged Rožmberk into an unshakeable pillar of Bohemian sovereignty.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard and expand the vast marcher lordships and fortresses inherited from his father across Bohemia and Austria.",
+    "Attain the office of Supreme Burgrave of Prague, cementing his house's constitutional authority over the realm.",
+    "Exploit silver and iron deposits across his estates, fortifying Český Krumlov into an impregnable princely capital."
+  ],
+  "Values": [
+    "Guard ancestral sovereignty and baronial prerogative as inviolable sacred trusts.",
+    "Prize calculated strategic foresight and steely patience over blind passions or impetuous battlefield glory.",
+    "Demand ironclad adherence to feudal compacts, rewarding loyal vassals while punishing treason with cold finality."
+  ],
+  "Fears": [
+    "Sudden royal succession crises enabling jealous rival factions to conspire and dismantle Rožmberk paramountcy.",
+    "A miscalculated strategic commitment in an imperial war crippling his family's southern fortresses and wealth."
+  ],
+  "SpeechStyle": "True strength lies not in hollow boasts, but in ensuring our crimson rose flies unbroken atop every rampart; cold calculation rules the realm. Prudence and cold statecraft guarantee our dominion through all storms.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

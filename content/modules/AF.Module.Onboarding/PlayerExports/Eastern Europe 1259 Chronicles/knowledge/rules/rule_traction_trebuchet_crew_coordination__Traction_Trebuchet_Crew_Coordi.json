@@ -1,0 +1,53 @@
+{
+  "Id": "rule_traction_trebuchet_crew_coordination",
+  "Keywords": [
+    "Traction trebuchet crews",
+    "Coordinating a traction engine",
+    "Ropes timber and shot for an engine"
+  ],
+  "RagShortTexts": [
+    "A traction trebuchet uses coordinated pullers; ropes and ammunition affect its throwing.",
+    "Erection, stone carriage and repairs need skill and labor within transport and supply limits."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A traction engine uses people pulling ropes at one end of a beam to cast a sling's stone, a different source of force from a falling counterweight. Timing, sling condition and ammunition affect throws; extra pullers alone do not ensure consistency. Before an eastern European stronghold it needs a firm position, sound materials and continuing stone supply, with food for crews and carriers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Pullers need a common command and space to move, while loaders and repairers need clear stoppages. Fatigue disrupts timing, making damaged ropes, loose framing and worn slings important to report. Piled rubble is not prepared ammunition: experienced operators select and test material, keeping companions clear of the engine's working area."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A besieger provides operators, carpenters, rope workers, stone carriers and guards together. Sustained operation depends on provisions, repairs and interference from the garrison, not the initial number of frames. Short stone supplies or cut roads may require concentrating limited equipment and reassessing the cost of continuing the siege."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villagers hauling stones and beams or making ropes lose farming time and use of carts and animals. Broken ropes and split or damp timber need replacement. Workers at the siege need food, shelter and protection. A prolonged operation burdens households through repeated journeys and working days continually taken away."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

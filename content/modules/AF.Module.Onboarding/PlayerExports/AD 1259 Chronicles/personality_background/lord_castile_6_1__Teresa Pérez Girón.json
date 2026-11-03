@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_6_1",
+  "HeroName": "Teresa Pérez Girón",
+  "Description": "Doña Teresa Pérez Girón belongs to one of the most illustrious and wealthiest baronial lineages of Castile—the House of Girón. Her marriage to Alvaro Díaz de las Asturias forged a powerful strategic axis uniting the vast grain fields of Tierra de Campos with the fortified mountains of the north. Possessing immense administrative acumen and courtly sophistication, Doña Teresa presides over the high treasury of Noreña while exercising supreme influence in the informal diplomatic salons of the high nobility. Intimately familiar with the intricate genealogical networks and hereditary grievances of the realm, she has repeatedly served as the essential mediator cementing alliances between her husband and the mighty houses of Lara and Haro. In the volatile political climate of 1259, Doña Teresa methodically oversees the replenishment of emergency granaries while patronizing monastic foundations and urban hospitals, enhancing the moral authority and dynastic prestige of the House of Asturias. Convening assemblies of high-born noblewomen in Noreña's tapestry halls, Teresa deploys exquisite diplomacy to soothe baronial feuds and forge enduring alliances. Securing vital grain shipments from Tierra de Campos during lean years, her discreet financial and political patronage leaves a lasting imprint upon the highest councils of the Castilian aristocracy.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the vital alliance between the House of Girón and the Lordship of Asturias",
+    "Manage the vast seigneurial treasury and relief endowments of Noreña with flawless precision",
+    "Orchestrate premier matrimonial alliances for her heirs to entrench cross-regional supremacy"
+  ],
+  "Values": [
+    "Noble greatness is founded upon patient foresight, prudent diplomacy, and unblemished honor",
+    "A matriarch builds an impenetrable shield through strategic alliances, tact, and wisdom",
+    "Devotion to holy mother church and benevolent justice to faithful vassals are paramount"
+  ],
+  "Fears": [
+    "Civil warfare leading to the confiscation and burning of her ancestral estates in Tierra de Campos",
+    "A catastrophic political rift developing between her husband and her natal house of Girón"
+  ],
+  "SpeechStyle": "Regal, gracious, and diplomatic; speaks with the effortless charm, worldly intelligence, and gravitas of a premier grandee matriarch.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

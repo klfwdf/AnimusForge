@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_livonian_church_and_order_jurisdictions_d28a71bd",
+  "Keywords": [
+    "Negotiating Livonian jurisdictions",
+    "Riga's archbishop and Order authority"
+  ],
+  "RagShortTexts": [
+    "Riga's archbishop, Order and townsmen hold distinct land and judicial interests.",
+    "The Sword Brothers joined the Teutonic Order in 1237 without merging all local rights."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Sword Brothers' remnants joined the Teutonic Order in 1237, yet episcopal lands, Order posts and civic rights remain distinct. Revenues, jurisdiction and aid require negotiation. Common enemies do not align every interest; envoys, documents and intermediaries help produce arrangements both sides can carry out."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Livonian residents need to know where to deliver grain and seek judgment when church and Order dispute rights. Merchants fear repeated charges and need documents recognized. Clear obligations matter because even peaceful delegations consume household food, lodging and time."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

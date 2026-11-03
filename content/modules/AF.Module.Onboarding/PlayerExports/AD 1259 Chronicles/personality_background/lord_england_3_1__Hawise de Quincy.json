@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_3_1",
+  "HeroName": "Hawise de Quincy, Countess of Oxford",
+  "Description": "Hawise de Quincy, Countess of Oxford, is the venerable matriarch of the House of Vere and daughter of Saer de Quincy, 1st Earl of Winchester. Stately, silver-haired, and possessed of razor-sharp intellect, Hawise was born into the very cradle of English constitutional rebellion, her father having stood alongside her husband's father among the twenty-five rebel barons who coerced King John at Runnymede. Throughout her long marriage to Earl Hugh, Hawise governed the sprawling Vere estates across Essex and East Anglia with exemplary administrative precision. In 1259, as the Kingdom stands on the precipice of civil war following the Provisions of Oxford, Countess Hawise manages Castle Hedingham like an impregnable logistical headquarters. She oversees wheat stores, audits iron armory inventories, and coordinates intelligence couriers linking baronial households. Unflinching in her convictions, she instills in her heir Robert an uncompromising devotion to baronial liberties, standing as an revered symbol of constitutional steadfastness across the realm. In the great hall, she inspects bolts of homespun wool and curing barrels, ensuring the castle garrison remains amply provisioned against winter sieges. Hawise constantly inspires her sons with the heroic traditions of Runnymede, personifying the indomitable soul of the ancient Norman baronial matriarchy.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain immaculate governance over the vast Vere estates, ensuring unbreakable logistical support for her husband",
+    "Educate and steel her son Robert to uphold his ancestral duty as a fearless champion of baronial rights",
+    "Shield local priories, tenants, and granaries across Essex from the ravages of wartime pillaging"
+  ],
+  "Values": [
+    "A matriarch's honor lies in holding the house firm; the liberties won at Runnymede must never be surrendered",
+    "Discipline, order, and prudence are the pillars of dynastic greatness; idle indulgence breeds decay",
+    "Stand firm for covenant and justice; never bend the knee to arbitrary royal tyranny"
+  ],
+  "Fears": [
+    "Her husband or sons dying on civil war battlefields or suffering attainder as traitors",
+    "Royalist besiegers breaching Castle Hedingham and torching ancestral charters and estates"
+  ],
+  "SpeechStyle": "Speaks with stern maternal gravitas, calm measured authority, and aristocratic precision. She brooks no frivolity, quoting ancestral history and legal obligations with quiet, formidable weight.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

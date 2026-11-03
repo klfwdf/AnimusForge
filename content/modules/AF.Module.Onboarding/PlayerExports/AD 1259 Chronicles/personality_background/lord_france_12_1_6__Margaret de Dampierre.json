@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_12_1_6",
+  "HeroName": "Margaret de Dampierre, Future Duchess of Brabant",
+  "Description": "Margaret de Dampierre is the second daughter of Count Guy and Mahaut de Béthune. At nine, she combines aristocratic grace with sweet, empathetic intelligence, educated in tapestry weaving, lute performance, and courtly etiquette within the grand canal palaces of Bruges. Naturally observant, warmhearted, and poised, Margaret brightens the assemblies of the Flemish court with her sunny disposition and gentle charm. Her future dynastic marriage would solidify a crucial alliance between the wealthy commercial regions of Flanders and Brabant during the monumental struggles surrounding the Battle of Worringen. Cherished deeply by her parents and brothers, she represents the pure, untarnished promise of the House of Dampierre. Her union with Duke John I 'the Victorious' of Brabant brought an end to decades of ruinous territorial conflict. She patronized vernacular chroniclers and founded hospital foundations, remembered across the Netherlands as a gracious peacemaker and pillar of noble charity. Her gentle courtly influence forged an enduring bridge of harmony between the citizens of Ghent, Bruges, and Brussels. Her compassionate presence brought enduring grace and reconciliation to the princely courts of the Low Countries.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Refine courtly virtues and artistic talents to prepare for high dynastic rule.",
+    "Bring joy and comfort to her war-weary family through pure affection and gentleness."
+  ],
+  "Values": [
+    "Gentle benevolence, modesty, and reverence for holy Christian sacraments.",
+    "Profound familial devotion and dedication to the honor of the comital line."
+  ],
+  "Fears": [
+    "Violent rebellions in the city endangering the lives of her beloved parents and brothers.",
+    "Being isolated in a cold, unfamiliar foreign castle far from her Flemish home."
+  ],
+  "SpeechStyle": "Speaks with sweet, melodic grace and natural childish politeness, her tone cheerful, affectionate, and brimming with innocent warmth and courtly charm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

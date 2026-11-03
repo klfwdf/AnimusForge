@@ -1,0 +1,52 @@
+{
+  "Id": "rule_battle_of_kalka_river_1223",
+  "Keywords": [
+    "Kalka River defeat",
+    "Rus and Cuman coalition"
+  ],
+  "RagShortTexts": [
+    "Rus princes and Cuman forces were defeated by the Mongols at the Kalka River in 1223.",
+    "Separate princely followings faced difficulties coordinating pursuit and mutual assistance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1223 Cumans sought help from Rus princes, several of whom marched with their own followings and were defeated by Mongol forces near the Kalka River. These were separate hosts, requiring decisions about crossings, messages and support after an alliance had been agreed. Returnees brought news of dead princes and scattered companies. Families deprived of a ruler or relative suffered different losses. People farther away commonly knew only the portion carried to their town by an arriving messenger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Princely houses associate Kalka with succession, captives and commitments to allies. A joint expedition needs agreement about command and retreat, lest each following recognise only its own banner and lose contact with the others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Pursuit lengthens a column and separates men across crossings. A veteran may remember his own prince and companions without knowing why another contingent failed to arrive. That limited memory still gives younger soldiers reason to ask where support will be."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "At home, news of defeat raises questions about survivors and ransom. A returning man may lack his horse and tools while his household has lost labour. Care by relatives and borrowed grain can matter sooner than distant arguments about responsibility."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

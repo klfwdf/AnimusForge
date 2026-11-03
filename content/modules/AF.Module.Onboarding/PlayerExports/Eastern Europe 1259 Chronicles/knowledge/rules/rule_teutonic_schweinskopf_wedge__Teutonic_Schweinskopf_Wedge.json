@@ -1,0 +1,53 @@
+{
+  "Id": "rule_teutonic_schweinskopf_wedge",
+  "Keywords": [
+    "Concentrating mounted troops",
+    "Following and turning with cavalry",
+    "Regrouping riders near woodland"
+  ],
+  "RagShortTexts": [
+    "Concentrated cavalry needs direction and support; frontage, speed and skill shape its formation.",
+    "Woods and wetlands restrict deployment; an opening still needs follow-up and a return route."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cavalry can place experienced, well-equipped men at the point of contact to concentrate pressure, adjusting to roads and opposition. Baltic woodland, ditches and wet ground narrow riders into files, and those behind may not follow a leading party promptly. Riders need a recognizable direction, regrouping space and support; density alone provides none of these."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A following rider leaves room to avoid obstacles and check his horse without crowding neighbors. A turn or halt ahead becomes dangerous if those behind accelerate without seeing it. After passing an opposing position, men need companions and a return direction. Chasing stragglers beyond support tires horses and exposes flanks and rear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A cavalry commander defines destinations for leaders, followers and support and checks frontage and horse condition. Experienced riders are scarce, and lost mounts weaken later scouting and escort duties. When an enemy withdraws into woods or marsh, regrouping while knowledgeable men inspect the route may preserve more options than following in the same formation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Assembling cavalry requires local fodder, handlers and repairs that continue after the attack. Injured mounts or scattered riders can leave drivers and families without expected escorts. Residents care about road guards, the return of requisitioned animals and fields trampled by repeated musters."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

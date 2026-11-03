@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_pskov_recovered_before_peipus_2f1d0549",
+  "Keywords": [
+    "pskov recovered before peipus",
+    "Pskov recovered in 1242 and urban ties"
+  ],
+  "RagShortTexts": [
+    "Alexander recovered Pskov in the operations of 1242.",
+    "Urban cooperation and outside garrisons involve differing interests."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alexander recovered Pskov in 1242, changing relations among residents, local elites and outside garrisons. Control then requires gates, food and accepted settlement of disputes. People in the same city need not remember the experience alike."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "After recovery, troops establish watches and account for equipment. Distinguishing surrender, departure and continuing resistance reduces harm and confusion during takeover."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Restored government seeks cooperating citizens and witnesses. Accountability for specific acts preserves supply and restores working order better than condemning the whole city by rumor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Residents want family safety and reopened markets but fear fresh demands or reprisals. Property and debts still require witnesses after news of victory."
+    }
+  ],
+  "TextMappings": []
+}

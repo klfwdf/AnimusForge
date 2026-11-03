@@ -74,7 +74,7 @@ namespace AnimusForge.Refactor.Domain
         if (!string.IsNullOrWhiteSpace(document.Title) && input.IndexOf(document.Title, StringComparison.OrdinalIgnoreCase) >= 0) score += 100;
         if (!string.IsNullOrWhiteSpace(document.AuthorKingdomName) && input.IndexOf(document.AuthorKingdomName, StringComparison.OrdinalIgnoreCase) >= 0) score += 40;
         if (!string.IsNullOrWhiteSpace(document.TargetKingdomName) && input.IndexOf(document.TargetKingdomName, StringComparison.OrdinalIgnoreCase) >= 0) score += 40;
-        if (input.IndexOf(WorldDiplomacyIntentVocabulary.IntentLabel(document.Intent), StringComparison.OrdinalIgnoreCase) >= 0) score += 20;
+        if (WorldDiplomacyIntentVocabulary.ContainsIntentLabel(input, document.Intent)) score += 20;
         return score;
     }
 
@@ -117,9 +117,9 @@ namespace AnimusForge.Refactor.Domain
 public static string BuildMultiActionMechanicalResult(List<WorldDiplomacyDocumentAction> actions)
 	{
 		if (actions == null || actions.Count == 0) return "";
-		return string.Join("；", actions
+		return string.Join(DiplomacyCompatibilityTexts.Semicolon, actions
 			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.MechanicalResult))
-			.Select(x => WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(x.TargetKingdomName, x.TargetKingdomId) + "：" + x.MechanicalResult));
+			.Select(x => WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(x.TargetKingdomName, x.TargetKingdomId) + DiplomacyCompatibilityTexts.Colon + x.MechanicalResult));
 	}
 public static bool DocumentContainsRequiredPeaceOfferResponse(
 		WorldDiplomacyDocument document,
@@ -296,7 +296,7 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
     public static string BuildFallbackRoundSummary(IEnumerable<WorldDiplomacyDocument> documents,
         List<string> ids, Func<int, string> formatDayFallback)
     {
-        return string.Join("；", (documents ?? Enumerable.Empty<WorldDiplomacyDocument>())
+        return string.Join(DiplomacyCompatibilityTexts.Semicolon, (documents ?? Enumerable.Empty<WorldDiplomacyDocument>())
             .Where(x => x != null && (ids ?? new List<string>()).Contains(x.DocumentId, StringComparer.OrdinalIgnoreCase))
             .OrderBy(x => x.Day).Take(16)
             .Select(x => WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(x, formatDayFallback)));
@@ -311,8 +311,9 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
     public static string BuildPeaceKingdomReferencePattern(string kingdomName, bool isAuthor, bool isTarget)
     {
         string name = Regex.Escape(kingdomName ?? "");
-        if (isAuthor) return "(?:" + DiplomacyCompatibilityTexts.Get("Regex_AuthorKingdomKeywords") + "|" + name + ")";
-        if (isTarget) return "(?:" + DiplomacyCompatibilityTexts.Get("Regex_TargetKingdomKeywords") + "|" + name + ")";
+        // Model text may be written in either language; accept both keyword variants.
+        if (isAuthor) return "(?:" + DiplomacyCompatibilityTexts.Alternation("Regex_AuthorKingdomKeywords") + "|" + name + ")";
+        if (isTarget) return "(?:" + DiplomacyCompatibilityTexts.Alternation("Regex_TargetKingdomKeywords") + "|" + name + ")";
         return "(?:" + name + ")";
     }
         public static bool ContainsDirectedPeaceTerm(string text,
@@ -324,7 +325,7 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
         string fromPattern = BuildPeaceKingdomReferencePattern(fromName, fromIsAuthor, fromIsTarget);
         string toPattern = BuildPeaceKingdomReferencePattern(toName, toIsAuthor, toIsTarget);
         string body = text ?? "";
-        return Regex.IsMatch(body, fromPattern + @"[^。；\n]{0,40}(?:" + actionPattern + @")[^。；\n]{0,40}" + toPattern, RegexOptions.CultureInvariant)
+        return Regex.IsMatch(body, fromPattern + @"[^\u3002\uFF1B\n]{0,40}(?:" + actionPattern + @")[^\u3002\uFF1B\n]{0,40}" + toPattern, RegexOptions.CultureInvariant)
             || Regex.IsMatch(body, fromPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfix") + toPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfixSuffix") + actionPattern + ")", RegexOptions.CultureInvariant);
     }
 
@@ -425,7 +426,7 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 				&& string.Equals(x.TargetKingdomId, targetId, StringComparison.OrdinalIgnoreCase))
 			.OrderByDescending(x => x.Day)
 			.Take(4)
-			.Select(x => DiplomacyCompatibilityTexts.Get("History_DayPrefix") + x.Day.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("History_DaySuffix")
+			.Select(x => DiplomacyCompatibilityTexts.Word("History_DayPrefix") + x.Day.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("History_DaySuffix")
                 + DiplomacyMiscPromptTexts.Get("NativeRequest_NotExecuted", "Intercepted native diplomatic request, not an execution receipt: ") + x.Reason));
 	}
 	public static string BuildRelevantCompletedRoundContext(IEnumerable<WorldDiplomacyRoundSummary> summaries,
@@ -464,7 +465,7 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 				&& WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, roundId)),
 			maxCount);
 		return string.Join("\n", recentKnown
-			.Select(x => "- " + WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(x, formatCampaignDay) + (string.IsNullOrWhiteSpace(x.Body) ? "" : "：" + WorldDiplomacyTextRules.Limit(x.Body, 420))));
+			.Select(x => "- " + WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(x, formatCampaignDay) + (string.IsNullOrWhiteSpace(x.Body) ? "" : DiplomacyCompatibilityTexts.Colon + WorldDiplomacyTextRules.Limit(x.Body, 420))));
 	}
 
     }

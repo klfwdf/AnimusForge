@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_4_3",
+  "HeroName": "Ingeborg Petersdotter",
+  "Description": "Lady Ingeborg Petersdotter of Finsta, highborn noblewoman of Uppland, was the eldest daughter of Sir Peter Karlsson. Reared within one of Svealand's paramount baronial seats, Ingeborg was educated in classical courtly manners, genealogical lore, and domestic stewardship. Possessing refined elegance paired with sharp economic aptitude, she assisted in directing the internal economy of Finsta Castle, auditing granary reserves and managing textile manufactories. Gracious and compassionate, she instituted emergency soup kitchens for impoverished tenant families during harsh winter famines. Sought in marriage by premier Scandinavian noble houses, Ingeborg was universally admired across Uppland as a noble exemplar of intelligence, charity, and poise. Ingeborg managed extensive textile workshops and botanical gardens at Finsta, exporting fine linens while supplying monastic robes and altar hangings to diocesan abbeys free of charge. Well-versed in customary codes and legal precedents, she offered incisive counsel during major land conveyances and marriage settlements, rigorously protecting her family's patrimony. Her aristocratic grace, generous heart, and masterful domestic governance won universal acclaim among the nobility of both Svealand and Götaland, honored as an exemplary noblewoman. Through her generous benefactions to regional convents and diligent stewardship of ancestral estates, she earned the heartfelt prayers of thousands of loyal dependents.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Oversee granary reserves and estate accounts at Finsta to provide steady logistics for her family's enterprises.",
+    "Negotiate prestigious matrimonial alliances among ruling dynasties to elevate the political standing of her house."
+  ],
+  "Values": [
+    "Believes true noble grandeur derives from inner moral discipline, devout faith, and compassionate charity.",
+    "Champions domestic order and filial devotion, utilizing gentle wisdom to preserve family harmony and honor."
+  ],
+  "Fears": [
+    "Dreads violent baronial discord embroiling Finsta in warfare and destroying her beloved home."
+  ],
+  "SpeechStyle": "Speaks with soft-spoken courtly grace and impeccable propriety, her composed diction reflecting thoughtful intelligence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

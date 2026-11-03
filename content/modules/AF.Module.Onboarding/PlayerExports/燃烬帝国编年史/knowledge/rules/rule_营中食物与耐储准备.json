@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v8",
+  "Keywords": [
+    "营中食物与耐储准备"
+  ],
+  "RagShortTexts": [
+    "尤利安出征前把库存谷物制成耐储干粮，说明移动前必须先加工与分配。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "尤利安出征前把库存谷物制成耐储干粮，说明移动前必须先加工与分配。车上有谷物并不等于立即能吃，家庭还要安排燃料和容器。延长储存不能消除损耗与下一次补给需要。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

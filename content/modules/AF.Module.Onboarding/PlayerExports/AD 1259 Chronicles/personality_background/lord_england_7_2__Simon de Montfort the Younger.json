@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_7_2",
+  "HeroName": "Simon de Montfort the Younger",
+  "Description": "Simon de Montfort the Younger is the formidable second son and chief military lieutenant of Simon de Montfort, 6th Earl of Leicester. Broad-shouldered, imposing, and radiant with Plantagenet royal vigor, he bears his father's famed white lion standard with unyielding pride. Trained from boyhood in modern cavalry tactics, siege artillery, and combined-arms maneuvers, young Simon commands immense adoration among the younger generation of English barons and London militia captains. In 1259, as kingdom-wide polarization deepens, he coordinates garrison fortifications across the Midlands, supervising the construction of heavy trebuchets and drilling shock cavalry squadrons. A charismatic rival to his cousin, Prince Edward (the future Longshanks), Simon matches the prince in equestrian skill and raw martial determination. Audacious, proud, and completely devoted to the revolutionary Provisions of Oxford, young Simon stands ready to lead baronial armies into the crucible of war to enshrine parliamentary liberties in blood. At Northampton and Kenilworth, he constructs massive earthworks, drilling young knights in cohesive massed cavalry assaults. Idolized by common soldiers and proud barons alike, young Simon vows to capture royalist commanders on the battlefield, forging a new era of parliamentary liberty through decisive martial triumph.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Serve as paramount field commander beside his father, crushing royalist resistance across the kingdom",
+    "Vanquish his cousin Prince Edward in pitched battle to prove himself the premier knight of Christendom",
+    "Secure undisputed political hegemony for the House of Montfort at the head of a reformed English realm"
+  ],
+  "Values": [
+    "Liberty is forged in the furnace of victory; hesitation on the battlefield leads straight to the scaffold",
+    "Iron battlefield discipline outshines blind mob fury; valor must be matched by tactical coordination",
+    "Unconditional loyalty to his father's cause and the people of England; die in armor rather than bend the knee"
+  ],
+  "Fears": [
+    "Logistical failures or tactical delays isolating his army, leaving his father to be overwhelmed",
+    "Conservative magnates betraying the baronial coalition at the decisive hour of confrontation"
+  ],
+  "SpeechStyle": "Booms with fiery resonance and ringing chivalric majesty like war horns sounding a general advance. His rallying speeches electrify thousands, delivering battle orders with fearless, commanding swagger.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

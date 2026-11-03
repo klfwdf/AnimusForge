@@ -1,0 +1,59 @@
+{
+  "Id": "be_hunnic_kingdom_military",
+  "Keywords": [
+    "匈人帝国军制",
+    "匈人骑射与马力恢复"
+  ],
+  "RagShortTexts": [
+    "匈人骑射依靠马力、备用马和休息。",
+    "久攻城镇仍需粮食和专门器具。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "骑射依赖马力、备用马和休息，持续追击会损耗坐骑。久攻城镇则需要粮食与专门器具，机动优势无法免除供给。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "匈人骑射依靠马力、备用马和休息。这些力量在路上仍受饮食、休息和负重限制，先锋速度不能代表全队。久攻城镇仍需粮食和专门器具。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "久攻城镇仍需粮食和专门器具。可用兵力要连同供给、留守和撤离能力计算，集中一侧会减少另一侧预备。匈人骑射依靠马力、备用马和休息。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "匈人骑射依靠马力、备用马和休息。出战者来自家户，长期失去劳力或牲畜会减少下一次供役能力。久攻城镇仍需粮食和专门器具。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "久攻城镇仍需粮食和专门器具。修器具、搬运和照护也消耗人手，军队经过后仍要维持日常供应。匈人骑射依靠马力、备用马和休息。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

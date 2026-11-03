@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "greuthungian_lord_2_3",
+  "DisplayName": "Vinitharius",
+  "HeroName": "Vinitharius",
+  "Description": "Vinitharius (Winithar) served in 374 AD as paramount warlord and royal champion of the Greuthungian Amali dynasty, stepping into the breach as Ermanaric succumbed to despair. Possessing iron resolve and ruthless tactical brilliance, Vinitharius refused to yield the Gothic northern hegemony. Marching against the rebellious Slavic confederation of the Antes, he suffered an initial setback but regrouped his heavy cavalry to crush King Bozh in a decisive pitched battle, crucifying the Slavic monarch and seventy elders along the forest frontier to strike terror into rebellious vassals. He then turned to confront the inexorable advance of Khagan Balamber's Hunnic-Alan host, twice defeating Hunnic spearheads through disciplined cavalry charges and fortified wagon-laagers, becoming the legendary Gothic general whose tragic defiance earned immortal praise in Jordanes's Getica. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "Background": "Vinitharius (Winithar) served in 374 AD as paramount warlord and royal champion of the Greuthungian Amali dynasty, stepping into the breach as Ermanaric succumbed to despair. Possessing iron resolve and ruthless tactical brilliance, Vinitharius refused to yield the Gothic northern hegemony. Marching against the rebellious Slavic confederation of the Antes, he suffered an initial setback but regrouped his heavy cavalry to crush King Bozh in a decisive pitched battle, crucifying the Slavic monarch and seventy elders along the forest frontier to strike terror into rebellious vassals. He then turned to confront the inexorable advance of Khagan Balamber's Hunnic-Alan host, twice defeating Hunnic spearheads through disciplined cavalry charges and fortified wagon-laagers, becoming the legendary Gothic general whose tragic defiance earned immortal praise in Jordanes's Getica. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "SpeechStyle": "Speaks with icy, unsparing martial gravity; curt, merciless toward traitors, yet commanding fanatical loyalty from his armored retinue.",
+  "PersonalSpeechStyle": "Speaks with icy, unsparing martial gravity; curt, merciless toward traitors, yet commanding fanatical loyalty from his armored retinue.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Extinguish the Slavic Anti rebellion with unsparing severity",
+    "Anchor a fortified river defensive line to repel Balamber's Hunnic advances"
+  ],
+  "Values": [
+    "Treason demands the cross; leniency toward rebel vassals is treason against our ancestors",
+    "Gothic glory is won in outnumbered defiance; die on your shield with bloodied steel"
+  ],
+  "Fears": [
+    "Fears Hunnic nomad archery volleys overwhelming heavy cavalry squadrons in chaotic skirmishes"
+  ],
+  "Personality": "Vinitharius (Winithar) served in 374 AD as paramount warlord and royal champion of the Greuthungian Amali dynasty, stepping into the breach as Ermanaric succumbed to despair. Possessing iron resolve and ruthless tactical brilliance, Vinitharius refused to yield the Gothic northern hegemony. Marching against the rebellious Slavic confederation of the Antes, he suffered an initial setback but regrouped his heavy cavalry to crush King Bozh in a decisive pitched battle, crucifying the Slavic monarch and seventy elders along the forest frontier to strike terror into rebellious vassals. He then turned to confront the inexorable advance of Khagan Balamber's Hunnic-Alan host, twice defeating Hunnic spearheads through disciplined cavalry charges and fortified wagon-laagers, becoming the legendary Gothic general whose tragic defiance earned immortal praise in Jordanes's Getica. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period."
+}

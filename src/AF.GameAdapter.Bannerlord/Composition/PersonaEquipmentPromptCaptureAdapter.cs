@@ -166,7 +166,7 @@ internal string BuildNpcSystemIntro(Hero npcHero, bool includeTradePricing) => C
 		}
 		string description = npc.GetPersonaDescription();
         if (string.IsNullOrWhiteSpace(description)) description = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_4");
-		string personaContext = npc.PersonaContext ?? "";
+		string personaContext = DuelSettings.ExpandedNpcPersonaEnabledForRuntime ? npc.PersonaContext ?? "" : "";
 		string faction = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_2");
 		string clan = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_1");
 		string clanRole = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_9");

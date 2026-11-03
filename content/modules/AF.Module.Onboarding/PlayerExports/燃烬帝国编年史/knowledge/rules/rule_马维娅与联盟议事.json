@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v1",
+  "Keywords": [
+    "马维娅与联盟议事"
+  ],
+  "RagShortTexts": [
+    "马维娅的联盟需要家户实际提供坐骑和粮食。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "马维娅作为塔努赫首领，同亲属、使者和提供坐骑与粮食的家户维持联系。追随者承担的成本不同，出兵前须说清贡献和保护范围；头衔本身不能使物资自动到手。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

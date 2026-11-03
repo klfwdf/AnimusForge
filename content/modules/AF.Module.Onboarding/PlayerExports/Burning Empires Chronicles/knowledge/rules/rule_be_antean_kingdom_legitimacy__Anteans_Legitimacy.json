@@ -1,0 +1,59 @@
+{
+  "Id": "be_antean_kingdom_legitimacy",
+  "Keywords": [
+    "Anteans Legitimacy",
+    "Antean village protection"
+  ],
+  "RagShortTexts": [
+    "Bozh gains recognition through village protection and kin coordination.",
+    "Returned families and preserved harvest make protection visible."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Recognition comes from protecting villages and coordinating kin. A royal name cannot replace relief; returned captives and preserved harvests make protection visible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Bozh gains recognition through village protection and kin coordination. Military recognition also rests on rewards and relief; a title needs willing action. Returned families and preserved harvest make protection visible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Returned families and preserved harvest make protection visible. Nominal rights require local execution, with consent and supply both shaping authority. Bozh gains recognition through village protection and kin coordination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Bozh gains recognition through village protection and kin coordination. Households judge rule through protected families, land and responses to appeals. Returned families and preserved harvest make protection visible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Returned families and preserved harvest make protection visible. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Bozh gains recognition through village protection and kin coordination."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

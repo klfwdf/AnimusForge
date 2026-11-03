@@ -1,0 +1,59 @@
+{
+  "Id": "be_sabir_kingdom_legitimacy",
+  "Keywords": [
+    "萨比尔人法统",
+    "库提尔齐斯的分配保护"
+  ],
+  "RagShortTexts": [
+    "护畜、分配和移动余地支持Kutilzis认可。",
+    "强邻馈赠可能附带超过本部承受力的服役。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "保护畜群、可靠分配和保存移动余地支持首领认可，强邻的礼物可能有利，也可能要求超出本部承受力的服役。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "护畜、分配和移动余地支持Kutilzis认可。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。强邻馈赠可能附带超过本部承受力的服役。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "强邻馈赠可能附带超过本部承受力的服役。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。护畜、分配和移动余地支持Kutilzis认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "护畜、分配和移动余地支持Kutilzis认可。家户通过家人、土地与求助能否获保护来认识统治。强邻馈赠可能附带超过本部承受力的服役。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "强邻馈赠可能附带超过本部承受力的服役。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。护畜、分配和移动余地支持Kutilzis认可。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

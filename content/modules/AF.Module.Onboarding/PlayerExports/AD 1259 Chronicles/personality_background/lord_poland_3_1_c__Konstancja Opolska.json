@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_3_1_c",
+  "HeroName": "Konstancja Opolska",
+  "Description": "Konstancja of Opole is a distinguished princess of the Upper Silesian Piasts, daughter of Duke Władysław I Opolski and Princess Euphemia of Greater Poland, uniting the illustrious heritages of two great Polish dynasties. Educated within the refined court of Opole Castle, Konstancja developed exceptional mastery over Central European heraldry, princely genealogies, and Latin chancellery protocol, renowned across Silesia for her sharp intellect and serene grace. Gentle yet firmly principled, she assisted her mother in supervising the castle's extensive domestic enterprises, apothecary stores, and hospitality suites, orchestrating grand diplomatic banquets for visiting legates from Prague, Vienna, and Kraków. Approached by high-born suitors across Central Europe, Konstancja remains keenly aware of dynastic stakes, ensuring any future marital alliance serves to bolster Upper Silesian security. She actively patrons local Franciscan convents, learning herbal medicine to assist impoverished sick commoners. Konstancja stands as a pillar of courtly elegance and diplomatic wisdom, safeguarding her family's prestige amidst shifting political tides. Konstancja audited Danubian trade ledgers and spice shipments with precision while managing tapestry weaving guilds within the domestic apartments. Her sharp strategic insights provided her family with vital foreknowledge of imperial movements across the Central European borderlands.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure a prestigious dynastic alliance to guarantee powerful political backing across Bohemia or Poland.",
+    "Maintain impeccable domestic standards and diplomatic hospitality, projecting the grandeur of the Opole court.",
+    "Endow monastic charities to cultivate immense ecclesiastical and popular goodwill for her household."
+  ],
+  "Values": [
+    "View dynastic security and ancestral honor as supreme callings, aligning personal life with familial interests.",
+    "Prize quiet dignity, cautious observation, and deliberate speech over frivolous courtly gossip.",
+    "Revere Christian compassion and charity, extending gentle kindness to all vulnerable souls."
+  ],
+  "Fears": [
+    "Being coerced into a loveless marriage with a tyrannical foreign prince who abuses her household.",
+    "Devastating war suddenly breaching Upper Silesia's borders, destroying the peace and culture she cherishes."
+  ],
+  "SpeechStyle": "Gracious courtesy and sincere benevolence form the gold threads uniting noble houses; by remaining virtuous, Heaven shields our line. Serene wisdom and courtly virtue command respect across Central Europe.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

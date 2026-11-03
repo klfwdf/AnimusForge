@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_smolensk_upper_dnieper_position_6eb294c3",
+  "Keywords": [
+    "Smolensk on the upper Dnieper",
+    "Transfers at Smolensk's riverbank"
+  ],
+  "RagShortTexts": [
+    "Smolensk lies on upper Dnieper routes where transfers connect trade with local revenues.",
+    "Crossings, roads and cargo transfers need labor, while neighboring powers influence passage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Smolensk's upper-river position makes cargo transfers between water, slopes and roads important. Merchants need crossings and storage, princes revenue and recognized passage, and guards messages and supplies. Heights aid observation but add carrying and road work. Relations with neighboring powers also determine detours and delays."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Smolensk's boatmen, porters and drivers agree where cargo changes hands, adjusting when water levels change. Damage, shortages and delay create disputes needing people recognized by both parties. Urgent military transport leaves merchants waiting and can delay wages and provisions for the carriers themselves."
+    }
+  ],
+  "TextMappings": []
+}

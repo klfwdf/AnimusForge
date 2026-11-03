@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_brittany_3f",
+  "HeroName": "Guyonne de Laval",
+  "Description": "Guyonne de Laval is the spirited nine-year-old younger son of Guy VII and Philippa. Steeped in the martial chivalry of his house, little Guyonne finds Latin grammar dry, preferring the vibrant noise of the tournament lawns and armory smithies. Brave, stubborn, and energetic, he relentlessly practices thrusts and parries with a notched wooden training broadsword alongside the stable squires, boasting loudly of his dreams to fight on crusade like his famous father. Naturally gifted with war-horses, he fearlessly gallops sturdy border ponies across the moat causeways, enthusiastically adored by grizzled castle sergeants as a born future champion of House Laval. Despite his youth, Guyonne's enthusiasm for martial training and horsemanship amazes the veteran sergeants of Vitré. His unyielding determination and eager recitation of chivalric ballads herald a bright, heroic future for the ancient line of Laval-Vitré. His lively passion for chivalric combat and courageous spirit inspire great affection among the men-at-arms, marking him as a true lion of Laval. His bold enthusiasm for swordsmanship and noble lineage guarantee that he will carry the storied banners of his ancestors to glorious victory and lasting martial renown on future fields of battle.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Train tirelessly with blade and horse to become a true crusader knight like his father.",
+    "Prove his courage on the training lawns to show he is a fearless fighter."
+  ],
+  "Values": [
+    "Emulating his valiant father and brother through relentless daily sword practice.",
+    "Refusing tears and hesitation, resolved to lead cavalry charges in defense of his people."
+  ],
+  "Fears": [
+    "Failing squires' combat drills, being mocked by garrison guards, and denied permission to campaign.",
+    "A hostile assault breaching the walls while he remains too young to wield real steel in defense."
+  ],
+  "SpeechStyle": "Speaks with bright, rapid, and enthusiastic boyish swagger, passionate about war-horses, swords, and chivalric combat with completely uninhibited courage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

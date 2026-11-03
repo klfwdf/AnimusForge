@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_2_2",
+  "HeroName": "Nicolao Navigajoso of Lemnos",
+  "Description": "Nicolao Navigajoso, aged thirty-five in 1259, is the youngest son of Megas Doux Leonardo, overseeing Lemnos's customs, merchant shipping, and warehouse logistics. Steeped in Venetian commercial acumen, he is a consummate administrator fluent in Italian, Greek, and Latin accounting ledgers. While his elder brothers command the garrisons and warships, Nicolao manages the lucrative export of the famed medicinal Lemnian earth (Terra Sigillata) and regional grain monopolies, generating vital bullion to finance island defenses. In 1259, anticipating maritime blockade, he orchestrates emergency import convoys of grain, pitch, crossbow strings, and salted pork from Venice and Crete, providing the indispensable logistical backbone for the beleaguered fortress of Lemnos. Nicolao's writing desk is covered with parchment ledgers, trade drafts, and tax receipts from Venice, Constantinople, and Alexandria. With uncanny commercial insight, he procures vital naval provisions at optimal market rates, keeping the island fortress stocked for extended sieges. His masterful financial stewardship provides an unshakeable foundation of gold and grain, matching the defensive strength of the island's greatest stone towers. Mastering the international grain trade and customs revenues of the northern Aegean, Nicolao finances the defense of Lemnos. His shrewd financial administration ensures that the island's stone citadels remain abundantly supplied throughout the longest sieges.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Articulates with sharp mercantile precision and financial eloquence, rapid in mental calculation and persuasive in negotiation.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

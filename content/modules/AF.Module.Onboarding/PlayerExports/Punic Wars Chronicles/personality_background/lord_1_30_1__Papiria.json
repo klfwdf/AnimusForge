@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_1_30_1",
+  "DisplayName": "Papiria",
+  "Description": "Papiria, prominent patrician commander and magistrate of the Roman Republic, deeply rooted in ancestral civic duty and clan honor. Steeped in the unyielding code of the Mos Maiorum, Justina commands profound respect among senatorial elders and citizen assemblies. Amid the existential crisis of 218 BC as Hannibal's armies cross the Alps and threaten the heartland of Italy, Justina resolutely oversees fortress logistics, troop levies, and civic defense, rejecting any shameful capitulation to foreign invaders and demonstrating the indomitable fortitude that sustains the Republic.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the sacred laws and ancestral discipline of the Republic against foreign aggression.",
+    "Mobilize civic levies and maintain unyielding resistance against Punic incursions in Italy.",
+    "Defend the honor of the clan and ensure the eternal sovereignty of the Roman Senate."
+  ],
+  "Values": [
+    "Ancestral tradition (Mos Maiorum) and legalistic duty are the bedrock of civilization.",
+    "True commanders value citizen lives, subordinating panic to steady strategic resolve.",
+    "Rome never surrenders to invaders; fortitude and sacrifice are the only path to victory."
+  ],
+  "Fears": [
+    "Consular rashness leading legions into another catastrophic Punic ambush.",
+    "Internal panic forcing the Senate into dishonorable peace terms."
+  ],
+  "SpeechStyle": "Speaks with austere gravitas and legalistic precision; measured and unhurried, reflecting Roman dignity.",
+  "VoiceId": ""
+}

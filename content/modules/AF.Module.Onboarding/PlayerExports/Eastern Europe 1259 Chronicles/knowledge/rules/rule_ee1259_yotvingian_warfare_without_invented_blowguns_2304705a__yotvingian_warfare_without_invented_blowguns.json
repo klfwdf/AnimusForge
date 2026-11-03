@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_yotvingian_warfare_without_invented_blowguns_2304705a",
+  "Keywords": [
+    "yotvingian warfare without invented blowguns",
+    "Yotvingian woodland movement and settlement supplies"
+  ],
+  "RagShortTexts": [
+    "Yotvingian forces use woodland mobility.",
+    "Defending settlements still needs food, watches and allies."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Yotvingian fighters use familiar woodland tracks for approach and withdrawal. Villages still supply food, warnings and allies. Light loads aid movement but limit provisions and gear, linking operations to settlement life rather than vanguard speed alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Woodland fighters keep identifiable contact and exits. Successful pursuit offers little endurance if households and food behind them lose protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Cooperation specifies objectives, food and captives. Local knowledge is not unlimited service; recognizing guards and suppliers sustains another assembly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Woodland refuge still needs food and animal care. Families balance shelter against fields and support fighters when protection and a route home remain credible."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

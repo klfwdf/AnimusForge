@@ -1,0 +1,59 @@
+{
+  "Id": "be_angle_kingdom_internal",
+  "Keywords": [
+    "盎格鲁人贵族",
+    "盎格鲁船主与耕作者"
+  ],
+  "RagShortTexts": [
+    "Wihtlaeg依赖亲族首领与航行伙伴。",
+    "船员、船主和耕作者分担不同出航成本。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wihtlaeg依赖亲族首领与航行伙伴，船员、船主和耕作者承担不同风险。共同出航需要商定人数、分配和返乡时限。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wihtlaeg依赖亲族首领与航行伙伴。随从有自己的家庭联系，留下谁守家、谁承担远行会影响共同服役。船员、船主和耕作者分担不同出航成本。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "船员、船主和耕作者分担不同出航成本。协调不是只分名号，还要弄清每一集团实际承担的供给与保护责任。Wihtlaeg依赖亲族首领与航行伙伴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Wihtlaeg依赖亲族首领与航行伙伴。家户会比较自己和邻人的负担，保护与供役不相称会使合作变弱。船员、船主和耕作者分担不同出航成本。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "船员、船主和耕作者分担不同出航成本。一人的许诺未必约束所有收货、护路与供粮者，交涉要找到实际担责者。Wihtlaeg依赖亲族首领与航行伙伴。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

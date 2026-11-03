@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v3",
+  "Keywords": [
+    "Albanian rock road and marsh"
+  ],
+  "RagShortTexts": [
+    "Strabo distinguished a rock-cut approach from Albania from marshy ground formed by the Alazonius."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Strabo distinguished a rock-cut approach from Albania from marshy ground formed by the Alazonius. Rock and wetland demanded different movement, rather than every Caucasian entrance being one identical walled gorge."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

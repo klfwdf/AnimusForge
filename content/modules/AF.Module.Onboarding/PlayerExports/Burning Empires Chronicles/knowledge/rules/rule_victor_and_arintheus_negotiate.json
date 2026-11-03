@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v4",
+  "Keywords": [
+    "Victor and Arintheus negotiate"
+  ],
+  "RagShortTexts": [
+    "Victor and Arintheus negotiated terms and reported acceptance by letter."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valens sent Victor and Arintheus to negotiate and report by letter that the Goths accepted the proposed terms. Contact, agreement and formal peace were successive stages; the emperor did not personally conduct every discussion."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

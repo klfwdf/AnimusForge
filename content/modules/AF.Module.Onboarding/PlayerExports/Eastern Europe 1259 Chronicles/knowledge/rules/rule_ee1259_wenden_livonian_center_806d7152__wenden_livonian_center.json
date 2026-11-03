@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_wenden_livonian_center_806d7152",
+  "Keywords": [
+    "Wenden as an Order meeting point",
+    "Attendants and local provisions at Wenden"
+  ],
+  "RagShortTexts": [
+    "Wenden links Livonian Order personnel and guards with provisioning for envoys and troops.",
+    "The fort depends on roads and settlements whose production bears demands for animals and grain."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wenden is an important Livonian Order post where guards, envoys and attendants exchange news and supplies. Instructions travel along roads and need reports back. Horses, fodder, lodging and trusted messengers maintain the connection, with nearby communities' capacity limiting repeated departures. The fort continues a post from Sword Brother times. Following the change of allegiance in 1237, local people still need to identify commanders and responsibility for equipment and earlier promises."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households near Wenden feed travelers, change mounts and repair gear, earning work while drawing on winter stocks. Uncertain stays make planning difficult. Even a fast messenger leaves handlers and return arrangements occupying other people's time, which also needs payment."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "Id": "rule_House_of_Habsburg_and_Hawk_Castle_Origins",
+  "Keywords": [
+    "Early House of Habsburg Red Lion",
+    "Aargau Hawk Castle Habichtsburg",
+    "Rudolf I Cautious Rise",
+    "Alpine Foreland Domain Accumulation"
+  ],
+  "RagShortTexts": [
+    "Count Rudolf’s influence rested on lands and relationships in Aargau and the Upper Rhine."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Habsburg name came from the castle in Aargau. Count Rudolf’s influence rested on Upper Rhine lands, marriage and local relationships. Churches, towns and neighboring lords had their own rights and demands. Claims over passage, jurisdiction and property needed allies and practical support; castles and roads required continuing maintenance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Rhenish electors saw Rudolf as an unthreatening minor count, and they underestimated the military networks he was quietly building. Each castle he secured and each town he drew into his service gave him more knights for a future bid. Letters between his chancery and the electoral courts were polite, and the electors learned too late how much support he had gathered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A household on Habsburg lands judges a count through the men collecting rents, the safety of a market journey and the hearing it gets in court. A patrol may restrain robbery while still demanding supplies from nearby farms. Local custom and written grants matter more than a story that one ruler personally makes every road safe and every payment predictable."
+    }
+  ],
+  "TextMappings": []
+}

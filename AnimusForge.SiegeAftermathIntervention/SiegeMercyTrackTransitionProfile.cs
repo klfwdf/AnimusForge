@@ -10,7 +10,7 @@ public static class SiegeMercyTrackTransitionProfile
 
     public const uint ReversiblePlunderStoppedMessageColor = 0xFFB6F7A8u;
 
-    public const string ReversiblePlunderStoppedMessage = "[Siege aftermath] Plunder was superseded by subsequent mercy/reassurance orders; soldiers ceased extortion, and the aftermath will be settled under the current constructive disposition.";
+    public static readonly string ReversiblePlunderStoppedMessage = SiegeAftermathCompatibilityTexts.Raw("mercy_reversible_plunder_stopped");
     public const string ReversiblePlunderStoppedMessageEn = "[Siege aftermath] Pillage was superseded by subsequent mercy/reassurance orders; soldiers stopped demanding wealth; departure settles according to current positive disposition.";
 
     public static string BuildBlockedAfterDestructiveMessage(string actionName)

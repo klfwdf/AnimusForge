@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mamluk_2_1",
+  "HeroName": "Vice-Sultan Al-Malik Rukn al-Din Baybars",
+  "Description": "Baybars was a Kipchak of the Barli tribe, born on the steppe north of the Black Sea around 1223. As a boy he saw Mongol invaders overrun his home and kill his parents. He was captured and sold at the slave market in Sivas, then bought in Hama by Ala al-Din Idikin al-Bunduqdari and taken to Cairo. In 1247 he passed into the service of the Ayyubid sultan As-Salih Ayyub. In 1250 he helped defeat Louis IX's Seventh Crusade at Mansurah, and soon afterwards he took part in the assassination of Turanshah. Historians say little of his looks, so the description here follows the game setting: a lean, hard frame, a blade scar through the left brow, and a worn mail shirt he keeps on even in court. In 1254 Aybak killed Aktai, and Baybars fled with Qalawun to Syria, where he raided Jerusalem and Gaza for years. In 1259 he was still in exile. After Ain Jalut he demanded the governorship of Aleppo and was refused, and his rift with Qutuz deepened from there. His noble aim is to free the lands of Islam from both crusaders and Mongols and to found a unified Mamluk state. His inner shadow is the fear that those who once treated him as a slave will erase his work and his family once his power peaks.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Take the sultanate after Qutuz's death and gather the Mamluk army's power in his own hands, so that he can build a unified state able to hold off Mongols and crusaders for decades.",
+    "Use his knowledge of Syrian and Palestinian terrain to dismantle crusader coastal strongholds one by one, turning each victory into authority for the Mamluk regime.",
+    "Place his sons and loyal men in key military posts and provinces, so that his family keeps the troops after his death and is not crushed by former slaves who now rank above it."
+  ],
+  "Values": [
+    "Power comes from proving one's worth on the battlefield rather than from birth, and a man who began as a slave must be tougher than others to reach the summit.",
+    "An enemy must always be watched, and promises can serve as tactics, but no oath should bind one's hands once a city has surrendered.",
+    "Patience and calculation outweigh momentary courage, so a ruler should secure his rear first and strike only when the moment favours him."
+  ],
+  "Fears": [
+    "His former masters or rivals combining to deny his legitimacy by pointing to his slave origins, overturning his regime at the moment of succession.",
+    "The Mongols gathering a great army and crossing the Euphrates while his own commanders quarrel and cannot respond in time."
+  ],
+  "SpeechStyle": "Brief and measured, he hides his true aims behind cool irony. He rarely praises anyone, and every compliment carries an unspoken debt the listener must repay. When he mentions old grudges his tone turns flat, which chills the listener.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

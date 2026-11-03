@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Konstantin Rostislavich is the stalwart warden of Smolensk's southwestern border fortresses along the Ugra and Vop rivers. Commanding a battle-tested garrison composed of local forest rangers, heavy spearmen, and skirmishing light horsemen, he guards the vulnerable forested approaches against persistent Lithuanian incursions. A master of defensive fieldcraft and timber engineering, Konstantin erected extensive ditch-and-palisade barriers across critical portage corridors, denying marauding raiding bands easy access to interior farming communities. He shares the modest rations and rough field bunks of his sentinels, leading from the front with personal bravery during border skirmishes. Regarding the defense of Smolensk's frontier marches as his sacred calling, Prince Konstantin stands as an unshakeable guardian anchoring the western marches. Shunning court luxuries to remain in remote forest keeps, his unwavering dedication keeps the border communities thriving in security. Konstantin tilled military fields and strengthened ramparts along the Ugra, forging a battle-tested frontier defense that denied passage to predatory Lithuanian invaders. His steadfast fortitude in the face of brutal border warfare established him as an indispensable shield protecting the southwestern marches. His incorruptible courage and tactical skill keep the southwestern gateway to Smolensk impenetrable against all hostile assaults.",
+  "SpeechStyle": "The waters of the Ugra reflect the cold steel of our spears. So long as I stand upon these ramparts, no invading raider shall cross our defensive line or harm our people!",
+  "Motivations": [
+    "Hold the Ugra fortress corridor against all odds, sealing the southwestern frontier against foreign raiding parties.",
+    "Maintain strict military discipline among border garrisons to protect local farming villages and transit routes."
+  ],
+  "Values": [
+    "Hold warrior valor, unyielding vigilance, and selfless defense of the frontier as sacred moral duties.",
+    "Value rugged resilience and quiet competence over empty court boasts, relying on strong walls and loyal steel."
+  ],
+  "Fears": [
+    "Fear extreme winter freezes solidifying river barriers and moats, enabling invading armies to bypass outer defenses.",
+    "Dread logistical neglect from central authorities leaving his border garrisons starving and freezing on the ramparts."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    }
+  ],
+  "HeroId": "lord_smolensk_5a",
+  "HeroName": "Konstantin Rostislavich"
+}

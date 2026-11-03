@@ -23,17 +23,17 @@ internal sealed class MemoryFailureUiText
     {
         MemoryFailureUiText detail = parseError?.Trim() switch
         {
-            var _ when string.Equals(parseError?.Trim(), MemoryTextResources.Raw("MEM_Raw_116"), StringComparison.Ordinal) => T("AF_MEMORY_UI_SummaryEmpty", "SUMMARY is empty."),
-            var _ when string.Equals(parseError?.Trim(), MemoryTextResources.Raw("MEM_Raw_117"), StringComparison.Ordinal) => T("AF_MEMORY_UI_TitleOrSummaryEmpty", "TITLE or SUMMARY is empty."),
-            var _ when string.Equals(parseError?.Trim(), MemoryTextResources.Raw("MEM_Raw_077"), StringComparison.Ordinal) => T("AF_MEMORY_UI_JsonParseFailed", "JSON parsing failed."),
-            var _ when string.Equals(parseError?.Trim(), MemoryTextResources.Raw("MEM_Raw_078"), StringComparison.Ordinal) => T("AF_MEMORY_UI_JsonObjectMissing", "No JSON object could be found."),
+            var _ when MemoryTextResources.IsRaw(parseError?.Trim(), "MEM_Raw_116") => T("AF_MEMORY_UI_SummaryEmpty", "SUMMARY is empty."),
+            var _ when MemoryTextResources.IsRaw(parseError?.Trim(), "MEM_Raw_117") => T("AF_MEMORY_UI_TitleOrSummaryEmpty", "TITLE or SUMMARY is empty."),
+            var _ when MemoryTextResources.IsRaw(parseError?.Trim(), "MEM_Raw_077") => T("AF_MEMORY_UI_JsonParseFailed", "JSON parsing failed."),
+            var _ when MemoryTextResources.IsRaw(parseError?.Trim(), "MEM_Raw_078") => T("AF_MEMORY_UI_JsonObjectMissing", "No JSON object could be found."),
             null or "" => T("AF_MEMORY_UI_UnknownParseError", "Unknown parsing error."),
             _ => Raw(parseError.Trim())
         };
         string requiredFieldsPrefix = MemoryTextResources.Raw("MEM_Raw_076");
         if (parseError?.StartsWith(requiredFieldsPrefix, StringComparison.Ordinal) == true)
             detail = T("AF_MEMORY_UI_JsonRequiredFieldsMissing", "No JSON object contained the required fields: {FIELDS}.",
-                ("FIELDS", RequiredFieldsForDisplay(parseError.Substring(requiredFieldsPrefix.Length).TrimEnd('。'))));
+                ("FIELDS", RequiredFieldsForDisplay(parseError.Substring(requiredFieldsPrefix.Length).TrimEnd('\u3002', '.'))));
         return T("AF_MEMORY_UI_SummaryParseFailed", "Summary response format could not be parsed: {ERROR}\n\nFull model reply:\n{REPLY}",
             ("ERROR", detail), ("REPLY", string.IsNullOrWhiteSpace(reply) ? T("AF_MEMORY_UI_NoModelReply", "No model reply was received or could be parsed") : Raw(reply.Trim())));
     }

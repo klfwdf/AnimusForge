@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_2a",
+  "HeroName": "Ugolino della Gherardesca",
+  "Description": "Count Ugolino della Gherardesca of Donoratico stands as Podestà and Capitano del Popolo of Pisa, immortalized by Dante in the tragic depths of Inferno 33 within the Tower of Hunger. A titan of realpolitik who oscillated between Ghibellines and Guelfs to dominate Tuscany, his iron will, ambition, and terrifying fate echo through world literature. Ugolino ruled Pisa with absolute autocratic grandeur, fortifying the Arno quays with heavy stone bastions and marshaling municipal wealth to equip armada squadrons of heavy war galleys. Playing a ruthless game of regional survival between Florence, Lucca, and the Curia, he ceded border castles to neutralize external foes, fanning incandescent hatred among rival Pisan magnates. An immortal figure of catastrophic tragic grandeur, the iron-willed count grasped the terrifying price of power, marching relentlessly toward his ghastly doom within the Tower of Hunger. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Establish supreme, lifelong autocratic dominion over Pisa for House Gherardesca.",
+    "Defeat the Genoese armada across the Tyrrhenian Sea to preserve Pisan maritime empire."
+  ],
+  "Values": [
+    "Power and sovereign rule are the sole realities; all allies are expendable in extremity.",
+    "Timid vacillation invites inevitable destruction beneath the wheels of statecraft."
+  ],
+  "Fears": [
+    "Archbishop Ruggieri orchestrating a treacherous aristocratic uprising to depose him.",
+    "Catastrophic annihilation of the Pisan battle fleet collapsing the Republic."
+  ],
+  "SpeechStyle": "Commands with gravelly, imperious severity and fierce intellectual menace, brooks no defiance. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

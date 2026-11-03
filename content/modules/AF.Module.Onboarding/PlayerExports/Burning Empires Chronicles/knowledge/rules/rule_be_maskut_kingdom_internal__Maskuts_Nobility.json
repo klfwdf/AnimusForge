@@ -1,0 +1,59 @@
+{
+  "Id": "be_maskut_kingdom_internal",
+  "Keywords": [
+    "Maskuts Nobility",
+    "Maskut coastal and foothill kin"
+  ],
+  "RagShortTexts": [
+    "Sanatruk joins coastal and foothill chiefs.",
+    "Winter grazing, gifts and escort shares affect joint action."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sanatruk joins coastal and foothill chiefs. Shares of winter pasture, gifts and escort income affect common action."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sanatruk joins coastal and foothill chiefs. Followers retain family ties; decisions about guards and distant service affect common participation. Winter grazing, gifts and escort shares affect joint action."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Winter grazing, gifts and escort shares affect joint action. Coordination allocates actual supply and protection duties, not merely titles. Sanatruk joins coastal and foothill chiefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Sanatruk joins coastal and foothill chiefs. Households compare burdens with neighbors; unmatched protection weakens cooperation. Winter grazing, gifts and escort shares affect joint action."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Winter grazing, gifts and escort shares affect joint action. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Sanatruk joins coastal and foothill chiefs."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

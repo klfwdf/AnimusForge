@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v6",
+  "Keywords": [
+    "Amber ornaments and luxury criticism"
+  ],
+  "RagShortTexts": [
+    "Amber ornaments displayed wealth and beauty while attracting criticism of extravagance."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Amber ornaments could display wealth and taste while attracting criticism of extravagance. Buyers prized color, carving and rarity, while others preferred spending on food, family or public affairs. The same small object held different value for different people."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

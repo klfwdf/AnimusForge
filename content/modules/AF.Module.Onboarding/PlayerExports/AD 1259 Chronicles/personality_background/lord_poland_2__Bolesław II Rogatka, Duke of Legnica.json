@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_2",
+  "HeroName": "Bolesław II Rogatka",
+  "Description": "Bolesław II Rogatka (the Horned or the Bald) rules as Duke of Legnica and Lower Silesia, the eldest son of High Duke Henry II the Pious, notorious throughout Central Europe for his erratic temperament, ferocious martial valor, and ruthless ambition. Inheriting a shattered realm after his father was decapitated by the Mongols at the Battle of Legnica in 1241, Bolesław struggled to preserve Silesian hegemony amidst economic ruin and family rivalries. Desperate to bankroll bands of German heavy mercenary knights (*Ritter*), he made the fateful decision to pawn and ultimately surrender the vital border march of Lubusz (Lebus) to the Margraves of Brandenburg, igniting bitter civil wars with his brothers. His explosive feud over tithes with Thomas I, the powerful Bishop of Wrocław, culminated in the brazen kidnapping and dungeon imprisonment of the prelate, an audacious sacrilege that provoked papal excommunication. Yet on the field of combat, Rogatka is an unstoppable shock cavalry leader, charging headlong into pike walls and displaying raw physical bravery. Turbulent, cunning, and totally uninhibited, he remains one of the most volatile dynasts in Polish history, carving his bloody imprint across medieval Silesia. Rogatka excavated subterranean dungeons at Legnica Castle, stockpiling heavy lances and torsion ballistas to crush any domestic opposition. His ferocious combat instincts and unyielding arrogance made him a feared adversary across every frontier of medieval Silesia.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Deploy German mercenary knights to subjugate Lower Silesia, reclaiming lands ceded to his younger brothers.",
+    "Extort silver ransoms and tithes to continuously bankroll devastating armored retinues of veteran mercenaries.",
+    "Defy papal legates, bishops, and royal suzerains to maintain unyielding personal autocratic authority in Legnica."
+  ],
+  "Values": [
+    "Believe supreme power grows exclusively from iron force and naked intimidation, despising weakness.",
+    "Prize personal martial daring, battlefield chaos, and brutal shock charges above all courtly niceties.",
+    "Scorn ecclesiastic decrees and moral conventions, acting entirely upon instinct, pride, and predatory ambition."
+  ],
+  "Fears": [
+    "A grand coalition of his brothers and church allies storming Legnica to strip him of all rank and imprison him.",
+    "Treasury exhaustion prompting his German mercenary contingents to mutiny and turn their blades upon him."
+  ],
+  "SpeechStyle": "Whoever commands iron mercenary lances dictates the law in Silesia! Bishops' curses and brothers' tears mean nothing before my warhammer; my sword alone rules! My warhammer crushes all insolence; Legnica bows to no mortal prince!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

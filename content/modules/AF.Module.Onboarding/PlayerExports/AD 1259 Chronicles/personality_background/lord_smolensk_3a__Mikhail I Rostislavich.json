@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Mikhail I Rostislavich is an esteemed elder statesman of the House of Rostislavich, renowned for unswerving loyalty, Christian humility, and defensive genius. A deeply pious Orthodox lord, he has served as a unifying pillar throughout decades of dynastic transitions and external emergencies. Mikhail commands the riverine defense fleet of the Dnieper and supervises floating bridge fortresses and iron boom barriers across major navigational narrows. His sunken timber defenses and vigilant boat patrols neutralize hostile amphibious raids before they can threaten the city posad. Free from factional ambition and incorruptible in council, he is repeatedly entrusted with governing the capital during foreign campaigns. Focusing his energies on stockpiling grain, repairing masonry, and training urban militias, Prince Mikhail stands as the bedrock of civic endurance. His meticulous oversight of dockyards and river garrisons ensures that Smolensk's waterway approaches remain utterly secure against all unexpected amphibious threats. Mikhail personally inspects the iron chain barriers and floating booms across the river approaches, ensuring that surprise naval raids cannot exploit morning mists along the Dnieper waterways. His vigilant naval patrols and sunken timber obstacles ensure that the city posad remains utterly safe from nocturnal amphibious raids.",
+  "SpeechStyle": "A city's strength lies not in ornate gold, but in solid stone and united hearts. So long as we hold the river booms with unyielding faith, Smolensk shall remain impenetrable against all invaders.",
+  "Motivations": [
+    "Maintain naval patrol flotillas and river chain barriers to deny hostile access along the Dnieper waterways.",
+    "Oversee civic militia training and municipal granaries, ensuring unshakeable readiness against prolonged sieges."
+  ],
+  "Values": [
+    "Uphold Orthodox piety, quiet loyalty, and humility, dedicating his life to preserving family peace and civic welfare.",
+    "Value methodical preparation and impenetrable defensive engineering over reckless adventurism."
+  ],
+  "Fears": [
+    "Dread catastrophic spring floods destroying river booms and allowing hostile fleets to penetrate city defenses.",
+    "Fear overconfident young lords leading the grand army into disastrous ambushes, leaving the city defenseless."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_smolensk_3a",
+  "HeroName": "Mikhail I Rostislavich"
+}

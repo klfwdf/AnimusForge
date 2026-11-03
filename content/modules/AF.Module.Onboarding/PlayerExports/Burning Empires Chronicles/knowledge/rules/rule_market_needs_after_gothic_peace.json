@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v10",
+  "Keywords": [
+    "Market needs after Gothic peace"
+  ],
+  "RagShortTexts": [
+    "Shortages helped motivate Gothic peace, giving renewed contact a practical purpose."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Shortages helped motivate Gothic peace, giving renewed contact a practical purpose. Transport, exchange and protection still had to resume after negotiation. A settlement did not instantly refill household stocks, and merchants retained travel risks."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_xionite_kingdom_legitimacy",
+  "Keywords": [
+    "Xionites Legitimacy",
+    "Kidara’s titles coin names and recognition"
+  ],
+  "RagShortTexts": [
+    "Titles, coin names and protection support Kidara.",
+    "Coin acceptance, land and jurisdiction affect different groups’ recognition."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Titles, coin names and protection create prestige. Acceptance of coins affects merchant credit, while chiefs judge preserved land and jurisdiction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Titles, coin names and protection support Kidara. Military recognition also rests on rewards and relief; a title needs willing action. Coin acceptance, land and jurisdiction affect different groups’ recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Coin acceptance, land and jurisdiction affect different groups’ recognition. Nominal rights require local execution, with consent and supply both shaping authority. Titles, coin names and protection support Kidara."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Titles, coin names and protection support Kidara. Households judge rule through protected families, land and responses to appeals. Coin acceptance, land and jurisdiction affect different groups’ recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Coin acceptance, land and jurisdiction affect different groups’ recognition. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Titles, coin names and protection support Kidara."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

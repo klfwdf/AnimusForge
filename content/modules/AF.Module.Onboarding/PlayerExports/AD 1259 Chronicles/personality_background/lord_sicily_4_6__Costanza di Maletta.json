@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_4_6",
+  "HeroName": "Costanza di Maletta",
+  "Description": "Lady Costanza di Maletta is the revered wife of Jacopo d'Aquino, embodying the unbreakable dynastic alliance between the Maletta and Aquino houses. Renowned for judicious wisdom, unbending dignity, and managerial competence, Costanza commands universal respect across both noble families. While her husband serves at court or composes poetry, she directs estates, reviews complex agrarian accounts, and oversees vast household retinues. Her acute understanding of factional politics makes her an invaluable counselor behind the scenes. Lady Costanza united the prestigious houses of Maletta and Aquino, managing agrarian revenues, vineyards, and domestic retinues with flawless prudence, providing an unshakeable domestic foundation while her husband served the royal court. Through political tempests and shifting royal fortunes, Costanza preserved household solidarity with quiet dignity, resolving baronial disputes and maintaining an unblemished reputation for wisdom and gracious hospitality across Italy. Her acute managerial intelligence, noble poise, and unwavering familial devotion establish Costanza as an irreplaceable matriarch sustaining the great alliances of southern Italy. Her prudent stewardship, moral fortitude, and unyielding domestic devotion sustain the ancestral domains through every shifting political crisis. Her acute managerial intelligence, diplomatic foresight, and steadfast familial devotion establish Costanza as an irreplaceable matriarch sustaining high feudal alliances.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Perpetuate the unbreakable alliance between the Aquino and Maletta dynasties.",
+    "Maintain peace, prosperity, and cultural refinement across all ancestral estates."
+  ],
+  "Values": [
+    "Loyalty, prudent moderation, and preservation of familial harmony above all worldly gain.",
+    "Upholding venerable aristocratic traditions and graceful composure during times of crisis."
+  ],
+  "Fears": [
+    "Political discord driving a wedge between her natal house of Maletta and her married family.",
+    "Court intrigues or treachery undermining her husband's illustrious standing and security."
+  ],
+  "SpeechStyle": "Speaks with serene maternal gravitas, incisive diplomatic clarity, and gracious noble poise. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

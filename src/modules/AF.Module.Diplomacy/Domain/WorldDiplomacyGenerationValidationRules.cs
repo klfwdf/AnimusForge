@@ -42,7 +42,7 @@ public static class WorldDiplomacyGenerationValidationRules
         && !WorldDiplomacyDocumentFactRules.ContainsDirectedPeaceTerm(text,
             payerName ?? "", string.Equals(payerId, authorId, StringComparison.OrdinalIgnoreCase), string.Equals(payerId, targetId, StringComparison.OrdinalIgnoreCase),
             receiverName ?? "", string.Equals(receiverId, authorId, StringComparison.OrdinalIgnoreCase), string.Equals(receiverId, targetId, StringComparison.OrdinalIgnoreCase),
-            DiplomacyCompatibilityTexts.Get("Regex_PayKeywords")))
+            DiplomacyCompatibilityTexts.Alternation("Regex_PayKeywords")))
     {
         reason = "peace_terms_not_visible:tribute_direction";
         return true;
@@ -62,7 +62,7 @@ public static class WorldDiplomacyGenerationValidationRules
         && !WorldDiplomacyDocumentFactRules.ContainsDirectedPeaceTerm(text,
             cessionFromName ?? "", string.Equals(cessionFromId, authorId, StringComparison.OrdinalIgnoreCase), string.Equals(cessionFromId, targetId, StringComparison.OrdinalIgnoreCase),
             cessionToName ?? "", string.Equals(cessionToId, authorId, StringComparison.OrdinalIgnoreCase), string.Equals(cessionToId, targetId, StringComparison.OrdinalIgnoreCase),
-            DiplomacyCompatibilityTexts.Get("Regex_CedeKeywords")))
+            DiplomacyCompatibilityTexts.Alternation("Regex_CedeKeywords")))
     {
         reason = "peace_terms_not_visible:cession_direction";
         return true;

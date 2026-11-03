@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v6",
+  "Keywords": [
+    "瓦多马里乌斯的两套称呼"
+  ],
+  "RagShortTexts": [
+    "瓦多马里乌斯对两位皇帝使用不同政治称呼。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦多马里乌斯写给尤利安的信极尽尊崇，给君士坦提乌斯的报告却称他不服从。敬称说明一封信希望建立的关系，不能单独证明写信者真正支持谁。把同一人的不同通信放在一起，政治含义才显露。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

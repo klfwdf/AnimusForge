@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_4_3",
+  "HeroName": "Caterina Morosini",
+  "Description": "Lady Caterina Morosini is the twenty-four-year-old daughter of the illustrious House of Morosini, celebrated across the lagoon for intellectual brilliance, aristocratic poise, and cultural refinement. Reared amidst the sumptuous mosaics and libraries of the family palazzo on the Grand Canal, Caterina was tutored by Greek scholars from Constantinople and Western humanists. Directing commercial correspondence and literary salons with extraordinary maturity, she represents the pinnacle of patrician sophistication. Presiding over the opulent banquets and diplomatic receptions of the Morosini palazzo, Lady Caterina weaves intricate marital and financial alliances with leading naval patricians, discreetly consolidating critical voting blocs in the Great Council. Her charitable endowments to religious orders and lagoon hospitals are guided by astute purpose; by endowing private chapels and financing relief funds for families of missing galley rowers, she garners profound public veneration. Dignified, cultured, and politically acute, she defends the honor of her historic lineage with regal elegance, standing as a formidable anchor of family unity amidst the intense partisan rivalries of the Venetian oligarchy. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master classical philosophy and commercial history, establishing an illustrious humanist salon in Venice.",
+    "Form an international dynastic alliance that elevates the continental prestige of the House of Morosini."
+  ],
+  "Values": [
+    "Humanist enlightenment, moral integrity, and dynastic honor above transient material vanity.",
+    "Cultivated wisdom, benevolence, and independent critical thought amidst cutthroat politics."
+  ],
+  "Fears": [
+    "Warfare destroying ancient libraries and priceless classical manuscripts across the Levant.",
+    "Geopolitical reversals forcing her into a humiliating political marriage that compromises her autonomy."
+  ],
+  "SpeechStyle": "Speaks with elegant humanist cadence, radiant intellectual charm, and polished patrician dignity. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

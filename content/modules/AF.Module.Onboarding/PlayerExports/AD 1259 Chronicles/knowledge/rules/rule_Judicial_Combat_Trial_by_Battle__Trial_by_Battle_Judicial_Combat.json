@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Judicial_Combat_Trial_by_Battle",
+  "Keywords": [
+    "Trial by Battle Judicial Combat",
+    "Divine Judgement Ordeal",
+    "Duel Gauntlet Defiance",
+    "Sacred Ordeal Champion Oath"
+  ],
+  "RagShortTexts": [
+    "Trial by battle depends on jurisdiction, status and the nature of the plea.",
+    "Rules for one form of combat do not govern every medieval litigant or champion."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In feudal jurisprudence, a charge of treason or a capital offence that lacked conclusive witnesses could be settled by trial by battle. Both contestants swore on holy relics that they had used no witchcraft, then fought within the roped lists under the eyes of judges and clergy. The outcome was read as the verdict of God, since providence was presumed to favour the righteous and defeat was taken as a sign of guilt. Courts recorded the oath, the combat and the result, and the victor's account carried the weight of a judgment. Because the verdict could cost a life, the ritual brought gravity to the proceedings, and it let both sides end a dispute by force instead of by evidence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord facing a capital accusation could not always take the lists himself. He might retain a professional champion to swear the oath and fight in his place. Yet if that champion yielded or fell, the principal was held to share the perjury, and the court's sentence fell on the house as well as on the man. Both sides knew the stakes were lethal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A person threatened with trial by battle worries about the weapon permitted, the champion available and the consequences for the household. Those rules depend on place, status and the kind of plea. A remembered tale of a fight with clubs is not a universal rule for all commoners, and even a legal victory can leave debts, injury and fields without labour."
+    }
+  ],
+  "TextMappings": []
+}

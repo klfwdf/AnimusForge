@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v9",
+  "Keywords": [
+    "哥特家庭与宗教分歧"
+  ],
+  "RagShortTexts": [
+    "共居和共同语言不保证哥特家户信仰一致。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "传教进入哥特社群后，家人可能信仰不同，首领也可能干预礼拜。共用语言与居处不会自动统一宗教。参与仪式、听取教导和承担军役应分别看待，不能从一项推断其余。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

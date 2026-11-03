@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v5",
+  "Keywords": [
+    "Gothic winter and disrupted trade"
+  ],
+  "RagShortTexts": [
+    "Campaigns and interrupted trade deprived Gothic residents of necessities."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Campaigns and interrupted trade deprived Gothic residents of necessities. Wagons could move stores without creating missing goods, making peace valuable to households as well as leaders. Absence from markets burdened more than fighters."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

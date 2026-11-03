@@ -20,7 +20,7 @@ namespace AnimusForge {
  internal static class EncyclopediaHeroPersonaPatch {internal static void QueueRefreshForHero(string id){Probe.Read();InformationManager.Refreshed++;} }
 
  internal static class SaveRuntimeGuard {internal static long Generation=1;internal static long CaptureGeneration()=>Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;internal static bool IsStale(long g,string s=null)=>!IsCurrentGeneration(g);}
- internal sealed class DuelSettings {internal static string Requirements="custom-requirements";internal string NpcPersonaGenerationRequirements=Requirements;internal static DuelSettings GetSettings(){Probe.Read();return new DuelSettings();}}
+ internal sealed class DuelSettings {internal static bool ExpandedEnabled=true;internal bool EnableExpandedNpcPersona=ExpandedEnabled;internal static string Requirements="custom-requirements";internal string NpcPersonaGenerationRequirements=Requirements;internal static DuelSettings GetSettings(){Probe.Read();return new DuelSettings();}}
  internal sealed class MentionedWorldEntities {internal List<string> Entities=new();}
  internal sealed class PromptLoreSettings {internal bool Enabled;}
  internal sealed class KnowledgeLibraryBehavior {

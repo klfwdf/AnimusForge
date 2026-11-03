@@ -1,0 +1,53 @@
+{
+  "Id": "rule_battering_ram_pendulum_mechanics",
+  "Keywords": [
+    "Battering rams at fortress gates",
+    "Ram approach to a gate",
+    "Ram frame and protective cover"
+  ],
+  "RagShortTexts": [
+    "A ram needs repeated impacts, a usable approach, a sound frame and a coordinated crew.",
+    "Missiles, ditches and gate construction delay ramming; timber and cover also matter."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At a Rus wooden town or Baltic stronghold, a ram must first cross ditches, slopes and obstacles. A carried beam and a heavier suspended one require different approaches and crews. Each stroke needs recovery. A roof gives some protection from missiles but adds weight, while defenders can use hooks, fire and stones to obstruct movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A ram crew needs coordinated effort and attention to the frame and ground. Sunken wheels or a shifted support can waste the force of the men behind. Relief crews, shields and removal of debris matter; wounded men also need an exit from the crowded approach."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander must compare the time and provisions required for an approach, ditch work and cover. Assigning every carpenter to a ram reduces wagon and camp repairs. Sustained use needs relief crews. If the gate is exposed to flanking fire, improving cover and access matters more than repeated attempts without cover."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A siege ram consumes long timbers, ropes, vehicles and transport, often demanded from nearby communities. Carriers need an unloading place and a route home, while animals left behind must still work fields. A prolonged siege increases lost labor and food costs for carpenters, drivers and farmers together."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

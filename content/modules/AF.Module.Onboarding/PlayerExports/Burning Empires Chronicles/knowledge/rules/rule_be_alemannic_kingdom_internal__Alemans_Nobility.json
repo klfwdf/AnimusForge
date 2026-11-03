@@ -1,0 +1,59 @@
+{
+  "Id": "be_alemannic_kingdom_internal",
+  "Keywords": [
+    "Alemans Nobility",
+    "Alamannic chiefly coalition"
+  ],
+  "RagShortTexts": [
+    "Alamanni comprise several chiefly groups.",
+    "Makrian’s common summons requires local cooperation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alamannic groups follow several chiefs. Makrian coordinates action while others retain families, followers and interests. Markets reward some groups while campaigning builds others’ reputation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Alamanni comprise several chiefly groups. Followers retain family ties; decisions about guards and distant service affect common participation. Makrian’s common summons requires local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Makrian’s common summons requires local cooperation. Coordination allocates actual supply and protection duties, not merely titles. Alamanni comprise several chiefly groups."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Alamanni comprise several chiefly groups. Households compare burdens with neighbors; unmatched protection weakens cooperation. Makrian’s common summons requires local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Makrian’s common summons requires local cooperation. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Alamanni comprise several chiefly groups."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

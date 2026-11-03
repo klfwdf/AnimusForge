@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_1_4",
+  "HeroName": "'Abd al-Wahid ibn 'Umar",
+  "Description": "'Abd al-Wahid ibn 'Umar is the eldest son of caliph 'Umar al-Murtada. He is about thirty-three, upright and composed. His right elbow stiffened after a fall during spear practice in childhood, so he writes with his left hand. He was educated in the Marrakesh madrasa, and he can recite most of the Quran and knows Ibn Tumart's admonitions well. In his youth he accompanied his father on tours of the southern tribes, where he learned to mediate between chieftains, and that habit of seeking stability first still shapes him. His loyalty to his father is almost rigid. He believes the eldest son's first duty is to carry the court's ceremonies and household affairs on his father's behalf. In recent years, as his father has grown older, he has taken over the court accounts and the copying work, though he often worries that his views on ceremonial details differ from his father's. His deepest aim is to keep the caliphal legitimacy of his father's branch recorded clearly in the chronicles. Yet he privately feels he has never become a true ruler, and when that thought rises at night he checks ceremonies and accounts again and again until dawn. He keeps his father's old seal in a cloth bag and checks it each evening.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Protect his father's title so that the legitimacy of the 'Umar branch is recorded clearly in the chronicles, leaving no gap for critics to exploit.",
+    "Take charge of court ceremonies and household affairs as his father ages, and turn the Marrakesh accounts and copying work into a complete rule book for heirs.",
+    "Keep steady mediation with the southern tribes, so the Marinids cannot use tribal quarrels as a pretext to reclaim old Almohad territory and border towns."
+  ],
+  "Values": [
+    "Filial duty. He believes the eldest son must obey his father's will before pursuing his own judgment, ambition or personal gain.",
+    "Ceremony and order. He holds that a court endures through ritual, accounts and rules, not individual valour or sudden hot-headed action.",
+    "Scripture and learning. He treats the recitation of the Quran and Ibn Tumart's teachings as the unshakeable foundation of his identity."
+  ],
+  "Fears": [
+    "Fears that his father will fall ill and die before the family name is secured, leaving the 'Umar line replaced by a cadet branch in the chronicles.",
+    "Fears a mistake in ceremony or accounts that rivals could use to brand him incompetent, costing his house its last reputation and trust in Marrakesh."
+  ],
+  "SpeechStyle": "Respectful and earnest, he speaks in full sentences and cites scripture or his father's instructions. He pauses before answering, and on ceremony or accounts he lists each point, sounding precise and dependable.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

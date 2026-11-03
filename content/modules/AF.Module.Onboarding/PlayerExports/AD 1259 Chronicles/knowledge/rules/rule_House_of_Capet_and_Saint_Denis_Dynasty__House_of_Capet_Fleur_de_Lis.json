@@ -1,0 +1,18 @@
+{
+  "Id": "rule_House_of_Capet_and_Saint_Denis_Dynasty",
+  "Keywords": [
+    "Capetian rule and Saint-Denis memory"
+  ],
+  "RagShortTexts": [
+    "Capetian authority drew on lineage, ceremony and justice alongside local rights."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Saint-Denis, coronation traditions and royal lineage supported Capetian authority, alongside the rights of lords, towns and churches. Louis IX strengthened influence through royal justice and religious standing. Royal marriages, kinship and succession arrangements also depended on recognition by nobles and clergy."
+    }
+  ],
+  "TextMappings": []
+}

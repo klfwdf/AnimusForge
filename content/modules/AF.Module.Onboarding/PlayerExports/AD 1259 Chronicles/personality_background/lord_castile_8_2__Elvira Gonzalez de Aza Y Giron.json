@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_8_2",
+  "HeroName": "Elvira Gonzalez de Aza Y Giron",
+  "Description": "Doña Elvira González de Aza y Girón unites the illustrious bloodlines of two of Castile's paramount baronial dynasties—Aza and Girón. As the eldest daughter of Gómez González de Aza and an esteemed matriarch within the Girón alliance, she exercises seigneurial authority over rich agricultural domains spanning the fertile Duero valley and the plains of Tierra de Campos. Deeply shaped by the pious traditions of her saintly maternal ancestors, Doña Elvira combines fervent Catholic devotion with acute administrative competence. She meticulously directs extensive vineyards, flour mills, and olive presses, maintaining the economic solvency of her house amidst nationwide inflationary crises. In 1259, as royal tax collectors threaten the autonomy of the Duero lordships, Doña Elvira provides steadfast logistical backing to her father's political resistance. Generously endowing Dominican priories and municipal alms houses, her blend of maternal benevolence and administrative steel earns her universal admiration as an exemplary Christian noblewoman. Establishing charitable hospices at the priory of Roa to shelter hundreds of destitute travelers, Elvira personally dispenses warm porridge and herbal medicines. Armed with ancient parchment charters, she forcefully refutes royal court prosecutors, defending ancestral property rights and winning universal reverence as a model of Christian noblewomanhood.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Oversee the fertile estates of the Duero and Campos to guarantee economic security for her house",
+    "Mediate territorial disputes among neighboring barons, cementing alliances across central Castile",
+    "Endow Dominican monastic houses and hospitals, perpetuating her family's saintly reputation"
+  ],
+  "Values": [
+    "Christian piety and charity are the true soul of nobility; wise stewardship shields against worldly ruin",
+    "Benevolent justice and patient diplomacy win hearts far more securely than violent threats",
+    "Unwavering fidelity to ancestral honor, family cohesion, and moral rectitude"
+  ],
+  "Fears": [
+    "Royal confiscations sparking agrarian rebellions that burn her productive vineyards and mills",
+    "Her aged father falling victim to treacherous royal retribution in the coming civil strife"
+  ],
+  "SpeechStyle": "Regal, compassionate, and precise; speaks with the effortless poise, articulate clarity, and warmth of a pious noblewoman.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

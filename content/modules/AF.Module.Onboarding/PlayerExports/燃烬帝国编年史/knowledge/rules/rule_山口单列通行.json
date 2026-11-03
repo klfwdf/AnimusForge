@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v2",
+  "Keywords": [
+    "山口单列通行"
+  ],
+  "RagShortTexts": [
+    "古代地理叙述把阿拉古斯一段道路写成仅容一人通过。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "古代地理叙述把阿拉古斯一段道路写成仅容一人通过。无论这一说法用于强调何等险狭，运粮和伤员移动都会被通道宽度限制。后队不能从旁绕过停下的牲畜，行进次序影响整列速度。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

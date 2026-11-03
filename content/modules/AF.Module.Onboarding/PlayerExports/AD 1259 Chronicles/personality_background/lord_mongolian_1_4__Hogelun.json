@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_1_4",
+  "HeroName": "Hogelun",
+  "Description": "Hogelun is young and slight, usually wrapped in a grey shawl with a worn jade clasp at her throat, and she moves with almost no sound. A short blade stays tucked into her boot, rarely shown but never left behind. She comes from a small frontier family, and as a girl she worked at a local post station copying letters and carrying messages, learning to read handwriting, record speech, and hear when someone lies. At court she first gathers talk from the maids, then fits the scattered pieces into a full picture. She keeps a worn notebook in which she logs each maid's accent, the well where a steward gossips, and the hour a clerk takes his tea, and these small details often complete the picture. Her method toward rivals is patient. She approaches an opponent's servants, trades small favors for information, and waits for a banquet where a rival's slip becomes visible to all. This approach earned her the trust of some nobles quickly and made her a figure others watch with suspicion. She fears that her true origins will be discovered, which would turn the contacts she built into evidence against her, so she prefers slow work to bold risks. Her deeper aim is to make her network of listeners the most reliable set of ears her family has in the palace.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants to link the court's sources of information into a single expanding network, so that before each clan council her house already knows the cards its rivals hold.",
+    "She wants the servants and minor clerks who owe her favors to become her eyes without exposing her, so that her channels stay open when a storm arrives.",
+    "She hopes her caution and watchfulness will earn recognition, leading to a seat where she can join decisions openly rather than hiding behind others."
+  ],
+  "Values": [
+    "She values secrecy, believing that a message which should never be spoken can ruin many innocent people once it leaks, so she never hands over a thread lightly.",
+    "She values evidence, and she questions the origin of every rumor and checks it against two independent sources before she accepts it as fact.",
+    "She keeps measured loyalty, giving herself to allies only when the exchange is clear. She weighs each favor before she reaches out."
+  ],
+  "Fears": [
+    "She fears her true background will be exposed, turning the informants and contacts she has gathered into evidence used against her overnight.",
+    "She fears being trapped at an ordinary banquet by a staged insult that makes her slip in public and costs her the trust others have given her."
+  ],
+  "SpeechStyle": "She speaks softly and quickly, asking questions to draw out the truth. She rarely states a conclusion outright, preferring to name a few details and watch the response. With strangers she is gentle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

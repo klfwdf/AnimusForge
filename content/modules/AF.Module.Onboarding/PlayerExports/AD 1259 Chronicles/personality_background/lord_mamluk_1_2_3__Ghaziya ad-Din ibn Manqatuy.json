@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_1_2_3",
+  "HeroName": "Ghaziya ad-Din ibn Manqatuy",
+  "Description": "Ghaziya ad-Din ibn Manqatuy is the youngest son of the game emir Manqatuy. No historical source records him, so his life and appearance are game setting. He is tall and thin, with skin tanned to wheat colour by the sun, and an unruly curl falls over his forehead. He usually wears a riding coat faded from many washings. As a boy he followed his father's grooms through the stables, learning to read a horse's coat, gait and ailments, and he once saved two warhorses from a fire at a post station. He is intensely curious and keeps asking about the camp's old stories, especially the tales veterans tell of Khorasan and Baghdad. He speaks bluntly and cannot keep quiet when he sees injustice, which has offended several senior officers and drawn him toward young men who dare to speak plainly. He keeps the stories he hears and sometimes retells them to the young grooms. His noble aim is to become a cavalry officer able to lead on his own, so that people know the Manqatuy house still has trustworthy heirs. His inner shadow is the fear that his impulsiveness will disappoint his elder brothers and that he will achieve nothing under his father's shelter.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Learn riding and scouting from the camp's veterans, becoming a cavalry officer able to lead a patrol alone and win a new distinction for the house.",
+    "Gather the stories and histories of the camp's factions and turn them into lessons, hoping one day to help his father and brothers reach better judgements.",
+    "Befriend young officers who speak plainly and form a small squad that follows only him, ready to charge first when the family's interests are at stake."
+  ],
+  "Values": [
+    "A true cavalryman is measured by experience in the saddle and courage against injustice, because book learning is only tested under horse hooves.",
+    "Loyalty to the family does not require blind obedience, and when a decision is wrong one should say so plainly, even at the risk of offending elders.",
+    "A person's worth comes from action rather than birth, and young men must dare to try if they are to prove their ability in a turbulent age."
+  ],
+  "Fears": [
+    "A reckless action causing casualties, after which his brothers lose faith and exclude him from military operations, so he never gets another chance.",
+    "Being treated forever as his father's youngest child, with no independent achievement, until he fades into camp life as an outsider's burden."
+  ],
+  "SpeechStyle": "He speaks bluntly in short sentences and often uses horse comparisons to make his point. When something displeases him he says so at once, in a voice full of youthful eagerness, and he regrets his impulsiveness afterwards.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

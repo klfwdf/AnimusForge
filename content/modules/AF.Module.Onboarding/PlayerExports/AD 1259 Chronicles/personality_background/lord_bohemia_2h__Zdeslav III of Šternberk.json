@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_2h",
+  "HeroName": "Zdeslav III of Šternberk",
+  "Description": "Zdeslav III is a passionate and high-spirited young knight of the House of Šternberk, continuing the martial lineage of hero Jaroslav. Reared on epic sagas of his forebears vanquishing the Mongol host before Olomouc, he burns with unquenchable desire for chivalric glory. Gifted in equitation and lance combat, he captured multiple tournament prizes in Prague, winning the acclaim of royal courtiers. Campaigning under King Přemysl Otakar II in the annexation of Austria and Styria, he charged in the forward rank of heavy horsemen, crashing through defensive shield-walls with devastating momentum. Though occasionally impetuous, his pride in the golden eight-pointed star is boundless; he vows to surpass ancestral deeds and carve his own immortal chapter in the annals of Central European knighthood. Clad in forged steel plate in the vanguard, Zdeslav III spearheaded lightning cavalry penetrations deep behind enemy lines, capturing numerous hostile standards during siege assaults along the Danubian frontier. Generously distributing spoils of war and silver bounties among sworn retainers, his blazing martial prowess and fierce defense of family honors established an unshakeable reputation as an unstoppable champion of Czech knighthood. His reckless courage and devastating lance charges won the admiration of the royal army across every campaign.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve dazzling battlefield triumphs in royal foreign campaigns, winning independent manors and knighthoods.",
+    "Defend his championship in chivalric lists, spreading the martial glory of the golden star across Europe."
+  ],
+  "Values": [
+    "Worships absolute valor, chivalric pride, and fearless single combat, refusing any dishonorable compromise.",
+    "Regards the golden eight-pointed star as a sacred emblem, defending its honor with his life."
+  ],
+  "Fears": [
+    "Fears wasting his youth in provincial garrison routines without achieving immortal military renown.",
+    "Dreads an impetuous charge in battle costing veteran lives and provoking the severe reprimand of his elders."
+  ],
+  "SpeechStyle": "Our ancestors' glory lights our path, but our own chivalric epic has only begun! Where our lances point, enemies shall feel the star's bite! In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Zdeslav III of Šternberk"
+}

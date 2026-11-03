@@ -1,0 +1,53 @@
+{
+  "Id": "rule_slavic_polk_regimental_doctrine",
+  "Keywords": [
+    "Rus forces and princely retinues",
+    "Tasks among assembled Rus forces",
+    "Retainers and townsmen on campaign"
+  ],
+  "RagShortTexts": [
+    "Rus campaigns can combine princely retainers, local followers and townsmen with differing service.",
+    "Leaders, messengers and agreed positions support cooperation; supplies and time away limit service."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A Rus prince draws on his retinue, dependent lords and manpower from towns. Equipment, skill and willingness differ. Men gathered around a leader respond first to familiar commands before cooperating with other groups. March order, camps and mutual support require arrangements, while provisions, home defense and disputes limit how long the force holds together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A follower needs his leader's banner, assembly place and contact if separated. Another group's movement need not mean a general withdrawal; copying it without orders can open a gap. Retainers and temporary levies differ in riding, weapon handling and watch experience, requiring clear arrangements rather than assumed common habits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A prince needs leaders to agree whom to bring, provisions and arrival, with mediation over camps and allocation along the road. Calling distant manpower weakens local defense and interrupts farming. A force that can be supplied and support its neighbors is more useful than a large gathering whose groups already seek separate ways home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Towns and villages supplying fighters still need grain carriers, animal care and markets. Prolonged absence can cost households a sowing or harvest and leave merchants' debts unsettled. Clear expectations about duration, maintenance and replacement guards help communities organize the labor remaining at home."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

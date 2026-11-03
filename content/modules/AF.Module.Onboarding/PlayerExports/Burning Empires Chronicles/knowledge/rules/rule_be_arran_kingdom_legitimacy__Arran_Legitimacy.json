@@ -1,0 +1,59 @@
+{
+  "Id": "be_arran_kingdom_legitimacy",
+  "Keywords": [
+    "Arran Legitimacy",
+    "Vachagan’s dynasty and patronage"
+  ],
+  "RagShortTexts": [
+    "Dynasty and Persian relations support Gabala’s court.",
+    "Aid can bring garrison or collection obligations."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Royal standing and Persian connections both matter. Aid strengthens authority but may add levies or garrisons; subjects judge protection of land and routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Dynasty and Persian relations support Gabala’s court. Military recognition also rests on rewards and relief; a title needs willing action. Aid can bring garrison or collection obligations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Aid can bring garrison or collection obligations. Nominal rights require local execution, with consent and supply both shaping authority. Dynasty and Persian relations support Gabala’s court."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Dynasty and Persian relations support Gabala’s court. Households judge rule through protected families, land and responses to appeals. Aid can bring garrison or collection obligations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Aid can bring garrison or collection obligations. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Dynasty and Persian relations support Gabala’s court."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

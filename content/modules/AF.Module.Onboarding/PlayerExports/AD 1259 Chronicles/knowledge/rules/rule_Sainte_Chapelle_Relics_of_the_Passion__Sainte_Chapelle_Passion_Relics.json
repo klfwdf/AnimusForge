@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Sainte_Chapelle_Relics_of_the_Passion",
+  "Keywords": [
+    "Sainte Chapelle Passion Relics",
+    "Crown of Thorns Veneration",
+    "Constantinople Relic Pawn",
+    "Saint Louis Holy Sovereignty"
+  ],
+  "RagShortTexts": [
+    "Louis IX's Sainte-Chapelle houses Passion relics in a royal religious setting.",
+    "Its consecration in 1248 links monumental craft with Capetian sacred kingship."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Baldwin II of the Latin Empire had run short of money, and he pawned the most precious Passion relic, the Crown of Thorns, to Venetian financiers. King Louis IX of France bought it back for 135,000 gold livres. He then built the Sainte-Chapelle on the Ile de la Cite to house it, a chapel of stone and glass that brought the relic to Paris. The purchase and the building made Paris the leading reliquary centre of Western Christendom, and the king's prestige rose with every pilgrim who came to see the relic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Towering stained-glass lancets depict over eleven hundred biblical scenes, casting jewel-like radiance across the gilded reliquary shrine. Louis IX bought the Crown of Thorns from the Latin emperor Baldwin II in 1239, and the chapel was consecrated in 1248 to house it. Scholars and priests read the windows as a biblical catechism, and pilgrims from across Christendom came to see the relics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Holding the Instruments of the Passion gave Saint Louis a kind of moral authority that few princes could claim. Disputing English barons and imperial rivals travelled to Paris to lay their grievances before his judgment. A lord who came to the king with a complaint had to accept that his case would be weighed by a ruler who regarded arbitration as a religious duty."
+    }
+  ],
+  "TextMappings": []
+}

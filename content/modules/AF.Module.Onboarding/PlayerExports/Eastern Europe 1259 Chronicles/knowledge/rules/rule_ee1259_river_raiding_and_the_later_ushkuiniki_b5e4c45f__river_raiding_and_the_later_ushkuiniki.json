@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_river_raiding_and_the_later_ushkuiniki_b5e4c45f",
+  "Keywords": [
+    "Raiding risks on river routes",
+    "Night watches and company for river traders"
+  ],
+  "RagShortTexts": [
+    "River trading vessels could face interception at narrow channels and landings.",
+    "Extra guards, waiting for company and detours each increased costs or delay."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Trading vessels could face armed interception. Narrow channels, landings and tired crews shaped their response. Owners arranging company, watches and handovers weighed escort costs against delays to a voyage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Trading vessels could face armed interception. Narrow channels, landings and tired crews shaped their response. Owners arranging company, watches and handovers weighed escort costs against delays to a voyage. Crews and guards organized watches and shore parties. Pursuit left goods and wounded people behind; risks depended on personnel, vessel and the next safe landing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Trading vessels could face armed interception. Narrow channels, landings and tired crews shaped their response. Owners arranging company, watches and handovers weighed escort costs against delays to a voyage. Authorities tolerating raids gained immediate property but lost traffic and invited reprisals. River income needed guards, negotiation and restraint of their own fighters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Trading vessels could face armed interception. Narrow channels, landings and tired crews shaped their response. Owners arranging company, watches and handovers weighed escort costs against delays to a voyage. Boatmen, handlers and food providers depended on traffic. Interrupted travel reduced livelihoods, while hosting victims and refugees strained stores and lodging."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v4",
+  "Keywords": [
+    "Arab chiefs offer Julian a crown"
+  ],
+  "RagShortTexts": [
+    "Arab chiefs offered Julian a gold crown and auxiliary support during his eastern expedition."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Arab chiefs offered Julian a gold crown and auxiliary support during his eastern expedition. The gift joined honor with promised service without registering every donor for Roman taxation. Promises still needed actual people and supplies."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

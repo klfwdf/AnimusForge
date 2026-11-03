@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_fermented_drinks_and_washing_1f4d66f9",
+  "Keywords": [
+    "fermented drinks and washing",
+    "Grain drinks and bathing fuel and water"
+  ],
+  "RagShortTexts": [
+    "Fermented grain drinks consume ingredients and preparation time.",
+    "Steam bathing needs fuel, water and heated stones."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Households make fermented grain drinks and arrange steam bathing with fire, stones and water. Both use time and materials, with access varying by means and housing. Washing still needs clean water, cleared smoke and help for less mobile people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers need hosts’ consent and available fuel before bathing. Wet clothing needs care afterward, while some companions remain with equipment and stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Shared bathing requires fuel, water and supervision. Guests increase local costs; grain spent on drinks cannot also be counted as staple reserves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Brewing uses grain, bathing fuel and time. Helping children and elders and drying clothes are household labor, not merely sociability."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

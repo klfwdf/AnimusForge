@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Kutna_Hora_and_Central_European_Silver_Boom",
+  "Keywords": [
+    "Bohemian mining and Jihlava"
+  ],
+  "RagShortTexts": [
+    "Bohemian and Moravian mining involved rights."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bohemian and Moravian mining involved rights, labor, timber, drainage and fuel, with Jihlava’s silver important to rulers. A vein still needed shafts, processing and transport before becoming regular output. Households used circulating local money and weighed silver rather than an assumed single great mint serving every mine."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_2c",
+  "HeroName": "Oberto Lanza Manfretta",
+  "Description": "Oberto Lanza Manfretta, cavalry captain of House Lancia and vice-commander of Busca, served Marquis Manfred across the Po battlefields. Renowned for shock combat and skirmish leadership, he stood as a loyal Hohenstaufen officer anchoring northern defenses. Oberto established vigilant mounted patrols across the mountain defiles of Busca, constructing deadfalls and spiked trenches across alpine passes to repeatedly shatter Guelf vanguard squadrons. Leading shock charges in the upper Po valley, he spearheaded assaults into enemy camp trenches, shattering superior numbers in close combat to prove his absolute feudal loyalty. Convinced that a knight's supreme destiny lay in mounted combat, this intrepid warrior forged an imperishable reputation across Piedmont through resolute shock leadership. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect imperial communications linking Piedmont and Lombardy against Guelf raiders.",
+    "Maintain the arsenals and bastions of Busca to keep Hohenstaufen troops fully armed.",
+    "Ambush French mercenary incursions in transalpine passes to safeguard Italian feudal integrity."
+  ],
+  "Values": [
+    "Values martial renown and absolute feudal obedience above life, scorning treachery.",
+    "Believes a knight's lance finds sacred purpose solely when serving the legitimate Emperor."
+  ],
+  "Fears": [
+    "Being betrayed by fickle allied condottieri and cut down in hopeless encirclement.",
+    "The total collapse of Hohenstaufen power casting House Lancia into landless exile."
+  ],
+  "SpeechStyle": "Speaks with curt military discipline and battlefield directness, brooking no equivocation. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

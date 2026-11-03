@@ -1,0 +1,32 @@
+{
+  "Id": "rule_Bordeaux_Capital_of_Aquitaine",
+  "Keywords": [
+    "Bordeaux Gascon Capital",
+    "Aquitaine Claret Wine Fleet",
+    "Garonne River Bordeaux Charters",
+    "English Crown Customs Lifeline"
+  ],
+  "RagShortTexts": [
+    "Bordeaux's wine exports connect Gascon merchants with the English crown.",
+    "Vintage, river transport and port dues affect both household income and royal revenue."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bordeaux anchored English Plantagenet rule in continental Gascony. The city sits on the Garonne, and its river trade carried wine down to the Gironde and out to England. Every autumn the wine fleets gathered for the crossing, and royal convoys often escorted them through disputed waters. Bordeaux's merchants held charters that protected their rights to trade and to govern their own affairs, and those privileges gave the town a degree of municipal liberty that many rural lords envied. The city's wealth depended on keeping the English crown satisfied with its customs revenue while preventing French officers from taking over the river tolls. For the Plantagenet kings, Bordeaux was both a commercial asset and a political anchor for their holdings south of the Loire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "notable",
+          "townsfolk"
+        ]
+      },
+      "Content": "English customs revenues depended directly upon Bordeaux vintage yields, binding civic burghers inextricably to the crown of England. Each cask shipped through the Gironde paid duty at the quay, and the wine merchants answered to royal officers. Every good harvest mattered to the crown and the city alike, since the export trade filled both the customs chests and the merchant houses."
+    }
+  ],
+  "TextMappings": []
+}

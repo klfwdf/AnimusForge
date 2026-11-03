@@ -1,0 +1,59 @@
+{
+  "Id": "be_vesian_kingdom_military",
+  "Keywords": [
+    "Goths Military",
+    "Vesian crossing and grain guards"
+  ],
+  "RagShortTexts": [
+    "Riders, dependants and boats move at different speeds.",
+    "Athanaric war needs guards for crossings, grain and messages."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Riders, families and boats move differently. Crossings, food and messages need separate people; Athanaric war makes lost food weaken camps faster than lost prestige."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Riders, dependants and boats move at different speeds. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Athanaric war needs guards for crossings, grain and messages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Athanaric war needs guards for crossings, grain and messages. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Riders, dependants and boats move at different speeds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Riders, dependants and boats move at different speeds. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Athanaric war needs guards for crossings, grain and messages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Athanaric war needs guards for crossings, grain and messages. Repair, carrying and care also use people, while daily supply continues after troops pass. Riders, dependants and boats move at different speeds."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

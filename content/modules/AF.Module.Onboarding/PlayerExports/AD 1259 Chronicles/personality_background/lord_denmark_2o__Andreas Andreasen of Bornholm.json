@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2o",
+  "HeroName": "Andreas Andreasen of Bornholm",
+  "Description": "Commander Andreas Andreasen of Bornholm was the trusted military castellan of Hammershus, the colossal coastal fortress perched atop the sheer northern cliffs of Bornholm. Acting as the ultimate martial protector of Archbishop Jakob Erlandsen's sanctuary, Andreas oversaw the most formidable stone citadel in the central Baltic Sea. Master of advanced fortification engineering, he ringed the rocky heights with concentric gatehouses, dry ditches, and lethal crossbow galleries that completely dominated sea approaches. Incorruptible, courageous, and fiercely loyal, he stood as the unconquered sentinel of Hammershus. Andreas engineered formidable stone catapults and timber deadfalls across the sheer granite sea-cliffs of Hammershus, constructing deep cisterns that ensured absolute self-sufficiency during protracted sieges. When royal war galleys repeatedly blockaded Bornholm and attempted amphibious landings, Andreas commanded archers from the ramparts, decimating the attackers with lethal precision. Maintaining tireless sentinel watches through blinding blizzards and stormy seas, his relentless vigilance safeguarded the archiepiscopal sanctuary, celebrated as the indomitable eagle of the Baltic fortress.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the impregnable cliff fortress of Hammershus and the archiepiscopal treasury against all royalist naval sieges.",
+    "Maintain naval patrol flotillas across the central Baltic, safeguarding church couriers and allied merchant vessels."
+  ],
+  "Values": [
+    "Regards castle defense and soldierly oaths as sacred duties, holding that an unbending post must be held to the final breath.",
+    "Champions methodical engineering defense and tireless sentinel vigilance, relying on calculated tactical discipline over rash heroics."
+  ],
+  "Fears": [
+    "Dreads internal sabotage poisoning the citadel's deep cisterns or rot spoiling grain stores, defeating the fortress from within."
+  ],
+  "SpeechStyle": "Speaks with a granite-hard, resonant baritone, his terse orders commanding absolute discipline across the battlements.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

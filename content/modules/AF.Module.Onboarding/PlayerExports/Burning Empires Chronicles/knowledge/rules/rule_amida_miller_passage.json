@@ -1,0 +1,38 @@
+{
+  "Id": "be_battle_amida_siege_record_v4",
+  "Keywords": [
+    "Amida miller passage"
+  ],
+  "RagShortTexts": [
+    "A deserter exposed Amida’s water passage in 359; infiltrators were later repelled."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "During the siege of Amida in 359, a miller familiar with the city deserted to the besiegers and identified a concealed water passage. Attackers used it to reach a high position inside before defenders repelled them. Everyday water and milling facilities became a weakness that local knowledge could exploit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Defenders faced more than external engines: someone who knew a watercourse could reveal an internal approach. A miller’s local knowledge might exceed a distant officer’s view, without making all millers suspected traitors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Urban authorities had to consider mills and waterworks alongside fortification. At Amida a deserter supplied the route, but the infiltrators were detected: intelligence, entry and occupation were separate achievements."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

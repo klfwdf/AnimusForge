@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_6_4",
+  "HeroName": "Chigu",
+  "Description": "Chigu is sturdy and broad-shouldered, with a short fringe of hair blown untidily across his forehead, and the palm of his right hand is hardened by years of drawing the bow. In the game he is the finest mounted archer of the sixth clan, thirty years old. He speaks in a blunt voice and often tucks an arrow into his boot, which clansmen take as a sign that he is going hunting. No medieval person of this name is recorded, so the background here rests on the sixth clan's setting alone. The men of this house have long made their name through archery and horsemanship, and a young man who cannot win honour in the saddle finds little respect in the clan. Chigu grew up under that demand. He trained until he could loose several arrows from a galloping horse, and he kept a direct, forthright temper. Against rivals he seldom bargains patiently. He answers provocation at once, which sometimes costs him, yet clansmen respect him for standing by what he does. He is deeply attached to his wife Holuikhan, and the two are often teased when they walk together through camp, a teasing he takes as a mark of honour. His highest aim is to build through his archery a name the steppe cannot overlook. His shadow is the fear that one impulsive decision might drag his wife and kinsmen into consequences he cannot bear.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Build through archery and horsemanship a name the steppe cannot overlook, so that the men of the sixth clan are never seen as weak before other peoples.",
+    "Lead the young men of the clan in archery and hunting drills, teaching them to control horse and bow so they can stand alone on the battlefield in time.",
+    "Protect his wife Holuikhan and the clansmen, standing in front during any dispute so that no one suffers for his own impulsiveness."
+  ],
+  "Values": [
+    "Courage and readiness to answer for one's deeds, because a man who only retreats does not deserve to be called a rider of the steppe.",
+    "Honour earned by one's own hand, because he looks down on status gained through others' protection and holds that only personal skill with bow and horse earns real respect.",
+    "Loyalty to his partner, because he values his bond with Holuikhan and insists on walking beside her despite the teasing, regarding her as his most dependable support."
+  ],
+  "Fears": [
+    "Fears that one impulsive decision will drag his wife and kinsmen into consequences he cannot bear, turning his courage into a disaster for everyone close to him.",
+    "Fears that he will miss his mark in a decisive contest or battle, so that his long-built reputation becomes a joke overnight and the clan loses faith in him."
+  ],
+  "SpeechStyle": "Blunt and short. Chigu states his attitude plainly and draws comparisons from archery and hunting. He argues back at once when he disagrees, yet respects the elders. With his wife his tone turns gentle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

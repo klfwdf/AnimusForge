@@ -1,0 +1,59 @@
+{
+  "Id": "be_gepid_kingdom_legitimacy",
+  "Keywords": [
+    "吉皮特人法统",
+    "西比杜斯的保地分配"
+  ],
+  "RagShortTexts": [
+    "保地与公允分配支持吉皮特首领认可。",
+    "强邻庇护可能附带军役和供粮要求。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "保护土地和公允分配支持首领认可，另一位强者的庇护有时带来安全，也可能附带出兵和供粮要求。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "保地与公允分配支持吉皮特首领认可。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。强邻庇护可能附带军役和供粮要求。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "强邻庇护可能附带军役和供粮要求。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。保地与公允分配支持吉皮特首领认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "保地与公允分配支持吉皮特首领认可。家户通过家人、土地与求助能否获保护来认识统治。强邻庇护可能附带军役和供粮要求。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "强邻庇护可能附带军役和供粮要求。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。保地与公允分配支持吉皮特首领认可。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

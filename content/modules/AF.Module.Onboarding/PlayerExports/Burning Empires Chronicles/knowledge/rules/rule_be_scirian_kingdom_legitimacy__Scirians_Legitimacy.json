@@ -1,0 +1,59 @@
+{
+  "Id": "be_scirian_kingdom_legitimacy",
+  "Keywords": [
+    "Scirians Legitimacy",
+    "Roderic’s protection of people and land"
+  ],
+  "RagShortTexts": [
+    "Roderic gains recognition by preserving people and land.",
+    "Powerful patrons may require food, troops and hostages."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Authority matters while people and land remain viable. A powerful protector brings security along with troops, food and hostage demands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Roderic gains recognition by preserving people and land. Military recognition also rests on rewards and relief; a title needs willing action. Powerful patrons may require food, troops and hostages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Powerful patrons may require food, troops and hostages. Nominal rights require local execution, with consent and supply both shaping authority. Roderic gains recognition by preserving people and land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Roderic gains recognition by preserving people and land. Households judge rule through protected families, land and responses to appeals. Powerful patrons may require food, troops and hostages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Powerful patrons may require food, troops and hostages. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Roderic gains recognition by preserving people and land."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

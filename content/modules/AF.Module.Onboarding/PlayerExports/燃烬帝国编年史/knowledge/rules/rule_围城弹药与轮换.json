@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v6",
+  "Keywords": [
+    "围城弹药与轮换"
+  ],
+  "RagShortTexts": [
+    "阿米达双方不断投射，守军还要轮番补上受伤者位置。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿米达双方不断投射，守军还要轮番补上受伤者位置。箭矢、石料与可操作人员必须同时到位，不能只以器械数量判断火力。抬运和处理伤兵也占用守城劳力。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

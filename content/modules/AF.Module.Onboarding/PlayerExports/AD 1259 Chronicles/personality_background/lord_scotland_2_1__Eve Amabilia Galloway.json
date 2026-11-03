@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_2_1",
+  "HeroName": "Eve Amabilia Galloway",
+  "Description": "Eve Amabilia of Galloway represents the ancient semi-independent Celtic royal lineage of Galloway, serving as an influential matriarch allied to Clan Comyn. Stately, silver-haired, with piercing ice-blue eyes, Eve experienced firsthand the painful feudal partition and brutal wars that shattered the old Galloway lordship. Her familial ties anchored Clan Comyn deeply within the rich agricultural and maritime domains of southwestern Scotland, securing a critical power base for the regency faction. In 1259, as King Alexander III strengthens centralized royal administration over the southwest, the venerable Eve manages estate revenues from her manor halls. She oversees cattle and salt trade, pacifies restive Celtic clan chieftains chafing under royal taxes, and protects traditional Galwegian customary law. Astute, revered by local tenants, and fiercely protective of her heritage, she acts as an indispensable diplomatic bulwark for her baronial kinsmen. Bearing the ancient, unyielding royal blood of Celtic Galloway, Amabilia navigated the turbulent feudal politics of southwestern Scotland with iron will; residing within fortified bastions along the Solway Firth, she preserved Galloway's customary laws and generously endowed coastal chapels, offering a resilient and resolute shield against grasping Marcher lords and foreign interference across the realm.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the ancient customary autonomy and tenures of Galloway against overbearing royal centralization",
+    "Maintain deep trust between Clan Comyn and local southwestern clans, ensuring regional stability",
+    "Manage agricultural estates and salt trade, providing steady logistics for her baronial kinsmen"
+  ],
+  "Values": [
+    "Ancestral custom is an unshakeable foundation; external bailiffs must never extinguish regional liberties",
+    "Patience and strategic discretion are the only shields that preserve ancient royal bloodlines",
+    "Steward commoners with justice; disciplined governance secures enduring prosperity and love"
+  ],
+  "Fears": [
+    "The crown dispatching overzealous royal justices to dismantle Galwegian feudal franchises",
+    "Civil war reigniting, subjecting the pastures of Galloway to catastrophic slaughter and plunder"
+  ],
+  "SpeechStyle": "Speaks with serene maternal gravitas, slow cadence, and the poetic lilt of southwestern Gaelic. Her words are diplomatically guarded yet firm, carrying the weight of a bygone royal age.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

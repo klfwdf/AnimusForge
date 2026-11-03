@@ -1,0 +1,59 @@
+{
+  "Id": "be_marcomannic_kingdom_military",
+  "Keywords": [
+    "马科曼尼人军制",
+    "马科曼尼林河警戒"
+  ],
+  "RagShortTexts": [
+    "林河警戒允许马科曼尼保留中立余地。",
+    "集结过久会先耗尽家户储粮。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "当前尚能保留中立余地，警戒者观察林河变化，家户仍能耕牧。集结若持续太久，储粮会先于战士勇气耗尽。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "林河警戒允许马科曼尼保留中立余地。这些力量在路上仍受饮食、休息和负重限制，先锋速度不能代表全队。集结过久会先耗尽家户储粮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "集结过久会先耗尽家户储粮。可用兵力要连同供给、留守和撤离能力计算，集中一侧会减少另一侧预备。林河警戒允许马科曼尼保留中立余地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "林河警戒允许马科曼尼保留中立余地。出战者来自家户，长期失去劳力或牲畜会减少下一次供役能力。集结过久会先耗尽家户储粮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "集结过久会先耗尽家户储粮。修器具、搬运和照护也消耗人手，军队经过后仍要维持日常供应。林河警戒允许马科曼尼保留中立余地。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

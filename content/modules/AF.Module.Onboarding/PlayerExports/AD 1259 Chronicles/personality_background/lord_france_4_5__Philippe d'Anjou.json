@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_4_5",
+  "HeroName": "Philippe d'Anjou, Titular King of Thessalonica and Prince of Achaea",
+  "Description": "Philippe d'Anjou is the second son of King Charles I, bearing the titles of titular King of Thessalonica and Prince of Achaea. At nineteen, he is a bold, dashing knight radiating restless ambition and tactical flair, reared in the Mediterranean ports of Provence and royal military encampments. A master of dynamic cavalry charges and amphibious coastal warfare, Philippe was chosen by his father to spearhead the Angevin expansion toward Greece and Outremer. His strategic union with Isabella of Villehardouin, heiress to the Principality of Achaea, positioned him as the foremost military champion of Frankish Greece against Byzantine reconquest. Openhanded, fiercely valiant, and magnetic in demeanor, he is idolized by young French and Provencal crusader knights. Philippe dreams of leading grand armadas across the Aegean Sea to establish lasting Latin dominion over the lands of the East. At Provencal ports, Philippe assembled sea-captains and practiced amphibious assault doctrines with heavy cavalry on coastal beaches. His fearless combat leadership and immense popularity among French and Provencal knights ensure that his name will forever inspire heroic songs across the Mediterranean.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead an Angevin armada to the Peloponnese to defeat Byzantine forces and claim Achaea.",
+    "Establish an invincible Latin principality across the Aegean to glorify the Capetian name."
+  ],
+  "Values": [
+    "Chivalric conquest and fame in foreign lands as the supreme summit of noble virtue.",
+    "Lavish generosity toward comrades-in-arms to inspire boundless battlefield devotion."
+  ],
+  "Fears": [
+    "Mediterranean gales destroying his armada before reaching Greek shores.",
+    "Succumbing to camp fever before winning enduring renown on the battlefield."
+  ],
+  "SpeechStyle": "Speaks with vibrant chivalric enthusiasm, his voice carrying the dashing confidence and bold cadence of a crusader prince hungry for maritime adventure and eastern conquest.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

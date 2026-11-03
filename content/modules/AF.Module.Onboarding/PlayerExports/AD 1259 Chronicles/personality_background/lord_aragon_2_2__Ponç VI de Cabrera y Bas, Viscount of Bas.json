@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_2",
+  "HeroName": "Ponç VI de Cabrera y Bas, Viscount of Bas",
+  "Description": "Ponç VI de Cabrera (Ponç Hug), Viscount of Bas, is a prominent magnate of the venerable House of Cabrera, sovereignly governing the rugged alpine fiefs of the Viscounty of Bas in Old Catalonia. Raised within the impregnable battlements of Montsoriu Castle, Don Ponç mastered Pyrenean cavalry tactics, siege warfare, and feudal jurisprudence. As a close kinsman of Count Àlvar of Urgell, he stands at the forefront of the Catalan baronial opposition, fiercely resisting the royal centralizing efforts of King James I. In 1259, Ponç commands the vital trade defiles and fortified keeps along the Fluvià river valley leading north toward Foix and Roussillon. Simultaneously disputing tithe jurisdictions with the Bishop of Girona and stockpiling arms in mountain bastions, he vigilantly prepares for any royal incursion. Dignified, unbending, and steeped in ancient feudal pride, Viscount Ponç stands as an unshakeable defender of Catalan provincial liberties against the encroaching crown. Holding court within the council chambers of Olot, Ponç maintains strict watch schedules, requiring beacon signals between alpine redoubts to guard against surprise royal raids. Deeply versed in ancient Catalan customs, he personally confronts royal collectors with armed knights, defending the ancestral liberties of Bas with unshakeable resolve. His unwavering commitment to the independence of Bas makes him an indispensable pillar of the northern Catalan baronial coalition.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the ancient seigneurial franchises and fiscal immunities of Bas against royal officers",
+    "Strengthen the Cabrera ring of castles across Girona to secure alpine toll revenues",
+    "Provide staunch military backing to the baronial league during clashes with the crown"
+  ],
+  "Values": [
+    "Feudal liberties won by ancestral blood cannot be alienated by royal decree",
+    "Dynastic unity and stone keeps are the only reliable shields against monarchy",
+    "A nobleman must stand faithfully by his feudal oaths and sworn kin"
+  ],
+  "Fears": [
+    "A royal army besieging Bas to annex the viscounty directly to the royal domain",
+    "Fratricidal division fracturing the House of Cabrera before royal pressure"
+  ],
+  "SpeechStyle": "Measured, grave, and assertive; speaks with the quiet defiance, legal precision, and unshakeable pride of an alpine Catalan viscount.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

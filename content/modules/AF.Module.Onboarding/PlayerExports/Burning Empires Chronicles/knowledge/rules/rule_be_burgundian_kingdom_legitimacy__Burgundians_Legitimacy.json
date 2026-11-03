@@ -1,0 +1,59 @@
+{
+  "Id": "be_burgundian_kingdom_legitimacy",
+  "Keywords": [
+    "Burgundians Legitimacy",
+    "Gebicca’s pledges and shares"
+  ],
+  "RagShortTexts": [
+    "Gebicca’s standing rests on success, reliability and shares.",
+    "Roman friendship does not replace local consent to service."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Standing comes from success, reliability and distribution. Roman friendship strengthens bargaining without making every chief accept the same service promise."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gebicca’s standing rests on success, reliability and shares. Military recognition also rests on rewards and relief; a title needs willing action. Roman friendship does not replace local consent to service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Roman friendship does not replace local consent to service. Nominal rights require local execution, with consent and supply both shaping authority. Gebicca’s standing rests on success, reliability and shares."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gebicca’s standing rests on success, reliability and shares. Households judge rule through protected families, land and responses to appeals. Roman friendship does not replace local consent to service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman friendship does not replace local consent to service. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Gebicca’s standing rests on success, reliability and shares."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_caledonian_kingdom_military",
+  "Keywords": [
+    "Picts Military",
+    "Pictish hill and coastal warfare"
+  ],
+  "RagShortTexts": [
+    "Hills and wetlands support dispersed movement.",
+    "Coastal war requires vessels, weather and safe routes home."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hills and wetlands favor dispersed movement; sailing needs wind, tides and landings. Roman war requires warnings, food and routes home rather than every guard marching south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Hills and wetlands support dispersed movement. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Coastal war requires vessels, weather and safe routes home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Coastal war requires vessels, weather and safe routes home. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Hills and wetlands support dispersed movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hills and wetlands support dispersed movement. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Coastal war requires vessels, weather and safe routes home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Coastal war requires vessels, weather and safe routes home. Repair, carrying and care also use people, while daily supply continues after troops pass. Hills and wetlands support dispersed movement."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

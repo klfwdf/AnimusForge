@@ -1,0 +1,52 @@
+{
+  "Id": "rule_smoked_black_ceramics_carburizing",
+  "Keywords": [
+    "firing dark pottery vessels",
+    "checking pots for cracks and leaks"
+  ],
+  "RagShortTexts": [
+    "Pots need suitable clay, forming, drying and firing, with colour affected by the fire.",
+    "A dark surface does not prove strength or watertightness; cracks and use still matter."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Potters prepare suitable clay, form vessels, dry them enough for firing and arrange fuel and kiln space. Excess damp, uneven heat or rapid cooling can crack a batch. Air and smoke alter surface colour, so dark, pale and mottled pots are not automatically ranked in quality.\n\nCooking, water storage and dry goods need different thicknesses, mouths and resistance to fire. Buyers inspect rims, bases, cracks and leakage; tapping or filling provides only part of a judgment. Packing needs cushioning, since one broken pot can damage others. Reusing a damaged vessel for dry goods still requires care over sharp edges and renewed heating."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Estate orders need uses and delivery losses specified beyond uniform colour. Fuel shortages and broken deliveries disrupt kitchens and storage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Marching cookware can crack in loading; inspection before departure prevents a leaking camp pot. Iron and clay have different carrying costs and fragility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families balance new pots against food money and intended use. Cheap imperfect ware serves only where its defects allow."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

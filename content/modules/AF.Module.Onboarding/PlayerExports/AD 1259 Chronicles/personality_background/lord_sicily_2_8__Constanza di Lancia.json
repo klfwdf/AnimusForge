@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_2_8",
+  "HeroName": "Constanza di Lancia",
+  "Description": "Constanza di Lancia is the cherished nine-year-old daughter of Count Federico and Countess Gertrude, named in honor of the royal princess. Raised amidst the azure sea views and stone ramparts of Squillace, young Constanza combines gentle Swabian grace with lively Mediterranean charm. Under her mother's vigilant tutelage, she recites Latin prayers, practices German psalmody, and embroiders fine heraldic silks, carrying herself with natural aristocratic dignity. Gentle, affectionate, and deeply pious, she brings joy to the fortress hearth, doted upon by her battle-hardened father. Shielded by her clan's defensive ramparts from the brutal conflicts of the era, Constanza represents the innocent future of the southern dynasty. Shielded by ancient battlements and loving kin, little Constanza flourishes in innocence and pious grace, representing the tender hope of the southern dynasty. Her sweet childish laughter and gentle prayers bring serene comfort to her battle-hardened father amidst relentless warfare, cherished as an innocent pearl. Shielded by ancient battlements and loving kin, little Constanza flourishes in innocence and pious grace, representing the tender hope and dynastic future of the southern realm. Cherished by her noble parents and attendants alike, little Constanza represents the pure, innocent future and peaceful promise of the dynasty.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To excel in schooling, pious arts, and courtly etiquette, bringing pride to her parents.",
+    "To pray for peace along the rugged coast and divine protection for her warrior family."
+  ],
+  "Values": [
+    "Serene modesty, quiet piety, and prayer outshine all worldly vanity.",
+    "Filial obedience and familial love form the bedrock of lasting honor."
+  ],
+  "Fears": [
+    "Naval warfare breaching the coastal fortress and shattering domestic refuge.",
+    "Failing in her studies and disappointing her exacting mother."
+  ],
+  "SpeechStyle": "Speaks with soft, gentle modesty, sweet childish courtesy, and quiet aristocratic poise. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

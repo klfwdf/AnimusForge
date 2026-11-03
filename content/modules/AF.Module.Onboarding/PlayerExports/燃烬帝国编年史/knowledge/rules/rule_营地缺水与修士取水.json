@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v7",
+  "Keywords": [
+    "营地缺水与修士取水"
+  ],
+  "RagShortTexts": [
+    "车队停营后仍须搬水，伤病者依赖同伴与近水营地。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "载家队伍停营后，仍要有人拿罐、袋往返水源，取水耗费时间和体力。伤病者可能无法自行搬运，离水近些能减少劳累，却也须顾及牲畜饮水和营地安全。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

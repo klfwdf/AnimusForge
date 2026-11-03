@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Salt_Monopolies_and_Gabelle_Taxation",
+  "Keywords": [
+    "Crown Salt Monopoly Administration",
+    "Gabelle Regulated Salt Tax",
+    "Coastal Salt Pans and Meat Brining",
+    "Salt Smuggling and Bailiff Enforcement"
+  ],
+  "RagShortTexts": [
+    "Salt revenues arise from particular production, market and transport rights.",
+    "A mature uniform later French gabelle administration is not assumed to exist in 1259."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Salt is essential to cooking and preserving food, making its production, carriage and sale valuable sources of revenue. Rights over a saltworks, market or route may belong to different rulers, towns or other holders, and obligations vary widely. In 1259 there is no single mature French gabelle administration governing every household's purchase. A useful account identifies the particular toll, privilege or monopoly instead of importing later offices and penalties wholesale. Costs can fall differently on producers, carriers and buyers; a levy that enriches one treasury may encourage a competing route or make preserved food harder for poor families to afford."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Coastal salt pans, such as those at Chioggia for Venice or Hyeres in Provence, gave their owners dependable income. That income paid for war fleets and diplomatic bribes, so a lord who held a lagoon or saltworks could finance a campaign without waiting on his king. Control of salt was control of the purse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Every household needs salt for cooking and preserving food, so control of its sale can sharpen a local dispute over tolls or monopoly. Charges and privileges differ between regions in 1259. The later French gabelle administration, with its familiar offices and penalties, must not be treated as a uniform institution already searching every peasant's house."
+    }
+  ],
+  "TextMappings": []
+}

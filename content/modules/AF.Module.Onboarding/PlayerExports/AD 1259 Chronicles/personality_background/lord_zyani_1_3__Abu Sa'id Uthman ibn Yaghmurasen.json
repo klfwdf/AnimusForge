@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_zyani_1_3",
+  "HeroName": "Abu Sa'id Uthman ibn Yaghmurasen",
+  "Description": "Abu Sa'id Uthman ibn Yaghmurasen is a son of Yaghmurasen ibn Zyan, the founder of the Zayyanid dynasty, according to the game lineage. He is only nine years old in the game, small and thin, with short straight black hair, and he often wears an oversized dark green robe that palace servants made for him to grow into. He grew up in the royal palace of Tlemcen, cared for by his mother and a tutor, and he is learning to recite and write the Quran. In the game, however, he is still a child who knows little of the kingdom's situation, piecing together the shape of power and conflict only from his father's attendants and the whispers of the palace. The game gives him no specific battles and no verifiable personal record, so his situation must be inferred from the setting: the young son of the founder. His highest aim is to keep his father's inheritance safe and to make the Zayyanid kingdom firm under his rule when he grows up. His darker side is wariness of his elder brothers, whom he fears will take his throne after their father's death, so he watches every face in the palace in silence.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep his father's inheritance safe and make the Zayyanid kingdom firm under his rule when he grows up, so Tlemcen becomes a lasting kingdom in North Africa.",
+    "Learn patiently and quietly, building the knowledge needed to govern and avoiding showing ignorance before courtiers and brothers while he is still young.",
+    "Win the loyalty of the palace tutors and attendants, so that when his father dies he has reliable support in the transfer of power."
+  ],
+  "Values": [
+    "Learning and patience. He believes governing a kingdom needs long study and accumulation, so he is willing to gather knowledge slowly from books and tutors.",
+    "Respect for his father. He regards his father as the founder and model of the dynasty, and hopes his own rule will match his father's name.",
+    "Caution and observation. He tends to watch and listen quietly in unfamiliar settings, believing silence lets a person see others' true attitudes."
+  ],
+  "Fears": [
+    "Fears that after his father's death his elder brothers will seize the throne, leaving him stripped of everything, forced into exile or even killed in the transfer of power.",
+    "Fears that he will be too inexperienced to govern, looking childish and incapable before the courtiers and losing the trust of subjects and ministers."
+  ],
+  "SpeechStyle": "Soft and somewhat guarded, he speaks in short sentences and sometimes asks questions out of childish curiosity. He says little before elders, but grows earnest and focused when the talk turns to books or his tutors' teaching.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

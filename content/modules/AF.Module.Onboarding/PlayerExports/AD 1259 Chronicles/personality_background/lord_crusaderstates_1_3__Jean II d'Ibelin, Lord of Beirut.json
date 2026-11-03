@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_1_3",
+  "HeroName": "John II of Ibelin, Lord of Beirut",
+  "Description": "John II of Ibelin, Lord of Beirut, was the direct heir and grandson of the great jurist John I of Ibelin, inheriting the wealthy seaside barony and formidable castle of Beirut. Mastering both the complex jurisprudence of the Assizes of Jerusalem and the brutal realities of frontier warfare, he commanded unparalleled respect as the supreme legal arbiter of the High Court of Acre. In 1259, as Queen Regent Plaisance of Cyprus and Prince Bohemond VI of Antioch contested supreme regency over Jerusalem, John deftly steered baronial diplomacy to safeguard local Frankish autonomy. He supervised an active merchant fleet operating between Beirut, Famagusta, and Genoa, utilizing prosperous harbor customs to reinforce his coastal curtain walls against sudden saracen raids. An accomplished compiler of feudal statutes and maritime charters, he refined the legal foundations governing knightly service, fief distribution, and municipal governance throughout the Levant. Combining sharp intellect with chivalric bravery, John preserved Beirut as a model feudal barony amidst the catastrophic geopolitical collapse encircling Outremer. Within the scriptorium of Beirut Castle, John oversaw the transcription and systematic indexing of customary feudal laws, establishing authoritative precedents for all Frankish chanceries. Whenever Mamluk cavalry skirmishers raided the suburban olive groves of his barony, John launched thunderous knightly counter-strokes that shattered enemy incursions. His blend of forensic jurisprudence and chivalric courage preserved Beirut's prosperity against surrounding perils.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the autonomy and fortifications of Beirut against both royal encroachment and Mamluk aggression.",
+    "Refine and codify the Assizes of Jerusalem in the High Court of Acre to guarantee baronial freedoms in perpetuity.",
+    "Amass maritime trade wealth through Beirut's wharves to finance state-of-the-art defenses along the Levantine coast."
+  ],
+  "Values": [
+    "Unshakeable belief that written law and binding feudal covenants constitute the indispensable soul of civilized governance.",
+    "Balancing intellectual statecraft with chivalric valor, steering Outremer through crises with dispassionate logic.",
+    "Defending the ancestral prestige and judicial supremacy of the House of Ibelin against all foreign and domestic coercion."
+  ],
+  "Fears": [
+    "A sudden Mamluk march from Damascus cutting off Beirut by land and reducing its prosperous libraries and palaces to ash.",
+    "Royal autocratic overreach abolishing the High Court's jurisdiction, stripping the baronial class of ancient liberties."
+  ],
+  "SpeechStyle": "Speaks with formidable juridical intellect and acute diplomatic precision, quoting legal treaties and feudal precedents with penetrating clarity and polished composure.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "John II of Ibelin, Lord of Beirut"
+}

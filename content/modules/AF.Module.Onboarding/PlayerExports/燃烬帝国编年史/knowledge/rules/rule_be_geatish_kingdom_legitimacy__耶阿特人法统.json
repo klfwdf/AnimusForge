@@ -1,0 +1,59 @@
+{
+  "Id": "be_geatish_kingdom_legitimacy",
+  "Keywords": [
+    "耶阿特人法统",
+    "吉苏尔的馈赠与家乡安全"
+  ],
+  "RagShortTexts": [
+    "馈赠、保护和伙伴承认支持Gissur。",
+    "船队归来而田地受损也会削弱首领威望。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "首领馈赠、保护和伙伴认可维持权威，出海的勇名要以家乡安全为支撑；船队回来了而田地荒了，也会损害威望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "馈赠、保护和伙伴承认支持Gissur。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。船队归来而田地受损也会削弱首领威望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "船队归来而田地受损也会削弱首领威望。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。馈赠、保护和伙伴承认支持Gissur。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "馈赠、保护和伙伴承认支持Gissur。家户通过家人、土地与求助能否获保护来认识统治。船队归来而田地受损也会削弱首领威望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "船队归来而田地受损也会削弱首领威望。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。馈赠、保护和伙伴承认支持Gissur。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

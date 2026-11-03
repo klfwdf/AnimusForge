@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_3_4_3",
+  "HeroName": "John Grenier",
+  "Description": "John Grenier was the younger son of Count Julian of Sidon and Princess Euphemia of Armenia, reared within the breathtaking ramparts of Beaufort and the port of Sidon. Inheriting his lineage's fierce chivalric spirit while absorbing from his mother's court a deep fascination with maritime navigation and chronicles, he combined courage with curiosity. Following the transfer of their familial strongholds to the Knights Templar, John accompanied his elder brother Balian to Acre, enlisting as a knightly squire in royal garrison service. In 1259, serving as an alert cavalry scout officer along the coastal highway, John repeatedly distinguished himself by repelling nocturnal Bedouin skirmishers with lance and crossbow. Refusing to surrender to dynastic melancholy over lost estates, he earned widespread affection among young Outremer knights for his cheerful bravery and open-hearted camaraderie. Determined to carve out his own fortune through sword and honor, John stood as an energetic exemplar of chivalric renewal amidst an embattled realm. While scouting coastal highways and river ferries, John operated with relentless vigilance, leading light cavalry patrols that dispersed predatory Bedouin raiders. His martial brilliance in joust and melee won him universal admiration among young Outremer knights who rallied behind his fearless leadership. Undaunted by dynastic hardship, he yearned for battlefield opportunities to prove that chivalric glory still flourished in the Latin East.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win martial distinction in frontline coastal campaigns around Acre to earn new hereditary fiefs through chivalric valor.",
+    "Serve as an unswervingly loyal tactical lieutenant to his elder brother Balian, defending familial honor through adversity.",
+    "Master maritime navigation and combined cavalry-crossbow tactics, becoming an accomplished amphibious commander."
+  ],
+  "Values": [
+    "True chivalric honor is forged through battlefield sweat and defending the vulnerable rather than hereditary paper titles.",
+    "Fraternal comradeship is sacred; never abandon a brother-in-arms in the heat of melee, living with courage and integrity.",
+    "Unwavering fidelity to Christian vows and lineage honor, confronting mortal peril with optimistic defiance."
+  ],
+  "Fears": [
+    "Languishing in tedious garrison routine, squandering his youth without reclaiming his family's chivalric glory.",
+    "The final catastrophic fall of Acre consuming his brothers-in-arms and extinguishing the Christian sanctuaries of Outremer."
+  ],
+  "SpeechStyle": "Speaks with brisk chivalric candor and youthful enthusiasm, discussing maritime expeditions and cavalry skirmishes with engaging openness and martial resolve.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "John Grenier"
+}

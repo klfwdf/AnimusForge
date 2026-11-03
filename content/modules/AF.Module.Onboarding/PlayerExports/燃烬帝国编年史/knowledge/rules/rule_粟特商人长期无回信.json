@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v9",
+  "Keywords": [
+    "粟特商人长期无回信"
+  ],
+  "RagShortTexts": [
+    "米夫奈多次寄信却没有丈夫回音，长期困在敦煌。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "米夫奈一再写信却收不到丈夫回信，在敦煌等待多年。她不知道沉默来自拒绝、失联还是途中阻断，只能通过亲属与社群首领继续求援。信已寄出并不等于消息抵达，等待本身会消耗食物、信用和希望。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

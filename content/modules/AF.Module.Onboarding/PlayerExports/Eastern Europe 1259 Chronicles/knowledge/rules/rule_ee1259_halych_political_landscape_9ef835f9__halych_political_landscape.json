@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_halych_political_landscape_9ef835f9",
+  "Keywords": [
+    "Princely Halych and its nobles",
+    "Petitions through kin at Halych"
+  ],
+  "RagShortTexts": [
+    "Princely authority at Halych needs nobles and church support amid competing family interests.",
+    "Aid, collections and property disputes need intermediaries and promises that are fulfilled."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At Halych, Romanovych standing intertwines with nobles, clergy and kin. Supporters may dispute land and offices, while outside help carries demands. Petitioners need intermediaries for protection or judgment. Excessive collections make later requests for support costlier in negotiation and resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Halych residents seek relatives, witnesses or introductions in land, debt and loss disputes. Waiting in town takes labor from home and costs lodging and gifts. Princely messages can bring opportunity, but families distinguish commitments from rumor before selling seed to meet an uncertain demand."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

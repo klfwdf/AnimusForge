@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v9",
+  "Keywords": [
+    "格内斯塔旁居住群"
+  ],
+  "RagShortTexts": [
+    "格内斯的石塔处在一群房屋之中，通道把不同居室连接起来。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "格内斯的石塔处在一群房屋之中，通道把不同居室连接起来。居民生活围绕炉火、储藏与通行组织，塔不能代表聚落全部空间。窄路让近邻关系紧密，也使搬运、清理和修缮需要协调。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_4_1",
+  "HeroName": "Euphemia de Clavering, Lady of Kilbride",
+  "Description": "Euphemia de Clavering is the noble Lady of Kilbride, wife to William Comyn and daughter of the illustrious Anglo-Norman baronial house of Warkworth in Northumberland. Graced with refined Northern chivalric charm and quick intellect, she carries the polished culture of the Plantagenet realm into the stone bastions of Clydeside. Her cross-border union serves as an indispensable bridge connecting the Scottish Comyns with the Marcher barons and the Earls of Dunbar. Northumbrian monastic chronicles commend her deep piety and exceptional manorial management, overseeing wool shearing revenues and textile commerce with acute skill. Despite her southern origins, Euphemia earned the genuine devotion of Kilbride retainers, governing castle domesticity and tenant courts with gracious impartiality during her husband's military campaigns. Acutely sensitive to Anglo-Scottish frontier tensions, she tempers William's martial impulses with diplomatic prudence and foresight. Family correspondence preserved at Warkworth Castle reveals Euphemia's tireless diplomatic mediation between her northern English kindred and Scottish in-laws; utilizing her sharp legal intellect and graceful French prose, she skillfully defused numerous border seizures and livestock impoundments, earning profound respect from Marcher wardens and local burghers on both sides of the Tweed for her unyielding integrity and fairness.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Oversee wool production and manorial revenues at Kilbride to ensure household wealth and comfort.",
+    "Maintain cordial familial ties with her Northumbrian kin to foster peace along the disputed border."
+  ],
+  "Values": [
+    "Values Christian charity, gracious hospitality, and compassionate justice toward manorial tenants.",
+    "Cherishes cross-border chivalric bonds, striving to harmonize English and Scottish noble interests."
+  ],
+  "Fears": [
+    "Dreads armed conflict between England and Scotland placing her loyalties between husband and kin.",
+    "Fears harvest failures or pestilence ravaging the prosperous tenant communities of Kilbride."
+  ],
+  "SpeechStyle": "Speaks with melodious Anglo-Norman refinement, warm and persuasive, combining courtly courtesy with practical good sense.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

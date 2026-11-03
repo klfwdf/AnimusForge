@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v9",
+  "Keywords": [
+    "Provisioning officers and public stores"
+  ],
+  "RagShortTexts": [
+    "Release, replacement and accounting for public grain required responsibility."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Release, replacement and accounting for public grain required responsibility. Hymetius’s case combined relief, financial scrutiny and political accusation. An office identified accountability without proving that a particular transaction was approved."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

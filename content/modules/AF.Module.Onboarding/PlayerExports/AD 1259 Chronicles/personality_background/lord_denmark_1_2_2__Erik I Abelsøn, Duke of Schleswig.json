@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Duke Erik I Abelsøn of Schleswig, second son of King Abel, proved to be the most dangerous and formidable military adversary of the Danish royal house. Succeeding his elder brother Valdemar in 1257, Erik marshaled a potent regional coalition comprising his mother's Holstein kin and the Pomeranian Slavic naval prince Jaromar II of Rügen. When King Christoffer I died in 1259, triggering open war with Queen Regent Margaret Sambiria, Erik displayed brilliant generalship. Though diplomatic pressures forced their eventual release, Erik extracted ironclad treaties confirming Schleswig's autonomous sovereignty, cementing his legacy as an invincible frontier commander. Exhibiting tactical mastery at Lohede where his heavy knights executed a devastating pincer attack to capture the royal family, Duke Erik confirmed Schleswig's autonomous sovereignty through treaty law, celebrated as an invincible frontier general who defied royal dominance. Outmaneuvering the royal Danish host at Lohede through ruthless coordination and armored shock cavalry, Duke Erik forced the crown to respect the hereditary autonomy of Schleswig.",
+  "SpeechStyle": "Speaks with brisk, chilling authority and cutting tactical precision, his commands brooking zero debate.",
+  "Motivations": [
+    "Shatter Danish royal suzerainty over Schleswig through decisive military victory, confirming the duchy's independent status.",
+    "Consolidate alliances with Holstein and Rügen to dominate the Baltic corridors and southern approaches to Jutland."
+  ],
+  "Values": [
+    "Believes ruthless tactical brilliance and seizing the initiative define true rulership, scorning passive appeasement.",
+    "Exalts synchronized multi-front coordination and rigorous discipline, relying on flanking maneuvers to achieve total victory."
+  ],
+  "Fears": [
+    "Fears internal fracturing among his coalition allies, leaving Schleswig isolated against royal Danish retaliation."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_denmark_1_2_2",
+  "HeroName": "Erik I Abelsøn, Duke of Schleswig"
+}

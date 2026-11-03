@@ -1,0 +1,59 @@
+{
+  "Id": "be_tanukhid_kingdom_economy",
+  "Keywords": [
+    "Tanukhids Trade",
+    "Palmyra pasture and caravan returns"
+  ],
+  "RagShortTexts": [
+    "Palmyra food, pasture and wells sustain Tanukhid kin.",
+    "Water shortage obstructs goods and animals together."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Palmyra food, pasture, wells and caravan exchange sustain kin. Service rewards and escort income matter, but water shortage stops cargo and animals together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Palmyra food, pasture and wells sustain Tanukhid kin. Traveling followers need real food from this production; valuables still require a buyer and exchange. Water shortage obstructs goods and animals together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Water shortage obstructs goods and animals together. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Palmyra food, pasture and wells sustain Tanukhid kin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Palmyra food, pasture and wells sustain Tanukhid kin. Households need meals and the means to keep producing after delivering goods. Water shortage obstructs goods and animals together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Water shortage obstructs goods and animals together. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Palmyra food, pasture and wells sustain Tanukhid kin."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

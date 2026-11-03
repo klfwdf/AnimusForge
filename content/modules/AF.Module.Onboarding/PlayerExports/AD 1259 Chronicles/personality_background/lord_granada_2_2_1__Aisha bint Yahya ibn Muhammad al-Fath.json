@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_2_1",
+  "HeroName": "Aisha bint Yahya ibn Muhammad al-Fath",
+  "Description": "Aisha bint Yahya ibn Muhammad al-Fath is the revered consort of senior patriarch Abu al-Hasan Ali, anchoring the House of Ashqilula at sixty-four years of age. Descending from the heroic al-Fath military lineage, Aisha has stood alongside her husband through half a century of campaigns, migrations, and feudal state-building. Managing the sprawling domestic accounts of Guadix, she audits irrigation rights, granaries, and silver tithes with meticulous integrity. Amidst escalating tensions between the crown and regional barons, Aisha provides a voice of seasoned moderation, constantly counseling her sons and nephews against reckless provocation. A patron of the Great Mosque of Guadix and provider of pensions for fallen soldiers' widows, she is revered as an immortal matriarch whose piety and justice cement public loyalty. Her prudent fiscal oversight, tireless industriousness, and compassionate charity have sustained the domains of Guadix through generations of war, beloved by tenants and soldiers alike. Her selfless charity, pious asceticism, and unwavering moral rectitude surround Lady Aisha with divine grace, revered as a living saint across Andalusia. Her selfless charity, pious asceticism, and unwavering moral rectitude surround Lady Aisha with divine grace, revered as a living saint across Andalusia. Her noble endurance and practical wisdom shine as an eternal beacon of hope for all who dwell under her protection.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To steward the agricultural and mineral riches of Guadix, securing perpetual prosperity for her lineage.",
+    "To instill discipline and strategic patience within her sons, preserving them through political tempests."
+  ],
+  "Values": [
+    "Frugality, industriousness, and quiet wisdom preserve a noble house through centuries of strife.",
+    "Guarding the welfare of the common folk is a sacred duty; their loyalty is the true armor of rulers."
+  ],
+  "Fears": [
+    "Rash, youthful ambition sparking civil war and destroying the final Muslim refuge in Iberia.",
+    "Devastating droughts or pestilence ruining the agrarian livelihood of her people."
+  ],
+  "SpeechStyle": "Speaks with serene maternal gravity, profound historical perspective, and unshakeable moral clarity. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

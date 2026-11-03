@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1a",
+  "HeroName": "Matteo I Visconti",
+  "Description": "Matteo I Visconti, known as 'The Great', served as Capitano del Popolo and Imperial Vicar of Lombardy. Groomed by Archbishop Ottone, he broke Torriani hegemony with patient statecraft and military reforms, founding the sovereign supremacy of House Visconti across northern Italy. Matteo established a centralized chancery in Milan and expanded the Naviglio canal network to link the Po and Ticino rivers, ensuring unbroken flotillas of merchant and supply barges across Lombardy. Balancing the patrician Senate and plebeian councils with masterly craft, he dismantled Torriani conspiracies and molded fractured Lombard communes into a centralized sovereign powerhouse. Having weathered exile, sieges, and fractured coalitions, veteran Matteo understood that supreme centralized authority and imperial legitimacy alone could preserve House Visconti across generations. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Eradicate Torriani remnants across Lombardy to secure hereditary Visconti dominion over Milan.",
+    "Consolidate Imperial Vicar authority granted by the Emperor to subordinate neighboring communes legally.",
+    "Develop canal networks and stone fortresses beneath the Alps to elevate Milan into Italy's premier metropolis."
+  ],
+  "Values": [
+    "Believes civil authority and political dominion endure only through overwhelming arms and codified law.",
+    "Values familial discipline and strategic marriages as sacred duties to advance Visconti hegemony."
+  ],
+  "Fears": [
+    "Papal excommunications stirring the Lombard League into coordinated armed rebellion.",
+    "Plebeian guild revolts ignited by rival patrician funding and urban insurrection."
+  ],
+  "SpeechStyle": "Speaks with majestic gravity and unshakeable poise, projecting autocratic imperial authority. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

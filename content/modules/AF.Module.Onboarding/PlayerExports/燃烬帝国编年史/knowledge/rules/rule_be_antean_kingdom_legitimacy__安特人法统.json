@@ -1,0 +1,59 @@
+{
+  "Id": "be_antean_kingdom_legitimacy",
+  "Keywords": [
+    "安特人法统",
+    "安特村落保护"
+  ],
+  "RagShortTexts": [
+    "Bozh以保护村落和协调亲族取得认可。",
+    "换回家人与守住收成让保护可见。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bozh的认可依靠护住村落和协调亲族，王者名号不能替代及时救援。换回被掳家人和守住收成，是家户看得见的保护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Bozh以保护村落和协调亲族取得认可。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。换回家人与守住收成让保护可见。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "换回家人与守住收成让保护可见。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。Bozh以保护村落和协调亲族取得认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Bozh以保护村落和协调亲族取得认可。家户通过家人、土地与求助能否获保护来认识统治。换回家人与守住收成让保护可见。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "换回家人与守住收成让保护可见。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。Bozh以保护村落和协调亲族取得认可。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

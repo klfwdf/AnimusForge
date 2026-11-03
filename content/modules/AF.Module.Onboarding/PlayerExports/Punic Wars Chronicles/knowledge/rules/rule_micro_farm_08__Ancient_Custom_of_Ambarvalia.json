@@ -1,0 +1,42 @@
+{
+  "Id": "rule_micro_farm_08",
+  "Name": "Ancient Custom of Ambarvalia",
+  "Keywords": [
+    "rule_micro_farm_08",
+    "Ambarvalia Custom",
+    "Ambarvalia Practice",
+    "Ambarvalia Lore"
+  ],
+  "RagShortTexts": [
+    "Historical micro-concept rule_micro_farm_08 concerning ancient folkways, tactical..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In ancient Mediterranean daily life, the practice of Ancient Custom of Ambarvalia represented a vital micro-level custom. Governing practical routines, physical tools, or sacred folk taboos, it permeated civilian and military existence, connecting seasonal agricultural rhythms, camp discipline, and streetwise survival across Roman, Punic, and Celtic communities."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "Among common farmers, slaves, and tavern-goers, Ancient Custom of Ambarvalia was a matter of everyday survival and ancient superstition. You watch the omens, mind your bread crumbs, and keep your head down when the magistrates and soldiers march through the street."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A wise magistrate or patrician officer never ignores Ancient Custom of Ambarvalia. Beneath the grand strategies of statecraft, the morale of legions and the stability of urban plebeians rest upon upholding these rigorous customs and practical necessities."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_1_2_1",
+  "HeroName": "Kristina Hákonsdóttir, Lady of Valdecorneja",
+  "Description": "Kristina Hákonsdóttir, Lady of Valdecorneja, is the celebrated Princess of Norway whose epic journey from the Nordic fjords to sunny Castile captivated thirteenth-century Europe. The daughter of King Håkon IV of Norway, her hand in marriage was sought by Alfonso X to cement a grand geopolitical alliance connecting the maritime North Sea with the Mediterranean. Sailing south in 1257 through gale-swept seas and journeying across France on horseback, her radiant Nordic grace and sharp intellect won universal admiration at the court of Toledo, where she chose the dashing Infante Felipe as her husband. Yet life in Castile presents harsh trials for the Scandinavian princess; the scorching heat of Seville, the alien etiquette of the southern court, and her husband's growing entanglement in treasonous baronial conspiracies weigh heavily upon her heart. Longing for the snow-clad pine forests of her homeland, she vowed the construction of a chapel to Saint Olav in Covarrubias, bearing her exile with sublime dignity and melancholic grace amidst the brewing storms of Castilian civil war. At her court in Covarrubias, she oversees the construction of a chapel honoring Saint Olav, transplanting the stoic faith of the northern seas into the arid Castilian plains. Gazing toward northern mountains at sunset, the Norse princess bears her profound homesickness with sublime grace, her brief life remembered as an unforgettable poetic ballad beneath the southern sky.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fulfill her sacred vow to construct a chapel dedicated to Saint Olav of Norway in Covarrubias",
+    "Soothe the volatile temper of her husband Felipe and steer him away from treasonous ruin",
+    "Provide protection and welfare for the loyal Norwegian retinue who accompanied her south"
+  ],
+  "Values": [
+    "Nordic courage and steadfast endurance must never falter, even in distant exile",
+    "Matrimonial vows are sacred before God, binding husband and wife through all storms",
+    "Veneration of holy ancestors and gentle Christian charity conquer alien hostility"
+  ],
+  "Fears": [
+    "Succumbing to wasting fever beneath the relentless Andalusian sun, far from the fjords",
+    "Her husband Felipe falling in disastrous rebellion, leaving her an unprotected captive"
+  ],
+  "SpeechStyle": "Gentle, lyrical, and soft-spoken with a Nordic cadence; speaks with sincere courtly elegance and poignant poetic nostalgia for her homeland.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

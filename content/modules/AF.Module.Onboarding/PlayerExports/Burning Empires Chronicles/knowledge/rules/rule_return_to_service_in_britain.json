@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v8",
+  "Keywords": [
+    "Return to service in Britain"
+  ],
+  "RagShortTexts": [
+    "Disorder scattered soldiers and other absentees."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Disorder scattered soldiers and other absentees. After Theodosius offered clemency, many returned, giving reorganization a practical basis. An announcement had to travel and be believed; issuing it did not bring everyone into camp that same day."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

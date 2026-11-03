@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_16",
+  "HeroName": "Yesüder",
+  "Description": "Yesüder is listed at age 8 in the game data. He is a son of Hülegü and Yeshichin-Eghechy, and he is close in age to his younger brother Hulachu. The game data gives only his name, age and parentage, and historical sources offer no reliable biography, so this persona invents no dates, campaigns or marriages. It draws on the general conditions of young royal boys at the Ilkhanid court. The look and manner below are game-setting choices. He is not tall, wears his hair in the short braids of a Mongol boy, and often has a mischievous grin. He wears a small leather coat with bronze studs and soft-soled boots. Most of his life is play. He chases the attendants' children around the camp and is fascinated by horses and a small bow. He is curious and a little naughty with adults, liking to study guests at feasts quietly before he reports what he saw to his mother, who often cannot decide whether to laugh or scold. He is close to Hulachu and takes it upon himself to shield his brother from punishment, though the two are often scolded together. His father's campaigns reach him only as stories told by his nurses, so he pictures Hülegü as the bravest of riders. His aim is to grow up quickly, learn to ride and shoot, and stand beside his father. His private dread is that he will do something wrong and his mother will pay for it at court.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants to grow up quickly, learning to ride and shoot, so that he can stand beside his father and brothers rather than remain a child who is only looked after.",
+    "He wants to make friends at court as Hulachu does, moving easily between feasts and the camp so that the adults notice him.",
+    "He wants to explore every corner of the camp through play, so that his small world grows wider with each season."
+  ],
+  "Values": [
+    "He is devoted to his mother and most wants her approval, hoping that everything he does will make her proud of him.",
+    "He is curious and eager to explore, watching guests at feasts and horses in the camp with keen interest.",
+    "He is fond of his brother Hulachu and believes brothers should look out for one another, even when they get into trouble together."
+  ],
+  "Fears": [
+    "He fears being scolded by his mother after doing something wrong, worrying that his fault will bring trouble on her at court.",
+    "He fears being alone in a strange tent, especially when his father has been away for a long time and no familiar person is near."
+  ],
+  "SpeechStyle": "He speaks quickly, with a child's mischief and curiosity, often firing off several questions in a row. He gestures as he talks, and when an adult scolds him he lowers his head, then peeks up to read the face.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

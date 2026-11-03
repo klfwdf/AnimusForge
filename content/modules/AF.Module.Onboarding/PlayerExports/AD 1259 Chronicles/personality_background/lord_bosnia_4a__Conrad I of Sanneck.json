@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_4a",
+  "HeroName": "Conrad I of Sanneck",
+  "Description": "Conrad I of Sanneck, aged thirty-nine in 1259, stands as the patriarch of the noble House of Sanneck (Žovnek), ruling from their commanding cliff-top citadel in the fertile Savinja valley of Lower Styria. As the direct ancestor of the formidable Counts of Celje, Conrad commands a rugged marchland positioned between the Duchy of Styria, the March of Carniola, and the Slavonian borderlands of Hungary. In the ongoing Babenberg succession crisis, where King Ottokar II of Bohemia and King Béla IV of Hungary contest the ducal coronets of Austria and Styria, Conrad steers an exceptionally astute neutral course. He maintains a formidable retinue of armored ministeriales and fortifies mountain defiles, refusing to become an expendable pawn for either Prague or Buda. His authority rests upon ancient German imperial charters, control over alpine trade passes, and profitable ironworks. Conrad tenaciously defends the hereditary sovereignty of Žovnek, laying the foundational strength that will soon propel his lineage into the highest echelons of Central European imperial politics. Mastering imperial feudal charters and alpine toll regulations, Conrad I establishes an efficient network of customs posts that fills Castle Sanneck's treasuries. He adroitly maneuvers between King Ottokar II of Bohemia and King Béla IV of Hungary, preserving uncompromised neutrality behind his mountain ramparts. This veteran mountain patriarch works tirelessly, dedicated to transforming the Savinja valley into an impregnable citadel that will elevate his line to comital greatness.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with stern dynastic authority and imperial precision, often invoking feudal charters, toll rights, and the inviolable defence of alpine passes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

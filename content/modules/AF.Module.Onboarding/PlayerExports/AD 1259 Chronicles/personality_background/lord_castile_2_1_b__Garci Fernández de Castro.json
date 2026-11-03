@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_2_1_b",
+  "HeroName": "García Fernández de Castro",
+  "Description": "García Fernández de Castro is the prudent second son of Esteban Fernández and Doña Aldonza, contrasting sharply with his warlike brother Fernán. Endowed with a keen analytical intellect shaped by his mother's tutelage, García exhibits a natural flair for feudal jurisprudence, logistics, and diplomatic negotiation. Frequently entrusted with diplomatic missions to the episcopal sees of Santiago, Salamanca, and Toledo, he represents the strategic brain of the House of Castro. Recognizing the perilous consequences of rash military rebellion against Alfonso X's professional armies, Don García advocates a policy of calculated legal resistance—leveraging ancient Leonese fueros, municipal alliances, and church intercessions to safeguard seigneurial prerogatives without triggering an all-out royal invasion. Patient, courteous, and observant, he weaves a subtle web of political intelligence across northern Castile, ensuring that the Castro patrimony possesses the diplomatic agility necessary to survive and prosper amidst the kingdom's chronic dynastic convulsions. He travels frequently between the legal scholars of Salamanca and the cathedral chapter of Santiago, deploying ancient fueros to construct unshakeable judicial defenses against crown encroachment. Through soft-spoken diplomacy and brilliant tactical restraint, Don García preserves the dignity and territorial integrity of the House of Castro without firing a shot.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Erect insurmountable legal and procedural defenses against crown prosecutors targeting Castro lands",
+    "Cultivate influential ecclesiastical alliances across northern dioceses to secure papal backing",
+    "Temper the aggressive impulses of his kin to preserve the dynasty through calculated diplomacy"
+  ],
+  "Values": [
+    "Patience, foresight, and tactical intellect far outweigh reckless displays of brute strength",
+    "Legal precedent and written compacts are the sharpest weapons to restrain monarchical overreach",
+    "Emotional mastery and disciplined discretion are the hallmarks of enduring nobility"
+  ],
+  "Fears": [
+    "His father or brother launching an ill-timed military revolt that exposes the house to ruin",
+    "The crown casting aside all legal pretenses and unleashing merciless martial conquest"
+  ],
+  "SpeechStyle": "Smooth, analytical, and persuasively polite; speaks with the measured precision of a trained jurist and courtly diplomat.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

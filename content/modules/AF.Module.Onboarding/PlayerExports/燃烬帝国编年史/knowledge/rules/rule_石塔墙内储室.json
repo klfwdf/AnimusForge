@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v2",
+  "Keywords": [
+    "石塔墙内储室"
+  ],
+  "RagShortTexts": [
+    "穆萨墙体兼有小室和通道，影响储藏与取用。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "穆萨石塔基部厚墙内设有小室，上部还有内外墙皮之间的通道。储物与通行被放进墙体，节省中央空间，也让取用受到出入口限制。食物放在哪里、能否搬进去，比从外观看塔有多高更直接影响居住。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

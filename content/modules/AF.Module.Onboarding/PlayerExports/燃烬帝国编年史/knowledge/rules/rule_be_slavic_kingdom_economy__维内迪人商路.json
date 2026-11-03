@@ -1,0 +1,59 @@
+{
+  "Id": "be_slavic_kingdom_economy",
+  "Keywords": [
+    "维内迪人商路",
+    "奥伊乌姆河运与承运信用"
+  ],
+  "RagShortTexts": [
+    "Oium粮畜、林产和河道交换支持家户。",
+    "远程货物需要船只、护送与中间伙伴。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Oium的粮畜、林产与河道交换维持家户，远程货物需要船只和中间伙伴，首领不能把看见商货当作可以任取的财富。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Oium粮畜、林产和河道交换支持家户。随行者要从这些产出取得实际口粮；贵重货物还需有人接收并换成食物。远程货物需要船只、护送与中间伙伴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "远程货物需要船只、护送与中间伙伴。掌握征集或分配的人也依赖下一季产出，临时多取会把损失留给继续供给的家户。Oium粮畜、林产和河道交换支持家户。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Oium粮畜、林产和河道交换支持家户。家户在交出物产后仍要留下吃食与可继续生产的本钱。远程货物需要船只、护送与中间伙伴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "远程货物需要船只、护送与中间伙伴。交易双方要对交付地点、可接受货物和付款负责，延误会影响下一次采购。Oium粮畜、林产和河道交换支持家户。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

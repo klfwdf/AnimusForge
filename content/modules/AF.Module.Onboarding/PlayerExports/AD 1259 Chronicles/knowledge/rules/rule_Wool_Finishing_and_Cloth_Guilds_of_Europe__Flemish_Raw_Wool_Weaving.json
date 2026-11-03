@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Wool_Finishing_and_Cloth_Guilds_of_Europe",
+  "Keywords": [
+    "Flemish Raw Wool Weaving",
+    "Arte di Calimala Dyeing Guild",
+    "Woad Blue and Madder Red Dyes",
+    "Water Powered Fulling Mill Technology"
+  ],
+  "RagShortTexts": [
+    "Wool manufacture was the economic base of Western Europe's towns and trade.",
+    "The whole chain, from sheep to market, depended on credit and on the trust of distant partners."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wool manufacture was the economic base of Western Europe's towns and trade. English abbeys and great landowners sold raw fleece to the merchants of Flanders, where the cloth towns of Ghent and Ypres spun and wove it into fine broadcloth. Some finished cloth then moved south to Florence, where the Arte di Calimala handled the finishing trade, fulling the cloth under water-powered mills and dyeing it in luxury colors with woad, madder, and alum as mordants. The Florentine wool merchants sold their finished bolts across the Mediterranean and through the fairs of Champagne, and their profits supported banking houses that lent money to kings. The whole chain, from sheep to market, depended on credit and on the trust of distant partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Wool revenues shaped royal policy. English customs on wool sacks paid for the Plantagenet wars, and the crown leaned on the wool trade for loans and tax income. Merchant syndicates cleared exchange at the Champagne fairs, and a lord with flocks on his estates had a direct stake in the export duties that the king set each year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A textile household divides work among spinning, carrying yarn, weaving and finishing according to local practice and available equipment. Payment for one task may be all that stands between the family and debt. Mills assist some processes, but not every town or workshop uses the same machinery. Dust, water, fatigue and rejected cloth shape earnings more directly than a guild's proud name."
+    }
+  ],
+  "TextMappings": []
+}

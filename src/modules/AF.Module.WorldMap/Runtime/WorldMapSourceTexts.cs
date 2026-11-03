@@ -9,17 +9,12 @@ namespace AnimusForge;
 // Queue identities and saved facts remain invariant across UI and content languages.
 internal static class WorldMapSourceTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(() =>
-    {
-        var result = new Dictionary<string, string>(StringComparer.Ordinal);
-        var source = JObject.Parse(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("WorldMapCompatibility.json"), Encoding.UTF8));
-        foreach (var section in source.Properties())
-            if (section.Value is JObject entries)
-                foreach (var entry in entries.Properties())
-                    result.Add(section.Name + "." + entry.Name, (string)entry.Value);
-        return result;
-    });
+    private static readonly BilingualTextTable Table =
+        BilingualTextTable.FromModuleData("WorldMapCompatibility.json", BilingualTextTable.ParseSections);
 
-    internal static string Get(string key) => Values.Value[key];
+    internal static string Get(string id) => Table.Get(id);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string Source(string id) => Table.Chinese(id);
+    internal static string[] Variants(string id) => Table.Variants(id);
+    internal static bool Is(string value, string id) => Table.Is(value, id);
 }

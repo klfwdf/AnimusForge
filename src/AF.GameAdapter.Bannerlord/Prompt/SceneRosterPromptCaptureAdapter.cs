@@ -469,11 +469,11 @@ internal static void AggregateRosterForPrompt(TroopRoster roster, bool excludeHe
 
 					string label = PartyAssetTransferBannerlordAdapter.GetPartyTransferTroopTypeLabelForExternal(character);
 
-					if (label == AdapterPromptCaptureTexts.PcapCompat("PromptCompat_58798cdd0ce4")) cavalry += count;
+					if (AdapterPromptCaptureTexts.IsPcapCompat(label, "PromptCompat_58798cdd0ce4") || EconomySourceTexts.Is(label, "PartyAsset_Cavalry")) cavalry += count;
 
-						else if (label == AdapterPromptCaptureTexts.PcapCompat("PromptCompat_46435cf51142")) archer += count;
+						else if (AdapterPromptCaptureTexts.IsPcapCompat(label, "PromptCompat_46435cf51142") || EconomySourceTexts.Is(label, "PartyAsset_Ranged")) archer += count;
 
-						else if (label == AdapterPromptCaptureTexts.PcapCompat("PromptCompat_f3ecd4cb98f0")) horseArcher += count;
+						else if (AdapterPromptCaptureTexts.IsPcapCompat(label, "PromptCompat_f3ecd4cb98f0") || EconomySourceTexts.Is(label, "PartyAsset_HorseArcher")) horseArcher += count;
 
 						else infantry += count;
 

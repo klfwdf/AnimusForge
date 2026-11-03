@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_6_1_a",
+  "HeroName": "Jadwiga Śląska",
+  "Description": "Jadwiga of Silesia reigns as an esteemed noble princess of the House of Piast, daughter of Duke Henryk III the White and Judith of Masovia, and full sister to the celebrated Duke Henryk IV Probus. Deeply inspired by the saintly mantle of her great-grandmother, Saint Hedwig of Silesia, young Jadwiga was educated in Christian scriptural commentaries, Latin chancellery arts, and imperial German genealogical heraldry. Witnessing her mother's valiant solitary defense of the Duchy of Wrocław following her father's early death, Jadwiga developed deep administrative poise and a profound understanding of dynastic responsibility. Her subsequent marriage to Count Otto I of Anhalt-Aschersleben wove the regal heritage of the Silesian Piasts into the foremost Ascanian lineages of the Holy Roman Empire, forming an enduring bridge between Germany and Poland. She generously endowed Poor Clares convents and municipal hospices, earning boundless affection from patricians and cottars alike through her selfless charity. Jadwiga shines as a pure white lily of the court of Wrocław, gracing European statecraft with tranquil virtue and Christian dignity. Jadwiga founded apothecary dispensaries across her Anhalt manors, distributing medicine and bread to cottars. Her holy virtue elevated the international prestige of the Silesian Piasts throughout imperial Germany.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Form an enduring dynastic alliance with the House of Ascania to secure imperial support for her brother Henryk IV.",
+    "Embrace ascetic charity, channeling wealth into rural hospices and monastic foundations to heal war victims.",
+    "Serve as a harmonious diplomatic conduit between German and Polish realms, elevating the renown of her house."
+  ],
+  "Values": [
+    "Hold Gospel charity, steadfast faith, and familial harmony as supreme virtues, condemning cruelty.",
+    "Prize quiet humility, dignified self-restraint, and pious contemplation above hollow temporal luxuries.",
+    "Fulfill her dynastic duties with unshakeable grace, ministering to the vulnerable with maternal devotion."
+  ],
+  "Fears": [
+    "Her beloved brother Henryk IV falling victim to cowardly poison amidst vicious baronial power struggles.",
+    "Lawless mercenary bands pillaging sacred cloisters and brutalizing consecrated nuns across the province."
+  ],
+  "SpeechStyle": "True noble blood is glorified through sacred virtue and compassionate love; may heavenly grace heal the wounds torn by human greed. Mercy soothes all grief; heavenly grace illuminates our dynastic heritage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

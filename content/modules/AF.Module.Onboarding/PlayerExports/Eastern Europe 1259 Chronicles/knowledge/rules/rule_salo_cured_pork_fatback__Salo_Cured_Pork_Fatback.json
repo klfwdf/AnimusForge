@@ -1,0 +1,52 @@
+{
+  "Id": "rule_salo_cured_pork_fatback",
+  "Keywords": [
+    "salting pork fat for storage",
+    "dividing pork and observing fasts"
+  ],
+  "RagShortTexts": [
+    "Pork and fat can be divided and salted, with keeping affected by salt, damp and vessels.",
+    "Wealth, custom and fasts govern access to meat and fat rather than universal daily use."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Keeping a pig invests food, space and labour in an animal. Slaughter then requires prompt division among meat, fat, hide and offal. Salt can help keep thick fatty portions, subject to adequate salt, suitable vessels and storage. A sound-looking surface does not prove the whole piece keeps well, so smell and spoilage need checking.\n\nFat can flavour grain food or serve as a gift or exchange, but poor homes may have little spare. Christian fasts alter when meat and fat are eaten, while illness, guests and workers raise questions of shares. Selling some for grain competes with winter food, and borrowed salt or slaughter help creates debts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Estate dues distinguish fresh and preserved meat, whose value changes with delay. Demand shifts around fasts and requires real provisioning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travel meat needs protection and inspection for spoilage. Salted fat does not replace all rations, and water and grain remain necessary."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families separate immediate portions from winter stores and reward helpers. Expensive salt creates a choice between preserving meat and buying staples."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v10",
+  "Keywords": [
+    "Named offices and their holders"
+  ],
+  "RagShortTexts": [
+    "Administrative identification required person, office, place and time."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mistaken arrests and journeys to locate emperors show that administrative information needed person, office, place and time. Different holders could succeed one another, and officials traveled. A title alone was not a present location."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

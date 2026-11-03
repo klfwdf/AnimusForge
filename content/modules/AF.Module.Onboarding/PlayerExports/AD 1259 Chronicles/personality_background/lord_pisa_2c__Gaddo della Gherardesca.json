@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_2c",
+  "HeroName": "Gaddo della Gherardesca",
+  "Description": "Gaddo della Gherardesca is the eldest son of Count Ugolino and a valiant knight of Pisa, forever immortalized in Dante's Inferno by his agonizing cry in the Muda tower: 'My father, why do you not help me?'. Brave, dutiful, and devoted, he campaigned fiercely alongside his father to defend the commune. Gaddo defended the sea gates of Pisa aboard battle galleys, repeatedly leading boarding parties through storms of crossbow bolts to capture enemy ensigns with dazzling martial valor. Devoted body and soul to Count Ugolino, he held the palace gate with unsheathed sword when armed mobs stormed the civic center, standing as an unyielding shield before his father. A magnificent knight destroyed by the savage machinery of factional hatred, his agonizing death within the Muda tower echoes down centuries as literature's most heartbreaking tragedy. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend his father's cause in the field and eliminate all factional rebels.",
+    "Uphold the martial renown of House Gherardesca with his sword and life."
+  ],
+  "Values": [
+    "Obedience to paternal command and defense of lineage form the sacred knightly code.",
+    "Better to perish gloriously on the battlefield than endure dishonorable surrender."
+  ],
+  "Fears": [
+    "Becoming entrapped within a fatal political conspiracy that destroys his house.",
+    "Being unable to protect his younger siblings and nephews in the hour of darkness."
+  ],
+  "SpeechStyle": "Speaks with earnest martial fortitude and filial devotion, unswervingly loyal to his father. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

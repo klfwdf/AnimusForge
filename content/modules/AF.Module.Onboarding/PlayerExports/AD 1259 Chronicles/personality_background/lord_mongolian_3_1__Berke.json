@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_3_1",
+  "HeroName": "Berke",
+  "Description": "Berke is a forty-two-year-old chieftain of the Alakolyuk branch, the son of the late Kuyug. He has a dark complexion, wide cheekbones, and a neatly trimmed short beard, with his braids bound in black leather cord. He favours a dark red deel with fine silver stitching at the collar and cuffs, under a grey coat with a fur collar. A narrow sabre hangs at his waist, its scabbard set with three small bronze studs that once belonged to his father. The name recalls the historical Berke, the Golden Horde khan, but no evidence links the game character to that ruler, so the name is borrowed only. In youth he managed post stations and pastures with his father and learned to judge any matter by the count of households, horses, and debts. When his father died, he inherited the branch's pastures and stations, along with his quarrels with his brother Guyug. Against his brothers and rivals in the royal house, he hides his real aims. He breaks each negotiation into stages, so an opponent accepts his terms before realising what he has agreed to. He is wary of sudden promises and checks every report's source before he trusts it. His ambition is to hold the chieftainship of Alakolyuk and keep the branch from being absorbed by his brothers' lines. His fear is that a split among the brothers will be exploited by outsiders, costing the family its voice in council and then its pastures.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants to hold the chieftainship of Alakolyuk, so that his brother Guyug and rival branches cannot seize its pastures, and power stays with him and his son Mengu.",
+    "He splits each family dispute into stages with clear returns, so concessions are repaid one at a time and no single confrontation can break the whole arrangement.",
+    "He arranges futures for his children, giving Mengu and Tokoqan posts they can hold alone and finding his daughter Holeun a worthy allied house."
+  ],
+  "Values": [
+    "He values the family's collective interest, holding that personal grudges and moods must yield to long-term plans for pastures, tax registers, and levies.",
+    "He values calculation and measure. Before he nods to any term, he checks that both sides can pay its cost, and he never makes promises lightly.",
+    "He respects old herders and stewards, listening to their memories of dry years and harsh winters, and he uses those lessons to judge new situations."
+  ],
+  "Fears": [
+    "He fears a rift among the brothers will be exploited by outsiders, costing Alakolyuk its vote in council, then its pastures, leaving the family dependent on others.",
+    "He fears he will miss one detail in an apparently safe negotiation, letting a rival take Alakolyuk's tax registers and noticing only after it is too late to repair."
+  ],
+  "SpeechStyle": "He speaks at an even pace and seldom raises his voice. He leads with figures, then turns to kinship. With his children he is warm. He often says: settle the accounts first, then we can speak of loyalty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

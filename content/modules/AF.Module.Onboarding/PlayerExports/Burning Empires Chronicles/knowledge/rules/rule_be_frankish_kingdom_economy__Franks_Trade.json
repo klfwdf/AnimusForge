@@ -1,0 +1,59 @@
+{
+  "Id": "be_frankish_kingdom_economy",
+  "Keywords": [
+    "Franks Trade",
+    "Lower Rhine markets and service income"
+  ],
+  "RagShortTexts": [
+    "Lower Rhine food, herds and crafts reach Roman exchange through markets.",
+    "Closed markets harm both Frankish warbands and farmers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lower Rhine fields, herds and crafts reach Roman exchange through markets; some households benefit from service and cross-border links. Closed markets deprive fighters and cultivators of supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lower Rhine food, herds and crafts reach Roman exchange through markets. Traveling followers need real food from this production; valuables still require a buyer and exchange. Closed markets harm both Frankish warbands and farmers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Closed markets harm both Frankish warbands and farmers. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Lower Rhine food, herds and crafts reach Roman exchange through markets."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Lower Rhine food, herds and crafts reach Roman exchange through markets. Households need meals and the means to keep producing after delivering goods. Closed markets harm both Frankish warbands and farmers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Closed markets harm both Frankish warbands and farmers. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Lower Rhine food, herds and crafts reach Roman exchange through markets."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

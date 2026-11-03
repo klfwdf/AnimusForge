@@ -72,9 +72,9 @@ internal static class DiplomacyDialogueStatusUi
     // and its identity remain untouched; unknown/player/model text is opaque.
     internal static string ProjectFactForUi(string body)
     {
-        if (body == DiplomacyCompatibilityTexts.Get("OralGeneration_DelayedFact"))
+        if (DiplomacyCompatibilityTexts.Is(body, "OralGeneration_DelayedFact"))
             return DiplomacyUiLocalization.Text("AF_DIP_UI_OralGeneration_DelayedFact", "The diplomatic declaration previously promised has not yet been published and awaits redrafting; the agreed terms have not changed.");
-        if (body == DiplomacyCompatibilityTexts.Get("OralGeneration_WithdrawalFact"))
+        if (DiplomacyCompatibilityTexts.Is(body, "OralGeneration_WithdrawalFact"))
             return DiplomacyUiLocalization.Text("AF_DIP_UI_OralGeneration_WithdrawalFact", "I have explicitly agreed to withdraw the earlier public diplomatic proposal, pending publication of the formal withdrawal declaration; the original proposal has not become invalid as a result yet.");
         return body;
     }
@@ -82,7 +82,9 @@ internal static class DiplomacyDialogueStatusUi
     private static string ProjectState(string status)
     {
         // Only exact generated state tokens are projected. User reasons stay untouched.
-        string token = status.EndsWith("。", StringComparison.Ordinal) ? status.Substring(0, status.Length - 1) : status;
+        // The trailing full stop follows the language the receipt was written in.
+        string token = status.EndsWith("\u3002", StringComparison.Ordinal) || status.EndsWith(".", StringComparison.Ordinal)
+            ? status.Substring(0, status.Length - 1) : status;
         return token switch
         {
             "accepted" => DiplomacyUiLocalization.Text("AF_DIP_STATUS_State_accepted", "accepted; not yet published"),

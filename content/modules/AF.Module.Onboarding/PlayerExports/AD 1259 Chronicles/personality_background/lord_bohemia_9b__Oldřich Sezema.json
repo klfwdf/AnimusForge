@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_9b",
+  "HeroName": "Oldřich Sezema",
+  "Description": "Oldřich Sezema is the martial vanguard and stalwart cavalry commander of the House of Sezema, defending the bustling river approaches of Sezimovo Ústí with aggressive valor. Possessing immense physical prowess and mastering the heavy lance, warhammer, and greatsword, Oldřich led Bohemian feudal contingents during King Otakar's punitive operations across the Austrian marches and Moravian borderlands. Unlike the deliberate caution of his elder kinsmen, Oldřich possesses a bold, fiery temperament, believing that aggressive preemptive strikes are the surest method to crush trespassing brigands and predatory German mercenaries. He personally drilled a mobile quick-response squadron of thirty ironclad lances and over a hundred stalwart billmen, capable of deploying to any threatened river bend or forest pass within hours of an alarm. Though occasionally impetuous in temper, his devotion to the security of his family and lands is absolute, consistently positioning himself at the very point of the wedge during cavalry countercharges. He thirsts for opportunities on grander battlefields, eager to elevate the renown of the Sezema line through undeniable martial feats. Oldřich constantly patrolled dense woodlands and muddy riverbanks, personally slaying notorious Bavarian highwaymen who dared raid border convoys. Longing to achieve immortal glory in the royal armies, he swore to elevate the House of Sezema through the unstoppable might of his lance.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Achieve distinguished martial feats under the royal banner, securing hereditary knightly manors and titles for his house.",
+    "Ruthlessly purge all robber knights and hostile scouts from the surrounding forests to guarantee absolute regional peace.",
+    "Forge the most responsive and formidable cavalry strike detachment in southern Bohemia to counter sudden invasions."
+  ],
+  "Values": [
+    "Prize unflinching physical bravery and warrior spirit, despising cowardly indecision as a stain upon chivalry.",
+    "Maintain fierce loyalty to his ancestral bloodline, viewing any slight against his family as a mortal offense.",
+    "Lead every charge in person, never asking his men-at-arms to face a hazard he has not boldly confronted first."
+  ],
+  "Fears": [
+    "Being lured into an enemy ambush through reckless impetuosity, costing the lives of his devoted brothers-in-arms.",
+    "Languishing in tedious garrison duties while grand wars of glory are fought and won without his lance."
+  ],
+  "SpeechStyle": "Words are wasted upon marauding thieves and border scum; a crushing lance charge is the only language they respect! Our blades stay sharp. Courage demands action; our blades defend our name against all foes!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

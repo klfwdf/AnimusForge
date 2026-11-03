@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v3",
+  "Keywords": [
+    "穆萨墙内楼梯"
+  ],
+  "RagShortTexts": [
+    "穆萨的狭窄石阶藏在墙内，中途有平台，通往上层。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "穆萨的狭窄石阶藏在墙内，中途有平台，通往上层。人和货物攀登时必须顺次通行，手持重物会更加困难。上层空间的使用依赖这条路线，不是把外墙加高就能不受限制地增加居住与守望人数。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

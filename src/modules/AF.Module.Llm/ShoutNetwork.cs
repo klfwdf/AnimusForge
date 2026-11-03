@@ -884,7 +884,7 @@ public static class ShoutNetwork
 							["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
 						});
 						Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
-						string parseError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ApiResponseFormatErrorPrefix") + parseEx.Message + "）", "", str);
+						string parseError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ApiResponseFormatErrorPrefix") + parseEx.Message + LlmSourceTexts.Get("ErrorSuffix"), "", str);
 						FreezeWatchdog.Mark("PrimaryChat.non_stream.parse_error", "elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 						if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), parseError))
 						{
@@ -927,7 +927,7 @@ public static class ShoutNetwork
 				["type"] = ex.GetType().Name
 			});
 			Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
-			string exceptionError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ProgramErrorPrefix") + ex.Message + "）", "");
+			string exceptionError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ProgramErrorPrefix") + ex.Message + LlmSourceTexts.Get("ErrorSuffix"), "");
 			FreezeWatchdog.Mark("PrimaryChat.non_stream.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), exceptionError))
 			{
@@ -1247,7 +1247,7 @@ public static class ShoutNetwork
 						["type"] = lastStreamException.GetType().Name
 					});
 					Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-					string streamError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ProgramErrorPrefix") + lastStreamException.Message + "）", fullText.ToString(), rawStreamResponse.ToString());
+					string streamError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ProgramErrorPrefix") + lastStreamException.Message + LlmSourceTexts.Get("ErrorSuffix"), fullText.ToString(), rawStreamResponse.ToString());
 					FreezeWatchdog.Mark("PrimaryChat.stream.exception_no_content", lastStreamException.GetType().Name + ": " + lastStreamException.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 					if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), streamError))
 					{
@@ -1377,7 +1377,7 @@ public static class ShoutNetwork
 					["type"] = ex3.GetType().Name
 				});
 				Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-				string streamError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ProgramErrorPrefix") + ex3.Message + "）", "", rawStreamResponse.ToString());
+				string streamError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ProgramErrorPrefix") + ex3.Message + LlmSourceTexts.Get("ErrorSuffix"), "", rawStreamResponse.ToString());
 				FreezeWatchdog.Mark("PrimaryChat.stream.exception", ex3.GetType().Name + ": " + ex3.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), streamError))
 				{

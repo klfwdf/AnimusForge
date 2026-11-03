@@ -1,0 +1,59 @@
+{
+  "Id": "be_sarmatian_kingdom_internal",
+  "Keywords": [
+    "Sarmatians Nobility",
+    "Sarmatian mounted kin and weaker households"
+  ],
+  "RagShortTexts": [
+    "Kasagos coordinates mounted families and kin partners.",
+    "Alans and Jazyges have separate chiefs; aid needs separate negotiation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kasagos joins mounted families and kin partners. Alans and Jazyges have separate leaders; aid needs defined terms rather than assumed common customs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kasagos coordinates mounted families and kin partners. Followers retain family ties; decisions about guards and distant service affect common participation. Alans and Jazyges have separate chiefs; aid needs separate negotiation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Alans and Jazyges have separate chiefs; aid needs separate negotiation. Coordination allocates actual supply and protection duties, not merely titles. Kasagos coordinates mounted families and kin partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kasagos coordinates mounted families and kin partners. Households compare burdens with neighbors; unmatched protection weakens cooperation. Alans and Jazyges have separate chiefs; aid needs separate negotiation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Alans and Jazyges have separate chiefs; aid needs separate negotiation. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Kasagos coordinates mounted families and kin partners."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

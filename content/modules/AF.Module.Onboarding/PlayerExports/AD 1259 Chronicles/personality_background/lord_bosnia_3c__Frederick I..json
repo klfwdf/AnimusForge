@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_3c",
+  "HeroName": "Frederick I.",
+  "Description": "Frederick I (Fridrik Frankopan), aged twenty-nine in 1259, is the capable eldest son and heir of Count Jerindo I, governing the vital continental march of Vinodol and the inland fortress of Modruš. Robust, chivalrous, and a master of naval boarding tactics and mountain fortification, he stands as the preeminent military champion of the House of Frankopan. Anchored in the fertile Vinodol valley, Frederick commands seasoned island marines and light border cavalry, fiercely guarding the commercial highways leading into continental Croatia. Just in his judicial administration and relentless against corsairs, he proved his tactical brilliance in numerous Adriatic skirmishes. In 1259, Frederick mobilizes his coastal bastions, ready to unleash his forces against any rival attempting to infringe upon the ancient liberties of his dynasty. Frederick I combines maritime naval tactics with heavy armored cavalry charges, commanding elite war galleys that protect Kvarner trade routes from corsairs. Stern and unyielding regarding his comital privileges, he defends his family's hereditary charters with fierce determination. This dynamic commander stands eager to inherit his father's vast maritime realm, ready to plant the Frankopan lion upon every coastal stronghold. Resolute in defense of comital rights, Frederick commands his war galleys with fierce pride, ready to sweep corsairs and rival fleets from the waters of Kvarner.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Commands with resonant soldierly authority and crisp naval clarity, decisive and bold, inspiring fierce fidelity among his troops.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3k",
+  "HeroName": "Giulia Napoleone della Torre",
+  "Description": "Giulia Napoleone della Torre, daughter of Napo and Marguerite de Baux, experienced the height of Milanese luxury followed by the catastrophe of Desio. Tempered by sudden exile, she guided the survival of the Torriani line across Venice and Friuli with heroic fortitude. Giulia fled toward Venetian sanctuaries following the disaster of Desio, spinning wool to sustain displaced retainers while coordinating northern diplomatic networks with Patriarch Raimondo. Drafting diplomatic appeals to European princes in Friuli, she addressed the Venetian Great Council on behalf of the Torriani, seeking strategic support to restore her disinherited house. Tempered by tragic misfortune, young Giulia concealed grief behind unbending resolve, dedicating her life in exile to the righteous restoration of House della Torre. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Rally Torriani kindred in the Patriarchate of Aquileia to establish secure northern refuges.",
+    "Sustain her displaced mother and younger siblings in exile with uncompromising noble pride.",
+    "Forge vengeance pacts under Venetian protection to avenge the catastrophic humiliation of Desio."
+  ],
+  "Values": [
+    "Believes exile and tragedy are divine crucibles that forge indestructible dynasties.",
+    "Holds loyalty to kin and sacred remembrance of ancestral martyrdom as an inviolable faith."
+  ],
+  "Fears": [
+    "Visconti bravos tracking down and assassinating surviving Torriani heirs in exile.",
+    "Younger relatives losing their chivalric resolve amidst long years of impoverished obscurity."
+  ],
+  "SpeechStyle": "Speaks with poignant sorrow and diamond-hard resolve, maintaining royal poise. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

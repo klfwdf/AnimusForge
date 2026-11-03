@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_1b",
+  "HeroName": "Elizabeth of Slavonia",
+  "Description": "Elizabeth of Slavonia, aged forty in 1259, is the formidable Baness consort of Bosnia, hailing from the high aristocracy of Slavonia under the Crown of Saint Stephen. Her marriage served as the critical diplomatic linchpin securing Hungarian royal favor for the Banate of Bosnia. Astute, devout, and politically influential, Elizabeth brought Western courtly manners and administrative discipline to the highland citadel of Bobovac. Managing domestic accounts and regional salt tariffs, she frequently interceded with King Béla IV of Hungary to forestall destructive inquisitorial crackdowns against Bosnia. In 1259, she supervises the knightly and diplomatic education of her young sons Stephen and Prijezda II, providing the domestic and political bedrock anchoring the nascent Kotromanić realm. Revered throughout the Bosnian court, Elizabeth brings saintly Catholic piety and compassionate solace to mountain subjects distressed by religious strife and foreign warfare. She personally manages castle granaries and textile halls, introducing advanced Slavonian agricultural techniques to the highlands. When Prijezda departs on arduous campaigns, Elizabeth serves as an unshakeable moral anchor, preserving peace and harmony within the realm. Her enduring charity, maternal nobility, and tranquil dignity inspire unwavering loyalty among highborn vassals and common mountain villagers alike across Bosnia.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with refined Hungarian courtliness and maternal authority, articulate and commanding, persuasive in high statecraft.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

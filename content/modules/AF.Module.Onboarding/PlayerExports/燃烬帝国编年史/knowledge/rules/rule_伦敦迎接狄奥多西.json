@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v5",
+  "Keywords": [
+    "伦敦迎接狄奥多西"
+  ],
+  "RagShortTexts": [
+    "伦敦欢迎援军时，狄奥多西仍须派部队清剿城外劫掠者。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狄奥多西抵达不列颠时，伦敦居民欢迎援军，将领又派分队迎击分散的掠夺者。城中的宽慰并不使城外道路立即安全；失去亲属与财物的家户，还要等待寻找、护送和归还。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

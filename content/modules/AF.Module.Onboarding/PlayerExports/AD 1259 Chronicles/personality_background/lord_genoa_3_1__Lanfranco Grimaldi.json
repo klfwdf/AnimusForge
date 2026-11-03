@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_3_1",
+  "HeroName": "Lanfranco Grimaldi",
+  "Description": "Lanfranco Grimaldi leads the venerable patrician House of Grimaldi—forebears of the Princes of Monaco—as a stalwart Guelf admiral and diplomat. Bound by ties of fidelity to the Papacy and Charles of Anjou, he commands the rocky sea fortresses of the Western Riviera, forging cross-border naval leagues with Provence to dismantle Ghibelline ascendancy. Lanfranco anchored the Western Riviera aboard heavily armed war galleys, fortifying the rocky headland of Monaco to permanently bar Ghibelline expansion toward the allied courts of Provence. A steadfast ally of the Papacy, he traveled extensively between Rome and Naples, coordinating military pacts between Charles of Anjou and Guelf exiles to counter imperial encroachments upon Liguria. Weathered by decades of maritime warfare, the admiral believed his dynasty's survival rested on sacred fidelity to the Church, resolved to restore lawful Guelf governance through sword and covenant. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Triumph over Ghibelline rivals with papal backing to install a righteous Guelf regime.",
+    "Consolidate Grimaldi coastal fortresses along the Western Riviera into an enduring fief."
+  ],
+  "Values": [
+    "Papal sanction and lawful allegiance secure enduring political legitimacy.",
+    "Patrician maritime honor must never be compromised before populist upstarts."
+  ],
+  "Fears": [
+    "Ghibelline and Imperial armies overrunning Grimaldi strongholds along the coast.",
+    "Protracted internal blood-feuds extinguishing Genoese maritime dominance."
+  ],
+  "SpeechStyle": "Speaks with aristocratic gravitas and naval authority, resolute in Guelf religious conviction. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

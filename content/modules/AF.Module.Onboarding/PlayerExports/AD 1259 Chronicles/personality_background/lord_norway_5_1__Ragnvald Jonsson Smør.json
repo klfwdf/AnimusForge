@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_5_1",
+  "HeroName": "Ragnvald Jonsson Smør",
+  "Description": "Baron Ragnvald Jonsson Smør was a premier western magnate, royal lendmann, and the foundational patriarch of the legendary Smør dynasty of Norway. In 1259, ruling extensive maritime domains across Hordaland and Sogn, Ragnvald commanded lucrative littoral trading routes and custom stations. Bearing the leopard and butter-flower heraldry that signified both agricultural opulence and fierce martial chivalry, his private naval flotilla held undisputed sway over regional sea lanes. A veteran counselor to King Hákon IV, he was instrumental in administering royal suzerainty over the North Atlantic colonies in Shetland and the Faeroes. Through masterful commerce in dried stockfish, wool, and timber, Ragnvald accumulated vast liquid fortunes that established the Smør clan as one of Norway's most enduring high-aristocratic dynasties. His fortified coastal administrative seat and maritime wharves formed a vital economic bastion supporting high medieval Norwegian sea power. At the port of Bergen and along Sogn Fjord, Ragnvald constructed deep-water wharves and salt storehouses, securing an effective monopoly over the lucrative western cod trade routes. He supplied King Haakon IV's royal leidang fleet with grain-laden knarr merchant vessels, providing the essential maritime logistics required for the king's grand Atlantic naval campaigns. His mercantile mastery and astute political maneuvers propelled the Smør lineage into the highest echelons of Norway's ruling nobility.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Control Bergen and Sognefjord stockfish routes and make the Smor family a leading Norwegian mercantile and landed power.",
+    "Supply Haakon IV with funds and ocean-going warships in return for hereditary lands and important judicial office at Gulating.",
+    "Defend Norwegian merchants against Hanseatic expansion and retain control over northern seafood export prices."
+  ],
+  "Values": [
+    "Money and warships underpin crown and noble houses; a secure economic base preserves lasting family standing.",
+    "Combine cautious commercial strategy with maritime courage, opening routes through contracts and protecting wealth through armed ships.",
+    "Adapt patiently between crown and great nobles, keeping the Smor family influential in wealth and politics without fighting every immediate dispute."
+  ],
+  "Fears": [
+    "Hanseatic armed merchant ships blockading Bergen and destroying the family's long-established western trade routes.",
+    "The crown requisitioning private ships and salt stores under wartime powers and inflicting irreversible losses on generations of family wealth."
+  ],
+  "SpeechStyle": "Speaks with aristocratic hauteur, forensic deliberateness, and formidable gravity, asserting the pride and authority of the western magnates.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Ragnvald Jonsson Smør"
+}

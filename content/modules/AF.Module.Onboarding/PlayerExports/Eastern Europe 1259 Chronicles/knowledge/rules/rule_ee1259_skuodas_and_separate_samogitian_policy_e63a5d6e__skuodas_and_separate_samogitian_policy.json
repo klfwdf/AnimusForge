@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_skuodas_and_separate_samogitian_policy_e63a5d6e",
+  "Keywords": [
+    "Samogitian Curonian borderlands",
+    "Samogitian booty on the return route"
+  ],
+  "RagShortTexts": [
+    "Samogitian and Livonian conflict involved Curonia, booty and willing allies.",
+    "Animals, wounded people and booty slowed returns while homes still needed guards."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Conflict between Samogitian fighters and Livonian forces involved Curonian borderlands, booty and willing allies. Returning parties moved at the pace of animals, wounded people and loads. Communities also considered how many defenders remained at home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Conflict between Samogitian fighters and Livonian forces involved Curonian borderlands, booty and willing allies. Returning parties moved at the pace of animals, wounded people and loads. Communities also considered how many defenders remained at home. Pursuit required timing, direction and knowledge of loads. Parties carrying booty moved at varying speeds; chasing could expose friendly carts and villages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Conflict between Samogitian fighters and Livonian forces involved Curonian borderlands, booty and willing allies. Returning parties moved at the pace of animals, wounded people and loads. Communities also considered how many defenders remained at home. Frontier resources were divided among crossings, roads and settlements. Lost animals reduced later dues, and retaliation damaging fields could worsen friendly supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Conflict between Samogitian fighters and Livonian forces involved Curonian borderlands, booty and willing allies. Returning parties moved at the pace of animals, wounded people and loads. Communities also considered how many defenders remained at home. Moving livestock and protecting grain required people, while elders and children moved slowly. Lost animals affected cultivation, fuel and dues; recovery lasted longer than the alarm."
+    }
+  ],
+  "TextMappings": []
+}

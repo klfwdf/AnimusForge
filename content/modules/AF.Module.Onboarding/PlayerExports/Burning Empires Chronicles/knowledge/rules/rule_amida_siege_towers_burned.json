@@ -1,0 +1,38 @@
+{
+  "Id": "be_battle_amida_siege_record_v5",
+  "Keywords": [
+    "Amida siege towers burned"
+  ],
+  "RagShortTexts": [
+    "At Amida in 359, missiles and fire damaged engines while the siege continued."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At Amida in 359, Persian forces advanced towers and engines toward the walls, and defenders answered with missiles and fire. Some engines were destroyed, but the siege continued. Advancing required cover and access, while defenders needed ammunition, fuel and men able to keep working."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Defenders concentrated missiles as engines approached and still needed relief and watches after a successful fire attack. Burning a tower bought time without replacing lost food or wounded men."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Attackers had to reorganize engines, labor and methods instead of equating proximity with conquest. Defending commanders likewise could not let one successful action erase continuing supply pressure."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

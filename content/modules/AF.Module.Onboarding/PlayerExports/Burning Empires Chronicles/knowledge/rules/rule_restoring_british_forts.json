@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v9",
+  "Keywords": [
+    "Restoring British forts"
+  ],
+  "RagShortTexts": [
+    "Repairing British posts needed men, materials and food, with routes still requiring protection."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Theodosius repaired damaged towns and defenses in Britain and restored garrisons and administrative links. Repairs required men, materials and food, and troops still had to maintain routes. Restoring one post did not immediately free every village from raids."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

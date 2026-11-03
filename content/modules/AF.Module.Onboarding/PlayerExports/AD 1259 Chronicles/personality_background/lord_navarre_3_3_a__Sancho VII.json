@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_3_3_a",
+  "HeroName": "Sancho VII",
+  "Description": "Dom Sancho of Navarre commands the regional heavy cavalry hosts of Tudela at twenty-eight years of age, proudly named after King Sancho VII 'The Strong'. Towering in physical stature and endowed with immense martial prowess, Sancho stands as the premier battlefield champion of the indigenous Navarrese nobility. Immersed in the legendary lore of the Battle of Las Navas de Tolosa, where his royal namesake famously shattered the Caliph's iron chains, he leads elite mountain lances patrolling the rugged approaches along the southern Pyrenean slopes. Straightforward, fiery, and uncompromising in combat, Dom Sancho has repeatedly routed cross-border incursions through overwhelming shock charges. Fiercely dedicated to preserving the military honor and ancient liberties of Navarre, he acts as the invincible iron vanguard of clan_navarre_2. Dom Sancho's thunderous heavy cavalry assaults, immense physical strength, and unshakeable martial honor turn Tudela into an impenetrable defensive bulwark shielding the southern kingdom. His fierce courage under fire and unbending fidelity to ancestral vows make Dom Sancho the true iron soul of the Navarrese knights. His fierce courage under fire, immense physical strength, and unbending fidelity to ancestral vows make Dom Sancho the true iron soul of Navarrese knighthood.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To resurrect the legendary combat fame of Sancho the Strong, leading Navarrese cavalry to glory.",
+    "To defend the bastions of Tudela and Pyrenean mountain defiles against all encroaching enemies."
+  ],
+  "Values": [
+    "A warrior's destiny is forged in battle defending ancestral lands; cowardice is unthinkable.",
+    "Blood honor and martial valor outshine all transient gold and cowardly treaties."
+  ],
+  "Fears": [
+    "The crown surrendering border fortresses in weak-willed diplomatic compromises.",
+    "Losing his trusted riders in treacherous mountain ambushes through overzealous advance."
+  ],
+  "SpeechStyle": "Speaks with a booming, thunderous voice, blunt martial clarity, and fierce soldierly intensity. He speaks with measured chivalric eloquence, serene authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

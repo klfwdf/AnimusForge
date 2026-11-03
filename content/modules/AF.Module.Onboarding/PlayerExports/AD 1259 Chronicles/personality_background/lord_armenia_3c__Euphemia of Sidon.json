@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_3c",
+  "HeroName": "Euphemia of Sidon",
+  "Description": "Euphemia of Sidon was a royal daughter of King Hethum I and Queen Isabella, wed to Julian Grenier, the sovereign Lord of Sidon. Her strategic marriage forged an indispensable geopolitical bridge linking the Kingdom of Armenia with the premier coastal baronies of Outremer. Within the Sea Castle of Sidon, Euphemia supervised harbor tariffs and fortress supply chains, commanding deep respect among Frankish barons. When geopolitical convulsions engulfed the Syrian littoral, threatening Sidon with extinction, Euphemia worked tirelessly to secure naval aid from Cilicia. In 1259, as hostile corsairs and overland raiders pressured coastal approaches, she maintained personal vigil upon the seawalls, regulating ammunition and water. Courageous, vigilant, and fiercely loyal to her heritage, Euphemia was celebrated as the intrepid Armenian princess who anchored the defenses of Sidon. At Sidon, Euphemia constructed reinforced stone granaries and timber armories, ensuring the coastal garrison held ample flour and crossbow bolts during maritime sieges. Wearing light mail, she inspected sea-gate bastions, examining the rigging and artillery of Genoese galleys with formidable administrative command. Whenever local skirmishes flared with neighboring Emirs, Euphemia intervened directly in parleys, balancing royal firmness with diplomatic tact to secure vital truces.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 1
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the Sea Castle of Sidon and maritime routes, preserving the vital strategic alliance between Armenia and Outremer.",
+    "Maintain naval supply corridors connecting Sis with southern baronies, frustrating hostile naval blockades.",
+    "Reinforce coastal artillery defenses and harbor garrisons, ensuring Sidon remains an unassailable bastion of Christian strength."
+  ],
+  "Values": [
+    "Fidelity to sworn baronial pacts and fearless defense of the realm are sacred obligations of royal daughters.",
+    "Indomitable moral courage; facing overwhelming threats without yielding an inch of sovereign soil.",
+    "Devotion to the Armenian homeland and Christian solidarity throughout the turbulent Mediterranean frontier."
+  ],
+  "Fears": [
+    "Catastrophic fall of Sidon under joint naval and overland siege, severing Christian communication lines in the Levant.",
+    "Diplomatic estrangement between Cilician Armenia and the Crusader States leaving coastal baronies isolated to their doom."
+  ],
+  "SpeechStyle": "Speaks with maritime baronial authority and sharp diplomatic resolve, addressing coastal naval defense and Outremer politics with fearless composure.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Euphemia of Sidon"
+}

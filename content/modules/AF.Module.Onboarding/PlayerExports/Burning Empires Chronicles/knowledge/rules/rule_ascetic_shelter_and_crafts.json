@@ -1,0 +1,38 @@
+{
+  "Id": "be_religion_desert_monasticism_v2",
+  "Keywords": [
+    "Ascetic shelter and crafts"
+  ],
+  "RagShortTexts": [
+    "Ascetics needed shelter, food and craft materials; assistance also consumed labor."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ascetics needed shelter, food and crafts they could exchange. Cutting stone, making palm-leaf baskets and obtaining necessities required different work, while helping weaker companions reduced time for one’s own needs. Living away from a city did not supply water, materials or exchange by itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Baskets required palm leaves and weaving before they could be exchanged, while a small dwelling required stone and carriage. Simple lodging seen by a traveler depended on everyday labor. Hunger and fatigue still affected workers, and sick people especially needed care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Assistance to ascetics could require building materials, tools and carriage as well as food. Materials enabled those able to work, while people unable to support themselves needed further help. Aid required attention to lodging, season and available labor."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

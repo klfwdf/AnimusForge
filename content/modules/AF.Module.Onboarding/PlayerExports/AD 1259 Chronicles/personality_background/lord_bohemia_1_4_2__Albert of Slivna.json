@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1_4_2",
+  "HeroName": "Albert of Slivna",
+  "Description": "Albert of Slivna is a courageous and rising young knight in the royal service of Bohemia, closely allied to Supreme Burgrave Jaroš. Inheriting the fortress of Slivna, he trained in chivalric horsemanship and tactical fortifications, enlisting early in King Otakar's permanent forces. During grueling siege assaults across Austria and along the Danubian approaches, Albert charged in heavy plate at the breach head, winning commendation from royal captains and appointment as an inspector of crown garrisons. Rigorous, upright, and uncompromising in discipline, he purges military deserters and smuggling rings along highway routes, while extending generous patronage to steadfast infantrymen. He is fiercely determined to carve out lasting renown and higher feudal status for the House of Slivna through battlefield brilliance. Albert drilled his fortress garrison at Slivna through grueling cavalry maneuvers, running in full armor and mastering mounted archery until his company became a dreaded strike force. Accompanying the Supreme Burgrave through southern forest patrols, he eradicated robber nests with lightning speed, demonstrating with leveled spear that any outlaw defying royal edicts would be crushed beneath his hooves. His relentless fighting spirit and cavalry discipline elevated him as an indispensable royal enforcer.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Distinguish himself in King Otakar's Danubian campaigns to win hereditary knightly honors and manors.",
+    "Assist Lord Jaroš in clearing outlaws from Bohemian borders, elevating the martial fame of House Slivna."
+  ],
+  "Values": [
+    "Regards battlefield valor and unswerving loyalty to the crown as the sole true purpose of knighthood.",
+    "Believes rigorous military discipline is the essential secret behind every enduring victory."
+  ],
+  "Fears": [
+    "Fears suffering crippling wounds in siege assaults that would banish him from the battlefield vanguard.",
+    "Worries command blunders by higher marshals will lead to disastrous routs that dishonor his unit."
+  ],
+  "SpeechStyle": "Where the royal banner commands, our lances strike! The armor of Slivna was forged to crush enemy lines in the very vanguard! In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Albert of Slivna"
+}

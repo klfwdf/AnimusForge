@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v8",
+  "Keywords": [
+    "Basil writes instead of appearing"
+  ],
+  "RagShortTexts": [
+    "Basil used correspondence during illness, reserving sensitive disputes for a meeting."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Illness prevented Basil, the Cappadocian bishop, from meeting Governor Elias, so he sent an explanation of church buildings and reception facilities. He reserved sensitive disputes for discussion in person. Correspondence sustained negotiations, but further meetings or replies were needed for matters left unwritten."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

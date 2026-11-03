@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Champagne_Fairs_and_Financial_Network",
+  "Keywords": [
+    "Champagne Fairs Network",
+    "Troyes and Provins Markets",
+    "Flemish Cloth Italian Silk",
+    "Medieval Bill of Exchange"
+  ],
+  "RagShortTexts": [
+    "The Champagne fair cycle links northern cloth with Mediterranean goods and credit.",
+    "Safe-conduct, fees and enforceable obligations support long-distance merchant exchange."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The annual Champagne fair cycle connects Lagny, Bar-sur-Aube, Provins and Troyes with merchants from northern and Mediterranean trading regions. Cloth, spices and other goods move alongside obligations recorded and settled through commercial networks. Countal protection, access to courts, weights and market facilities help make those dealings possible, while fees and tolls provide revenue. Credit reduces some need to carry coin, but depends on trust, partners and the enforcement of promises rather than a modern banking system appearing fully formed. Safe-conduct is valuable precisely because travel remains risky; a commercial privilege cannot ensure that no war or robbery ever interrupts a fairbound journey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Counts of Champagne grew rich on market rents, weighmaster fees, and hall tolls, and every fair they hosted added to their treasury. War did not stop the trade, because a fairbound merchant brought too much revenue to be lost. A count who failed to guard the roads would soon see merchants take their bales elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Behind money-changers' benches, Sienese and Florentine bankers assay silver mark fineness. Six fairs rotate among Lagny, Bar-sur-Aube, Provins, and Troyes each year, and commercial contracts recorded by licensed fair notaries hold legal validity from London to Palermo. Letters of exchange let a merchant settle debts without carrying coin across the frontiers."
+    }
+  ],
+  "TextMappings": []
+}

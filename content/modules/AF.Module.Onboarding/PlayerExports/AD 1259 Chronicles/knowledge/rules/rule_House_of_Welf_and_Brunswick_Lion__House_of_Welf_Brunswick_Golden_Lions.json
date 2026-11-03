@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Welf_and_Brunswick_Lion",
+  "Keywords": [
+    "House of Welf Brunswick Golden Lions",
+    "Henry the Lion Saxon Patrimony",
+    "Guelph Faction Papal Defenders",
+    "Imperial Hohenstaufen Dynastic Vendetta"
+  ],
+  "RagShortTexts": [
+    "The House of Welf rallied northern German baronies beneath the Brunswick lion, championing."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Welfs were the origin of the anti-imperial Guelph faction, a dynasty whose two golden lions on red gave Italy the name of its papal party. After Emperor Frederick Barbarossa stripped Henry the Lion of his duchies in 1180, the Welfs kept their remaining Saxon lands, the Brunswick and Lüneburg territories around the Weser and the Elbe. Their bitter memory of the Hohenstaufen deposition kept them hostile to the imperial line, and they gave their support to papal autonomy wherever it served their purposes. Brunswick's castle of Dankwarderode and its bronze lion, cast in the twelfth century, became a symbol of ducal pride. The family kept ties to the Plantagenet crown through the marriage of Henry the Lion to Matilda, daughter of Henry II."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Welf dukes sat in councils with Saxon counts and Plantagenet envoys, measuring each marriage and each alliance against the power of the Hohenstaufen. Brunswick's knights served in the lower Weser and Elbe lands, and each lordship gave them a claim to tolls, forests and fortified towns that rivals sought to seize."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Before Dankwarderode Castle stands the bronze Brunswick Lion, and passing men-at-arms touch its mane for luck before a march. Wet fog rolls off the Oker, and a sergeant on the walls checks the pike rack and the crossbows at every change of watch. Discipline is kept by the watchword and the lantern signal, because a poorly kept gate in Brunswick would invite a Hohenstaufen raid."
+    }
+  ],
+  "TextMappings": []
+}

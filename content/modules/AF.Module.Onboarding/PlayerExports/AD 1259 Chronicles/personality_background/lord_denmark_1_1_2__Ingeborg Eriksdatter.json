@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Queen Ingeborg Eriksdatter of Norway, second daughter of Danish King Eric IV, played a transformative role in thirteenth-century Nordic history as consort to King Magnus VI the Lawmender. Revered across the western fjords for her profound piety, calm wisdom, and charitable benefactions, Ingeborg was also an unyielding defender of her Danish territorial claims. Supported by King Magnus, she dispatched royal jurists to press her legal rights over valuable Danish estates, and following her husband's death, she served as a decisive dowager regent for her young son, King Eric II. Championing Franciscan friars and urban commerce, Queen Ingeborg combined sovereign grace with shrewd political tenacity across two kingdoms. Collaborating with King Magnus to compile the historic national law codes of Norway, Ingeborg endowed friaries and municipal grain dispensaries, her serene moral integrity and diplomatic tact transforming hostile maritime rivalries into lasting peace between Norway and Denmark. Queen Ingeborg's gentle benevolence, unwavering legal rectitude, and judicial mediation transformed maritime animosity into lasting fraternity, forever honored as a beloved northern peacemaker and guardian of royal rights.",
+  "SpeechStyle": "Speaks with serene, dignified composure and forensic legal clarity, her gracious warmth commanding unswerving respect.",
+  "Motivations": [
+    "Pursue legal and diplomatic channels to recover her vast Danish maternal inheritance to reinforce the Norwegian treasury.",
+    "Support her husband and son in codified legal reforms, patronizing monasteries and securing peaceful maritime commerce."
+  ],
+  "Values": [
+    "Believes in codified law and sworn covenants over senseless warfare, promoting judicial integrity to resolve dynastic feuds.",
+    "Exalts Christian queenly charity, viewing the protection of commoners and sponsorship of monasteries as divine callings."
+  ],
+  "Fears": [
+    "Fears that dynastic inheritance disputes will reignite bloody naval wars between Denmark and Norway, devastating trade."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_denmark_1_1_2",
+  "HeroName": "Ingeborg Eriksdatter"
+}

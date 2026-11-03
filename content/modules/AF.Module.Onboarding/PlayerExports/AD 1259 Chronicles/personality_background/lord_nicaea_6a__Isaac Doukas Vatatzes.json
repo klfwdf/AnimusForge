@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_6a",
+  "HeroName": "Isaákios Doúkas Vatátzēs",
+  "Description": "Isaákios Doúkas Vatátzēs, aged forty-five, is the elder brother (or senior kinsman) of the revered late Emperor John III Doukas Vatatzes and a premier statesman of Nicaea. Representing the golden legacy of the Vatatzes dynasty that governed Nicaea through three decades of agricultural prosperity, he enjoys towering moral authority across the realm. A seasoned administrator of provincial economy, he assisted John III in curbing aristocratic extravagance, promoting silk cultivation, and founding communal imperial granaries. During the delicate dynastic transition from the Laskaris-Vatatzes house to Michael VIII Palaiologos, Isaákios consistently prioritized national survival over petty factionalism. Though privately concerned for the safety of the child-emperor John IV, he pragmatically realized that only Michael's iron grip could repel Western crusaders and Turkish invaders. Serving as an elder arbiter on the imperial council, he ensures veteran commanders remain loyal while fiercely advocating for the rights of former imperial retainers. Standing as a revered bridge between Nicaea's prosperous heritage and its triumphant future, his dignity commands deep deference from Emperor Michael himself and all commanders. Advocating agricultural prosperity and grain accumulation in high imperial assemblies, he uses his towering moral stature to caution against ruinous expenditures, serving as an irreplaceable anchor of wisdom and fiscal stability.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 6a lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with deep, resonant composure and paternal gravitas, dispensing measured wisdom accumulated over decades of guiding imperial statecraft.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

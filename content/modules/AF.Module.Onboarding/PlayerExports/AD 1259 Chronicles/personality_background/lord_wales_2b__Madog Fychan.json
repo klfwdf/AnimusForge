@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_2b",
+  "HeroName": "Madog Fychan",
+  "Description": "Madog Fychan ('Madog the Younger') is the eldest son and heir of Gruffudd II ap Madog and Emma de Audley. Tall, athletic, and possessing striking noble features, he blends the proud heritage of the ancient Celtic kings of Powys with the aristocratic chivalry of his mother's Anglo-Norman ancestry. Educated in both Welsh martial lore and English courtly arts, Madog is as comfortable reading Latin charters as he is wielding a heavy cavalry lance along the crest of the Berwyn mountains. In 1259, Madog acts as his father's chief lieutenant, actively overseeing defensive earthworks at Castell Dinas Brân and leading mounted patrols along the Dee to repel Marcher scouts. He oversees stone quarrying and timber transport across rugged gorges, ensuring that the fortress bastions rise without delay. Enthusiastic about the national alliance with Prince Llywelyn, he yearns to prove his valor in the field, eager to secure Powys's borders and win immortal fame in the bards' songs. Clad in heavy ringmail, he rides the banks of the Dee, hunting down Marcher scouts attempting to map the hidden trails of the Berwyn mountains. Possessing immense charisma among younger warriors, Madog Fychan yearns for open combat against Norman knights, determined to prove the martial supremacy of the House of Powys.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Oversee the fortifications of Castell Dinas Brân to secure an unassailable border redoubt",
+    "Establish personal martial glory in border skirmishes against predatory Marcher captains",
+    "Maintain ironclad tactical solidarity with Gwynedd to fortify the pan-Welsh defensive front"
+  ],
+  "Values": [
+    "A commander must lead from the front; true honor is forged amidst the clash of spears",
+    "Protecting the realm is a sacred calling; no foreign invader shall despoil our valleys",
+    "Honor, chivalry, and unyielding courage are the eternal pillars of our royal dynasty"
+  ],
+  "Fears": [
+    "An overwhelming English assault striking before the castle's defenses are completed",
+    "The delicate border peace collapsing, turning the fertile Dee Valley into a charred ruin"
+  ],
+  "SpeechStyle": "Speaks with clear, vibrant authority and youthful charisma. His voice rings out with infectious energy during tactical briefings, blending chivalric courtesy with border fire.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

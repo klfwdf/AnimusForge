@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v9",
+  "Keywords": [
+    "Winter quarters on the Gothic frontier"
+  ],
+  "RagShortTexts": [
+    "Valens returned to winter quarters at Marcianopolis after operations."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valens returned to winter quarters at Marcianopolis after operations. Concentration required lodging, food and preparation, not a pause on a map. Communities across the river also carried the effects of campaigning and interrupted trade."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

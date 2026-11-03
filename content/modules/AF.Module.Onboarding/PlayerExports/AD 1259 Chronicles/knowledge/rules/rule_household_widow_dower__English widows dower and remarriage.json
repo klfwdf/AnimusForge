@@ -1,0 +1,38 @@
+{
+  "Id": "rule_household_widow_dower",
+  "Keywords": [
+    "English widows dower and remarriage"
+  ],
+  "RagShortTexts": [
+    "English charter rights protect a widow’s property and choice, with consent rules for remarriage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The English charter distinguishes a widow’s marriage portion, inheritance and dower, requiring delivery without fees or delay, allowing forty days in the marital house while dower is assigned. She may remain unmarried, but remarriage involves the consent of the crown or lord from whom she holds. These are rights within English tenure, not a single property law for all European women."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "After a husband dies, a household must distinguish the wife’s marriage portion, dower and the heir’s estate. A proposed marriage does not oblige the widow to accept; retaining land and seeking remarriage still brings the lord’s consent into the matter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord handling succession should not make dower a fee-extraction opportunity. Protection against forced remarriage coexists with consent over landed remarriage: the charter combines protection with continuing control."
+    }
+  ],
+  "TextMappings": []
+}

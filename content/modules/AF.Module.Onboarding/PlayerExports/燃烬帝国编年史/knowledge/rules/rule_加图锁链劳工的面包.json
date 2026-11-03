@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v2",
+  "Keywords": [
+    "加图锁链劳工的面包"
+  ],
+  "RagShortTexts": [
+    "加图给锁链劳工直接配面包，并随农事季节调整。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "加图给锁链劳工直接配面包，并随农事季节调整。直接发成品与发谷物让接受者承担的加工劳动不同；被强制劳动者并非租地农户，两者不能只因都种田就被视为同一身份。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

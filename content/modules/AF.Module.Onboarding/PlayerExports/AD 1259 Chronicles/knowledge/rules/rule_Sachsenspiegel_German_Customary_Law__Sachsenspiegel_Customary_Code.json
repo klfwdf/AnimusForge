@@ -1,0 +1,40 @@
+{
+  "Id": "rule_Sachsenspiegel_German_Customary_Law",
+  "Keywords": [
+    "Sachsenspiegel Customary Code",
+    "German Feudal Fief Law",
+    "Free Peasant Land Tenure",
+    "Saxon Jurisprudence Eike"
+  ],
+  "RagShortTexts": [
+    "The Sachsenspiegel recorded land and feudal law amid differing local practice."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Eike von Repgow’s Sachsenspiegel recorded land law and feudal law in German, addressing status, inheritance, litigation and lordship. Readers could use it to organize customs and claims, while particular cases still involved local practice, privileges and jurisdiction. Manuscripts needed copying and interpretation; owning the book did not make every court accept the same judgment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Under the Lehnrecht, a liege lord could not strip a vassal of his fief without a judicial ruling. Knight service could not be pushed past six weeks unless the lord paid for the extra time. Such rules shielded the lesser nobility from ducal encroachment, and a count who ignored them risked losing his vassals to the courts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A villager hearing the Sachsenspiegel read aloud may find language for an argument about tenure, inheritance or a boundary. Winning still depends on standing, witnesses and the court that hears the plea. Written custom does not make every lord powerless to demand a payment, nor does one Saxon law book govern every village in the German lands."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v5",
+  "Keywords": [
+    "摩尼教斋戒与日月"
+  ],
+  "RagShortTexts": [
+    "摩尼教祈祷与斋戒同日月周期相联系。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "摩尼教的祈祷与斋戒安排同日月运行相连，修行者通过时间和朝向表达信仰。不同成员的严格程度不一，不能用一个祭日推出全年断食。维持这样的生活仍需要普通日子的供给。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

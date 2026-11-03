@@ -1,0 +1,59 @@
+{
+  "Id": "be_lazica_kingdom_military",
+  "Keywords": [
+    "Lazica Military",
+    "Lazican port and pass defence"
+  ],
+  "RagShortTexts": [
+    "Lazican ports, stores and pass guards need mutual support.",
+    "Sending every force uphill leaves river ports exposed."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "River ports, stores and passes require mutual support. Kartli war strains coastal and inland links; all forces on one mountain road leave ports exposed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lazican ports, stores and pass guards need mutual support. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Sending every force uphill leaves river ports exposed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Sending every force uphill leaves river ports exposed. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Lazican ports, stores and pass guards need mutual support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Lazican ports, stores and pass guards need mutual support. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Sending every force uphill leaves river ports exposed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sending every force uphill leaves river ports exposed. Repair, carrying and care also use people, while daily supply continues after troops pass. Lazican ports, stores and pass guards need mutual support."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

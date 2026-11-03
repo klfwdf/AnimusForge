@@ -11,7 +11,7 @@ internal sealed class HeroGoldNextDayOnceEffectModule : PolicyEffectModuleBase<H
 	IScheduledOncePolicyEffectModule,
 	IAtomicHeroGoldPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "heroGoldNextDayOnce",
 		order: 131,
 		legacyIds: Array.Empty<string>(),
@@ -38,7 +38,8 @@ internal sealed class HeroGoldNextDayOnceEffectModule : PolicyEffectModuleBase<H
 		promptVisible: false,
 		displayGroup: "heroGold",
 		targetProjection: PolicyEffectTargetProjectionKind.SettlementOwnerClanLeader,
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

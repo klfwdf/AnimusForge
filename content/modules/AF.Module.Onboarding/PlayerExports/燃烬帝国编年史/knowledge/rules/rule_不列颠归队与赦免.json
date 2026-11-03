@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v8",
+  "Keywords": [
+    "不列颠归队与赦免"
+  ],
+  "RagShortTexts": [
+    "战乱使逃散军人和其他离队者散布各处。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "战乱使逃散军人和其他离队者散布各处。狄奥多西发出宽宥承诺后，许多人返回，整顿兵力才有实际基础。新命令要经过传达并被人相信，不能假定发出公告当日所有人就已归营。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

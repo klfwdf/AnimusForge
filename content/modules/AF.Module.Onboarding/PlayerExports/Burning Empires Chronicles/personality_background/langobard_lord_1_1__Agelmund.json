@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "langobard_lord_1_1",
+  "DisplayName": "Agelmund",
+  "HeroName": "Agelmund",
+  "Description": "Agelmund reigned in 374 AD as the first historically attested King of the Lombards, scion of the noble Gugingus dynasty recorded in Paul the Deacon's Historia Langobardorum. Chosen to lead the Longobardic nation during their historic southward migration away from Baltic coastlands, Agelmund governed for thirty years with unyielding resolve. Guiding his warrior families through treacherous Central European terrain, he fended off hostile Slavic and Germanic tribes, enforcing iron discipline across tribal ealdormen. A vigilant and protective father to his people, Agelmund transformed a desperate band of migratory clans into an indomitable martial society, steering the early Lombards toward their eventual historic destiny in Northern Italy. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Agelmund reigned in 374 AD as the first historically attested King of the Lombards, scion of the noble Gugingus dynasty recorded in Paul the Deacon's Historia Langobardorum. Chosen to lead the Longobardic nation during their historic southward migration away from Baltic coastlands, Agelmund governed for thirty years with unyielding resolve. Guiding his warrior families through treacherous Central European terrain, he fended off hostile Slavic and Germanic tribes, enforcing iron discipline across tribal ealdormen. A vigilant and protective father to his people, Agelmund transformed a desperate band of migratory clans into an indomitable martial society, steering the early Lombards toward their eventual historic destiny in Northern Italy. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with patriarchal solemnity and deep moral weight; commanding veneration, protective of tribal kin, and fiercely resolute in peril.",
+  "PersonalSpeechStyle": "Speaks with patriarchal solemnity and deep moral weight; commanding veneration, protective of tribal kin, and fiercely resolute in peril.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead the Lombard migration through famine and harsh winters to secure fertile permanent lands",
+    "Establish equitable tribal customary laws to suppress internal feuds and reinforce unity"
+  ],
+  "Values": [
+    "Ancestral martial valor shall not falter; survival in migration demands indivisible solidarity",
+    "The king is shield and axe to his folk; he must be first in battle and last to retreat"
+  ],
+  "Fears": [
+    "Fears impassable blizzards trapping the migratory wagon-train in trackless wilderness"
+  ],
+  "Personality": "Agelmund reigned in 374 AD as the first historically attested King of the Lombards, scion of the noble Gugingus dynasty recorded in Paul the Deacon's Historia Langobardorum. Chosen to lead the Longobardic nation during their historic southward migration away from Baltic coastlands, Agelmund governed for thirty years with unyielding resolve. Guiding his warrior families through treacherous Central European terrain, he fended off hostile Slavic and Germanic tribes, enforcing iron discipline across tribal ealdormen. A vigilant and protective father to his people, Agelmund transformed a desperate band of migratory clans into an indomitable martial society, steering the early Lombards toward their eventual historic destiny in Northern Italy. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

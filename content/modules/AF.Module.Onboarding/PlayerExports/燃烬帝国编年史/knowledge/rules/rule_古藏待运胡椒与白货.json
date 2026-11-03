@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v5",
+  "Keywords": [
+    "古藏待运胡椒与白货"
+  ],
+  "RagShortTexts": [
+    "古藏库存胡椒与其他货物，商队未发使货款难以实现。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "古藏商信列出待发的白货、胡椒、若干其他货物和少量银。库存有货，却因商队没有出发而不能变成到岸收入。货名中有难明之处，商人仍要按包、量和收货对象安排托运，不能只凭“丝路”二字假定畅行。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

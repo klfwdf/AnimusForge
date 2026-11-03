@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3j",
+  "HeroName": "Marguerite de Baux",
+  "Description": "Marguerite de Baux, of the ancient sovereign lords of Les Baux in Provence, was the consort of Napoleone della Torre. Bringing southern French chivalric pride to Milan, she participated in court defense and bore the catastrophic downfall of the Torriani with unshakeable fortitude. Lady Marguerite supervised palace watches and garrison changes in Milan, governing the home front with knightly ferocity while Napo was campaigning to extinguish internal treason. Donning mail armor to rally castle garrisons during rebel sieges, she directed crossbow volleys and stone throwers to repulse nocturnal assaults with dazzling chivalric audacity. Possessing untamed Provençal chivalric blood, Marguerite confronted the catastrophic collapse of her house with unyielding aristocratic pride, scorning her conquerors. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold her husband Napo's autocratic glory against domestic and transalpine threats.",
+    "Leverage Provençal noble prestige to secure foreign allies against papal encumbrances.",
+    "Defend her children during the collapse of the Signoria to ensure dynastic survival."
+  ],
+  "Values": [
+    "Holds unbroken noble pride as an invulnerable armor, refusing subservience in defeat.",
+    "Believes only those who confront fate's cruellest blows deserve memory in chronicles."
+  ],
+  "Fears": [
+    "Napo dying in hideous torment within Visconti iron cages, followed by a total purge.",
+    "Her descendants losing their sovereign birthright to wander Europe as penniless outcasts."
+  ],
+  "SpeechStyle": "Speaks with haughty Provençal ferocity and unbending dignity, fiery and defiant. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

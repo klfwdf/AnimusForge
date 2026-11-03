@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_9f",
+  "HeroName": "Isabella von Metz",
+  "Description": "Isabella is the cherished young daughter of Duke Friedrich III and Duchess Margaret of Navarre, uniting the royal blood of Pamplona with the ducal house of Lorraine. Nurtured amid sacred choral melodies and tournament fanfares in Nancy, she imbibed her mother's courtly elegance and diplomatic poise. Versed in French narrative romances and imperial heraldry, she is endowed with gentle modesty, sharp perception, and serene grace. From youth, Isabella displayed quiet understanding and attentive courtesy, welcoming visiting dignitaries with graceful humility. Sympathetic to the immense military burdens borne by her father and brother, she brings tranquil warmth and unblemished nobility to Nancy's embattled court. In the quiet libraries of Nancy, Isabella studied Latin theological commentaries and princely genealogies, aiding her mother in distributing woolen cloth to monastic almshouses and widows of fallen knights. Possessing gentle grace and penetrating intelligence, she comforted anxious attendants with serene prayers during border sieges, beloved across the realm as Nancy's brightest jewel. Her virtuous humility and serene wisdom brought enduring dignity to the princely lineage of Lorraine and Navarre.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Observe noble decorum and pious virtue, preparing thoroughly for a future high-born foreign alliance.",
+    "Assist her mother with domestic charities and chapel prayers, comforting her battle-worn father and warriors."
+  ],
+  "Values": [
+    "Regards purity, filial modesty, and devout Christian faith as the crowning virtues of a princess.",
+    "Cherishes familial warmth and tranquil halls, believing true strength resides in gentle self-restraint."
+  ],
+  "Fears": [
+    "Fears border warfare reaching Nancy's heartland, shattering peaceful memories of courtyard melodies.",
+    "Dreads marrying into a cold, deceitful court, longing for genuine affection in her future alliance."
+  ],
+  "SpeechStyle": "Sunset gilds the walls of Nancy amid prayers and lutes; may Heaven grant our halls tranquility and our house eternal strength. In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Isabella von Metz"
+}

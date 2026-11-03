@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1n",
+  "HeroName": "Cangrande II della Scala",
+  "Description": "Cangrande II della Scala, known as 'Can Rabbioso', was Lord of Verona. Suspicious and autocratic, he relied upon Brandenburg mercenaries and constructed the monumental Castelvecchio and fortified Scaliger bridge across the Adige before perishing in a palace coup by his brother. Cangrande II marshaled Brandenburg mercenaries to construct the fortified Castelvecchio and Scaliger bridge across the Adige, forging an impenetrable personal citadel. Hoarding bullion within guarded vaults in Castelvecchio, he liquidated treacherous guards, reigning as a terrifying, isolated autocrat in his riverside fortress. Paranoid and ruthless, Cangrande II embodied late medieval despotism, transforming fear into an instrument of state and leaving Castelvecchio as his brooding monument. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "suspicious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Employ German Brandenburg mercenaries to crush municipal unrest and secure absolute autocracy.",
+    "Erect the fortified Castelvecchio and Scaliger bridge as an impregnable citadel and escape route.",
+    "Hoard bullion in fortified vaults to deter usurpation from jealous brothers and kin."
+  ],
+  "Values": [
+    "Believes only fear and stone citadels endure; kinship and moral oaths are treacherous illusions.",
+    "Holds preemptive ruthlessness as the sole infallible defense against dynastic assassination."
+  ],
+  "Fears": [
+    "Clandestine civic conspirators conspiring with his brothers to murder him in his bedchamber.",
+    "German mercenaries mutinying over silver stipends and surrendering the gates to armed mobs."
+  ],
+  "SpeechStyle": "Snarls with paranoid malice and chilling cruelty, radiating dangerous unpredictability. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

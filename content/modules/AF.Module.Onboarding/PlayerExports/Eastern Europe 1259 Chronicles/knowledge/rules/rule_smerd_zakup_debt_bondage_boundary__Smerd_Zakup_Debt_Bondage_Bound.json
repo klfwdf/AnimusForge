@@ -1,0 +1,52 @@
+{
+  "Id": "rule_smerd_zakup_debt_bondage_boundary",
+  "Keywords": [
+    "zakup debt service obligations",
+    "smerd status and rural claims"
+  ],
+  "RagShortTexts": [
+    "Rus law distinguishes debt service, rural people and household slaves rather than one status.",
+    "Debts, work, flight and masters’ duties require specific judgment and affect families."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus rural people occupy different positions in person and property; smerd, zakup and household slave are distinct legal terms. A debt servant’s borrowed money, goods or seed creates labour obligations whose amount and use matter. Working for another does not automatically place an entire family in hereditary ownership; disputes depend on status, events and applicable rules.\n\nDebt links present food with future work, while a servant’s own fields and children also need care. Flight can have serious consequences, but a master’s abuse can also be disputed. Witnesses and a clear debt history shape the case. Poor harvests may force further borrowing, and help from neighbours can preserve a family’s sowing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Creditors need clear debts and services rather than merged statuses. Taking all seed and working time can make repayment harder instead of increasing real returns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Recruiters need to check existing duties rather than accept claims of freedom without inquiry. Clothing alone does not distinguish flight from lawful travel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Seed loans save sowing but promised labour competes with home fields. Families need debt and work terms, while help from kin can prevent another loan."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_parnu_river_mouth_d24ab72d",
+  "Keywords": [
+    "Arrivals at the Parnu river mouth",
+    "Water and road deliveries at Parnu"
+  ],
+  "RagShortTexts": [
+    "Parnu's river mouth connects coastal and inland carriage, requiring local reception ashore.",
+    "Church, guards and residents share demands on landings and carriage as water conditions change."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At Parnu's river mouth coastal goods can pass inland while local produce moves outward. Receiving crews, envoys and guards divides a small settlement's storage, lodging and labor. Water conditions determine access, but successful delivery still needs an agreed place, recipient and return arrangement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Parnu households carry cargo, feed visitors and guide boats, earning money while rapidly using stores. Late unloading means another night's meals for crews and missed onward transport. Familiar contacts and agreed payment reduce disputes, especially when water and weather delay work."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

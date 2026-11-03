@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_1_2",
+  "HeroName": "Tommaso I di Saluzzo, Marquess of Saluzzo",
+  "Description": "Tommaso I di Saluzzo rules as the formidable Marquess of Saluzzo at thirty-seven years of age, standing as King Manfred's most vital northern ally guarding the Western Alps. Dominating the upper Po river valleys and high mountain passes connecting Lombardy with Provence, Saluzzo forms an indispensable strategic bastion. An iron disciplinarian clad in heavy mail, Tommaso has long aligned his house with the imperial Ghibelline cause, linking his fortunes with the Staufen crown. Leading hardy alpine cavalry, he has repeatedly repulsed incursions by Guelph leagues and Angevin expansionists. Methodical, unyielding, and tactical, Marquess Tommaso expertly utilizes rugged defiles to crush superior forces, securing the northwestern alpine gateway for the Sicilian kingdom. Marquess Tommaso's rigid command discipline, tactical vigilance, and mastery of alpine terrain turn Saluzzo into an impenetrable defensive bulwark safeguarding King Manfred's northern flank. His unyielding fidelity to the imperial cause ensures that the mountain passes remain closed to all Guelph invaders, maintaining unbreakable order across the marquisate. His unwavering strategic competence, steadfast loyalty to the Staufen dynasty, and masterly command over mountain passes make Marquess Tommaso an unassailable bastion of imperial sovereignty. With seasoned strategic vision and unblemished knightly honor, he remains an unyielding bulwark shielding northern Italy from foreign aggression and subversion.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To seal off the western alpine defiles against Angevin penetration from Provence.",
+    "To safeguard the sovereign franchises of Saluzzo under the Staufen imperial banner."
+  ],
+  "Values": [
+    "Steadfast loyalty to sworn alliances is sacred; guarding the frontier passes secures the state.",
+    "Iron discipline and cold caution in war crush reckless bravado."
+  ],
+  "Fears": [
+    "Angevin chivalry breaching the alpine passes and devastating the Piedmontese valleys.",
+    "Lombard communes defecting en masse to the Guelph faction, isolating Saluzzo."
+  ],
+  "SpeechStyle": "Speaks with gravelly mountain restraint, curt soldierly precision, and vigilant authority. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_1_1_3",
+  "HeroName": "Gutkeled nembeli János",
+  "Description": "Gutkeled nembeli János is the younger son of Miklós II, serving as an exceptional fortress commander and military engineer for the clan. Unlike his brother who thrives in open-field cavalry clashes, János possesses natural genius for masonry fortification and siege mechanics. Influenced by his grandfather's grand architectural vision, he studied under master masons, overseeing the modernization of Gutkeled strongholds along the Drava. Methodical and patient, János meticulously inspects ballista emplacements, stone granaries, and water cisterns, ensuring bastions can endure prolonged sieges. In 1259, confronting potential invasion from Bohemian and Austrian armies, János directs the reinforcement of defensive ditches and artillery batteries, prepared to turn family fortresses into lethal cauldrons for any besieger. János directed the erection of formidable twin ashlar curtain walls and deep moats along the river passages of the southern borderlands. Integrating advanced catapult ballistics obtained from Saxon craftsmen, he transformed regional fortresses into deadly siege traps. His engineering expertise ensured that the clan's riverside citadels stood well-prepared to outlast any prolonged hostile investment. His meticulous architectural designs and artillery preparations transformed river fortresses into impregnable bulwarks capable of shattering any foreign host, establishing an impregnable bastion of royal defense along the river.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Transform every Gutkeled fortress into an impenetrable redoubt, breaking any enemy siege attempt.",
+    "Master advanced fortification engineering, maximizing clan defensive supremacy in wartime."
+  ],
+  "Values": [
+    "Believe meticulous engineering and deep supply reserves guarantee victory, scorning empty rhetoric.",
+    "Prize methodical discipline, viewing the unyielding defense of home ramparts as paramount duty."
+  ],
+  "Fears": [
+    "Fears water contamination or sap-mining compromising fortress foundations from within.",
+    "Dreads exhaustion of supplies forcing a surrender that dishonors the clan's martial renown."
+  ],
+  "SpeechStyle": "Our masonry is flawless, and our artillery stands primed! So long as I command these battlements, no enemy army shall ever breach our gates! Our ramparts are granite; Gutkeled battlements shall stand forever!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

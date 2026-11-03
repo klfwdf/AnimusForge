@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_7h",
+  "HeroName": "Vítek V. z Příběnic",
+  "Description": "Vítek V of Příběnice is a commanding fortress engineer and influential magnate of the Vítkovci dynasty, ruling from the staggering granite promontory of Příběnice Castle high above the Lužnice River. He conceived and erected this colossal stone citadel, featuring concentric dry moats, massive octagonal bergfried towers, and advanced crenelations that made it one of the most formidable strongholds in thirteenth-century Central Europe. Mastering hydraulic defense and military architecture, Vítek installed river boom chains, fortified sluice gates, and watch bastions across the Lužnice defile, exerting absolute dominion over cross-river trade and troop movements. An analytical and patient tactician, he famously ambushed hostile German mercenary raiding columns seeking to exploit river valleys during the Styrian border disputes, crushing them with lethal crossfire from hidden cliff emplacements. Reserved, austere, and intensely disciplined, he subjected his castle garrison to monastic military rigors, molding them into an elite core of archers and men-at-arms. He stands as an unshakeable guardian of Bohemian river frontiers, dedicated to ensuring that Příběnice remains a fatal trap for any invader. Vítek V engineered interlocking arrow slits and deadfall drop gates along the precipitous bluffs of Příběnice, nullifying all possibility of surprise assaults. Perched atop the octagonal bergfried gazing down at the rushing river, his tireless vigilance maintained an elite garrison feared by trespassers across Central Europe.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Transform Příběnice into the supreme impregnable sanctuary and bastion of Bohemia, immune to any siege apparatus.",
+    "Control the Lužnice riverway to dominate river tolls and strategic logistics across the province.",
+    "Establish an interconnected beacon network across southern river bluffs to eliminate any threat of surprise incursions."
+  ],
+  "Values": [
+    "Value precise architectural calculation and defensive engineering above reckless battlefield charges.",
+    "Uphold uncompromising military discipline and obedience as the supreme virtues of a castle garrison.",
+    "Maintain unwavering loyalty to his dynastic brethren, offering his ramparts as an eternal bastion for their line."
+  ],
+  "Fears": [
+    "Advanced trebuchet bombardment or sap mining cracking the bedrock foundations of his great octagonal towers.",
+    "Contaminated cisterns spreading debilitating fever through the garrison before blades can be crossed in defense."
+  ],
+  "SpeechStyle": "The churning torrents of the Lužnice and the precipices of Příběnice are divine shields; let whole armies arrive, and they shall shatter upon our rock. High granite cliffs and discipline make Příběnice an eternal bastion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

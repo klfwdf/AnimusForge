@@ -52,6 +52,7 @@ internal static class CampaignComposition
             campaignGameStarter.AddBehavior(new NpcTributeVassalageBehavior());
             campaignGameStarter.AddBehavior(new KingdomAnnexationBehavior());
             campaignGameStarter.AddBehavior(new AfWarStatsBehavior());
+            campaignGameStarter.AddBehavior(new FieldCampBehavior());
         }
     }
 }

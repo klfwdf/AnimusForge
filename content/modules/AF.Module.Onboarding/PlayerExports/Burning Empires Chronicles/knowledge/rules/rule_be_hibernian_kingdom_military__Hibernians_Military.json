@@ -1,0 +1,59 @@
+{
+  "Id": "be_hibernian_kingdom_military",
+  "Keywords": [
+    "Hibernians Military",
+    "Hibernian landings and return voyages"
+  ],
+  "RagShortTexts": [
+    "Voyages need crews, food, water and return arrangements.",
+    "Roman and Votadinian wars pull limited vessels in different directions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Voyages require crews, provisions and return plans; landings still need boat guards. Roman and Votadinian wars pull limited vessels in different directions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Voyages need crews, food, water and return arrangements. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Roman and Votadinian wars pull limited vessels in different directions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Roman and Votadinian wars pull limited vessels in different directions. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Voyages need crews, food, water and return arrangements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Voyages need crews, food, water and return arrangements. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Roman and Votadinian wars pull limited vessels in different directions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman and Votadinian wars pull limited vessels in different directions. Repair, carrying and care also use people, while daily supply continues after troops pass. Voyages need crews, food, water and return arrangements."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

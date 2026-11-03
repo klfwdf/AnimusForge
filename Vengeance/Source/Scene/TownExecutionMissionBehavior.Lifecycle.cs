@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -132,6 +132,9 @@ public sealed partial class TownExecutionMissionBehavior
             {
                 completed &= RemoveSpawnedEntity(_spawnedEntities[index]);
             }
+            if (Request.IsFieldCamp && _fieldCampPreparationAreas is not null && _spawnedEntities.Count == 0)
+                VengeanceIntegration.FieldCampCeremonyGeometryChanged?.Invoke(
+                    Request.SessionId, _fieldCampPreparationAreas, false);
         }
 
         return completed;
@@ -330,7 +333,7 @@ public sealed partial class TownExecutionMissionBehavior
             // If the per-Agent exclusion could not be applied, keep the
             // mission-wide guard in place until the mission is actually gone;
             // otherwise the completed victim would become an F target again.
-            if (_victimConversationBlockApplied || !_campaignCommitAttempted)
+            if (Request.IsFieldCamp || _victimConversationBlockApplied || !_campaignCommitAttempted)
             {
                 _conversationLogic?.DisableStartConversation(false);
             }
@@ -361,6 +364,7 @@ public sealed partial class TownExecutionMissionBehavior
             RexLog.Error("Execution-session release failed during final cleanup.", exception);
         }
 
+        NotifyFieldCampCeremonyReleased();
         _cleanupComplete = completed;
         if (!completed)
         {

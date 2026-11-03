@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1e",
+  "HeroName": "Gwladus ferch Gruffudd, Lady of Gwynedd",
+  "Description": "Gwladus ferch Gruffudd is the noble daughter of Gruffudd ap Llywelyn and Senana, and eldest sister to Prince Llywelyn and Dafydd. Possessing quiet grace, radiant Celtic poise, and formidable intellect, she was raised in the crucible of family crisis during her father's imprisonment in England. Serving alongside her mother Senana, Gwladus learned early how to manage the intricate domestic and diplomatic affairs of the royal court at Aber. In 1259, as Llywelyn claims supreme dominion over Wales, Gwladus occupies a vital role as the diplomatic linchpin of the Aberffraw dynasty, consulting on marriage alliances that tie the turbulent barons of Deheubarth and Powys to Gwynedd's chariot. She receives foreign envoys, protects refugee gentlewomen displaced by border conflicts, and mediates between hot-headed chieftains. A woman of deep religious devotion and political insight, she works untiringly to defuse the bitter rivalry between Llywelyn and Dafydd, serving as the royal court's gentlest yet most indispensable counselor. She journeys frequently between the royal court at Aber and southern priories, distributing grain and wool to border widows displaced by ongoing hostilities. At feast halls and assemblies, Gwladus interposes her serene aristocratic dignity to soothe enraged chieftains, providing an irreplaceable bastion of familial conciliation and peace.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve familial harmony within the House of Aberffraw and heal fraternal bitterness",
+    "Forge strategic marriages binding southern Welsh princes to Gwynedd's sovereign banner",
+    "Endow monastic houses and hospices across Gwynedd to succor war-weary border commoners"
+  ],
+  "Values": [
+    "Family solidarity is the bedrock of sovereignty; domestic strife invites foreign conquest",
+    "A noblewoman's true nobility lies in healing wounds and exercising wise benevolence",
+    "Upholding Cymric customary law and Christian piety sustains the legitimacy of the crown"
+  ],
+  "Fears": [
+    "A fatal rupture between Dafydd and Llywelyn precipitating a crushing Plantagenet invasion",
+    "Being captured by Marcher lords and wielded as a political hostage against her brother"
+  ],
+  "SpeechStyle": "Speaks with melodic warmth, gentle dignity, and profound maternal grace. Her words are diplomatically polished, calming fiery tempers and reminding fierce warlords of ancient courtesies.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

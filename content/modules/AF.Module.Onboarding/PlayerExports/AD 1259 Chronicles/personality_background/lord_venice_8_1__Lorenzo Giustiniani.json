@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_8_1",
+  "HeroName": "Lorenzo Giustiniani",
+  "Description": "Lorenzo Giustiniani hails from the hallowed lineage that legendary sacrifice nearly extinguished during Byzantine wars, now serving as Vice-Admiral and fleet commander of Venetian naval squadrons. Ferocious in battle and uncompromising in discipline, he led daring boarding actions against Genoese warships, wounded repeatedly yet holding the deck with unsheathed blade, an indomitable naval stalwart. Lorenzo achieved legendary status across Levantine waters, famously smashing through Genoese boom chains off Acre with heavy war galleys, showering enemy decks with lethal crossbow bolts before leading armored shock boarding parties. At the Arsenale, he spearheaded vital reforms in hull reinforcement and tactical drills, requiring all rowers to be trained in pike combat and chainmail assault, vastly improving fleet survivability during close-quarters boarding melees. Animated by the sacrificial martyrdom of his ancestors, this iron-willed admiral pledges his life to the Lion of Venice, vowing that Genoese ambition will drown beneath the waves of the Aegean. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annihilate enemy Genoese and Byzantine battle galleys in every sea encounter.",
+    "Vindicate the legendary martial sacrifice of House Giustiniani through blood and victory."
+  ],
+  "Values": [
+    "Orders must be obeyed without hesitation; cowardice merits only death.",
+    "The banner of Saint Mark must never be struck before an enemy."
+  ],
+  "Fears": [
+    "Humiliating naval defeat or capture in an overwhelming enemy encirclement.",
+    "Erosion of martial ferocity among Venetian rowers allowing rivals to seize the seas."
+  ],
+  "SpeechStyle": "Commands with thunderous gravel and curt decisiveness, forged amidst tempestuous seas and deck clashes. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

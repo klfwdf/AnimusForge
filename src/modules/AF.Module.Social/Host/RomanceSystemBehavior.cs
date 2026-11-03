@@ -38,7 +38,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 
 	private const int MarriageCandidateMaxAgeGap = 25;
 
-	private static readonly string[] LoveLevelTexts = new string[10] { SocialPromptTexts.Get("P047"), SocialPromptTexts.Get("P048"), SocialPromptTexts.Get("P049"), SocialPromptTexts.Get("P050"), SocialPromptTexts.Get("P051"), SocialPromptTexts.Get("P052"), SocialPromptTexts.Get("P053"), SocialPromptTexts.Get("P054"), SocialPromptTexts.Get("P055"), SocialPromptTexts.Get("P056") };
+	private static readonly PromptLanguageValue<string[]> LoveLevelTextsByLanguage = new PromptLanguageValue<string[]>(() => new string[10] { SocialPromptTexts.Get("P047"), SocialPromptTexts.Get("P048"), SocialPromptTexts.Get("P049"), SocialPromptTexts.Get("P050"), SocialPromptTexts.Get("P051"), SocialPromptTexts.Get("P052"), SocialPromptTexts.Get("P053"), SocialPromptTexts.Get("P054"), SocialPromptTexts.Get("P055"), SocialPromptTexts.Get("P056") });
+	private static string[] LoveLevelTexts => LoveLevelTextsByLanguage.Value;
 
 	private static readonly Regex LoveDeltaRegex = new Regex("\\[ACTION:LOVE_DELTA:([^\\]:]+):([+\\-]?\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -576,7 +577,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			string text = BuildMarriageRecordKey(hero.StringId, hero2.StringId);
 			if (hashSet.Add(text))
 			{
-				yield return "- " + GetHeroDisplayWithClanAndGender(hero) + SocialPromptTexts.Get("P036") + GetHeroDisplayWithClanAndGender(hero2) + SocialPromptTexts.Get("P037") + BuildBridePriceSummary(record, forPrompt: true) + "。";
+				yield return "- " + GetHeroDisplayWithClanAndGender(hero) + SocialPromptTexts.Get("P036") + GetHeroDisplayWithClanAndGender(hero2) + SocialPromptTexts.Get("P037") + BuildBridePriceSummary(record, forPrompt: true) + SocialSourceTexts.Period;
 			}
 		}
 		if (clan != null && clan2 != null)
@@ -592,7 +593,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				if (hashSet.Add(text))
 				{
 					MarriageRecord marriageRecord = GetMarriageRecord(item, spouse);
-					yield return "- " + GetHeroDisplayWithClanAndGender(item) + SocialPromptTexts.Get("P036") + GetHeroDisplayWithClanAndGender(spouse) + SocialPromptTexts.Get("P037") + BuildBridePriceSummary(marriageRecord, forPrompt: true) + "。";
+					yield return "- " + GetHeroDisplayWithClanAndGender(item) + SocialPromptTexts.Get("P036") + GetHeroDisplayWithClanAndGender(spouse) + SocialPromptTexts.Get("P037") + BuildBridePriceSummary(marriageRecord, forPrompt: true) + SocialSourceTexts.Period;
 				}
 			}
 		}
@@ -602,7 +603,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			if (hashSet.Add(text2))
 			{
 				MarriageRecord marriageRecord2 = GetMarriageRecord(Hero.MainHero, speaker);
-				yield return "- " + GetHeroDisplayWithClanAndGender(Hero.MainHero) + SocialPromptTexts.Get("P036") + GetHeroDisplayWithClanAndGender(speaker) + SocialPromptTexts.Get("P037") + BuildBridePriceSummary(marriageRecord2, forPrompt: true) + "。";
+				yield return "- " + GetHeroDisplayWithClanAndGender(Hero.MainHero) + SocialPromptTexts.Get("P036") + GetHeroDisplayWithClanAndGender(speaker) + SocialPromptTexts.Get("P037") + BuildBridePriceSummary(marriageRecord2, forPrompt: true) + SocialSourceTexts.Period;
 			}
 		}
 	}
@@ -1696,7 +1697,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		TryAppendHeroMarriageBlockers(left, SocialSourceTexts.Get("S141"), list);
 		TryAppendHeroMarriageBlockers(right, SocialSourceTexts.Get("S142"), list);
-		return string.Join("；", list.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
+		return string.Join(SocialSourceTexts.Semicolon, list.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
 	}
 
 	private static void TryAppendHeroMarriageBlockers(Hero hero, string sideLabel, List<string> reasons)
@@ -1709,7 +1710,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (!hero.IsActive)
 			{
-				reasons.Add(sideLabel + SocialSourceTexts.Get("S143"));
+				reasons.Add(SocialSourceTexts.Join(sideLabel, SocialSourceTexts.Get("S143")));
 			}
 		}
 		catch
@@ -1719,7 +1720,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.Spouse != null)
 			{
-				reasons.Add(sideLabel + SocialSourceTexts.Get("S144"));
+				reasons.Add(SocialSourceTexts.Join(sideLabel, SocialSourceTexts.Get("S144")));
 			}
 		}
 		catch
@@ -1729,7 +1730,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (!hero.IsLord)
 			{
-				reasons.Add(sideLabel + SocialSourceTexts.Get("S145"));
+				reasons.Add(SocialSourceTexts.Join(sideLabel, SocialSourceTexts.Get("S145")));
 			}
 		}
 		catch
@@ -1739,7 +1740,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.IsMinorFactionHero)
 			{
-				reasons.Add(sideLabel + SocialSourceTexts.Get("S146"));
+				reasons.Add(SocialSourceTexts.Join(sideLabel, SocialSourceTexts.Get("S146")));
 			}
 		}
 		catch
@@ -1749,7 +1750,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.IsNotable)
 			{
-				reasons.Add(sideLabel + SocialSourceTexts.Get("S147"));
+				reasons.Add(SocialSourceTexts.Join(sideLabel, SocialSourceTexts.Get("S147")));
 			}
 		}
 		catch
@@ -1759,7 +1760,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.IsTemplate)
 			{
-				reasons.Add(sideLabel + SocialSourceTexts.Get("S148"));
+				reasons.Add(SocialSourceTexts.Join(sideLabel, SocialSourceTexts.Get("S148")));
 			}
 		}
 		catch
@@ -1769,7 +1770,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.PartyBelongedTo?.MapEvent != null)
 			{
-				reasons.Add(sideLabel + SocialSourceTexts.Get("S149"));
+				reasons.Add(SocialSourceTexts.Join(sideLabel, SocialSourceTexts.Get("S149")));
 			}
 		}
 		catch
@@ -1779,7 +1780,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.PartyBelongedTo?.Army != null)
 			{
-				reasons.Add(sideLabel + SocialSourceTexts.Get("S150"));
+				reasons.Add(SocialSourceTexts.Join(sideLabel, SocialSourceTexts.Get("S150")));
 			}
 		}
 		catch
@@ -3175,7 +3176,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				string text2 = (rule?.Description ?? "").Trim();
 				if (!string.IsNullOrWhiteSpace(text2))
 				{
-					stringBuilder.Append("：").Append(text2);
+					stringBuilder.Append(SocialSourceTexts.Colon).Append(text2);
 				}
 				stringBuilder.AppendLine();
 			}

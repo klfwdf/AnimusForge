@@ -498,6 +498,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			vector = null;
 			return engine != null && engine.TryGetEmbedding(text, out vector);
 		}
+		public float[][] EmbedDocuments(IReadOnlyList<string> texts)
+			=> OnnxEmbeddingEngine.Instance?.EmbedDocuments(texts) ?? new float[texts?.Count ?? 0][];
 		public bool RerankerAvailable => OnnxCrossEncoderReranker.Instance?.IsAvailable == true;
 		public bool TryScoreBatch(string query, IReadOnlyList<string> documents, out List<float> scores)
 		{
@@ -603,15 +605,17 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private static readonly LoreCandidateRetriever Retriever = new LoreCandidateRetriever(Index, Logger.Log);
 
-	/// <summary>Game thread: publish detached rules only. Cold index work belongs to the query worker.</summary>
+	/// <summary>Game thread: publish detached rules even for an empty mention set. Cold index work belongs to the query worker.</summary>
 	internal static long PreparePromptLoreRetrieval(MentionedWorldEntities mentions)
 	{
-		if (Instance == null || mentions == null || mentions.IsEmpty)
+		if (Instance == null)
 		{
-			return Index.Version;
+			return 0L;
 		}
 		try
 		{
+			// The first dialogue must prepare the library even when the router found no entities.
+			// Otherwise its worker can mistake an unpublished rule snapshot for an empty library.
 			PublishPromptRules();
 			return Index.Version;
 		}
@@ -621,7 +625,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	/// <summary>Worker: select candidates from the prepared index without reading a Hero or Campaign.</summary>
+	/// <summary>Worker: build the prepared index before selecting candidates, including for an empty mention set; never read a Hero or Campaign.</summary>
 	internal static LoreCandidateRules CollectPromptLoreCandidates(MentionedWorldEntities mentions, long preparedVersion, PromptLoreSettings settings)
 	{
 		if (Instance == null || settings == null || preparedVersion <= 0L || Index.Version != preparedVersion)
@@ -1203,12 +1207,16 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			actualPlayerName = "";
 		}
 		const string actualNamePlaceholder = "\uE102AF_PLAYER_PERSONA_ACTUAL_NAME\uE103";
-		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, KnowledgeSourceTexts.Get("KN_Raw_007"), StringComparison.Ordinal))
+		string[] playerWords = KnowledgeSourceTexts.Variants("KN_Raw_007");
+		bool actualNameIsPlayerWord = Array.IndexOf(playerWords, actualPlayerName) >= 0;
+		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !actualNameIsPlayerWord)
 		{
 			result = result.Replace(actualPlayerName, actualNamePlaceholder);
 		}
-		result = result.Replace(KnowledgeSourceTexts.Get("KN_Raw_007"), PlayerPersonaRawNameBeginMarker + KnowledgeSourceTexts.Get("KN_Raw_007") + PlayerPersonaRawNameEndMarker);
-		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, KnowledgeSourceTexts.Get("KN_Raw_007"), StringComparison.Ordinal))
+		// Worldbooks of either language may refer to the player generically.
+		foreach (string playerWord in playerWords)
+			result = result.Replace(playerWord, PlayerPersonaRawNameBeginMarker + playerWord + PlayerPersonaRawNameEndMarker);
+		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !actualNameIsPlayerWord)
 		{
 			result = result.Replace(actualNamePlaceholder, PlayerPersonaRawNameBeginMarker + actualPlayerName + PlayerPersonaRawNameEndMarker);
 		}

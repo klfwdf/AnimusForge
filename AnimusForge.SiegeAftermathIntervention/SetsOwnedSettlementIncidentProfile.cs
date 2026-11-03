@@ -14,7 +14,7 @@ public static class SetsOwnedSettlementIncidentProfile
 
     public const string EntryOptionText = "{=!}{AF_SETS_OWNED_INCIDENT_ENTRY_OPTION_TEXT}";
 
-    public const string LeaveOptionText = "Withdraw and leave";
+    public static readonly string LeaveOptionText = SiegeAftermathCompatibilityTexts.Raw("incident_leave_option");
     public const string LeaveOptionTextEn = "Withdraw and leave";
 
     public const uint MessageColor = 0xFFB6F7A8u;

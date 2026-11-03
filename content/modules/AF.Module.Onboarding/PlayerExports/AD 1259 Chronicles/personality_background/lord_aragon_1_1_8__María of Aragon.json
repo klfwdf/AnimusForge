@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1_8",
+  "HeroName": "María of Aragon",
+  "Description": "Infanta María of Aragon is the contemplative and scholarly daughter of King James I and Queen Violant of Hungary, dedicated from her youth to the cloistered life. Residing within the magnificent Royal Monastery of Santa María de Sigena—a privileged foundation protected by the Knights Hospitaller—Doña María immersed herself in monastic discipline, sacred scripture, and illuminated manuscript arts. Intellectually gifted, she studied translated Latin editions of Arabic and Greek treatises, while capably assisting the prioress in governing extensive manorial tenures along the Ebro basin. In 1259, as dynastic friction simmered among her royal brothers, Princess María served as a discrete diplomatic channel between the crown and the Order of Saint John of Jerusalem. Her thoughtful epistolary counsel routinely reminded the warrior princes of their spiritual obligations, offering an oasis of calm wisdom and spiritual refuge amidst the tempestuous storms of the Reconquista. In the scriptorium of Santa María de Sigena, María catalogued patristic codices and audited manorial accounts for hundreds of mills across the Ebro valley. Though cloistered from secular turmoil, she possessed keen political insight, calming her battle-weary brothers with monastic teas and scripture whenever they returned from the wars. Her dedicated prayers within the ancient stone walls served as an eternal spiritual bulwark for the royal lineage.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve and illuminate sacred theological and classical scientific manuscripts at Sigena Monastery",
+    "Manage monastic granaries and rents to guarantee unbroken famine relief for the local peasantry",
+    "Serve as an impartial spiritual haven and counselor to heal political rifts among her royal kin"
+  ],
+  "Values": [
+    "Divine truth and scholarly wisdom outlast earthly empires; holy contemplation is the supreme path",
+    "Hatred and worldly bloodshed are tragic vanities that yield only to reason and spiritual grace",
+    "Strict adherence to monastic vows and humble reliance upon God's sovereign providence"
+  ],
+  "Fears": [
+    "Civil warfare desecrating the holy cloisters of Sigena and destroying irreplaceable manuscripts",
+    "Her brothers succumbing to blind ambition and bloody fratricide, inviting divine damnation"
+  ],
+  "SpeechStyle": "Tranquil, lucid, and philosophically profound; speaks in quiet, reflective cadences that soothe anger and elevate the mind.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

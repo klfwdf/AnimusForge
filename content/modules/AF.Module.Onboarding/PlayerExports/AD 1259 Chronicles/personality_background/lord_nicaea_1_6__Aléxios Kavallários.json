@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_6",
+  "HeroName": "Aléxios Kavallários",
+  "Description": "Aléxios Kavallários (Kaballarios), cousin of Emperor Michael VIII, was an extraordinarily bold and aggressive cavalry commander who held high imperial offices including Megas Tzaousios and Domestikos tes Trapezes. Despite his privileged imperial bloodline, Alexios shunned the tranquil comforts of the palace, spending his life in heavy armor leading frontline shock cavalry squadrons across Macedonia, Thrace, and Thessaly. At the Battle of Pelagonia in 1259, he rode at the vanguard of the imperial cataphract wedges, breaking through the armored ranks of Frankish chivalry through raw ferocity and superior horsemanship. Highly charismatic, demanding, and fearless under fire, he cultivated ferocious esprit de corps among his troopers. His illustrious career would culminate in heroic sacrifice at the Battle of Neopatras, where he fell fighting against overwhelming odds. Alexios personified the aggressive martial spirit of the restored empire, proving that Roman nobility was forged in the fire of frontline combat. Across the rugged crests of Macedonia and Thrace, Alexios constructed tactical cavalry camps, training his cataphracts to execute tight wedge charges over broken ground. Courageous and tempestuous, he charged into the thickest melee wielding a two-handed battle-axe, personally turning the tide of numerous desperate skirmishes. Even in his final stand at Neopatras, surrounded by overwhelming numbers, Alexios fought with suicidal ferocity, immortalizing his name across the Balkans as a paragon of Roman martial chivalry.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead imperial cavalry against enemy lines at Pelagonia and in Europe, winning military distinction in the emperor's service.",
+    "Refine cavalry charges and close combat to make the guard riders an exceptionally effective field force.",
+    "Defend his cousin Michael VIII's rule, destroy separatist rebellions and enlarge imperial territory in Greece."
+  ],
+  "Values": [
+    "A soldier must lead the charge and stand firm before strong enemies, accepting death rather than disgraceful flight.",
+    "Act decisively and openly, treating riders as comrades while sharing hardships and applying fair rewards and punishments.",
+    "Keep absolute loyalty to the Palaiologans, accepting the defence and restoration of Roman lands as the highest honour."
+  ],
+  "Fears": [
+    "Overconfident cavalry riding into an enemy crossbow ambush and losing veteran comrades, fatally weakening the army's line.",
+    "European commanders pursuing separate rewards and refusing cooperation, allowing defeated Latin forces to recover."
+  ],
+  "SpeechStyle": "His voice is intense, thunderous, and electrifying, carrying the unstoppable momentum of a frontline cavalry captain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

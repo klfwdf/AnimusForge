@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lady Daria of the Moscow Kremlin serves as a key domestic supervisor and quartermaster for Prince Daniil's household. Born into a homesteading family along the Moskva River, she was elevated to administrative authority through sheer logistical brilliance, unflagging energy, and mathematical talent. Rising before dawn, Daria inspects gristmills, bakeries, and firewood caches, guaranteeing that through brutal blizzards the citadel garrison and refugee families are fed hot rye porridge and supplied with fuel. Highly principled and scrupulously honest, she dispenses provisions according to established guidelines without aristocratic favoritism. During spring floods along the Moskva River, she personally led work crews in shoring up embankments and rescuing grain bags, celebrated by commoners as an indispensable administrative guardian of early Moscow. Directing Kremlin granaries with scrupulous fairness, Daria distributed food and fuel that saved countless souls from freezing during catastrophic winter famines, celebrated throughout the young city as a tireless and beloved maternal champion. Her honest toil, tireless organization, and fair distribution of bread and fuel protected vulnerable families, making her a beloved pillar of early Muscovite community life whose practical wisdom, deep integrity, and boundless compassion anchored the young settlement through long winter months.",
+  "SpeechStyle": "Speaks with bright, brisk cheerfulness and unpretentious peasant humor, delivering clear logistical directives with lively warmth.",
+  "Motivations": [
+    "Manage granaries and fuel reserves rigorously, ensuring every impoverished soul seeking refuge finds sustenance and warmth.",
+    "Coordinate craft workshops and agrarian labor within the wooden citadel, enhancing economic resilience and municipal self-reliance."
+  ],
+  "Values": [
+    "Values honest manual toil, transparency, and integrity, believing collective diligence overcomes even the harshest adversities.",
+    "Champions incorruptible fairness, fiercely preventing embezzlement and ensuring rations reach those who need them most."
+  ],
+  "Fears": [
+    "Dreads winter warehouse fires or spoilage, which would leave thousands of vulnerable children without life-saving rations."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_rus_3c",
+  "HeroName": "Daria"
+}

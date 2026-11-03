@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1m",
+  "HeroName": "Ana Radoslava Komnena Doukaina",
+  "Description": "Ana Radoslava Komnene Doukaina, aged nineteen in 1259, is the graceful daughter of Dragoslav and Jelena, uniting the proud lineages of the Byzantine imperial Doukai and Serbian Nemanjić nobility. Endowed with beauty, wit, and exceptional education, she moves effortlessly between classical Greek court poetry and heroic South Slavic ballads. Serving as an intimate lady-in-waiting to Queen Helen, Ana assists in teaching young noble maidens manuscript copying and the weaving of liturgical silks at the royal academy. In 1259, as various Balkan magnates seek her hand in dynastic marriage, the spirited young noblewoman maintains a discerning eye on geopolitical affairs, determined to marry only a champion worthy of her bloodline. Ana Radoslava enchants the royal court of Raška with her melodious harp playing and classical poetic recitations. Embroidering liturgical altar cloths with fine gold thread, she weaves prayers of peace and dynastic flourishing into every stitch. Courted by numerous highborn Balkan lords, the spirited maiden maintains noble composure, awaiting a champion worthy of her imperial lineage. Radiant with youth and imperial ancestry, Ana Radoslava illuminates the royal academy of Raška with her poetic and needlework talents. Her high principles and discerning intellect ensure that she will stand as a formidable partner to any future lord of the Balkans.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with lively aristocratic brilliance and melodic sweetness, sharp-witted and confident, carrying an innate imperial poise.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

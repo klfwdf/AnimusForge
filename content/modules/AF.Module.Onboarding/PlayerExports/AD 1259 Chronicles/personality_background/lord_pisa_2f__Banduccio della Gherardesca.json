@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_2f",
+  "HeroName": "Banduccio della Gherardesca",
+  "Description": "Banduccio della Gherardesca serves as a grim and resolute knight of House Gherardesca, overseeing family armories and torsion artillery in Pisa. Expert in infantry-cavalry coordination, he enforced his father's political purges with ruthless efficiency, acting as an unyielding sword for the regime. Banduccio supervised the construction of torsion ballistas and trebuchets in Pisa, inspecting cordage and munitions with ruthless engineering precision to ensure total defensive readiness. Enforcing martial law throughout city quarters, he dismantled insurgent armories and liquidated seditious cells with chilling efficiency, precluding internal coups against the regime. Cold and incorruptible, the young commander viewed dynastic survival as an absolute mathematical imperative, executing security edicts with uncompromising severity. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Extinguish all embers of sedition in Pisa through uncompromising military violence.",
+    "Forge the most advanced armaments in Tuscany to sustain permanent dynastic readiness."
+  ],
+  "Values": [
+    "Leniency toward traitors places a noose around one's own neck.",
+    "Absolute discipline and precision are the sole guarantees of victory."
+  ],
+  "Fears": [
+    "Subversive coup conspiracies breaching palace security cordons.",
+    "Sabotage or explosion destroying the central munitions depots of the clan."
+  ],
+  "SpeechStyle": "Speaks with icy brevity and mechanical resolve, unswayed by sentiment or pity. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

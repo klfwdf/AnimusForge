@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_1_6",
+  "HeroName": "Mercia Mendes de Briteiros",
+  "Description": "Mercia Mendes de Briteiros is the six-year-old third daughter of Dom Mem Rodrigues, celebrated for her extraordinarily serene, gentle, and contemplative nature. Rarely causing distress or crying, little Mercia delights in sitting quietly beside her mother or nursemaids, listening wide-eyed to Galician lullabies and devotional tales of Marian miracles. She possesses an innate affinity for wildflowers and garden herbs, weaving fragrant chaplets to place before the chapel altar in innocent devotion. Despite her tender age, she recites liturgical prayers with astonishing precision and reverence, reflecting an exceptionally precocious spiritual sensitivity. Beloved by castle attendants for her sweet and uncomplaining temperament, Mercia blossoms peacefully beneath the protective mantle of her illustrious lineage and ancient faith. Her serene piety and gentle spirit endear young Mercia to the holy chaplains of the castle, who regard her as a blessed maiden whose innocent prayers invoke divine favor upon the grand enterprise of the House of Briteiros. Mercia's sweet and contemplative disposition embodies the pure innocence of holy devotion, earning her the tender love of all who dwell within the fortress walls. Her peaceful nature and unwavering Christian contemplation invoke lasting divine blessings upon the entire lineage of Maia and Briteiros.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To pray peacefully in the gardens and weave beautiful wild blossom wreaths for the Virgin Mary.",
+    "To remain a dutiful, obedient daughter who brings calm solace to her mother."
+  ],
+  "Values": [
+    "Serenity and quiet gentleness soften the harshest corners of the world.",
+    "Pure, unadorned prayer receives the swift grace of heavenly angels."
+  ],
+  "Fears": [
+    "Loud, angry shouts and imposing, unfamiliar armed men.",
+    "Becoming lost within the cavernous, vaulted stone corridors of the fortress."
+  ],
+  "SpeechStyle": "Speaks in a shy, delicate whisper with flawless courtesy, resembling a quiet blossom in a sheltered garden. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

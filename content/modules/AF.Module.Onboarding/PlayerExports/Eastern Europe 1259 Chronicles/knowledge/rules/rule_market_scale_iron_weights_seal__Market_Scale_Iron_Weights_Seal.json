@@ -1,0 +1,52 @@
+{
+  "Id": "rule_market_scale_iron_weights_seal",
+  "Keywords": [
+    "checking weights in a market",
+    "witnesses to disputed weighing"
+  ],
+  "RagShortTexts": [
+    "Markets need checks of scales, weights and containers with locally accepted standards.",
+    "Marks aid recognition but do not replace weighing or establish quality."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "For grain, wax or metal, both parties must know whether a weighing means net goods, goods with a sack or an agreed package. Tampered beams, cords and weights accumulate small differences into substantial loss. Traders compare familiar weights or seek market witnesses; a shared method makes agreement possible.\n\nOwners’ marks and recognised stamps identify equipment without proving every use correct. Foreigners may not understand local units, and interpreters or intermediaries can favour a party. Opening, reweighing and agreeing tare at the market is easier than pursuing a claim far away. Dishonest sellers exploit haste and unfamiliar onlookers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Market leaders need ways to reweigh and hear claims. Collecting dues while ignoring false weights discourages honest suppliers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ration collection needs checks of containers, adulteration and short weight. A shared handover weighing helps prevent every later shortage being charged to the escort."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Small sellers also lose from short weighing and value trusted neighbours as witnesses. Buyers inspect the goods and packing as well as marks on weights."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

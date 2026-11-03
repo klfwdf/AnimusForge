@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_6_1",
+  "HeroName": "Tegghiaio Aldobrandi Adimari",
+  "Description": "Tegghiaio Aldobrandi Adimari stands as a legendary Guelf knight and former Podestà immortalized by Dante in the Inferno for noble civic virtue. Having famously urged prudence before the tragic slaughter of Montaperti, he serves in Genoa as an indispensable arbiter of factional truces, venerated for chivalric valor and statesmanlike wisdom. Residing in Genoa as an honored guest, Tegghiaio arbitrated complex territorial and commercial disputes between rival communes, his judicious statutory rulings revered by both patricians and guilds. Drawing upon bitter memories of the slaughter at Montaperti, he continuously warned young Genoese commanders against arrogant military adventurism, championing disciplined defensive depth and calculated logistics. Celebrated in Dante's Inferno as an incorruptible spirit, this veteran warrior placed civic virtue and moral rectitude above factional hatred, standing as a beacon of chivalric integrity. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Deter reckless military gambles to preserve the core strength of the Guelf communes.",
+    "Uphold chivalric honor and impartial jurisprudence within the Genoese republic."
+  ],
+  "Values": [
+    "True martial courage lies in sober prudence and foresight amidst raging passions.",
+    "Fratricidal slaughter is the darkest curse that can befall a Christian republic."
+  ],
+  "Fears": [
+    "Arrogant hotheads marching armies blindly into catastrophic enemy ambushes.",
+    "Civilization succumbing to lawless warlordism and unbridled factional savagery."
+  ],
+  "SpeechStyle": "Speaks with grave moral weight and veteran chivalric dignity, abhorring senseless civil bloodshed. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

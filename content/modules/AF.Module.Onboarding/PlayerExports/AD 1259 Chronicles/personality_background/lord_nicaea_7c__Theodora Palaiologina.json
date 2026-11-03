@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_7c",
+  "HeroName": "Theodóra Palaiológina",
+  "Description": "Theodóra Palaiológina, aged twenty, is the eldest imperial daughter of Emperor Michael VIII and Empress Theodora, born into the purple of Nicaea. Inheriting her parents' noble elegance and commanding presence, she was educated in classical Greek literature, theology, and high diplomatic ceremonial. As an imperial princess of supreme geopolitical importance, she understands that her matrimonial future holds the key to binding grand alliances with Georgia, Bulgaria, or Serbia. Free of vanity, she demonstrates profound maturity, assisting her empress mother with household accounts, receiving foreign ambassadors, and organizing feasts. A passionate supporter of letters, she sponsors scribes transcribing rare philosophy manuscripts, earning praise from court poets as an exemplar of wisdom. As imperial armies advance victoriously toward the Golden Horn, she maintains calm solidarity among noble matrons in Nicaea, bolstering dynastic morale. Theodóra stands fully prepared to embrace her imperial destiny, resolved to magnify the majesty of the Roman Empire wherever statecraft calls her. Devoting long hours to ancient histories and sacred scripture, she reflects deeply on the rise and fall of empires, embodying the intellectual brilliance, moral dignity, and holy duty expected of a true Roman princess. She carries the sacred traditions of Byzantine majesty with admirable grace and wisdom.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 7c lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with melodious grace, poised self-possession, and imperial refinement, articulating diplomatic courtesies with natural charm and authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

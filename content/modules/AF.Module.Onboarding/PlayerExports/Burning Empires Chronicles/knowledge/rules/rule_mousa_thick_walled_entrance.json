@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v1",
+  "Keywords": [
+    "Mousa thick-walled entrance"
+  ],
+  "RagShortTexts": [
+    "Mousa’s thick walls enclose a small interior reached through a long entrance."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mousa’s massive dry-stone walls surround a small interior, reached through a long entrance in the wall’s thickness. Food, fuel and equipment must pass through the restricted opening. The tower could display status and offer shelter, while its usable interior remained far smaller than its outer bulk."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

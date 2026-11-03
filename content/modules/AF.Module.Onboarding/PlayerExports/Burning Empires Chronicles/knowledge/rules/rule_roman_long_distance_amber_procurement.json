@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v9",
+  "Keywords": [
+    "Roman long-distance amber procurement"
+  ],
+  "RagShortTexts": [
+    "Pliny recalled distant amber procurement for display in Nero’s time."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pliny recalls an expedition in Nero’s time that obtained large quantities of amber for public display. Court demand could concentrate distant materials without one state governing the entire route. Purchasing, escort and final allocation involved different powers and costs."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

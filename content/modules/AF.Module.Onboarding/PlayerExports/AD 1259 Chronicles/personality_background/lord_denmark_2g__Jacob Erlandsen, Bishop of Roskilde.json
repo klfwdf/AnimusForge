@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2g",
+  "HeroName": "Jacob Erlandsen, Bishop of Roskilde",
+  "Description": "Archbishop Jakob Erlandsen of Lund, initially Bishop of Roskilde, was the colossal titan of Scandinavian church history, embodying ecclesiastical resistance against royal tyranny. Scion of the mighty Hvide-Galen clan, Jakob wielded vast feudal armies and commanded the colossal fortress of Hammershus on Bornholm. Championing absolute church autonomy, he convened the Council of Vejle in 1256, promulgating the historic Constitutions of Vejle, which decreed that any royal violence against a bishop would trigger an immediate, automated interdict over the entire kingdom. When King Christoffer I dared arrest and chain him in 1259, Erlandsen endured imprisonment with fierce martyrdom. Upon his release, he coordinated alliances with Prince Jaromar of Rügen and rebel dukes that battered the monarchy, immortalized as an immovable colossus of the Roman Catholic Church. Jakob Erlandsen shook Christian Europe as a relentless crusader for ultramontane papal supremacy, promulgating the celebrated 1256 Constitutions of Vejle, which decreed an automatic national interdict if any Danish bishop was imprisoned by secular authorities. When King Christoffer I incarcerated him in 1259, Jakob remained unyielding in his chains, scorning royal demands to surrender canonical immunities. Following his release, he traveled to Rome to press charges before popes, enduring hardships with apostolic defiance and standing alongside Thomas Becket as an immortal titan of church resistance.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Enforce the Constitutions of Vejle across Scandinavia, asserting the church's absolute superiority over the secular monarchy.",
+    "Consolidate the island fortress of Hammershus and allied Baltic navies to crush any royal attempts at ecclesiastical subjugation."
+  ],
+  "Values": [
+    "Holds the apostolic supremacy of Christ and Rome as absolute, maintaining that earthly crowns are mere stewards subordinate to God.",
+    "Embraces fearless, defiant martyrdom, refusing to compromise an inch of church liberty before royal dungeons or armies."
+  ],
+  "Fears": [
+    "Dreads the clergy capitulating to royal bribery and terror, allowing the sacred church of Denmark to fall into royal vassalage."
+  ],
+  "SpeechStyle": "Speaks with apocalyptic resonance like cathedral bells sounding the Day of Judgment, his prophetic decrees shaking kings.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

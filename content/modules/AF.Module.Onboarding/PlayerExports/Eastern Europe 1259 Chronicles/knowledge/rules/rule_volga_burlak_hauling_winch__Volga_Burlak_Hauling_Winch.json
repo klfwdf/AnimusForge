@@ -1,0 +1,52 @@
+{
+  "Id": "rule_volga_burlak_hauling_winch",
+  "Keywords": [
+    "hauling a boat upstream on the Volga",
+    "towpaths and river cargo"
+  ],
+  "RagShortTexts": [
+    "Upstream boats use hauling, poles or favourable wind and water, limited by banks and loads.",
+    "Towing needs people, rope and coordination; bad banks and broken lines endanger cargo."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Volga cargo generally moves more easily downstream. Upstream passage depends on wind, current, banks and draught. A usable bank permits hauling; other stretches need poles, transshipment or waiting. Lightening a boat may save effort but require more trips, and suitable landings govern rest and supply.\n\nHaulers, steersmen and bank watchers must coordinate. Snags, shoals and slippery mud abruptly alter tension, and a broken line can injure people or lose cargo. Hiring needs clear wages, food and the stretch to be worked. Added loads or unpaid wages drive helpers away; inexpensive river carriage still depends on substantial human work."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Owners need upstream time and workers’ food in their costs, beyond downstream estimates. Exactions blocking tow routes reduce supplies and local income."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts avoid taut-line danger and cooperate with the steersman at shoals. Threats do not change the current and may drive away local skill."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villagers earn from hauling while balancing farm work. Food and the end point need agreement before work, so families know when to expect them."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

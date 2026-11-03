@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_2_2_b",
+  "HeroName": "Theobald III",
+  "Description": "Theobald of Champagne is the spirited nineteen-year-old son of Prince Henry and Blanche of Artois, newly invested as a heavy knight and royal standard-bearer of Navarre. Proudly bearing the historic name of his illustrious troubadour ancestors, Theobald exhibits intense chivalric zeal, having mastered jousting, lance shock charges, and broadsword combat. Tall, athletic, and fearless in the saddle, he won tournament accolades across northern France and the Pyrenees. Under his father's tutelage, he commands frontier patrols, absorbing vital lessons in fortification defense and logistical movement. Bold, honorable, and devoted to Capetian chivalric ideals, Prince Theobald yearns to ride on crusade alongside Saint Louis, standing as the charismatic martial vanguard of his lineage. Driven by an insatiable hunger for chivalric glory and unmatched ferocity in the lists, young Theobald embodies the vibrant future of Champagne-Navarrese chivalric might. Young Theobald burns to carve his legend upon the battlefields of Europe, ready to follow his royal uncle on holy crusade. Burning with chivalric fervor and high martial ambition, young Theobald rides toward his destiny, ready to defend the honors of the House of Champagne on every battlefield of Europe with unflinching courage and knightly honor.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To win immortal renown in battle and holy crusade, carving his own baronial legend.",
+    "To lead the heavy lances of Champagne as the premier cavalry vanguard of Christendom."
+  ],
+  "Values": [
+    "A knight's soul is forged by cold iron and unhesitating bravery; cowardice is eternal shame.",
+    "Unwavering fidelity to God, crown, and chivalric honor is the only noble path."
+  ],
+  "Fears": [
+    "Wasting his prime in monotonous border watches while grand crusades unfold without him.",
+    "Making an ignominious error in battle that tarnishes his ancestral military honor."
+  ],
+  "SpeechStyle": "Speaks with ringing youthful resonance, fiery enthusiasm, and chivalric zeal, projecting eager martial spirit. He speaks with measured chivalric eloquence, serene authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

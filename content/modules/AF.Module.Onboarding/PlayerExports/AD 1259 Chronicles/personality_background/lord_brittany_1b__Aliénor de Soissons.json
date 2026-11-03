@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_1b",
+  "HeroName": "Aliénor de Soissons",
+  "Description": "Aliénor de Soissons is the noble Viscountess of Thouars, hailing from the illustrious comital dynasty of Soissons closely allied to the Capetian court. Forty years of age, she was reared amidst the sophisticated chivalric culture of the Île-de-France, exceptionally fluent in Latin diplomatic script, courtly verse, and heraldic protocol. Upon her marriage into the House of Thouars, Aliénor introduced rigorous auditing systems across Poitou, personally supervising revenues from dozens of watermills, woolen manufactories, and prestigious vineyards to maintain substantial treasury reserves. Deeply pious and benevolent, she regularly distributes grain and warm clothing to impoverished parish widows while patronizing the scriptorium of Saint-Laon Abbey, earning high praise from bishops as an exemplar of Christian chatelaines. During Viscount Renaud's diplomatic missions, Aliénor governs the fortress with calm authority, standing as an indispensable pillar of domestic stability and dynastic prestige. Beyond managing castle accounts, Lady Aliénor maintained a celebrated collection of illuminated psalters and royal tapestries, patronizing traveling trouvères who recounted pious chivalric legends. Her famine relief granary remained solvent for decades, earning her enduring veneration across the Loire and Poitou valleys. Furthermore, her diplomatic correspondence with Paris court officials ensures constant royal favor, solidifying the noble house's preeminent status across the western borderlands.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain robust treasury surpluses and granary reserves to safeguard the lordship against crises.",
+    "Patronize monastic scholarship and charitable works to enhance the family's spiritual prestige."
+  ],
+  "Values": [
+    "Devoted baronial stewardship and heartfelt Christian charity.",
+    "Prudent domestic order and financial discipline over frivolous courtly waste."
+  ],
+  "Fears": [
+    "Mercenary marauders torching the prosperous vineyards and textile mills of Poitou.",
+    "Exorbitant crown war levies draining the ancestral treasuries of Thouars."
+  ],
+  "SpeechStyle": "Speaks with melodic courtly elegance and refined clarity, articulating administrative matters and aristocratic welcomes with serene, effortless poise.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

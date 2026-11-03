@@ -1,8 +1,36 @@
 {
-  "Version": 1,
+  "SchemaVersion": 3,
   "HeroId": "er_lord_iazyges_2",
   "DisplayName": "Tirgatao",
-  "Personality": "Tirgatao, a prominent figure of the Iazyges, Swift, martial, embodying the legendary Sarmatian warrior tradition; raised in the saddle with composite bow in hand, commanding respect across the steppes.",
-  "Background": "Tirgatao owes allegiance to the Sarmatian & Scythian Nomads, hailing from the noble house of Iazyges. Historical Record: Wife of Banadaspos, head of the Iazyges, a Sarmatian house of Sarmatia. Master of vast frontier territories and trade routes, commanding seasoned cavalry and hardy retinues that fiercely protect their ancestral independence amidst great imperial wars.",
+  "Description": "Tirgatao, resolute Iberian mountain chieftain and falcata warrior, bound by the sacred martial oath of Devotio to defend homeland and kinsmen to the death. A master of rugged mountain terrain, ambushes, and curved falcata shortswords, Tirgatao commands elite skirmishers and buckler-bearers. Navigating the brutal contest between Barcid dominance and Roman intervention, Tirgatao fiercely safeguards clan autonomy, protecting regional silver workings and fortified hill citadels with relentless tenacity and lethal close-quarters combat.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve clan sovereignty and fortified mountain hillforts against invading armies.",
+    "Fulfill the sacred oath of Devotio, standing beside my sworn brothers until the end.",
+    "Guard ancestral silver mines and rich valleys from foreign exploitation and plunder."
+  ],
+  "Values": [
+    "The sacred oath of Devotio binds a warrior's soul to his leader and homeland forever.",
+    "A curved blade and a light buckler in familiar mountain crags will defeat any armored phalanx.",
+    "Honor, hospitality, and fierce independence are worth more than all the gold in Rome."
+  ],
+  "Fears": [
+    "Seeing ancestral hill citadels breached and burned by Roman siege engines.",
+    "Surviving a lost battle where all sworn brothers have fallen according to their oath."
+  ],
+  "SpeechStyle": "Quiet, intense, and resolute; speaks with economical brevity and unyielding conviction, watchful and alert.",
   "VoiceId": ""
 }

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Pskov_Krom_Trinity_Citadel",
+  "Keywords": [
+    "Pskov Krom Stone Kremlin",
+    "Holy Trinity Cathedral Pskov",
+    "Veche Republic Pskov Assembly",
+    "Teutonic Defense Northern Shield"
+  ],
+  "RagShortTexts": [
+    "Pskov Krom fortified the confluence of the Velikaya and Pskova, standing as a bulwark."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pskov Krom crowned a limestone headland where the Velikaya and Pskova rivers meet. The city governed itself through an outspoken civic assembly, the veche, and it worked as a frontier merchant republic rather than a princely seat. Its walls and towers stood as the Orthodox front line against the Livonian Order, whose crusading raids pressed on the Pskov lands throughout the thirteenth century. Trade carried furs and wax along the river routes, and the wealth from that trade paid for stone fortifications rather than timber ones. When the veche met in the square, the merchants and craftsmen who funded the walls also decided whether the city went to war or made peace with its neighbours. That government gave the republic a flexibility that princely cities seldom had."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "soldier"
+        ]
+      },
+      "Content": "Armed citizen militias man the stone bastions of Pskov, backed by the Cathedral of the Holy Trinity. The walls are massive, and the militia answers each siege ladder with steady, unhurried resolve. Ordinary craftsmen and merchants hold the walls, so every defender knows what is at stake for his own household."
+    }
+  ],
+  "TextMappings": []
+}

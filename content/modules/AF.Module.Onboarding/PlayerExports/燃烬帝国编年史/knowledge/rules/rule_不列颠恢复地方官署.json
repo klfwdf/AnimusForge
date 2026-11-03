@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v7",
+  "Keywords": [
+    "不列颠恢复地方官署"
+  ],
+  "RagShortTexts": [
+    "狄奥多西整修据点，也恢复地方行政。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狄奥多西整修据点，也恢复地方行政。城市、驻军和乡村需要能确认责任的官署，军队夺回财物后也有归属与秩序问题。战斗成功与可持续治理须分别安排。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

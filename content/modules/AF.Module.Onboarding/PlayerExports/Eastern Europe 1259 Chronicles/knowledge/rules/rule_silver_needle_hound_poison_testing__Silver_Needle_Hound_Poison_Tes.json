@@ -1,0 +1,52 @@
+{
+  "Id": "rule_silver_needle_hound_poison_testing",
+  "Keywords": [
+    "poison fears at a feast",
+    "trust in household food service"
+  ],
+  "RagShortTexts": [
+    "Poison fears concern kitchens, servers and trust, and rumours easily become accusations.",
+    "Tasting or watching silver cannot ensure safety, nor does illness alone prove poisoning."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A host with enemies worries who entered the kitchen, brought a wine jar or served a dish. Many people handle purchase, storage and cooking; spoiled leftovers, dirty vessels and mistaken ingredients also cause illness, though onlookers may immediately suspect a plot. Trusted duties and known vessels make later inquiries easier without removing every risk.\n\nSome trust tasting or a change in silver as reassurance, but foods, utensils and onset times differ, and one uneventful taste does not prove a table safe. A suddenly ill guest needs care, drink and experienced help while the host asks who ate what. Threatening servants into admissions turns fear and guesses into statements and damages household ties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lords need care for patients and clear accounts from kitchen workers. Punishing guesses can silence people who actually know purchases and handovers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Guards respond to poison alarms without rash violence or blocking care. Ill travelers need accounts of food, water and companions rather than an immediate scapegoat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Kitchen workers’ livelihoods suffer when guests fall ill. Clear recollection of supplies and handovers explains events better than echoing a patron’s suspicion."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

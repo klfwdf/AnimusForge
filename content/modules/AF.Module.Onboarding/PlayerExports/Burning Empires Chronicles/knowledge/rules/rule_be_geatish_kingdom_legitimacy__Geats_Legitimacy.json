@@ -1,0 +1,59 @@
+{
+  "Id": "be_geatish_kingdom_legitimacy",
+  "Keywords": [
+    "Geats Legitimacy",
+    "Gissur’s gifts and home security"
+  ],
+  "RagShortTexts": [
+    "Gifts, protection and recognition support Gissur.",
+    "Returning vessels do not excuse damaged fields."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gifts, protection and recognition sustain leadership. Maritime reputation needs home security; a returning fleet does not excuse ruined fields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gifts, protection and recognition support Gissur. Military recognition also rests on rewards and relief; a title needs willing action. Returning vessels do not excuse damaged fields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Returning vessels do not excuse damaged fields. Nominal rights require local execution, with consent and supply both shaping authority. Gifts, protection and recognition support Gissur."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gifts, protection and recognition support Gissur. Households judge rule through protected families, land and responses to appeals. Returning vessels do not excuse damaged fields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Returning vessels do not excuse damaged fields. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Gifts, protection and recognition support Gissur."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

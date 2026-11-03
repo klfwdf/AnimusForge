@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_5_1_4",
+  "HeroName": "Uilliam de Brùs",
+  "Description": "William de Brus is the second son of Robert V, Lord of Annandale, and Isabella de Clare, eleven years of age. Athletic, spirited, and sharp-featured, his eager gray eyes reveal an intense passion for the chivalric arts of war. Bred in the martial atmosphere of Lochmaben Castle, young William undergoes strict page and squire training, practicing daily with broadsword, buckler, shortbow, and falconry. He hero-worships his elder brother Robert VI, enthusiastically emulating his cavalry charges in junior tilting yard contests against older boys. Castle household records note his possession of a prized Highland destrier pony and custom steel dagger, accompanying his father along the Solway frontier outposts. Genial, fearless, and intensely loyal, William commands natural camaraderie among the castle squires, eagerly awaiting the day he might take up knightly vows. Riding through the wind-swept moorlands of Annandale, young William demonstrates extraordinary skill with warhorse, bow, and falcon; fiercely loyal to his father and elder brother, he eagerly trains alongside household men-at-arms, determined to forge his name among the foremost chivalric champions and frontier guardians of Scotland and England, upholding family martial prowess with fiery determination, honor, and courage on every field of battle.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master equestrian combat and swordplay to earn his spurs and fight alongside his brother Robert.",
+    "Protect his younger brothers and uphold the honor of Clan Bruce in every junior contest."
+  ],
+  "Values": [
+    "Values physical bravery, chivalric brotherhood, and unhesitating loyalty above scholarly ease.",
+    "Believes true noble manhood is demonstrated through martial courage and devoted service to one's kin."
+  ],
+  "Fears": [
+    "Fears being thought weak or unready by his formidable father and elder brother.",
+    "Dreads the sudden horrors of warfare bringing harm or death to his family."
+  ],
+  "SpeechStyle": "Speaks with boyish enthusiasm and energetic vigor, eager, direct, and brimming with chivalric zeal.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

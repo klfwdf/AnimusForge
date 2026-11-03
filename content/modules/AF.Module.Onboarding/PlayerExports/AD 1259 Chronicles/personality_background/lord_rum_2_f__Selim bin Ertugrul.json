@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_2_f",
+  "HeroName": "Selim bin Ertugrul",
+  "Description": "Selim bin Ertugrul is seven, the youngest child of Ertugrul and Halime Hatun. He is slight and pale, with bright dark eyes, and he usually glances at an adult beside him before he speaks. A fine cord, twisted from wool by his mother, is tied around his left wrist, and he will not take it off, since it is said to keep him safe. He wears a small grey wool tunic with matching strips of cloth sewn at the collar and cuffs, and a little wooden horse carved by hand hangs at his waist. His body is not robust, and he often catches colds in winter, lying wrapped in felt for a whole day, and when he wakes he presses the adults with questions about the world beyond the steppe. The chronicles do not record Selim, so he is a family member of this game who spends most of his time inside the tent. He likes wooden horses and small knives, and sits quietly to carve, making the legs of his little horse slim and straight before setting it beside the felt. One winter he ran a high fever, and his mother sat up with him all night, and when he woke his first act was to press the carved horse into her hand. He speaks little but remembers well, and can recite every grazing ground the adults have named. His ambition is to grow quickly, to ride and herd as his brothers do, and to stop lying in the tent watching others work. His deepest fear is that his body will never bear the strain of riding, so that he cannot even guard a flock and becomes a burden to the household.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow stronger day by day, learn to ride and herd so he can guard the flocks like his brothers, and stop spending his days in the tent watching others work, his greatest wish.",
+    "Learn from his mother how to look after himself, how to keep warm in winter and avoid catching colds, so his family stops worrying about his illnesses and he can help her.",
+    "Remember the names of every river and pasture and carve each one on the base of his wooden horse, making a private map of the steppe to keep for the days ahead."
+  ],
+  "Values": [
+    "Perseverance and self-discipline, believing that practice must continue each day even when his body is weak, even if only on a small pony at the edge of camp.",
+    "Dependence on family, treating the cord his mother twisted as a token of protection and preferring to wear it all his life rather than take it off.",
+    "Focus and patience, able to carve quietly for an entire afternoon, with an almost stubborn care for the smallest grain of the wood, never doing anything carelessly."
+  ],
+  "Fears": [
+    "His body never bearing the strain of riding, so he cannot even guard a flock and becomes a burden to the household that the adults sigh over again and again.",
+    "Another winter fever keeping him in the felt for days, while he watches his mother sit up through the night and cannot ease the worry in her heart."
+  ],
+  "SpeechStyle": "Speaks little and softly, glancing at a nearby adult before answering. Coaxing and affectionate with his mother, timid behind his brothers. Recites pasture names in one earnest breath, as if reciting a poem.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

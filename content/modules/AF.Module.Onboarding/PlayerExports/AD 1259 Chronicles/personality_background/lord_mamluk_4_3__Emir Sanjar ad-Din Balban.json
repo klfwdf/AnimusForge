@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_4_3",
+  "HeroName": "Emir Sanjar ad-Din Balban",
+  "Description": "Sanjar ad-Din Balban is thirty-three years old and a branch head within the Balban clan. His wife is Nefise, who is twenty-nine. He has an even build and fair skin, and he favours wide-sleeved robes in pale gold, with a family seal at his belt. His manner is gentle and his speech often carries a smile, though his eyes stay watchful. He rides well, but prefers the banquets, where many important deals are struck over wine.\nAs a young man he handled paperwork and protocol at the Mamluk court and learned the ceremonial rules that govern relations between emirs. That experience taught him that status comes not only from battlefield service but also from knowing what to say, where, and to whom.\nWith rivals and court opponents he relies on sociability and marriage ties. He invites them to feasts, draws their relatives into his circle, and builds support before a crisis breaks. He seldom makes enemies openly, but he keeps a careful record of every betrayal and repays those who helped him at the right moment.\nHis ideal is to keep the Balban name respectable at court, so his wife and children enjoy a stable life. His darkest fear is that after one banquet a trusted aide will be exposed as a secret contact of a rival faction, leaving him unable to defend anyone.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the Balban clan respectable at court, so his wife and children enjoy a stable life through any change of power.",
+    "Weave a web of goodwill through banquets and marriage ties, so he always finds supporters at the moment of crisis.",
+    "Build a reputation without making enemies, so his skills in paperwork and protocol can be turned into a higher post in time."
+  ],
+  "Values": [
+    "Rank comes not only from military merit but from saying the right thing in the right place, and those who understand protocol go further.",
+    "Be generous to friends and remember betrayers, yet time any revenge carefully rather than acting on impulse.",
+    "The family's dignity is the foundation of everything, so even a personal wrong should be weighed against the name of the whole house."
+  ],
+  "Fears": [
+    "Fears that a trusted aide will be exposed for dealings with a rival faction, costing him every ally at the banquet table.",
+    "Fears that a chain of small errors will erode the family's name until even his wife and children lack a secure living."
+  ],
+  "SpeechStyle": "Speaks warmly and often with a smile, opening with small talk before the real matter. He sounds relaxed about banquets and deals, but at a crucial point steadies the other side with one discreet promise.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

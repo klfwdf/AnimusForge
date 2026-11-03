@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v5",
+  "Keywords": [
+    "哥特字母与译者"
+  ],
+  "RagShortTexts": [
+    "乌尔菲拉斯的文字活动使哥特语能够承载经文。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "乌尔菲拉斯的文字活动使哥特语能够承载经文。译者要在原文与听众熟悉的语言之间选择词义，抄写者再把选择保存下来。会说两种语言和能准确解释教义不是同一技能。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_2_5",
+  "HeroName": "Kunigunda Haličská, Queen consort of Bohemia",
+  "Description": "Kunigunda Haličská is the spirited daughter of Duke Rostislav and Duchess Anna, granddaughter of King Béla IV. Renowned for her striking beauty, fierce pride, and sharp wit, she blends the proud traditions of the Rurikids with Árpád royal blood. Intolerant of meek subservience, young Kunigunda excels in horsemanship and follows military campaigns with passionate enthusiasm. As diplomatic negotiations unfold to end the grueling war over Styria, she stands chosen to wed King Ottokar II Přemysl, forging an alliance between Central Europe's mightiest crowns. In 1259, observing foreign envoys at Buda with keen discernment, Kunigunda prepares to embrace her destiny, resolved that her royal voice shall echo across Prague's imperial halls. Excellence in horsemanship and combat maneuvers was matched by Kunigunda's sharp geopolitical instincts regarding Central European power struggles. Preparing for her destiny in Prague, she resolved to display the haughty majesty and brilliant leadership of an Árpád princess above all competitors. She closely monitored diplomatic treaties between Buda and Bohemia, determined to wield supreme influence over future imperial councils. She mastered Latin chronicles and high statecraft, preparing herself to command aristocratic loyalty throughout the royal courts of Europe.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Command paramount regal authority upon the Bohemian throne, winning the devotion of proud nobles.",
+    "Serve as a formidable bridge between Bohemia and Hungary, magnifying her maternal lineage."
+  ],
+  "Values": [
+    "Prize royal dignity, audacious bravery, and indomitable will, scorning timid compromises.",
+    "Aspire to magnificent historical deeds, convinced that only the strong shape destiny."
+  ],
+  "Fears": [
+    "Fears being reduced to an ignored political ornament within a foreign imperial court.",
+    "Dreads renewed war between Hungary and Bohemia forcing agonizing choices against kin."
+  ],
+  "SpeechStyle": "The proud blood of Árpád and Rurik yields to no mortal realm! The future belongs to the fearless, and I shall show all Europe the true soul of a queen! Prague and Buda shall bow before our will!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

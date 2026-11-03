@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_yuriev_polsky_stone_carving_9cb98181",
+  "Keywords": [
+    "Stone church at Yuriev Polsky",
+    "Stoneworkers and patrons at Yuriev Polsky"
+  ],
+  "RagShortTexts": [
+    "Yuriev Polsky's stone church required craftsmen, material and patrons.",
+    "Carving and worship carried local meaning while upkeep required work and provisions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Yuriev Polsky's stone church required stone, craftsmen and patrons, with carving and worship giving it religious and local importance. Maintenance, clergy and workers required supplies while neighboring households still tended fields and domestic work."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Yuriev Polsky's stone church required stone, craftsmen and patrons, with carving and worship giving it religious and local importance. Maintenance, clergy and workers required supplies while neighboring households still tended fields and domestic work. Passing troops sought prayer, food or space for wounded people, limited by hosts' means. Armed visitors consumed food and lodging, while patients needed carers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Yuriev Polsky's stone church required stone, craftsmen and patrons, with carving and worship giving it religious and local importance. Maintenance, clergy and workers required supplies while neighboring households still tended fields and domestic work. Patronage sustained standing and local ties but required actual land, goods and work. Clergy balanced worship and hospitality and could not meet every additional requisition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Yuriev Polsky's stone church required stone, craftsmen and patrons, with carving and worship giving it religious and local importance. Maintenance, clergy and workers required supplies while neighboring households still tended fields and domestic work. Households sought clergy for marriage, burial, prayer and messages and helped lighting and repairs. Gifts and time drew on finite stores, with kin sharing funerals and care."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

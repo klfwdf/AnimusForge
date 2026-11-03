@@ -1,0 +1,59 @@
+{
+  "Id": "be_kushan_kingdom_legitimacy",
+  "Keywords": [
+    "Kushans Legitimacy",
+    "Kipunada’s titles and coinage"
+  ],
+  "RagShortTexts": [
+    "Titles, coin names and local recognition support Kipunada.",
+    "Traders judge coin acceptance; elites judge land and jurisdiction."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Royal titles, coin names and local recognition support the court. Traders ask whether coins are accepted, elites whether property and jurisdiction remain protected."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Titles, coin names and local recognition support Kipunada. Military recognition also rests on rewards and relief; a title needs willing action. Traders judge coin acceptance; elites judge land and jurisdiction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Traders judge coin acceptance; elites judge land and jurisdiction. Nominal rights require local execution, with consent and supply both shaping authority. Titles, coin names and local recognition support Kipunada."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Titles, coin names and local recognition support Kipunada. Households judge rule through protected families, land and responses to appeals. Traders judge coin acceptance; elites judge land and jurisdiction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Traders judge coin acceptance; elites judge land and jurisdiction. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Titles, coin names and local recognition support Kipunada."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

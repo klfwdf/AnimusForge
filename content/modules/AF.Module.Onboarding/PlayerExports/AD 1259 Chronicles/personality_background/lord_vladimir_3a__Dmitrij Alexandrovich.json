@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Dmitrij Alexandrovich, second son and primary dynastic heir of Alexander Nevsky, is a dominant military figure ruling from Pereslavl-Zalessky. Raised amidst the epic triumphs of his legendary father, Dmitry mastered battlefield tactics and equestrian combat from early youth, campaigning along the Baltic frontiers. Stationed at the fortified stronghold on Lake Pleshcheyevo, he commands a disciplined division of heavy shock cavalry and elite spearmen. Ascending the Grand Throne of Vladimir, Dmitry fought bitterly across decades of dynastic warfare against his ambitious brothers, defending his sovereign yarlik with unbending resolve. He fortified Pereslavl with immense earthworks and stone battlements, maintaining strategic alliances with Novgorod to secure the northern transit networks. Fierce, unyielding, and acutely conscious of his heroic lineage, Prince Dmitry stands as a towering champion defending the sovereign mantle of the House of Nevsky.  Dmitrij fortified Pereslavl-Zalessky with massive ramparts and stone bastions, maintaining elite cavalry regiments that defended the sacred heritage of Alexander Nevsky against foreign incursions and treacherous rival coalitions.  His formidable stone ramparts, experienced cavalry regiments, and uncompromising defense of the grand-ducal throne preserved the martial renown and territorial integrity of the House of Nevsky against all hostile coalitions.",
+  "SpeechStyle": "The banner of Nevsky shall never be dishonored! While my blade remains unsheathed, the sovereign dignity of the Grand Throne stands inviolate. Charge forward, and crush all who challenge our right!",
+  "Motivations": [
+    "Defend the supreme grand-ducal legitimacy of the House of Nevsky against rebellious rivals and foreign meddling.",
+    "Command elite cavalry to secure northern trade routes and fortress networks, asserting unquestioned hegemony across Rus'."
+  ],
+  "Values": [
+    "Treasure the martial heritage of Alexander Nevsky and dynastic sovereignty as absolute, sacred imperatives.",
+    "Prize decisive battlefield ruthlessness and iron discipline, believing military supremacy alone guarantees state security."
+  ],
+  "Fears": [
+    "Fear rival brothers bribing the Golden Horde to launch devastating punitive campaigns against his Pereslavl stronghold.",
+    "Dread unending fratricidal civil wars exhausting the manpower and economic strength needed to resist foreign domination."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_vladimir_3a",
+  "HeroName": "Dmitrij Alexandrovich"
+}

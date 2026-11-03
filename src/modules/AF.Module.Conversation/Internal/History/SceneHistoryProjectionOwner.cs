@@ -245,11 +245,13 @@ internal static bool IsSingleUseSceneNpcFactText(string text)
 		{
 			return false;
 		}
-		if (text3.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0300"), StringComparison.Ordinal) && text3.EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0301"), StringComparison.Ordinal))
+		if ((text3.StartsWith(ConversationRuntimeTexts.RawSource("AF_CONV_Runtime_0300"), StringComparison.Ordinal) && text3.EndsWith(ConversationRuntimeTexts.RawSource("AF_CONV_Runtime_0301"), StringComparison.Ordinal))
+			|| (text3.StartsWith(ConversationRuntimeTexts.RawEnglish("AF_CONV_Runtime_0300"), StringComparison.Ordinal) && text3.EndsWith(ConversationRuntimeTexts.RawEnglish("AF_CONV_Runtime_0301"), StringComparison.Ordinal)))
 		{
 			return true;
 		}
-		if (text3.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0302"), StringComparison.Ordinal) && text3.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0303")) && text3.EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0304"), StringComparison.Ordinal))
+		if ((text3.StartsWith(ConversationRuntimeTexts.RawSource("AF_CONV_Runtime_0302"), StringComparison.Ordinal) && text3.Contains(ConversationRuntimeTexts.RawSource("AF_CONV_Runtime_0303")) && text3.EndsWith(ConversationRuntimeTexts.RawSource("AF_CONV_Runtime_0304"), StringComparison.Ordinal))
+			|| (text3.StartsWith(ConversationRuntimeTexts.RawEnglish("AF_CONV_Runtime_0302"), StringComparison.Ordinal) && text3.Contains(ConversationRuntimeTexts.RawEnglish("AF_CONV_Runtime_0303")) && text3.EndsWith(ConversationRuntimeTexts.RawEnglish("AF_CONV_Runtime_0304"), StringComparison.Ordinal)))
 		{
 			return true;
 		}

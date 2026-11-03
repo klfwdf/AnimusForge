@@ -1,0 +1,59 @@
+{
+  "Id": "be_hibernian_kingdom_internal",
+  "Keywords": [
+    "Hibernians Nobility",
+    "Hibernian kin marriage and fosterage"
+  ],
+  "RagShortTexts": [
+    "Niall joins kin and local chiefs.",
+    "Marriage, fosterage and gifts do not transfer every feud to all partners."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Niall’s following joins kin and local chiefs. Marriage, fosterage and gifts form connections without making every district inherit another leader’s feud."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Niall joins kin and local chiefs. Followers retain family ties; decisions about guards and distant service affect common participation. Marriage, fosterage and gifts do not transfer every feud to all partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Marriage, fosterage and gifts do not transfer every feud to all partners. Coordination allocates actual supply and protection duties, not merely titles. Niall joins kin and local chiefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Niall joins kin and local chiefs. Households compare burdens with neighbors; unmatched protection weakens cooperation. Marriage, fosterage and gifts do not transfer every feud to all partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Marriage, fosterage and gifts do not transfer every feud to all partners. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Niall joins kin and local chiefs."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

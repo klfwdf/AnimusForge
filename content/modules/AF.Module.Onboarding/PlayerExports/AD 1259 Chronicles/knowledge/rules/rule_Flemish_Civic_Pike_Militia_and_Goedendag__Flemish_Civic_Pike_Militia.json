@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Flemish_Civic_Pike_Militia_and_Goedendag",
+  "Keywords": [
+    "Flemish Civic Pike Militia",
+    "Goedendag Spiked Iron Club Staff",
+    "Ghent and Bruges Cloth Guilds",
+    "Anti Knight Dense Infantry Square"
+  ],
+  "RagShortTexts": [
+    "Flemish urban levies connect military duties with workshop and household burdens.",
+    "Discipline and mutual protection matter more than claims of an invincible cheap weapon."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The wealthy textile towns of Flanders, Bruges, Ghent, and Ypres, raised civic infantry that fought in dense formations and relied on discipline rather than noble rank. Craft guilds organised the militia, and weavers, fullers, and drapers formed the pike hedges that faced the cavalry of the count and the king. Their chief weapon was the goedendag, a heavy wooden club capped with a steel spike that could impale a horse or crush a plate helm. Such men had little land to lose, but they had their guild halls, their charters, and their trade, and they fought hard to keep them. The sight of a town's banners moving through the streets could steady a civic army before it ever met an enemy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Communal magistrates resisted French royal demands for feudal dues, and every new tax or levy was a fight over who would pay. When the belfry tocsin rang, thousands of disciplined guild craftsmen gathered beneath their trade banners, and a count who ignored that bell risked a rising in his own capital."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A townsman's duty in the levy takes time from his bench and money from his household. A stout staff or spear is useful only if the line keeps order and men protect one another. No cheap weapon effortlessly defeats every helmet or charging horse. Later images of Flemish victories cannot be treated as an equipment list for every town militia in 1259."
+    }
+  ],
+  "TextMappings": []
+}

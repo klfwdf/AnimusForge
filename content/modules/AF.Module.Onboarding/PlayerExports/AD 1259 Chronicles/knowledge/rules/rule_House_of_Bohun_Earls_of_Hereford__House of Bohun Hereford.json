@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Bohun_Earls_of_Hereford",
+  "Keywords": [
+    "House of Bohun Hereford",
+    "Hereditary Lord High Constables",
+    "Earls of Essex and Hereford",
+    "Welsh Marcher Lords Bohun"
+  ],
+  "RagShortTexts": [
+    "The Bohun dynasty held the hereditary Constableship of England, dominating the rugged Welsh."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Bohun family held the hereditary office of Constable of England, and their castles on the Severn and in Essex gave them control of the Welsh borderlands. Humphrey de Bohun, Earl of Hereford, emerged as a decisive baronial voice in the 1258 reform movement, which sought to bind the crown to a council of barons. The Constable's duties covered the army's order of march and the arrangement of its camps, so the family's counsel shaped military decisions as well as the reform talks. Bohun earldoms also held Essex estates, which tied their finances to London and the Thames trade. In the years after Oxford, Bohun lords used their household knights to keep the peace in the border counties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Constable's seal certified feudal muster rolls, so every levy that marched to the Welsh frontier passed under the Earl of Hereford's hand. Plantagenet campaigns depended on his countersignature for pay, and a baron who wanted a campaign delayed could simply withhold his certificate."
+    }
+  ],
+  "TextMappings": []
+}

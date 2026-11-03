@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Canterbury_Primatial_See",
+  "Keywords": [
+    "Canterbury Primatial See",
+    "Thomas Becket Martyr Shrine",
+    "Canterbury Tales Pilgrimage Path",
+    "Ecclesiastical Immunity Papal Legate"
+  ],
+  "RagShortTexts": [
+    "Canterbury's archbishop asserts religious authority in English royal and church affairs.",
+    "Ecclesiastical jurisdiction can conflict with royal demands and legal process."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Canterbury was the seat of the Archbishop who styled himself Primate of All England, a title that gave the see a claim to supremacy over the English church which Rome repeatedly tested. The archbishop presided over provincial councils, consecrated bishops of the southern province, and held the ancient right to crown the kings. The archbishop could invoke canon law to shield clerks from secular courts, and he could excommunicate men who seized church property. The cathedral priory managed manors, mills, and tithes across Kent, and its revenues swelled with pilgrims at Becket's shrine. Successive kings learned that a quarrel with Canterbury cost them the support of bishops and parish clergy, so the archbishop remained a permanent counterweight to royal ambition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "The Archbishop of Canterbury held the ancient right to crown English kings, and he asserted canon law immunities against intrusive royal writs. Bishops of the province answered to the primate in matters of Church discipline, and the primate guarded the independence of the Church against the king's justices."
+    }
+  ],
+  "TextMappings": []
+}

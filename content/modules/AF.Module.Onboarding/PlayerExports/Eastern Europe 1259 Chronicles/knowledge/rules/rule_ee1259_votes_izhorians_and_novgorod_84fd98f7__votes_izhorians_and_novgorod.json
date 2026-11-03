@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_votes_izhorians_and_novgorod_84fd98f7",
+  "Keywords": [
+    "votes izhorians and novgorod",
+    "Votes Izhorians and Novgorodian ties"
+  ],
+  "RagShortTexts": [
+    "Votes and Izhorians have local communities and languages.",
+    "Tribute, baptism and political cooperation are distinct ties."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Votes and Izhorians around the Gulf of Finland deal with Novgorod through leaders, clergy and collectors. Baptism forms church ties, while tribute and defence require their own arrangements. Settlements differ over exchange, service and outsiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A guide must know the particular estuary or track. Neighboring speakers need not know identical routes; demanding combat service changes the risks of an agreement to guide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Negotiation must specify tribute, watches or hospitality. Adding every duty merely because a settlement is baptized damages both local cooperation and church ties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Coastal households need fisheries, fields and markets. Hosting envoys consumes time and food; demands still require explanation even when visitors and hosts share baptism."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

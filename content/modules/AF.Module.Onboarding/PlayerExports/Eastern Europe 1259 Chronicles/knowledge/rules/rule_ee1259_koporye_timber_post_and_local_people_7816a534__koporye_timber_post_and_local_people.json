@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_koporye_timber_post_and_local_people_7816a534",
+  "Keywords": [
+    "Koporye post and Votic communities",
+    "Supplies at Koporye in Votic territory"
+  ],
+  "RagShortTexts": [
+    "Koporye involved Order activity and Rus counteraction in Votic lands.",
+    "Holding a post still required protected routes, food and neighboring cooperation."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Koporye related to Order activity and Rus counteraction in Votic territory. Holding a post required roads, food and cooperation. Nearby households protected kin and animals during military movement and sought passage or protection from competing powers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Koporye related to Order activity and Rus counteraction in Votic territory. Holding a post required roads, food and cooperation. Nearby households protected kin and animals during military movement and sought passage or protection from competing powers. Guards arranged watches, messages and entry checks; pursuit reduced defenders. Escorts needed closing times, waiting places and arrangements for injured mounts and cargo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Koporye related to Order activity and Rus counteraction in Votic territory. Holding a post required roads, food and cooperation. Nearby households protected kin and animals during military movement and sought passage or protection from competing powers. Lords balanced repair, stores and retainers against revenue. Requisitioned work advanced repairs at a cost to harvests, while relief required reliable reports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Koporye related to Order activity and Rus counteraction in Votic territory. Holding a post required roads, food and cooperation. Nearby households protected kin and animals during military movement and sought passage or protection from competing powers. Outlying households chose what to move, with animals, seed and kin competing for carts. Refuge inside required shelter, food and water, while staying home brought other risks."
+    }
+  ],
+  "TextMappings": []
+}

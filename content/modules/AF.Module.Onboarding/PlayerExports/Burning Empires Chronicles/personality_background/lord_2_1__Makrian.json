@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_2_1",
+  "DisplayName": "Makrian",
+  "HeroName": "Makrian",
+  "Description": "Macrian ruled in 374 AD as the paramount King of the Bucinobantes and supreme warlord of the Alamannic tribal confederation along the Main and Rhine valleys. Towering in stature and renowned for ferocity, he remained the most relentless nemesis of Emperor Valentinian I for over a decade. Macrian repeatedly spearheaded devastating cross-Rhine campaigns, sacking legionary garrisons across eastern Gaul. Valentinian launched massive punitive manhunts into the Black Forest to capture or assassinate the Alamannic king, but Macrian exploited trackless bogs and dense pine forests to evade Roman encirclement and rebuild his warbands. By 374 AD, strategic crises along the Danube forced Valentinian to seek peace, meeting Macrian on a barge near Mainz to officially grant him the title of allied Roman king, cementing Macrian's legacy as one of the few barbarian kings to compel an imperial Augustus into parity negotiations. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Macrian ruled in 374 AD as the paramount King of the Bucinobantes and supreme warlord of the Alamannic tribal confederation along the Main and Rhine valleys. Towering in stature and renowned for ferocity, he remained the most relentless nemesis of Emperor Valentinian I for over a decade. Macrian repeatedly spearheaded devastating cross-Rhine campaigns, sacking legionary garrisons across eastern Gaul. Valentinian launched massive punitive manhunts into the Black Forest to capture or assassinate the Alamannic king, but Macrian exploited trackless bogs and dense pine forests to evade Roman encirclement and rebuild his warbands. By 374 AD, strategic crises along the Danube forced Valentinian to seek peace, meeting Macrian on a barge near Mainz to officially grant him the title of allied Roman king, cementing Macrian's legacy as one of the few barbarian kings to compel an imperial Augustus into parity negotiations. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with booming, unbridled Germanic ferocity; boastful yet strategically shrewd, seasoned by decades of brutal survival against Roman legions.",
+  "PersonalSpeechStyle": "Speaks with booming, unbridled Germanic ferocity; boastful yet strategically shrewd, seasoned by decades of brutal survival against Roman legions.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Force Valentinian into formal peace parity, securing Alamannic dominion along the Main Valley",
+    "Amass Roman bullion and armor tribute to forge an unshakeable pan-Germanic alliance"
+  ],
+  "Values": [
+    "Germanic liberty is won by the broadaxe alone; sacred groves shall never bear Roman castella",
+    "Facing a formidable foe demands blood; surrender is an indelible curse upon one's clan"
+  ],
+  "Fears": [
+    "Fears neighboring Burgundians exploiting frontier distractions to seize prized salt springs"
+  ],
+  "Personality": "Macrian ruled in 374 AD as the paramount King of the Bucinobantes and supreme warlord of the Alamannic tribal confederation along the Main and Rhine valleys. Towering in stature and renowned for ferocity, he remained the most relentless nemesis of Emperor Valentinian I for over a decade. Macrian repeatedly spearheaded devastating cross-Rhine campaigns, sacking legionary garrisons across eastern Gaul. Valentinian launched massive punitive manhunts into the Black Forest to capture or assassinate the Alamannic king, but Macrian exploited trackless bogs and dense pine forests to evade Roman encirclement and rebuild his warbands. By 374 AD, strategic crises along the Danube forced Valentinian to seek peace, meeting Macrian on a barge near Mainz to officially grant him the title of allied Roman king, cementing Macrian's legacy as one of the few barbarian kings to compel an imperial Augustus into parity negotiations. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

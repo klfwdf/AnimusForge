@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_annona_militaris_v2",
+  "Keywords": [
+    "Lauriacum grain ships"
+  ],
+  "RagShortTexts": [
+    "Blocking grain access to Seleucia left soldiers and residents hungry together."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "When Isaurian forces approached Seleucia, grain ships used the Calycadnus and the attackers blocked access near its mouth. Supplies failed to enter, leaving soldiers and residents hungry together. Defenders still held the walls, but stores depended on transport beyond them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A garrison can hold its gates and still lose its rations when the boat route closes. Escorts need to report the river mouth and unloading point together; an intact wall says nothing about grain available for issue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "City officers faced civilians and troops sharing a broken supply line. Relief had to restore transport, not merely add orders or nominal allocations; the same shortage could worsen urban disorder."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

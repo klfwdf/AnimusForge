@@ -1,0 +1,50 @@
+{
+  "Id": "rule_Mamluk_Ascendancy_and_Ain_Jalut_Eve",
+  "Keywords": [
+    "Mamluk Ascendancy 1259",
+    "Eve of Ain Jalut Battle",
+    "Qutuz and Baibars Leadership",
+    "Cairo Slave Guard Shock Force"
+  ],
+  "RagShortTexts": [
+    "Egyptian military power needed ties, revenue and transport amid concern about Mongol news."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Egypt’s Mamluk commanders drew strength from military ties, training and resources amid rivalry at court. Cavalry, weapons and forts required iqta revenue, grain taxes and transport. News of Baghdad’s sack heightened concern about Mongol power, while court and local communities judged events through the envoys and merchants reaching them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The slave-soldiers of Cairo demanded full submission and heavy war taxes from the notables of Egypt. Qutuz had confiscated baronial bullion across the land and declared that any nobleman who withheld coin from the holy defence would lose both fortune and head. Ledgers of every confiscation went to the sultan's treasury, and the men who paid quickly kept their heads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A Mamluk heavy cavalryman trains relentlessly in the furusiyya, loosing armour-piercing arrows at full gallop before closing with two-handed maces. Hour after hour in the training yard builds the iron discipline that rivals the Mongol tumens. A rider who breaks formation in the line is sent back to the barracks, and the sergeant ends the drill only when every man can strike at speed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "The tax collectors emptied our granaries, but folk along the Nile keep silent. If the Mamluk steel breaks in Syria, the riders who slaughtered Baghdad will drink our water and burn our fields. Villagers hide their oxen when the muster comes, and the headman counts what is left before the column leaves."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v7",
+  "Keywords": [
+    "Clothes and shoes in ascetic discipline"
+  ],
+  "RagShortTexts": [
+    "Ascetic restraint involved clothing repairs, shared stores and distribution."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ascetics practiced restraint in clothing, footwear and personal possessions. Repairs and redistribution extended limited supplies. Shared stores needed a keeper and knowledge of withdrawals; shortages made warmth, work and presentability harder to reconcile."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

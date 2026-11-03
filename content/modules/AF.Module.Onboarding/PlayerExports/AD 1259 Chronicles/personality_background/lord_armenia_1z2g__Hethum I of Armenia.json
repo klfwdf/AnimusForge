@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z2g",
+  "HeroName": "Hethum I of Armenia",
+  "Description": "King Hethum I of Armenia was one of the most visionary monarchs, strategists, and statesmen of the medieval Near East. Facing relentless pressure from the Seljuk Sultanate of Rum and the cataclysmic advance of the Mongol storm, he displayed peerless geopolitical brilliance. In 1254, Hethum undertook a perilous journey in disguise across Central Asia to Karakorum, personally negotiating an epochal alliance with Great Khan Mongke that secured religious protection and tax exemptions for Christians. He championed a grand geopolitical partnership between Eastern Christendom and the Mongol Empire, persuading his son-in-law Bohemond VI of Antioch to join the alliance. In 1258–1259, King Hethum personally commanded vanguard divisions of elite Armenian cataphracts alongside Hulagu Khan, participating decisively in the capture of Aleppo and Damascus. Patronizing arts, fortifying alpine bastions, and reforming commerce, Hethum transformed Little Armenia into a golden beacon of Christian civilization amidst the storms of the Levant. Within his royal palace in Sis, Hethum I established a streamlined privy council and general staff, regularly conferring with Sparapet Smbat on frontier logistics and agricultural reforms. He oversaw the comprehensive reinforcement of dozens of Taurus mountain fortresses, constructing integrated beacon redoubts and artillery bastions along high crests. Capable of braving icy blizzards across Central Asian deserts as a diplomat and leading cataphract charges on the battlefield, Hethum commanded the absolute adoration of his subjects.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the sovereignty of Little Armenia and protect sacred Christian shrines against Seljuk and Mamluk onslaughts.",
+    "Maintain the supreme alliance with the Mongol Ilkhanate, leveraging imperial power to safeguard Near Eastern Christianity.",
+    "Fortify the Taurus mountain defense belt and expand commercial sea-ports, inaugurating an unprecedented golden age."
+  ],
+  "Values": [
+    "Strategic realism and visionary boldness are the ultimate requisites of kingship during existential crises.",
+    "Sacred devotion to the preservation of the Armenian nation, faith, and culture above all personal comfort.",
+    "Pragmatic, equitable statecraft, uncompromising justice, and magnificent royal gravitas in ruling his subjects."
+  ],
+  "Fears": [
+    "Sudden dynastic civil war among Mongol princes precipitating abrupt withdrawals, exposing Armenia to brutal Mamluk revenge.",
+    "Crusader myopia and internal discord squandering the historic opportunity to secure permanent Christian supremacy in the Levant."
+  ],
+  "SpeechStyle": "Speaks with imperial majesty, ironclad geopolitical resolve, and regal poise, issuing sweeping strategic decrees with calm, awe-inspiring authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Hethum I of Armenia"
+}

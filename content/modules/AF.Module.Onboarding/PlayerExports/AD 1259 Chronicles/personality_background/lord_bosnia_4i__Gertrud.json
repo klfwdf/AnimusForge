@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_4i",
+  "HeroName": "Gertrud",
+  "Description": "Gertrud, aged eighteen in 1259, is a vivacious and spirited noblewoman of the House of Sanneck, flourishing within the commanding ramparts of Žovnek in the Savinja valley. Combining refined aristocratic accomplishments—such as courtly song, harp play, and intricate embroidery—with a spirited passion for falconry and equestrian trail riding, Gertrud defies fragile conventions. Living on the volatile borderland of Styria and the Slavic marches in 1259, she takes a keen interest in martial affairs, familiarizing herself with fortress layout and knightly regalia. Her cheerful warmth, quick wit, and natural charm make her a beloved figure among the castle retainers, where she frequently eases diplomatic friction during knightly banquets with effortless social poise. Gertrud rides mountain trails and practices falconry with fearless spirit, adored by retainers and lords alike throughout the Savinja fortress. Easing political tensions at noble banquets with her harp and quick wit, she also takes a keen interest in fortress defense and knightly regalia. Amidst the harsh warfare of the medieval borderlands, this spirited noblewoman brings radiant vitality to the ramparts, inspiring everyone with her infectious courage. Spirited, warm-hearted, and courageous, Gertrud brings joyous vitality to the mountain citadel, inspiring retainers and knights with her infectious optimism.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with a bright, melodic timbre full of youthful exuberance and quick wit, effortlessly blending courtly courtesy with vivacious charm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

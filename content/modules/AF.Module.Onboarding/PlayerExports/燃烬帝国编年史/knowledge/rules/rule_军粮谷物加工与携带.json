@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v6",
+  "Keywords": [
+    "军粮谷物加工与携带"
+  ],
+  "RagShortTexts": [
+    "尤利安出兵前让库存谷物制成耐储干粮，由士兵负担携带。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "尤利安出兵前让库存谷物制成耐储干粮，由士兵负担携带。加工后的食物可延长离仓时间，但要先投入劳力与燃料，携带又占用负重。库存、成品与前线可吃到的份额不是同一数字。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

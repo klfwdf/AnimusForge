@@ -27,11 +27,11 @@ internal static class NativeConversationLlmApplicationAdapter
 			}
 			catch (OperationCanceledException) when (requestTimeout.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
 			{
-				return LlmSourceTexts.Get("Legacy_934074296674") + NativeConversationMainReplyTimeoutMs + "ms）";
+				return LlmSourceTexts.Get("Legacy_934074296674") + NativeConversationMainReplyTimeoutMs + "ms" + LlmSourceTexts.Get("ErrorSuffix");
 			}
 			cancellationToken.ThrowIfCancellationRequested();
 			if (requestTimeout.IsCancellationRequested)
-				return LlmSourceTexts.Get("Legacy_934074296674") + NativeConversationMainReplyTimeoutMs + "ms）";
+				return LlmSourceTexts.Get("Legacy_934074296674") + NativeConversationMainReplyTimeoutMs + "ms" + LlmSourceTexts.Get("ErrorSuffix");
 			FreezeWatchdog.Mark("NativeConversation.api_non_stream_done", "resultLen=" + ((result ?? "").Length) + " elapsedMs=" + Math.Round(nativeApiWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			return result;
 		}
@@ -80,7 +80,7 @@ internal static class NativeConversationLlmApplicationAdapter
 		{
 			Logger.Log("NativeConversation", "[WARN] main reply timed out before first stream chunk. timeoutMs=" + NativeConversationMainReplyTimeoutMs);
 			FreezeWatchdog.Mark("NativeConversation.api_stream_timeout", "elapsedMs=" + Math.Round(nativeApiWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			return LlmSourceTexts.Get("Legacy_934074296674") + NativeConversationMainReplyTimeoutMs + "ms）";
+			return LlmSourceTexts.Get("Legacy_934074296674") + NativeConversationMainReplyTimeoutMs + "ms" + LlmSourceTexts.Get("ErrorSuffix");
 		}
 		if (!string.IsNullOrWhiteSpace(completed))
 		{

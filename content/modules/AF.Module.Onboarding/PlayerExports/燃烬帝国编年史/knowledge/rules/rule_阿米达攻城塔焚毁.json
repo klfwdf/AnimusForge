@@ -1,0 +1,38 @@
+{
+  "Id": "be_battle_amida_siege_record_v5",
+  "Keywords": [
+    "阿米达攻城塔焚毁"
+  ],
+  "RagShortTexts": [
+    "359年阿米达守军用投射物和火毁伤攻具，围攻仍继续。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "359年阿米达围城中，波斯军把攻城塔与器械推近城墙，守军以投射物和火反击。部分攻具被毁，围攻仍继续。推进需要掩护和通路，防守者也须备好弹药、燃料与能够继续操作的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "守墙者要在器械接近时集中投射，火攻成功后仍须轮换与守夜。损毁攻城塔能争取时间，却不恢复已经损失的粮食与伤兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "围军首领必须重新安排器械、劳力和进攻方式，不能把靠到墙边等同于占领。守方统帅也不能以一轮成功抵消持续围困带来的补给压力。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

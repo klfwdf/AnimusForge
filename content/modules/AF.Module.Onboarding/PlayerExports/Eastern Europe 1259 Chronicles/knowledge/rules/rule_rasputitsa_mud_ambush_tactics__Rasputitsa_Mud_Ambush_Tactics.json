@@ -1,0 +1,53 @@
+{
+  "Id": "rule_rasputitsa_mud_ambush_tactics",
+  "Keywords": [
+    "Mud season movement",
+    "Rus muddy road baggage",
+    "Dry camps during muddy marches"
+  ],
+  "RagShortTexts": [
+    "Muddy Rus roads slow vehicles and separate forces, increasing danger when stores lag.",
+    "Firm tracks, crossings and dry camps are scarce, making repair and detours costly."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Thaw or rain on Rus roads sinks wheels and tires draft animals. Mounted vanguards can outdistance stores. Woods, valleys and firm tracks concentrate movement and warning. Detours need guides, crossings and camps, while repairs consume timber and labor. Mud joins tactical choices to daily supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A fighter on a muddy route must watch stores and animals behind. Speed ahead does not deliver food. Wet clothes, cold meals and poor camps accumulate fatigue. Pursuit off the firm route risks isolation. Freeing carts, sharing loads and keeping food dry support continued movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander must shorten expected stages and check bridges, dry ground and fodder rather than use fair-weather distances. Guards need to cover stores and defiles, with repair and recovery capacity. Pausing to gather a delayed rear may be safer than sending more men ahead without food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roadside households supply timber, fodder, animals and guides while their own routes and fields suffer. Lost animals do not return when an army leaves, and repairs delay farming. Payment, return and defined access affect whether communities can sustain repeated passage."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

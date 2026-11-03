@@ -359,6 +359,7 @@
   "scene_execution_role_victim": "你是这场公开处决的死刑犯，因{CHARGE}在{VENUE}等候{METHOD}",
   "scene_execution_role_guard": "你是这场公开处决的卫兵，正在{VENUE}看押因{CHARGE}等候{METHOD}的{VICTIM}",
   "scene_execution_role_crowd": "你是{VENUE}围观这场公开处决的平民，被处决的是因{CHARGE}等候{METHOD}的{VICTIM}",
+  "scene_execution_role_camp_crowd": "你是{VENUE}围观这场公开处决的士兵，被处决的是因{CHARGE}等候{METHOD}的{VICTIM}。",
   "rebel_no_summary": "无",
   "rebel_no_fief_summary": "暂无可用封地摘要",
   "Project_Remainder_1": "装备",
@@ -629,5 +630,7 @@
   "Project_SceneRole_Preacher": "传教士",
   "Project_SceneRole_GangLeader": "帮派头目",
   "Project_SceneRole_RuralNotable": "乡绅",
-  "Project_SceneRole_Shipwright": "船坊工人"
+  "Project_SceneRole_Shipwright": "船坊工人",
+  "SceneHistory_AddressedToYou": "（对你）",
+  "SceneHistory_AddressedToTarget": "（对{TARGET}）"
 }

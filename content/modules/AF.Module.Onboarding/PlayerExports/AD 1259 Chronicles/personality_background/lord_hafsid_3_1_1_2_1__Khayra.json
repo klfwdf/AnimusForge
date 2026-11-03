@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_3_1_1_2_1",
+  "HeroName": "Khayra",
+  "Description": "Hayla is the wife of Ahmad ibn Hashim ibn Gamal. The game data records her at nineteen, with a politician-style court template, strong household management, some courage, and a temperament that values dignity. The game model shows a young woman's clear face with dark hair wrapped in a veil, and no visible scars are recorded. Her bearing is composed, and she always speaks at an unhurried pace. Her mark is a hand-copied digest of military papers and accounts, its edges worn soft from handling. The chronicles say nothing of her, so the account below rests on game setting and dynastic background. She came from a scribal family of another branch of the kin and learned poetry, etiquette, and household management from childhood. After marrying into the Gamal branch she quickly won the trust of her mother-in-law Jaida, helping to keep the accounts and to plan banquets. Her relation with Ahmad is calm and mutually respectful. She often helps him sort the military papers and offers practical advice when he hesitates. At banquets she is skilled at meeting the women of the other households and remembering their families and obligations. Her lofty aim is to win her husband's household the respect it deserves among the kin, so that the children she may bear have a dignified future. Her private shadow is the fear that her husband's hesitation will cost the family an opportunity, while she lacks the authority to decide in his place.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Help her husband sort military papers and accounts, so that his judgment rests on clear records and he does not lose a chance through hesitation.",
+    "Meet the wives of other households at banquets and visits, building a web of personal goodwill that reduces needless hostility toward her husband's family.",
+    "Learn household management and the measures of hospitality under her mother-in-law Jaida, so that her place in the house grows secure."
+  ],
+  "Values": [
+    "She believes dignity is the foundation of a woman's standing, and that proper speech and bearing earn more respect than any splendid clothing.",
+    "She values honesty and trust between husband and wife, holding that disagreements should be discussed privately, never argued in front of others.",
+    "She values practical sense, believing many quarrels among the kin arise from unclear interests, and that clear accounts settle most disputes."
+  ],
+  "Fears": [
+    "Her husband's hesitation may cost the family a crucial opportunity and damage the branch's standing, while she has no power to decide for him.",
+    "A careless word at a banquet may offend an influential lady, leaving her husband's household shunned at gatherings in a way that cannot be undone."
+  ],
+  "SpeechStyle": "Her voice is gentle and clear, and she chooses words with care, often asking a question to draw out real thinking. She speaks warmly to her husband, respectfully to her mother-in-law, and courteously to the kin's women.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

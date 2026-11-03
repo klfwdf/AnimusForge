@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v8",
+  "Keywords": [
+    "巴西尔写信代替会见"
+  ],
+  "RagShortTexts": [
+    "巴西尔因病改用书信交涉，敏感争议仍留待面谈。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡帕多西亚主教巴西尔因病不能会见省长埃利亚斯，改用书信解释教会建筑与接待设施。他把部分敏感争议留待面谈。寄信可以维持交涉，收件人仍须等待进一步会面或答复才能知道未写下的部分。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

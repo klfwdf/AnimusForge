@@ -1,0 +1,38 @@
+{
+  "Id": "be_sassanid_asbaran_noble_retainers",
+  "Keywords": [
+    "Maintaining Sasanian aristocratic cavalry"
+  ],
+  "RagShortTexts": [
+    "Sasanian elite cavalry needed family resources, horses, armor, followers and fodder."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sasanian aristocratic cavalry linked family standing with military service. Horses, weapons, armor and attendants required continuing support, with fodder and transport added for campaigning. Wealthier families could furnish equipment and men, but riders differed in resources and kit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A rider tended the horse and checked saddle, reins and armor each day. Long marches exhausted animals; courage alone could not make an injured or underfed mount charge. Attendants and pack animals brought everyday supplies to the cavalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mustering elite cavalry required coordination with families controlling horses, men and wealth. A gathering place short of water or grazing became harder to supply as numbers grew. Estates and households also bore the cost of prolonged absence. A royal command still had to produce horses and men who could actually arrive."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

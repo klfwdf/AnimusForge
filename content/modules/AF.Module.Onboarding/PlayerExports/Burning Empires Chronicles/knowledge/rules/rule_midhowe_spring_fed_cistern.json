@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v6",
+  "Keywords": [
+    "Midhowe spring-fed cistern"
+  ],
+  "RagShortTexts": [
+    "Midhowe contains a spring-fed cistern, bringing water within the structure."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Midhowe contains a spring-fed cistern, bringing water within the structure. This changed the labor of fetching water and the usefulness of enclosure, while still requiring usable access and containers. Similar-looking brochs cannot automatically be assumed to share this water supply."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

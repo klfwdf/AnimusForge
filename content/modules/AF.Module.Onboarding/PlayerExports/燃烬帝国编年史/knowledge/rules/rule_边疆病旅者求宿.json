@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v6",
+  "Keywords": [
+    "边疆病旅者求宿"
+  ],
+  "RagShortTexts": [
+    "卡帕多西亚接待病旅者的设施提供医者、运输和护送。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡帕多西亚的教会接待设施容纳病旅者，并安排医者、住处、运输与护送。远行可因病中断，求助者需要能够抵达设施，也可能无力独自离开。帮助要落实到可用的人、车辆和建筑。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

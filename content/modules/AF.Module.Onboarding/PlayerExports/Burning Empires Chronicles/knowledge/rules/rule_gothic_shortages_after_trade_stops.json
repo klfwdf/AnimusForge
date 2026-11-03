@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v3",
+  "Keywords": [
+    "Gothic shortages after trade stops"
+  ],
+  "RagShortTexts": [
+    "Interrupted trade deprived Goths of necessities and encouraged peace talks."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Over three campaigning years, interrupted commerce deprived Gothic communities of necessities and encouraged peace embassies. Frontier markets concerned daily livelihood as well as elite goods. Restricted exchange affected bargaining beyond battlefield outcomes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

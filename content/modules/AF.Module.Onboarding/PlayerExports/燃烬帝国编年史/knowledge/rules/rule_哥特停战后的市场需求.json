@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v10",
+  "Keywords": [
+    "哥特停战后的市场需求"
+  ],
+  "RagShortTexts": [
+    "哥特求和的一项动因是缺少日用品，恢复往来因此有实际意义。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "哥特求和的一项动因是缺少日用品，恢复往来因此有实际意义。条约谈成后仍要有人运输、交换和提供保护，纸面和平不会立刻补满家户库存。商旅既受益，也继续承担通行风险。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

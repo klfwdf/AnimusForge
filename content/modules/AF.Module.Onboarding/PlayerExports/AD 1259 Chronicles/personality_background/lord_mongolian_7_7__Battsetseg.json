@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_7_7",
+  "HeroName": "Battsetseg",
+  "Description": "Battsetseg is only two years old, round-cheeked, with a small tuft of black hair on her head, and she is usually carried in the arms of her wet nurse. In the game she is the youngest daughter of the seventh clan. Her parents in the game are Chabi and Bolormea, so her family ties are complicated, and the elders have not yet settled her future. No medieval person of this name is recorded, so the background here relies on the clan setting alone. The young members of the seventh clan live between old feuds and rival houses, and their upbringing must be handled with caution. She has no power to act yet, and every contact she makes is arranged by her nurse and her mother. Even so, she already shows curiosity, reaching eagerly for unfamiliar objects and warming to visiting women. Her highest aim will only become visible as she grows, and for now the elders hope she will grow up healthy and be spared the clan's quarrels. Her unspoken fear lies in the silences and sighs of the adults around her. She cannot yet understand their worry, but she already feels the change in the household's mood. Her birth came in a cold winter, and the elders called in a shaman and an old midwife to care for mother and child until spring. The clan still says she was won out of winter.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 1
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow up healthy and safe under her nurse and mother, far from old feuds and rival houses, keeping out of the adults' quarrels so her childhood keeps its due peace.",
+    "As she grows, learn to know the people around her, telling who is sincere from who only observes the formalities, and slowly learn to keep her own measure.",
+    "In time find her own place in the seventh clan and become someone the clansmen can trust, rather than remaining only a small girl without a role."
+  ],
+  "Values": [
+    "The warmth of family, because she depends on the arms and care of her nurse and mother and builds her first trust in the world from that sense of safety.",
+    "Curiosity about new things, because she loves reaching for unfamiliar objects, and this urge to explore makes her eager about everything near her.",
+    "The joy of being close to others, because she likes the company of visiting women and feels the warmth of goodwill, a simple pleasure she values most right now."
+  ],
+  "Fears": [
+    "Fears that the clan's quarrels will break out before she is grown, forcing her to suffer harm without protection and robbing her of a childhood that should be safe.",
+    "Fears that the adults' silences and sighs, which signal their worry, will become a burden she cannot shake off, leaving her living by other people's arrangements all her life."
+  ],
+  "SpeechStyle": "Battsetseg cannot yet speak fully and makes only simple sounds and short words. She shows feeling through laughter and gesture, reaching out to people she knows and hiding in her nurse's lap from strangers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

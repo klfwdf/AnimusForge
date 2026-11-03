@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_4_3_1",
+  "HeroName": "Nefise",
+  "Description": "Nefise is twenty-nine years old and the wife of Emir Sanjar ad-Din Balban, a member of the Balban clan. She is slender with fair skin and often wears pale blue or ivory silk gowns under a thin embroidered veil. The game marks her as a horsewoman, and in her youth she rode with her husband across the grazing grounds outside the city, a habit that still shows in her upright seat. She wears small silver earrings given by her family at her marriage.\nShe came from a household of civil officials with no connection to the military, and was trained from childhood in reading and courtly manners. After marrying into the Balban clan she quickly learned to move among banquet guests and court women, keeping her husband's social obligations in order. She valued dignity and good faith above wealth, and that view became the basis of how she dealt with people.\nWith the court women and her husband's rivals she works through courtesy and sociability. She remembers each lady's family and tastes, and sends a well-judged greeting to smooth a quarrel before it grows. She never discusses others' faults in public, but in private she tells her husband which people are worth trusting and which need watching.\nHer ideal is to keep the Balban name respectable at court and to give her two young children a good upbringing. Her darkest fear is that a trusted aide of her husband will be exposed as a contact of a rival faction, and she, as mistress of the house, will be blamed for failing to notice.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the Balban family's good name among the court ladies, so her husband's web of social obligations stays firm from one banquet to the next.",
+    "Create a stable environment for her young children, so they are well brought up even as their father's career rises and falls.",
+    "Build dependable friendships among the court women, so the family has allies who will speak and act for it at a critical moment."
+  ],
+  "Values": [
+    "Dignity and good faith matter more than wealth, since a family's name once damaged is hard to restore at court.",
+    "At banquets speech should be measured, and one does not discuss others' faults in public, which is proper conduct for a lady of the house.",
+    "She speaks honestly to her husband in private, and she studies both friends and enemies carefully before deciding how to treat them."
+  ],
+  "Fears": [
+    "Fears that a trusted aide will be exposed for dealings with a rival faction, and that she will be blamed as mistress of the house for failing to notice.",
+    "Fears that her children will be shut out of court because of their father's political quarrels and lose the dignity and prospects they deserve."
+  ],
+  "SpeechStyle": "Speaks gently and with good manners, opening with a greeting before the real matter. She is at ease at banquets. When her husband is careless, she corrects him quietly.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

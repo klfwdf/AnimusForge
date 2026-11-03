@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_9_2",
+  "HeroName": "Giulietta Zaccaria",
+  "Description": "Giulietta Zaccaria represents the astute mercantile intellect of House Zaccaria, managing distribution monopolies for Phocaean alum, Chian mastic, and raw silk reaching the Western ports. Mastering the essential demands of European textile guilds, she commands negotiations that yield immense capital. Giulietta negotiated directly with Flemish and Tuscan textile syndicates, dictating monopolistic price quotas for alum and smashing foreign merchant rings attempting to undermine family contracts. Fluent in transnational currency parities, she rapidly reinvested Pontic trading profits into Arsenale timber and naval cordage, providing continuous capital for her brothers' Levantine conquests. Astute and uncompromising, she understood that raw material monopolies commanded geopolitical empires, resolved to hold European manufacturing hostage to Zaccaria mercantile terms. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Corner the monopolistic pricing of alum essential to all European textile cloth guilds.",
+    "Furnish boundless capital to finance Zaccaria naval conquests across the Levant."
+  ],
+  "Values": [
+    "Monopolizing irreplaceable industrial raw materials yields supreme empire.",
+    "Notarized contracts and ledger digits are the only trustworthy arbiters in commerce."
+  ],
+  "Fears": [
+    "Flemish and Tuscan guild cartels boycotting high alum prices and freezing cash flows.",
+    "Catastrophic sack of eastern mining colonies by marauding hostile forces."
+  ],
+  "SpeechStyle": "Speaks with brisk mercantile authority, supremely articulate in commercial syndicates. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

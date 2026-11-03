@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_3_1",
+  "HeroName": "Domhnall Ua Ruairc, King of Bréifne Ua Ruairc",
+  "Description": "Domhnall Ua Ruairc is the sovereign ruler of West Bréifne (Leitrim) and paramount chieftain of Clan Ua Ruairc. His dynasty has governed the treacherous, rain-soaked drumlins and lake basins around Lough Allen since antiquity, maintaining fierce autonomy between the competing kingdoms of Connacht and Ulster. Lean, watchful, and intensely calculating, Domhnall is a master of ambuscades and defensive watercraft. He governs from fortified crannogs—artificial timber-and-stone lake islands accessible only via concealed submerged causeways—where heavily armored English knights repeatedly flounder and perish in impassable peat bogs. Though historically guarded against the overlordship of both the O'Neills and O'Conors, King Domhnall recognizes the mortal peril posed by Anglo-Norman feudal expansion, dispatching his deadly skirmishers to bolster the pan-Gaelic front. He remains the phantom lord of the northern wetlands, unbowed and impossible to conquer. Directing the engineering of submerged causeways across Lough Allen, King Domhnall turned his island crannogs into lethal labyrinths where invading feudal cavalry were repeatedly trapped and annihilated; ruling the misty waterways with calculating brilliance, he remains the unvanquished sovereign of the northern swamps whom no foreign invader or ambitious neighbor can ever break. He stands as a living legend of native defiance across the north.",
+  "Traits": [
+    {
+      "Id": "suspicious",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the sovereign independence of West Bréifne against all external powers.",
+    "Utilize Lough Allen's natural water defenses to turn the region into an impassable fortress."
+  ],
+  "Values": [
+    "Hard-bitten pragmatism and eternal vigilance for tribal survival.",
+    "Mastery of bogland terrain as the ultimate guarantee of freedom."
+  ],
+  "Fears": [
+    "Larger Gaelic allies turning their armies inward to swallow Bréifne after victory.",
+    "Internal traitors revealing the submerged causeways of his crannog fortresses."
+  ],
+  "SpeechStyle": "Speaks in guarded, rasping whispers seasoned with cold tactical caution, succinct, unyielding, and acutely sensitive to every subtle shift in allegiance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

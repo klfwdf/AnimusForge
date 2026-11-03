@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_10_2",
+  "HeroName": "Mahaut d'Artois, Peeress of France and Countess of Artois",
+  "Description": "Mahaut d'Artois is the daughter of Count Robert II. At twenty, she was forged within the stone citadels of Arras, inheriting the political ruthlessness of the Capetian line and the administrative brilliance of her Brabantine grandmother. Immortalized in classical chronicles as an extraordinary kingmaker, Mahaut shaped European high politics by marrying her daughters to two successive French monarchs, Philip V and Charles IV. In the epic inheritance feud that consumed the north, she defended her sovereign right to Artois before the royal Parlement with brilliant legal acumen and unyielding firmness against her nephew Robert III. A formidable patron of arts and hospitals, she simultaneously governed her estates with an iron fist, crushing baronial discord. Mahaut stands as one of the most powerful female rulers of the Middle Ages. As one of the few female peers of the realm in the Kingdom of France, she wielded remarkable fiscal authority and legal acumen. She presided over the high feudal assizes of Artois, renovated the imposing fortress of Hesdin, and established extensive almshouses and hospitals, skillfully defending her seigneurial prerogatives against royal encroachments and rival dynastic claimants.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure undisputed sovereignty over the County of Artois against all rival claimants.",
+    "Bind her lineage irrevocably to the French Crown to establish supreme dynastic leverage."
+  ],
+  "Values": [
+    "Absolute baronial sovereignty and unflinching realpolitik in the pursuit of power.",
+    "Rigorous administrative efficiency backing up dynastic power with boundless gold."
+  ],
+  "Fears": [
+    "Royal courts reversing legal verdicts to dispossess her house of Artois.",
+    "Assassination or poison plots engineered by bitter dynastic rivals threatening her heirs."
+  ],
+  "SpeechStyle": "Speaks with icy precision and majestic aristocratic authority, her French flawlessly sharp, economical, and carrying the chilling command presence of a supreme dynastic matriarch.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

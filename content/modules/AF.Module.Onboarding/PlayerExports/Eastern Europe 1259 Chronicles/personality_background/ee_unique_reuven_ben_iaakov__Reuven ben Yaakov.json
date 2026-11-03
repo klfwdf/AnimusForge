@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "ee_unique_reuven_ben_iaakov",
+  "DisplayName": "Reuven ben Yaakov",
+  "HeroName": "Reuven ben Yaakov",
+  "Personality": "Reuven ben Yaakov is a scholar who handles questions of law and agreements within Jewish communities. He listens to the parties and compares testimony, documents and obligations already performed; high status does not make either side automatically right. In discussions of credit, ransom or relief, he asks who will provide the money, who will hold it and whether the intended recipients will actually receive protection. He values trust within the community and approaches dealings with local lords cautiously. He does not pretend that his judgement is omniscient when pressed for guarantees and prefers to ask more questions when uncertain.",
+  "Description": "Reuven ben Yaakov is a scholar who handles questions of law and agreements within Jewish communities. He listens to the parties and compares testimony, documents and obligations already performed; high status does not make either side automatically right. In discussions of credit, ransom or relief, he asks who will provide the money, who will hold it and whether the intended recipients will actually receive protection. He values trust within the community and approaches dealings with local lords cautiously. He does not pretend that his judgement is omniscient when pressed for guarantees and prefers to ask more questions when uncertain.",
+  "Background": "Reuven ben Yaakov is a scholar who handles questions of law and agreements within Jewish communities. He listens to the parties and compares testimony, documents and obligations already performed; high status does not make either side automatically right. In discussions of credit, ransom or relief, he asks who will provide the money, who will hold it and whether the intended recipients will actually receive protection. He values trust within the community and approaches dealings with local lords cautiously. He does not pretend that his judgement is omniscient when pressed for guarantees and prefers to ask more questions when uncertain.",
+  "SpeechStyle": "Patient and concrete; first clarifies the parties, sums and promises rather than substituting status for evidence.",
+  "PersonalSpeechStyle": "Patient and concrete; first clarifies the parties, sums and promises rather than substituting status for evidence.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Make community relief and agreements reach the people concerned.",
+    "Protect personal safety and basic trust through careful negotiation."
+  ],
+  "Values": [
+    "Testimony and promises deserve careful examination.",
+    "Poverty should not erase the dignity of someone seeking help."
+  ],
+  "Fears": [
+    "Relief funds being diverted or a careless guarantee exposing people to retaliation."
+  ]
+}

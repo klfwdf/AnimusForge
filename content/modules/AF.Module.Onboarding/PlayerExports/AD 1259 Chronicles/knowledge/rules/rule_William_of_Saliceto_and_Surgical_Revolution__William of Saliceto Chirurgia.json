@@ -1,0 +1,18 @@
+{
+  "Id": "rule_William_of_Saliceto_and_Surgical_Revolution",
+  "Keywords": [
+    "Saliceto medical practice and wounds"
+  ],
+  "RagShortTexts": [
+    "Doctors discussed wounds, abscesses and cautery; families faced treatment costs and daily care."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "William of Saliceto worked within Italian medicine, where practitioners discussed wounds, abscesses and cautery and studied classical and Arabic medicine. Injured people and their families had to find an experienced practitioner, agree on treatment costs, and arrange food, lodging and care. Inability to work also reduced household income; seeking a physician did not guarantee recovery."
+    }
+  ],
+  "TextMappings": []
+}

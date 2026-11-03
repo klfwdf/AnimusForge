@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_1",
+  "HeroName": "Maria Laskarina, Queen consort of Hungary",
+  "Description": "Maria Laskarina is Queen consort of Hungary, born an imperial princess of the Byzantine Empire of Nicaea as the daughter of Emperor Theodore I Laskaris. Since her royal marriage in 1218, she infused the Árpád court with eastern Roman sophistication, refined administrative diplomacy, and majestic ceremonial dignity. During the catastrophic Mongol onslaught of 1241, Queen Maria stood steadfast beside King Béla IV throughout their harrowing flight to the Adriatic coast, enduring hardship with unshakeable imperial poise. In the years of reconstruction, she sponsored Franciscan and Dominican monastic foundations and raised royal offspring who shaped Christian Europe, including Saint Margaret of Hungary and Saint Kinga of Poland. By 1259, with deep political rifts brewing between her husband and her son Stephen, Maria leverages her immense prestige and extensive dynastic networks to safeguard royal harmony and defend the crown's interests. Maria established grain reserves and civic hospices around Buda, providing relief to displaced orphans with imperial Byzantine generosity. Her subtle diplomatic maneuvers reconciled competing baronial ambitions, serving as an irreplaceable spiritual foundation for the Árpád monarchy. She patronized Dominican monasteries and endowed collegiate chapters, safeguarding orthodox Catholic piety and royal dynastic heritage against court factions.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Reconcile bitter tensions between her husband and eldest son, averting a devastating civil war.",
+    "Sponsor monastic orders and strategic marriages to elevate the European prestige of the Árpád dynasty."
+  ],
+  "Values": [
+    "Cherish imperial dignity and Christian piety, viewing familial solidarity as the pillar of the state.",
+    "Value diplomatic tact and moral fortitude over rash political ruptures."
+  ],
+  "Fears": [
+    "Fears that fratricidal civil bloodshed will undo decades of royal reconstruction across Hungary.",
+    "Dreads foreign pagan threats endangering sacred monasteries and royal sanctuaries."
+  ],
+  "SpeechStyle": "Imperial lineage taught me calm resolve amidst the fiercest storms. Saint Stephen's throne shall not be shaken by factional strife; faith and wisdom shall preserve our realm! Dignity and charity shield our royal throne!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

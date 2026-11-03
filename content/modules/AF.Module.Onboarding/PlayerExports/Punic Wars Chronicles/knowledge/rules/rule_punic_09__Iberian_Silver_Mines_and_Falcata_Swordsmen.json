@@ -1,0 +1,43 @@
+{
+  "Id": "rule_punic_09",
+  "Name": "Iberian Silver Mines and Falcata Swordsmen",
+  "Keywords": [
+    "rule_punic_09",
+    "Sierra Morena Mines",
+    "Castulo Silver",
+    "Falcata Vanguard",
+    "Barcid Treasury"
+  ],
+  "RagShortTexts": [
+    "The rich silver mines of Sierra Morena funded Hannibal's war chest and hired fierce Iberian..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The true foundation of Barcid power lay in the mineral wealth of southern Hispania, particularly the rich silver mines of Castulo and Carthago Nova. Generating hundreds of silver talents annually, these revenues allowed the Barcids to hire tens of thousands of ferocious Celtiberian swordsmen, Balearic slingers, and Lusitanian skirmishers. Armed with curved falcata shortswords capable of cleaving helmets, Iberian warriors formed the lethal vanguard of Punic assault formations."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Those Spanish mountain fighters don't give a damn about formation! They charge with curved falcata blades that chop straight through bronze cheek-guards and sever limbs in a single blow!"
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "merchant",
+          "artisan"
+        ]
+      },
+      "Content": "Every ounce of silver minted into Hannibal's war coins came from the deep shafts of Sierra Morena. Control those mines, and you starve the Punic war machine of its very lifeblood."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,53 @@
+{
+  "Id": "rule_slavic_broadsword_physics",
+  "Keywords": [
+    "Double-edged swords in Rus",
+    "Sword edges and grips",
+    "Swords in mounted and foot combat"
+  ],
+  "RagShortTexts": [
+    "Grip, edge and balance affect sword control; armor, shields and distance shape opportunities.",
+    "A sword is valuable equipment requiring repair and a sound scabbard as well as purchase money."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus retainers and prosperous fighters may carry double-edged swords of varied origins and forms. Cutting or thrusting depends on distance, position and opposing shields and armor, not blade width or weight alone. Guard, grip and edge must work together. Scabbards protect costly weapons from neglect during wet journeys, riding and storage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A swordsman needs controlled movements around shields and crowded men; mounted use also depends on balance and reins. Chipped edges, twisting grips and wet scabbards need attention at rest. Forceful swings against armor can upset balance. Position, companions and space to step back preserve the ability to keep fighting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A gift sword expresses trust while adding purchase and maintenance costs. A new retainer also needs practice, a suitable scabbard and protection; price cannot replace experience. When trade routes fail, repairing old blades and maintaining spears and shields may sustain a force better than decorated hilts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A smith repairing a sword examines fittings and grip as well as the edge; a bright surface alone does not restore it. Households purchasing a blade also bear upkeep costs and may struggle to replace a loss. Returning fighters bring damaged swords and armor to the same limited forges, fuel supplies and craftsmen."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

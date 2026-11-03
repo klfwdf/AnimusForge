@@ -1,0 +1,59 @@
+{
+  "Id": "be_greuthungian_kingdom_internal",
+  "Keywords": [
+    "Greuthungians Nobility",
+    "Greuthungian chiefs and followings"
+  ],
+  "RagShortTexts": [
+    "Ermanaric joins chiefs retaining their own followers.",
+    "Local chiefs still protect their own dependants and land."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ermanaric joins chiefs with their own followers. They value royal protection while defending households and land; joint war does not erase differences."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ermanaric joins chiefs retaining their own followers. Followers retain family ties; decisions about guards and distant service affect common participation. Local chiefs still protect their own dependants and land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Local chiefs still protect their own dependants and land. Coordination allocates actual supply and protection duties, not merely titles. Ermanaric joins chiefs retaining their own followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Ermanaric joins chiefs retaining their own followers. Households compare burdens with neighbors; unmatched protection weakens cooperation. Local chiefs still protect their own dependants and land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Local chiefs still protect their own dependants and land. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Ermanaric joins chiefs retaining their own followers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

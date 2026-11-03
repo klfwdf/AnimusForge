@@ -1,0 +1,59 @@
+{
+  "Id": "be_vesian_kingdom_geopolitics",
+  "Keywords": [
+    "Goths Frontiers",
+    "Vesian Danube landing places"
+  ],
+  "RagShortTexts": [
+    "Danube separates banks and carries goods and envoys.",
+    "Boat numbers, water levels and stopping places shape crossings."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Danube separates banks and carries goods and envoys. Boat numbers, water levels and stopping places determine group movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Danube separates banks and carries goods and envoys. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Boat numbers, water levels and stopping places shape crossings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Boat numbers, water levels and stopping places shape crossings. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Danube separates banks and carries goods and envoys."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Danube separates banks and carries goods and envoys. Closed routes may separate families from goods, imposing costs on those remaining at home. Boat numbers, water levels and stopping places shape crossings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Boat numbers, water levels and stopping places shape crossings. Cargo passes different carriers, making distant route changes become local shortages through delay. Danube separates banks and carries goods and envoys."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

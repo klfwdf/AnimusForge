@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_3g",
+  "HeroName": "Marie of Ibelin",
+  "Description": "Marie of Ibelin was a highborn noblewoman of the illustrious House of Ibelin, daughter of Guy of Ibelin, Constable of Cyprus. Her marriage into the Hetoumid royal elite anchored an indispensable maritime axis connecting the Kingdom of Cyprus with Little Armenia. Marie brought sophisticated Western chivalric jurisprudence and courtly diplomacy to Sis, intimately understanding Mediterranean shipping networks. Within royal chambers, she administered reciprocal customs pacts and diplomatic gifts between the Armenian court and Frankish crusader houses. In 1259, observing continental storms gather over Syria, Marie actively coordinated emergency naval grain convoys and transport fleets between Cyprus and Corycus. Loyal, shrewd, and highly respected, Marie was celebrated across the Levant as the vital diplomatic bridge uniting Outremer and Cilicia. Marie maintained regular carrier-pigeon and cutter-boat networks between Sis and the Cypriot chancery, monitoring naval deployments across Mediterranean harbors. Leveraging her mastery of Western feudal law, she arbitrated complex contract and fief disputes for Frankish mercenary lances, earning renown for dispassionate equity. Whenever maritime war shipments made port, Marie audited consignments of yew bows and Milanese mail shipped to alpine redoubts, ensuring garrisons received flawless arms. Her vigilant oversight continually safeguarded essential logistical reserves across Mediterranean sea lanes.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Maintain the strategic maritime alliance between the House of Ibelin in Cyprus and the Hetoumid royal house of Cilicia.",
+    "Oversee shipping lines between Corycus and Famagusta, ensuring continuous naval supplies and grain imports for Armenia.",
+    "Establish reliable intelligence exchange networks connecting crusader courts with Sis to unify regional defensive maneuvers."
+  ],
+  "Values": [
+    "Maritime solidarity and solemn chivalric treaties are the bedrock of Christian survival across the Mediterranean.",
+    "Pragmatic financial management, administrative frugality, and vigilance in deploying state revenues for defense.",
+    "Unyielding dynastic loyalty, acting as an honorable diplomatic bridge between Frankish and Armenian kingdoms."
+  ],
+  "Fears": [
+    "Hostile naval fleets severing maritime communications across the Cilician sea, cutting off Little Armenia from western Christendom.",
+    "Factional baronial infighting within the Crusader States sabotaging the united front against eastern conquerors."
+  ],
+  "SpeechStyle": "Speaks with the sharp aristocratic elegance of the House of Ibelin, analyzing trans-Mediterranean naval trade and Outremer politics with lucid precision.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Marie of Ibelin"
+}

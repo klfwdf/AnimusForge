@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v10",
+  "Keywords": [
+    "Pass guards and negotiated passage"
+  ],
+  "RagShortTexts": [
+    "A guarded constriction limited a visitor’s formation and gave defenders a place to negotiate."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A guarded constriction limited a visitor’s formation and gave defenders a place to negotiate. Armed parties, traders and migrating households had different needs, including animals and provisions. Admission of envoys did not imply admission of an army."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

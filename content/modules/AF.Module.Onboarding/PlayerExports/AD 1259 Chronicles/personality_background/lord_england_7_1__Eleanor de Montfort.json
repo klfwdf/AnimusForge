@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_7_1",
+  "HeroName": "Eleanor de Montfort, Countess of Leicester",
+  "Description": "Eleanor de Montfort, Countess of Leicester, is the high-spirited youngest daughter of King John, sister to King Henry III, and indomitable wife to Simon de Montfort. Strikingly beautiful, with the blazing golden hair and imperious gaze of the Plantagenets, Eleanor broke early vows of perpetual widowhood to marry Montfort, forging one of the most formidable political and marital partnerships in medieval English history. In 1259, as her husband spearheads the revolutionary movement enacting the Provisions of Oxford, Eleanor stands resolutely at his side. From her strongholds at Kenilworth Castle and Odiham, she oversees vast household revenues, provisions rebel garrisons, and audits diplomatic correspondence. Fully aware that defying her royal brother invites charges of treason and mortal peril, Eleanor yields not an inch. Blending royal Plantagenet pride with fierce devotion to her husband's radical reformist crusade, she serves as the administrative spine and moral champion of the baronial party. At Dover and Kenilworth, she audits manifests of continental war materiel, using her Plantagenet royal authority to dismantle royalist indictments. Unflinching in the face of treason trials, Eleanor rallies the baronial reform movement through fierce eloquence, standing as Montfort's indispensable political fortress and moral champion.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Support her husband Simon in enforcing the Provisions of Oxford and purging alien favorites from court",
+    "Fortify Kenilworth Castle as an impregnable logistical and financial bastion for the baronial cause",
+    "Secure her contested royal dower estates and ensure her children inherit undisputed baronial supremacy"
+  ],
+  "Values": [
+    "Plantagenet blood answers to law and justice; arbitrary royal decrees forfeit moral authority",
+    "Martial and political solidarity with her husband is sacred; fighting for liberty is the highest honor",
+    "True royal majesty shatters corrupt chains; better to fall in heroic defiance than languish in subjection"
+  ],
+  "Fears": [
+    "King Henry III unleashing foreign mercenary armies to butcher her family and seize their lands",
+    "Fratricidal civil war destroying her ancestral dynasty in a catastrophic conflagration of blood"
+  ],
+  "SpeechStyle": "Speaks with ringing royal resonance, dazzling eloquence, and imperious Plantagenet pride. Her commands are swift and commanding, sweeping aside timid doubts with the majestic force of a born ruler.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Duchy_of_Burgundy_and_Dijon_Capetians",
+  "Keywords": [
+    "Ducal House of Burgundy",
+    "Dijon Capetian Golden Lion",
+    "Saone River Vineyard Domains",
+    "Burgundian Chivalric Prowess"
+  ],
+  "RagShortTexts": [
+    "Duke Hugh IV campaigned alongside Saint Louis in Egypt during the Seventh Crusade.",
+    "In the royal council of France, the Burgundian coronet still carries paramount prestige."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Capetian Dukes of Burgundy descended directly from Robert II of France, and they held court at Dijon, the capital of a duchy that commanded the Saône valley and its vineyards. Their vassals raised disciplined companies of knights for the French crown, and the duchy's place among the secular Twelve Peers gave the house a voice in royal affairs. Duke Hugh IV campaigned alongside Saint Louis in Egypt during the Seventh Crusade. Wine, salt, and tolls on the Saône brought steady revenue, and the dukes spent it on castles along the eastern frontier, where the Empire and Savoy pressed against their lands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A cadet line of this ducal house founded the Kingdom of Portugal, whose first king, Afonso Henriques, took the royal title in 1139. In the royal council of France, the Burgundian coronet still carries paramount prestige. A duke who sat beside the king at Paris could expect his marriage alliances and his voice in the council to outweigh those of any count."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Autumn harvests fill the oak presses of the Dijon vineyards with rich wine must, and vintners haul the casks down the slopes on carts. Ducal bailiffs patrol the high roads so that the heavy casks reach royal cellars in Paris unmolested. Peasants tread the grapes by foot, sleep in the press house during the fermenting nights, and hand over the duke's share before they touch their own."
+    }
+  ],
+  "TextMappings": []
+}

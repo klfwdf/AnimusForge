@@ -1,0 +1,104 @@
+{
+  "Id": "rule_punic_47",
+  "Name": "阿耳忒弥斯狂欢夜潜与埃皮波莱绝壁陷落",
+  "Description": "公元前212年春，叙拉古全城因阿耳忒弥斯节沉溺于美酒狂欢烂醉无备，马塞卢斯派遣敢死百人队夜间乘梯潜上埃皮波莱悬崖低矮石墙夺取城门，坚不可摧的要塞外郭毁于懈怠。",
+  "Tags": [
+    "埃皮波莱陷落",
+    "阿耳忒弥斯节",
+    "马塞卢斯夜袭",
+    "敢死登城",
+    "叙拉古突破",
+    "狂欢懈怠"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 85,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前212年春叙拉古城民因阿耳忒弥斯神节狂饮三日美酒全城守备松懈。",
+    "马塞卢斯根据使者密报测量出埃皮波莱悬崖城墙偏矮处派遣敢死队夜登。",
+    "敢死百人队夜间割喉守兵打开城门致使罗马精锐军团潮水般涌入险要外郭。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "整整两年的苦战与阿基米德的机关折磨，终于在今夜被罗马军团的隐忍与神机撕开了缺口！马塞卢斯将军从谈判使节嘴里探明了埃皮波莱北端悬崖的城砖层数，算准了城内因阿耳忒弥斯节醉酒如泥！深夜万籁俱寂，一千名罗马死士口衔短剑、轻手轻脚架上云梯。当我们登上城头时，希腊守卫在美酒的鼾声中被悄无声息地割断喉咙！城门大开，军团号角破晓长鸣，坚固的高地埃皮波莱已在罗马军团脚下！"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是耻辱至极的荒唐背叛！阿基米德的机关挡住了两年的巨浪与战火，整座城池却毁在了几桶廉价的葡萄酒里！因为缺粮，节日里统领只发放了酒水，愚蠢的士兵们喝得东倒西歪、城垛上连个哨兵都没有！等黎明的号角吹响，罗马人已经端着短剑站在大街上屠杀宿醉未醒的市民！两年的血泪抗战，在这一夜彻底断送！"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "前一天晚上街上还在跳舞唱歌，老少爷们都在庆祝女神节，连城门守卫都喝得像死猪一样趴在桌上。半夜里突然听到窗外有急促的脚步声，探头一看，全是不出声的罗马甲士在小巷子里乱窜，见人就扎一枪。等太阳出来的时候，城墙上的叙拉古旗帜已经被扯下来踩在泥地里了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前212年春，叙拉古守军在阿耳忒弥斯节大肆饮酒陷入松懈。罗马统帅马塞卢斯利用先前勘测计算出的悬崖城墙低矮处，派遣特遣死士趁夜潜登埃皮波莱外郭城墙，暗杀守军并开启六道城门。罗马主力涌入夺取埃皮波莱要塞，将战线推进至城内核心城区阿克拉迪纳与奥提伽岛。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "阿耳忒弥斯狂欢夜潜与埃皮波莱绝壁陷落",
+    "rule_punic_47"
+  ]
+}

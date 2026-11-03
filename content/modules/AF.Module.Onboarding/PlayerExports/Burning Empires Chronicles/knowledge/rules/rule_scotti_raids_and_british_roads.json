@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v5",
+  "Keywords": [
+    "Scotti raids and British roads"
+  ],
+  "RagShortTexts": [
+    "Britain faced raids by several groups; defenders needed to protect settlements and routes."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pictish, Scottic and other armed groups raided Britain, putting pressure on local troops, residents and roads. Raiders needed to remove their gains, while defenders protected scattered settlements and communications. Crossings and the return journey constrained both sides."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

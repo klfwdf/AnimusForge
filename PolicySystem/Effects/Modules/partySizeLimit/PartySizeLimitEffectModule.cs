@@ -31,7 +31,7 @@ internal sealed class PartySizeLimitEffectModule
 		ClanLordsRuntimeModuleId
 	};
 
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "partySizeLimit",
 		order: 170,
 		legacyIds: Array.Empty<string>(),
@@ -66,7 +66,8 @@ internal sealed class PartySizeLimitEffectModule
 		targetProjection: PolicyEffectTargetProjectionKind.None,
 		targetRefresh: PolicyEffectTargetRefreshKind.Dynamic,
 		allowIndependentClanTargets: true,
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

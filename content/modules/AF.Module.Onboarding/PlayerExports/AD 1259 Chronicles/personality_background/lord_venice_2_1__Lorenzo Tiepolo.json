@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_2_1",
+  "HeroName": "Lorenzo Tiepolo",
+  "Description": "At the monumental Battle of Acre in 1258 during the War of Saint Sabas, Lorenzo commanded the Venetian fleet to a crushing, total annihilation of the Genoese navy, demolishing their fortified quarter and establishing absolute Venetian hegemony over the Levant. Fearless, strategically audacious, and politically brilliant, Tiepolo is revered across the Mediterranean. At the monumental Battle of Acre in 1258, Lorenzo Tiepolo personally directed the breakthrough ramming assault against the Genoese battleline, demolishing enemy fortifications and shattering Genoa's naval presence in the Levant to achieve immortal renown. An unvanquished naval titan whose name echoed terror through Genoese ports, Lorenzo Tiepolo welded tactical daring with strategic genius, steering the Venetian navy to undisputed mastery across the eastern Mediterranean trade basins. His brilliant statecraft, overwhelming naval victories, and immortal triumph at Acre enshrine Lorenzo Tiepolo as one of the most dominant and celebrated doges in Venetian history. Lord Lorenzo's unconquered war banner remains the ultimate rallying symbol for every Venetian sailor marching across the Levant and Mediterranean. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Annihilate Genoese naval power across the Levant and establish unchallenged Venetian mastery.",
+    "Leverage his supreme naval triumphs to claim the ducal bonnet, restoring Tiepolo leadership to the Republic."
+  ],
+  "Values": [
+    "Total naval victory, uncompromising republican supremacy, and visceral disdain for retreat.",
+    "Iron maritime discipline combined with generous baronial protection for loyal captains and sailors."
+  ],
+  "Fears": [
+    "Papal arbitration or diplomatic truces stripping Venice of the hard-won commercial spoils of Acre.",
+    "Jealous rivals in the Senate cutting naval subsidies to sabotage his path to the ducal throne."
+  ],
+  "SpeechStyle": "Speaks with thunderous naval authority, unshakeable confidence, and the magnetic charisma of a conquering admiral. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

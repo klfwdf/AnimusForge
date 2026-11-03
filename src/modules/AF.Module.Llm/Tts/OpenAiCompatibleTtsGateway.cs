@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -32,6 +33,8 @@ public sealed class OpenAiCompatibleTtsGateway
             (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp) || !string.IsNullOrEmpty(uri.UserInfo))
             return Failed("tts_openai_endpoint_invalid");
         if (string.IsNullOrWhiteSpace(request.Text) || request.Text.Length > 4096) return Failed("tts_openai_text_invalid");
+        string speechText = PrepareSpeechText(request.Text);
+        if (string.IsNullOrWhiteSpace(speechText)) return Failed("tts_openai_text_invalid");
         if (float.IsNaN(request.Speed) || float.IsInfinity(request.Speed) || request.Speed < 0.25f || request.Speed > 4f)
             return Failed("tts_openai_speed_invalid");
         if (request.TimeoutSeconds < 10 || request.TimeoutSeconds > 120) return Failed("tts_openai_timeout_invalid");
@@ -40,7 +43,7 @@ public sealed class OpenAiCompatibleTtsGateway
         timeout.CancelAfter(TimeSpan.FromSeconds(request.TimeoutSeconds));
         try
         {
-            var payload = new JObject { ["model"] = request.Model.Trim(), ["input"] = request.Text,
+            var payload = new JObject { ["model"] = request.Model.Trim(), ["input"] = speechText,
                 ["voice"] = request.Voice.Trim(), ["response_format"] = "wav", ["speed"] = request.Speed, ["stream"] = onPcm != null };
             using var message = new HttpRequestMessage(HttpMethod.Post, uri);
             message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credential.Trim());
@@ -80,6 +83,30 @@ public sealed class OpenAiCompatibleTtsGateway
     }
 
     private static TtsSynthesisResult Failed(string error, int? status = null) => new TtsSynthesisResult(false, null, status, error);
+
+    // One linear pass per synthesis attempt, never over the visible reply or history.
+    // Keep Unicode letters (including supplementary characters) and ordinary punctuation.
+    private static string PrepareSpeechText(string text)
+    {
+        var speech = new StringBuilder(text.Length);
+        for (int i = 0; i < text.Length;)
+        {
+            bool pair = char.IsHighSurrogate(text[i]) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]);
+            int width = pair ? 2 : 1;
+            int code = pair ? char.ConvertToUtf32(text[i], text[i + 1]) : text[i];
+            var category = CharUnicodeInfo.GetUnicodeCategory(text, i);
+            if (category == UnicodeCategory.OtherSymbol || category == UnicodeCategory.Surrogate ||
+                code == '*' || code == 0xFE0E || code == 0xFE0F || code == 0x200D || code == 0x20E3 ||
+                (code >= 0x1F3FB && code <= 0x1F3FF) || (code >= 0xE0020 && code <= 0xE007F))
+            {
+                // Separate words across a removed symbol instead of joining them.
+                if (speech.Length > 0 && speech[speech.Length - 1] != ' ' && code != '*') speech.Append(' ');
+            }
+            else speech.Append(text, i, width);
+            i += width;
+        }
+        return speech.ToString().Trim();
+    }
 
     // Validate before the legacy player can interpret unknown/compressed bytes as raw PCM.
     internal static string ValidateWave(byte[] data)

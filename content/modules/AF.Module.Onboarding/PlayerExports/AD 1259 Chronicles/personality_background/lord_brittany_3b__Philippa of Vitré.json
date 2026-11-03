@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_3b",
+  "HeroName": "Philippa of Vitré, Baroness of Vitré",
+  "Description": "Philippa of Vitré is the hereditary Baroness of Vitré and illustrious wife of Guy VII de Laval. Twenty-nine years of age, she is the sole surviving heir of the ancient baronial house that guarded eastern Brittany since the tenth century, holding sprawling manors, dense oak forests, and dozens of parish benefices. During her husband's prolonged absence in the Holy Land on crusade, Philippa governed the barony with brilliant administrative composure, financing massive crusading subsidies while safeguarding domestic security with unshakeable resolve. A munificent patron of the church, she commissioned the Gothic stone cloisters of Notre-Dame de Vitré and established permanent charitable foundations for impoverished widows. Universally venerated as the rightful sovereign chatelaine of the march, her ancient lineage confers sacred legitimacy upon House Laval. As the lawful heir of Vitré, Philippa brought vast territorial domains and immense wealth to the Laval union, soothing regional rivalries with extraordinary benevolence. Her meticulous charitable bequests to local leper hospitals remain a benchmark of Christian stewardship in eastern Brittany. Her boundless compassion toward impoverished serfs and pilgrims established an enduring standard of Christian virtue, forever commemorated in the solemn records of the church. Her profound spiritual convictions and continuous charitable gifts to monastic houses ensure that her sacred memory will endure through the generations.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the ancient charters and territorial integrity of the Barony of Vitré.",
+    "Govern her ancestral patrimony with Christian justice, ensuring frontier peace and prosperity."
+  ],
+  "Values": [
+    "Preserving the territorial integrity of the Barony of Vitré for her lawful descendants.",
+    "Ceaseless charity toward the poor to secure divine favor and protection for her lineage."
+  ],
+  "Fears": [
+    "Laval relatives usurping the ancestral prerogatives of the independent Barony of Vitré.",
+    "Untimely death leaving her young children vulnerable to manipulation by ambitious regents."
+  ],
+  "SpeechStyle": "Speaks with crystalline baronial authority and regal composure, articulate, decisive, and commanding profound respect throughout the border lordships.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

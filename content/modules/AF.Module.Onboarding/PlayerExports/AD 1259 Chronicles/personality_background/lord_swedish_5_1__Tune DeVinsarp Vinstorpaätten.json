@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_5_1",
+  "HeroName": "Tune DeVinsarp Vinstorpaätten",
+  "Description": "Sir Tune of Vinsarp, patriarchal founder of the illustrious Vinstorpa dynasty in West Götaland, was a formidable military lord of mid-thirteenth-century Sweden. Seated within the moated stone fortress of Vinsarp, Tune commanded vast agrarian estates, cattle pastures, and hydraulic watermills across the western marches. A master of Westgothic customary law and mobile siege tactics, he mobilized armored lancers to defend the western frontier against Norwegian incursions and lawless raiding bands. During the centralizing reign of Birger Jarl, Tune balanced regional baronial autonomy with pragmatic service to the crown, securing royal confirmation for his hereditary domains and laying the durable foundations of the Vinstorpa dynasty. Sir Tune developed iron mining and forge manufactories across Vinsarp, harnessing rapid mountain streams to power hydraulic bellows, producing high-grade cavalry armor, broadswords, and horseshoes for his retainers. At the Westgothic ting assemblies, his practical judgment and strategic wisdom consistently swayed regional lords, defending local liberties during crown-baronial disputes. Through a lifetime of martial discipline and economic statecraft, Tune established the foundation for centuries of Vinstorpa prominence, celebrated as an immovable giant of West Götaland. His astute defensive architecture and formidable cavalry muster transformed his border manors into an unassailable bastion against foreign incursions.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Fortify the moated battlements of Vinsarp and frontier beacon networks against Norwegian incursions.",
+    "Establish the Vinstorpa dynasty as premier leaders of West Götaland, securing royal confirmations of their charters."
+  ],
+  "Values": [
+    "Believes territorial expansion, martial autonomy, and dynastic survival are the supreme obligations of a feudal lord.",
+    "Champions disciplined realism and battlefield readiness, scorning ideological fanatism in favor of family continuity."
+  ],
+  "Fears": [
+    "Dreads large-scale Norwegian invasions breaching border defiles and putting the Vinsarp estates to the torch."
+  ],
+  "SpeechStyle": "Speaks with deep, commanding soldierly force, his unvarnished baritone commands demanding absolute compliance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

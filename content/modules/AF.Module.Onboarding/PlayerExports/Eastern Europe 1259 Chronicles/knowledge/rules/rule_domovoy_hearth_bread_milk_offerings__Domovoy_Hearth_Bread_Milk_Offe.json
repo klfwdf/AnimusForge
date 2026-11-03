@@ -1,0 +1,52 @@
+{
+  "Id": "rule_domovoy_hearth_bread_milk_offerings",
+  "Keywords": [
+    "household prayers at the hearth",
+    "domestic spirits and clergy"
+  ],
+  "RagShortTexts": [
+    "The hearth gathers cooking, warmth and family life as well as hopes of protection.",
+    "Clerical and household explanations differ; rituals do not replace fuel and food work."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The hearth supplies hot food, drying and warmth, with household rules about fuel, ash and children nearby. Families connect a home’s fortunes with ancestors, blessings and prohibitions, especially after moving, fire or repeated loss. Some pray before meals and others trust inherited practices; elders often explain the rules.\n\nRus Christians pray before icons and make the sign of the cross while sharing homes with relatives attached to older customs. Clergy may oppose offerings to spirits, and families may dispute how to judge inherited observances. Seeking protection changes neither fuel nor grain supplies: damp wood burns poorly, and offerings or hospitality also consume food needed at home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "In a lord’s household, hearth rules concern fires and provisioning. Punishment alone over spirit customs can damage trust; religious advice and practical duties both need responsible people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lodgers observe where hosts place icons and valued objects before touching things around the hearth. A household has its own fire and meal arrangements beyond camp habits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Elders may explain taboos while younger people worry about fuel. Someone must still cook and watch children during a dispute; cooperation matters beyond winning an argument."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

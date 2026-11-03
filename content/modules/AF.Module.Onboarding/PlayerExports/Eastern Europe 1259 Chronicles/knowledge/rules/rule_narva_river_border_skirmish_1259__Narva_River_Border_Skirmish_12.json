@@ -1,0 +1,52 @@
+{
+  "Id": "rule_narva_river_border_skirmish_1259",
+  "Keywords": [
+    "Narva crossings and borderlands",
+    "passage between gulf and lake"
+  ],
+  "RagShortTexts": [
+    "The Narva waterway connects Lake Peipus with the Gulf of Finland amid competing powers.",
+    "Memory of the 1242 fighting remains relevant to crossings and disputes over passage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Narva waterway connects the Lake Peipus region with the Gulf of Finland. Passage, fishing and dues involve competing authorities. Fighting between Novgorod and western neighbours remains within living memory, with the events of 1242 shaping reactions to soldiers and envoys. A navigable stretch does not remove transfers or shore journeys elsewhere. Travellers need local knowledge of guards, routes and people able to guarantee safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A frontier complaint may concern cargo, livestock or an authorised armed crossing. Identifying it helps find the responsible party. Turning every quarrel into general hostility also deprives a lord’s merchants of lodging and food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A crossing guard usually sees a vessel or company, not the intentions of a distant ruler. Checking identity, sending warnings and keeping a return route can prevent mistaken encounters provoking reprisals on both banks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Fishers and carriers need understandable dues and passage terms. Families move small boats and animals when troops approach. Witnessed losses and possible redress help exchange resume afterwards."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

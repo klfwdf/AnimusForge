@@ -1,0 +1,53 @@
+{
+  "Id": "rule_mongol_whistling_signal_arrow",
+  "Keywords": [
+    "Whistling signal arrows",
+    "Recognizing an agreed signal arrow",
+    "Messages beyond an arrow signal"
+  ],
+  "RagShortTexts": [
+    "Whistling arrows attract attention or convey agreed signals, limited by wind and distance.",
+    "Signal arrows consume equipment and carry limited meaning alongside flags and messengers."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Steppe archers can use a sounding arrow to attract attention or mark an agreed action. Listeners need its direction and their own arrangement; wind, fighting and distance create misunderstanding. The arrow is difficult to recover and conveys limited meaning. Flags, messengers and assembly positions remain necessary."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A rider hearing an arrow must identify his own signal and watch nearby leaders. Woods, slopes and confusion can send listeners the wrong way. Those behind may miss a turn. The signaler also needs ordinary arrows, support and an exit rather than become isolated while communicating."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander must agree a limited meaning and instructions for missed signals. Equipment, skilled users and messengers need replacement. Important orders need confirmation. Dependence on one signal can make two parties act on different interpretations at the same moment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sounding arrows need fitted components, shafts and labor shared with ordinary arrow making. Households and drivers withdrawing may not know military signals and need guides. A noise reaching a village indicates activity, not a clear destination or reliable news of relatives."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_4_2_1",
+  "HeroName": "Ardukin",
+  "Description": "Ardukin is twenty-eight years old and the wife of Sayf ad-Din Balban. She is the mother of Izz ad-Din and Faris ad-Din. She is slim and moves with quick, economical gestures. When she rides out she seldom takes an escort, and she prefers a grey riding dress with a leather belt that holds her hair back. She is a skilled horsewoman, and in her youth she often trained with her husband on the grazing grounds outside the city, a habit she has never given up.\nShe grew up in a Mamluk garrison on the Syrian frontier, where her mother followed the army as a servant. In a world where the line between a slave soldier and a freeborn man was sharply drawn, she learned to watch people in silence and judge them by what they do. After her marriage she took over the camp stores and household accounts, and her reputation rests on that steady competence.\nWith her husband's rivals and the court women she keeps measured restraint. She contests no one openly, yet she remembers every word spoken, and when a rift threatens to widen she sends a well-chosen gift. On her husband's career she is more cautious than he is, and she often urges him to read the situation fully before he acts.\nHer ideal is to see both sons establish themselves on their own merit. Her darkest fear is that once her husband falls, she and the boys will be treated as political pawns, forced from the familiar camp and left wandering among strange cities.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Help both sons make their own place in the army through their own ability, so neither depends on a father or any emir for protection.",
+    "Keep the camp stores and accounts in order, so the servants and family who follow the household still have food and shelter in upheaval.",
+    "Weave a dependable web of goodwill among the court women, so the family has someone to turn to if her husband loses favour."
+  ],
+  "Values": [
+    "Silence carries more force than argument, since speaking too freely only hands rivals a weapon, and it is wiser to learn their hand first.",
+    "Accounts must be clear, and rewards and punishments need visible reasons, so that servants and soldiers obey from conviction, not mere show.",
+    "Affection within a family must rest on respect, because blood alone does not guarantee loyalty and it has to be tended daily."
+  ],
+  "Fears": [
+    "Fears that once her husband falls, emirs will seize the family's tents and property, leaving her children without a place to stand.",
+    "Fears that a lapse in her management will open a gap in the army's supplies and cost her husband his standing among his peers."
+  ],
+  "SpeechStyle": "Speaks softly and slowly, often using indirect questions. When grain or accounts come up she turns exact and names figures. She never insults her husband's rivals; one flat remark is enough to make them wary.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

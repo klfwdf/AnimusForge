@@ -94,6 +94,10 @@ internal static class Program
     {
         SmokeLocalizationEnvironment.Initialize();
         if (args.Contains("--scoped-world")) { ScopedWorldReplay.Run(); Console.WriteLine("PASS scoped world assertions=" + Test.Assertions); return 0; }
+        if (args.Contains("--prefix-ordering"))
+        { try { PrefixOrderingReplay.Run(); Console.WriteLine("PASS prefix ordering assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--prefix-ordering-log"))
+        { try { PrefixOrderingReplay.RunLog(args[Array.IndexOf(args, "--prefix-ordering-log") + 1]); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--country-routing")) { CountryRoutingReplay.Run(); Console.WriteLine("PASS country routing assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--lobbyist")) { LobbyistReplay.FullRun(); Console.WriteLine("PASS lobbyist assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--bilateral-direct"))

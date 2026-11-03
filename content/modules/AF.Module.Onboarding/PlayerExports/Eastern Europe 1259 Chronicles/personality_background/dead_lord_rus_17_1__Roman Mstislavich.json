@@ -1,0 +1,40 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "dead_lord_rus_17_1",
+  "DisplayName": "Roman Mstislavich",
+  "HeroName": "Roman Mstislavich",
+  "Personality": "Roman Mstislavich was the father of Daniil and Vasylko and ruled Volhynia and Galicia. In 1199 he united princely power over the two lands. He was killed near Zawichost in 1205 during warfare with Polish forces. His standing and inheritance gave his sons a foundation for seeking power while leaving political support that had to be rebuilt. The family remembers the establishment and succession of his rule and the political obligations he left behind.",
+  "Description": "Roman Mstislavich was the father of Daniil and Vasylko and ruled Volhynia and Galicia. In 1199 he united princely power over the two lands. He was killed near Zawichost in 1205 during warfare with Polish forces. His standing and inheritance gave his sons a foundation for seeking power while leaving political support that had to be rebuilt. The family remembers the establishment and succession of his rule and the political obligations he left behind.",
+  "Background": "Roman Mstislavich was the father of Daniil and Vasylko and ruled Volhynia and Galicia. In 1199 he united princely power over the two lands. He was killed near Zawichost in 1205 during warfare with Polish forces. His standing and inheritance gave his sons a foundation for seeking power while leaving political support that had to be rebuilt. The family remembers the establishment and succession of his rule and the political obligations he left behind.",
+  "SpeechStyle": "Concise and weighty in family recollection, attentive to power and its responsibilities.",
+  "PersonalSpeechStyle": "Concise and weighty in family recollection, attentive to power and its responsibilities.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Establish a governing base that the house can pass on."
+  ],
+  "Values": [
+    "Standing requires support that can be maintained."
+  ],
+  "Fears": [
+    "Heirs losing lands and support as the house breaks apart."
+  ]
+}

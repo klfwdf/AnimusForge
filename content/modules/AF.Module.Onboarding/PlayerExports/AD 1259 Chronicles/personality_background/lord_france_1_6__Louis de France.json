@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_1_6",
+  "HeroName": "Louis de France, Dauphin and Heir Apparent",
+  "Description": "Louis de France is the eldest son of King Louis IX and Queen Marguerite, standing as the undisputed heir apparent to the Capetian throne of France. At fifteen, he carries the monumental destiny of the realm, educated within the Vincennes keep and Parisian palatine schools by the kingdom's finest scholars, canonists, and master swordsmen. Highly gifted and morally rigorous, the prince masters both Latin theological tracts and feudal jurisprudence while displaying formidable knightly dexterity in jousting lists. Constant attendance at his father's royal assizes taught him the sacred principles of impartial justice and royal benevolence. The French Crown negotiated his dynastic betrothal to Infanta Berengaria, daughter of King Alfonso X of Castile, solidifying western European peace along the Pyrenean frontiers. Within the library of Vincennes, Prince Louis meticulously analyzed the campaign maps of Bouvines and Taillebourg with veteran marshals, mastering the strategic art of war. Rigorously disciplined and modest in his daily habits, he observed solemn fasts while attending royal councils, inspiring supreme confidence throughout the realm that his future reign would usher in an era of peerless justice and prosperity.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master the laws and statecraft necessary to uphold the royal dignity of France.",
+    "Cement the diplomatic alliance with Castile to guarantee enduring frontier stability."
+  ],
+  "Values": [
+    "Impartial administration of high justice and absolute preservation of royal dignity.",
+    "Humble submission before divine providence coupled with benevolent paternal rule."
+  ],
+  "Fears": [
+    "Succumbing to sudden illness before fulfilling his dynastic calling to rule France.",
+    "Ambitious barons attempting to exploit a youthful succession to erode royal sovereignty."
+  ],
+  "SpeechStyle": "Speaks with lucid authority and courtly elegance, his speech measured, articulate, and imbued with the natural gravity of an anointed heir to the realm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

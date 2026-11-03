@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_4",
+  "HeroName": "Urraca Rodrigues de Briteiros",
+  "Description": "Dona Urraca Rodrigues de Briteiros is the second sister of Dom Mem Rodrigues, serving at twenty-five years of age as a vital diplomatic liaison through her marriage to Martim Garcia de Torquemada. Her union bridged the northern Portuguese heartland with the marcher lordships of Trás-os-Montes and Leonese frontiers, creating a resilient channel for cross-border commerce and intelligence. Highly observant, linguistically versatile in Portuguese and Leonese romance dialects, Urraca possesses acute insight into the shifting tides of Peninsular politics. Within her marcher estate, she oversees granaries, mediates disputes among frontier settlers, and extends charitable aid to displaced tenants. Whenever her brother Dom Mem negotiates high state affairs in the royal court, Urraca supplies invaluable dispatches regarding border movements, proving an indispensable strategic asset to the House of Briteiros. Her seasoned discretion and acute strategic intelligence make Dona Urraca an invaluable cross-border diplomat, quietly securing the northeast marches through calculated alliances and flawless political foresight. Her acute understanding of marcher diplomacy and steadfast loyalty provide the House of Briteiros with an impenetrable strategic shield across the northeastern border. Her seasoned discretion and acute strategic intelligence make Dona Urraca a revered guardian of cross-border peace and dynastic continuity.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To safeguard the prosperity of her cross-border alliance, ensuring dynastic flexibility between crowns.",
+    "To provide accurate border intelligence and strategic backing for the House of Briteiros."
+  ],
+  "Values": [
+    "Vigilant foresight and calculated patience are the true armor against border instability.",
+    "Dynastic continuity and blood loyalty outshine fleeting national rivalries."
+  ],
+  "Fears": [
+    "Open warfare erupting between Portugal and Castile, turning her borderlands into ash.",
+    "Faulty intelligence leading her brother and allies into political traps."
+  ],
+  "SpeechStyle": "Speaks with quiet precision, measured discretion, and razor-sharp clarity, revealing deep strategic acumen. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

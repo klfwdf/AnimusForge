@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_navarre_2_2",
+  "HeroName": "Blanche of Artois",
+  "Description": "Blanche of Artois is the formidable wife of Prince Henry (Henri le Gros), wielding immense aristocratic authority at forty years of age. As the daughter of Count Robert I of Artois and niece of King Louis IX, Blanche embodies the supreme royal pride of the House of Capet. Possessing a commanding presence, iron will, and razor-sharp political acumen, she superintends household finances, diplomatic correspondences, and fief administrations across both Champagne and Navarre. An indispensable counselor to her husband, Blanche vigilantly grooms her children for high European sovereignty. Resolute, fearless in the face of factional hostility, and masterly in high court diplomacy, Blanche of Artois stands as a formidable matriarchal titan defending her dynasty's royal destiny. Her iron resolution, diamond-cut political intellect, and unyielding defense of Capetian royal supremacy ensure that Blanche of Artois commands total reverence as an immortal sovereign matriarch. Her masterful diplomacy and fearless leadership guarantee that her dynasty remains preeminent across northern France and the Iberian marches. Her iron resolution, sharp political intellect, and royal dignity ensure that Blanche of Artois commands total reverence as an immortal sovereign matriarch defending her royal house against all domestic and foreign enemies.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To secure the Navarrese royal succession for her husband and progeny, asserting supreme sovereign rank.",
+    "To lock Navarre permanently into the French royal orbit, repelling Castilian and Aragonese encroachments."
+  ],
+  "Values": [
+    "Capetian royal blood is supreme; only iron authority and centralized governance preserve power.",
+    "Preemptive statecraft and calculated boldness shatter rival conspiracies."
+  ],
+  "Fears": [
+    "Iberian crowns seizing Navarre upon succession, reducing her dynasty to powerless puppets.",
+    "The sprawling lands of Champagne being partitioned and lost to French rivals."
+  ],
+  "SpeechStyle": "Speaks with aristocratic hauteur, diamond-cut severity, and imperial command, projecting royal superiority. She speaks with serene courtly poise, gentle articulation, and gracious royal dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

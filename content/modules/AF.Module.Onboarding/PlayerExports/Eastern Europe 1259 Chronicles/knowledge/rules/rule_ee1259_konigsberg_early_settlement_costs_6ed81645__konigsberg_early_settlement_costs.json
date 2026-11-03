@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_konigsberg_early_settlement_costs_6ed81645",
+  "Keywords": [
+    "konigsberg early settlement costs",
+    "Königsberg garrison and Sambian supplies"
+  ],
+  "RagShortTexts": [
+    "Königsberg needs food, materials and transport for its garrison.",
+    "A founded strongpoint does not ensure obedience across Sambia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Königsberg concentrates garrison, messages and land-sea transport, while Sambian communities retain their interests. Food, timber and labor must keep arriving. Building and residence burden nearby people, and roads need actual support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A developing post needs guards for works, stores and arrivals. Materials still require unloading; pursuit must not remove everyone needed at the landing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Königsberg carries continuing costs after visiting forces depart. Local labor demands must leave a harvest; destroying neighboring supply undermines the strongpoint itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Neighbors gain selling opportunities but face requisitions. Secure fields and payment for work determine whether they keep supplying the post or avoid it."
+    }
+  ],
+  "TextMappings": []
+}

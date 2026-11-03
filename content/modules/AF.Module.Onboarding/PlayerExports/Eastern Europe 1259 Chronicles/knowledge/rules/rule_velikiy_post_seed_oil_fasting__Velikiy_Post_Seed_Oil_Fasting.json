@@ -1,0 +1,52 @@
+{
+  "Id": "rule_velikiy_post_seed_oil_fasting",
+  "Keywords": [
+    "household meals during Orthodox fasts",
+    "Great Lent provisions"
+  ],
+  "RagShortTexts": [
+    "Orthodox fasts restrict meat and dairy; fish, oil and feast exceptions follow church practice.",
+    "Household fasting also depends on stores, health and work rather than abundant substitutes."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus Christians follow a church calendar of fasting, with limits on meat, dairy and some uses of oil changing household cooking. Fish days and provision for sick people require clerical and local guidance rather than merely replacing a dish name. Prayer, repentance and alms accompany restraint, and neighbours judge reputations for observance.\n\nStores diminish toward spring, so suitable meals depend on grain, dried vegetables, fish and fuel. Wealthy people buy alternatives while poor homes may simply lose already scarce dairy or meat. Elders, sick people and heavy workers have different needs. Food shares should reflect strength, and grain given to a poor neighbour helps more than criticism alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Estates need fasting meals and work planned together, with people actually fed rather than only compliant kitchen accounts. Alms and sick dependants require ongoing provision."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers and soldiers have limited food choices and can seek clerical advice. Fish or vegetable alternatives still require money, fuel and pots."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families stretch stores to the next supply and reserve food for sick people. Borrowed grain or a neighbour’s hot meal helps more than an inaccessible rich menu."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_annona_militaris_v1",
+  "Keywords": [
+    "Julian twenty-day provisions"
+  ],
+  "RagShortTexts": [
+    "Julian prepared twenty days of stored grain as durable food before a Gallic campaign."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "For a campaign in Gaul before the new harvest, Julian ordered twenty days of stored grain prepared as durable food and carried by the soldiers. Stocks allowed an earlier departure, but processing, distribution and loads still had to be arranged. New supplies were needed when those stores ran out."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Soldiers carried processed, durable food rather than expecting an immediate harvest on the route. Preparation and carriage put some supply work on the troops; another supply source was still needed when that stock ran out."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The commander used stores to choose a departure time, with processing before movement. Grain on an account still needed preparation, issue and carriage. Once stocks ran out, the army again faced the harvest season and its next supply."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

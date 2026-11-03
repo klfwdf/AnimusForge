@@ -1,0 +1,59 @@
+{
+  "Id": "be_sarmatian_kingdom_legitimacy",
+  "Keywords": [
+    "萨尔马提亚人法统",
+    "卡萨戈斯的家户保护"
+  ],
+  "RagShortTexts": [
+    "家户保护和分配支持Kasagos的威望。",
+    "牧地与粮源能否继续使用影响首领认可。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "首领威望与保护家户、分配收益相连，战士要求尊重，家户则看牧地和粮源是否还能继续使用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "家户保护和分配支持Kasagos的威望。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。牧地与粮源能否继续使用影响首领认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "牧地与粮源能否继续使用影响首领认可。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。家户保护和分配支持Kasagos的威望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "家户保护和分配支持Kasagos的威望。家户通过家人、土地与求助能否获保护来认识统治。牧地与粮源能否继续使用影响首领认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "牧地与粮源能否继续使用影响首领认可。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。家户保护和分配支持Kasagos的威望。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

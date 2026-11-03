@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_4",
+  "HeroName": "Świętopełk II Wielki",
+  "Description": "Świętopełk II the Great (dux Pomereliae-Gdańsk) reigns as the formidable sovereign Duke of Pomerelia and Gdańsk, the most towering figure of the Samboride dynasty who permanently shattered Polish Piast vassalage to assert Pomeranian independence. A warlord of volcanic energy, iron will, and brilliant strategic acumen, Świętopełk recognized that naval commerce was the lifeblood of his maritime imperium, turning Gdańsk at the mouth of the Vistula into the dominant amber and timber entrepôt on the Baltic littoral. When the rapacious crusading armies of the Teutonic Order expanded along the lower Vistula, Świętopełk formed audacious military alliances with pagan Old Prussian chieftains, erupting in protracted, savage campaigns that battered Teutonic strongholds. Unawed by papal threats of excommunication, he deployed amphibious river flotillas and fierce shock infantry, cutting crusader supply lines and forcing repeated papal legations to treat for terms. Though demonized by German monastic scribes as an obstinate lion, his subjects venerated him as the glorious founding father of Pomeranian sovereignty. He stands as an immortal colossus along the Baltic shoreline, wielding his sword to ensure that Gdańsk remains free and unconquered. Świętopełk erected fortified stone sea walls and river stockades along the mouth of the Vistula, securing absolute customs sovereignty over Baltic merchant shipping. His ferocious defiance broke crusader dominance, immortalizing Pomerelia as an unyielding maritime power along the northern coasts.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush Teutonic Order expansion across the Lower Vistula, securing Pomerelia's sovereign maritime freedom.",
+    "Monopolize all riverine transit tariffs and Baltic amber trade through Gdańsk to forge an unmatched maritime treasury.",
+    "Federate with pagan Prussians, Danes, and regional dukes into a formidable anti-Teutonic military alliance."
+  ],
+  "Values": [
+    "Hold national sovereignty, territorial autonomy, and maritime freedom above all foreign imperial or papal edicts.",
+    "Rely on proactive pre-emptive strikes and ruthless shock warfare to deter superior crusader coalitions.",
+    "Prize the commercial prosperity of Gdańsk and native Pomeranian seafaring liberties as eternal rights."
+  ],
+  "Fears": [
+    "A pan-European crusading armada summoned by the Pope wiping out Gdańsk and subjugating Pomerelia.",
+    "Fratricidal treason among his siblings delivering the river gateways of the Vistula to crusader garrisons."
+  ],
+  "SpeechStyle": "The Baltic gales bend the knee to no one, and Gdańsk yields neither to Teutonic monks nor Piast lords! While I breathe, I rule the mouth of the Vistula! The Baltic belongs to the free; Gdańsk yields to no foreign conqueror!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

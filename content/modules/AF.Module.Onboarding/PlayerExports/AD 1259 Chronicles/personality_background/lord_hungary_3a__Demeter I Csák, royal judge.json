@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_3a",
+  "HeroName": "Demeter I Csák, royal judge",
+  "Description": "Demeter I Csák is a preeminent elder statesman and patriarch of the ancient and legendary Csák clan, serving as Judge Royal (Országbíró) and Master of the Stewards. Tracing their noble lineage directly to Szabolcs, cousin of Árpád and one of the seven Magyar tribal conquerors, the Csák family possessed vast ancestral domains across Upper Hungary and Transdanubia. Mastering both customary Hungarian law and royal chancellery decrees, Demeter presided over supreme royal justice following the catastrophic Mongol invasion, relentlessly punishing lawless land usurpations. His profound legal acumen and venerable judicial authority positioned him as a crucial constitutional bridge between the ancient Magyar nobility and the royal court. In 1259, as bitter dynastic disputes escalate between King Béla IV and Junior King Stephen, Lord Demeter steadfastly upholds royal justice, defending the integrity of the kingdom's ancient statutes. Demeter unswervingly defended royal statutory codes and ancient Magyar constitutional liberties against arbitrary baronial encroachments. Presiding over supreme judicial diets, he delivered impartial verdicts that protected both the royal domain and lesser gentry rights. His lifelong dedication to codified law and equity established him as an enduring constitutional pillar of medieval Hungarian statecraft. His profound wisdom and fearless defense of royal statutes earned him the universal veneration of the realm as an uncorrupted champion of justice.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold supreme royal law and judicial equity, stopping predatory magnates from usurping gentry lands.",
+    "Consolidate the preeminent standing of Clan Csák within the royal council for future generations."
+  ],
+  "Values": [
+    "Hold judicial impartiality and ancient constitutional legality as sacred vows, condemning lawless tyranny.",
+    "Value moral authority and dignified jurisprudence, convinced true justice resolves all civil strife."
+  ],
+  "Fears": [
+    "Fears dynastic civil war destroying royal legal order, plunging the kingdom into lawless feudal anarchy.",
+    "Dreads overmighty warlords defying court verdicts by force, paralyzing supreme judicial authority."
+  ],
+  "SpeechStyle": "Saint Stephen's law is the foundation of our realm; the blood of Csák witnessed the very birth of Hungary! Any tyrant scorning justice shall face royal reckoning! Royal law is supreme; Clan Csák defends the sacred justice of the crown!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

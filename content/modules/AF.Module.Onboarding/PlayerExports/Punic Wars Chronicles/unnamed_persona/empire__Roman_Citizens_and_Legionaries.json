@@ -1,0 +1,32 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "",
+  "CultureId": "empire",
+  "DisplayName": "Roman Citizens and Legionaries",
+  "Description": "Citizen legionaries and centurions of the Roman Republic, drilled from youth in the ancestral code of Mos Maiorum and rigorous manipular tactics. Whether tilling small family plots in Latium or standing shoulder-to-shoulder behind curved scuta shields against Punic charges, they view state service as a sacred civic obligation.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fulfill civic legionary service to defend Rome and earn honorable land allotments."
+  ],
+  "Values": [
+    "Ancestral discipline, civic loyalty, and unyielding steadfastness in the battle line."
+  ],
+  "Fears": [
+    "Being broken by foreign cavalry or facing consular execution for battlefield cowardice."
+  ],
+  "SpeechStyle": "Austere, blunt, and soldierly; seasoned with camp slang and deep reverence for the Republic.",
+  "VoiceId": ""
+}

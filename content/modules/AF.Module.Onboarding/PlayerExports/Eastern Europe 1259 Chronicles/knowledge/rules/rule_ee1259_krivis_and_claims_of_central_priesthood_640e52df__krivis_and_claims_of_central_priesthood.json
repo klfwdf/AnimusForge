@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_krivis_and_claims_of_central_priesthood_640e52df",
+  "Keywords": [
+    "Sacred fires groves and ritual supplies",
+    "Guardians and offerings at Lithuanian ritual sites"
+  ],
+  "RagShortTexts": [
+    "Respected ritual places depended on guardians, offerings and community support.",
+    "Rules for wood, entry and rites mattered to local trust."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Maintaining a respected ritual place depended on custodians, offerings and community support. Rules concerned gathering wood, access and who could lead observances. Leaders disregarding these customs could lose the trust of kin and households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Maintaining a respected ritual place depended on custodians, offerings and community support. Rules concerned gathering wood, access and who could lead observances. Leaders disregarding these customs could lose the trust of kin and households. Troops gathering fuel or camping could encounter local prohibitions, explained by guides. Offended households withheld news, food or guidance despite military superiority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Maintaining a respected ritual place depended on custodians, offerings and community support. Rules concerned gathering wood, access and who could lead observances. Leaders disregarding these customs could lose the trust of kin and households. Leaders balanced custom, partners and outside religious demands. Protecting respected places won trust, while offerings, labor and access could provoke internal disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Maintaining a respected ritual place depended on custodians, offerings and community support. Rules concerned gathering wood, access and who could lead observances. Leaders disregarding these customs could lose the trust of kin and households. Households expressed reverence while needing fuel and pasture. Offerings in a poor harvest strained resources, and elders and younger people could differ over propriety."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

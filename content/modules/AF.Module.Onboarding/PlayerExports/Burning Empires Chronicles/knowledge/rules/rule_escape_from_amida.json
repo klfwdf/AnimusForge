@@ -1,0 +1,38 @@
+{
+  "Id": "be_battle_amida_siege_record_v7",
+  "Keywords": [
+    "Escape from Amida"
+  ],
+  "RagShortTexts": [
+    "Escapees from Amida in 359 faced enemies, thirst, fatigue and missing companions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "When Amida fell in 359, small groups of defenders sought a way out amid the confusion. Enemy positions, thirst and exhaustion restricted escape, and companions had to decide whether to wait for stragglers. Those who escaped could not immediately know what had happened to relatives and captives left behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escape meant evading pursuit and finding water and a safer route, within the companions’ endurance. One man’s return did not establish that all comrades withdrew; missing people still required inquiry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "An officer receiving escapees asked about routes, observation points and the time they left. Survivors might know one street or gate without having seen residents elsewhere. Relief and reception still required efforts to find missing people and obtain further reports."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

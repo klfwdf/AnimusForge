@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_2_1",
+  "HeroName": "Hugh III of Lusignan, 'The Great'",
+  "Description": "Hugh III of Lusignan, remembered by chroniclers as 'Hugh the Great', served as Regent and later King of both Cyprus and Jerusalem, unifying the royal crowns of the Latin East. The son of Prince Henry of Antioch and Isabella of Lusignan, he fused the ferocious chivalric courage of the House of Poitiers with the shrewd statecraft of the Lusignan dynasty. In 1259, amidst the minority of young King Hugh II, the energetic Hugh established himself as the dominant political architect in the Cypriot High Court at Nicosia. He cemented an unassailable domestic alliance by marrying Isabella of Ibelin, binding the royal house to Outremer's foremost baronial and military faction. Anticipating the catastrophic confrontations with Sultan Baibars's Mamluk legions and the shifting alliances of the Mongol Ilkhanate, Hugh overhauled the Cypriot royal navy. Determined to restore royal prerogative over contentious baronial factions, Hugh stood as the last formidable monarch striving to preserve the crusader presence in the Levant. At the port of Famagusta, Hugh constructed stone drydocks capable of harboring dozens of war galleys, instituting naval academies to train skilled Frankish captains. In the High Court of Nicosia, he reformed feudal fief tenures to support permanent professional knightly contingents, vastly expanding national defensive readiness. His visionary statecraft and charismatic leadership marked him as the preeminent monarch of the late crusader era.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Unify the dual crowns of Cyprus and Jerusalem, reasserting undisputed royal sovereignty over fractious feudal barons.",
+    "Build an integrated naval and cavalry military machine based in Famagusta and Acre to halt Mamluk conquest.",
+    "Heal divisions among Outremer lords through judicial reforms and matrimonial diplomacy to form a united defense."
+  ],
+  "Values": [
+    "Belief in the divine legitimacy of royal authority as the sole mechanism to rescue Christian Outremer from total ruin.",
+    "A sovereign must combine the courage of a lion with the cunning of a fox, outmaneuvering foes on the Levantine chessboard.",
+    "Pursuit of enduring dynastic glory, dedicating his royal career to safeguarding the sacred remnants of the Kingdom of God."
+  ],
+  "Fears": [
+    "The barons of Acre refusing royal command out of petty hubris, allowing the Mamluks to crush the fortress cities piecemeal.",
+    "Factional dynastic conspiracies in Cyprus fracturing the regency, paralyzing the combined military effort of the realm."
+  ],
+  "SpeechStyle": "Speaks with imperious regal confidence and acute strategic discernment, delivering royal decrees and diplomatic demands with resonant, majestic eloquence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Hugh III of Lusignan, 'The Great'"
+}

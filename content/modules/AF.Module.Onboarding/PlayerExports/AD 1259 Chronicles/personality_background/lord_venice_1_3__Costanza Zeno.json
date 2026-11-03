@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_1_3",
+  "HeroName": "Costanza Zeno",
+  "Description": "Lady Costanza Zeno is the accomplished twenty-year-old daughter of the ducal house, celebrated across the lagoon for beauty, intellect, and patrician refinement. Reared amidst the pageantry of Saint Mark's Square and the bustling maritime wharves, Costanza combines classical Latin literacy with an acute understanding of the spice and silk trade routes. Navigating marriage overtures with serene discernment, she is dedicated to leveraging her hand to strengthen her family's legislative standing within the Great Council. Lady Costanza immersed herself in ancient maritime logs and cartographic charts within the ducal chancery, her intellectual brilliance and serene political poise establishing her as an admired and courted noblewoman across the grand salons of the Grand Canal. With acute intellect and patrician dignity, Costanza navigates legislative rivalries with calm discernment, dedicated to leveraging her hand and intellect to establish permanent, glorious alliances that elevate her noble lineage across Italy. Her acute managerial intelligence, refined courtly wit, and steadfast familial devotion establish Costanza Zeno as an irreplaceable noblewoman sustaining the great patrician alliances of the south. Her courtly elegance, poetic intellect, and refined aristocratic poise make Costanza a celebrated maiden across the noble courts of central Italy. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Form an advantageous dynastic marriage that elevates the House of Zeno within the Venetian senate.",
+    "Master maritime commercial treaties and diplomatic arts to advance the republic's international standing."
+  ],
+  "Values": [
+    "Patrician honor, republican loyalty, and unblemished personal integrity above fleeting worldly vanity.",
+    "Kindness, intellectual depth, and acute wariness against duplicitous political flatterers."
+  ],
+  "Fears": [
+    "Maritime wars wiping out family commercial investments and forcing an unfavorable marriage match.",
+    "Deadly factional vendettas breaking out along the Grand Canal and endangering her kin."
+  ],
+  "SpeechStyle": "Speaks with melodic lyricism, subtle diplomatic intelligence, and polished aristocratic poise. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

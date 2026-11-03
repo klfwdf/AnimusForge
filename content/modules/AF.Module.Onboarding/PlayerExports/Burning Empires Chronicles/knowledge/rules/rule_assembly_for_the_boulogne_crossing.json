@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v4",
+  "Keywords": [
+    "Assembly for the Boulogne crossing"
+  ],
+  "RagShortTexts": [
+    "Theodosius assembled for Britain at Boulogne."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Theodosius assembled for Britain at Boulogne. Infantry, cavalry and following units had to move through successive stages. The channel separated appointment, assembly and arrival; an imperial order did not instantly place reinforcements on the island."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

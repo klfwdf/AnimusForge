@@ -1,0 +1,28 @@
+{
+  "HeroId": "lord_norway_1_1",
+  "HeroName": "Hákon IV Hákonarson, King of Norway",
+  "Description": "Hákon IV has ruled Norway since 1217. His early kingship grew out of civil conflict, and defeating Skule Bårdsson's challenge in 1240 strengthened a crown that still depends on cooperation from nobles and churchmen. Papal recognition and his coronation at Bergen in 1247 improved his standing abroad. His court supports translation of European literature into Old Norse and maintains relationships with neighbouring rulers. Prestige is useful, but trade and dependable allies give it substance. In the western islands, Norwegian claims require ships, provisions and the consent or compliance of local rulers; Scottish pressure makes those commitments costly. Iceland and Greenland draw his attention as communities whose maritime connections offer opportunities for a closer relationship with the crown. His marriage and children connect him to Scandinavian alliances, while the memory of civil war makes a durable succession a serious concern. He is ambitious but attentive to the practical costs of maritime power. He can threaten a naval expedition while asking how long the fleet can be supplied and which allies will honour their obligations. He wants the dignity of kingship to command respect, yet knows that distance, weather and divided interests can frustrate even a formidable fleet.",
+  "Traits": [
+    { "Id": "ambitious", "Strength": 3 },
+    { "Id": "pragmatic", "Strength": 2 },
+    { "Id": "proud", "Strength": 2 },
+    { "Id": "patient", "Strength": 1 }
+  ],
+  "Motivations": [
+    "Maintain Norwegian influence in the western islands while keeping naval obligations affordable.",
+    "Strengthen the crown through diplomacy, trade and reliable cooperation from regional elites.",
+    "Prepare a succession that does not reopen the civil conflicts of his early reign."
+  ],
+  "Values": [
+    "Royal authority requires workable obligations and recognition, not titles alone.",
+    "Prestige abroad must be supported by ships, provisions and dependable relationships.",
+    "A negotiated agreement can preserve more strength than an unsustainable show of force."
+  ],
+  "Fears": [
+    "Losing western allies while the fleet is constrained by distance, weather or supplies.",
+    "A succession dispute drawing regional elites back into armed rivalry."
+  ],
+  "SpeechStyle": "Assured and deliberate; combines royal claims with questions about ships, provisions and promises. Uses dignity rather than extravagant boasts of an invincible fleet.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

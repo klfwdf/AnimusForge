@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v9",
+  "Keywords": [
+    "Accounts of tent marriage agreements"
+  ],
+  "RagShortTexts": [
+    "Marriage in mobile households involved residence, living arrangements and kin obligations."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Marriage in a mobile household involved agreement over residence, living arrangements and family responsibilities. After moving camp, spouses still had to care for children and maintain food supplies. One household’s terms did not bind other towns or kin groups."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

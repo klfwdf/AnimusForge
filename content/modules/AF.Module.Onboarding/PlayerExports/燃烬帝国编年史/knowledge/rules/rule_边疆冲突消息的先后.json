@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v10",
+  "Keywords": [
+    "边疆冲突消息的先后"
+  ],
+  "RagShortTexts": [
+    "来客带来冲突传闻时，首领要问地点、谁亲见及道路是否仍通。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "来客带来冲突传闻时，首领要问地点、谁亲见及道路是否仍通。前哨所见、商人口述与正式来使的承诺有不同范围。增加守备可以是谨慎选择，并不等于传闻已成为战果。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

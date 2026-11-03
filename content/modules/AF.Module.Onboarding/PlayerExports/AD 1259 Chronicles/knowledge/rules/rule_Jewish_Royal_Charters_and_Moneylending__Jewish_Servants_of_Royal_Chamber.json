@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Jewish_Royal_Charters_and_Moneylending",
+  "Keywords": [
+    "Jewish Servants of Royal Chamber",
+    "Usury Prohibition Scholastic Ban",
+    "Pawn Credit and Vellum Bond Chirographs",
+    "Jewish Quarters and Yellow Felt Badges"
+  ],
+  "RagShortTexts": [
+    "Jewish communities combine varied livelihoods with particular royal rights and vulnerabilities.",
+    "Royal protection and demands for revenue can coexist without guaranteeing lasting security."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Canon law forbade Christians to lend at interest, and that prohibition left a gap in the credit market that Jewish communities filled under the status of servants of the royal chamber. Kings in England, France and Iberia granted charters of protection, and in return they taxed the moneylending heavily and enforced the badges mandated by the Lateran Councils. The royal chamber treated these lenders as a ready source of revenue. When a debt was forgiven or a community was expelled, the crown seized the bonds and the property. Jewish quarters grew up within the walls of towns, and their residents depended on the monarch's protection and on the fragile goodwill of their Christian neighbours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Barons and abbots borrowed heavily from Jewish moneylenders to finance castles, abbeys and household expenses. The debts were recorded on vellum chirographs. In revolts the debts became a target. During rebellions such as Montfort's uprising, baronial mobs broke into Jewish archives and burned the bonds, so the lenders' records vanished with them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Enclosed within urban quarters, Jewish yeshivas cultivated advanced arithmetic, law, and medicine. Jewish physicians translated Greco-Arabic medical treatises, and in the 13th century Shem Tov of Tortosa translated Al-Zahrawi's surgical encyclopedia. Copyists and binders who produced these manuscripts found steady work in the scholars' quarters."
+    }
+  ],
+  "TextMappings": []
+}

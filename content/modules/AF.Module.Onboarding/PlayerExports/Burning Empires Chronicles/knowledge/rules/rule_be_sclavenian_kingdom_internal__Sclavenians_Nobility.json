@@ -1,0 +1,59 @@
+{
+  "Id": "be_sclavenian_kingdom_internal",
+  "Keywords": [
+    "Sclavenians Nobility",
+    "Sclavenian village surplus and mutual aid"
+  ],
+  "RagShortTexts": [
+    "Perbund needs local chiefs to share warnings.",
+    "Unequal food and manpower make aid require defined provisions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Perbund needs shared warnings among chiefs. Villages have different grain and manpower, making aid without supply terms a cause of resentment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Perbund needs local chiefs to share warnings. Followers retain family ties; decisions about guards and distant service affect common participation. Unequal food and manpower make aid require defined provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Unequal food and manpower make aid require defined provisions. Coordination allocates actual supply and protection duties, not merely titles. Perbund needs local chiefs to share warnings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Perbund needs local chiefs to share warnings. Households compare burdens with neighbors; unmatched protection weakens cooperation. Unequal food and manpower make aid require defined provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Unequal food and manpower make aid require defined provisions. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Perbund needs local chiefs to share warnings."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

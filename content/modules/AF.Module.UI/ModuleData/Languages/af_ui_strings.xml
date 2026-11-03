@@ -159,7 +159,7 @@
   <string id="AF_MCM_MainApi_Model_Hint" text="For example, gpt-4o-mini. Enter a model supported by your configured endpoint." />
   <string id="AF_MCM_MainApi_Dropdown_Hint" text="Fetch the model list first, then choose a model. Selecting *manual entry* uses the model name in the text field above." />
   <string id="AF_MCM_MainApi_Thinking_Hint" text="When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
-  <string id="AF_MCM_MainApi_Reasoning_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
+  <string id="AF_MCM_MainApi_Reasoning_Hint" text="Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled." />
   <string id="AF_MCM_MainApi_Temperature_Hint" text="Controls response-generation randomness. 0 is more stable and 2 is more varied. Default: 0.80." />
   <string id="AF_MCM_MainApi_MaxTokens_Hint" text="The max_tokens value for main API response generation. Default: 12000; endpoints that do not support a high limit may reject the request." />
   <string id="AF_MCM_MainApi_Streaming_Hint" text="Main responses use SSE when this option or the selected speech service is enabled. Supported interfaces reveal text progressively; local speech reads accepted complete replies sentence by sentence. Preprocessing, postprocessing and weekly reports are unchanged. The saved switch defaults to off; changes apply to the next request." />
@@ -390,11 +390,6 @@
   <string id="AF_UI_Terminal_SourceRoots" text="Source roots:" />
   <string id="AF_UI_Terminal_Tag" text="Tag" />
   <string id="AF_UI_Terminal_Source" text="Source:" />
-  <string id="AF_UI_Terminal_KeepEntry" text="At least one terminal entry (key or icon) must remain." />
-  <string id="AF_UI_Terminal_HotkeyOff" text="Terminal hotkey access disabled (U key)." />
-  <string id="AF_UI_Terminal_HotkeyOn" text="Terminal hotkey access enabled (U key)." />
-  <string id="AF_UI_Terminal_MapIconOff" text="World-map terminal icon entry disabled." />
-  <string id="AF_UI_Terminal_MapIconOn" text="World-map terminal icon entry enabled." />
   <string id="AF_UI_Terminal_WarBreadcrumb" text="War" />
   <string id="AF_UI_Terminal_WeeklyBreadcrumb" text="Current kingdom reports" />
   <string id="AF_UI_Terminal_VassalBreadcrumb" text="Vassal tribute settlement history" />
@@ -475,8 +470,6 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_MCM_Knowledge_Group" text="5. Knowledge retrieval (returned)" />
   <string id="AF_MCM_Knowledge_TopN" text="Knowledge results limit" />
   <string id="AF_MCM_Knowledge_TopN_Hint" text="Maximum related knowledge entries supplied to AI per conversation. Terms are assigned independent slots by importance; later results fill unused slots. Default: 4." />
-  <string id="AF_MCM_Knowledge_Device" text="Reranker inference device" />
-  <string id="AF_MCM_Knowledge_Device_Hint" text="Default CPU. GPU (CUDA) requires NVIDIA and optional CUDA runtime components; vector retrieval remains on CPU. Missing components, incompatible drivers, or GPU failure fall back to CPU. Restart the game fully after changing this value." />
   <string id="AF_MCM_Knowledge_Entity" text="Entity injection limit" />
   <string id="AF_MCM_Knowledge_Entity_Hint" text="Maximum people, places, clans, and kingdoms injected into each AI request. In preprocessing importance order, each term first occupies one highest-scoring entity slot. For people with the same name, a clan explicitly specified by another term takes priority, followed by a kingdom. Their actual campaign-map distance from the current NPC then adds a small bonus of up to 0.15; the final score may exceed 1.00. If scope or position is unavailable, the original score is used. If the highest-scoring entity is already occupied by an earlier term, the first unoccupied entity is used instead. Secondary results are added only when the limit exceeds the term count: first up to 3 for the earliest term, then for subsequent terms in order. Default: 6." />
   <string id="AF_MCM_Knowledge_Candidates" text="List candidate display limit" />
@@ -678,9 +671,6 @@ Produces a very large log and is intended for developers only." />
     <string id="AF_UI_Terminal_Prefab_014" text="Back to list" />
     <string id="AF_UI_Terminal_Prefab_015" text="Generate full report" />
     <string id="AF_UI_Terminal_Prefab_016" text="Run AI diagnostic analysis" />
-    <string id="AF_UI_Terminal_Prefab_017" text="Open with hotkey" />
-    <string id="AF_UI_Terminal_Prefab_018" text="Icon entry" />
-    <string id="AF_UI_Terminal_Prefab_019" text="Save after editing; press ESC or Close to exit" />
     <string id="AF_UI_Terminal_Prefab_020" text="Back to previous level" />
     <string id="AF_UI_Terminal_Prefab_021" text="Save settings" />
     <string id="AF_UI_Terminal_Prefab_022" text="Close" />
@@ -814,7 +804,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_MainApiThinkingEnabled_Hint" text="When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
   <string id="AF_TERMINAL_UI_MainApiThinkingEnabled_Group" text="1. AI core configuration/1. Main API (response generation)" />
   <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Title" text="Main API Reasoning Effort Dropdown" />
-  <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
+  <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Hint" text="Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled." />
   <string id="AF_TERMINAL_UI_MainApiReasoningEffortDropdown_Group" text="1. AI core configuration/1. Main API (response generation)" />
   <string id="AF_TERMINAL_UI_MainApiTemperature_Title" text="Main API Temperature" />
   <string id="AF_TERMINAL_UI_MainApiTemperature_Hint" text="Controls response-generation randomness. 0 is more stable and 2 is more varied. Default: 0.80." />
@@ -847,7 +837,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_AuxiliaryApiThinkingEnabled_Hint" text="When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
   <string id="AF_TERMINAL_UI_AuxiliaryApiThinkingEnabled_Group" text="1. AI core configuration/2. Preprocessing API (rule retrieval and simple dialogue)" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Title" text="Auxiliary API Reasoning Effort Dropdown" />
-  <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
+  <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Hint" text="Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled." />
   <string id="AF_TERMINAL_UI_AuxiliaryApiReasoningEffortDropdown_Group" text="1. AI core configuration/2. Preprocessing API (rule retrieval and simple dialogue)" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiTemperature_Title" text="Auxiliary API Temperature" />
   <string id="AF_TERMINAL_UI_AuxiliaryApiTemperature_Hint" text="Controls randomness in preprocessing, rule routing, and simple dialogue. 0 is more stable and 2 is more varied. Default: 0.00." />
@@ -877,7 +867,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiThinkingEnabled_Hint" text="When enabled, OpenAI-compatible reasoning requests include thinking.type=enabled and reasoning_effort; Anthropic/Claude requests include thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiThinkingEnabled_Group" text="1. AI core configuration/3. Postprocessing API (action and emotion tags)" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Title" text="Action Postprocess API Reasoning Effort Dropdown" />
-  <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
+  <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Hint" text="Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled." />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiReasoningEffortDropdown_Group" text="1. AI core configuration/3. Postprocessing API (action and emotion tags)" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiTemperature_Title" text="Action Postprocess API Temperature" />
   <string id="AF_TERMINAL_UI_ActionPostprocessApiTemperature_Hint" text="Controls randomness in action-tag and emotion-tag classification. A low value is recommended. Default: 0.00." />
@@ -910,7 +900,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiThinkingEnabled_Hint" text="Disabled by default. Event weekly reports and kingdom-rebellion naming require strict formats; enable only after confirming that the endpoint reliably writes the final answer to content. When enabled, OpenAI-compatible thinking endpoints receive thinking.type=enabled and reasoning_effort; Anthropic/Claude endpoints receive thinking.type=enabled and output_config.effort. When disabled, thinking.type=disabled is sent." />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiThinkingEnabled_Group" text="1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Title" text="Event And Rebellion API Reasoning Effort Dropdown" />
-  <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Hint" text="Supports minimal/low/medium/high/xhigh/max. Disable Enable reasoning to turn reasoning off; YJ Gemini sends the selected value unchanged." />
+  <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Hint" text="Options: low/medium/high/xhigh/max. YJ Gemini sends the selected value unchanged. When reasoning is disabled, YJ Gemini 3.7/3.8-flash-high uses provider defaults; reasoning may remain enabled." />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiReasoningEffortDropdown_Group" text="1. AI core configuration/4. Event and kingdom-rebellion API (weekly reports and naming)" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Title" text="Event And Rebellion API Temperature" />
   <string id="AF_TERMINAL_UI_EventAndRebellionApiTemperature_Hint" text="Controls randomness for weekly reports, kingdom naming, diplomatic declarations, scribe drafting, and other tasks using the event/rebellion API. Diplomacy uses the main API temperature when incomplete configuration causes fallback to the main API. 0 is more stable and 2 is more varied. Default: 0.80." />
@@ -924,9 +914,6 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Title" text="Knowledge Direct Top N" />
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Hint" text="Maximum related knowledge entries supplied to AI per conversation. Takes at most this many terms in importance order, with one independent knowledge slot per term. If the highest-scoring knowledge is already occupied by an earlier term, uses the first unoccupied entry instead. Only when the limit exceeds the term count are later results for those terms added. Default: 4." />
   <string id="AF_TERMINAL_UI_KnowledgeDirectTopN_Group" text="5. Knowledge retrieval (returned)" />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Title" text="Reranker Device Dropdown" />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Hint" text="Default CPU. GPU (CUDA) requires NVIDIA and optional CUDA runtime components; vector retrieval remains on CPU. Missing components, incompatible drivers, or GPU failure fall back to CPU. Restart the game fully after changing this value." />
-  <string id="AF_TERMINAL_UI_RerankerDeviceDropdown_Group" text="5. Knowledge retrieval (returned)" />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Title" text="World Entity Inject Maximum Count" />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Hint" text="Maximum people, places, clans, and kingdoms injected into each AI request. In preprocessing importance order, each term first occupies one highest-scoring entity slot. For people with the same name, a clan explicitly specified by another term takes priority, followed by a kingdom. Their actual campaign-map distance from the current NPC then adds a small bonus of up to 0.15; the final score may exceed 1.00. If scope or position is unavailable, the original score is used. If the highest-scoring entity is already occupied by an earlier term, the first unoccupied entity is used instead. Secondary results are added only when the limit exceeds the term count: first up to 3 for the earliest term, then for subsequent terms in order. Default: 6." />
   <string id="AF_TERMINAL_UI_WorldEntityInjectMaxCount_Group" text="5. Knowledge retrieval (returned)" />
@@ -2913,8 +2900,6 @@ Choose how to proceed:" />
   <string id="AF_MCM_Prompt_CustomSceneFormat_Hint" text="Omit the default one-on-one identity restrictions and reply format, action, inner-thought, and length requirements. Provide a complete format in the player custom rules. Disabled by default." />
   <string id="AF_MCM_Option_ModelManual" text="*manual entry*" />
   <string id="AF_MCM_Option_ModelEmpty" text="(empty)" />
-  <string id="AF_MCM_Option_DeviceCpu" text="CPU (default)" />
-  <string id="AF_MCM_Option_DeviceGpu" text="GPU (CUDA / NVIDIA)" />
   <string id="AF_MCM_Option_DiplomacySmall" text="Low" />
   <string id="AF_MCM_Option_DiplomacyMedium" text="Standard" />
   <string id="AF_MCM_Option_DiplomacyLarge" text="High" />
@@ -3302,7 +3287,7 @@ Choose how to proceed:" />
   <string id="AF_UI_Persona_TraitLimit" text="Five traits are already set. Remove one before adding another." />
   <string id="AF_UI_Persona_ExpandedUpdated" text="Expanded persona updated." />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Title" text="Event-driven NPC persona evolution" />
-  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="Default: off. New confirmed bulletin events can change NPC personas. Uses the auxiliary API with merged, rate-limited requests. Turning off discards pending updates but keeps existing changes. Requires bulletin mode; auto-publishing is not required." />
+  <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Hint" text="Default: off. New confirmed bulletin events trigger full NPC persona regeneration using the shared generation rules and editable requirements. The expanded-persona setting controls whether expanded fields are generated. Requests are merged and rate-limited. Turning this event setting off discards pending updates and keeps existing changes. Requires bulletin mode, not auto-publishing." />
   <string id="AF_TERMINAL_UI_EnableNpcPersonaEventEvolution_Group" text="Weekly reports / bulletins" />
   <string id="AF_MCM_Tts_ProviderVolc" text="Volcengine" />
   <string id="AF_MCM_Tts_ProviderOpenAi" text="OpenAI-compatible" />
@@ -3322,6 +3307,8 @@ Choose how to proceed:" />
   <string id="AF_MCM_Tts_OpenAiTimeout_Hint" text="Total request/read deadline for this service. Default: 60 seconds. No automatic retry; failure falls back to text." />
   <string id="AF_MCM_Tts_OpenAiTesting" text="[TTS] Testing the selected OpenAI-compatible speech service; synthesis may incur charges." />
   <string id="AF_MCM_Tts_TestNotQueued" text="[TTS] Test voice was not queued: the queue is full or the engine has stopped. Try again later." />
+  <string id="AF_MCM_Tts_WaitEmotion" text="Wait for postprocess speech emotion" />
+  <string id="AF_MCM_Tts_WaitEmotion_Hint" text="Default: on. Waits for postprocessing to select speech emotion. When off, sends the cleaned main reply directly to TTS in a neutral tone, without postprocess speech translation. Gameplay action postprocessing still runs. Applies to new speech requests." />
   <string id="AF_MCM_Tts_Streaming" text="Stream audio playback with lip-sync" />
   <string id="AF_MCM_Tts_Streaming_Hint" text="Default: on. Sends stream=true to the OpenAI-compatible service and plays incoming WAV segments with lip-sync. Turning off sends stream=false and waits for the complete utterance. Upstream streaming support and first-audio latency depend on the service. Applies only to the OpenAI-compatible service." />
   <string id="AF_TERMINAL_GROUP_TTS_API" text="TTS API" />
@@ -3344,6 +3331,38 @@ Choose how to proceed:" />
   <string id="AF_UI_KingdomStability_FactionImmunity" text="Player-kingdom immunity prevents faction uprisings." />
   <string id="AF_MCM_Shout_MaxRelayTurns" text="Maximum scene-shout relay turns" />
   <string id="AF_MCM_Shout_MaxRelayTurns_Hint" text="Maximum total NPC speaking turns after one player shout, including the first reply. Repeated speakers count again. Set to 1 for only the first reply. Range: 1-8; default: 8. Changes apply to the next shout; characters may end the relay earlier." />
+  <string id="AF_MCM_Shout_RelayMutualGaze" text="Relay speakers face each other" />
+  <string id="AF_MCM_Shout_RelayMutualGaze_Hint" text="During a scene relay, the speaker looks at the person being answered, who looks back; other participants split between watching the speaker and watching you. Only the look direction changes. Default: on." />
+  <string id="AF_MCM_Shout_RelayPrefetch" text="Prepare the next relay speaker early" />
+  <string id="AF_MCM_Shout_RelayPrefetch_Hint" text="When a relay will continue and at most two characters may answer next, their memory is loaded while the current line is still being spoken. The line itself is still generated only when it is that character's turn. Shortens pauses but may load memory that is not used. Default: off." />
+  <string id="AF_MCM_Ambient_Enabled" text="Enable ambient scene interaction" />
+  <string id="AF_MCM_Ambient_Enabled_Hint" text="While you stay idle in a peaceful tavern, lord's hall, town or village scene, nearby characters, named or not, may talk to each other or come over to speak to you. Seated characters speak from their seat when close enough. Each line uses a model request. Default: off." />
+  <string id="AF_MCM_Ambient_IdleSeconds" text="Player idle time before ambient interaction (s)" />
+  <string id="AF_MCM_Ambient_IdleSeconds_Hint" text="You must not have shouted, talked or opened a menu for this long. Default: 20." />
+  <string id="AF_MCM_Ambient_Cooldown" text="Interval between ambient interactions (s)" />
+  <string id="AF_MCM_Ambient_Cooldown_Hint" text="Minimum time after one ambient interaction ends before another may start. Default: 120." />
+  <string id="AF_MCM_Ambient_PairCooldown" text="Same-pair cooldown (real minutes)" />
+  <string id="AF_MCM_Ambient_PairCooldown_Hint" text="The same two characters will not start another ambient chat with each other within this time. Default: 10." />
+  <string id="AF_MCM_Ambient_MaxPerScene" text="Maximum ambient interactions per scene" />
+  <string id="AF_MCM_Ambient_MaxPerScene_Hint" text="Counted from when you enter the scene. Default: 5." />
+  <string id="AF_MCM_Ambient_MaxLines" text="Maximum lines per ambient chat" />
+  <string id="AF_MCM_Ambient_MaxLines_Hint" text="Total spoken lines in one NPC-to-NPC chat before it ends. Default: 4." />
+  <string id="AF_MCM_Ambient_NpcWeight" text="Chance of NPC-to-NPC chat (%)" />
+  <string id="AF_MCM_Ambient_NpcWeight_Hint" text="Share of ambient interactions in which two NPCs talk to each other; the rest are an NPC coming over to talk to you. If one kind has no candidate, the other is tried. Default: 70." />
+  <string id="AF_MCM_Ambient_PlayerRadius" text="Ambient hearing radius (m)" />
+  <string id="AF_MCM_Ambient_PlayerRadius_Hint" text="Only characters within this distance of you take part, and you are recorded as having overheard the chat. Default: 15." />
+  <string id="AF_MCM_Ambient_AbortRadius" text="Ambient stop distance (m)" />
+  <string id="AF_MCM_Ambient_AbortRadius_Hint" text="An ambient interaction stops when you move farther away than this; lines not yet spoken are discarded. Default: 20." />
+  <string id="AF_MCM_Ambient_Voice" text="Voice ambient chat" />
+  <string id="AF_MCM_Ambient_Voice_Hint" text="When off, ambient lines show only as bubbles and messages even if speech synthesis is enabled. Default: on." />
+  <string id="AF_MCM_Ambient_TopicRelation" text="Ambient topic: the speakers' relationship" />
+  <string id="AF_MCM_Ambient_TopicRelation_Hint" text="Allow chats seeded by kinship, friendship or rivalry between the speakers. Default: on." />
+  <string id="AF_MCM_Ambient_TopicWorld" text="Ambient topic: wars and the realm" />
+  <string id="AF_MCM_Ambient_TopicWorld_Hint" text="Allow chats seeded by the speaker's kingdom and its current wars. Default: on." />
+  <string id="AF_MCM_Ambient_TopicPlace" text="Ambient topic: this settlement" />
+  <string id="AF_MCM_Ambient_TopicPlace_Hint" text="Allow chats seeded by the current settlement's owner and condition. Default: on." />
+  <string id="AF_MCM_Ambient_TopicPlayer" text="Ambient topic: the player" />
+  <string id="AF_MCM_Ambient_TopicPlayer_Hint" text="Allow chats in which the speakers talk about you. Default: on." />
   <string id="AF_UI_Editor_LengthStatus" text="Characters: {CURRENT} / {MAX}" />
   <string id="AF_UI_Editor_LengthLimit" text="Maximum: {MAX} characters." />
   <string id="AF_UI_Editor_InputTruncated" text="Some input was truncated at the limit; check the end of your text." />
@@ -3383,5 +3402,71 @@ Choose how to proceed:" />
   <string id="AF_UI_Persona_PromptedRerollIntro" text="Describe how to regenerate this character&#x27;s personality and background. These requirements apply only to this request. The voice is kept, and a failed request keeps the existing persona." />
   <string id="AF_UI_Persona_PromptedRerollHint" text="Enter a background, personality direction, or details to preserve. Current game facts still apply." />
   <string id="AF_UI_Persona_PromptedRerollEmpty" text="Enter requirements before generating." />
+  <string id="AF_TERMINAL_UI_Root_FieldCamp" text="Field camp" />
+  <string id="AF_TERMINAL_UI_Root_FieldCamp_Hint" text="Pitch camp on the campaign map, or open the camp menu while camped." />
+  <string id="AF_MCM_FieldCamp_Group" text="19. Field camp" />
+  <string id="AF_MCM_FieldCamp_Enabled" text="Enable field camp" />
+  <string id="AF_MCM_FieldCamp_Enabled_Hint" text="Lets you pitch camp on the campaign map while travelling alone or leading an army. Disabling it ends any active camp." />
+  <string id="AF_MCM_FieldCamp_Key" text="Field camp key (one uppercase letter)" />
+  <string id="AF_MCM_FieldCamp_Key_Hint" text="Press on the campaign map to pitch camp, or to reopen the camp menu while camped. Default: Z." />
+  <string id="AF_MCM_FieldCamp_PitchHours" text="Hours to pitch camp" />
+  <string id="AF_MCM_FieldCamp_PitchHours_Hint" text="Campaign hours spent setting up camp. Default: 1." />
+  <string id="AF_MCM_FieldCamp_StrikeHours" text="Hours to strike camp" />
+  <string id="AF_MCM_FieldCamp_StrikeHours_Hint" text="Campaign hours spent breaking camp before marching. Not charged when an encounter breaks the camp. Default: 1." />
+  <string id="AF_MCM_FieldCamp_HealMultiplier" text="Wounded recovery multiplier" />
+  <string id="AF_MCM_FieldCamp_HealMultiplier_Hint" text="Wounded soldiers and heroes recover this many times faster than normal while camped. Default: 2." />
+  <string id="AF_MCM_FieldCamp_MoralePerHour" text="Morale recovered per hour" />
+  <string id="AF_MCM_FieldCamp_MoralePerHour_Hint" text="Morale each camped party regains every hour. Default: 1." />
+  <string id="AF_MCM_FieldCamp_MoraleCap" text="Morale recovery cap" />
+  <string id="AF_MCM_FieldCamp_MoraleCap_Hint" text="Resting alone does not raise morale above this value. Default: 70." />
+  <string id="AF_MCM_FieldCamp_MapVisuals" text="Show camps on the campaign map" />
+  <string id="AF_MCM_FieldCamp_MapVisuals_Hint" text="Places a tent cluster next to each camped party. Turn off if another mod conflicts with map visuals; camping still works." />
+  <string id="AF_FC_Menu_Title" text="Field camp" />
+  <string id="AF_FC_Menu_Rest" text="Rest and wait" />
+  <string id="AF_FC_Menu_Strike" text="Strike camp" />
+  <string id="AF_FC_Menu_Leave" text="Return to the map" />
+  <string id="AF_FC_Menu_CancelPitch" text="Cancel pitching camp" />
+  <string id="AF_FC_Menu_StopWait" text="Stop resting" />
+  <string id="AF_FC_Disabled" text="Field camp is disabled in the settings." />
+  <string id="AF_FC_Pitched" text="Camp is pitched. The troops settle in to rest." />
+  <string id="AF_FC_Struck" text="Camp is struck. The march can resume." />
+  <string id="AF_FC_MoveBlocked" text="You are camped. Strike camp from the camp menu before marching." />
+  <string id="AF_FC_BlockedState" text="You cannot pitch camp right now." />
+  <string id="AF_FC_BlockedEncounter" text="You cannot pitch camp during an encounter or conversation." />
+  <string id="AF_FC_BlockedSiege" text="You cannot pitch a field camp during a siege." />
+  <string id="AF_FC_BlockedArmyMember" text="Only the army leader can order the army to camp." />
+  <string id="AF_FC_BlockedSea" text="You cannot pitch camp at sea or on water." />
+  <string id="AF_FC_BlockedSettlement" text="You are too close to {SETTLEMENT} to pitch a field camp." />
+  <string id="AF_FC_InspectionBlocked" text="Strike camp before using the troop inspection flow." />
+  <string id="AF_FC_StrikeTooltip" text="Takes {HOURS} hours. Resting stops; the march resumes once camp is struck." />
+  <string id="AF_FC_Status_Pitching" text="Your troops are pitching camp. About {HOURS} hours remain." />
+  <string id="AF_FC_Status_Striking" text="Your troops are striking camp. About {HOURS} hours remain." />
+  <string id="AF_FC_Status_Resting" text="The camp rests. The wounded recover faster and morale slowly returns. Camped for {HOURS} hours; {PARTIES} parties in camp." />
+  <string id="AF_FC_Status_Camped" text="The camp is quiet. Resting heals the wounded faster and slowly restores morale, but the march is halted. Camped for {HOURS} hours; {PARTIES} parties in camp." />
+  <string id="AF_MCM_FieldCamp_AgentCap" text="Soldiers shown in camp" />
+  <string id="AF_MCM_FieldCamp_AgentCap_Hint" text="Most soldiers spawned when walking the camp, sampled by troop type. Tents and fires still follow the real head count. Default: 150." />
+  <string id="AF_MCM_FieldCamp_TentCap" text="Most tents in camp" />
+  <string id="AF_MCM_FieldCamp_TentCap_Hint" text="Upper limit for tents placed in the camp scene. Default: 40." />
+  <string id="AF_MCM_FieldCamp_PatrolHours" text="Hours spent walking the camp" />
+  <string id="AF_MCM_FieldCamp_PatrolHours_Hint" text="Campaign time charged once each time you leave the camp scene. Resting effects still apply during it. Default: 1." />
+  <string id="AF_FC_Menu_Patrol" text="Walk the camp" />
+  <string id="AF_FC_PatrolTooltip" text="Walk among the tents and troops. Leaving the camp scene costs about {HOURS} hours." />
+  <string id="AF_FC_PatrolWounded" text="You are too badly wounded to walk the camp." />
+  <string id="AF_FC_PatrolFailed" text="The camp scene could not be opened here." />
+  <string id="AF_FC_Assembled" text="The troops fall in by troop type." />
+  <string id="AF_FC_Dismissed" text="The troops are dismissed and return to camp." />
+  <string id="AF_FC_IssueResolved_Encourage" text="You reassured the men." />
+  <string id="AF_FC_IssueResolved_Grant" text="You granted the request." />
+  <string id="AF_FC_IssueResolved_Refuse" text="You turned the request down." />
+  <string id="AF_FC_IssueResolved_Discipline" text="You restored discipline." />
+  <string id="AF_FC_IssueResolved_Dismissed" text="{COUNT} troublemakers were discharged." />
+  <string id="AF_FC_IssueResolved_Spent" text="Spent {GOLD} denars." />
+  <string id="AF_FC_IssueResolved_Morale" text="Morale {MORALE}." />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Title" text="Expanded NPC personas" />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Hint" text="Default: on. Generates traits, motivations, values, fears, and speech style with new or regenerated personas. When off, expanded fields are hidden and excluded from model context. Successful generation or regeneration while off clears that character's previous expanded fields; switching off alone keeps stored data. Event-driven persona regeneration is controlled separately." />
+  <string id="AF_TERMINAL_UI_EnableExpandedNpcPersona_Group" text="9. Prompt extensions" />
+    <string id="AF_FC_NoCampSite" text="This scene has no suitable whole-camp site. No facilities were forced onto the hillside. The scene stays open; leave manually without a patrol time charge." />
+    <string id="AF_FC_IncompleteCamp" text="Camp setup is incomplete: {PLACED}/{TOTAL} tents were placed. You decide when to leave; details are recorded in the FieldCamp log." />
+    <string id="AF_FC_DeploymentClearing" text="Preparing your confirmed execution site. Residents must walk outside the safety boundary; optional spectators do not delay construction." />
 </strings>
 </base>

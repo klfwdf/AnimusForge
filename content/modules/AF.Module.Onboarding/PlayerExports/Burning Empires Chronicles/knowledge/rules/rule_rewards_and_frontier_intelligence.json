@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v10",
+  "Keywords": [
+    "Rewards and frontier intelligence"
+  ],
+  "RagShortTexts": [
+    "Areani rewards compromised the confidentiality of Roman frontier information."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Areani traveled to report neighboring movements but were accused of disclosing Roman information for rewards. People able to cross a frontier were valuable channels exposed to competing interests. Their office alone could not establish the reliability of contacts, payment or observation."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

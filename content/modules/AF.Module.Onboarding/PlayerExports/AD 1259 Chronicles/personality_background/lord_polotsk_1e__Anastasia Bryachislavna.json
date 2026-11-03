@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Anastasia Bryachislavna is the younger daughter of Prince Bryachislav of Polotsk and sister to Grand Duchess Alexandra, admired across court society for learning and piety. Raised within the scholarly cloisters of Saint Sophia Cathedral, she was educated in Church Slavonic manuscripts, theological treatises, and liturgical iconography. Gracious, contemplative, and principled, Anastasia supervised convent textile workshops in Vitebsk and Polotsk, creating gold-embroidered altar vestments to fund charitable missions. Confronting wartime distress, she walked among municipal hospices, dressing the wounds of disabled veterans and distributing herbal medicines to destitute families. She established scriptorium academies to instruct common apprentices, personally sponsoring the preservation of ancient Polotsk chronicle scrolls. Revered by commoners as the 'White Lily of the Dvina', she serves as an inspiring bridge connecting princely prestige with popular welfare. Within the hallowed scriptorium of Saint Sophia Cathedral, Princess Anastasia dedicated her life to preserving the literary heritage of Rus'. She transcribed ancient princely charters, illuminated sacred codices, and established medical dispensaries that comforted hundreds of war victims. Her untarnished piety and cultural devotion transformed her into an immortal symbol of spiritual hope along the Western Dvina. Her luminous intellect illuminated the darkest chapters of regional strife.",
+  "SpeechStyle": "Ink and parchment outlive centuries of darkness, and divine truth alone guides our souls to lasting peace! Tend our wounded champions; so long as love endures, no storm shall blow out our altar flame!",
+  "Motivations": [
+    "Preserve and illuminate ancient chronicle manuscripts and religious scrolls, safeguarding Ruthenian intellectual culture.",
+    "Expand charitable hospices across the Dvina basin, ministering to the sick and war-weary with tireless Christian devotion."
+  ],
+  "Values": [
+    "Valuing intellectual dedication, historical truth, and boundless charity, repudiating superficial vanity, pride, and brutality.",
+    "Believing the sacred power of learning and steadfast faith guides scarred communities through dark historical trials."
+  ],
+  "Fears": [
+    "Hostile raiders sacking monastic libraries, turning irreplaceable illuminated scrolls of Polotsk's history into ash.",
+    "That unrelenting wartime cruelty will erode moral laws and religious devotion, plunging society into a barbaric abyss."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_polotsk_1e",
+  "HeroName": "Anastasia Bryachislavna"
+}

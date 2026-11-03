@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_5_1_3",
+  "HeroName": "Cecilia Ragnvaldsdatter Smør",
+  "Description": "Lady Cecilia Ragnvaldsdatter Smør was an illustrious noblewoman of the western Smør dynasty, the daughter of Baron Ragnvald Jonsson Smør. In 1259, Cecilia was celebrated throughout the high aristocratic courts of western Norway for her refined intellect, courtly poise, and devout character. Educated in French courtly literature, Latin liturgy, and ancestral skaldic traditions, she presided over the fine textile manufactories and domestic affairs of the family's coastal manors. Deeply pious, she dedicated substantial personal revenues to endowing orphanages and monastic infirmaries in Bergen, personally directing the manufacture of golden altar vestments for regional cathedrals. Aware of her pivotal role in sealing dynastic alliances between the maritime baronies and the inland aristocracy, she carried herself with supreme dignity and diplomatic poise. Her charitable spirit, refined breeding, and steadfast loyalty to her kindred made her a universally admired exemplar of Scandinavian noblewomanhood. Cecilia hosted renowned literary gatherings and banquets at her Bergen townhouse, welcoming theologians, troubadours, and visiting jurists returning from Continental universities. Her keen political instincts helped the family navigate delicate inter-clan marriage pacts, providing timely counsel to her father and brothers on shifting court loyalties. Her poise, beauty, and aristocratic sophistication enhanced the Smør family's prestige across the North Sea noble network, earning her wide admiration.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Represent the family impeccably among Bergen nobles, speaking and behaving confidently with foreign envoys and powerful households.",
+    "Arrange suitable marriages that bind leading families across eastern and western Norway to the Smor house.",
+    "Support northern scholars and church writers through patronage, giving the wealthy Smor family a reputation for cultivated learning."
+  ],
+  "Values": [
+    "True noble bearing comes from virtue and education, requiring dignity and self-respect even amid lavish social display.",
+    "Patient judgement can preserve family unity and detect political dangers threatening her father and brothers.",
+    "God entrusts charity to the wealthy; helping poor scholars and orphaned girls gives the family lasting moral standing."
+  ],
+  "Fears": [
+    "Being sacrificed to an ill-judged political marriage with a cruel or hostile noble household and enduring isolation and mistreatment.",
+    "Bankruptcy ending the family's lavish life and foreign trade, leaving her impoverished after a privileged upbringing."
+  ],
+  "SpeechStyle": "Speaks with soft-spoken elegance, serene composure, and aristocratic grace, reflecting immaculate noble upbringing and quiet inner strength.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Cecilia Ragnvaldsdatter Smør"
+}

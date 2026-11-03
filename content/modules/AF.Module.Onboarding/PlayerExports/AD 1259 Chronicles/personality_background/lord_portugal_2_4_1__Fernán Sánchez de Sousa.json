@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_4_1",
+  "HeroName": "Fernán Sánchez de Sousa",
+  "Description": "Fernán Sánchez de Sousa is the capable eldest son and heir of Dom Sancho Garcia, standing as a disciplined vanguard officer within the House of Sousa. Trained from childhood in horsemanship, archery, and swordsmanship within the garrisons along the Douro, Don Fernán embodies the austere martial rectitude of his father. He has distinguished himself in border patrol operations, ruthlessly intercepting cross-border banditry and restoring order to frontier settlements. In 1259, serving as chief cavalry patrol officer for the family's central estates, he commands the deep trust and obedience of his garrison knights. Methodical, reserved, and equitable in resolving agrarian disputes, he is regarded by family elders as an ideal successor to command Douro marcher defenses. Fiercely devoted to his house, Fernán maintains his forces in peak combat readiness to defend ancestral lands. Patrolling central marcher boundaries day and night, Fernán rigorously verified transit tolls and rooted out rogue mercenary companies infesting the river crossings. Disciplined, austere, and leading by personal example, he commanded the deep trust of his knights as the reliable frontier protector of the House of Sousa. His strict military discipline, tireless vigilance, and tactical reliability make Fernán an indispensable captain safeguarding the central marcher frontiers.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master fortress logistics and cavalry operations to prepare for ruling his family's Douro estates",
+    "Reinforce the patrol network across central domains to eliminate banditry and illegal incursions",
+    "Support his father in estate governance, cultivating fierce loyalty among garrison troops and tenants"
+  ],
+  "Values": [
+    "A commander's sacred trust is vigilant defense; administrative negligence is treason to the realm",
+    "Iron discipline and personal example build an invincible force capable of triumphing in crisis",
+    "Filial obedience, unswerving loyalty to the House of Sousa, and relentless dedication to duty"
+  ],
+  "Fears": [
+    "A surprise hostile offensive severing supply lines and trapping his patrol in an impossible siege",
+    "Epidemic sickness decimating tenantries and livestock, crippling his family's manorial economy"
+  ],
+  "SpeechStyle": "Crisp, steely, and composed; speaks with the disciplined economy, no-nonsense precision, and quiet authority of a dedicated cavalry captain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

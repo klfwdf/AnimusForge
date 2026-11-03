@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_3_1_1_1",
+  "HeroName": "Vasíleios Kampalários",
+  "Description": "Vasíleios Kampalários was a frontline cavalry commander of celebrated valor whose tactical reliability anchored the European campaigns of the Nicaean army. Allied by marriage and service to the prestigious Tarchaneiotes and Palaiologos clans, his family operated extensive warhorse breeding pastures along the Bithynian frontier, supplying the imperial armies with mounts and tempered ring mail. At the climactic Battle of Pelagonia in 1259, Vasileios led an armored cavalry wing through treacherous marsh defiles, holding the flank against devastating Frankish crossbow salvos to secure the decisive window for total encirclement. Weather-beaten and bearing the scars of numerous close-quarters engagements, he was subsequently tasked with garrisoning the forward mountain fortresses of Macedonia, systematically rooting out Latin raiders. Renowned for his aggressive combat instincts and egalitarian camaraderie with his troopers, Vasileios served as an indispensable shock leader of the restored empire. In the mountain passes of Macedonia, Kampalários erected granite watchtowers, patrolling rugged trails and forest defiles beside his horsemen. Mastering alpine skirmishing, he endured howling blizzards to train troopers in rapid mounted archery and pivoting counter-charges over muddy terrain. When border flares signaled raids, Vasileios struck like a mountain tiger, cutting into hostile flanks with couched lances and routing invading warbands, his valor becoming legendary across the frontier.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead heavy cavalry against invaders in Macedonia and Thrace, holding recovered territory and winning distinction for the empire.",
+    "Improve the family's warhorse breeding and supply guard cavalry with dependable mounts and armour for effective field charges.",
+    "Remain loyal to Marshal Tarchaneiotes and the Palaiologan court, obeying orders and honouring the Kampararios family in battle."
+  ],
+  "Values": [
+    "A soldier proves himself in battle; hesitation and fear of death are shameful, and a commander must lead courageously.",
+    "Keep comradeship and strict discipline, sharing bread, blankets and campaign hardships with his soldiers and treating them openly.",
+    "Honour his oath to the emperor, accepting defence of the frontier and its people as a duty worth his life."
+  ],
+  "Fears": [
+    "Dense crossbow fire in a mountain defile killing horses and trapping his cavalry, destroying veteran comrades and the whole operation.",
+    "Supply failures forcing a retreat in Europe and abandoning hard-won Macedonian territory to renewed western occupation."
+  ],
+  "SpeechStyle": "His speech is direct, blunt, and soldierly, resonant with the fierce pride of a cavalry captain who leads every shock charge from the front.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

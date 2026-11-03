@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v3",
+  "Keywords": [
+    "罗马军事指挥与使团分工"
+  ],
+  "RagShortTexts": [
+    "瓦伦斯派步骑军长官维克托和阿林泰乌斯先谈和平，皇帝随后正式会面。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦伦斯派步骑军长官维克托和阿林泰乌斯先谈和平，皇帝随后正式会面。战场指挥者也可被委任外交任务，职称不意味着所有决策都由本人作主。谈判结果经报告返回才进入下一步。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

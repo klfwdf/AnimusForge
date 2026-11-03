@@ -1,0 +1,38 @@
+{
+  "Id": "be_sassanid_eranshahr_sacred_kingship",
+  "Keywords": [
+    "Shapur royal authority and allied negotiation"
+  ],
+  "RagShortTexts": [
+    "Shapur II claimed kingship over kings but still had to coordinate nobles and allies."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Shapur II displayed authority through the title king of kings, dynastic tradition and religious ceremony. Raising an army still required men and resources from nobles and frontier allies. At Amida in 359, the death of the Chionite ally Grumbates’s son brought funeral and revenge demands that affected coalition operations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Soldiers in the royal army encountered allies with different languages, equipment and customs. Orders passed through their own commanders, and an allied leader’s losses could change plans. Sharing a siege did not give every contingent identical interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Rewards, receptions for envoys and ceremonies maintained support. Allied honor and family losses needed attention; troops present in camp might otherwise refuse continued cooperation. Claims of divine favor did not replace provisions, negotiation or command."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

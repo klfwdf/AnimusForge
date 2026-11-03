@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_1_2",
+  "HeroName": "Felipe de Castilla, Lord of Valdecorneja",
+  "Description": "Infante Felipe of Castile, Lord of Valdecorneja, is the restless and formidable younger brother of Alfonso X. Yet his martial spirit and thirst for secular glory could not be contained by cloistered vows. In 1258, he formally renounced his holy orders in a sensational break with the church, marrying the exotic Norse Princess Kristina of Norway and acquiring strategic seigneurial lordships across Valdecorneja and Ávila. A seasoned warrior of immense physical stature and volatile temperament, Felipe harbors deep resentment toward his royal brother's centralizing legal codes and punitive taxation. Respected by the frontier knighthood for his prowess in the saddle, the infante increasingly aligns himself with disgruntled Castilian grandees—most notably Nuño González de Lara—positioning himself as the martial figurehead of noble liberties against Alfonso's creeping royal absolutism. Within his granite stronghold of Ávila, he gathers hundreds of defiant highland horsemen and freebooting lancers, openly refusing to recognize royal judicial officers. Enraged by the king's fiscal wastefulness, Infante Felipe vows to defend the ancient customary liberties of the nobility with steel, standing as a menacing feudal bastion in the central sierra.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate independent seigneurial power in Valdecorneja free from royal oversight",
+    "Lead the league of magnates resisting royal legal centralism and fiscal extortion",
+    "Win martial glory on the battlefield outshining his intellectual brother Alfonso"
+  ],
+  "Values": [
+    "True men carve their destiny with steel, not through dry clerical bureaucracy",
+    "Ancient noble charters and feudal autonomy must be defended at swordpoint",
+    "Kinship demands mutual respect; tyranny must be opposed even within the family"
+  ],
+  "Fears": [
+    "The king deploying royal bailiffs to confiscate his lordships and imprison him in a cloister",
+    "His beloved Norse wife succumbing to illness in the alien, arid climate of Castile"
+  ],
+  "SpeechStyle": "Gruff, commanding, and blunt; speaks with the unvarnished ferocity of a seasoned battle commander who despises legalistic sophistry.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

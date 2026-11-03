@@ -158,12 +158,15 @@ def check_contract_recursive(
                 "detail": f"CJK characters found in English string: {en_val[:120]}",
             })
         if path == "$.Id" and file_type == "knowledge_rule":
-            if not en_val.startswith("rule_"):
+            # Production imports accept any nonempty stable ID. Preserve authored
+            # identities (for example be_*) without forcing a save-visible rename;
+            # translated IDs still follow the existing English rule_ convention.
+            if not en_val.strip() or (en_val != zh_val and not en_val.startswith("rule_")):
                 errors.append({
                     "code": "invalid_english_rule_id_prefix",
                     "context": context_label,
                     "json_path": path,
-                    "detail": f"English rule Id must start with 'rule_': {en_val}",
+                    "detail": f"English rule Id must preserve a nonempty source Id or start with 'rule_': {en_val}",
                 })
             return
 

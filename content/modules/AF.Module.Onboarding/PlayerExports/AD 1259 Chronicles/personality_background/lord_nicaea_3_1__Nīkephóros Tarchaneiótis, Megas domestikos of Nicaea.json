@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_3_1",
+  "HeroName": "Nīkephóros Tarchaneiótis, Megas domestikos of Nicaea",
+  "Description": "Nīkephóros Tarchaneiótis was the venerated Grand Domestic (Megas domestikos) and supreme military architect who anchored the resurgence of the Nicaean Empire across three reigns. The trusted right-hand commander of Emperor John III Doukas Vatatzes, Nikephoros led the imperial field armies that systematically reclaimed Macedonia and Thrace from Bulgarian and Latin warlords. His marriage to Maria Palaiologina, elder sister of Michael VIII, forged an indissoluble bond between the reigning house and the foremost military dynasty of the age. Renowned for strategic patience, ironclad logistical planning, and engineering brilliance in siegecraft, Nikephoros held the total devotion of veteran legions. In the dangerous power vacuum of 1258 following the murder of George Mouzalon, his monumental authority steadied the armed forces, guaranteeing Michael VIII's smooth ascension to the regency. Father of generals Michael, Andronikos, and John, Nikephoros stood as an immortal pillar of the Roman restoration. Throughout campaigns liberating Macedonia, Nikephoros constructed fortified castra enclosed by iron stakes and deep trenches that defied assault. Methodical and resolute, he surveyed every mountain defile and water spring before giving battle, applying Maurice's Strategikon to modern medieval warfare. Under this venerable Grand Domestic, Nicaea's armed forces evolved into an unbeatable war machine that dismantled hostile kingdoms and restored the Roman purple to Constantinople.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Strengthen Balkan and Anatolian defences and recover Constantinople, completing the restoration attempted by three earlier emperors.",
+    "Teach and advance younger relatives in strategy and loyalty so that the Tarchaneiotes family continues producing capable commanders.",
+    "Keep military houses loyal to the Palaiologans, reconcile civil and military factions and prevent mutiny or internal conflict."
+  ],
+  "Values": [
+    "Careful strategy and endurance are national strengths; adventures pursued for glory are grave military mistakes.",
+    "Command openly and impartially, combining care for soldiers with firm law and practical judgement.",
+    "Remain loyal to Roman legitimacy and Orthodoxy, defending frontier and people without seeking empty fame."
+  ],
+  "Fears": [
+    "Religious concessions splitting the Church and army, wasting three generations' military efforts and plunging the state back into division.",
+    "Courtiers neglecting frontier farms and fortresses for luxury, leaving eastern Anatolia exposed to Seljuk raids and conquest."
+  ],
+  "SpeechStyle": "His voice carries profound military seniority and calm gravitas, commanding instinctive obedience from veterans and emperors alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

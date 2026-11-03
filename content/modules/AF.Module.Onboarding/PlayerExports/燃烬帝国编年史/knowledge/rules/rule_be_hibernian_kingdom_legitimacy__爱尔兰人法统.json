@@ -1,0 +1,59 @@
+{
+  "Id": "be_hibernian_kingdom_legitimacy",
+  "Keywords": [
+    "爱尔兰人法统",
+    "奈尔的高王认可"
+  ],
+  "RagShortTexts": [
+    "奈尔的高王声望依靠保护、分配和认可。",
+    "人质与赎俘直接关系亲族安全。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "高王声望要由保护、分配与首领承认维持，人质与赎俘关系家族安全。承诺无法兑现时，家户会重新衡量合作。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "奈尔的高王声望依靠保护、分配和认可。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。人质与赎俘直接关系亲族安全。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "人质与赎俘直接关系亲族安全。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。奈尔的高王声望依靠保护、分配和认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "奈尔的高王声望依靠保护、分配和认可。家户通过家人、土地与求助能否获保护来认识统治。人质与赎俘直接关系亲族安全。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "人质与赎俘直接关系亲族安全。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。奈尔的高王声望依靠保护、分配和认可。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

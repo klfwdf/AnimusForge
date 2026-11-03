@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_8_2",
+  "HeroName": "Katarina Johansdotter Ängel",
+  "Description": "Lady Katarina Johansdotter Ängel was an illustrious noblewoman and cultural luminary belonging to the exalted Ängel dynasty. In 1259, Katarina was a pivotal figure within the high aristocratic society of central Sweden, renowned for her sharp intellect, courtly elegance, and extensive dynastic connections. Educated in classical Latin and ancestral Scandinavian literature, she moved effortlessly among prelates, foreign envoys, and high barons, conducting delicate diplomatic conversations with consummate charm. Beyond her courtly presence, Katarina played a vital role in managing the administrative finances and ceremonial records of the Ängel estates. Her keen political intuition and perceptive assessment of court intrigues made her a valued informal advisor to her father and brothers during factional power struggles. A generous patron of monastic scriptoriums and ecclesiastical textile workshops, she embodied the highest ideals of medieval Scandinavian noblewomanhood. Within the great halls of the Ängel estates, Lady Katarina hosted brilliant courtly salons, welcoming wandering Continental scholars and troubadours to turn remote castles into luminous intellectual centers. Through perceptive diplomatic mediation, she defused brewing aristocratic feuds, preserving the delicate balance of power across the Svealand marches. Her intellectual brilliance, courtly poise, and immaculate grace commanded universal respect among the noble houses of Scandinavia.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Maintain wide provincial alliances for the Angel family through diplomacy and suitable noble marriages.",
+    "Notice significant political information at court gatherings and give her father and brothers timely warning for decisions and military preparations.",
+    "Support learning, art and charity, raising the family's moral reputation in Church and cultural circles."
+  ],
+  "Values": [
+    "Composure and considered judgement protect a woman in violent politics; flexibility can endure pressures that break open defiance.",
+    "Care for the family's reputation from within, since an honest name may protect it from slander better than wealth.",
+    "Keep noble manners and social promises even when dealing with political enemies, preserving dignity and education."
+  ],
+  "Fears": [
+    "An unexpected palace revolt or coup damaging the family and forcing relatives into exile after confiscation.",
+    "Being sacrificed to a political marriage with a cruel, uneducated and declining lord, losing the prospect of a fulfilling life."
+  ],
+  "SpeechStyle": "Speaks with courtly refinement and diplomatic subtlety, weaving charming grace with keen political observation and aristocratic poise.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

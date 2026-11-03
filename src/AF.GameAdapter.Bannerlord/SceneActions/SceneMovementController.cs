@@ -1136,7 +1136,7 @@ internal sealed class SceneMovementController
 				}
 				if (list.Count > 1)
 				{
-					return string.Join("、", list);
+					return string.Join(AdapterRecordTexts.ListSeparator, list);
 				}
 			}
 		}
@@ -1172,7 +1172,7 @@ internal sealed class SceneMovementController
 		{
 			text2 = AdapterSceneTexts.Raw("SceneMovementRaw_043");
 		}
-		_ports.AppendTargetedSceneNpcFact(AdapterSceneTexts.Raw("SceneMovementRaw_044") + text2 + AdapterSceneTexts.Raw("SceneMovementRaw_045") + text + AdapterSceneTexts.Raw("SceneMovementRaw_046") + text2 + AdapterSceneTexts.Raw("SceneMovementRaw_047"), request.SpeakerAgentIndex, persistHeroPrivateHistory: true);
+		_ports.AppendTargetedSceneNpcFact(AdapterRecordTexts.Tidy(AdapterSceneTexts.W("SceneMovementRaw_044") + text2 + AdapterSceneTexts.W("SceneMovementRaw_045") + text + AdapterSceneTexts.W("SceneMovementRaw_046") + text2 + AdapterSceneTexts.W("SceneMovementRaw_047")), request.SpeakerAgentIndex, persistHeroPrivateHistory: true);
 		value.CompletionFactRecorded = true;
 	}
 
@@ -1910,7 +1910,7 @@ internal sealed class SceneMovementController
 		{
 			text = AdapterSceneTexts.Raw("ExternalObservation_069");
 		}
-		string extraFactLine = request.SpeakerName + AdapterSceneTexts.Raw("SceneMovementRaw_049") + text + AdapterSceneTexts.Raw("SceneMovementRaw_050") + text + AdapterSceneTexts.Raw("SceneMovementRaw_051");
+		string extraFactLine = AdapterRecordTexts.Tidy(request.SpeakerName + AdapterSceneTexts.W("SceneMovementRaw_049") + text + AdapterSceneTexts.W("SceneMovementRaw_050") + text + AdapterSceneTexts.W("SceneMovementRaw_051"));
 		string singleReplyUserContent = AdapterSceneTexts.Format("SceneLive_ArrivalSpeech", "Using only the current scene's public dialogue and interactions and the player-action facts above, speak in character and ask {PLAYER} what they want. Use 18-40 characters and output only your spoken words.", ("PLAYER", text));
         Mission sourceMission = Mission.Current;
         long generation = _generation;
@@ -2259,7 +2259,7 @@ internal sealed class SceneMovementController
 		{
 			return;
 		}
-		string text = string.Join("、", session.Participants.Where((SceneSummonConversationParticipant x) => x != null && !string.IsNullOrWhiteSpace(x.DisplayName)).Select((SceneSummonConversationParticipant x) => x.DisplayName).Distinct());
+		string text = string.Join(AdapterRecordTexts.ListSeparator, session.Participants.Where((SceneSummonConversationParticipant x) => x != null && !string.IsNullOrWhiteSpace(x.DisplayName)).Select((SceneSummonConversationParticipant x) => x.DisplayName).Distinct());
 		_activeSceneSummonConversationSessions.Remove(session);
 		CancelSceneSummonBatch(session.BatchId);
 		Agent agent = ResolveAgentForLocationCharacter(session.SpeakerLocationCharacter);
@@ -4086,7 +4086,7 @@ internal sealed class SceneMovementController
 		{
 			text = AdapterSceneTexts.Raw("SceneMovementRaw_043");
 		}
-		string factText = reachedDoor ? (AdapterSceneTexts.Raw("SceneMovementRaw_056") + text + AdapterSceneTexts.Raw("SceneMovementRaw_057") + request.TargetName + AdapterSceneTexts.Raw("SceneMovementRaw_058")) : (AdapterSceneTexts.Raw("SceneMovementRaw_056") + text + AdapterSceneTexts.Raw("SceneMovementRaw_060") + request.TargetName + AdapterSceneTexts.Raw("SceneMovementRaw_047"));
+		string factText = AdapterRecordTexts.Tidy(reachedDoor ? (AdapterSceneTexts.W("SceneMovementRaw_056") + text + AdapterSceneTexts.W("SceneMovementRaw_057") + request.TargetName + AdapterSceneTexts.W("SceneMovementRaw_058")) : (AdapterSceneTexts.W("SceneMovementRaw_056") + text + AdapterSceneTexts.W("SceneMovementRaw_060") + request.TargetName + AdapterSceneTexts.W("SceneMovementRaw_047")));
 		ScheduleSceneGuideReturnAfterNextSpeech(request);
 		_ports.TriggerImmediateSceneBehaviorReaction(factText, request.GuideAgentIndex, persistHeroPrivateHistory: true, suppressStare: true, postSpeechLeaveSeconds: 0.5f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false);
 	}
@@ -4104,7 +4104,7 @@ internal sealed class SceneMovementController
 		{
 			text = AdapterSceneTexts.Raw("SceneMovementRaw_043");
 		}
-		string factText = AdapterSceneTexts.Raw("AfefNpcPrefix") + text + AdapterSceneTexts.Raw("SceneMovementRaw_064");
+		string factText = AdapterRecordTexts.Tidy(AdapterSceneTexts.W("AfefNpcPrefix") + text + AdapterSceneTexts.W("SceneMovementRaw_064"));
 		ScheduleSceneGuideReturnAfterNextSpeech(request);
 		_ports.TriggerImmediateSceneBehaviorReaction(factText, request.GuideAgentIndex, persistHeroPrivateHistory: true, suppressStare: true, postSpeechLeaveSeconds: 0.5f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false);
 	}

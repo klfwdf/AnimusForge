@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_sambia_coast_resources_and_control_f5bfe4dd",
+  "Keywords": [
+    "sambia coast resources and control",
+    "Sambian amber coasts and local defence"
+  ],
+  "RagShortTexts": [
+    "Amber and coastal routes shape Sambian interests.",
+    "Order pressure alters choices among local communities."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sambian gathering, exchange and defence are connected as Order activity changes posts and rights. Chiefs and households weigh resistance, compromise and aid. Protection of harvest and contact matters more than declarations of universal unity or submission."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Local guidance varies across Sambian routes. Knowing one post is not knowing the whole region; pursuit still needs rear protection for goods and dependants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Sambian agreements define land, dues and protection and identify participants. Continued exchange supplies defence better than claims binding everyone through one chief."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Coastal gathering needs safe access. Conflict damages both trade and farming, with households’ differing losses shaping their choice of protector."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

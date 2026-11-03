@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_3_1_1",
+  "HeroName": "Theodóra Palaiológina Tarchaneiótissa",
+  "Description": "Theodóra Palaiológina Tarchaneiótissa occupied an exalted station at the nexus of the reigning Palaiologos dynasty and the premier martial house of Tarchaneiotes, as the daughter of Grand Domestic Nikephoros Tarchaneiotes and Maria Palaiologina. In 1259, as her family spearheaded the military triumphs that culminated in the reconquest of Constantinople, Theodora exercised formidable administrative and diplomatic authority within the domestic chanceries of both dynasties. Renowned for her intellectual gravitas, austerity, and religious patronage, she expertly managed sprawling latifundia, silver mining revenues, and ecclesiastical endowments spanning Bithynia and Thrace. Her diplomatic finesse resolved tense rivalries among noble commanders over newly partitioned European estates, safeguarding the familial solidarity crucial for imperial stability. A generous benefactress of convents and urban orphanages, Theodora stood as an unshakeable matriarchal pillar whose wisdom and piety commanded universal veneration. As Orthodox liturgies resounded in Constantinople, Theodora financed marble and gold-leaf restorations across monastic cloisters. Auditing family ledgers personally, she verified shipments of armor and warhorse stipends to European battlefronts with extraordinary administrative talent. Whenever noble commanders disputed estate partitions, Theodora hosted reconciliation banquets, utilizing her imperial seniority to dissolve factional bitterness, standing as the unshakeable domestic fortress preserving dynastic unity.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the Palaiologan-Tarchaneiotes family alliance and secure both houses' authority at the imperial centre.",
+    "Develop inherited estates, farming and mines in Asia Minor and Europe, building grain and cash reserves for campaigning armies.",
+    "Fund Orthodox monasteries and relief houses and care for war orphans, seeking enduring divine protection for the family."
+  ],
+  "Values": [
+    "Family unity sustains a house through disorder; jealousy and internal disputes invite defeat and require fair, inclusive judgement.",
+    "Keep dignified aristocratic manners and religious restraint, treating others modestly while managing the household strictly.",
+    "Remain loyal to Orthodoxy and Roman legitimacy, meeting crises with foresight and a household leader's steady composure."
+  ],
+  "Fears": [
+    "Young commanders from the two families competing for honours and estates, weakening their alliance and enabling hostile courtiers to divide them.",
+    "Prolonged war exhausting the treasury and bringing forced taxes upon noble estates, damaging the family's base and provoking local rebellion."
+  ],
+  "SpeechStyle": "Her speech is stately, refined, and commanding, combining imperial poise with the practical wisdom of a high noble administrator.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

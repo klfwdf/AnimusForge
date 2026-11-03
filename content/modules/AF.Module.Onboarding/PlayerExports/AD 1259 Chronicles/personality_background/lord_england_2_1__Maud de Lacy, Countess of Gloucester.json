@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_2_1",
+  "HeroName": "Maud de Lacy, Countess of Gloucester",
+  "Description": "Maud de Lacy, Countess of Gloucester and Hertford, is the formidable matriarch of the House of Clare, daughter of John de Lacy, Earl of Lincoln. Stately, sharp-eyed, and commanding immense aristocratic respect, Maud represents the strategic fusion of northern Lacy baronies with the vast Marcher empire of her husband, Richard de Clare. As mother to the young Gilbert 'the Red Earl', Maud exercises profound influence over the politics of the realm from Tonbridge Castle. In 1259, as her husband clashes bitterly with Simon de Montfort over the radical direction of the Provisions of Oxford, Maud provides calculated, prudent counsel. She cautions Richard against alienating the crown entirely while fiercely guarding their autonomous palatine privileges across Glamorgan. Mastering complex estate finances and dynastic marriage negotiations, Maud remains acutely suspicious of Montfort's populist ambitions. Steely, calculating, and relentlessly protective of her family's wealth, she navigates the gathering civil war with unblinking strategic intelligence. In her private solar at Tonbridge, Maud audits intricate estate ledgers, meticulously tracking the loyalties of hundreds of mesne tenants across the Marches. She counsels her sons to steer clear of premature commitments, employing her profound political sagacity to preserve the House of Clare through impending civil war.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Check Simon de Montfort's radical populism and anchor the Clare dynasty as the paramount leaders of baronial reform",
+    "Secure unshakeable inheritance rights and strategic continental marriage ties for her son Gilbert",
+    "Preserve the immense revenues and Marcher autonomies of Glamorgan against wartime disruption"
+  ],
+  "Values": [
+    "Dynastic continuity surpasses partisan zeal; pragmatic balance preserves great houses through civil storms",
+    "Wealth and fortified palatines are the true anchors of authority; sound ledgers outshine brittle oaths",
+    "The blood of Clare answers to none; our house must reign supreme, never acting as another lord's pawn"
+  ],
+  "Fears": [
+    "Her husband becoming fatal collateral in the personal feud between King Henry and Montfort",
+    "Prince Llywelyn exploiting English civil war to overrun Clare fortresses across Glamorgan"
+  ],
+  "SpeechStyle": "Speaks with aristocratic gravitas, measured composure, and icy political clarity. Her words are diplomatically guarded yet razor-sharp, cutting effortlessly through chivalric rhetoric to expose bare geopolitical realities.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

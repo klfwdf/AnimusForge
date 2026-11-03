@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v2",
+  "Keywords": [
+    "摩尼教食物与光的信念"
+  ],
+  "RagShortTexts": [
+    "摩尼教选民的素食规范与解放被物质束缚之光的信念相连。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "摩尼教选民的素食规范与解放被物质束缚之光的信念相连。信众由此赋予水果与进食宗教意义，但那是教义解释，不是食物实际含有可供施法的力量。家庭供食也成为支持修行的劳动。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

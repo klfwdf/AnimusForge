@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_prussian_resistance_without_future_battles_4d532d46",
+  "Keywords": [
+    "prussian resistance without future battles",
+    "Prussian local dues and religious pressure"
+  ],
+  "RagShortTexts": [
+    "Prussian communities differ in responses to rule and dues.",
+    "Leaders, households and clergy need not share one position."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Prussian communities respond differently to demands over rule, dues and religion. Some seek patrons, retain customs or prepare resistance. Kin, livelihood and nearby posts affect choices; households judge burdens and protection beyond a leader’s consent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A commander identifies actual Prussian participants and home guards. One chief’s promise does not levy a whole district; exhausted food and herds weaken later assembly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Combining tribute, baptism and service indiscriminately can unite otherwise divided grievances. Separate terms identify partners able to keep cooperating."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families fear demands and fields becoming battlegrounds. Relatives may disagree; seed stores and reliable news matter more than the loudest claim."
+    }
+  ],
+  "TextMappings": []
+}

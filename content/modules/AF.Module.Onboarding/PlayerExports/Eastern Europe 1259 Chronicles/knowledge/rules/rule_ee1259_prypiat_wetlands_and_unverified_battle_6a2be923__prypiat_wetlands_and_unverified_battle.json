@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_prypiat_wetlands_and_unverified_battle_6a2be923",
+  "Keywords": [
+    "prypiat wetlands and unverified battle",
+    "Prypiat wetland boats and guides"
+  ],
+  "RagShortTexts": [
+    "Prypiat wetland routes change with the seasons.",
+    "Boats, loads and guides shape movement choices."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Waterways, firm ground and forest tracks in the Prypiat change with water levels. Walkers, horses and loaded boats cannot always use one route. Guides find stopping places while the rear transfers food; a short mapped distance can delay an entire column."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wetland troops need front-to-rear contact. A lost pack animal can block a narrow track; pursuit requires a known return that rising water may change."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Commanders arrange boats and land parties separately and specify numbers and loads to guides. More collected food is useless if it cannot reach the advance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Residents know household fishing routes, not necessarily passages for a loaded army. Guiding costs working time and exposes familiar refuges to strangers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_gepid_kingdom_economy",
+  "Keywords": [
+    "Gepids Trade",
+    "Galtis fields and pass exchange"
+  ],
+  "RagShortTexts": [
+    "Galtis fields, livestock and pass exchange sustain settlements.",
+    "Long campaigns damage harvest and later service capacity."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Galtis grain land, livestock and pass exchange sustain settlements. War removes cultivators, reducing harvest and shortening service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Galtis fields, livestock and pass exchange sustain settlements. Traveling followers need real food from this production; valuables still require a buyer and exchange. Long campaigns damage harvest and later service capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Long campaigns damage harvest and later service capacity. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Galtis fields, livestock and pass exchange sustain settlements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Galtis fields, livestock and pass exchange sustain settlements. Households need meals and the means to keep producing after delivering goods. Long campaigns damage harvest and later service capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Long campaigns damage harvest and later service capacity. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Galtis fields, livestock and pass exchange sustain settlements."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

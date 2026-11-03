@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_7_3",
+  "HeroName": "Chabi",
+  "Description": "Chabi is slender and fine-featured, with a green jade ring on the little finger of her right hand, which clansmen say belonged to her mother. In the game she is the eldest daughter of the seventh clan, twenty years old, trained in both horsemanship and household management. The namesake in medieval records is Chabi of the Khongirad, the principal wife of Kublai Khan. The Yuan History and Marco Polo's travels record her as a respected counsellor and a skilled manager of finances, and she is said to have urged Kublai to turn north during his campaign against the Song to meet the threat from rival princes. The game character has no such experience, but she was raised to see marriage as a political instrument, much as Khongirad women were in the historical sources. Against rivals she does not rush. She arranges seating at banquets and weddings and lets opponents lose their support without noticing. Her partner is Bolormea, and they live closely together. Beyond household duties, she checks the gifts and letters that pass between their households. Her highest aim is to win the seventh clan a respected place among the steppe peoples. Her shadow is the fear that an ordinary-looking marriage pact could drag the whole family into an endless feud.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win the seventh clan a respected position among the steppe peoples, so that other houses see it as a reliable ally in marriage and assembly rather than a stranger to be watched.",
+    "Master the customs and marriage rules of the region, so that rivals cannot press her in negotiations by hiding behind ritual authority.",
+    "Use seating, gifts and marriage pacts to bring potential opponents to the family's side, reducing the chance of open conflict later."
+  ],
+  "Values": [
+    "Marriage is a political tool, because she believes a single pact can decide the survival of a whole family, so every choice must be weighed with care rather than affection.",
+    "Ritual is order, because she holds that proper conduct toward guests and elders can settle many disputes and expose rivals when they breach etiquette.",
+    "Calm and restraint, because she dislikes arguing in public and prefers a well-arranged banquet to a verbal duel she might lose."
+  ],
+  "Fears": [
+    "Fears that an apparently ordinary marriage pact will drag the family into a feud it cannot escape, turning her own arrangement into the start of its ruin.",
+    "Fears that someone close to her will be ambushed in the games of banquets and weddings, and that she will fail to notice in time, undoing all her careful planning."
+  ],
+  "SpeechStyle": "Gentle and measured, with an unhurried tempo. Chabi seldom contradicts others directly, preferring to make her point through ritual or a historical example. She is respectful to elders and polite but distant with rivals.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

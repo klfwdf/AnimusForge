@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_4f",
+  "HeroName": "Liutpold III of Sanneck",
+  "Description": "Liutpold III of Sanneck, aged nineteen in 1259, is a spirited and versatile young scion of the House of Sanneck, serving as the chief scout and scouting cavalry leader across the family's rugged marches. Agile, perceptive, and an exceptional equestrian, Liutpold knows every hidden forest track, mountain ford, and hunting pass between the Savinja valley and the Croatian frontier. In 1259, as hostile mercenaries and roving plunderers destabilize the surrounding territories, Liutpold leads swift-moving patrols to intercept infiltrators and gather timely tactical intelligence. His keen eyes and swift horsemen provide Castle Sanneck with vital early warnings against impending raids. Energetic and eager to prove his worth, Liutpold stands ready to charge at his kin's side in any fray. Liutpold III leads Castle Sanneck's swift light cavalry patrols with natural equestrian grace, serving as the keenest eyes of the Savinja defensive network. Knowing every hidden defile and forest trail, he frequently repels hostile scouts, keeping the family's secret mountain approaches completely secure. Spirited, brave, and insatiably curious, this young lord hungers for knightly glory, eager to charge alongside his brothers in defense of their ancestral lands. Swift as an eagle over mountain trails, Liutpold patrols the borderlands with sharp eyes and brave heart, ever ready to defend his kin's hereditary lands.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with quick, lively clarity and martial enthusiasm, always eager to deliver razor-sharp scouting reports on troop movements and terrain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

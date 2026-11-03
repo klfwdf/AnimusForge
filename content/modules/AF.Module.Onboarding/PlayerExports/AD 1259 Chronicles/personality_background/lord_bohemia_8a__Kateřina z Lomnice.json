@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_8a",
+  "HeroName": "Kateřina z Lomnice",
+  "Description": "Kateřina of Lomnice is the distinguished noble matriarch of the Silver Rose lineage of the Vítkovci, governing the flourishing castellany of Lomnice nad Lužnicí and Landštejn with remarkable economic foresight. Residing at the heart of the marshy Třeboň depression, Kateřina pioneered large-scale wetland reclamation, directing thousands of peasant colonists in constructing sophisticated earthen dikes, sluice canals, and extensive carp ponds. Her innovative fishpond rotation systems and flour milling networks transformed waterlogged bogs into the wealthiest aquaculture and rye granary in the Bohemian realm, pouring immense wealth into her family's treasuries. Formidable in provincial litigation, she repeatedly defended her house's riparian jurisdictions and forestry rights in the South Bohemian land courts, outwitting rival barons with exact legal documentation. Frugal, resolute, and pragmatic, she prepared emergency defensive doctrines utilizing defensive inundation, ready to breach perimeter dikes and submerge southern lowlands to halt invading heavy cavalry in their tracks. She rooted the power of the Silver Rose deeply within the fertile soil of the wetlands, turning water and silt into an unyielding shield of baronial prosperity. Kateřina engineered interconnected reservoir systems and negotiated long-term commercial delivery charters with fishmonger guilds in Linz and Vienna. Through iron resolve, she overcame the harsh challenges of wetland reclamation, cementing an enduring economic foundation for the Silver Rose dynasty.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand carp aquaculture systems and drainage canals across Třeboň, securing unrivaled agrarian prosperity.",
+    "Vigorously assert legal monopolies over all river weirs, grain mills, and fisheries throughout her provincial domain.",
+    "Accumulate massive reserves of dried fish, rye grain, and coin to guarantee absolute resilience during protracted warfare."
+  ],
+  "Values": [
+    "Prize practical economic development, drainage engineering, and sustainable husbandry over hollow vanity.",
+    "Champion strict fiscal thrift, abhorring frivolous aristocratic dissipation and uncalculated military ventures.",
+    "Rely on solid documentary evidence, charters, and riparian jurisprudence to preserve ancestral prerogatives."
+  ],
+  "Fears": [
+    "Catastrophic flash floods breaching primary retaining dikes, devastating delicate pond ecosystems and drowning villages.",
+    "Ruthless raiders burning grain mills and granary complexes, disrupting generations of patient agricultural labor."
+  ],
+  "SpeechStyle": "The waters and fisheries of Třeboň are inexhaustible sources of gold and fatal bogs for arrogant invaders; mastering the water protects the realm. Prudent hydrology and thrift nourish our enduring baronial strength.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_lakhmid_kingdom_internal",
+  "Keywords": [
+    "Lakhmids Nobility",
+    "Lakhmid towns and desert kin"
+  ],
+  "RagShortTexts": [
+    "Imru al-Qays II coordinates towns, kin and Persian patrons.",
+    "Service promises need defined rewards and provisions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Imru al-Qays II links towns, kin and Persian patrons. Groups exchange and compete for returns, so service needs rewards and provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Imru al-Qays II coordinates towns, kin and Persian patrons. Followers retain family ties; decisions about guards and distant service affect common participation. Service promises need defined rewards and provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Service promises need defined rewards and provisions. Coordination allocates actual supply and protection duties, not merely titles. Imru al-Qays II coordinates towns, kin and Persian patrons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Imru al-Qays II coordinates towns, kin and Persian patrons. Households compare burdens with neighbors; unmatched protection weakens cooperation. Service promises need defined rewards and provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Service promises need defined rewards and provisions. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Imru al-Qays II coordinates towns, kin and Persian patrons."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

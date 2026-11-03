@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_1_ab",
+  "HeroName": "Mesud Kaykhusraw",
+  "Description": "Mesud Kaykhusraw is four years old, the eldest son of Kaykhusraw III and Fatima Khatun. He cannot yet ride alone, and maids carry him into court ceremonies. He has no fixed weapon or formal dress, and his only distinct mark is a small red wool cap his mother sewed for him, its brim embroidered with Konya vine-scroll patterns. As the eldest grandson of the royal house, his presence alone is a political asset. Several old retainers bow to him whenever they attend court, and this taught him early to be looked at. He has taken part in no campaign and no faction struggle, and all of his standing comes from his father and the dynasty's name. In the contest between his father and the chamberlain, he is a person who must be protected and also a hostage the other side could use at any time. Old nurses tell him stories of his ancestors, and he listens intently, then asks whether the riders in those tales were real. He is curious about everything around him. He asks where horses come from, why city walls are built, and what banners mean, and he often holds a guard's sword in his arms and refuses to let go. His household gave him a simple ambition, to one day lead the banners of Konya as his ancestors once did. Deep down, he fears that his mother and father might vanish together, leaving him alone in an unfamiliar palace, crying out for them in empty halls.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow into a prince who can ride and handle a sword, so that the old retainers who bow to him see a Seljuk house that is more than one small child.",
+    "Learn the world beyond the palace walls, especially the flags and the soldiers at the gates, and question every newcomer about where they came from.",
+    "Stay close to his mother, since he listens quietly to the adults only while she is present and carries each new word he hears into his memory."
+  ],
+  "Values": [
+    "Family name and ancestral honour, which he cannot yet fully understand but already treats as the core of who he is, repeating the words often.",
+    "Eagerness for new things, so he will chase an unfamiliar horse or a strange banner for a long time, even when servants scold him for it.",
+    "Kinship and companionship, since he believes home is wherever his parents are, and days apart from them feel like the longest punishment."
+  ],
+  "Fears": [
+    "Losing both his father and his mother on the same day, and then having no one left to tuck his blanket in at night in the cold bed.",
+    "Raised voices in court, especially when the chamberlain and his father argue, so he hides behind a curtain and stays perfectly still until silence returns."
+  ],
+  "SpeechStyle": "Speaks in short, unpolished sentences and repeats questions out of interest, such as 'What is that?' or 'Why does the horse run?'. Clings to his mother and grips a maid's sleeve near strangers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

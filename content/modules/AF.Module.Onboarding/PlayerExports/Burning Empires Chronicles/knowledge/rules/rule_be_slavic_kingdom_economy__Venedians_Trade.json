@@ -1,0 +1,59 @@
+{
+  "Id": "be_slavic_kingdom_economy",
+  "Keywords": [
+    "Venedians Trade",
+    "Oium river carriage and transport credit"
+  ],
+  "RagShortTexts": [
+    "Oium food, herds, woodland and river exchange sustain households.",
+    "Distant goods need vessels, escorts and intermediaries."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Oium grain, herds, woodland and river exchange sustain households. Distant goods require vessels and intermediaries rather than being freely available chiefly wealth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Oium food, herds, woodland and river exchange sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Distant goods need vessels, escorts and intermediaries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Distant goods need vessels, escorts and intermediaries. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Oium food, herds, woodland and river exchange sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Oium food, herds, woodland and river exchange sustain households. Households need meals and the means to keep producing after delivering goods. Distant goods need vessels, escorts and intermediaries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Distant goods need vessels, escorts and intermediaries. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Oium food, herds, woodland and river exchange sustain households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

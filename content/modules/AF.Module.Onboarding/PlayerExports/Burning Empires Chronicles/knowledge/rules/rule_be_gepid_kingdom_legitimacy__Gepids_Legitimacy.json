@@ -1,0 +1,59 @@
+{
+  "Id": "be_gepid_kingdom_legitimacy",
+  "Keywords": [
+    "Gepids Legitimacy",
+    "Cibidus’ land protection and shares"
+  ],
+  "RagShortTexts": [
+    "Land protection and fair shares support Gepid leadership.",
+    "Powerful patrons can demand service and food in return."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Land protection and fair returns support recognition. A powerful patron offers security while potentially demanding service and food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Land protection and fair shares support Gepid leadership. Military recognition also rests on rewards and relief; a title needs willing action. Powerful patrons can demand service and food in return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Powerful patrons can demand service and food in return. Nominal rights require local execution, with consent and supply both shaping authority. Land protection and fair shares support Gepid leadership."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Land protection and fair shares support Gepid leadership. Households judge rule through protected families, land and responses to appeals. Powerful patrons can demand service and food in return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Powerful patrons can demand service and food in return. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Land protection and fair shares support Gepid leadership."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

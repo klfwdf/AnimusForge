@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_1_1_a",
+  "HeroName": "Isabel of Cornwall",
+  "Description": "Isabel of Cornwall, daughter of Richard of Cornwall and Isabel Marshal, was a Plantagenet princess of high blood. Combining Marshal martial tenacity with her father's statecraft, she served as a diplomatic bridge connecting English and Rhenish baronial houses. Isabel managed domestic treasuries between English manors and Rhenish palaces, ensuring secure naval convoys across the Channel with meticulous accounting and royal grace. She endowed scriptoriums in Dorset and Cornwall, dispensing alms to war-torn peasants and setting a luminous example of Christian charity for the Plantagenet crown. Living in pious devotion, this noble Plantagenet lady guided her people through turbulent times as a serene emblem of Christian charity and royal decorum. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold Plantagenet royal dignity across transmarine baronies, assisting with vassal fealty.",
+    "Endow charitable foundations to cultivate moral veneration for her dynasty across two realms.",
+    "Vigilantly guard against English baronial rebel plots aimed at capturing royal princesses."
+  ],
+  "Values": [
+    "Believes the true glory of chivalric houses lies in steadfast duty and sacred oaths.",
+    "Holds dynastic honor supreme, scorning empty vanity to preserve her ancestral bloodline."
+  ],
+  "Fears": [
+    "Civil war in England laying waste to her personal dower manors and tenants.",
+    "Her father King Richard suffering disaster in Germany, leaving her without protection."
+  ],
+  "SpeechStyle": "Speaks with formal solemnity and gracious modesty, reflecting English royal breeding. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

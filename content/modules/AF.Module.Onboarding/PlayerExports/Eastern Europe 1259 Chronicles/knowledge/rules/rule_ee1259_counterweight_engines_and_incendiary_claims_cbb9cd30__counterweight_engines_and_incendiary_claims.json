@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_counterweight_engines_and_incendiary_claims_cbb9cd30",
+  "Keywords": [
+    "Siege engine craftsmen and transport",
+    "Timber and rope for siege stone throwers"
+  ],
+  "RagShortTexts": [
+    "Siege stone throwers required timber, ropes, skilled work and transport.",
+    "Ground, assembly and upkeep constrained engines; stones competed with food for carriage."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Stone-throwing engines needed timber, rope, craftsmen and ammunition, with transport and assembly consuming labor. Besiegers protected workers while obtaining food and fodder. Damage also depended on targets and defenders' repairs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Stone-throwing engines needed timber, rope, craftsmen and ammunition, with transport and assembly consuming labor. Besiegers protected workers while obtaining food and fodder. Damage also depended on targets and defenders' repairs. Operators coordinated with guards while handlers faced defenders. Damage, wet ropes and fatigue affected work beyond the spectacle of one shot."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Stone-throwing engines needed timber, rope, craftsmen and ammunition, with transport and assembly consuming labor. Besiegers protected workers while obtaining food and fodder. Damage also depended on targets and defenders' repairs. Commanders divided resources among works, assault and waiting, paying daily supply costs. Materials alone made no working engine without craftsmen and transport."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Stone-throwing engines needed timber, rope, craftsmen and ammunition, with transport and assembly consuming labor. Besiegers protected workers while obtaining food and fodder. Damage also depended on targets and defenders' repairs. Nearby households supplied wood, carts or work as markets failed. Lost materials and animals hurt repairs and farming; even paid workers needed immediate household food."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

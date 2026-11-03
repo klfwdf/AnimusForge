@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_1d",
+  "HeroName": "Prijezda II",
+  "Description": "Prijezda II, aged sixteen in 1259, is the thoughtful second son of Ban Prijezda I, future co-ruler of Bosnia . Reflective, observant, and administratively gifted, he complements his martial elder brother Stephen with keen political acumen. Assisting his mother in managing castle charters and commercial tariffs at Bobovac, Prijezda mastered feudal jurisprudence and Patarene clan genealogies. Skilled in swordplay yet inclined toward statecraft, he frequently arbitrates property disputes between Catholic burghers and native Bosnian Church elders with remarkable fairness. In 1259, overseeing logistics and scribal records for the Banate, Prijezda II anchors the administrative efficiency of the Kotromanić dynasty with scholarly maturity. Prijezda II displays mature wisdom and studious discipline, mastering Slavic devotional scripts and Latin ecclesiastical law with equal brilliance. Assisting his father with castle treasuries and regional logistics, he reveals exceptional administrative capability. Possessing a deep sense of dynastic destiny, the young prince dedicates himself to defending his homeland through integrity, piety, and unwavering vigilance. Tempered by pious humility, deep learning, and noble diligence, the young prince embraces his sacred dynastic duty, striving to bring enduring justice, Christian peace, and renewed prosperity to his beloved mountain homeland, securing his family's realm.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Articulates with quiet judicial poise and analytical clarity, persuasive and measured, possessing natural diplomatic tact.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

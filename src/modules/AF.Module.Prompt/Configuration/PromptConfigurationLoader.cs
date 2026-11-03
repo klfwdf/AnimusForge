@@ -24,11 +24,17 @@ internal interface IPromptConfigurationFiles
 
 internal sealed class ProductionPromptConfigurationFiles : IPromptConfigurationFiles
 {
+    // Fixed prompt files follow the game language (X.en.json for English). AIConfig.json is player data.
     public string PathFor(string fileName)
     {
+        bool english = !PromptLanguage.IsChinese;
         if (fileName == "Defaults/PreprocessPrompts.json" || fileName == "Defaults/RpItemIntroductionPrompts.json")
-            return Path.Combine(AnimusForgeModulePaths.GetCurrentModuleRoot(), "ModuleData", "Defaults", Path.GetFileName(fileName));
-        return AnimusForgeModulePaths.GetModuleDataFilePath(fileName);
+        {
+            string path = Path.Combine(AnimusForgeModulePaths.GetCurrentModuleRoot(), "ModuleData", "Defaults", Path.GetFileName(fileName));
+            return english ? PromptLanguage.EnglishSiblingOrSelf(path) : path;
+        }
+        if (fileName == "AIConfig.json") return AnimusForgeModulePaths.GetModuleDataFilePath(fileName);
+        return PromptLanguage.ResolveModuleDataPath(fileName, english);
     }
     public bool Exists(string path) => File.Exists(path);
     public string ReadText(string path) => File.ReadAllText(path);
@@ -64,14 +70,14 @@ internal sealed class PromptConfigurationLoader
     private static readonly Regex TemplateVariable = new Regex("\\{([a-z][a-z0-9_]*)\\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     private readonly IPromptConfigurationFiles _files;
-    private readonly Lazy<JObject> _preprocessDefaults;
-    private readonly Lazy<string> _rpDefaults;
+    private readonly PromptLanguageValue<JObject> _preprocessDefaults;
+    private readonly PromptLanguageValue<string> _rpDefaults;
 
     internal PromptConfigurationLoader(IPromptConfigurationFiles files)
     {
         _files = files ?? throw new ArgumentNullException(nameof(files));
-        _preprocessDefaults = new Lazy<JObject>(LoadPackagedPreprocess);
-        _rpDefaults = new Lazy<string>(LoadPackagedRpIntroduction);
+        _preprocessDefaults = new PromptLanguageValue<JObject>(LoadPackagedPreprocess);
+        _rpDefaults = new PromptLanguageValue<string>(LoadPackagedRpIntroduction);
     }
 
     internal PromptConfigurationLoadResult Load()

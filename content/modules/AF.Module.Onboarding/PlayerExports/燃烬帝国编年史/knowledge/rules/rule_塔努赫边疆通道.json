@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v2",
+  "Keywords": [
+    "塔努赫边疆通道"
+  ],
+  "RagShortTexts": [
+    "塔努赫群体联系叙利亚和伊拉克边疆，在当地社群与罗马之间参与服务和交换。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "塔努赫群体联系叙利亚和伊拉克边疆，在当地社群与罗马之间参与服务和交换。道路、驻地与资源让首领有不同选择，不能把一次交涉理解成永不改变的共同立场。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

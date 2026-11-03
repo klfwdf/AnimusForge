@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Medieval_University_Curriculum_Trivium_Quadrivium",
+  "Keywords": [
+    "Medieval Trivium Grammar Rhetoric Logic",
+    "Quadrivium Arithmetic Geometry Music Astronomy",
+    "Scholastic Disputatio Dialectic Method",
+    "Thomas Aquinas Summa Antecedents"
+  ],
+  "RagShortTexts": [
+    "The arts curriculum joins language and reasoning with mathematical disciplines.",
+    "Disputation and university privileges do not abolish legal jurisdiction or study costs."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "University lectures in Paris, Bologna and Oxford centred on the seven liberal arts. The Trivium of grammar, rhetoric and logic came first, and the Quadrivium of arithmetic, geometry, music and astronomy followed for students who had mastered the basics. Teaching reached its peak in the scholastic disputation, a formal contest in which a master set a question, students argued each side, and the master gave a final ruling. Masters tried to reconcile the authority of the Church Fathers with the newly translated works of Aristotle, which reached Latin readers through Arabic and Greek sources. Thomas Aquinas drew the sharpest debates of the period, since his synthesis of Aristotelian logic and Christian doctrine raised questions that many masters had never faced before."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "A scholar studies grammar, rhetoric and logic before pursuing more advanced learning; arithmetic, geometry, music and astronomy also frame the arts curriculum. University privileges concern particular courts and jurisdictions, not freedom from all law. In 1259 disputes over Aristotle and mendicant teaching are real, while later condemnations cannot be cited as judgments already delivered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "wanderer"
+        ]
+      },
+      "Content": "A poor clerk must find food, lodging and access to books before arguing over a master's lecture. Copying texts may bring income, but parchment and study time remain expensive. Learning can open service in a church or chancery; it does not guarantee that a peasant's son becomes a chancellor. Many students leave before taking a degree."
+    }
+  ],
+  "TextMappings": []
+}

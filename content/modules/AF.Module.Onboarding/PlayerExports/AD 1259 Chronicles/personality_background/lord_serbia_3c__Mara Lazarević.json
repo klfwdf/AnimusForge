@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_3c",
+  "HeroName": "Mara Lazarević",
+  "Description": "Mara Lazarević, aged twenty-eight in 1259, is the aristocratic wife of Lord Vuk Branković, uniting the prestige of the Serbian high nobility with the ruling elite of Kosovo. Highly educated, composed, and politically astute, she manages the extensive domestic economy of Priština castle, overseeing estate harvests, troop provisions, and silver accounts. Her diplomatic tact smooths friction between rival vassal families, earning her widespread admiration at court. In 1259, while her husband patrols the northern borderlands, Mara oversees garrison logistics and nurtures their young sons, standing as an unshakeable guardian of the Branković dynasty's domestic prosperity and future succession. Lady Mara orchestrates the administration of Priština castle with flawless efficiency, maintaining abundant food and remount reserves. Deeply compassionate, she regularly provides grain and woolen cloth to war orphans, winning profound loyalty from the peasantry. Governing from this strategic crossroads, this wise noblewoman preserves domestic stability, anchoring the prosperous future of the Branković house. Prudent, benevolent, and administratively gifted, Lady Mara governs the vast household economy of Priština with serene composure. Her generous charity toward war-torn tenant families wins deep popular loyalty, securing the prosperous future of the Branković dynasty and elevating her into one of the most respected noblewomen across the southern Serbian lands.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with refined dignity and crisp administrative intelligence, calm and persuasive, commanding natural respect.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

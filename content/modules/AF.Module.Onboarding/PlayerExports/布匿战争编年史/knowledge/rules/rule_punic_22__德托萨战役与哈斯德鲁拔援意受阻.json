@@ -1,0 +1,106 @@
+{
+  "Id": "rule_punic_22",
+  "Name": "德托萨战役与哈斯德鲁拔驰援意大利受阻",
+  "Description": "公元前215年春，罗马西庇阿兄弟在埃布罗河南岸德托萨击溃企图北上意大利会师汉尼拔的哈斯德鲁拔大军，迫使迦太基调遣增援主力转投西班牙战场。",
+  "Tags": [
+    "德托萨战役",
+    "伊贝拉战役",
+    "双西庇阿",
+    "哈斯德鲁拔·巴卡",
+    "坎尼余波",
+    "战略牵制"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前215年德托萨战役中罗马双西庇阿大败哈斯德鲁拔·巴卡大军。",
+    "哈斯德鲁拔企图效仿坎尼会战双重包围却因伊比利亚中军溃退而惨败。",
+    "此役粉碎了迦太基两兄弟在意大利夹击罗马本土的宏大战略构想。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德托萨战役拯救了处于坎尼梦魇中的罗马共和国！坎尼惨败后，如果哈斯德鲁拔的大军再与汉尼拔在罗马城下胜利会师，共和国就彻底亡了！普布利乌斯与格奈乌斯两位西庇阿将军在埃布罗河南岸死战不退，中路军团铁骑如山凿穿了叛乱的高卢与西班牙阵线，彻底把巴卡家族的增援锁死在了伊比利亚！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是功亏一篑的致命战役。哈斯德鲁拔统帅本已得到元老院的严令，率军强行翻越比利牛斯山驰援意大利兄长。在德托萨，统帅本想重演坎尼两翼包抄的奇迹，但临时强征的伊比利亚中军意志薄弱，在罗马重装步兵的压迫下临阵倒戈溃逃，反而冲乱了我们的精锐底线。若非此役受挫，罗马早在公元前214年就已向汉尼拔屈膝求和了！"
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "迦太基人把我们伊比利亚战士摆在最危险的凹陷中军，指望我们用血肉之躯去挡罗马人的重标枪与短剑，自己却把非洲精锐藏在两翼！当罗马人如同钢铁洪流般撞上来时，谁还会为那些从不把我们当人看的迦太基官老爷卖命？扔掉盾牌四散逃命才是活下去的唯一出路！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前215年春，在伊比利亚德托萨（又称伊贝拉），普布利乌斯与格奈乌斯·西庇阿兄弟率领罗马军队迎击哈斯德鲁拔·巴卡。哈斯德鲁拔试图模仿兄长汉尼拔的包围战术，但其中路伊比利亚仆从军迅速崩溃，导致全线溃败。此役成功阻止了迦太基大军进入意大利，改变了地中海战略全局。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "德托萨战役与哈斯德鲁拔驰援意大利受阻",
+    "rule_punic_22"
+  ]
+}

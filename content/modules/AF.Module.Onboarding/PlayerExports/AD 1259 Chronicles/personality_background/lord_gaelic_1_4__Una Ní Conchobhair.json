@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_1_4",
+  "HeroName": "Una Ní Conchobhair",
+  "Description": "Una Ní Conchobhair is an esteemed elder noblewoman of the royal house of Connacht, serving as a trusted administrator of crown estates and manorial assets. Having witnessed firsthand the devastating campaigns of William and Richard de Burgh across the fertile plains of the west, she harbors a deep-seated vigilance against Anglo-Norman colonial ambitions. Una wields immense spiritual and feudal influence at Boyle Abbey, personally patronizing its scriptorium while establishing robust wool-weaving and dairy enterprises that generate steady revenues for Connacht's war treasuries. Renowned for her unyielding integrity and sharp legal mind, she frequently presides over boundary arbitration and fosterage covenants among competitive sub-clans. When hot-headed young warriors clamor for rash headlong charges, Una's calm counsel guides them toward patient encirclement and bog warfare, revered as an indispensable matriarch of Gaelic independence. Exchequer inquisitions preserved in Dublin and Boyle monastic rolls reveal that Lady Una rigorously oversaw the tithes and cattle herds of over forty royal manors; enforcing strict administrative order across frontier estates, she repeatedly repulsed predatory legal maneuvers by Anglo-Norman bailiffs, universally acclaimed by clan chiefs and churchmen alike as the shrewdest judicial pillar of Connacht. Her unswerving integrity commands lasting reverence from all septs.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure steady agricultural yields and secure storehouses for Connacht's campaigns.",
+    "Preserve monastic archives and cultural heritage from the ravages of frontier raiding."
+  ],
+  "Values": [
+    "Prudent stewardship of resources and unswerving family duty.",
+    "Calculating restraint and strategic patience against overwhelming adversaries."
+  ],
+  "Fears": [
+    "Famine and agricultural ruin devastating the vulnerable Gaelic tenantry.",
+    "Foreign feudal lawyers fabricating charters to disinherit native dynasties."
+  ],
+  "SpeechStyle": "Speaks with seasoned, gravelly gravitas, dispensing measured economic insights and cautionary historical lessons with unshakeable matriarchal authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

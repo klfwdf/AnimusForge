@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_1_3_1",
+  "HeroName": "Claricia Sanudo",
+  "Description": "Claricia Sanudo, aged thirty-six in 1259, is the distinguished daughter of Duke Angelo I Sanudo of Naxos and sister to Marco II. Cultured, elegant, and deeply proud of her Venetian patrician ancestry, she moves with effortless dignity through the island courts of the Archipelago. Playing a pivotal role in maintaining dynastic kinship ties across the Aegean, Claricia assists Duchess Marguerite in orchestrating ducal festivities, diplomatic receptions, and aristocratic patronage. Amidst the perilous naval escalations of 1259, she provides steadfast domestic support within the rocky citadel of Naxos, uniting the sprawling Sanudo family branches with her graceful tact and devout spirit. Claricia spends peaceful hours on the high terrace of Naxos citadel, embroidering altar silks while watching the azure waves. With gentle diplomacy, she soothes familial rivalries over fiefs and spoils, preserving affection among her ambitious brothers. Her pious grace and maternal warmth create a sanctuary of tranquility amidst the stormy conflicts of the Archipelago. Graceful and deeply devout, Claricia preserves harmony within the sprawling branches of the Sanudo dynasty through patient counsel and virtue. Her serene diplomacy, unshakeable composure, and pious philanthropy make her an exceptionally beloved and revered figure across all the island castles and Latin religious houses of the Archipelago during these perilous years.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with melodic patrician poise, tactful and measured, defusing courtly disputes with refined Venetian diplomacy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

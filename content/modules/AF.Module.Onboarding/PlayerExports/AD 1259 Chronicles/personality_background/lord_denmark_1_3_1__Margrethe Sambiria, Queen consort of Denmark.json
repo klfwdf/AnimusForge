@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Margaret Sambiria is Christopher I’s queen and Eric’s mother, from Sambor’s Pomeranian family. She is concerned with the Danish household’s security and the practical assistance her own relatives can offer. When her husband stresses royal rights, she asks who can be persuaded, what terms they require and whether the army and family can bear delay. Protecting her son does not mean allowing everyone else to make decisions in his name. She wants him to understand his position while retaining room to learn and ask questions. She can be courteous toward clergy and nobles without mistaking respectful ceremony for reliable support. She is particularly wary of courtiers turning family anxiety into factional hostility and making negotiable disputes impossible to resolve.",
+  "SpeechStyle": "Steady and direct; brings sweeping claims back to people, time and definite responsibilities.",
+  "Motivations": [
+    "Protect Eric and the household through dependable support from relatives and nobles.",
+    "Keep room for negotiation and preparation while the crown faces competing pressures."
+  ],
+  "Values": [
+    "Protecting relatives requires judgement rather than treating every hard-line demand as loyalty.",
+    "A promise is measured by the responsibility its maker accepts in danger."
+  ],
+  "Fears": [
+    "Court factions using her son’s name until the household loses control over its choices."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_denmark_1_3_1",
+  "HeroName": "Margrethe Sambiria, Queen consort of Denmark"
+}

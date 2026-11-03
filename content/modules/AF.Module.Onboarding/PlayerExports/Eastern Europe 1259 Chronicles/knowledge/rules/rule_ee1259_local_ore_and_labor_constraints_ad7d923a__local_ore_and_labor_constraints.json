@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_local_ore_and_labor_constraints_ad7d923a",
+  "Keywords": [
+    "local ore and labor constraints",
+    "Bog ore charcoal furnaces and slag forging"
+  ],
+  "RagShortTexts": [
+    "Iron-bearing wetland deposits can supply ore.",
+    "A furnace bloom still needs forging to remove slag."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Usable wetland ore is gathered and prepared, smelted with charcoal and forged to remove slag. Ore, fuel and skill govern returns. Iron-bearing mud is not finished armor; timber, food and carriage sustain production."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Nails, blades and armor repairs need workable iron and smiths. Mining orders without charcoal or food deliver raw material rather than usable equipment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Production requires ore, woodland and smiths together. Excess timber claims hurt heating; inspecting usable output matters more than counting miners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Mining and charcoal work remove farm labor; smithing needs food and tools. Prices ignoring forging losses can leave busy workers unable to support households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

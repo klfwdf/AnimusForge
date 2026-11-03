@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v8",
+  "Keywords": [
+    "皇帝出行与接报地点"
+  ],
+  "RagShortTexts": [
+    "瓦伦提尼安赶路时得知不列颠危急，君士坦提乌斯也由使者在凯撒利亚找到。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦伦提尼安赶路时得知不列颠危急，君士坦提乌斯也由使者在凯撒利亚找到。皇帝的职掌随人移动，固定首都与实际接报地点不能混为一谈。使团须找到行在才能完成任务。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

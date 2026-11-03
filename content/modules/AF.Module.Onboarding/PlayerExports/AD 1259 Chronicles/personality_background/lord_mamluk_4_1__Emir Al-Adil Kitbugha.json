@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_4_1",
+  "HeroName": "Emir Al-Adil Kitbugha",
+  "Description": "Kitbugha came from a Mongol tribe and first served in the Ilkhanid army of Hulagu. Historical sources do not describe his appearance, so this entry does not invent one. He was calm and methodical, and courtiers said he behaved more like a quartermaster than a warlord. In his youth he earned respect through military service and a steady manner of work. The rival who troubled him most was the vizier Alam al-Din Sanjar al-Shuja'i, whose ambition forced him to plan every move with care. His method against rivals was practical. The young prince was moved first to another part of the palace and later to al-Karak. Kitbugha wanted the emirs satisfied without letting the deposed boy become a banner for revenge, and that dilemma left him wary of everyone close to him. His ideal was an orderly sultanate where ability and service, not birth, decided rank. His darkest fear was betrayal in his own camp. In those years he kept returning in his mind to how he had risen to the throne and how he had lost it within a single night.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Gather his old followers in Damascus and Salkhad, and wait for a chance to return to Cairo and reclaim the sultanate he lost, which remained his chief aim for the rest of his life.",
+    "Shelter desperate Oirat refugees and captured Mongols, showing Mamluk emirs that he can accept men of every origin and so enlarging his own manpower.",
+    "Restore a working bureaucracy in which service and ability, not birth, decide how far a man can rise, and so keep the restive emirs in line."
+  ],
+  "Values": [
+    "Merit matters more than lineage, yet new men must pass the test of the institutions before earning real office, and a single success should not bring a sudden promotion.",
+    "Surrendered enemies and prisoners deserve courtesy even in hostile times, because a well-treated enemy often becomes a reliable man later on.",
+    "Be generous to allies and settle accounts with traitors, since mercy toward a betrayer only invites a larger betrayal, a lesson he took from the Lajin affair."
+  ],
+  "Fears": [
+    "Fears that the emirs around him will unite again, as Lajin did, and quietly take the power and camp he has just recovered, leaving him defenceless.",
+    "Fears being branded a friend of the Mongols, which would estrange the old Mamluk officers and the court, and make even his kindness to refugees look like treason."
+  ],
+  "SpeechStyle": "Speaks at an even pace and hears others out before judging. He uses vague time words when recalling old events and rarely admits error, but makes amends with a concrete promise. He is brief with subordinates.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

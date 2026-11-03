@@ -54,6 +54,11 @@
     <string id="REX_Builder_Decoration_Crucifix" text="Crucifix" />
     <string id="REX_Builder_Deleted" text="Selected part deleted." />
     <string id="REX_Builder_Enter" text="Choose a place in town, then press B to open the custom execution-site deployment studio." />
+    <string id="REX_Builder_Enter_FieldCamp" text="Choose a place in the camp, then press B to open the custom execution-site deployment studio." />
+    <string id="REX_FieldCamp_Name" text="the field camp" />
+    <string id="REX_Error_FieldCamp_Unavailable" text="The field camp cannot host an execution right now." />
+    <string id="REX_FieldCamp_No_Prisoners" text="No eligible adult hero prisoner is held by your party." />
+    <string id="REX_Action_Order_Executioner" text="order the executioner to proceed" />
     <string id="REX_Builder_Executioner" text="Executioner" />
     <string id="REX_Builder_Functional_Apparatus" text="Functional apparatus" />
     <string id="REX_Builder_Hold_B" text="Press B to open the deployment studio." />
@@ -486,5 +491,7 @@
     <string id="REX_Continue_Description" text="The sentence is settled. Choose another escorted prisoner, or leave." />
     <string id="REX_Continue_Leave" text="Leave the execution site." />
     <string id="REX_Continue_Title" text="Choose the next prisoner" />
+    <string id="REX_FieldCamp_Continue_Cancel" text="Cancel" />
+    <string id="REX_FieldCamp_Continue_Description" text="Choose another prisoner for this execution site, or finish the ceremony and return to camp." />
   </strings>
 </base>

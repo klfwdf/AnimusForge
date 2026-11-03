@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v6",
+  "Keywords": [
+    "多瑙河中船上缔和"
+  ],
+  "RagShortTexts": [
+    "双方把船划到多瑙河中央，各带随从在那里会面，既不让阿塔纳里克上岸，也避免皇帝越境。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "双方把船划到多瑙河中央，各带随从在那里会面，既不让阿塔纳里克上岸，也避免皇帝越境。船的位置和护卫安排是承认地位的实际方式，不只是宴会装饰。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

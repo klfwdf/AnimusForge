@@ -1,0 +1,59 @@
+{
+  "Id": "be_ere_kingdom_internal",
+  "Keywords": [
+    "Eastern Roman Empire Nobility",
+    "Eastern appointments levies and churches"
+  ],
+  "RagShortTexts": [
+    "Eastern emperor, officials, urban elites and churches have different duties.",
+    "Appointments, grain and doctrine affect local cooperation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Emperor, civil officials, officers, urban elites and churches have different interests. Appointments, grain and doctrine can overlap, with local cooperation determining implementation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Eastern emperor, officials, urban elites and churches have different duties. Followers retain family ties; decisions about guards and distant service affect common participation. Appointments, grain and doctrine affect local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Appointments, grain and doctrine affect local cooperation. Coordination allocates actual supply and protection duties, not merely titles. Eastern emperor, officials, urban elites and churches have different duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Eastern emperor, officials, urban elites and churches have different duties. Households compare burdens with neighbors; unmatched protection weakens cooperation. Appointments, grain and doctrine affect local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Appointments, grain and doctrine affect local cooperation. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Eastern emperor, officials, urban elites and churches have different duties."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

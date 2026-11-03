@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Treaty_of_Paris_1259_and_Feudal_Vassalage_Paradox",
+  "Keywords": [
+    "Territorial scope of Aquitanian homage"
+  ],
+  "RagShortTexts": [
+    "In Henry and Louis’s talks, homage concerned continental land rather than a merger of kingdoms."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In Henry and Louis’s talks, homage concerned continental land rather than a merger of kingdoms. A ruler could exercise kingship while owing obligations as a landholder. Claims needed a territory and jurisdiction, and unfinished negotiations did not replace existing local orders."
+    }
+  ],
+  "TextMappings": []
+}

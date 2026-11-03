@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_1c",
+  "HeroName": "Hugues de Thouars, Seigneur de Pouzauges et Tiffauges",
+  "Description": "Hugues de Thouars is an illustrious scion of the House of Thouars, serving as hereditary Seigneur of Pouzauges and Tiffauges. Thirty-nine years of age, he unites the formidable prowess of a seasoned heavy cavalry knight with the administrative rigor of a frontier governor. Holding the granite fortress of Tiffauges commanding the Sèvre Nantaise river valley, Hugues guards the vital strategic corridor connecting central Poitou to the plains of Nantes. An expert in military architecture and defensive ballistics, he personally directed the construction of polygonal stone towers and deep moats around Pouzauges, rendering it one of the most impregnable strongholds south of the Loire. Strictly disciplined and unyielding in battle, Hugues has repeatedly led heavily armored horsemen to purge predatory brigands and outlaw companies, safeguarding lucrative pilgrimage and trade roads. Highly trusted by Viscount Renaud, he serves as the family's premier martial commander. Hugues actively fostered local armories and blacksmith guilds, inspecting every forged cuirass and crossbow to ensure peak readiness for his garrison. His habit of bivouacking with ordinary spearmen in winter blizzards endeared him immensely to his troops, cementing Pouzauges as an unassailable bastion of Poitevin frontier defense. His iron resolve and unyielding commitment to baronial honor ensure that the western frontiers of Poitou remain secure against all incursions.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify the ramparts of Tiffauges and Pouzauges into an unassailable bastion.",
+    "Eradicate lawless brigands and protect commerce across the Sèvre marchlands."
+  ],
+  "Values": [
+    "Iron military discipline and unwavering fidelity to his chivalric vows.",
+    "Pragmatic mastery of defensive stonework and tactical vigilance."
+  ],
+  "Fears": [
+    "Prolonged encirclement starving his frontier garrisons into capitulation.",
+    "Rival neighboring magnates sparking a border conflagration that ravages his estates."
+  ],
+  "SpeechStyle": "Speaks in crisp, resonant military tones, authoritative, blunt, and direct, discussing fortifications and tactical maneuvers with unshakeable professional confidence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1_6_1",
+  "HeroName": "Hedwig von Schaunberg",
+  "Description": "Hedwig descends from the noble comital House of Schaunberg in Austria, wedded to Supreme Marshal Vok I of Rožmberk, infusing the Rosenberg dynasty with immense Upper Austrian landholdings and crucial Danubian aristocratic ties. Proud, discerning, and exceptionally educated, she possessed exhaustive knowledge of German heraldry and feudal charters. While her husband governed the Austrian territories and campaigned with the royal host, Hedwig held court at Rožmberk Castle with regal authority, directing estate revenues, vassal parleys, and pious endowments. She directly supervised the construction and patronage of Vyšší Brod Monastery as the dynastic necropolis for the Rosenberg lords. Venerated by prelates across Bohemia and Austria, she stands as the key diplomatic linchpin uniting Czech magnates with Austrian nobility. Presiding over Rožmberk Castle with aristocratic authority, Lady Hedwig resolved endless grievances between Czech landholders and Danubian knights, earning the respect of both realms. Diligent in overseeing treasury collections and endowing Vyšší Brod with illuminated manuscripts and golden relics, she governed alongside Vok I as the indispensable architect of Rosenberg dynastic supremacy. Her regal dignity and astute political vision anchored the rapid expansion of the Rosenberg empire, bridging the great houses of Austria and Bohemia with lasting majesty.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Consolidate Schaunberg and Rosenberg dominion along the Danube, securing Austrian inheritances for her heirs.",
+    "Support her husband in endowing Vyšší Brod and family palaces, cementing Rosenberg prestige across the Empire."
+  ],
+  "Values": [
+    "Regards ancestral lineage, blood purity, and generous monastic endowments as pillars of noble dignity.",
+    "Believes prudent household administration and noble alliances are the bedrock of lasting dynastic power."
+  ],
+  "Fears": [
+    "Fears Austrian regional revolts engulfing her Schaunberg family lands, undermining Rosenberg authority.",
+    "Worries King Otakar's growing jealousy will target her husband, endangering their young heirs."
+  ],
+  "SpeechStyle": "Schaunberg's ancient towers stand proud beside Rožmberk's keep, witnessed by Danube and Vltava alike; our blood yields to none. In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Hedwig von Schaunberg"
+}

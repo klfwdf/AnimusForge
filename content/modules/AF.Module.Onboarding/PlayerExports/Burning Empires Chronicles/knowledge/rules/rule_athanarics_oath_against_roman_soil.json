@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v5",
+  "Keywords": [
+    "Athanaric’s oath against Roman soil"
+  ],
+  "RagShortTexts": [
+    "Athanaric’s oath shaped the place chosen for a meeting on the river."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Athanaric invoked his father’s command and an oath against setting foot on Roman soil, while the emperor would not cross to him. A meeting on the river resolved a dispute in which personal obligation shaped diplomatic ceremony."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

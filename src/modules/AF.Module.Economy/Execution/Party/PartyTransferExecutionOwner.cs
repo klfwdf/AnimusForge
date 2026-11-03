@@ -165,20 +165,20 @@ internal static class PartyTransferExecutionOwner
 						}
 					}
 				}
-				string batchSummary = EconomySourceTexts.Get("S042") + attemptedEntries + EconomySourceTexts.Get("S043") + successfulEntries + EconomySourceTexts.Get("S044") + failedOrPartialEntries + EconomySourceTexts.Get("S045") + actualUnits + EconomySourceTexts.Get("S046") + actualValue + EconomySourceTexts.Get("S047");
+				string batchSummary = EconomySourceTexts.Get("S042") + attemptedEntries + EconomySourceTexts.Get("S043") + successfulEntries + EconomySourceTexts.Get("S044") + failedOrPartialEntries + EconomySourceTexts.Get("S045") + actualUnits + EconomySourceTexts.Post("S046") + actualValue + EconomySourceTexts.Post("S047");
 				StringBuilder combinedFact = new StringBuilder(256);
 				combinedFact.Append(EconomySourceTexts.Get("S048")).Append(text2).Append(partialEffects.Length > 0 ? EconomySourceTexts.Get("S049") : EconomySourceTexts.Get("S050"));
 				if (transferredTroopFacts.Length > 0)
 				{
-					combinedFact.Append(EconomySourceTexts.Get("S051")).Append(transferredTroopFacts).Append('。');
+					combinedFact.Append(EconomySourceTexts.W("S051")).Append(transferredTroopFacts).Append(EconomySourceTexts.Period);
 				}
 				if (recruitedVolunteerFacts.Length > 0)
 				{
-					combinedFact.Append(EconomySourceTexts.Get("S052")).Append(recruitedVolunteerFacts).Append('。');
+					combinedFact.Append(EconomySourceTexts.W("S052")).Append(recruitedVolunteerFacts).Append(EconomySourceTexts.Period);
 				}
 				if (transferredPrisonerFacts.Length > 0)
 				{
-					combinedFact.Append(EconomySourceTexts.Get("S053")).Append(transferredPrisonerFacts).Append('。');
+					combinedFact.Append(EconomySourceTexts.W("S053")).Append(transferredPrisonerFacts).Append(EconomySourceTexts.Period);
 				}
 				combinedFact.Append(batchSummary);
                 if (partialEffects.Length > 0) combinedFact.Append(partialEffects);
@@ -212,7 +212,7 @@ internal static class PartyTransferExecutionOwner
 		}
 		if (builder.Length > 0)
 		{
-			builder.Append('、');
+			builder.Append(EconomySourceTexts.ListSeparator);
 		}
 		builder.Append(entry.DisplayName).Append('x').Append(amount);
 	}
@@ -237,12 +237,12 @@ internal static class PartyTransferExecutionOwner
     {
         if (effect.Indeterminate)
         {
-            text.Append(EconomySourceTexts.Get("S056")).Append(entry?.DisplayName ?? EconomySourceTexts.Get("S057"))
+            text.Append(EconomySourceTexts.Pre("S056")).Append(entry?.DisplayName ?? EconomySourceTexts.Get("S057"))
                 .Append(EconomySourceTexts.Get("S058"));
             return;
         }
-        text.Append(EconomySourceTexts.Get("S059")).Append(entry?.DisplayName ?? EconomySourceTexts.Get("S057"))
-            .Append(EconomySourceTexts.Get("S060")).Append(effect.Debited).Append(EconomySourceTexts.Get("S061"))
-            .Append(effect.Delivered).Append(EconomySourceTexts.Get("S062"));
+        text.Append(EconomySourceTexts.Pre("S059")).Append(entry?.DisplayName ?? EconomySourceTexts.Get("S057"))
+            .Append(EconomySourceTexts.Get("S060")).Append(effect.Debited).Append(EconomySourceTexts.Post("S061"))
+            .Append(effect.Delivered).Append(EconomySourceTexts.Post("S062"));
     }
 }

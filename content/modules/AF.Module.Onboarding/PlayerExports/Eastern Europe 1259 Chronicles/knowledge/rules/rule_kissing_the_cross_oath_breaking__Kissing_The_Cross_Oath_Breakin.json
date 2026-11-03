@@ -1,0 +1,52 @@
+{
+  "Id": "rule_kissing_the_cross_oath_breaking",
+  "Keywords": [
+    "oaths sworn upon the cross",
+    "witnessing a sworn agreement"
+  ],
+  "RagShortTexts": [
+    "Kissing the cross solemnises Rus commitments, whose parties and terms must be clear.",
+    "Witnesses, performance and redress matter; a sacred oath does not ensure compliance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus princes, kin and disputants can kiss the cross to give an undertaking religious weight. Breaking it offends God and witnesses as well as damaging negotiation. Terms need clarity: whose right is recognised, what returns, when violence stops and who guarantees it. What others actually heard matters when performance is disputed.\n\nPeople and goods still need delivering and attacks stopping after the ceremony. Parties may plead coercion, misunderstanding or a prior breach, while clergy, relatives and allies disagree. Letters and witnesses help preserve the bargain, but those controlling roads, land or property retain power to delay. A weak claimant may need an influential protector to seek redress."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lords need retainers to understand sworn obligations so continued exactions do not cause a breach. Guaranteeing a relative can also bring compensation demands and feuds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops need actual orders after a sworn truce. Travelers invoking an agreement require checks of parties and terms before guards release a hostage or open a route."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Common witnesses need to recall the words they heard, and guarantees carry risk. Kin or clergy accompanying a claim can matter when the other party is powerful."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

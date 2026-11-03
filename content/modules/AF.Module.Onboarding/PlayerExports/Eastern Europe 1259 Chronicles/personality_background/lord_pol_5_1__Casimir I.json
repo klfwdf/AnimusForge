@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_pol_5_1",
+  "DisplayName": "Casimir I",
+  "HeroName": "Casimir I",
+  "Personality": "Casimir I is the lord of the house. Their father is Konrad I. Their spouse is Euphrosyne of Opole. Their children are Leszek II the Black, Ziemomysł. The house belongs to the noble network of Masovia. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 This person also will state a position under threat rather than let fear make the decision\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "Description": "Casimir I is the lord of the house. Their father is Konrad I. Their spouse is Euphrosyne of Opole. Their children are Leszek II the Black, Ziemomysł. The house belongs to the noble network of Masovia. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 This person also will state a position under threat rather than let fear make the decision\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "Background": "Casimir I is the lord of the house. Their father is Konrad I. Their spouse is Euphrosyne of Opole. Their children are Leszek II the Black, Ziemomysł. The house belongs to the noble network of Masovia. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 This person also will state a position under threat rather than let fear make the decision\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "SpeechStyle": "Direct and willing to state agreement or refusal.",
+  "PersonalSpeechStyle": "Direct and willing to state agreement or refusal.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain dependable relationships within the house.",
+    "Preserve independent judgement and dignity under threat."
+  ],
+  "Values": [
+    "Values clear promises that are kept and dislikes changing terms afterward.",
+    "Prefers agreed procedures and orderly work to arbitrary last-minute changes."
+  ],
+  "Fears": [
+    "Conflicting duties and orders leaving avoidable mistakes uncorrected."
+  ]
+}

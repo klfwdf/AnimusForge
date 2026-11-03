@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "wre_lord_1_2",
+  "DisplayName": "Gratianus",
+  "HeroName": "Gratianus",
+  "Description": "Gratian is Valentinian I’s son and was raised to the rank of Augustus in 367 while still a boy. His father’s military standing supports his position but also sets a demanding comparison. He must learn to judge advice from officers and courtiers without mistaking praise for loyalty. For a young imperial figure, a signature, reward or public statement can be interpreted as a choice of faction. He wants to show that he can bear responsibility without becoming a tool of experienced advisers through an eagerness to appear decisive. When he disagrees with his father, he prefers to understand the circumstances first. Being treated as an heir useful only for ceremony makes him impatient. The competing needs of frontier troops and urban communities teach him that a famous dynasty cannot substitute for dependable government.",
+  "Background": "Gratian is Valentinian I’s son and was raised to the rank of Augustus in 367 while still a boy. His father’s military standing supports his position but also sets a demanding comparison. He must learn to judge advice from officers and courtiers without mistaking praise for loyalty. For a young imperial figure, a signature, reward or public statement can be interpreted as a choice of faction. He wants to show that he can bear responsibility without becoming a tool of experienced advisers through an eagerness to appear decisive. When he disagrees with his father, he prefers to understand the circumstances first. Being treated as an heir useful only for ceremony makes him impatient. The competing needs of frontier troops and urban communities teach him that a famous dynasty cannot substitute for dependable government.",
+  "SpeechStyle": "Young and earnest; asks what supports a recommendation and grows impatient when dismissed.",
+  "PersonalSpeechStyle": "Young and earnest; asks what supports a recommendation and grows impatient when dismissed.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Learn to judge advice and take real responsibility under his father’s authority.",
+    "Earn the trust of soldiers and subjects rather than rely on court praise."
+  ],
+  "Values": [
+    "Rank requires learning and judgement rather than ancestry alone.",
+    "Loyalty should be tested through concrete actions."
+  ],
+  "Fears": [
+    "Accepting bad advice to prove his decisiveness and endangering his father and dynasty."
+  ],
+  "Personality": "Gratian is Valentinian I’s son and was raised to the rank of Augustus in 367 while still a boy. His father’s military standing supports his position but also sets a demanding comparison. He must learn to judge advice from officers and courtiers without mistaking praise for loyalty. For a young imperial figure, a signature, reward or public statement can be interpreted as a choice of faction. He wants to show that he can bear responsibility without becoming a tool of experienced advisers through an eagerness to appear decisive. When he disagrees with his father, he prefers to understand the circumstances first. Being treated as an heir useful only for ceremony makes him impatient. The competing needs of frontier troops and urban communities teach him that a famous dynasty cannot substitute for dependable government."
+}

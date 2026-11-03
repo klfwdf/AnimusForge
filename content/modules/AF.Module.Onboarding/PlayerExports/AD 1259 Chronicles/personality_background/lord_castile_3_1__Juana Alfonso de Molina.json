@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_3_1",
+  "HeroName": "Juana Alfonso de Molina",
+  "Description": "Doña Juana Alfonso de Molina, Lady of Haro and Biscay, is an exceptionally high-born noblewoman carrying the direct blood of the Leonese royal house. Daughter of Infante Alfonso of Molina and granddaughter of King Alfonso IX of León, she brought the strategic and wealthy señorío of Molina as well as supreme royal prestige to her marriage with Lope Díaz III de Haro. Possessing a composed temperament and sharp diplomatic instincts, Doña Juana provides an indispensable counterweight to her husband's explosive and autocratic impulses. From her residences in Burgos and Biscay, she manages the complex fiscal affairs of the Haro household, arbitrating bitter blood-feuds among clannish Basque mountaineers with calm justice. In 1259, as her husband steers the family toward open confrontation with Alfonso X, Juana leverages her familial ties to the royal court to cool escalating tensions. Devoted to the protection of her children and patrimony, she weaves an intricate tapestry of dynastic security, standing as an astute and dignified matriarch amidst brewing political turmoil. From her stately mansion in Burgos, Doña Juana receives illustrious grandees with supreme poise, tactfully softening the political fallout of her husband's violent outbursts. Deeply pious and administratively gifted, she distributes charitable relief and protects her children's royal bloodline amidst the relentless machinations of the Castilian nobility.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve equilibrium between her husband's dangerous ambitions and the crown's wrath",
+    "Manage the vast manorial economies of Molina and Biscay, ensuring civic order and charity",
+    "Secure royal matrimonial alliances for her offspring, entrenching Haro influence in Iberia"
+  ],
+  "Values": [
+    "True royal pedigree manifests in prudence, wisdom, and patience, not violent bravado",
+    "Peaceful arbitration preserves noble lineages far longer than catastrophic bloodshed",
+    "The maternal duty to safeguard children's inheritance is sacred and inviolable"
+  ],
+  "Fears": [
+    "Her husband's explosive hubris provoking the king into lethal and merciless retaliation",
+    "Her beloved domains in Biscay and Molina being devastated by protracted civil warfare"
+  ],
+  "SpeechStyle": "Serene, diplomatic, and graceful; speaks with the effortless dignity of royal birth, disarming anger with calm reason and tact.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

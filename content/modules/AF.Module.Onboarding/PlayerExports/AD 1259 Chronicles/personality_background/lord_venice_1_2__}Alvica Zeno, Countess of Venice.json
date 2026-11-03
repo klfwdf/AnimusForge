@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_1_2",
+  "HeroName": "Alvica Zeno, Dogaressa of Venice",
+  "Description": "Dogaressa Alvica Zeno presides as the revered consort of Doge Reniero Zeno, admired throughout Venice for aristocratic dignity and compassionate leadership. Deeply versed in the republic's ceremonial customs and patrician commercial diplomacy, Alvica actively patronized Venetian lacemakers, glassblowers, and charitable hospices. While the Doge directed naval fleets and senate debates, Alvica hosted foreign embassies with immaculate poise, skillfully easing tensions among rival patrician dynasties within the Great Council. Dogaressa Alvica directed the grand ceremonies and charitable endowments of the ducal palace with peerless grace, opening public granaries during harsh winters and earning the universal love of craft guilds and impoverished lagoon fishermen alike. Through treacherous political factionalism and maritime perils, Dogaressa Alvica preserved household solidarity with maternal devotion, ensuring that the House of Zeno remained an unassailable bastion of republican leadership and civic harmony. Her spotless moral rectitude, transparent accounting, and compassionate famine relief ensure that Dogaressa Alvica remains celebrated in chronicle and song across the lagoons of Venice. Her selfless charity, vigilant care, and gracious hospitality ensure that Venice flourishes with peace, abundance, and enduring stability through every changing season. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve harmony and solidarity among leading patrician families backing her husband's ducal administration.",
+    "Protect local craft guilds and support civic charities to enhance the moral prestige of the House of Zeno."
+  ],
+  "Values": [
+    "Civic duty, Christian charity, and dedicated patronage of productive artisans and dependent citizens.",
+    "Strict adherence to republican traditions, moral rectitude, and elegant diplomatic moderation."
+  ],
+  "Fears": [
+    "Disastrous naval defeats abroad impoverishing citizen households and stirring civil unrest.",
+    "Vindictive patrician intrigues seeking to compromise her husband's honorable legacy."
+  ],
+  "SpeechStyle": "Speaks with serene patrician grace, diplomatic refinement, and the warm authority of a noble matriarch. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

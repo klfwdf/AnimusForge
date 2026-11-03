@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_halych_and_the_dniester_landscape_c4be7a4d",
+  "Keywords": [
+    "Princely Halych and the Dniester",
+    "Provisioning the old Halych center"
+  ],
+  "RagShortTexts": [
+    "Halych's princely center links uplands, river valleys and surrounding settlements.",
+    "War losses make rebuilding, farming and levies compete for labor around the old center."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Princely Halych connects the Dniester valley, uplands, church communities and noble households. Water transport gathers goods, but transfers onto roads and slopes require carts and labor. Returning inhabitants and craftsmen repair war losses. The old center's prestige attracts negotiation without itself filling stores or manning defenses. Danylo established his residence here in 1238; destruction in 1241 added to the work of restoring connections around the old church and princely center."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households around Halych restore fields while carrying grain and rebuilding houses. Landed cargo needs animals, storage and recipients. Broken roads or urgent levies disrupt that work. Princely peace matters to market security, but families also judge how much seed and food remain after collections."
+    }
+  ],
+  "TextMappings": []
+}

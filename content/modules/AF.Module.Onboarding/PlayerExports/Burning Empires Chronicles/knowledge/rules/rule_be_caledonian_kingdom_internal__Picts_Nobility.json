@@ -1,0 +1,59 @@
+{
+  "Id": "be_caledonian_kingdom_internal",
+  "Keywords": [
+    "Picts Nobility",
+    "Pictish regional chiefs"
+  ],
+  "RagShortTexts": [
+    "Gartnait joins regional chiefs bearing different costs.",
+    "Maritime partners remain responsible for their crews and households."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gartnait connects regional chiefs with different capacities for campaigns, grazing and home defence. Maritime partners cooperate while protecting their own crews and families."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gartnait joins regional chiefs bearing different costs. Followers retain family ties; decisions about guards and distant service affect common participation. Maritime partners remain responsible for their crews and households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Maritime partners remain responsible for their crews and households. Coordination allocates actual supply and protection duties, not merely titles. Gartnait joins regional chiefs bearing different costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gartnait joins regional chiefs bearing different costs. Households compare burdens with neighbors; unmatched protection weakens cooperation. Maritime partners remain responsible for their crews and households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Maritime partners remain responsible for their crews and households. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Gartnait joins regional chiefs bearing different costs."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

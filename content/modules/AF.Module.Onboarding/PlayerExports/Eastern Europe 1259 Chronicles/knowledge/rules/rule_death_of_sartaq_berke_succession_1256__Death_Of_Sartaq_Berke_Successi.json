@@ -1,0 +1,52 @@
+{
+  "Id": "rule_death_of_sartaq_berke_succession_1256",
+  "Keywords": [
+    "succession after Batu",
+    "Sartaq and Berke"
+  ],
+  "RagShortTexts": [
+    "After Batu’s death and brief succession changes, Berke obtained the khanate.",
+    "Sartaq’s death prompted rumours; envoys still needed to identify the recognised authority."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After Batu died, succession in the Jochid family involved Sartaq and other brief changes before Berke obtained authority. Rus princes and merchants needed to know who received envoys and whose instructions officers along the road would recognise. Camps and markets offered different explanations for deaths during the succession. A visitor could identify those receiving him without knowing private affairs inside every princely tent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A prince seeking continued recognition needs a trustworthy envoy to confirm the new authority and reception arrangements. Refusing payment on a succession rumour risks intervention, while paying extra does not necessarily obtain a valid guarantee."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Embassy escorts ask who recognises their credentials, where to wait and whether supplies suffice. Earlier instructions require someone still able to perform them; one rider’s account is not automatically a court decision."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tribute waiting on the road consumes food and working animals, with travel paid by particular households. Residents may care more about another collection and recognition of previous deliveries than private succession stories."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

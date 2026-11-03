@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Nasrid_Dynasty_and_Alhambra_Red_Citadel",
+  "Keywords": [
+    "Nasrid Red Banner of Victory",
+    "Muhammad I Ibn al Ahmar Emir",
+    "Alhambra Red Citadel Construction",
+    "There is No Victor but God Motto"
+  ],
+  "RagShortTexts": [
+    "Every tribute and every alliance was a calculated move to keep the mountain kingdom alive.",
+    "Lords in Granada understood that each payment was a bargain with a stronger neighbour."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Muhammad I ibn al-Ahmar founded the Nasrid dynasty and built the Emirate of Granada into the last Islamic state on the Iberian Peninsula. His house displayed red banners, and it began the Alhambra on Sabika Hill as a palace-fortress above the city. Its walls and arches carried the dynasty's motto, 'There is no victor but God' (Wa la ghaliba illa Allah), repeated in carved script across the courtyards. The emirate survived by balancing its status as a vassal of Castile against its ties to the Marinid court across the Strait. Every tribute and every alliance was a calculated move to keep the mountain kingdom alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Muhammad paid annual parias to Castile to keep his frontier quiet, and he sent auxiliary horsemen when Castile needed them against rival Muslim cities. Lords in Granada understood that each payment was a bargain with a stronger neighbour. The emir's survival rested on a ledger of gold, horses and favours, kept balanced from one year to the next."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Refugee scholars, tile-makers, and botanists transformed Granada's Albayzín into an intellectual hub, embellishing Alhambra courtyards with intricate arabesques and canal gardens. Muhammad I founded the emirate and began the Alhambra in 1238, so royal commissions kept many craftsmen busy. Artisans carved plaster, laid glazed tiles, and cut channels for mountain water."
+    }
+  ],
+  "TextMappings": []
+}

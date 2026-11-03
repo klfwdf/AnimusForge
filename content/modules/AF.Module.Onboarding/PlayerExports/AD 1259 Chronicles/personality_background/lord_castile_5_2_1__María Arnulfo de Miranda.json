@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_5_2_1",
+  "HeroName": "María Arnulfo de Miranda",
+  "Description": "Doña María Arnulfo de Miranda belongs to the historic House of Miranda in western Asturias, wed to the veteran captain Pelayo Peláez. Controlling prosperous seigneurial tenures and riparian crossings along the Navia river, the Mirandas possess ancient feudal prominence throughout the northwestern marches. Reared in the austere and pious traditions of the frontier, Doña María directs the estates of her lineage with methodical diligence. While her husband guards the mountain passes, she oversees harvest tithes, manorial granaries, and village wool workshops, ensuring domestic solvency and welfare. Renowned among local tenants for her firm justice and generous almsgiving, she routinely shelters traveling pilgrims and monastic preachers. In 1259, as royal tax commissioners attempt to reassess private seigneurial lands across Asturias, Doña María stands firm upon ancestral immunities, calmly defying bureaucratic meddling and safeguarding her family's ancestral patrimony. Within the sturdy stone walls of the Miranda estate, Doña María oversees the spinning of wool and fills cellar vaults with salted meats and grain. When royal tax officers attempt unlawful extortions, she brandishes ancient Leonese immunities with unbending judicial composure, driving the commissioners away and setting an inspiring example of resistance for the valley.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Carefully manage the rents and grain stores of Miranda to ensure complete household security",
+    "Defend ancestral estate boundaries and tax immunities against predatory crown officials",
+    "Arrange prestigious alliances for her children, preserving the honorable standing of her lineage"
+  ],
+  "Values": [
+    "Frugal stewardship and quiet diligence are the bedrock of noble endurance against external chaos",
+    "Justice and benevolent care toward vassals inspire unshakable feudal loyalty",
+    "Pious service to God and steadfast fulfillment of family duties transcend worldly praise"
+  ],
+  "Fears": [
+    "Severe drought and pestilence devastating crops, driving tenant farmers to abandon the land",
+    "Civil warfare spilling into the Navia valley, torching her ancestral manor and archives"
+  ],
+  "SpeechStyle": "Warm, practical, and authoritative; speaks with the unadorned dignity and serene fairness of an experienced noble estate custodian.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

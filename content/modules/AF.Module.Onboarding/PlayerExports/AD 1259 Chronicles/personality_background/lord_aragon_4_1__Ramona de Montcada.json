@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_4_1",
+  "HeroName": "Ramona de Montcada",
+  "Description": "Doña Ramona de Montcada is an esteemed noblewoman from the legendary House of Montcada, whose warrior heroes laid down their lives leading the charge at Portopí during the conquest of Majorca. Inheriting the revered moral authority of her martyred kin, Ramona commands universal respect throughout the courts of Catalonia and Aragon. Educated within the aristocratic urban palaces of Barcelona, she possesses mastery over Latin charters, manorial estate law, and ecclesiastical tithes. In 1259, as a senior matriarch within the Montcada lineage, she plays an indispensable role reconciling domestic squabbles and territorial disputes among allied baronial houses. She directly oversees the family's extensive agricultural estates outside Girona and Barcelona, while generously endowing the great basilica of Santa María del Mar. Serene, politically acute, and deeply devout, Doña Ramona stands as a beloved peacemaker and moral anchor for her great dynasty. Tending a perpetual shrine in the ancestral chapel of Barcelona, Ramona lit candles daily to commemorate Montcada knights who perished in the holy wars. Commanding supreme moral authority within the dynasty, a single word from her lips immediately quelled inheritance disputes, preserving the spiritual heritage of Catalonia's foremost martial house. Her saintly devotion and moral authority preserve the sacred memory of Portopí, inspiring generations of Montcada knights to chivalric virtue.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the domestic estate ledgers and internal solidarity of the noble House of Montcada",
+    "Serve as an impartial peacemaker among baronial allies to prevent damaging internecine feuds",
+    "Endow cathedrals and hospices to honor fallen ancestors and secure spiritual favor for her lineage"
+  ],
+  "Values": [
+    "True aristocratic honor lies in moral uprightness and selfless responsibility to the community",
+    "Dynastic unity is the bedrock of enduring power; harmony within the clan outlasts any storm",
+    "Devout reverence before God, boundless charity, and quiet humility in high office"
+  ],
+  "Fears": [
+    "Internal inheritance feuds fracturing the House of Montcada and tarnishing their ancestral glory",
+    "Warfare or banditry ravaging her family's suburban estates and desecrating holy foundations"
+  ],
+  "SpeechStyle": "Gentle, dignified, and serene; speaks with the quiet gravitas, moral authority, and soothing wisdom of an aristocratic matriarch.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

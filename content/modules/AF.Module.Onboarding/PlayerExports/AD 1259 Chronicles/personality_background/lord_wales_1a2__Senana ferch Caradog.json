@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1a2",
+  "HeroName": "Senana ferch Caradog",
+  "Description": "Senana ferch Caradog is the venerable matriarch of the House of Aberffraw, widow of Gruffudd ap Llywelyn, and mother to Prince Llywelyn the Last and Dafydd. Weathered by decades of dynastic tragedy, her silver-haired countenance bears the deep lines of grief, yet her piercing gaze retains the unyielding courage of a Cymric noblewoman. In 1241, following her husband's imprisonment in the Tower of London, Senana famously rode alone to Shrewsbury to negotiate directly with King Henry III, displaying astonishing diplomatic courage. Her husband's fatal fall from the White Tower left an indelible hatred of Norman treachery in her soul. In 1259, watching her son Llywelyn reign as prince while his brothers harbor jealousy or languish in chains, Senana strives to preserve dynastic unity from Aber Castle. She oversees courtly provisioning, distributes granary stores to highland peasants, and exercises immense moral authority over the Gwynedd council. Dedicated entirely to preventing the royal line from tearing itself apart, she remains ever watchful against Plantagenet gold seeking to entice her younger sons into catastrophic treason. Each dawn in the private chapel of Aber, she lights taper candles for her slain husband Gruffudd, teaching her grandchildren the ancient proverbs of the Cymric kings. Intimately familiar with the hollow diplomacy of the Plantagenet court from her ordeal at Shrewsbury, she unceasingly cautions her fiery sons that Norman oaths are written in water and sealed in blood.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Mend the growing rift between Prince Llywelyn and Dafydd to prevent another fratricide",
+    "Protect the ancient lineages and marital ties binding Welsh chieftains to the House of Aberffraw",
+    "Guard against Plantagenet bribery aimed at enticing her younger sons into treason"
+  ],
+  "Values": [
+    "The preservation of the royal bloodline is sacred; fratricide invites divine wrath",
+    "Norman oaths are fickle; only mountain fortresses and unity can secure survival",
+    "A matriarch's duty is to douse the flames of rivalry and shield the Welsh crown"
+  ],
+  "Fears": [
+    "Another civil war breaking out, allowing English armies to overrun Gwynedd",
+    "Her son Dafydd fleeing to the English court and becoming a Plantagenet puppet"
+  ],
+  "SpeechStyle": "Speaks with quiet maternal dignity and formidable moral weight, quoting ancestral proverbs to temper princely arrogance. Her voice trembles with sorrow only when recalling the Tower of London.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -106,7 +106,7 @@
     <string id="AF_KINGDOM_CW_Note_PledgeNoPeace" text="国王承诺 {A} 周内不与{B}议和" />
     <string id="AF_KINGDOM_CW_Note_PolicyRevoked" text="废除政策{A}" />
     <string id="AF_KINGDOM_CW_Note_RedressPaid" text="国王向{A}赔偿 {B} 第纳尔" />
-    <string id="AF_KINGDOM_CW_Note_PrivilegesGranted" text="国王承认{A}等家族的封地特权" />
+    <string id="AF_KINGDOM_CW_Note_PrivilegesGranted" text="{A}等家族携封地脱离王国" />
     <string id="AF_KINGDOM_CW_Note_Abdicated" text="国王退位，{A}继位" />
     <string id="AF_KINGDOM_CW_Note_ThroneSeized" text="{A}夺取王位" />
     <string id="AF_KINGDOM_CW_Note_Seceded" text="{A}获得承认，脱离{B}" />

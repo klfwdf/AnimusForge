@@ -1,0 +1,53 @@
+{
+  "Id": "rule_sapping_countermining_subterranean",
+  "Keywords": [
+    "Mining and countermining",
+    "Supporting a mine beneath walls",
+    "Listening for digging near foundations"
+  ],
+  "RagShortTexts": [
+    "Siege mining depends on ground, water and supports; rock and wet soil increase effort and danger.",
+    "Defenders can listen, intercept and repair foundations; both sides consume skilled labor and timber."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Besiegers may approach a stone wall's footing to weaken its support, while timber and earth defenses present different ground problems. Underground work hides distance and meets loose soil, rock or seepage. Props and spoil removal demand sustained labor, and the entrance needs protection above ground. Mining is a substantial siege commitment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Diggers depend on men who understand soil and props; weapons offer little help if an entrance is attacked or a passage collapses. Defenders report suspicious sounds near the wall without assuming every echo signals an enemy breakthrough. Rotation, spoil and timber carrying drain strength in wet, confined working conditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander compares mining with assault and blockade. Local well diggers and quarrymen need provisions, payment and protection. Water or hard rock may make another attack point more economical. Defenders allocate repair materials and reliable listeners without stripping other wall sections whenever an uncertain sound is heard."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Residents may know old wells, cellars and wet ground and be questioned or compelled to dig, while work beneath houses threatens foundations. Carpenters supply props and drivers remove spoil at the expense of ordinary work. Siege forces compete for labor, provisions and sound structural timber as well as positions near a wall."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

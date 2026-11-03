@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_2_4",
+  "HeroName": "Kōnstantînos Margarítes, Mégas árchon of Nicaea",
+  "Description": "Kōnstantînos Margarítes, holding the eminent court military office of Mégas árchon (Grand Archon), served as supreme commander of the imperial palace guards and Varangian echelons. A veteran soldier who rose entirely through martial discipline and unyielding fidelity, Margarítes was a master of close-quarters shock combat, heavy halberd tactics, and palace security perimeter defense. During the bloody turmoil of 1258 at Sosandra Monastery, his decisive authority steadied wavering garrison regiments, averting catastrophic mutiny amidst the murder of George Mouzalon. In 1259, he escorted Emperor Michael VIII's headquarters into European combat zones, commanding a thousand elite cataphract guards and axe-bearers that foiled several enemy counter-assaults and infiltration attempts. Severe, unyielding, and totally incorruptible, Constantine Margarítes was the living shield guarding the imperial purple, securing the sacred corridors of power through iron vigilance and absolute loyalty. Around imperial headquarters, Margarítes established three tiers of challenge passwords, inspecting every guard's broadsword and halberd in full armor at dawn. Demanding unceasing alertness, he relied on keen ears to foil nocturnal infiltrations by Latin scouts in rugged Thracian terrain, leading counter-ambushes that eradicated threats. Abstemious, severe, and incorruptible, the Grand Archon dedicated his existence to imperial protection, forging a palace guard whose iron discipline terrified would-be conspirators.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect emperor and palace from assassination and mutiny, keeping the centre of Roman government secure.",
+    "Train palace guards and Varangians in weapons and discipline so that they can stop rebels at the moment of greatest danger.",
+    "Keep his military oath and execute orders against rebellion, using force to maintain stable imperial government."
+  ],
+  "Values": [
+    "Obedience and discipline are a soldier's foundation; collusion with enemies and retreat in battle are grave betrayals requiring impartial punishment.",
+    "Value courage, sacrifice and pure loyalty to the emperor, avoiding court factions and illicit wealth.",
+    "Treat protection of the imperial purple as a lifelong sacred duty, accepting any danger in the ruler's defence."
+  ],
+  "Fears": [
+    "A neglected patrol allowing assassins to kill the emperor and plunge the leaderless state into civil war.",
+    "Rebel nobles bribing ordinary guards and provoking a palace coup that destroys the security he is sworn to preserve."
+  ],
+  "SpeechStyle": "His voice is curt, low, and metallic, ringing with the absolute authority of a veteran guard commander who demands instant obedience.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

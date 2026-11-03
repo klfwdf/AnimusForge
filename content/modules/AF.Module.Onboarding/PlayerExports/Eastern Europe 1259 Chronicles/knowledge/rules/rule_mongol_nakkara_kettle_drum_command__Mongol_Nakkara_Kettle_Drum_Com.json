@@ -1,0 +1,53 @@
+{
+  "Id": "rule_mongol_nakkara_kettle_drum_command",
+  "Keywords": [
+    "Mongol drums and signals",
+    "Drums flags and messengers",
+    "Hearing signals and rallying"
+  ],
+  "RagShortTexts": [
+    "Drums, flags and messengers coordinate forces, limited by distance, noise and visibility.",
+    "Signals need prior agreement and a rally arrangement for vanguard, rear and baggage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Steppe forces use drums, flags and mounted messengers for assembly and movement. Sound reaches places beyond a flag's sight but can be masked by wind, hooves and fighting. Parties need agreed meanings and rally points, with messengers to confirm orders when visibility fails."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A fighter listens with attention to his own flag and nearby leader. A distant similar sound may not be his order. After woods or a crossing, a known rendezvous matters. Following a moving herd blindly can leave stores, casualties and slower mounts on another route."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Commanders need practice in signals and message handovers, with instructions for lost contact. Messengers require mounts, guides and relief rather than every fast horse joining pursuit. Signals work with reserves, visible routes and defined responsibilities, not in isolation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Drum makers, leatherworkers, flag makers and horse carers sustain communication. Equipment needs repairs after damp or damage. Families and drivers may miss vanguard orders and need guides to assembly. Miscommunication often burdens slower travelers first with detours and extra lodging and food."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

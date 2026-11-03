@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v2",
+  "Keywords": [
+    "Bread for chained laborers in Cato"
+  ],
+  "RagShortTexts": [
+    "Cato allotted bread directly to chained workers and varied it with the agricultural season."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cato allotted bread directly to chained workers and varied it with the agricultural season. Issuing bread rather than grain changed who performed processing. Coerced workers were not simply tenant households merely because both cultivated land."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

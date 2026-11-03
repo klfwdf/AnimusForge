@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_northern_operations_in_1256_7dab4a01",
+  "Keywords": [
+    "northern operations in 1256",
+    "Northern operations of 1256 and gulf works"
+  ],
+  "RagShortTexts": [
+    "Alexander conducted northern operations around 1256.",
+    "Gulf posts and Finnish approaches affect frontier security."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alexander’s northern operations around 1256 concern gulf fortifications and Finnish approaches. Local guides matter along coasts and forests. An expedition changes pressure but continuing reports, supplies and negotiation sustain security afterward."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Northern troops need food, shelter and contact. Ice routes can change before return; one successful passage does not justify repeating it without checking."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Planning identifies local contributions and remaining guards. Treating one success as permanent security removes the watches needed for another warning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Hosts lose stores during an expedition and may supply the returning force too. Safety becomes visible through restored fishing and exchange, not distant victory reports alone."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

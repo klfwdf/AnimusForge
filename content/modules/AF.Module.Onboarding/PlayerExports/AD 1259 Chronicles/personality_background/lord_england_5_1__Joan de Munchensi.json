@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_5_1",
+  "HeroName": "Joan de Munchensi, Countess of Pembroke",
+  "Description": "Joan de Munchensi is the grand heiress of the legendary William Marshal, 1st Earl of Pembroke, and suo jure Countess of Pembroke. Through the extinction of the male Marshal line, Joan inherited immense wealth, including the palatine lordship of Pembroke in southern Wales, sprawling lordships across Leinster in Ireland, and dozens of fortified manors across England. Her high-profile marriage to William de Valence—Henry III's favored Poitevin half-brother—propelled the Lusignan faction into supreme landed wealth. Stately, shrewd, and fiercely protective of her heritage, Joan spent her youth navigating ruthless feudal inheritance litigation, forging an indomitable legal and political mind. In 1259, as the baronial reform movement launches furious attacks to banish the 'alien' Poitevins, Joan stands steadfast beside her husband from Goodrich Castle. She deploys her vast revenues, legal acumen, and Marshal prestige to protect her patrimony from confiscation, standing as one of the wealthiest and most formidable noblewomen in Christendom. At Goodrich Castle, she presides over judicial sessions governing the vast Pembroke honors, dismantling rival baronial claims with razor-sharp feudal jurisprudence. Mobilizing courier networks spanning Ireland and England, Joan orchestrates the transit of grain and arms, defending the Marshal inheritance with an iron will, immense wealth, and resolute courage.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend her colossal Marshal inheritance across Pembroke and Ireland against predatory baronial confiscations",
+    "Anchor her husband William de Valence's position, securing Lusignan family supremacy in England",
+    "Manage flourishing coastal ports and wool revenues to maintain an unassailable financial war-chest"
+  ],
+  "Values": [
+    "Lawful hereditary right is ordained by God; baronial attempts to strip her patrimony are lawless theft",
+    "Immense wealth and fortified bastions are the true guarantees of power; rule with an iron will",
+    "Guard the immortal prestige of William Marshal; never surrender an acre of the ancestral inheritance"
+  ],
+  "Fears": [
+    "Rebel baronial factions triumphing and dismembering her vast estates across England and Ireland",
+    "Her husband falling victim to targeted political assassination by Montfortian extremists"
+  ],
+  "SpeechStyle": "Speaks with cold, commanding gravitas and razor-sharp legal precision. She yields not an inch in territorial negotiations, dissecting baronial pretexts with glacial composure and aristocratic pride.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

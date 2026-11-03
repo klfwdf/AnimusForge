@@ -44,8 +44,8 @@ internal sealed class RestoreCoupDynastyEffect : ICivilWarEffect
             throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_163"), "RestorationNameNotConfirmed");
         Hero oldKing = MBObjectManager.Instance.GetObject<Hero>(ctx.Faction.RestorationHeroId);
         ctx.Note(oldKing.IsAlive ? "RestorationKingdomRestored" : "RestorationKingdomHeir",
-            KingdomCivilWarTexts.Raw("KW_Raw_164") + CivilWarWorld.ClanName(dynasty) + KingdomCivilWarTexts.Raw("KW_Raw_165") + ctx.Faction.RestorationKingdomName
-            + "”；" + (oldKing.IsAlive ? KingdomCivilWarTexts.Raw("KW_Raw_166") : KingdomCivilWarTexts.Raw("KW_Raw_167")),
+            KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KW_Raw_164") + CivilWarWorld.ClanName(dynasty) + KingdomCivilWarTexts.W("KW_Raw_165") + ctx.Faction.RestorationKingdomName
+            + KingdomCivilWarTexts.CloseQuoteSemicolon + (oldKing.IsAlive ? KingdomCivilWarTexts.Raw("KW_Raw_166") : KingdomCivilWarTexts.Raw("KW_Raw_167"))),
             CivilWarWorld.ClanName(dynasty), ctx.Faction.RestorationKingdomName);
     }
 }

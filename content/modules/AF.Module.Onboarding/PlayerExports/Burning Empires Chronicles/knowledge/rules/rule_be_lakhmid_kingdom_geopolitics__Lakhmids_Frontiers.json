@@ -1,0 +1,59 @@
+{
+  "Id": "be_lakhmid_kingdom_geopolitics",
+  "Keywords": [
+    "Lakhmids Frontiers",
+    "Euphrates to desert well routes"
+  ],
+  "RagShortTexts": [
+    "Hira’s wells connect with river supply.",
+    "Water has local users; escorts need the next drinkable stop."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wells and river supply together determine travel. Water has local users; escorts need knowledge of the next drinkable stop, not direction alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Hira’s wells connect with river supply. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Water has local users; escorts need the next drinkable stop."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Water has local users; escorts need the next drinkable stop. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Hira’s wells connect with river supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hira’s wells connect with river supply. Closed routes may separate families from goods, imposing costs on those remaining at home. Water has local users; escorts need the next drinkable stop."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Water has local users; escorts need the next drinkable stop. Cargo passes different carriers, making distant route changes become local shortages through delay. Hira’s wells connect with river supply."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

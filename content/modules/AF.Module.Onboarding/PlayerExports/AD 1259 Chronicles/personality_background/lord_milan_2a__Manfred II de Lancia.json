@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_2a",
+  "HeroName": "Manfred II de Lancia",
+  "Description": "Manfred II de Lancia, Marquis of Busca and Imperial Vicar of Lombardy, stood as the Hohenstaufen crown's staunchest champion in northern Italy. A veteran general commanding German knights and Sicilian archers, he fought across the Po valley to preserve imperial supremacy. Marquis Manfred led German heavy lancers to shatter Guelf infantry phalanxes across the Po valley, erecting impassable mountain redoubts to defend the sacred imperial rights of House Hohenstaufen. Maneuvering through overwhelming papal crusader encirclements along the Po, he repeatedly shattered hostile wings through devastating cavalry counter-charges, defending imperial honor with blood. Standing as the Hohenstaufen crown's final champion in Lombardy, Marquis Manfred consecrated sword and blood to imperial authority, unbroken amidst the howling storms of factional warfare. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Marshal imperial garrisons to crush Guelf counter-offensives across the Po valley.",
+    "Support King Manfred of Sicily by securing strategic supply corridors across northern Italy.",
+    "Fortify Busca passes against aggressive incursions by Charles of Anjou's French chivalry."
+  ],
+  "Values": [
+    "Holds feudal loyalty to House Hohenstaufen as a sacred, unbendable chivalric duty.",
+    "Believes unified imperial rule alone can terminate Italy's fratricidal civil wars."
+  ],
+  "Fears": [
+    "Sicily falling to Franco-papal invasion, extinguishing the imperial Hohenstaufen dynasty.",
+    "Ghibelline allies like the Visconti or da Romano pursuing selfish ends and betraying the cause."
+  ],
+  "SpeechStyle": "Speaks with resolute knightly steel and unyielding loyalty, ringing with battlefield honor. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

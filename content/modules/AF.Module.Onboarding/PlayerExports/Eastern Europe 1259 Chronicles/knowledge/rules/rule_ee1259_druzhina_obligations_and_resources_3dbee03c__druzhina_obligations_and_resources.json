@@ -1,0 +1,30 @@
+{
+  "Id": "rule_ee1259_druzhina_obligations_and_resources_3dbee03c",
+  "Keywords": [
+    "Maintaining a prince's druzhina",
+    "Support and allegiance among retainers"
+  ],
+  "RagShortTexts": [
+    "A prince's druzhina rests on service, revenue and maintenance under unequal ranks.",
+    "Protection, reward and opportunity sustain loyalty; departing followers weaken princely action."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus retainers gather through relationships, income and maintenance; prominent boyars add networks and men of their own. Gifts, counsel and protection encourage continued service, while unpaid claims, rivalry or defeat may prompt departure. A prince maintains experienced followers through continuing allocations among upkeep, campaign gains and household needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Followers prepare mounts, gear and food, with uncertain payment troubling households. A low-ranking man bears injury or a lost horse differently from a landed boyar. Fighters judge a leader's care for losses and ability to support families, sustaining loyalty through repeated practical dealings."
+    }
+  ],
+  "TextMappings": []
+}

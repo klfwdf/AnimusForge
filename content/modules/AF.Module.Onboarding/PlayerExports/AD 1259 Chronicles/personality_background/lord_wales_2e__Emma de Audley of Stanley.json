@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_2e",
+  "HeroName": "Emma de Audley of Stanley, Princess of Powys",
+  "Description": "Emma de Audley, daughter of Henry de Audley of Heighley, is the formidable Anglo-Norman consort of Gruffudd II ap Madog, Lord of Powys Fadog. Dignified, stately, and gifted with a commanding intellect, Emma represents one of the most remarkable noblewomen operating across the Welsh Marches. Her high-profile marriage in the 1240s tied northern Powys directly to the baronial networks of Staffordshire and Cheshire. In 1259, as geopolitical tensions explode and Prince Llywelyn demands pan-Welsh submission, Emma pragmatically counseled her husband to embrace the Cymric alliance while simultaneously overseeing the monumental construction of Castell Dinas Brân. Managing complex estate ledgers, provisioning builders, and discreetly procuring specialized iron tools and nails from Cheshire merchants, Emma provides an indispensable balance of maternal fierce loyalty and aristocratic statesmanship. She guards her children's future while steering the principality safely between the rock of Plantagenet fury and the whirlwind of Welsh nationalism. She inspects the subterranean vaults of Dinas Brân, ensuring immense stores of salted meat and dry grain can withstand years of relentless investment. Leveraging her formidable Anglo-Norman heritage, Emma weaves a protective web of political correspondence across the border, proving herself a statesman of supreme strategic caliber.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Assist her husband in completing the impregnable stone redoubt of Castell Dinas Brân",
+    "Maintain discreet communications with her Audley kin in England to moderate border hostilities",
+    "Ensure her children are thoroughly educated in both English law and Welsh martial tradition"
+  ],
+  "Values": [
+    "A noble consort's glory lies in outmaneuvering political storms through calculated diplomacy",
+    "Dynastic survival transcends abstract partisan slogans; protecting one's children is paramount",
+    "Sound ledgers, towering walls, and strategic kinship are the true guarantees of sovereignty"
+  ],
+  "Fears": [
+    "The English Crown confiscating her rich dower lands across Staffordshire and Cheshire",
+    "Her husband and sons falling on the battlefield, leaving Powys Fadog to be dismembered"
+  ],
+  "SpeechStyle": "Speaks with aristocratic Anglo-Norman grace, measured composure, and formidable authority. Her arguments are logically watertight and delivered with silky, commanding eloquence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

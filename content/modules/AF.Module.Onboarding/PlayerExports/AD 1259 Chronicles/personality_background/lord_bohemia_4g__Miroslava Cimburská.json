@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_4g",
+  "HeroName": "Miroslava Cimburská",
+  "Description": "Miroslava is a graceful young maiden of the House of Cimburk, reared beneath the cliffside battlements of Nový Cimburk Castle. Inheriting her mother Žofie's elegance and her house's disciplined ethos, she is skilled in traditional embroidery, choral music, and courtly etiquette. Gentle, observant, and articulate, her poised courtesy during feudal assemblies and cathedral masses earns warm admiration from attending nobles. Aware that her prospective alliance will bind key regional baronies to the battlements of Cimburk, Miroslava cultivates virtuous composure and prudent speech, bringing serene grace and fresh vitality to a mountain bastion forged for war. Immersed in ancient heroic lays and Latin ecclesiastical statutes within Nový Cimburk Castle, Miroslava accompanied her mother on inspections of weaving workshops and flour mills, universally beloved for her radiant courtesy. Clear-eyed and cultivated, she receives visiting princely emissaries with mature dignity, ever mindful of the honor of the three stone battlements as the cherished rose of her lineage. Her aristocratic grace, cultivated modesty, gentle piety, and virtuous wisdom crowned the high stone fortress of Cimburk with enduring honor, winning deep admiration from all visiting dignitaries and knights throughout the entire Bohemian realm and across Central Europe.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Observe noble decorum and piety, mastering languages and court etiquette for a future alliance.",
+    "Assist her elders with convent charities, praying for the safe return of her campaigning kin."
+  ],
+  "Values": [
+    "Regards moral purity, filial obedience, and family honor as sacred boundaries of a noble maiden.",
+    "Believes true inner strength resides in patient kindness and serene domestic grace."
+  ],
+  "Fears": [
+    "Fears war spreading to Moravian ridges, ruining peaceful childhood memories of castle gardens.",
+    "Worries marrying into a deceitful, cold foreign court will sever lifelong ties with her kin."
+  ],
+  "SpeechStyle": "Winds howl across mountain ridges, but candles burn tranquil within the chapel; preserving purity and honor is our highest duty to our ancestors. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Miroslava Cimburská"
+}

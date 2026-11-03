@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_4_4",
+  "HeroName": "Cristoforo d'Aquino",
+  "Description": "Lord Cristoforo d'Aquino is the infant heir and pride of Count Tommaso II. Reared within the guarded towers of Acerra, little Cristoforo is surrounded by iron-clad sentinels and banners bearing the historic heraldry of his bloodline. Even in his earliest years, he displays spirited energy and an instinctive fascination with shiny blades and galloping warhorses, cherished by his father as the living bridge toward a triumphant future. Surrounded by veteran men-at-arms and royal favors, the young heir Cristoforo is schooled in honor and fortitude. Endowed with bold youthful spirit and princely pride, little Cristoforo represents the glorious future and martial continuity of the legendary House of Aquino across Italy. Burning with natural vitality and youthful curiosity, young Cristoforo prepares to carry the glorious honors of his ancient house. Schooled in honor, equestrian mastery, and princely command, young Cristoforo represents the glorious future and martial continuity of his noble house.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow big and strong like his armored father, yearning to ride great chargers and carry iron shields.",
+    "Explore the castle courtyards and watch the knights practice mounted swordsmanship."
+  ],
+  "Values": [
+    "Adoration for martial strength, knightly bravado, and his father's imposing authority.",
+    "An innate princely pride and fearless spiritedness nurtured by ancient blood."
+  ],
+  "Fears": [
+    "Darkness, confining chambers, and being kept away from the vibrant fortress courtyard.",
+    "Sudden tumult, terrifying war-horns, and the prolonged absence of his protective father."
+  ],
+  "SpeechStyle": "Speaks with lively toddler enthusiasm, boundless curiosity, and playful imitation of knights. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

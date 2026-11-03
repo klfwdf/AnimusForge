@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Provisions_of_Oxford_and_Westminster_Reform",
+  "Keywords": [
+    "Provisions of Westminster 1259",
+    "Simon de Montfort Reform",
+    "English Constitutional Precedent",
+    "Baronial Council Oversight"
+  ],
+  "RagShortTexts": [
+    "The Westminster reforms of 1259 address abuses affecting courts and landholders.",
+    "Reform needs enforcement and does not extend identical rights to every unfree tenant."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Simon de Montfort's reformist faction, having won the Provisions of Oxford in 1258, issued the Provisions of Westminster in October 1259. The new statute widened the legal protections open to lesser knights and freeholders, and it regulated abuses by baronial and royal bailiffs alike. Its clauses shaped early English parliamentary government by linking the council's authority to written rules. Its scope was broader than the earlier Oxford settlement, which had concentrated on the great offices of state, and it reached the people who held land in the shires."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Great magnates had hoped only to curb Henry III's spending, yet Montfort dared to place baronial courts under statutory law. The Provisions of Westminster split the baronial league, and conservative lords who feared the reform drifted back to the Crown. A baron who had supported Oxford now had to choose between his own courts and the reforming council."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A freeholder hearing of the Westminster reforms hopes for restraints on abuses in courts and in the handling of debts and land. A promise on parchment still needs enforcement by officers who may be powerful neighbours. The measures of 1259 do not abolish customary rent or extend identical remedies to every unfree tenant on every manor."
+    }
+  ],
+  "TextMappings": []
+}

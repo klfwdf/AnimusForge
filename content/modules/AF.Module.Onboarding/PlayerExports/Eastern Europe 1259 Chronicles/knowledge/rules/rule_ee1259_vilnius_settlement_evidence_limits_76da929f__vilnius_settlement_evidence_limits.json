@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_vilnius_settlement_evidence_limits_76da929f",
+  "Keywords": [
+    "Vilnia Neris confluence",
+    "Stops and lodging at the Vilnia confluence"
+  ],
+  "RagShortTexts": [
+    "The Vilnia and Neris confluence helped travelers identify routes and landings.",
+    "Loaded boats and driven animals used different routes and needed water and lodging reports."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Vilnia joins the Neris at a recognizable route point. Banks, paths and landing places shaped stopping there. Travelers asked residents about water and lodging; loaded boats and people driving animals could require different routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The Vilnia joins the Neris at a recognizable route point. Banks, paths and landing places shaped stopping there. Travelers asked residents about water and lodging; loaded boats and people driving animals could require different routes. A crossing could separate the advance party from baggage, requiring escorts to watch both banks and the remaining column. Urgency could not replace boats or workable water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Vilnia joins the Neris at a recognizable route point. Banks, paths and landing places shaped stopping there. Travelers asked residents about water and lodging; loaded boats and people driving animals could require different routes. Controlling a crossing offered income and influence but required guards, boats and repair. Requisitioning boatmen interrupted their livelihood and needed arrangements for provisions and return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "The Vilnia joins the Neris at a recognizable route point. Banks, paths and landing places shaped stopping there. Travelers asked residents about water and lodging; loaded boats and people driving animals could require different routes. Households crossing for markets, kin or livestock faced waiting and fares. A blocked passage meant longer travel, more food and lost fieldwork."
+    }
+  ],
+  "TextMappings": []
+}

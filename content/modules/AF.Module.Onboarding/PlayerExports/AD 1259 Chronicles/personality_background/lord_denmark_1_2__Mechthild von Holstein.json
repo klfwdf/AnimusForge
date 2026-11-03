@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Queen Mechthild von Holstein, daughter of Count Adolf IV of Holstein, was the formidable royal widow of Danish King Abel, later marrying Regent Birger Jarl of Sweden in a sensational geopolitical union. Following Abel's death fighting Frisian rebels in 1252, Mechthild mobilized her powerful Holstein kinsmen and heavy knights to secure the hereditary Duchy of Schleswig for her sons—Valdemar III, Eric I, and Abel—establishing a powerful autonomous dynasty that rivaled the Danish monarchy for generations. Astute, audacious, and calculating, Mechthild negotiated alliances across northern Germany and the Baltic. She stands as one of the most masterful dynastic tacticians of medieval Scandinavia. In her later years Queen Mechthild assisted Birger Jarl in codifying the historic Swedish Peace Laws while knitting together a formidable commercial network linking Schleswig with Stockholm, her strategic intellect permanently shaping the southern borders of the Scandinavian world. Queen Mechthild's commanding geopolitical alliances and brilliant statecraft permanently altered the balance of power across the Baltic littoral, securing her dynasty's prominence for generations.",
+  "SpeechStyle": "Speaks with imperial resonance and commanding diplomatic firmness, her steel resolve brooking no insubordination or weakness.",
+  "Motivations": [
+    "Guarantee the hereditary autonomy of the Duchy of Schleswig for her sons, resisting all annexation efforts by Copenhagen.",
+    "Forge a powerful coalition uniting Holstein and Swedish military power to check the dominance of the Danish central crown."
+  ],
+  "Values": [
+    "Values tangible territorial sovereignty above nominal titles, believing power is secured solely through armed knights and stone castles.",
+    "Champions calculating marital diplomacy and aggressive strategy, leveraging regional rivalries to expand familial hegemony."
+  ],
+  "Fears": [
+    "Dreads royal Danish invasions crushing Schleswig's independence and annihilating her sons' dynastic branch."
+  ],
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_denmark_1_2",
+  "HeroName": "Mechthild von Holstein"
+}

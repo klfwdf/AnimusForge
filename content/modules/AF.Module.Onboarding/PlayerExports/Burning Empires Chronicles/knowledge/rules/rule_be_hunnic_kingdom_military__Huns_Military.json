@@ -1,0 +1,59 @@
+{
+  "Id": "be_hunnic_kingdom_military",
+  "Keywords": [
+    "Huns Military",
+    "Hunnic mounted archery and horse recovery"
+  ],
+  "RagShortTexts": [
+    "Hunnic mounted archery needs horses, remounts and rest.",
+    "Prolonged sieges still need food and special equipment."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mounted archery needs horses, remounts and rest. Pursuit wears mounts out; sieges require grain and equipment, so mobility never removes supply needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Hunnic mounted archery needs horses, remounts and rest. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Prolonged sieges still need food and special equipment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Prolonged sieges still need food and special equipment. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Hunnic mounted archery needs horses, remounts and rest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hunnic mounted archery needs horses, remounts and rest. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Prolonged sieges still need food and special equipment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Prolonged sieges still need food and special equipment. Repair, carrying and care also use people, while daily supply continues after troops pass. Hunnic mounted archery needs horses, remounts and rest."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

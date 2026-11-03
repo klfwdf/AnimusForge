@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v6",
+  "Keywords": [
+    "波斯撤军中的边疆袭扰"
+  ],
+  "RagShortTexts": [
+    "363年罗马自波斯撤军遭袭扰，疲惫与缺粮加重归途风险。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "363年罗马军队从波斯撤回时，遭到阿拉伯武装袭扰。疲惫、缺粮与敌对接触叠加，队伍必须一面保护同行者，一面寻找补给。先前同其他首领有往来，并不使所有路段都安全。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

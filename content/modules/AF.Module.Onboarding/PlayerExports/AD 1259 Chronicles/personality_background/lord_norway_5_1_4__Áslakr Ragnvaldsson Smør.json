@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_5_1_4",
+  "HeroName": "Áslakr Ragnvaldsson Smør",
+  "Description": "Sir Áslakr Ragnvaldsson Smør was a daring young knight, ocean navigator, and adventurous younger son of Baron Ragnvald Jonsson Smør. In 1259, Aslak was celebrated across western Norway for his superb equestrian jousting skills, fearless seamanship, and charismatic generosity. Possessing a restless explorer's spirit, he commanded merchant drakkars across the open North Atlantic, sailing to the Faeroes, Shetland, and Iceland to pioneer resilient maritime routes. Generous to a fault and completely unpretentious, he treated deckhands and squire knights as brothers-in-arms, distributing his trading profits and royal gifts freely among his crew. Though detached from the court intrigues of Bergen, Aslak repeatedly displayed tactical brilliance during sudden corsair ambushes, outmaneuvering hostile squadrons in narrow coastal sounds. His boundless optimism, martial daring, and romantic chivalric spirit made him one of the most beloved young knights of the Norwegian maritime realm. Along the perilous reaches of Hardangerfjord, Aslak led armed convoy escorts, repeatedly defeating Danish corsairs and rogue privateers attempting to plunder coastal shipping. He frequently visited fishing hamlets to assess local hardship, petitioning Bergen's royal bailiffs to alleviate onerous levies following poor fishing seasons. His open-hearted generosity and martial prowess made him beloved among mariners and common folk, embodying the authentic virtues of an honorable northern chivalric warrior.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Patrol Hardangerfjord with fishing and merchant vessels, protecting coastal cargo from pirates and raiders through personal courage.",
+    "Seek fair taxes and fish-purchase terms for poor fishers at Bergen, earning the trust of coastal communities.",
+    "Explore northern island routes in his fast boat and open new fishing grounds for the Smor family."
+  ],
+  "Values": [
+    "A warrior must protect the weak against pirates and corrupt officials rather than allow power to prey on innocent farmers and sailors.",
+    "A promise binds him equally before nobles and common people; honour is worth more than wealth.",
+    "Seek freedom and adventure in mountains and seas, facing danger with courage rather than spending life confined to paperwork."
+  ],
+  "Fears": [
+    "Officials and merchants manipulating prices until coastal people freeze or starve despite his efforts to protect them.",
+    "Failing to reach a friend during a sudden fjord ambush and carrying lifelong guilt for the comrade's death."
+  ],
+  "SpeechStyle": "Speaks with vibrant chivalric enthusiasm, easy humor, and nautical warmth, winning comrades and retainers through open-hearted bravado.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Áslakr Ragnvaldsson Smør"
+}

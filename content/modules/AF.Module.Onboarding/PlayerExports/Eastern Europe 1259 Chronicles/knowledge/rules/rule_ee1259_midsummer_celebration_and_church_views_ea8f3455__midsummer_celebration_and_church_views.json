@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_midsummer_celebration_and_church_views_ea8f3455",
+  "Keywords": [
+    "Midsummer household gatherings",
+    "Household work at midsummer gatherings"
+  ],
+  "RagShortTexts": [
+    "Summer gatherings involved fires, water, songs and household preparation.",
+    "Church feasts and local customs met in differing schedules and work burdens."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Long daylight allowed gatherings, visits and sociability alongside mowing, livestock and fieldwork. Food, light and space required hosts, and kin and clergy had expectations about proper conduct."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Long daylight allowed gatherings, visits and sociability alongside mowing, livestock and fieldwork. Food, light and space required hosts, and kin and clergy had expectations about proper conduct. Duty still required gates, roads and animals watched; shifts determined attendance. Travelers used gatherings for news and increased lodging needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Long daylight allowed gatherings, visits and sociability alongside mowing, livestock and fieldwork. Food, light and space required hosts, and kin and clergy had expectations about proper conduct. Hosting displayed standing and relationships but cost food, light and hospitality. Seating, invitations and gifts could offend and turn goodwill into disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Long daylight allowed gatherings, visits and sociability alongside mowing, livestock and fieldwork. Food, light and space required hosts, and kin and clergy had expectations about proper conduct. Families prepared food, clothes and arrangements for children and elders without stopping all work. Gifts and meals sustained ties according to household stores."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

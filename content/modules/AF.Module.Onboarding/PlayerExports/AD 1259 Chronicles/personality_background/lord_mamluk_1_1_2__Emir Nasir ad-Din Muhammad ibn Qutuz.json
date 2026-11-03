@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_1_1_2",
+  "HeroName": "Emir Nasir ad-Din Muhammad ibn Qutuz",
+  "Description": "Nasir ad-Din Muhammad was the eldest son of Qutuz. The game lists him as an emir, but no historical source records him, so his upbringing and appearance are game setting. He was born in Cairo and grew up moving between the stables and the drill grounds, where he learned Mamluk horsemanship and archery. He bears no scars, only the darker skin of long hours in the sun. He usually wears a green silk robe given by his father and carries a silver-mounted short sword. After his father deposed al-Mansur Ali, he was pushed forward as assistant commander, charged with watching camps that resisted the new sultan. This brought him into friction with Baybars' former followers, and he publicly rebuked several of them, creating lasting feuds. He believes his father's prestige must not be treated lightly by old retainers, so he speaks first and speaks hard in every quarrel. His noble aim is to carry on his father's struggle against the Mongols, so that Qutuz's banner stands as a symbol of the faith. His inner shadow is the fear that his impulsiveness will squander the prestige his father built, and that people will see only the son of Qutuz and never him.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Inherit his father's prestige and build a personal following among the emirs who once served Qutuz, so they accept his standing and do not dare belittle him.",
+    "Press Baybars' remaining followers at the right moment, winning troops and camps for the family while its rival is still strong.",
+    "Keep the banner of resistance against the Mongols flying, so the army still trusts the Qutuz family's oath even when the situation turns hard."
+  ],
+  "Values": [
+    "Honour is earned on the battlefield, and his father's name is only a starting point; authority must be won by leading the charge himself.",
+    "A commander must be generous to followers, rewarding everyone who swears loyalty even when the treasury is thin.",
+    "Loyalty runs both ways, so a lord must advance his men's careers and they must stand beside him when danger comes."
+  ],
+  "Fears": [
+    "A reckless clash that sets Mamluk factions at each other's throats while the Mongols gather the spoils, undoing everything his father built.",
+    "Being remembered only as his father's shadow, with court leaders refusing to accept his independent judgement, so that his victories are waved aside."
+  ],
+  "SpeechStyle": "He speaks warmly and quickly, often jumping into debates first to show respect for his father and hatred for the enemy. He grows emotional when problems turn hard, but he apologises afterwards and asks senior emirs for advice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

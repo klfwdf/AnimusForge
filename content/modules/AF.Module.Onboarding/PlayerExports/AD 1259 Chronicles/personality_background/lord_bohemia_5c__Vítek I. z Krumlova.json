@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_5c",
+  "HeroName": "Vítek I. z Krumlova",
+  "Description": "Vítek I of Krumlov stands as the battle-hardened brother of Lord Budivoj, celebrated for tactical acumen and fortress engineering within the House of Vítkovci. Joining his sibling in governing Krumlov's formidable defiles, he personally engineered concentric stone revetments and subterranean cistern galleries, ensuring the green rose citadel could withstand protracted sieges without water deprivation. Grim, watchful, and ruthlessly decisive, Vítek led veteran mountain cavalry through dense southern forests, hunting down royal spies without mercy to guard baronial secrets. Combining his brother's fierce ambition with cooler tactical foresight, he amassed stockpiles of plate armor and siege components, serving as the razor-sharp martial spearhead of the rebellious Krumlov magnates. Establishing concealed cavalry outposts and hidden iron foundries in southern primeval forests, Vítek I continually supplied the Krumlov garrison with armor-piercing arrows and heavy broadswords. Enforcing draconian discipline over his mountain shock troops, he ambushed royal patrol columns along rocky riverbanks, operating as a lethal phantom warlord on the vulnerable southern flank of the Bohemian Crown. His mastery of guerrilla forestry warfare, deadly ambushes, and fortress defense struck lasting fear and caution into royal garrisons and marching columns across southern Bohemia through dense forest terrain.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Make Krumlov's defenses utterly impregnable, securing absolute control over southern mountain passes.",
+    "Lead guerrilla strikes behind royal lines in any conflict, severing Prague's southern supply columns."
+  ],
+  "Values": [
+    "Regards overwhelming defensive engineering and ruthless strikes as supreme laws of survival.",
+    "Maintains absolute fraternal solidarity, ready to bleed to defend the Vítkovci's green rose."
+  ],
+  "Fears": [
+    "Fears royal heavy siege trebuchets breaching outer revetments, nullifying Krumlov's natural terrain.",
+    "Worries mountain shock units walking into royal counter-ambushes, losing veteran retainers."
+  ],
+  "SpeechStyle": "The Vltava runs deep, and our forests conceal deadly blades; he who intrudes uninvited into Krumlov shall find only broken steel and stone! In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Vítek I. z Krumlova"
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v7",
+  "Keywords": [
+    "摩尼教书籍与讲授"
+  ],
+  "RagShortTexts": [
+    "摩尼教书籍与讲授依赖语言能力、材料和接待者。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "摩尼教的书籍和讲授是社群传播信仰的重要方式，抄写与传授需要材料、语言能力和接待者。信众与反对者可能对同一教导作出不同解释，听众要向讲授者问清所用词语与要求。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

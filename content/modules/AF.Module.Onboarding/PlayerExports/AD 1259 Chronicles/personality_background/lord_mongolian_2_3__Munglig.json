@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_2_3",
+  "HeroName": "Munglig",
+  "Description": "Munglig is a twenty-two-year-old lord, son of Tudun and Ulakci. He has a tall frame, broad shoulders, pronounced brow ridges, and a bronze earring in his right ear. He favours a pale grey short tunic under a light leather coat, and a horn bow and a long lance hang beside his saddle, the shaft wrapped in white wool. He grew up between his father's pastures and the tents, and by his teens he led small parties alone to hunt wild horses and wolf packs, sharpening archery and command together. He rarely boasts about a chase. He reports the route and the kill in a few words and lets the results speak. After adulthood he travelled with his father's retinue through post stations and towns, learning to bargain with merchants and town representatives, knowing when to press a price and when to yield. He has no open quarrel with his younger brother Suyiketu, yet each secretly measures who reads a situation faster. Against rivals in the royal branches he prefers to strike first. He often lays out a plan in council and presses his opponent to answer it. His ambition is a cavalry force that answers only to him, not one borrowed from his father's ledgers or his mother's connections. His fear is that youthful impatience will push him into a reckless advance that costs an entire column and the trust of his men. He knows this about himself, yet the restlessness rarely sleeps. Each victory sends him looking for the next challenge before the last has cooled.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants a cavalry force that answers only to him, so his men obey him directly and not through his father's name or his mother's contacts.",
+    "He seizes the initiative in council, laying out his own plans first so rivals must answer his terms and he controls the pace of every debate.",
+    "He wants his own reputation in western post stations and towns, so merchants deal with him directly, which secures steady supplies for his horsemen."
+  ],
+  "Values": [
+    "He values courage and speed, believing a man who will not strike first earns little respect on the steppe and cannot lead his men forward.",
+    "He values loyalty among brothers and sisters, shielding them from outsiders' contempt even after quarrels with other branches, even if it costs him.",
+    "He deals fairly with merchants. If they keep their word, he pays a reasonable price, giving up short-term gain for long-term trust."
+  ],
+  "Fears": [
+    "He fears one reckless advance will wreck his entire cavalry, break his men's trust, and strip him of command, which would be hard to win back.",
+    "He fears his father's registers and his mother's connections will define him completely, leaving him seen as a family appendage, not a commander."
+  ],
+  "SpeechStyle": "He speaks fast and states conclusions first. He jokes with his men but turns sharp when pressing them, and he answers provocation at once. He often says: get moving first, and the road will show itself.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

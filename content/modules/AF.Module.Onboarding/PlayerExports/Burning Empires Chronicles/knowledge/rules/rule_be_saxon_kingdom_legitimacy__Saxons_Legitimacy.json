@@ -1,0 +1,59 @@
+{
+  "Id": "be_saxon_kingdom_legitimacy",
+  "Keywords": [
+    "Saxons Legitimacy",
+    "Freawine’s safe return and shares"
+  ],
+  "RagShortTexts": [
+    "Coastal protection, promised shares and safe return support Freawine.",
+    "Rewards only for fighters discourage owners and farmers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Coast protection, promised shares and returned crews sustain standing. Rewards only for fighters leave owners and farmers reluctant to join again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Coastal protection, promised shares and safe return support Freawine. Military recognition also rests on rewards and relief; a title needs willing action. Rewards only for fighters discourage owners and farmers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Rewards only for fighters discourage owners and farmers. Nominal rights require local execution, with consent and supply both shaping authority. Coastal protection, promised shares and safe return support Freawine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Coastal protection, promised shares and safe return support Freawine. Households judge rule through protected families, land and responses to appeals. Rewards only for fighters discourage owners and farmers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Rewards only for fighters discourage owners and farmers. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Coastal protection, promised shares and safe return support Freawine."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

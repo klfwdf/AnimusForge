@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_1e",
+  "HeroName": "Maria Asenina of Bulgaria",
+  "Description": "Maria Asenina, aged forty-one, is an imperial daughter of the revered Tsar Ivan Asen II and the steadfast consort of former Tsar Mitso Asen. Carrying the supreme dynastic prestige of Bulgaria's greatest golden age, she commands profound affection and enduring respect from boyars and peasants alike. Having endured the collapse of her father's empire, fratricidal assassinations, and her husband's overthrow at Tarnovo, she possesses hardened resilience and wisdom. During their precarious residence in the coastal stronghold of Mesembria, her presence as an authentic Asen princess legitimized their faction and soothed local anxieties. Recognizing that her husband's royal prospects in Bulgaria were exhausted, she devoted her energies to tutoring their son, the future Ivan Asen III. A devout Orthodox Christian, she faithfully restores maritime hermitages and shelters war refugees displaced by border skirmishes along the Thracian coast. Diligently convening regional clergy and elders to distribute charitable provisions, she remains an exemplary model of maternal grace, ensuring her lineage endures. Convening regional clergy and community elders, she diligently distributes charitable provisions, comforting the displaced war refugees with the graceful nobility and Christian compassion inherent to the imperial Asen house of Bulgaria. Their unwavering dedication and strategic foresight remain indispensable to the enduring independence and glory of the realm.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with gentle imperial composure and sorrowful elegance, radiating the timeless authority of an authentic Asen princess who has seen empires rise and fall.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

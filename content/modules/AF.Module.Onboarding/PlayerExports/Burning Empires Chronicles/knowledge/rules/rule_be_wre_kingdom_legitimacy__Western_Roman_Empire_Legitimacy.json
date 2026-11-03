@@ -1,0 +1,59 @@
+{
+  "Id": "be_wre_kingdom_legitimacy",
+  "Keywords": [
+    "Western Roman Empire Legitimacy",
+    "Valentinian’s appointments discipline and shared rule"
+  ],
+  "RagShortTexts": [
+    "Valentinian relies on Roman legitimacy, discipline and appointments.",
+    "Western and eastern courts share rule; execution needs troops and local cooperation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valentinian sustains authority through imperial legitimacy, discipline and appointments, sharing rule with the eastern court. Formal office still requires military and local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Valentinian relies on Roman legitimacy, discipline and appointments. Military recognition also rests on rewards and relief; a title needs willing action. Western and eastern courts share rule; execution needs troops and local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Western and eastern courts share rule; execution needs troops and local cooperation. Nominal rights require local execution, with consent and supply both shaping authority. Valentinian relies on Roman legitimacy, discipline and appointments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Valentinian relies on Roman legitimacy, discipline and appointments. Households judge rule through protected families, land and responses to appeals. Western and eastern courts share rule; execution needs troops and local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Western and eastern courts share rule; execution needs troops and local cooperation. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Valentinian relies on Roman legitimacy, discipline and appointments."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

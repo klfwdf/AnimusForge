@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_marinid_3_1",
+  "HeroName": "Emir al-'Abbas ibn Muhammad al-Marini",
+  "Description": "Emir al-'Abbas ibn Muhammad al-Marini was a son of Abu Ma'ruf Muhammad ibn 'Abd al-Haqq and Zeyneb al-Mariniyya, and a full brother of 'Uthman al-'Affan. No chronicle records his life, so this portrait is a game-setting construction based on the faction's history. His appearance is a game-setting invention: a tall man with slightly stooped shoulders, an old saddle-rub scar on his brow, and a dark green belted robe. At his belt hangs a bronze seal with the family emblem, a sign that he oversees correspondence. In youth he studied scripture and letters at home. He was later posted to a frontier garrison as emir, where he collected taxes and arranged the defense, earning a name for steadiness and careful speech. He won few battles, but he was skilled at moving between factions, and one precisely worded letter once defused a quarrel that might have turned violent. With rivals he first offers courtesy and then sets a trap, presenting terms that embarrass them once they relax. His highest aim is to keep the frontier in order and protect the reputation his parents left, so that family feuds do not tarnish it. His darkest side is coldness. He places interest before affection, and he fears that if his brothers see through his calculations he will be cut off from the kin. He dreads losing the dynasty's trust more than he dreads losing his life.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wanted to keep the frontier in order, managing taxes and garrison supply well so that the reputation his parents left was not dimmed by feuds.",
+    "He moved between factions and resolved disputes with exact letters and terms, so no clash spilled into the frontier towns under his charge.",
+    "He sought the dynasty's trust through results in the frontier posts, so his name would appear in official records as a reliable emir."
+  ],
+  "Values": [
+    "Caution and measure, since he believed a single phrase can decide the course of a situation, and he never spoke rashly.",
+    "Order in tax and pay, as he held that frontier calm comes from collecting taxes and paying troops on time rather than from force alone.",
+    "Dignity and courtesy, because he took the etiquette of envoys seriously and believed an insult is remembered longer than a defeat."
+  ],
+  "Fears": [
+    "His brothers seeing through his calculations, which would cut him off from kin support and from the allies he relies on.",
+    "The dynasty's trust breaking down, since a charge of poor administration would strip him of all power on the frontier."
+  ],
+  "SpeechStyle": "He speaks slowly and chooses words with care, often opening with a courteous phrase before moving to exact tax sums and troop numbers. With rivals he is mild but leaves room for retreat.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

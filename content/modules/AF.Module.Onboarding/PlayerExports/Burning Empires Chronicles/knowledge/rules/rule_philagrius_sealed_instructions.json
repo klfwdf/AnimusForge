@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_cursus_publicus_v2",
+  "Keywords": [
+    "Philagrius sealed instructions"
+  ],
+  "RagShortTexts": [
+    "Julian’s signed order to Philagrius could be opened only after Vadomarius crossed the Rhine."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Julian sent his secretary Philagrius to the Rhine with a signed paper that was to be read only if Vadomarius appeared on the western bank. The envoy held general authority for emergencies, but the specific instruction had its own opening condition. When Vadomarius attended a banquet, Philagrius left on a pretext, read the paper at his lodging, and then carried out the arrest. This was a particular political operation, not the normal handling of every Roman letter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Frontier soldiers must distinguish a bearer’s general authority from the act authorized in a document. Philagrius waited for the named man to cross before reading the order: arrival, identification and location preceded execution. A letter was not unlimited power to arrest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Julian entrusted the condition in a signed paper rather than publicly announcing an arrest. The ruler retained control of timing, while the local agent had to establish that the condition was met. Conditional delegation is more accurate than treating an issued order as an accomplished act."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

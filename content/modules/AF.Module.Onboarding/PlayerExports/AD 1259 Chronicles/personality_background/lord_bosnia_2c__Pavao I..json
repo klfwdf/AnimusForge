@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_2c",
+  "HeroName": "Pavao I.",
+  "Description": "Pavao I Šubić of Bribir (Paul I), aged twenty-seven in 1259, is the formidable eldest son of Count Stjepan II. Fiercely ambitious, ruthless, and possessing towering military genius, young Paul spent his youth mastering heavy cavalry shock tactics and galley warfare along the Dalmatian coast. Dreaming of uniting the entirety of Croatia and the Bosnian highlands under his banner, he actively cultivates loyal knightly followings across the Adriatic towns. In 1259, commanding the vanguard of Bribir cavalry, Paul patrols the strategic approaches between Šibenik and the mountain fortresses, an apex predator poised to seize dominion over the Balkans. Commanding widespread respect among Balkan princes, Paul I patrols the heights of Knin and coastal havens, perfecting integrated combined-arms warfare. Recognizing the historic opportunity presented by Hungarian royal weakness and Bosnian instability, he quietly negotiates alliances across the Adriatic. This brilliant young magnate steadily accumulates military power. Driven by unmatched strategic vision, Paul prepares his lances and war galleys, determined that the banner of Bribir shall fly unchallenged across both mountain and sea.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with icy martial authority and unbending will, sharp and commanding, brooking neither hesitation nor insubordination.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

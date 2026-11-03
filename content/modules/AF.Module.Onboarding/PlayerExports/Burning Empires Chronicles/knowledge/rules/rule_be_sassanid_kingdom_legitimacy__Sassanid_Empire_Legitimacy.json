@@ -1,0 +1,59 @@
+{
+  "Id": "be_sassanid_kingdom_legitimacy",
+  "Keywords": [
+    "Sassanid Empire Legitimacy",
+    "Shapur II’s titles and religious patronage"
+  ],
+  "RagShortTexts": [
+    "Royal titles, Iranian traditions and victory support Shapur II.",
+    "Religious patronage does not erase noble and local differences."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Royal titles, Iranian traditions and victory sustain prestige. Religious patronage supports authority while nobles and communities retain distinct interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Royal titles, Iranian traditions and victory support Shapur II. Military recognition also rests on rewards and relief; a title needs willing action. Religious patronage does not erase noble and local differences."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Religious patronage does not erase noble and local differences. Nominal rights require local execution, with consent and supply both shaping authority. Royal titles, Iranian traditions and victory support Shapur II."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Royal titles, Iranian traditions and victory support Shapur II. Households judge rule through protected families, land and responses to appeals. Religious patronage does not erase noble and local differences."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Religious patronage does not erase noble and local differences. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Royal titles, Iranian traditions and victory support Shapur II."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_2_1_1",
+  "HeroName": "Halwa",
+  "Description": "Halwa is the wife of Emir Yahya Butrus al-Mutawakkil. The game data records her at forty-one, the same age as her husband, with the court template of a diplomatic household mistress. The game model shows a mature woman's face with dark hair bound under a headcloth and faint lines at the eyes and brow, and the sources record no scars. Her marks are a writing case she carries and the silver ornaments she wears for public occasions. The chronicles say nothing of her, so the account below rests on game setting and dynastic background. She came from a merchant family between Tunis and Bejaia, knew the market prices and the traffic of messengers, and after marriage into the kin she quickly became a key support to her husband's network beyond the palace. At banquets and in gatherings of women she listens closely, remembers the family, marriages, and debts of each guest, and passes goodwill on to her husband at the right moment. She takes great care over the schooling of her sons Zakariya and Hassan and often drills them herself in reading and in the manners of hospitality, requiring them to name and place each guest. When the women of the royal kin quarrel out of spite, she uses courteous conduct and well-chosen gifts to defuse most disputes before they reach open view, and she never speaks ill of others in company. Her lofty aim is to win her household respect among the kin and the regional lords, so that her children's marriages and prospects rest on firm personal ties. Her private dread is that if her husband falls from favor, those who once courted her will turn away, and her children will lose every shelter they have.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep up friendships with the wives of regional lords through banquets and gatherings, so that the household's network beyond the palace stays active in a downturn.",
+    "Find suitable marriages for her sons Zakariya and Hassan, using kinship ties to build firm steps for their future careers and to keep them from isolation.",
+    "Mediate between her husband and the royal kin's women, so that quarrels never harden into open hostility and the household keeps its dignity and its children's reputation."
+  ],
+  "Values": [
+    "She holds that personal goodwill is the most precious asset, and that honest dealing with courteous manners will bring help when it is needed, far more than gold.",
+    "She values the schooling and conduct of her children and believes they must learn to treat people well before they pursue ambition or talent.",
+    "She keeps her word, and any promise she makes, however small, she records herself and works to fulfill, so that no one is ever let down."
+  ],
+  "Fears": [
+    "If her husband falls from favor, the lords' wives who once courted her may turn away or even betray the household, and its network could collapse overnight.",
+    "Her sons may cause offense to powerful men through a careless word or lapse in manners, ruining their careers, and she may be unable to undo the harm."
+  ],
+  "SpeechStyle": "Her tone is gentle and proper. She opens with greetings before the main point. She is respectful toward senior kin and calm with servants, and when opinions clash she suggests another angle, so no one loses face.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

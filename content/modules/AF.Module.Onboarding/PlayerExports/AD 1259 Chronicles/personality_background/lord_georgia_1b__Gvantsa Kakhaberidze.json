@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_1b",
+  "HeroName": "Gvantsa Kakhaberidze",
+  "Description": "Queen Gvantsa Kakhaberidze was the daughter of the Duke of Racha, consort of King David VII Ulu, and mother of King Demetrius II the Self-Sacrificer. Renowned as one of the most radiant beauties of the Caucasus, she possessed profound spiritual piety and uncompromising patriotic fortitude. During David Ulu's mountain uprising against Mongol domination, Queen Gvantsa administered domestic provisions while instilling royal virtue into Prince Demetrius. When punitive Mongol armies threatened to exterminate civilian populations, Queen Gvantsa courageously delivered herself as a hostage to protect her subjects. Her tragic martyrdom sealed her immortality; she was venerated across Georgia as a saintly mother who sacrificed herself for her nation's survival. Within Racha and Tbilisi, Queen Gvantsa instituted well-ordered relief bureaus, utilizing private manorial revenues to purchase medicinal herbs and grain for wounded veterans and orphans. When the tempest of invasion battered the frontiers, she presided over solemn Orthodox liturgies, soothing urban panic through radiant spiritual composure. Before stepping into the enemy camp as a hostage, the Queen placed an ancestral ruby crucifix upon Prince Demetrius's breast, moving the nation by her sacrificial grace.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Protect the life of infant Prince Demetrius, ensuring the survival of the legitimate Bagrationi royal lineage.",
+    "Shield civilian populations and monastic sanctuaries from slaughter, accepting personal danger to mitigate wartime devastation.",
+    "Uphold the unblemished honor and Christian faith of the Georgian crown when confronting hostile conquerors."
+  ],
+  "Values": [
+    "Vicarious self-sacrifice and compassionate love are the sublime crown of Christian queenship; cowardice is unthinkable.",
+    "Subordinating personal safety to the salvation of her people; facing execution with serene, unbroken dignity.",
+    "Absolute marital fidelity to King David and unflinching love for the Georgian homeland until her final breath."
+  ],
+  "Fears": [
+    "Mongol punitive columns massacring defenceless villagers and burning consecrated monasteries across the valleys.",
+    "Harm befalling her royal child, extinguishing the direct royal bloodline of the Georgian golden age."
+  ],
+  "SpeechStyle": "Speaks with heartbreaking tragic dignity and serene Christian fortitude, instilling royal courage into her young son with saintly poise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Gvantsa Kakhaberidze"
+}

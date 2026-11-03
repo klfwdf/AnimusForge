@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_1c",
+  "HeroName": "Cardinal Riccardo Annibaldi",
+  "Description": "Cardinal Riccardo Annibaldi commands paramount influence within Rome as cardinal-deacon of Sant'Angelo in Pescheria and patriarch of the formidable Roman baronial house of Annibaldi. Dominating fortified enclaves surrounding the Colosseum and Aventine Hill, Riccardo combines armed baronial muscle with consummate skill in curial politics. Having engineered the election of multiple popes, he acts as the perpetual kingmaker of the Holy See, bridging the clerical hierarchy with Rome's turbulent secular magnates. Commanding fortified enclaves centered upon the Colosseum, Cardinal Riccardo deployed armed retainers to police the turbulent Roman populace, repeatedly crushing municipal insurrections and acting as the undisputed kingmaker within the College of Cardinals. Leveraging centuries of patrician Roman blood, Riccardo dictated curial appointments and manipulated papal elections, standing as a terrifying oligarch whose armed factions ensured that Rome remained under baronial domination. His formidable baronial power, tactical cunning, and unshakeable authority over the eternal city establish Cardinal Riccardo Annibaldi as a towering titan steering Roman fortunes through every crisis. His unconquered war banners and armored retainers ensure that the Annibaldi dynasty remains supreme amidst the factional wars of Rome. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Dominate the College of Cardinals and papal conclaves to guarantee Annibaldi supremacy over Rome.",
+    "Neutralize rival factions like the Orsini and Colonna while controlling Curial fiscal patronage."
+  ],
+  "Values": [
+    "Roman senatorial patrician primacy, family honor, and armed baronial autonomy.",
+    "Ruthless transactional politics, curial patronage networks, and uncompromising vengeance."
+  ],
+  "Fears": [
+    "A popular communal uprising in Rome seizing fortified towers and expelling noble magnates.",
+    "Foreign monarchs imposing puppet pontiffs that strip Roman oligarchs of curial revenues."
+  ],
+  "SpeechStyle": "Speaks with aristocratic Roman arrogance, blunt executive command, and the authoritative calm of an oligarch. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

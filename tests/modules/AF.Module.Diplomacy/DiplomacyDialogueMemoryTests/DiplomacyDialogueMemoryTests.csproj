@@ -10,6 +10,8 @@
     <Compile Include="../../../../src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs" Link="ConversationMessage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Memory/Runtime/MemoryTextResources.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>$(MSBuildSDKsPath)/../Newtonsoft.Json.dll</HintPath></Reference>
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.json" LogicalName="AnimusForge.Memory.SourceTexts.json" />

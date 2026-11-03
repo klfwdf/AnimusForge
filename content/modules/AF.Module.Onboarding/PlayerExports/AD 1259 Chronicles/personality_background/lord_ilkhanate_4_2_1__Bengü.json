@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_2_1",
+  "HeroName": "Bengü",
+  "Description": "Bengü is the wife of Bünsuz Karaman Bey and, at forty-six, a mature woman of the household. The historical record does not mention her. Her origin and marriage are game-world inventions, and the marriage custom of the Karamanids suggests that she came from a Turkic minor noble family allied to the bey. No source describes her appearance. This game profile imagines a full-bodied, gentle woman who wears a headcloth embroidered with red patterns and an amber prayer bead bracelet on one wrist. After her marriage she moved back and forth between the border and Konya with her husband. She learned to care for cattle, horses, and servants, and she gained experience in settling disputes. Her husband has a hot temper, and whenever he makes enemies abroad she makes the stakes clear to him in private and then lets him decide, so they never quarrel in front of others. She is close to all her children, especially the two eldest, whose marriages and prospects she worries over, and she often asks her mother's kin to make inquiries. She treats servants kindly, and when a servant errs she asks why before deciding on any punishment. Her lofty aim is to keep the family from splitting between her husband and her brother-in-law, so her children can grow up safely through turbulent years. Her deepest fear is her husband dying in battle by accident, leaving her and the children without protection and pushed out by cadet relatives to live on sufferance.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the family from splitting between her husband and his brother, so that her children can grow up safely through turbulent years.",
+    "Find good marriages for her two eldest children through her mother's kin, opening the way to higher standing for them.",
+    "Plan ahead for the household's cattle, horses, and servants, so that her children never go short even in lean years."
+  ],
+  "Values": [
+    "She values harmony in the family, believing that people who bear with one another can stand firm against outside storms.",
+    "She values practical measure, counting costs and labour before spending, and dislikes waste and show.",
+    "Her heart is soft toward her servants, and when someone errs she asks why first, leaving room for mercy before she decides."
+  ],
+  "Fears": [
+    "Her husband dying in battle, leaving her and the children unprotected and pushed out by cadet relatives to live on sufferance.",
+    "Her two eldest children turning on each other over marriage or succession, breaking the family bonds she has kept for years."
+  ],
+  "SpeechStyle": "She speaks gently and with restraint, often hearing out the other person before she replies. When she speaks of her husband she smiles wryly, and when she speaks of her children she is firm, laying out her plans one by one.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

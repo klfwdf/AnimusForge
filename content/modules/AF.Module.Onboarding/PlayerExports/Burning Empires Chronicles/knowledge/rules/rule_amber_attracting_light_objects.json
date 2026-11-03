@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v4",
+  "Keywords": [
+    "Amber attracting light objects"
+  ],
+  "RagShortTexts": [
+    "Rubbed amber attracted chaff and light fibers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ancient observers knew that rubbed amber attracted chaff, leaves and light fibers, giving rise to names implying seizure. A demonstration could impress a buyer, without granting its wearer magic, healing or victory in litigation."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

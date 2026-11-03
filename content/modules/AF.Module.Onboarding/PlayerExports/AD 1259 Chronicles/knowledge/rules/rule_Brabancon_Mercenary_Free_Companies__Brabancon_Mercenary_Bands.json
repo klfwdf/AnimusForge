@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Brabancon_Mercenary_Free_Companies",
+  "Keywords": [
+    "Brabancon Mercenary Bands",
+    "Routier Free Companies",
+    "Lowland Pike Mercenaries",
+    "Excommunicated Mercenaries"
+  ],
+  "RagShortTexts": [
+    "Mercenary companies need pay and provisions to sustain service beyond short levies.",
+    "Unpaid armed bands expose rural households to requisition and pillage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hardened free companies from Brabant and Flanders, known as Brabançons and routiers, sold their pikes and arbalests to European sovereigns. These bands had no lasting ties to any lord, and each company followed the contract that paid best. Their cohesion on the field made them dependable against cavalry charges, but in peacetime the lack of discipline and the absence of wages turned them into marauders. They raided villages, ransacked the grain stores of the countryside, and sometimes desecrated abbeys, which earned them excommunication from church councils. Their reputation followed them from one war to the next, and rulers who hired them had to pay for the damage they left behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Royal promises are wind, and silver marks in the belt pouch are the only certainty. A Brabant pike square marches shoulder to shoulder and holds its ground under cavalry. Withhold our wages and we will take payment from your grain barns, with fire if we must. Every captain counts the money before the drum sounds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A village near an unpaid mercenary company worries first about seed, livestock and the next demand for provisions. Captains may offer protection while their employer pays, then take supplies by force when wages stop. Families hide portable goods and watch the road; the same armed band can be a garrison's support and a farmer's immediate danger."
+    }
+  ],
+  "TextMappings": []
+}

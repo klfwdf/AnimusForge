@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_7",
+  "HeroName": "Béla V of Hungary",
+  "Description": "Prince Béla (styled in chronicles as Duke Béla of Slavonia, titular Béla V) is the youngest and most cherished son of King Béla IV and Queen Maria Laskarina. As bitter estrangement grew between the king and his headstrong eldest son Stephen, the aged monarch placed his deepest hopes and fatherly affection upon young Béla. Endowed with an innate sense of honor, gentle modesty, and filial devotion, Prince Béla was created Duke of Slavonia, Croatia, and Dalmatia, commanding the southern realm to the Adriatic coast. His father even contemplated designating him principal heir to the realm, a design that deepened tensions with the junior king. Untainted by selfish ambition, Béla governs his southern duchy from Zagreb with admirable fairness, winning the loyalty of maritime communes. In 1259, as war clouds gather on the northern and western horizons, young Duke Béla safeguards the Adriatic littoral, standing as his father's loyal southern shield. Béla curbed fiscal extortion across Slavonian treasury offices, protecting urban municipal self-governance and equipping coastal naval patrol galleys. His equitable administration from Zagreb won unanimous loyalty from maritime communes and Croatian magnates alike. He inspected coastal fortifications along the Dalmatian shore, ensuring that royal citadels stood well-provisioned against pirate raids and foreign threats.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Devote himself to his royal parents, defending Árpád sovereignty across Slavonia and Dalmatia.",
+    "Promote just governance from Zagreb and protect flourishing maritime trade across the Adriatic."
+  ],
+  "Values": [
+    "Hold filial devotion and chivalric integrity as inviolable pillars, scorning greedy power struggles.",
+    "Treasure civic welfare and fair commerce, convinced genuine loyalty is earned through justice."
+  ],
+  "Fears": [
+    "Fears his elder brother Stephen unleashing civil war to invade Slavonia, shattering family bonds.",
+    "Dreads that his youth might invite insubordination from rebellious Croatian magnates."
+  ],
+  "SpeechStyle": "My father's trust outweighs the deepest sea. The citadels of Slavonia shall remain forever loyal to Saint Stephen's crown, brooking no whisper of treason! Slavonia stands unshakeably loyal with my royal father!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

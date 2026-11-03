@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_3_3",
+  "HeroName": "Lochlann Ua Ruairc, Prince of Bréifne Ua Ruairc",
+  "Description": "Lochlann Ua Ruairc is the spirited tanist of West Bréifne, commanding the kingdom's flotilla of fast-moving lake currachs and war-galleys. Nineteen years old, he has grown to manhood amidst the tempestuous squalls of Lough Allen and the trackless spruce forests of Leitrim, forging exceptional amphibious warfare capabilities. Lochlann excels in silent nocturnal galley navigation, repeatedly leading daring kern raids into Anglo-Norman supply camps along the Shannon headwaters to incinerate baggage trains before vanishing effortlessly into reed beds. He openly mocks the cumbersome iron mail of feudal knights, championing traditional Gaelic speed, stealth, and javelin volleys. Despite his youthful fire, he executes his father's defensive ambuscades with disciplined patience, never squandering lives for empty display. Revered by young lake fighters as an indomitable water-chieftain, Lochlann is the sharp spearhead of Bréifne's river defenses. Leading silent currach flotillas across Lough Allen under cover of moonless nights, Prince Lochlann slipped into English harbor encampments, setting fire to eleven enemy grain transports before vanishing into the reeds; his dazzling amphibious mastery and iron discipline have made him the sharpest spearhead of Bréifne's sovereign water defenses and territorial freedom. He guards the pristine waters with ferocious pride and vigilance.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain absolute naval dominance over Lough Allen and crush hostile lake flotillas.",
+    "Distinguish himself in battle as a worthy future sovereign of Clan Ua Ruairc."
+  ],
+  "Values": [
+    "Amphibious agility and unspoken trust among oarsmen and skirmishers.",
+    "Tangible battlefield results over reckless and hollow bravado."
+  ],
+  "Fears": [
+    "Extreme winter freezing over the lakes and stripping his boats of mobility.",
+    "Careless scouting leading his light galleys into concentrated heavy crossbow ambushes."
+  ],
+  "SpeechStyle": "Speaks with crisp, ringing vigor, energetic, sharp, and alert to every tactical opportunity, exuding the confident swagger of a veteran boat-captain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v10",
+  "Keywords": [
+    "命名职务与实际持有人"
+  ],
+  "RagShortTexts": [
+    "官署辨人须核对姓名、职务、地点与时间。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "同名误捕与远途寻找皇帝的经历，都说明官署信息要包含人、职务、地点和时间。一个称号可由不同人先后持有，持有人也会旅行。抄写完整名称比把旧名册当成眼前位置更可靠。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

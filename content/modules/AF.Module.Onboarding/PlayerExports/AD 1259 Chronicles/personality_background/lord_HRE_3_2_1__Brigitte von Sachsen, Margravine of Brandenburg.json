@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_3_2_1",
+  "HeroName": "Brigitte von Sachsen, Margravine of Brandenburg",
+  "Description": "Brigitte of Saxony, daughter of Duke Albert I of Saxony, was the noble consort of Johann I of Brandenburg. From the senior Ascanian ducal line, she brought ancient Saxon feudal prestige and retinues, managing household governance while her husband campaigned across the eastern frontier. Brigitte audited ducal granaries in Berlin, enforcing Saxon courtly discipline to stabilize urban grain prices whenever Johann was campaigning across distant frontiers. Maintaining courier networks linking Brandenburg with Saxony, she managed palace resources with iron impartiality, earning universal praise across both ancient houses. Stern in domestic discipline and unyielding in loyalty, Brigitte anchored Ascanian frontiers from the chancery, admired as an indispensable pillar of empire. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Coordinate feudal alliances between Brandenburg and Saxony against Danish naval expansion.",
+    "Audit agricultural registries across new frontier manors to maintain soldier stipends.",
+    "Train Otto IV and her sons in chivalric horsemanship, molding an invincible martial dynasty."
+  ],
+  "Values": [
+    "Holds ancestral traditions and strict domestic discipline as the soul of sovereign endurance.",
+    "Believes patient fiscal management and equitable justice anchor frontiers amidst wilderness."
+  ],
+  "Fears": [
+    "Johann I falling in reckless frontier ambushes, stranding her young sons amidst hostile powers.",
+    "Civil war in Saxony severing vital military reinforcements bound for the Brandenburg march."
+  ],
+  "SpeechStyle": "Speaks with austere Saxon gravitas and uncompromising maternal authority, steady and firm. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

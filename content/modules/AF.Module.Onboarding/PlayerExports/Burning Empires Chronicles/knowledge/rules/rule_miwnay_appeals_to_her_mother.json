@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v7",
+  "Keywords": [
+    "Miwnay appeals to her mother"
+  ],
+  "RagShortTexts": [
+    "Abandoned in Dunhuang, Miwnay appealed to her mother because her husband had not brought her away."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Abandoned in Dunhuang, Miwnay appealed to her mother because her husband had not brought her away. She needed someone to undertake the cost and responsibility of a journey, rather than an abstract guarantee of commercial safety. Merchant migration separated families; kinship offered possible help without ensuring it arrived."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

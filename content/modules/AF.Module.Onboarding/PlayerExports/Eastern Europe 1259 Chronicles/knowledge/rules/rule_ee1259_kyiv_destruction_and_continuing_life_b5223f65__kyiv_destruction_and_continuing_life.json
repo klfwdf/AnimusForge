@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_kyiv_destruction_and_continuing_life_b5223f65",
+  "Keywords": [
+    "Kyiv life and traffic after destruction",
+    "Seed and tools for rebuilding Kyiv"
+  ],
+  "RagShortTexts": [
+    "The 1240 attack devastated Kyiv and cost people homes, kin and property.",
+    "Recovery needed homes, seed and tools; open routes let aid arrive."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The attack of 1240 devastated Kyiv, costing homes, kin and property. Those remaining or returning repaired shelter, sought food and rebuilt exchange. Churches and kin could help burial, care and messages, while routes still mattered to urban life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The attack of 1240 devastated Kyiv, costing homes, kin and property. Those remaining or returning repaired shelter, sought food and rebuilt exchange. Churches and kin could help burial, care and messages, while routes still mattered to urban life. Returnees found units, treated wounds and sought food while watches might continue. Those without mounts or weapons needed support to serve again, beyond a muster order."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The attack of 1240 devastated Kyiv, costing homes, kin and property. Those remaining or returning repaired shelter, sought food and rebuilt exchange. Churches and kin could help burial, care and messages, while routes still mattered to urban life. Lords needed income and households able to remain and farm. Relief, seed and roads required resources; collecting all arrears too soon could drive more people away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "The attack of 1240 devastated Kyiv, costing homes, kin and property. Those remaining or returning repaired shelter, sought food and rebuilt exchange. Churches and kin could help burial, care and messages, while routes still mattered to urban life. Returnees sought shelter, repaired tools, obtained seed and contacted kin. Wounds and lost animals made farming difficult without shared work or loans that created new obligations."
+    }
+  ],
+  "TextMappings": []
+}

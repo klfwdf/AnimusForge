@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -1056,8 +1056,10 @@ public sealed partial class TownExecutionMissionBehavior
         }
     }
 
-    private static void PoseAgentAt(Agent agent, Vec3 position, Vec2 direction)
+    private void PoseAgentAt(Agent agent, Vec3 position, Vec2 direction)
     {
+        if (_buildingFieldCampScene && _borrowedCampActors.Contains(agent))
+        { _fieldCampEntryMarks[agent] = (position, direction); return; }
         var safeDirection = direction.IsNonZero()
             ? direction.Normalized()
             : Vec2.Forward;

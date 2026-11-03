@@ -1,0 +1,59 @@
+{
+  "Id": "be_kartli_kingdom_geopolitics",
+  "Keywords": [
+    "Kartli Frontiers",
+    "Kura valley and Darial"
+  ],
+  "RagShortTexts": [
+    "Kura routes link east and west, while Darial leads north.",
+    "Coastal contact requires western passage."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kura routes link east and west and Darial leads north. Seasons and local controllers affect each road; coastal contact depends on western passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kura routes link east and west, while Darial leads north. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Coastal contact requires western passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Coastal contact requires western passage. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Kura routes link east and west, while Darial leads north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kura routes link east and west, while Darial leads north. Closed routes may separate families from goods, imposing costs on those remaining at home. Coastal contact requires western passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Coastal contact requires western passage. Cargo passes different carriers, making distant route changes become local shortages through delay. Kura routes link east and west, while Darial leads north."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

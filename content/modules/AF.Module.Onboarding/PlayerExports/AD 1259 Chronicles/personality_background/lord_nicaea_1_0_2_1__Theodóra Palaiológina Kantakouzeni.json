@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_0_2_1",
+  "HeroName": "Theodóra Palaiológina Kantakouzeni",
+  "Description": "Theodóra Palaiológina Kantakouzene Raoulaina ranks among the foremost intellectual luminaries and aristocratic bibliophiles of the late Byzantine Renaissance. As the eldest daughter of John Kantakouzenos and Irene Eulogia, her youth in 1259 was marked by the violent dynastic upheavals surrounding the regency of Michael VIII and the assassination of George Mouzalon. Renowned for her mastery of classical Hellenic literature, rhetoric, and patristic theology, Theodora spent hours within private scriptoria personally transcribing manuscripts and restoring the historic monastery of Saint Andrew in Krisei. Later married to Protovestiarios John Raoul Petraliphas, she emerged as an uncompromising opponent of the Council of Lyons, championing Orthodox liturgical purity against imperial dictates. Her letters, patronages, and scholarly salons provided an essential intellectual sanctuary where Roman literary traditions and theological integrity flourished amidst geopolitical uncertainty. Within the restored monastery of Saint Andrew in Krisei, Theodora Raoulaina instituted an expansive scriptorium, expending family wealth to ransom endangered parchment codices from Aegean islands. A rigorous scholar of Thucydides, Plato, and Gregory of Nazianzus, she penned insightful scholia upon ancient rhetoric, commanding the admiration of leading contemporary humanists. Even when subjected to house arrest and property confiscation for defying the imperial Union of Lyons, Theodora continued transcribing theological treatises by lamplight, defending intellectual integrity and Orthodox patristic independence.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Collect endangered Greek and Orthodox manuscripts and support copying workshops, preserving Rome's learning for future generations.",
+    "Defend Orthodox doctrine against papal alteration, supporting Patriarch Arsenios's discipline rather than surrendering religious principles.",
+    "Build scholarly and political standing for the Kantakouzenos and Raoul families, serving the state and honouring her ancestors."
+  ],
+  "Values": [
+    "Scholarly truth and pure faith stand above worldly power; betraying Orthodoxy to please a ruler is disgraceful.",
+    "Value rigorous classical Greek learning and monastic restraint, remaining modest toward others and devoting herself to knowledge and faith.",
+    "Protect family honour, relatives and fellow believers during political storms, earning scholars' respect through learning and integrity."
+  ],
+  "Fears": [
+    "An emperor imposing church union to obtain western military aid, sacrificing the eastern Church's independence and undermining the state's spiritual foundations.",
+    "War or fire destroying rare manuscripts in Nicaea and Constantinople and extinguishing irreplaceable ancient learning."
+  ],
+  "SpeechStyle": "Her discourse is elegant, highly cultured, and uncompromising in its theological precision, reflecting deep devotion to classical scholarship.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

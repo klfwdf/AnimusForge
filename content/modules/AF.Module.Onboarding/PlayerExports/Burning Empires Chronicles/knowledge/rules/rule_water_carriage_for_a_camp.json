@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v7",
+  "Keywords": [
+    "Water carriage for a camp"
+  ],
+  "RagShortTexts": [
+    "Stopped caravans still needed water carriers, especially for sick companions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After a household caravan stopped, people still carried jars and bags to and from water. Fetching it took time and strength. Sick people might be unable to carry their share; camping nearer reduced labor but also required attention to animals and safety."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

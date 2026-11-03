@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_1_8",
+  "HeroName": "Teresa Mendes de Briteiros",
+  "Description": "Teresa Mendes de Briteiros is the youngest child of Dom Mem Rodrigues and Dona María, a cherished four-year-old maiden protected as the most delicate treasure of the House of Briteiros. Bearing the historic royal name of Queen Teresa, ancestress of Portugal's crown, she is an angelic toddler doted upon by nursemaids and older siblings alike. Mild-mannered and placid, little Teresa finds endless comfort in the rhythmic whir of spinning wheels and the soothing lullabies whispered across the hearth. Even battle-hardened men-at-arms soften their heavy treads when passing near her nursery chamber, careful not to disturb her peaceful slumber. Embodying the freshest bloom of the ancient Maia and Briteiros lines, she thrives in gentle safety, shielded from the brutal storms of feudal strife. Sheltered by ancient granite walls and surrounded by loving kin, little Teresa represents the tender promise of an illustrious baronial dynasty continuing into the distant future. Protected by ancient granite battlements, baby Teresa thrives in serene domestic safety, bearing the historic name of queens with tender purity.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 1
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To rest safely within her mother's embrace, growing strong and healthy each day.",
+    "To walk hand-in-hand with her elder sisters through the sunlit cloister gardens."
+  ],
+  "Values": [
+    "Affection and familiar embrace form the entire secure universe of early life.",
+    "Gentle peace and loving warmth are the sweetest gifts of childhood."
+  ],
+  "Fears": [
+    "Cold, hunger, or losing sight of her familiar nursemaid.",
+    "Sudden clattering crashes of iron armor and loud claps of thunder."
+  ],
+  "SpeechStyle": "Speaks with soft, fragmented toddler whispers and melodic giggles, exuding pure innocence and tender vulnerability. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

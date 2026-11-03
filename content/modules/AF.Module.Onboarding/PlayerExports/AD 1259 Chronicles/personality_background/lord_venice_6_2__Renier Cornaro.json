@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_6_2",
+  "HeroName": "Renier Cornaro",
+  "Description": "Renier Cornaro serves as a seasoned magistrate and naval sopracomito within House Cornaro, having administered key Venetian consular posts and naval patrols along Dalmatian waters. Renowned for strict adherence to maritime statutes, suppression of contraband, and vigilance against Genoese ambushes, he tirelessly lobbies the Senate for fortified coastal signal networks and standardized rower recruitments. Renier regularly commanded heavy war galleys patrolling strategic straits of the Adriatic, ruthlessly confiscating contraband cargoes and springing devastating maritime ambushes on Genoese raiding squadrons off Corfu and Durazzo. During fierce senatorial budget debates, he defended naval defense expenditures with meticulous cartographic data and supply expenditure logs, instituting standardized garrison supplies and disciplined rower rotations across overseas bastions. Blending judicial precision with uncompromising naval leadership, this veteran commander understands that the sea pardons no negligence, maintaining that unyielding law and perpetual vigilance form Venice's greatest bulwarks. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain unyielding judicial discipline and revenue collection in overseas emporia.",
+    "Keep Adriatic supply lines impregnable against Genoese naval incursions."
+  ],
+  "Values": [
+    "The statutes of Venice are the immutable foundation of public order.",
+    "Unfaltering duty and vigilance above personal ease."
+  ],
+  "Fears": [
+    "Surprise capture of undefended colonial factories by Byzantine or Genoese forces.",
+    "Decay of maritime discipline compromising Venetian naval survival."
+  ],
+  "SpeechStyle": "Employs measured, authoritarian phrasing honed through judicial oversight and high-seas command. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

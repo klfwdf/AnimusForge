@@ -1,0 +1,70 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+namespace AnimusForge;
+internal static class Program
+{
+    private static int checks;
+    private static void Check(bool condition, string reason)
+    {
+        checks++;
+        if (!condition) throw new Exception("FAIL " + reason);
+    }
+    private static int Count(string text, string value) => text.Split(new[] {value}, StringSplitOptions.None).Length - 1;
+    static int Main()
+    {
+        foreach (string language in new[] {"zh-CN", "en"})
+        {
+            AdapterPromptCaptureTexts.Values = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(language + ".json"));
+            Hero.MainHero = new Hero { Name = "Player" };
+            var npc = new NpcDataPacket { AgentIndex = 7 };
+            var agent = new Agent { Index = 7, Character = new CharacterObject() };
+            Mission.Current = new Mission { Agents = new List<Agent> {agent} };
+            var captor = new Hero {Name = "Captor"};
+            var prisoner = new Hero {IsPrisoner = true, PartyBelongedToAsPrisoner = new PartyBase {IsMobile = true, MobileParty = new MobileParty {Name = "Captor party", LeaderHero = captor}}};
+            foreach (var holder in new[] {prisoner.PartyBelongedToAsPrisoner, new PartyBase {IsSettlement = true, Settlement = new Settlement {Name = "Dungeon", IsCastle = true, OwnerClan = new Clan {Leader = captor}}}, null})
+            {
+                prisoner.PartyBelongedToAsPrisoner = holder;
+                string intro = SceneAgentIdentityPromptCaptureAdapter.BuildPrisonerContextLineForPrompt(npc, prisoner);
+                string status = SharedPromptCaptureBannerlordAdapter.BuildHeroPrisonerStatusPromptLineForExternal(prisoner);
+                string extras = PromptExtrasComposer.Compose(new PromptExtrasSections {ActivePrisonerStatusLine = status});
+                Check(intro == "", language + " ordinary prisoner excluded from persona intro");
+                Check(status.Length > 0 && Count(intro + "\n" + extras, status) == 1, language + " final live prisoner state appears once");
+                Check(Count(extras, status) == 1, language + " Courier/single-source status retained");
+            }
+            Check(SharedPromptCaptureBannerlordAdapter.BuildHeroPrisonerStatusPromptLineForExternal(null) == "", "null hero");
+            Check(SharedPromptCaptureBannerlordAdapter.BuildHeroPrisonerStatusPromptLineForExternal(new Hero()) == "", "free hero");
+            Check(SceneAgentIdentityPromptCaptureAdapter.BuildPrisonerContextLineForPrompt(npc, new Hero()) == "", "free persona");
+            agent.Inspection = true;
+            string inspection = SceneAgentIdentityPromptCaptureAdapter.BuildPrisonerContextLineForPrompt(npc, null);
+            Check(inspection.Length > 0 && inspection.Contains("Player"), language + " non-hero inspection retained");
+            Check(SceneAgentIdentityPromptCaptureAdapter.BuildPrisonerContextLineForPrompt(npc, new Hero()).Length > 0, language + " inspection fallback retained");
+            agent.Castle = true;
+            SiegeAiInterventionBehavior.Situation = "castle-specific captivity";
+            Check(SceneAgentIdentityPromptCaptureAdapter.BuildPrisonerContextLineForPrompt(npc, prisoner) == SiegeAiInterventionBehavior.Situation, "castle-specific hero state retained");
+            Check(SceneAgentIdentityPromptCaptureAdapter.BuildPrisonerContextLineForPrompt(npc, null) == SiegeAiInterventionBehavior.Situation, "castle-specific non-hero state retained");
+            SiegeAiInterventionBehavior.Situation = "";
+            Check(SceneAgentIdentityPromptCaptureAdapter.BuildPrisonerContextLineForPrompt(npc, prisoner) == "", "empty castle falls through to shared hero owner");
+            Check(SceneAgentIdentityPromptCaptureAdapter.BuildPrisonerContextLineForPrompt(npc, null) == inspection, "empty castle preserves inspection fallback");
+        }
+        Console.WriteLine("PASS prisoner status ownership checks=" + checks + " languages=zh-CN,en");
+        return 0;
+    }
+}
+internal sealed class NpcDataPacket { internal int AgentIndex; }
+internal sealed class Hero { internal static Hero MainHero; internal bool IsPrisoner; internal string Name; internal PartyBase PartyBelongedToAsPrisoner; }
+internal sealed class CharacterObject {}
+internal sealed class Agent { internal int Index; internal object Character; internal bool Castle, Inspection; }
+internal sealed class Mission { internal static Mission Current; internal List<Agent> Agents; }
+internal sealed class Faction { internal string Name; }
+internal sealed class Clan { internal Hero Leader; internal string Name; }
+internal sealed class Settlement { internal string Name, StringId; internal bool IsCastle, IsTown, IsVillage; internal Clan OwnerClan; internal Faction MapFaction; }
+internal sealed class MobileParty { internal string Name, StringId; internal Hero LeaderHero; internal Clan ActualClan; internal Faction MapFaction; }
+internal sealed class PartyBase { internal bool IsSettlement, IsMobile; internal Settlement Settlement; internal MobileParty MobileParty; internal Hero LeaderHero; internal Faction MapFaction; }
+internal static class CastleAftermathRuntimeBridge { internal static bool IsPrisonerAgent(Agent a) => a?.Castle == true; }
+internal static class SiegeAiInterventionBehavior { internal static string Situation; internal static string BuildCastleNpcSituationPromptForAgent(Hero h, CharacterObject c, int index) => Situation; }
+internal static class SceneTradeBannerlordAdapter { internal static string GetPlayerDisplayNameForShout() => "Player"; }
+internal static class AdapterPromptCaptureTexts { internal static Dictionary<string,string> Values; internal static string PcapText(string key) => Values[key]; internal static string PcapCompat(string key) => "the player"; }
+internal static partial class SceneAgentIdentityPromptCaptureAdapter { private static bool IsInspectionPrisonerAgentForPrompt(Agent a) => a?.Inspection == true; }

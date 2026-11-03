@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Great_Novgorod_Kremlin_and_Veche_Bell_Republic",
+  "Keywords": [
+    "Novgorod Kremlin Detinets",
+    "Veche Bell Civic Democracy",
+    "St Sophia Cathedral Domes",
+    "Volkhov River Baltic Trade"
+  ],
+  "RagShortTexts": [
+    "Novgorod's river trade, assembly, elites and archbishop support a negotiated autonomy.",
+    "Tribute and census demands create immediate pressures in the 1250s."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Novgorod stands on the Volkhov, linking a northern hinterland with routes toward the Baltic. Furs, wax and other goods support merchants, while the Detinets and Saint Sophia form important religious and political landmarks. The veche and elected offices are central to the city's arrangements, but public assembly does not mean equal power for every inhabitant: wealthy families, the archbishop and invited princes have different resources. Relations with the Mongols make tribute and the census pressing matters in the 1250s. The city's autonomy is negotiated through institutions, wealth and armed protection, rather than purchased once for permanent immunity from danger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Princes served Novgorod under contract as hired commanders, and each contract spelled out the liberties they had to respect. Should a prince violate those liberties, the Veche bell summoned the citizens, who could expel him from the city. Yet against the Teutonic crusaders, Alexander Nevsky's military genius proved irreplaceable, and the city's levies followed him onto Lake Peipus in 1242."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "People in Novgorod used inscribed birchbark notes for goods, debts and family messages. Short notes could travel with acquaintances, while those unable to read needed help. Senders specified the recipient and task, and recipients had to allow for delays along the route."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_christburg_fort_and_agreement_a18e3fb8",
+  "Keywords": [
+    "Christburg agreements and religious obligations",
+    "Affairs of Pomesanian converts"
+  ],
+  "RagShortTexts": [
+    "The 1249 Christburg treaty concerns rights and duties of some Prussian converts.",
+    "Disputes among fort, church and settlements require practical enforcement of written terms."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Christburg's fort and the agreement of 1249 connect rule, faith and local rights in Pomesania. Converts' duties and the handling of disputes determine how promises operate. Order and church need cooperation while residents protect land and property. Documents require explanation and authorities willing to act on their terms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families around Christburg need to know how baptism affects marriage, property and service. Disputes require interpreters of agreements and familiar witnesses. When fort and church make demands together, households need clear obligations to avoid repeated claims on the same harvest."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

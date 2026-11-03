@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_cult_15",
+  "Name": "Ancient Tradition of Spartan Agoge Legacy in Greece",
+  "Keywords": [
+    "rule_punic_cult_15",
+    "Sacred Code of Spartan Agoge Legacy in Greece",
+    "Civic Rites Spartan Agoge Legacy in Greece",
+    "Ancestral Law Spartan Agoge Legacy in Greece"
+  ],
+  "RagShortTexts": [
+    "The institutional tradition of Spartan Agoge Legacy in Greece defined social hierarchy,..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The social order of antiquity was rooted in Spartan Agoge Legacy in Greece. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Without Spartan Agoge Legacy in Greece, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "peasant",
+          "villager"
+        ]
+      },
+      "Content": "From childhood our elders taught us to revere Spartan Agoge Legacy in Greece. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v9",
+  "Keywords": [
+    "阿里亚尼报告的行程"
+  ],
+  "RagShortTexts": [
+    "阿里亚尼穿行远地报告邻近动向，返程期间形势仍会改变。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿里亚尼穿行远地报告邻近动向，返程期间形势仍会改变。报告须问发生地点和亲见时间，未经过的地区不能由猜测补齐。远行者的价值在于具体观察，不在于一张无所不知的地图。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

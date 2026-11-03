@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v4",
+  "Keywords": [
+    "布洛涅渡海集结"
+  ],
+  "RagShortTexts": [
+    "狄奥多西受命去不列颠，在布洛涅组织渡海。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狄奥多西受命去不列颠，在布洛涅组织渡海。步兵、骑兵与后续部队要分批行动，海峡把接令、集结和抵岸分开。增援速度取决于船只与实际运输，不是宫廷任命一出便已到场。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_carpathian_diplomacy_and_conditional_aid_aac0c879",
+  "Keywords": [
+    "carpathian diplomacy and conditional aid",
+    "Danylo’s western support and Carpathian routes"
+  ],
+  "RagShortTexts": [
+    "Danylo seeks western and Hungarian support.",
+    "Carpathian passes affect envoys and military aid."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Danylo seeks western and Hungarian support to widen his choices under Mongol pressure. Marriage, envoys and aid carry conditions. Carpathian seasons, pack animals and permissions determine when promised assistance actually arrives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Pass assistance needs food and guides. Late reinforcements may miss the immediate need; escorts require next-stage contacts rather than a friendly letter alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Negotiation distinguishes hopes from committed contingents. Staged aid limits burdens and avoids placing every option on forces not yet traveling."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Mountain hosts provide fuel, food and animals. Reliable payment and returned pack power determine whether another friendly embassy receives the same welcome."
+    }
+  ],
+  "TextMappings": []
+}

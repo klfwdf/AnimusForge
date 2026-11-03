@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_marinid_2_4",
+  "HeroName": "Amir ibn Idris",
+  "Description": "Amir ibn Idris was a son of Idris and a full brother of Muhammad ibn Idris, with their birth order unrecorded. No chronicle records his life, so the portrait below is a game-setting construction based on the faction's history. His appearance is a game-setting invention: a man of middle height with greying temples and a missing top joint on his left little finger, injured in youth when a rein snapped against it in the stables. On the road he wears plain robes and a small knife in a plain sheath, avoiding display. As a young man he travelled with the family's merchant caravans between Fez and Taza, learning to appraise goods, bargain, and keep accounts. Within the kin he earned a reputation as shrewd and quiet. He fought in no great battle, but he knew the tax roads and relay stations well and could calculate the cost of a shipment within minutes. Facing rivals, he rarely declared his position. He gathered news from every faction and chose the side that promised him the most when the moment came. His highest aim was to keep the branch's trade steady so that the family would not depend on any powerful patron in the Marinid kin. His darkest side is suspicion. He treats every kindness as a transaction, and he cannot fully believe even his closest brothers would stand by him when interest is at stake. He dreads the day his true dealings are exposed and his routes, contacts and standing vanish overnight.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "He wanted to keep the branch's trade steady so that the family would not depend on any powerful patron, standing on its own accounts and routes.",
+    "He gathered and sorted news from every faction, judging which promises were reliable and choosing sides at key moments to avoid pointless conflict.",
+    "He extended the family's trade roads to the region around Taza through caravans and relay stations, leaving his sons a secure source of income."
+  ],
+  "Values": [
+    "Appraisal and exact calculation, since he held that every deal must first be costed and its risks weighed, and that decisions by feeling alone ruin a house.",
+    "Discretion and endurance, because he believed quiet men survive longer and that showing too much edge only invites resentment.",
+    "Steady income, which he preferred over quick fortunes, and he despised speculation that makes a man rich overnight and bankrupt the next."
+  ],
+  "Fears": [
+    "His real dealings being exposed, with his caravans, contacts and relay stations lost, leaving him without standing among the kin in a single night.",
+    "Being betrayed by his own blood, since he treats kindness as trade yet still fears a brother would abandon him when self-interest demands it."
+  ],
+  "SpeechStyle": "He speaks slowly and precisely, citing figures such as prices, distances and dates. He rarely states a position outright and answers questions with questions about cost and risk. When threatened, he changes the subject to accounts.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

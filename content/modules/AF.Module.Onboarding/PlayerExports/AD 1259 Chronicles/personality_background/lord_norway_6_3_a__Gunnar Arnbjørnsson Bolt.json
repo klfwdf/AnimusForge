@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_6_3_a",
+  "HeroName": "Gunnar Arnbjørnsson Bolt",
+  "Description": "Sir Gunnar Arnbjørnsson Bolt was a celebrated knight-commander, royal councilor, and the foundational patriarch of the illustrious Bolt dynasty. In 1259, Gunnar was establishing himself as a formidable military leader across the southeastern marches of Norway, commanding heavy shock cavalry with singular skill. Bearing the heraldic crossbow bolt that symbolized piercing martial resolve, he spearheaded royal punitive expeditions and border campaigns under King Hákon IV. Renowned for his indomitable personal valor in the vanguard, he was repeatedly rewarded with extensive crown feoffments across Borgarsyssel and Viken. An ambitious dynastic strategist, he laid the military and economic foundations that propelled the Bolt house into dominant national prominence over the succeeding two centuries. His tactical innovations in heavy cavalry shock charges and defensive masonry established him as one of high medieval Norway's most distinguished knightly commanders. Across the coastal inlets and forests of Viken, Gunnar established interconnected cavalry outposts and watchtowers, patrolling the frontier with an elite company of armored lancers. He capitalized on toll collection rights along Bohuslän trade routes, deploying privateer flotillas that firmly established the rising prominence of the Bolt lineage. His bold determination, martial vigor, and practical administrative prowess inaugurated a dynasty that would dominate the southeastern borderlands for generations.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Lead Bolt knights in expanding the Viken frontier, defeating Swedish incursions and establishing firm family authority.",
+    "Control Bohuslan and Oslofjord trade crossings and customs, making the Bolt family a leading eastern Norwegian power.",
+    "Build a strong court alliance and seek royal recognition of the family as hereditary governors of the Viken frontier."
+  ],
+  "Values": [
+    "Land, rank and rewards are won through military achievement; the frontier belongs to those bold enough to advance.",
+    "Be ruthless toward enemies but generous in lands and wealth to knights whose loyalty is proven in battle.",
+    "Bolt honour takes precedence; foreign enemies and hostile courtiers who obstruct the family's rise must be struck decisively."
+  ],
+  "Fears": [
+    "A suspicious crown supporting rival nobles, dividing Bolt lands, cutting defence funds and removing hereditary command.",
+    "His main cavalry pursuing too deeply into enemy territory and losing much of its trained strength in a crossbow ambush."
+  ],
+  "SpeechStyle": "Speaks with ringing martial authority, bold chivalric vigor, and decisive resolve, articulating tactical commands and family ambitions with commanding steel.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Gunnar Arnbjørnsson Bolt"
+}

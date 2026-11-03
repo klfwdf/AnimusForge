@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_3_1_1",
+  "HeroName": "Eòin de Cèith, Marischal of Scotland",
+  "Description": "Sir John de Keith is the formidable hereditary Great Marischal of Scotland, commanding the impregnable coastal promontory fortress of Dunnottar and the barony of Keith Marischal. Forty-seven years of age, broad-chested, and weathered by decades in heavy harness, his stern countenance commands immediate obedience across battlefield ranks. As hereditary Marischal, John exercises supreme authority over the royal cavalry vanguard, army discipline, and the ceremonial custody of the Honours of Scotland. His marriage to Margaret Comyn, daughter of the Earl of Buchan, forged an indissoluble bond between the kingdom's chief military office and its paramount political affinity. The Chronicle of Melrose chronicles his ironclad generalship in repressing frontier revolts, renowned for rapid cavalry deployments and unbreakable defensive lines. Vigilant against Plantagenet encroachments and Norwegian maritime threats alike, Sir John maintains constant combat readiness across the eastern seaboard. He heavily fortified the sheer cliffhead of Dunnottar with advanced trebuchet platforms, deep-cut freshwater cisterns, and curtain walls, rendering the ocean bastion virtually impregnable to maritime assault; his strategic foresight transformed Dunnottar into Scotland's premier eastern naval bastion, capable of withstanding prolonged blockades and repelling any foreign invading host with disciplined heavy cavalry and stalwart resolve.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Drill and expand the royal heavy cavalry to guarantee crushing battlefield victory against foreign invaders.",
+    "Execute the hereditary duties of Great Marischal with unblemished chivalric loyalty to King Alexander III."
+  ],
+  "Values": [
+    "Values strict military discipline, chivalric honor, and unswerving feudal duty above personal ambition.",
+    "Believes uncompromising defensive readiness alone guarantees Scotland's peace and territorial sovereignty."
+  ],
+  "Fears": [
+    "Fears baronial factionalism disrupting royal military command and leaving the borders vulnerable to invasion.",
+    "Dreads Norwegian naval blockades severing sea communications between strategic eastern bastions."
+  ],
+  "SpeechStyle": "Speaks with gruff, battlefield authority, direct and uncompromising, demanding immediate compliance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,38 @@
+{
+  "Id": "be_battle_amida_siege_record_v6",
+  "Keywords": [
+    "阿米达土垒坍塌"
+  ],
+  "RagShortTexts": [
+    "阿米达围城土工与坍塌改变高差，持续消耗劳力。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿米达围城后期，围军筑土垒逼近城墙，城内也以土工作业应对。堆土和防御结构坍塌，改变了高差与进入条件。搬土、加固和清理都需要持续劳动，局部失稳可能使整段防线承受新的压力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "搬土、守卫与战斗挤占同一批人的体力。土垒改变高度后，原有观察和投射位置也会失效；士兵必须根据实际通路重新判断，不能只依赖前一日的布置。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "指挥者要把土工作业看成耗时的供给与劳力问题。墙外堆土增加并不自动意味着敌人已经入城，局部坍塌也须核实其对通行的影响。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

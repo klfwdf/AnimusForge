@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_2_1_c",
+  "HeroName": "Jadwiga Legnicka",
+  "Description": "Jadwiga of Legnica reigns as a distinguished noble princess of the Silesian Piast dynasty, the eldest daughter of Duke Bolesław II Rogatka and Hedwig of Anhalt. Raised amidst the cultural intersection of German Ascanian courtly ideals and native Polish traditions, Jadwiga mastered Latin chancellery letters, genealogical heraldry, and diplomatic protocol from early youth. During the relentless military campaigns of her father and brothers, she provided steady administrative assistance to her mother, managing castle textile workshops and auditing domestic household rolls. Her prospective marriage to Duke Konrad II of Czersk subsequently formed a crucial strategic bridge uniting the fortunes of Lower Silesia and the Duchy of Masovia. Composed, intelligent, and discerning, Jadwiga navigates complex inter-ducal rivalries with graceful poise, avoiding the violent impulses that plagued her male kin. A generous benefactress of Benedictine and Franciscan foundations, she upholds spiritual devotion and dynastic honor amidst an era dominated by predatory warfare. Jadwiga examined ancestral boundary charters in the castle archives and conducted strategic negotiations with Masovian envoys concerning joint border defense and mutual military aid. Her dignified intellect and refined courtly demeanor made her an esteemed and trusted figure throughout the aristocratic circles of southern Poland.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure an advantageous baronial marriage to bind Silesian interests with powerful allies in Masovia and Greater Poland.",
+    "Maintain impeccable domestic order and logistical stability within the castle to support campaigning kin.",
+    "Endow monastic chapels and hospices to intercede spiritually for her family amidst perilous dynastic conflicts."
+  ],
+  "Values": [
+    "Hold dynastic duty and familial honor as sacred callings, aligning personal life with the survival of her lineage.",
+    "Prize discreet self-restraint and prudent observation over reckless speech or hasty factional alignments.",
+    "Revere Christian morality and familial peace, striving to soothe violent enmities among her royal kinsmen."
+  ],
+  "Fears": [
+    "Her ancestral stronghold falling to a sudden siege, leaving her a helpless captive in hostile baronial hands.",
+    "Her brothers descending into permanent fratricidal war, destroying the Silesian Piast dynasty from within."
+  ],
+  "SpeechStyle": "Where cold steel only breeds endless strife, holy kinship compacts and quiet virtue alone soothe wrath; let justice guide our house. Grace and wise alliances preserve our house through every dynastic peril.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Cologne_Cathedral_and_Rhine_Three_Kings_Shrine",
+  "Keywords": [
+    "Cologne Cathedral Gothic Flying Buttress",
+    "Shrine of Three Holy Kings",
+    "Rhine Shipping Toll Hub",
+    "Cologne Archbishop Elector Power"
+  ],
+  "RagShortTexts": [
+    "Cologne's Three Kings shrine draws pilgrims and supports monumental religious work.",
+    "A pilgrimage pennant does not exempt a commercial Rhine cargo from lawful tolls."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cologne stood on the Rhine as the largest city of the Holy Roman Empire, and its wealth came from river traffic, warehouses, and the pilgrims who came to see the relics of the Magi. Work on the cathedral began in 1248, and its vast choir was designed to hold the gilded Shrine of the Three Kings, made by Nicholas of Verdun. Pilgrims donated generously to the shrine, and that money fed the building's progress. The Archbishop-Elector held the title of Arch-Chancellor of Italy and sat among the men who chose the king of the Romans. He governed a city whose merchants guarded their charters jealously and whose council watched every toll and tax the archbishop tried to raise."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Patrician burghers kept challenging the prince-archbishop's feudal jurisdiction, and every court case over tolls or market rights became a contest for power. While the prelate counted electoral subsidies from foreign monarchs, the city council armed civic militias to guard its trade charters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A boatman taking wine or timber toward Cologne must reckon with river conditions, toll stations and time spent waiting at the quay. Pilgrims heading for the Three Kings' shrine bring custom to the city, but a devotional pennant is no legal exemption for a merchant cargo. The crew needs a recognised privilege or payment, not merely a holy image on the mast."
+    }
+  ],
+  "TextMappings": []
+}

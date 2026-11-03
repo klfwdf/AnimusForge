@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3c",
+  "HeroName": "Pagano della Torre",
+  "Description": "Pagano della Torre was the founding patriarch of the Torriani Signoria and Lord of Milan. Following the catastrophic defeat of Milan at Cortenuova, he sheltered thousands of wounded citizens in his alpine strongholds, earning boundless civic love and founding the dynasty. Pagano established iron forges and stud farms across the valleys of Valsassina, supplying Milanese popular militias with endless suits of plate harness, halberds, and heavy crossbows. Opening his castles to shelter ten thousand wounded citizens after Cortenuova, he risked total bankruptcy to save the commune, winning immortal love and establishing the Torriani Signoria. A founding sovereign of transcendent compassion, Pagano placed citizen survival above personal fortune, rescuing Milan to lay the indestructible foundation of his house. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Rescue Milanese communal liberties and citizen lives from imperial Hohenstaufen wrath.",
+    "Integrate Valsassina iron mines and pastures into Milan's urban commercial economy.",
+    "Codify equitable municipal relief statutes to ensure every citizen feels protected."
+  ],
+  "Values": [
+    "Believes boundless compassion during disaster wins deeper devotion than the sword.",
+    "Holds communal liberty and popular welfare supreme, demanding self-sacrifice from leaders."
+  ],
+  "Fears": [
+    "Imperial armies returning to raze Milan and abolish all municipal charters.",
+    "Feudal oligarchs using usury to reclaim land won by the popular commune."
+  ],
+  "SpeechStyle": "Speaks with patriarchal warmth and majestic benevolence, exuding statesmanlike nobility. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

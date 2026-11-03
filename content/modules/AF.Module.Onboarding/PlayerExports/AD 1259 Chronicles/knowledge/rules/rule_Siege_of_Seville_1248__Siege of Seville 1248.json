@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Siege_of_Seville_1248",
+  "Keywords": [
+    "Siege of Seville 1248",
+    "Ramon Bonifaz Castilian Fleet",
+    "Guadalquivir Pontoon Cut",
+    "Saint Ferdinand III Seville"
+  ],
+  "RagShortTexts": [
+    "In 1248, Ferdinand III subdued Seville through a 16-month combined naval and terrestrial."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ferdinand III of Castile besieged Seville through the years 1247 and 1248, a campaign that reshaped the economy of Andalusia. The city depended on a bridge of boats across the Guadalquivir at Triana, and its supply lines ran through that crossing. Admiral Ramón de Bonifaz brought reinforced northern cogs upriver, rammed and fired the pontoons, and cut the link between the city and the outside world. Isolated and starved, the garrison surrendered in November 1248. The capture gave Castile command of the lower Guadalquivir and opened the valley to Castilian lords who claimed land along its banks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "A Castilian captain who helped take Seville could expect a share of conquered houses, lands, and river craft. The repartimiento divided the spoils among knights and religious orders who fought beside the king, and trade began to tilt toward Castilian hands. Sailors who brought the cogs upriver earned prize shares, while the real gains went to lords who received new fiefs."
+    }
+  ],
+  "TextMappings": []
+}

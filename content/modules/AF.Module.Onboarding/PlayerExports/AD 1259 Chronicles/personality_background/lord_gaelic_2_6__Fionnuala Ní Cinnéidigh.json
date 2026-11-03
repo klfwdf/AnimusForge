@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_2_6",
+  "HeroName": "Fionnuala Ní Cinnéidigh",
+  "Description": "Fionnuala Ní Cinnéidigh is the noble wife of Prince Tadg Ua Briain and a high-born lady of the ancient Clan Cinnéidigh of Ormond. Her ancestral lineage has held the eastern shores of Lough Derg and the rolling hills of Tipperary for generations, serving as Thomond's vital frontier bulwark against Anglo-Norman penetration. Resolute, cultured, and exceptionally capable, Fionnuala possesses both baronial administrative brilliance and the martial poise demanded of border noblewomen. During Tadg's frequent diplomatic absences in Ulster and Connacht, she personally supervises manor stockades, autumn grain harvests, and tenant musters with disciplined authority. Highly skilled in herbal medicine and wound-tending, she personally cares for injured warriors returned from frontier skirmishes. Fiercely dedicated to her husband's vision of Gaelic solidarity, Fionnuala serves as an indispensable pillar of stability across the eastern march. Supervising the construction of defensive earthworks along the eastern shores of Lough Derg, Fionnuala mobilized farm levies to transform border manors into formidable garrisons; ministering to wounded kerns with rare herbal remedies, her courage and Christian mercy have won the passionate devotion of the frontier populations of Ormond and neighboring riverlands. She remains an unyielding fortress of strength for the embattled frontier communities.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the defenses of eastern Ormond to secure her husband's rear flank.",
+    "Administer compassionate medical aid and shelter to wounded warriors and refugees."
+  ],
+  "Values": [
+    "Quiet fortitude in defending the domestic hearth and unyielding marital loyalty.",
+    "Christian compassion and fierce dedication to the native soil of Ormond."
+  ],
+  "Fears": [
+    "Sudden cavalry encirclement overrunning the defenseless manors of Lough Derg.",
+    "Her husband falling victim to ambush during his treacherous diplomatic missions."
+  ],
+  "SpeechStyle": "Speaks with gentle, crystalline composure and practical clarity, authoritative in managing household logistics and deeply compassionate in pastoral care.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

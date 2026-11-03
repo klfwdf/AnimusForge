@@ -1,0 +1,52 @@
+{
+  "Id": "rule_cuman_exiles_hungary_resettlement_1259",
+  "Keywords": [
+    "Cuman refugees in Hungary",
+    "Köten’s death and migration"
+  ],
+  "RagShortTexts": [
+    "Béla IV admitted Cuman refugees into Hungary as Mongol expansion drove groups westward.",
+    "Köten’s killing in 1241 deepened conflict over protection, pasture and service."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mongol expansion drove Cuman groups from their former pastures. Béla IV admitted some into Hungary, seeking mounted support. Herds needed grazing, while royal protection involved the rights of local nobles and residents. Köten’s killing in Hungary in 1241 intensified hostility, and some groups departed again. Present dealings still require identifying particular leaders, relatives and settlements rather than assuming one envoy speaks for everyone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Receiving horsemen requires terms for residence, service and jurisdiction. The king seeks troops while local lords fear for pasture and authority. Workable conditions preserve cooperation better than treating every dispute as treachery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men travelling with Cuman riders need to know the chief recognised by their guides, the next camp and arrangements for grazing. Skill with horses helps, but orders cannot retain people who believe their families are unprotected."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Cultivators worry about crops and animals; displaced families need grass, water and security for relatives. Trampled fields and detained stock call for specific compensation. General hostility makes markets and passage more dangerous."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

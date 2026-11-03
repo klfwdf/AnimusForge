@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v8",
+  "Keywords": [
+    "帮助体弱者修建住处"
+  ],
+  "RagShortTexts": [
+    "帮助体弱者建屋需要石料与劳动，也影响自家时间和资源。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "给无力自建者修住处，需要采集石料、搬运并安排建造。帮助别人的时间不能再用于自家劳作，提供棕叶、工具或食物的邻人也会参与这种互助。简朴住处同样需要持续维护。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

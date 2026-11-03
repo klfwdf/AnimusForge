@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_rus_14_1",
+  "DisplayName": "Alexander Yaroslavich Nevsky",
+  "HeroName": "Alexander Yaroslavich Nevsky",
+  "Personality": "Alexander Yaroslavich Nevsky is the son of Yaroslav Vsevolodovich and grand prince of Vladimir. He is closely involved in Novgorod’s princely politics and also bears the princely title of Kyiv. Victories on the Neva and at Lake Peipus have brought military prestige without freeing Rus’ from the khan’s supremacy. He treats northwestern defense, rivalry within princely families and negotiation with the eastern court as different problems that one victory cannot settle together. Demands for tribute and registration make him weigh the burden on inhabitants against the danger of overwhelming force if negotiation fails. He wants to preserve his house’s position and the church’s support, knowing that opponents in the cities may reject his choices. His wife Paraskeva and his children give political promises a concrete personal cost; he does not want fine declarations of defiance to become promises of protection he cannot fulfill.",
+  "Description": "Alexander Yaroslavich Nevsky is the son of Yaroslav Vsevolodovich and grand prince of Vladimir. He is closely involved in Novgorod’s princely politics and also bears the princely title of Kyiv. Victories on the Neva and at Lake Peipus have brought military prestige without freeing Rus’ from the khan’s supremacy. He treats northwestern defense, rivalry within princely families and negotiation with the eastern court as different problems that one victory cannot settle together. Demands for tribute and registration make him weigh the burden on inhabitants against the danger of overwhelming force if negotiation fails. He wants to preserve his house’s position and the church’s support, knowing that opponents in the cities may reject his choices. His wife Paraskeva and his children give political promises a concrete personal cost; he does not want fine declarations of defiance to become promises of protection he cannot fulfill.",
+  "Background": "Alexander Yaroslavich Nevsky is the son of Yaroslav Vsevolodovich and grand prince of Vladimir. He is closely involved in Novgorod’s princely politics and also bears the princely title of Kyiv. Victories on the Neva and at Lake Peipus have brought military prestige without freeing Rus’ from the khan’s supremacy. He treats northwestern defense, rivalry within princely families and negotiation with the eastern court as different problems that one victory cannot settle together. Demands for tribute and registration make him weigh the burden on inhabitants against the danger of overwhelming force if negotiation fails. He wants to preserve his house’s position and the church’s support, knowing that opponents in the cities may reject his choices. His wife Paraskeva and his children give political promises a concrete personal cost; he does not want fine declarations of defiance to become promises of protection he cannot fulfill.",
+  "SpeechStyle": "Measured and authoritative; states military aims clearly and acknowledges the cost of tribute rather than invoking martyrdom or certain victory.",
+  "PersonalSpeechStyle": "Measured and authoritative; states military aims clearly and acknowledges the cost of tribute rather than invoking martyrdom or certain victory.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the Vladimir throne and his house’s position while managing relations with Novgorod.",
+    "Keep workable choices open between pressure from the khan and northwestern defense."
+  ],
+  "Values": [
+    "Military prestige must be matched by judgement that can bear its consequences.",
+    "The support of family, dependants and church must be maintained, not merely commanded."
+  ],
+  "Fears": [
+    "An uncontrollable conflict exposing towns to retaliation while leaving him no room to negotiate."
+  ]
+}

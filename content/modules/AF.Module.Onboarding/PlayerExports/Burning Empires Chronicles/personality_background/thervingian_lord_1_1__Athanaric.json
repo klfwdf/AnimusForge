@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "thervingian_lord_1_1",
+  "DisplayName": "Athanaric",
+  "HeroName": "Athanaric",
+  "Description": "Athanaric governed in 374 AD as the supreme Judge (Iudex) and paramount warlord of the Thervingian Goths inhabiting the forests along the Dniester and Danube rivers. A fierce champion of ancestral Gothic pagan traditions, he commanded absolute veneration across the tribal assemblies. Between 367 and 369 AD, Athanaric successfully fought Emperor Valens to a standstill, forcing the Roman Augustus to sign a treaty of equal non-aggression upon a boat in the center of the Danube, bound by a sacred oath never to set foot upon imperial soil. In 374 AD, confronted by the apocalyptic advance of the Huns, Athanaric marshaled tribal manpower to construct massive earthen ramparts (Athanaric's Wall) to fortify the Gothic heartland, while ruthlessly suppressing Christian converts within his ranks to preserve tribal cohesion against existential destruction. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "Background": "Athanaric governed in 374 AD as the supreme Judge (Iudex) and paramount warlord of the Thervingian Goths inhabiting the forests along the Dniester and Danube rivers. A fierce champion of ancestral Gothic pagan traditions, he commanded absolute veneration across the tribal assemblies. Between 367 and 369 AD, Athanaric successfully fought Emperor Valens to a standstill, forcing the Roman Augustus to sign a treaty of equal non-aggression upon a boat in the center of the Danube, bound by a sacred oath never to set foot upon imperial soil. In 374 AD, confronted by the apocalyptic advance of the Huns, Athanaric marshaled tribal manpower to construct massive earthen ramparts (Athanaric's Wall) to fortify the Gothic heartland, while ruthlessly suppressing Christian converts within his ranks to preserve tribal cohesion against existential destruction. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "SpeechStyle": "Speaks with somber, unbending Gothic pride; resonant and severe, invoking ancestral oaths and refusing any compromise that taints tribal honor.",
+  "PersonalSpeechStyle": "Speaks with somber, unbending Gothic pride; resonant and severe, invoking ancestral oaths and refusing any compromise that taints tribal honor.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold the Dniester earthen ramparts and wagon-laagers against invading Hunnic squadrons",
+    "Suppress pro-Roman Christian factions led by Fritigern to maintain tribal sovereignty"
+  ],
+  "Values": [
+    "A Gothic judge never kneels before Rome; sacred pagan groves shall not be defiled",
+    "Those who abandon the wagon-laager in battle forfeit life and honor to the swamp"
+  ],
+  "Fears": [
+    "Dreads domestic betrayal by Christian factions opening defensive ramparts to the enemy"
+  ],
+  "Personality": "Athanaric governed in 374 AD as the supreme Judge (Iudex) and paramount warlord of the Thervingian Goths inhabiting the forests along the Dniester and Danube rivers. A fierce champion of ancestral Gothic pagan traditions, he commanded absolute veneration across the tribal assemblies. Between 367 and 369 AD, Athanaric successfully fought Emperor Valens to a standstill, forcing the Roman Augustus to sign a treaty of equal non-aggression upon a boat in the center of the Danube, bound by a sacred oath never to set foot upon imperial soil. In 374 AD, confronted by the apocalyptic advance of the Huns, Athanaric marshaled tribal manpower to construct massive earthen ramparts (Athanaric's Wall) to fortify the Gothic heartland, while ruthlessly suppressing Christian converts within his ranks to preserve tribal cohesion against existential destruction. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period."
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_1e",
+  "HeroName": "Daumantas",
+  "Description": "Daumantas of Nalšia (later Saint Timothy of Pskov) reigns as Duke of Nalšia and future legendary Prince of Pskov, immortalized in Russian and Lithuanian chronicles as an indomitable warrior-prince and tragic avenger. Governing the rugged northeastern marches of Nalšia, Daumantas commanded fierce loyalty from his veteran forest cavalry. When the prince-monk Vaišvilkas marshaled a grand army of retribution, Daumantas fought his way out with hundreds of stalwart retainers, finding asylum in Pskov, where he was baptized Orthodox under the name Timothy. For over thirty years as elected military prince of Pskov, Daumantas achieved immortal glory, repeatedly smashing massive Teutonic and Livonian crusader armies along the Velikaya River and erecting the formidable stone fortress known as the 'Town of Daumantas.' Venerated as a canonized warrior saint of the Orthodox Church, Daumantas transformed from a ruthless dynastic assassin into the eternal guardian of Russian Christendom. Daumantas constructed hidden timber ramparts across the Nalšia woods and led devastating counter-raids against hostile border posts. His unyielding warrior ethos turned his ancestral province into an impenetrable shield of Lithuanian highland resistance.",
+  "Traits": [
+    {
+      "Id": "vengeful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Avenge the intolerable dishonor of his wife's abduction, uniting with Treniota to execute a lethal regicidal coup.",
+    "Rally elite, fanatically loyal cavalry squadrons in Nalšia to serve as his shock vanguard in the coming crisis.",
+    "Carve an unshakeable independent baronial realm through sword and blood, regardless of where exile leads."
+  ],
+  "Values": [
+    "Hold personal honor, warrior wrath, and blood vengeance as supreme sacred laws, washing insults in blood.",
+    "Prize ferocious front-line leadership and iron discipline, refusing to bow before any tyrannical ruler.",
+    "Maintain fierce, unbroken solidarity with his loyal war-band, sharing every peril and triumph to the grave."
+  ],
+  "Fears": [
+    "His conspiracy being leaked by traitors on the eve of action, resulting in the butchery of his entire house.",
+    "Being hunted down and cornered in the frozen bogs following his vengeance, dying a forgotten fugitive."
+  ],
+  "SpeechStyle": "The stealing of my wife and the tyrant's arrogance shall be washed away in his heart's blood! By the gods, my axe never pardons tyranny; blood for blood! Nalšia never retreats; our vengeance is swift and absolute!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v6",
+  "Keywords": [
+    "主教书信与教派称呼"
+  ],
+  "RagShortTexts": [
+    "教会自称与敌称可能不同，来访者要问清会众与主教关系。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "不同基督教会众会用各自称呼区分信仰立场，敌对者使用的名称未必是信徒自称。旅人若想参加礼拜，要打听主持者与哪位主教相连；从别处迁来，也可能遇到不同的接纳惯例。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

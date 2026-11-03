@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_3_1_a",
+  "HeroName": "Kazimierz II Opolski",
+  "Description": "Kazimierz II of Opole reigns as Duke of Bytom and Koźle, the enterprising son of Duke Władysław I Opolski, celebrated as the foremost patron of metallurgy and silver mining in medieval Upper Silesia. Displaying an exceptional intellect for geology, water-powered blast furnaces, and mineral smelting, Kazimierz championed the systematic exploitation of rich galena, lead, and silver deposits surrounding Bytom. He issued groundbreaking mining charters that welcomed expert German and Silesian prospectors, instituting one of the earliest specialized mining tribunals and miner brotherhoods in the Polish realm. Pragmatic, disciplined, and thoroughly attentive to accountancy, Kazimierz understood that flowing silver and solid defensive engineering were his principality's best defenses against rapacious neighbors. At Koźle, commanding key trade barges along the upper Oder, he erected customs ports and fortified warehouses, guaranteeing unobstructed river export of refined lead ingots and silver bullions to Prague and Kraków. Grounding his power in the subterranean wealth of Upper Silesia, Kazimierz forged Bytom into an indomitable economic and military bulwark. Kazimierz inspected silver assays at Bytom's assay offices and established mutual aid funds to protect disabled miners and their families. Through strict fiscal management, he turned his mining towns into resilient fortresses capable of withstanding protracted baronial wars.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Dramatically expand silver and lead mining operations across Bytom to dominate Central European bullion trade.",
+    "Fortify Oder river transit wharves and customs towers at Koźle to ensure total security for mineral shipments.",
+    "Protect the legal privileges and fair pay of miners to draw thousands of expert artisans into his territories."
+  ],
+  "Values": [
+    "Value practical industrial development and fiscal reserves as the true bedrock of political survival.",
+    "Prize exact financial accounting and conscientious frugality, stamping out corruption and wasteful display.",
+    "Uphold legal contracts and commercial integrity, earning the trust of merchant syndicates across Europe."
+  ],
+  "Fears": [
+    "Disastrous underground floodings collapsing primary silver adits and killing hundreds of irreplaceable master miners.",
+    "Predatory neighboring warlords seizing his productive mines by military force to pillage his bullion reserves."
+  ],
+  "SpeechStyle": "Every ounce of refined silver mined from deep shafts buys the stoutest armor and most loyal retinues; by mastering iron and stone, Bytom endures! Honest ledgers and silver adits forge Bytom into an unyielding bastion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,104 @@
+{
+  "Id": "rule_punic_35",
+  "Name": "法莱尔努斯峡谷牛角火炬夜遁计",
+  "Description": "公元前217年秋，独裁官法比乌斯将汉尼拔大军困于坎帕尼亚法莱尔努斯狭窄平原，汉尼拔夜间在两千头黄牛角上绑缚干燥枯枝引燃驱入山岭，瞒天过海引开罗马守军全军突围。",
+  "Tags": [
+    "法莱尔努斯平原",
+    "汉尼拔",
+    "火牛阵",
+    "夜间突围",
+    "费边战术",
+    "兵者诡道"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前217年秋汉尼拔在法莱尔努斯峡谷被独裁官法比乌斯重兵合围关门。",
+    "夜间将两千头公牛牛角绑上易燃柴火点燃驱赶向山岭制造大军夜袭假象。",
+    "罗马守军误判火光调离扼守山口的主力致使迦太基全军连同辎重安然突围。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "法比乌斯自以为筑起石墙扼死山口就能将我们当成笼中困兽！但汉尼拔统帅的狡黠连神明也要赞叹！他搜集了两千头健硕的耕牛，角上绑满蘸满沥青的木柴。深夜号角一吹，烈火点燃牛角，吃痛的牛群狂奔冲向高耸的山脊，火星四溅宛若万千神兵夜袭！守隘口的四千罗马步兵吓得魂飞魄散弃关追截牛群，我们的大军就踏着整齐的步伐，赶着数以万计抢来的辎重牛羊，大摇大摆地从正规峡谷穿行而过！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "法比乌斯独裁官的布局原本天衣无缝，群山环抱、隘口封死，只要严防死守不出数日汉尼拔便粮尽自毙。谁曾想驻守山口的副将竟然被漫山遍野狂奔的火牛骗过，擅离阵地引火上山！汉尼拔不仅全身而退，更让全罗马对法比乌斯的谨慎产生了巨大的质疑，民粹派开始狂叫‘这是懦弱在资敌’，共和国再次被推向了冒险决战的边缘！"
+    },
+    {
+      "Priority": 72,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "半夜里山头上突然烧红了半边天，无数条火龙在悬崖峭壁上嗷嗷乱撞，田里的老百姓还以为是伏尔坎火神发了怒！等天亮了一看，满山都是烧焦的死牛，而那个独眼汉尼拔的大军早就卷走了全平原所有的葡萄酒和小麦，连个影子都找不到了！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前217年秋，罗马独裁官法比乌斯将劫掠坎帕尼亚的汉尼拔全军围困于法莱尔努斯平原。汉尼拔于夜间在两千头牛角上绑缚火把并驱赶上山制造夜袭假象，引开扼守险要隘口的罗马驻军，率领全军安全突围。此计瓦解了罗马对汉尼拔的致命合围。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "法莱尔努斯峡谷牛角火炬夜遁计",
+    "rule_punic_35"
+  ]
+}

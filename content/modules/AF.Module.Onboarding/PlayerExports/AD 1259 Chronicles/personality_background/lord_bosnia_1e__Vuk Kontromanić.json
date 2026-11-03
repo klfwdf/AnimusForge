@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_1e",
+  "HeroName": "Vuk Kontromanić",
+  "Description": "Vuk Kotromanić, aged fourteen in 1259, is the spirited younger son of Ban Prijezda I, a fiery squire eager for martial renown. Agile, daring, and physically robust, he spent his boyhood mastering horseback archery and mountain ambush tactics amidst the rugged cliffs of central Bosnia. Accompanying his elder brothers on frontier reconnaissance missions, Vuk displays remarkable endurance and scouting instinct along dangerous crags. Instructed in Christian chivalry and epic South Slavic ballads, he combines the raw courage of mountain fighters with aristocratic pride. In 1259, training incessantly with lance and target shield at Bobovac, the spirited youth hungers to prove his valor in battle, an eager young blade of the Kotromanić dynasty. Young Vuk trains tirelessly in the courtyards of Bobovac, displaying fierce fascination with heavy cavalry swords and mountain crossbow tactics. Adoring his father's battlefield exploits, he rides with seasoned men-at-arms across rugged cliffs, embodying the raw vigor of highland warriors. Under the watchful care of his kin, this spirited youth grows swiftly, eager to ride forth beneath the family banner in defense of his heritage. Guided by fierce martial passion and youthful resolve, he dreams of leading thunderous cavalry charges to defend his ancestral stone halls against all foreign aggression.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with vibrant boyish enthusiasm and fierce martial eagerness, bold and direct, impatient to achieve glorious deeds.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v9",
+  "Keywords": [
+    "粟特信札的日期与背书"
+  ],
+  "RagShortTexts": [
+    "粟特信札分置地址日期，女儿也可添写新消息。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "粟特信札在正文、背面或边侧写上收件人、寄件人和日期，女儿也能在母亲信上补话。不同笔段承担称呼、运输识别与新消息，读信者须分清是谁在发言，不把全封信都归给同一个人。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

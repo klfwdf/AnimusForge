@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Battle_of_Durbe_and_Great_Prussian_Uprising",
+  "Keywords": [
+    "Prussian conquest and local allegiance"
+  ],
+  "RagShortTexts": [
+    "Prussian leaders chose service."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Prussian leaders chose service, negotiation or resistance under pressure from the Order, with different local relationships. Castles controlled nearby routes but required food and dependable troops. News of resentment did not establish agreement on a general revolt."
+    }
+  ],
+  "TextMappings": []
+}

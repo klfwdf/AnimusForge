@@ -201,7 +201,15 @@ function Get-AnimusForgeAfefFactMarkerPattern {
 }
 
 function Test-AnimusForgeChineseJsonProse {
-    param([Parameter(Mandatory = $true)][string]$Text)
+    param([Parameter(Mandatory = $true)][string]$Text, [switch]$XmlAware)
+    if ($XmlAware) {
+        [xml]$document = $Text
+        foreach ($row in $document.base.strings.string) {
+            $prose = [regex]::Replace([string]$row.text, '\[(?:ACTION|RELAY|AD|ADP|AFEF):[^\]\r\n]*\]', '')
+            if (Test-AnimusForgeChineseText -Text $prose) { return $true }
+        }
+        return $false
+    }
     $queue = [Collections.Generic.Queue[object]]::new()
     $queue.Enqueue(($Text | ConvertFrom-Json))
     while ($queue.Count -gt 0) {
@@ -242,11 +250,20 @@ function Get-AnimusForgeSharedTextResourceHashes {
     param([Parameter(Mandatory = $true)][string]$ProjectRoot)
     $resources = @{}
     foreach ($entry in Get-AnimusForgeContentLayout -ProjectRoot $ProjectRoot) {
-        if ($entry.LogicalName -and $entry.LocalizationRole -in @('compatibility', 'bilingual-ui')) {
+        if ($entry.LogicalName -and $entry.LocalizationRole -in @('compatibility', 'bilingual-ui', 'bilingual-prompt')) {
             $resources.Add($entry.LogicalName, (Get-FileHash -LiteralPath $entry.SourcePath -Algorithm SHA256).Hash)
         }
     }
     return $resources
+}
+
+function Test-AnimusForgePlayerPackageOmission {
+    param([Parameter(Mandatory = $true)][string]$RelativePath)
+    $relative = $RelativePath.Replace('\', '/').TrimStart('/')
+    if ($relative -match '(?i)\.pdb$') { return $true }
+    # Keep both Lite worldbooks in source/Stage; omit them from player releases.
+    # Unicode escapes keep this rule readable by Windows PowerShell 5.1 too.
+    return $relative -match '^(?i:PlayerExports)/(?:Calradia Chronicles \(Lite Edition\)|\u4f4e\u914d\u7248\u5361\u62c9\u8fea\u4e9a\u7f16\u5e74\u53f2[^/]*)(?:/|$)'
 }
 
 function Get-AnimusForgePackageProjection {
@@ -259,11 +276,23 @@ function Get-AnimusForgePackageProjection {
     $layout = @(Get-AnimusForgeContentLayout -ProjectRoot $ProjectRoot)
     $byTarget = @{}
     foreach ($entry in $layout) { $byTarget[$entry.Target] = $entry }
-    # Both editions retain the registered bilingual interface. Only package
-    # prompt/worldbook assets select an English counterpart below.
+    # Both editions retain the registered bilingual interface and every fixed
+    # prompt file in both languages (the runtime picks one by game language).
+    # Only player-editable prompts and worldbooks select an English counterpart below.
     $sharedLocalizationTargets = @{}
-    foreach ($entry in $layout | Where-Object { $_.LocalizationRole -in @('compatibility', 'bilingual-ui') }) {
+    foreach ($entry in $layout | Where-Object { $_.LocalizationRole -in @('compatibility', 'bilingual-ui', 'bilingual-prompt') }) {
         $sharedLocalizationTargets[$entry.Target] = $true
+    }
+    foreach ($entry in $layout | Where-Object { $_.LocalizationRole -ceq 'bilingual-prompt' -and $_.Target -match '\.en\.(json|xml)$' }) {
+        $base = $entry.Target -replace '\.en\.(json|xml)$', '.$1'
+        if (-not $byTarget.ContainsKey($base)) { throw "Bilingual prompt has no Chinese base: $($entry.Target)" }
+        $baseEntry = $byTarget[$base]
+        if ($baseEntry.LocalizationRole -cne 'bilingual-prompt') { throw "Bilingual prompt base is not marked bilingual-prompt: $base" }
+        if ($base -match '\.xml$') { Assert-AnimusForgePromptXmlContract -OriginalPath $baseEntry.SourcePath -EnglishPath $entry.SourcePath }
+        else { Assert-AnimusForgeEnglishJsonContract -OriginalPath $baseEntry.SourcePath -EnglishPath $entry.SourcePath }
+        if (Test-AnimusForgeChineseJsonProse -Text ([IO.File]::ReadAllText($entry.SourcePath, [Text.Encoding]::UTF8)) -XmlAware:($base -match '\.xml$')) {
+            throw "English fixed prompt still contains Chinese prose: $($entry.Target)"
+        }
     }
     foreach ($entry in $layout | Where-Object { $_.Target -match '^ModuleData/Languages/(?:CNs/)?language_data\.xml$' }) {
         $sharedLocalizationTargets[$entry.Target] = $true
@@ -280,16 +309,11 @@ function Get-AnimusForgePackageProjection {
     $failures = [Collections.Generic.List[string]]::new()
     foreach ($file in Get-ChildItem -LiteralPath $stage -Recurse -File -Force | Sort-Object FullName) {
         $relative = $file.FullName.Substring($stage.Length).TrimStart('\', '/').Replace('\', '/')
+        if (Test-AnimusForgePlayerPackageOmission -RelativePath $relative) { continue }
         $source = $file.FullName
         $bytes = $null
         if ($relative -ceq 'SubModule.xml') {
             $bytes = Get-VersionedSubModuleBytes -SubModulePath $source -NewVersion $PackageVersion
-        }
-        elseif ($Language -eq 'EN' -and $relative -ceq 'ModuleData/SceneActionPromptTexts.xml') {
-            $english = Get-AnimusForgeEnglishAsset -Entry $byTarget[$relative] -Worldbook $worldbook
-            if (-not $english) { throw "English scene prompt corpus is missing: $relative" }
-            Assert-AnimusForgePromptXmlContract -OriginalPath $byTarget[$relative].SourcePath -EnglishPath $english
-            $source = $english
         }
         elseif ($Language -eq 'EN' -and $relative -match '\.json$' -and $byTarget.ContainsKey($relative) -and -not $sharedLocalizationTargets.ContainsKey($relative)) {
             $english = Get-AnimusForgeEnglishAsset -Entry $byTarget[$relative] -Worldbook $worldbook
@@ -398,7 +422,7 @@ function Assert-AnimusForgeEnglishRuntimeSource {
     }
     $embedded = @(Get-AnimusForgeContentLayout -ProjectRoot $ProjectRoot | Where-Object { $_.LogicalName })
     foreach ($entry in $embedded) {
-        if ($entry.LocalizationRole -in @('compatibility', 'bilingual-ui')) { continue }
+        if ($entry.LocalizationRole -in @('compatibility', 'bilingual-ui', 'bilingual-prompt')) { continue }
         if (Test-AnimusForgeChineseText ([IO.File]::ReadAllText($entry.SourcePath, [Text.Encoding]::UTF8))) {
             throw "Shared DLL embedded default is still Chinese: $($entry.Source). Disk-only localization is insufficient."
         }

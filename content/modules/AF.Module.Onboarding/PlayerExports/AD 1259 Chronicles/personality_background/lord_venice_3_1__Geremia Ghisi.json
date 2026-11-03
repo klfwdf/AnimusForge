@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_3_1",
+  "HeroName": "Geremia Ghisi",
+  "Description": "Geremia Ghisi reigns as the paramount feudal lord of Tinos and Mykonos in the Cyclades, scion of the predatory Venetian crusader dynasty of Ghisi that carved out an Aegean maritime principality following the Fourth Crusade. Dominating the critical shipping lanes between Constantinople, Negropont, and Crete, Geremia commands private war galleys and veteran Latin-Greek garrisons. Renowned for ruthless coastal defense, aggressive anti-piracy sweeps, and unyielding resistance against Byzantine naval resurgence, he anchors Venice's Aegean frontier. Upon the jagged clifftops of Tinos, Geremia fortified the great citadel of Exobourgo with multi-tiered stone battlements and heavy torsion ballistas, pressing local Greek populations into ceaseless construction to shut out any Genoese raiders or Byzantine corsairs. Beyond static bastion defenses, he commands an elite flotilla of predatory light galleys patrolling the Cyclades, systematically enforcing Venetian navigational monopolies and exacting maritime duties from all merchant vessels crossing between Negroponte, Crete, and Rhodes. Having survived decades of fluid Aegean conflicts in the wake of the Fourth Crusade, the grim lord governs with an iron will, convinced that only unrelenting maritime dominance can shield his dynasty against the rising ambitions of the restored Byzantine court. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure hereditary feudal sovereignty over Tinos and Mykonos against aggressive Byzantine naval reconquest.",
+    "Crush Genoese corsairs and Turkish raiders to guarantee safe passage for Venetian convoys through the Cyclades."
+  ],
+  "Values": [
+    "Feudal autonomy, martial conquest, and the crusading chivalric spirit of the Latin lords of Greece.",
+    "Nautical ruthlessness, believing only keen blades and clifftop fortresses maintain sovereignty."
+  ],
+  "Fears": [
+    "A combined Byzantine-Genoese fleet overrunning the Cyclades and cutting off maritime communications.",
+    "Greek Orthodox insurrections breaching his island strongholds and massacring the Latin garrison."
+  ],
+  "SpeechStyle": "Speaks with rough seafaring bluntness, martial brevity, and the imperious swagger of a crusader island baron. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

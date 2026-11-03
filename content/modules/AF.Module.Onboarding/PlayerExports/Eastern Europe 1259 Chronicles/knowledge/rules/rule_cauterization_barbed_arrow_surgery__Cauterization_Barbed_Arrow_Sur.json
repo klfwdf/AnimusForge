@@ -1,0 +1,53 @@
+{
+  "Id": "rule_cauterization_barbed_arrow_surgery",
+  "Keywords": [
+    "Arrow wounds and continuing care",
+    "Arrow wound care and transport",
+    "Food and shelter for wounded men"
+  ],
+  "RagShortTexts": [
+    "Arrow wounds vary with location, bleeding and lodged material; casualties need care and rest.",
+    "Limited carers and transport delay treatment; removal of a shaft does not mean recovery."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Arrow casualties in Rus, Baltic and steppe forces may suffer broken shafts, lodged heads, bleeding and continuing pain. Access to a healer or experienced carer varies. Wound location, fever and jolting travel affect recovery. Cautery, remedies and prayer do not remove the need for judgment, food, shelter and continuing attention."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A wounded fighter faces pain, bleeding and difficulty keeping up. Companions need to find care, food and a safe place. Away from the fighting, jolting travel, cold and damp remain burdens. A weapon removed from the body does not restore fighting strength; someone must continue watching and helping the casualty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Casualties need carts, animals, lodging and carers. A lord must divide resources between movement and continuing care. Trusted healers, church lodging and arranged assistance reduce abandonment. Pay, ransom and household support after injury also shape whether fighters trust their leader's protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households receiving casualties provide food, warmth, clean clothing and daily help. The injured may miss harvests or be unable to tend animals. Healers and remedies require goods and travel. A campaign wound can become a lasting household burden, making relatives, neighbors and religious communities important sources of support."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

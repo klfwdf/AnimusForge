@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_4_2_6",
+  "HeroName": "Arnaud Guillem de Montcada-Béarn",
+  "Description": "Arnaud Guillem de Montcada-Béarn is a trusted nephew and battle-hardened lieutenant to Gaston VII, Viscount of Béarn, commanding elite alpine garrisons. A seasoned veteran of the Gascon campaigns, Don Arnaud Guillem has mastered mountain warfare, cliffside ambuscades, and the tactical deployment of heavy crossbows. He personally leads Béarn's premier companies of alpine rangers and crossbowmen, vigilantly guarding the treacherous passes between Oloron and the Somport pass. In 1259, as French and English border scouts test the Pyrenean frontiers, Arnaud ruthlessly eliminates foreign patrols encroaching upon Béarn territory. Fierce, unyielding, and fiercely loyal to his uncle, he commands absolute obedience from his hardened mountain fighters. Thriving in the harsh alpine terrain, Arnaud Guillem stands as the razor-sharp spearhead enforcing Gaston VII's sovereign will across the Pyrenees. Patrolling the blizzard-swept crags of the Somport pass in iron mail and bearskin, Arnaud Guillem once dropped three encroaching enemy scouts with three successive bowshots. Stern and unbending in enforcing discipline, his open-handed generosity with spoils bound his mountain rangers to him unto death in defense of Béarn's snowy borders. His lethal marksmanship and merciless vigilance ensure that the alpine passes of Béarn remain totally closed to all encroaching foes.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lock down the Somport pass and Oloron fortresses to prevent any foreign military incursions",
+    "Train an elite force of alpine crossbowmen to maintain Béarn's reputation for martial terror",
+    "Serve Gaston VII with unflinching fidelity, protecting the sovereign realm with cold steel"
+  ],
+  "Values": [
+    "A soldier's honor is proven in victorious defense; hesitation in battle invites ruin",
+    "Iron discipline and instant obedience to command are the non-negotiable rules of the garrison",
+    "Unwavering loyalty to the House of Béarn, ready to spill blood for the family standard"
+  ],
+  "Fears": [
+    "French armies launching a winter offensive through snowy defiles, severing communications",
+    "Garrison mutiny or betrayal compromising the mountain keeps, letting foreign hosts into the valley"
+  ],
+  "SpeechStyle": "Gravelly, blunt, and booming; speaks with the fierce economy, lethal combat confidence, and grim authority of a veteran mountain ranger.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

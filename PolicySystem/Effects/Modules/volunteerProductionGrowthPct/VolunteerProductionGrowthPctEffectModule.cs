@@ -11,7 +11,7 @@ internal sealed class VolunteerProductionGrowthPctPayload : NumericPolicyEffectP
 internal sealed class VolunteerProductionGrowthPctEffectModule
 	: NumericPolicyEffectModuleBase<VolunteerProductionGrowthPctPayload>, IModelModifierPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "volunteerProductionGrowthPct",
 		order: 145,
 		legacyIds: Array.Empty<string>(),
@@ -42,7 +42,8 @@ internal sealed class VolunteerProductionGrowthPctEffectModule
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_volunteerProductionGrowthPct_editableEvaluationPrompt", "The value is a percentage change relative to native daily check frequency, not absolute probability points. +20 multiplies native probability by 1.2, +50 by 1.5, +100 by 2, and -100 sets it to zero. Mild improvements or impediments usually use ±10% to ±25%; explicit institutional changes about ±25% to ±60%; strong reforms about ±60% to ±100%. More than +100% requires very strong policy evidence, but runtime follows the old policy system without an extra positive hard cap. Add policies first; the multiplier minimum is 0, and final probability is limited to 0 to 1. Use soldier elite training alongside this only if the policy separately grants experience to ordinary soldiers already in lord parties or garrisons."),
 		targetProjection: PolicyEffectTargetProjectionKind.PrimaryFiefAndBoundSettlements,
 		targetRefresh: PolicyEffectTargetRefreshKind.Dynamic,
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v6",
+  "Keywords": [
+    "罗马家内取水劈柴"
+  ],
+  "RagShortTexts": [
+    "罗马宴会依赖奴仆取水、劈柴与处理工具。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "普劳图斯戏中，主人一面命奴仆装满水壶，一面催人劈柴；斧钝也不能免于责骂。宴会热食背后是取水、燃料与工具劳动。戏剧夸张暴露主仆权力，却不提供所有家户每天相同的用柴量。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

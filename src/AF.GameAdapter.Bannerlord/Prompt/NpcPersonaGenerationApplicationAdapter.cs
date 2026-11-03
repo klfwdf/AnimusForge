@@ -9,6 +9,14 @@ using ApiCallResult = AnimusForge.MyBehavior.ApiCallResult;
 using NpcPersonaProfile = AnimusForge.MyBehavior.NpcPersonaProfile;
 using NpcPersonaGenerationWork = AnimusForge.MyBehavior.NpcPersonaGenerationWork;
 namespace AnimusForge.Refactor.Adapters;
+// Event validity and completion callbacks execute only inside the campaign-thread dispatcher.
+internal sealed class NpcPersonaEventRegeneration
+{
+    internal string Facts;
+    internal Func<bool> IsCurrent;
+    internal Action<NpcPersonaProfile> OnSaved;
+}
+
 internal sealed class NpcPersonaGenerationApplicationAdapter
 {
     private readonly PersonaProfileStateOwner _profiles;
@@ -39,7 +47,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
     internal void GetNpcPersonaStrings(Hero hero, out string personality, out string background)
     { personality = GetNpcPersonaDescription(hero); background = ""; }
     internal NpcPersonaProfile GetNpcPersonaProfile(Hero hero,bool createIfMissing) => hero==null ? null : _profiles.Get(hero.StringId,createIfMissing);
-    internal string GetNpcPersonaContext(Hero hero, bool forUi = false) => hero == null ? "" : NpcPersonaTextRules.BuildPersonaContext(_profiles.Get(hero.StringId, createIfMissing: false), forUi);
+    internal string GetNpcPersonaContext(Hero hero, bool forUi = false) => hero == null || !DuelSettings.ExpandedNpcPersonaEnabledForRuntime ? "" : NpcPersonaTextRules.BuildPersonaContext(_profiles.Get(hero.StringId, createIfMissing: false), forUi);
     internal void SaveNpcPersonaProfile(Hero hero,NpcPersonaProfile profile) => _profiles.Save(hero?.StringId,profile,_stampProfile);
     internal NpcPersonaGenerationWork CaptureNpcPersonaGeneration(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)
     {
@@ -55,6 +63,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
         try
         {
 			NpcPersonaProfile existingProfile = GetNpcPersonaProfile(hero, createIfMissing: false);
+            var settings = DuelSettings.GetSettings();
             var work = new NpcPersonaGenerationWork
             {
                 Id = id, OriginalDescription = description, Reservation = lease,
@@ -63,7 +72,8 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
 				OriginalValues = CloneStrings(existingProfile?.Values),
 				OriginalFears = CloneStrings(existingProfile?.Fears),
 				OriginalSpeechStyle = existingProfile?.SpeechStyle ?? "",
-				Facts = PersonaGenerationFactCaptureAdapter.BuildHeroFactsForPersonaGeneration(hero), Requirements = DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements
+				Facts = PersonaGenerationFactCaptureAdapter.BuildHeroFactsForPersonaGeneration(hero), Requirements = settings?.NpcPersonaGenerationRequirements,
+                ExpandedPersonaEnabled = settings?.EnableExpandedNpcPersona != false
             };
             // Manual regeneration reads the same target's memories once, on the existing game-thread dispatcher.
             // Let capture failures reach the caller; do not silently regenerate without requested memories.
@@ -92,7 +102,14 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
         catch { _reservations.Complete(lease, saved: false); throw; }
     }
 
-    internal async Task<string> GenerateNpcPersonaAsync(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting, string requestRequirements = null)
+    internal Task<string> GenerateNpcPersonaAsync(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting, string requestRequirements = null)
+        => GenerateNpcPersonaCoreAsync(hero, ignoreRetryCooldown, overwriteExisting, requestRequirements, null);
+
+    internal Task<string> RegenerateForEventAsync(Hero hero, NpcPersonaEventRegeneration trigger)
+        => GenerateNpcPersonaCoreAsync(hero, true, true, null, trigger);
+
+    private async Task<string> GenerateNpcPersonaCoreAsync(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting,
+        string requestRequirements, NpcPersonaEventRegeneration trigger)
     {
         long generation = SaveRuntimeGuard.CaptureGeneration();
         NpcPersonaGenerationWork work = null;
@@ -103,6 +120,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
             // The queue retains its historical memory name; persona does not create a second scheduler.
             bool captured = await _dispatch(generation, () =>
             {
+                if (trigger != null && !trigger.IsCurrent()) { retired = true; return false; }
                 work = CaptureNpcPersonaGeneration(hero, ignoreRetryCooldown, overwriteExisting);
                 if (work?.Reservation != null && !string.IsNullOrWhiteSpace(requestRequirements))
                     work.Requirements = string.IsNullOrWhiteSpace(work.Requirements) ? requestRequirements.Trim()
@@ -123,7 +141,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
             }
             bool started = await _dispatch(generation, () =>
             {
-                if (!_reservations.IsCurrent(work.Reservation) || !ReferenceEquals(_findHero(work.Id), hero))
+                if ((trigger != null && !trigger.IsCurrent()) || !_reservations.IsCurrent(work.Reservation) || !ReferenceEquals(_findHero(work.Id), hero))
                 {
                     retired = true;
                     work.Failure = overwriteExisting ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_InvalidatedNotGenerated", "The request was invalidated by data cleanup or a character change; no new persona was generated.") : "";
@@ -143,7 +161,10 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
                 try { loreSource = KnowledgeLibraryBehavior.Instance?.BuildPersonaLoreSource(hero, loreRule, work.LoreRuleVersion) ?? ""; }
                 catch (Exception error) { Logger.Log("NpcPersona", "[WARN] Lore source skipped: " + error.Message); }
                 NpcPersonaPrompt prompt = NpcPersonaTextRules.BuildNative(work.Facts + (string.IsNullOrWhiteSpace(loreSource) ? "" : "\n" + loreSource),
-                    work.OriginalDescription, overwriteExisting, work.Requirements, work.RecentExperiences);
+                    work.OriginalDescription, overwriteExisting, work.Requirements, work.RecentExperiences, work.ExpandedPersonaEnabled);
+                if (trigger != null)
+                    prompt = new NpcPersonaPrompt(prompt.System + "\n\n" + PersonaPromptTexts.Get("AF_PERSONA_PROMPT_EvolutionSystem", ""),
+                        prompt.User + "\n\n" + trigger.Facts);
                 // Capture provider settings on the game thread before the gateway's first await.
                 work.Response = ConfiguredChatApplicationAdapter.CallAuxiliaryGatewayDetailed(prompt.System, prompt.User, "NpcPersona", 0, forceThinkingDisabled: false);
                 return true;
@@ -160,7 +181,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
             string failure = null;
             bool accepted = await _dispatch(generation, () =>
             {
-                if (!_reservations.IsCurrent(work.Reservation) || !ReferenceEquals(_findHero(work.Id), hero))
+                if ((trigger != null && !trigger.IsCurrent()) || !_reservations.IsCurrent(work.Reservation) || !ReferenceEquals(_findHero(work.Id), hero))
                 { retired = true; failure = overwriteExisting ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_CleanupInvalidatedNotSaved", "The request was invalidated by data cleanup or a character change; the new persona was not saved.") : ""; return true; }
                 if (parsed)
                 {
@@ -181,11 +202,15 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
 					}
 					NpcPersonaProfile profile = overwriteExisting ? new NpcPersonaProfile { VoiceId = (current.VoiceId ?? "").Trim(), GptSoVitsVoiceId = (current.GptSoVitsVoiceId ?? "").Trim(), OpenAiVoiceId = (current.OpenAiVoiceId ?? "").Trim(), Personality = current.Personality, Background = current.Background } : current;
                     profile.Description = nextDescription;
-					ApplyGeneratedExtras(profile, current, generated, overwriteExisting);
+                    profile.Evolution = current.Evolution;
+                    profile.RecentChangeReason = current.RecentChangeReason;
+					ApplyGeneratedExtras(profile, current, generated, overwriteExisting,
+                        work.ExpandedPersonaEnabled && DuelSettings.ExpandedNpcPersonaEnabledForRuntime);
 					profile.SchemaVersion = Math.Max(profile.SchemaVersion, 3);
                     SaveNpcPersonaProfile(hero, profile);
                     saved = !string.IsNullOrWhiteSpace(profile.Description);
-                    if (saved && overwriteExisting) Logger.Log("NpcPersona", "[REROLL] Replaced personality and background for " + work.Id + "; voiceId preserved=" + !string.IsNullOrWhiteSpace(profile.VoiceId) + ".");
+                    if (saved) trigger?.OnSaved(profile);
+                    if (saved && overwriteExisting) Logger.Log("NpcPersona", "[REROLL] Replaced personality and background for " + work.Id + "; voiceId preserved=" + !string.IsNullOrWhiteSpace(profile.VoiceId) + "; expanded=" + (work.ExpandedPersonaEnabled && DuelSettings.ExpandedNpcPersonaEnabledForRuntime) + ".");
                 }
                 if (!saved)
                 {
@@ -253,9 +278,22 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
             && SameStrings(current?.Fears, work?.OriginalFears)
             && string.Equals(current?.SpeechStyle ?? "", work?.OriginalSpeechStyle ?? "", StringComparison.Ordinal);
 
-    internal static void ApplyGeneratedExtras(NpcPersonaProfile target, NpcPersonaProfile current, NpcPersonaGeneratedData generated, bool overwriteExisting)
+    internal static void ApplyGeneratedExtras(NpcPersonaProfile target, NpcPersonaProfile current, NpcPersonaGeneratedData generated, bool overwriteExisting, bool expandedPersonaEnabled = true)
     {
         if (target == null) return;
+        if (!expandedPersonaEnabled)
+        {
+            // A successful prose-only generation retires this profile's old expanded fields.
+            // Merely toggling the setting never mutates saved profiles or event queues.
+            target.Traits = new List<NpcPersonaTrait>();
+            target.Motivations = new List<string>();
+            target.Values = new List<string>();
+            target.Fears = new List<string>();
+            target.SpeechStyle = "";
+            target.RecentChangeReason = "";
+            target.Evolution = current?.Evolution;
+            return;
+        }
         bool hasTraits = generated?.Traits?.Count > 0;
         bool hasMotivations = generated?.Motivations?.Count > 0;
         bool hasValues = generated?.Values?.Count > 0;

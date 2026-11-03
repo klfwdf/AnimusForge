@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v5",
+  "Keywords": [
+    "Pompey enters Iberia"
+  ],
+  "RagShortTexts": [
+    "Pompey’s earlier route did not guarantee the same conditions for another army."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ancient geography used the marches of Pompey and Canidius to illustrate approaches from Armenia into Iberia. Earlier campaigns supplied route experience, not a guarantee of the same weather, crossings or local cooperation for another army."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

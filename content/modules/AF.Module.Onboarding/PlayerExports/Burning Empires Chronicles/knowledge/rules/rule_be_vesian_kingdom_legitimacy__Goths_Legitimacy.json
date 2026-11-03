@@ -1,0 +1,59 @@
+{
+  "Id": "be_vesian_kingdom_legitimacy",
+  "Keywords": [
+    "Goths Legitimacy",
+    "Fritigern’s food and service terms"
+  ],
+  "RagShortTexts": [
+    "Protection, diplomacy and fair shares support Fritigern.",
+    "Followers need defined food suppliers and levy limits."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Protection, negotiation and fair returns sustain recognition. Roman aid matters, but followers need to know who supplies food and limits levies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Protection, diplomacy and fair shares support Fritigern. Military recognition also rests on rewards and relief; a title needs willing action. Followers need defined food suppliers and levy limits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Followers need defined food suppliers and levy limits. Nominal rights require local execution, with consent and supply both shaping authority. Protection, diplomacy and fair shares support Fritigern."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protection, diplomacy and fair shares support Fritigern. Households judge rule through protected families, land and responses to appeals. Followers need defined food suppliers and levy limits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Followers need defined food suppliers and levy limits. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protection, diplomacy and fair shares support Fritigern."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

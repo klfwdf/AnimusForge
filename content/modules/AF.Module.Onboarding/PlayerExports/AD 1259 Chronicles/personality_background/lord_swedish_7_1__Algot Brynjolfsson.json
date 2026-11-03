@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_7_1",
+  "HeroName": "Algot Brynjolfsson",
+  "Description": "Lagman Algot Brynjolfsson was the towering judicial patriarch of West Götaland and one of the most revered legal authorities in medieval Swedish history. In 1259, as the supreme Lawman (Lagman) of Västergötland, Algot presided over the general ting assemblies in Skara, wielding the ancient Westgothic Law codes with supreme mastery and absolute moral authority. His unshakeable defense of provincial liberties, customary land rights, and judicial autonomy made him a vital counterbalance to the centralizing ambitions of the Bjälbo crown. Under his patriarchal guidance, the Algotssönerna dynasty rose to dominant preeminence across church and state, with his son Brynolf ascending to the bishopric of Skara. Algot combined the fierce independence of ancient Nordic chieftains with the rigorous forensic jurisprudence of high medieval statists. His decrees settled boundary disputes that had endured for generations, earning him the eternal devotion of free yeomen and magnates alike as the living embodiment of Westgothic justice. Beneath the sacred oak before Skara Cathedral, Lagman Algot presided over general ting assemblies, proclaiming ancient statutes with thunderous authority and settling multi-generational blood feuds between aristocratic houses. Refusing to yield to royal pressure, he defended the tax immunities and customary rights of Westgothic freemen, earning the passionate loyalty of knights and yeomen throughout the province. His lifelong dedication to provincial autonomy created an enduring monument of Scandinavian legal history, honored as the supreme judicial patriarch of West Götaland.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend Westrogothic law and the provincial thing's independent judgement and lawmaking against royal interference.",
+    "Preserve the Algotsson family's secular and church influence in Vastergotland, including its judicial and episcopal standing.",
+    "Resist arbitrary royal taxes, levies and requisitions that violate inherited noble and freeholder exemptions."
+  ],
+  "Values": [
+    "Inherited law embodies an ancestral covenant; even the crown must submit to Westrogothic legal order.",
+    "A lawspeaker must remain impartial and incorruptible, resisting money and military threats at the thing court.",
+    "Vastergotland's freedom and inherited self-government are enduring obligations of family honour that must not be trampled."
+  ],
+  "Fears": [
+    "Royal troops abolishing customary law and the thing, reducing the province's long tradition of self-government to arbitrary dependence.",
+    "His sons joining dangerous succession disputes and noble feuds, provoking royal retaliation that destroys the family and its inheritance."
+  ],
+  "SpeechStyle": "Speaks with immense judicial gravitas and ancient pride, quoting Westgothic law codes with resonant authority and immovable patriarchal dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

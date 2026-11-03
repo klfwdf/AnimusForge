@@ -1,0 +1,38 @@
+{
+  "Id": "be_ere_valens_arian_persecution",
+  "Keywords": [
+    "Valens Homoian church disputes"
+  ],
+  "RagShortTexts": [
+    "Valens backed Homoian clergy; Nicene disputes involved bishops, churches and exile."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Homoian position supported by Valens stressed that the Son was like the Father and avoided defining their relation through substance terminology. Adherents of the Nicene creed upheld the Son’s consubstantiality with the Father and opposed the court-backed church position. Disputes involved episcopal appointments, access to churches and the return of exiles, with different circumstances in each city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Worship and preaching heard in one city might differ from the next. Believers asked who presided and which bishop recognized the congregation. Soldiers maintaining order could encounter rival congregations claiming a church. A sectarian name did not replace knowledge of particular people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Appointments and exile changed local networks of support. Officials handling church disputes faced congregations and existing clergy. Court support strengthened a party without immediately changing every resident’s faith. Taxation, garrisons and public order still required decisions beyond a doctrinal declaration."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

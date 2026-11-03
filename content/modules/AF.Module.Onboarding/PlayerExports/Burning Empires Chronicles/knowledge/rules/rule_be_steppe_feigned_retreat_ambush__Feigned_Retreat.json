@@ -1,0 +1,38 @@
+{
+  "Id": "be_steppe_feigned_retreat_ambush",
+  "Keywords": [
+    "Cavalry pursuit and deceptive withdrawal"
+  ],
+  "RagShortTexts": [
+    "Mounted withdrawal can draw pursuers out of order; pursuit needs cohesion and support."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cavalry leaving contact might be retreating or seeking an opportunity to regroup and counterattack. Pursuers focused only on nearby enemies could stretch their ranks and leave infantry and baggage behind. Advances, withdrawals and renewed formations repeatedly altered mounted engagements during the Persian campaign of 363."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A pursuer watched whether companions could keep up, how tired the horse was and whether ditches or cover lay ahead. Scattered riders did not prove the absence of other troops. Halting to regroup could preserve an advantage better than continuing the chase."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A pursuit order needed to specify who followed, who remained in support and where to stop. Securing water or baggage might matter more than catching a few riders. If orders could not reach the leading men, pursuit could dissolve into isolated fights."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

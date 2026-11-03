@@ -1,0 +1,59 @@
+{
+  "Id": "be_salihid_kingdom_legitimacy",
+  "Keywords": [
+    "Salihids Legitimacy",
+    "Zokomos’ kin and Roman rewards"
+  ],
+  "RagShortTexts": [
+    "Protection, kin recognition and rewards support Zokomos.",
+    "Roman titles cannot replace followers’ actual returns."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Protection, kin recognition and credible rewards sustain leadership. Roman cooperation must offer followers returns rather than an outside title alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Protection, kin recognition and rewards support Zokomos. Military recognition also rests on rewards and relief; a title needs willing action. Roman titles cannot replace followers’ actual returns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Roman titles cannot replace followers’ actual returns. Nominal rights require local execution, with consent and supply both shaping authority. Protection, kin recognition and rewards support Zokomos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protection, kin recognition and rewards support Zokomos. Households judge rule through protected families, land and responses to appeals. Roman titles cannot replace followers’ actual returns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman titles cannot replace followers’ actual returns. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protection, kin recognition and rewards support Zokomos."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

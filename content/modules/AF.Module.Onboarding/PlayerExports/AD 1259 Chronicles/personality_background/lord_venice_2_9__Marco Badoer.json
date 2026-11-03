@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_2_9",
+  "HeroName": "Marco Badoer",
+  "Description": "Marco Badoer is a prominent thirty-seven-year-old patrician leader of the ancient apostolic House of Badoer, holding senior rank in the Great Council and senate committees. Pairing extensive mainland feudal fiefs with massive Mediterranean shipping investments, Marco maneuvers within republican politics with seasoned mastery. Mobilizing armed merchant galleys to reinforce state fleets during the War of Saint Sabas, his calculating statecraft and immense legislative influence anchor the Tiepolo-Badoer governing alliance. Leveraging immense shipping investments and mainland estates, Marco Badoer guided the senate through treacherous foreign wars, coordinating privateer fleets to reinforce state navies and anchoring the governing Tiepolo-Badoer legislative coalition. With calculating statecraft and immense financial resources, Marco steered the Republic through shifting geopolitical tides, standing as an unyielding pillar of republican liberty and patrician baronial honor. His seasoned vigilance, constitutional constancy, and logistical mastery command the total trust and unreserved loyalty of the entire senate and merchant fleets. His cold calculations under fire and resolute defense of republican liberties ensure that the state remains completely secure against hostile surprise. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate Badoer legislative supremacy within the Senate and guide the Republic's grand strategy.",
+    "Support Lorenzo Tiepolo's election to the dogate to expand Badoer commercial monopolies in the Levant."
+  ],
+  "Values": [
+    "Republican constitutionalism, patrician oligarchic supremacy, and ancestral apostolic prestige.",
+    "Cold realpolitik, fiscal prudence, and reliance on solid institutional coalitions."
+  ],
+  "Fears": [
+    "Protracted naval wars exhausting public credit and empowering parvenu merchants against the patriciate.",
+    "A Genoese blockade of the Otranto strait strangling his vast merchant fleet across the Mediterranean."
+  ],
+  "SpeechStyle": "Speaks with measured senatorial gravitas, profound political acumen, and aristocratic Roman dignity. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

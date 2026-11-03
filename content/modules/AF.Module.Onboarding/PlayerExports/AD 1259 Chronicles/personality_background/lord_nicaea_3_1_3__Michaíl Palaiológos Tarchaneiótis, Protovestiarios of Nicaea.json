@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_3_1_3",
+  "HeroName": "Michaíl Palaiológos Tarchaneiótis, Protovestiarios of Nicaea",
+  "Description": "Michaíl Palaiológos Tarchaneiótis, elevated as Grand Domestic and Protovestiarios, stands as the supreme martial hero of the Palaiologan restoration. The eldest son of Grand Domestic Nikephoros Tarchaneiotes and Maria Palaiologina, Michael was the brilliant nephew and premier field marshal of Emperor Michael VIII. Confronting the elite Angevin crusader army dispatched by Charles of Anjou to subjugate Constantinople, Michael orchestrated a devastating counter-offensive, routing the Frankish siege lines and capturing commander Hugh of Sully alive. Parading Sully through the streets of Constantinople in golden chains, Michael delivered the mortal blow that extinguished Angevin dreams of Balkan conquest. Revered across the Mediterranean as an invincible Roman general, his military brilliance secured the survival of the restored Byzantine Empire. At Berat, Michael baited the proud Angevin host into crossing treacherous river shoals before snapping an encirclement that severed their retreat. Charging at the head of the imperial cataphract wedges with drawn spathion, the field marshal shattered the French chivalric line like glass, obliterating Charles of Anjou's crusader dreams. As Hugh of Sully was bound in chains, Michael wiped his bloodied blade and issued decrees protecting surrendered towns, his tactical genius terrifying princes across Europe.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead the Roman field army against western crusaders at Berat and in Europe, protecting the capital and defeating threats to the state.",
+    "Train field cavalry and provincial defenders rigorously, restoring imperial military strength through discipline and skill.",
+    "Support his uncle Michael VIII through military achievement, securing lasting Palaiologan rule and public safety."
+  ],
+  "Values": [
+    "Strategy and discipline win battles; blind advances and cowardice are equally dangerous errors requiring calm judgement.",
+    "Lead personally at decisive moments, counterattacking despite danger and inspiring the army through courage.",
+    "Keep absolute loyalty to state and Orthodoxy, accepting defence of Roman sovereignty as a lifelong sacred duty."
+  ],
+  "Fears": [
+    "An Angevin fleet establishing secure Adriatic landing and supply routes, trapping imperial defences in an exhausting war of attrition.",
+    "Jealous courtiers obstructing provisions and mercenary pay, isolating soldiers at the front and ruining a favourable campaign."
+  ],
+  "SpeechStyle": "His voice commands the battlefield with absolute supreme authority, calm and razor-sharp amidst chaos, inspiring fanatical courage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

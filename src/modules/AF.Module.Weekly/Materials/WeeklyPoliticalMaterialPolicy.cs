@@ -20,14 +20,14 @@ internal static class WeeklyPoliticalMaterialPolicy
 			return "";
 		}
 		list = SelectPoliticalReasonMaterialParts(list);
-		return label + "：" + string.Join("；", list) + "。";
+		return label + WeeklyMaterialTexts.Colon + string.Join(WeeklyMaterialTexts.Semicolon, list) + WeeklyMaterialTexts.Period;
 	}
 
 	internal static List<string> SelectPoliticalReasonMaterialParts(List<string> parts)
 	{
 		List<string> source = parts ?? new List<string>();
 		List<string> selected = new List<string>();
-		string topicPart = source.FirstOrDefault((string x) => (x ?? "").StartsWith(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0412"), StringComparison.OrdinalIgnoreCase));
+		string topicPart = source.FirstOrDefault((string x) => WeeklyMaterialTexts.StartsWithRaw(x, "AF_WEEKLY_Material_0412", StringComparison.OrdinalIgnoreCase));
 		AddPoliticalReasonPartIfUseful(selected, topicPart);
 		string corePart = BuildPoliticalReasonCorePart(source);
 		AddPoliticalReasonPartIfUseful(selected, corePart);
@@ -73,12 +73,16 @@ internal static class WeeklyPoliticalMaterialPolicy
 			return "";
 		}
 		text = Regex.Replace(text, "\\s+", " ");
-		if (text.StartsWith(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0413"), StringComparison.OrdinalIgnoreCase))
+		if (WeeklyMaterialTexts.StartsWithRaw(text, "AF_WEEKLY_Material_0413", out int prefixLength, StringComparison.OrdinalIgnoreCase))
 		{
-			text = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0414") + TrimPoliticalReasonPart(text.Substring(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0415").Length), 62);
+			text = WeeklyMaterialTexts.W("AF_WEEKLY_Material_0414").TrimStart() + TrimPoliticalReasonPart(text.Substring(prefixLength), 62);
 		}
 		return TrimPoliticalReasonPart(text, PoliticalReasonMaxPartLength);
 	}
+
+	// Cut points for reasons written in either language.
+	private static readonly char[] ClauseBreaks = { '\uFF0C', ',' };
+	private static readonly char[] SentenceBreaks = { '\uFF1B', ';' };
 
 	internal static string TrimPoliticalReasonPart(string text, int maxLength)
 	{
@@ -87,16 +91,16 @@ internal static class WeeklyPoliticalMaterialPolicy
 		{
 			return value;
 		}
-		int cut = value.LastIndexOf('，', Math.Min(maxLength - 4, value.Length - 1));
+		int cut = value.LastIndexOfAny(ClauseBreaks, Math.Min(maxLength - 4, value.Length - 1));
 		if (cut < 18)
 		{
-			cut = value.LastIndexOf('；', Math.Min(maxLength - 4, value.Length - 1));
+			cut = value.LastIndexOfAny(SentenceBreaks, Math.Min(maxLength - 4, value.Length - 1));
 		}
 		if (cut < 18)
 		{
 			cut = Math.Max(12, maxLength - 3);
 		}
-		return value.Substring(0, Math.Min(cut, value.Length)).TrimEnd('，', '；', '。', ' ') + "...";
+		return value.Substring(0, Math.Min(cut, value.Length)).TrimEnd('\uFF0C', '\uFF1B', '\u3002', ',', ';', '.', ' ') + "...";
 	}
 
 	internal static string BuildPoliticalReasonCorePart(List<string> parts)
@@ -120,7 +124,7 @@ internal static class WeeklyPoliticalMaterialPolicy
 		{
 			return "";
 		}
-		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0467") + string.Join("、", tags.Take(4));
+		return WeeklyMaterialTexts.W("AF_WEEKLY_Material_0467").TrimStart() + string.Join(WeeklyMaterialTexts.ListSeparator, tags.Take(4));
 	}
 
 	internal static void AddPoliticalReasonCoreTag(List<string> tags, List<string> parts, string tag, params string[] keywords)
@@ -143,31 +147,31 @@ internal static class WeeklyPoliticalMaterialPolicy
 	internal static int GetPoliticalReasonPartPriority(string part)
 	{
 		string text = part ?? "";
-		if (text.StartsWith(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0468"), StringComparison.OrdinalIgnoreCase))
+		if (WeeklyMaterialTexts.StartsWithRaw(text, "AF_WEEKLY_Material_0468", StringComparison.OrdinalIgnoreCase))
 		{
 			return 0;
 		}
-		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0469"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0470"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0471"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0472"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0469", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0470", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0471", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0472", StringComparison.OrdinalIgnoreCase))
 		{
 			return 1;
 		}
-		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0473"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0474"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0475"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0476"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0473", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0474", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0475", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0476", StringComparison.OrdinalIgnoreCase))
 		{
 			return 2;
 		}
-		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0477"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0478"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0479"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0480"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0477", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0478", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0479", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0480", StringComparison.OrdinalIgnoreCase))
 		{
 			return 3;
 		}
-		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0481"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0482"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0481", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0482", StringComparison.OrdinalIgnoreCase))
 		{
 			return 4;
 		}
-		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0483"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0484"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0485"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0483", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0484", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0485", StringComparison.OrdinalIgnoreCase))
 		{
 			return 5;
 		}
-		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0486"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0487"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0488"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0486", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0487", StringComparison.OrdinalIgnoreCase) || WeeklyMaterialTexts.ContainsRaw(text, "AF_WEEKLY_Material_0488", StringComparison.OrdinalIgnoreCase))
 		{
 			return 6;
 		}

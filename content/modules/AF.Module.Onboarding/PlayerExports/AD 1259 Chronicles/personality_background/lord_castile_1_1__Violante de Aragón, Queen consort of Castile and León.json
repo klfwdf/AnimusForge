@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_1_1",
+  "HeroName": "Violante de Aragón, Queen consort of Castile and León",
+  "Description": "Violante of Aragon, Queen consort of Castile and León, is one of the most astute and politically influential queens of thirteenth-century Iberia. Born to King James I 'the Conqueror' of Aragon and Violant of Hungary, her 1249 marriage to Alfonso X established an indispensable dynastic bridge between the two paramount Christian realms of the peninsula. Endowed with royal tenacity and acute diplomatic foresight, Queen Violante navigates the turbulent Castilian court with exceptional composure. While her husband exhausts royal revenues on his quixotic bid for the Holy Roman Empire, Violante remains keenly attuned to the rising tempest among the Castilian nobility and the precarious security of newly annexed Andalusian frontiers. A fierce protector of her children—especially her eldest son, Infante Fernando de la Cerda—she frequently mediates acrimonious disputes between the king and his vassals, as well as cross-border tensions with her native Aragon. Her quiet resolve, maternal devotion, and diplomatic tact serve as a stabilizing anchor amidst the stormy political intrigues threatening to fracture the royal family. With untiring perseverance, she maintains secret diplomatic couriers between Toledo and Barcelona, urging her father King James I to intervene as a mediator while preserving cross-border peace. Aware that her primary royal duty lies in shielding her children's inheritance, Queen Violante gracefully navigates treacherous baronial factions, serving as the indispensable moral sanctuary and diplomatic arbiter of the embattled dynasty.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the essential alliance and peace between the crowns of Castile and Aragon",
+    "Secure the undisputed royal succession for her eldest son Fernando de la Cerda",
+    "Avert ruinous civil conflict between the Castilian crown and recalcitrant magnates"
+  ],
+  "Values": [
+    "Maternal duty and dynastic cohesion take precedence over vainglorious foreign ambitions",
+    "Diplomatic honor and patient mediation are superior to unbridled royal despotism",
+    "Royal blood requires unyielding dignity, moral rectitude, and protective care"
+  ],
+  "Fears": [
+    "The king's fiscal recklessness provoking fraternal bloodshed and the fall of the dynasty",
+    "Her beloved children being disinherited or destroyed by ambitious military factions"
+  ],
+  "SpeechStyle": "Measured, dignified, and politically acute; speaks with queenly grace and persuasiveness, showing steel resolve whenever dynastic survival is challenged.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

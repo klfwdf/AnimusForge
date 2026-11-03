@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_6_1_a",
+  "HeroName": "Anastasia von Pommern",
+  "Description": "Anastasia is the cherished daughter of Duke Barnim I, carrying in her veins the proud lineage of the Pomeranian Griffins and Mecklenburg princes. Reared within the stone bastions of Stettin amid sacred choral hymns and strict dynastic discipline, she witnessed northern frontier diplomacy firsthand. Dignified, composed, and well-schooled in Latin scriptures and Low German speech, Anastasia bears herself with regal grace whether gracing tournament pavilions or kneeling before cathedral altars, fully conscious of her solemn duty as a princess whose dowry cements peace between sovereign northern houses. Walking the sheltered cloisters of Stettin, Anastasia mastered fine tapestry work and monastic devotion, frequently receiving visiting patrician ladies and prioresses from Baltic port towns. Possessing comprehensive knowledge of Mecklenburg baronies and genealogies, she preserved unyielding composure amid northern political storms, resolute in her sacred calling to serve as an unshakeable bridge of amity between the two allied duchies. Her impending nuptials stand as a proud testament to the enduring stature of the Griffin dynasty across the Baltic.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fulfill her dynastic betrothal to Mecklenburg, erecting a solid diplomatic barrier on Pomerania's western flank.",
+    "Uphold pious noble virtues in her future court to earn the devotion of subjects and clergy."
+  ],
+  "Values": [
+    "Upholds loyalty and filial piety, placing the long-term welfare of her house and duchy above personal desires.",
+    "Cherishes quiet intellectual and spiritual cultivation, scorning superficial vanity and factional strife."
+  ],
+  "Fears": [
+    "Worries her future lord may perish during distant crusading pilgrimages, leaving her isolated in a foreign court.",
+    "Fears the ducal alliance might fracture due to reckless border skirmishes between hotheaded vassals."
+  ],
+  "SpeechStyle": "Though reared in palace halls, we bear burdens as heavy as any sword; honor and dynastic trust demand absolute devotion. In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Anastasia von Pommern"
+}

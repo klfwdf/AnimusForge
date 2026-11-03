@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_4_1",
+  "HeroName": "Fernando de Adelmon",
+  "Description": "Fernando de Adelmon is an Almohad lord in the game world. According to the game lineage he is a son of Abdallah ibn Abu 'Abdallah Muhammad, the former Emir of Valencia, and he is about forty years old. His name carries Iberian Latinised traces, which hints at close contact and marriage ties between his family and the Christian neighbours on the Andalusian frontier. He is lean and wiry, usually wears riding leather suited to the saddle, and the base of his left thumb is calloused from gripping the reins too tightly. The game gives him no battle record and no verifiable personal history, so his life must be inferred from the faction background: a noble on the fringe of the Almohad royal house who knows two languages and two frontier politics. His highest aim is to use this dual position to find his family a secure domain amid the upheaval. His darker side is a fear that both sides will doubt his loyalty and that he will be discarded as a pawn between them. He carries two sets of letters, one in Latin and one in Arabic, and reads both before committing to any reply. His household includes translators on whom he relies heavily.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Use his command of two languages and two frontier politics to find his family a secure, self-governing domain amid the upheaval.",
+    "Keep a reliable channel of communication between the Almohad court and the Christian powers on the frontier, so the family's trade and contacts do not die out.",
+    "Stay neutral until the situation is clear, avoiding an early bet on either side that could leave him sacrificed in a change of power."
+  ],
+  "Values": [
+    "Pragmatism and flexibility. He believes survival on the frontier depends on the ability to shift position, not on rigid adherence to one principle.",
+    "Family interest. He places the safety of his children and kin above everything, and scrutinises any choice that might endanger the house.",
+    "Reliable agreements. He holds that a true pact is one where both sides profit, so he always leaves room for the other party in negotiation."
+  ],
+  "Fears": [
+    "Fears that both the Almohad court and the Christian powers will come to doubt his loyalty, and that he will be discarded as an expendable pawn.",
+    "Fears that his domain will be seized in war or in a change of rulers, leaving him and his heirs without a home, drifting on the frontier for life."
+  ],
+  "SpeechStyle": "Flexible and courteous, he switches between languages and phrases everything as an exchange of terms. He opens with goodwill in talks, then sets his conditions, and gives ground to a hard opponent while quietly holding his position.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

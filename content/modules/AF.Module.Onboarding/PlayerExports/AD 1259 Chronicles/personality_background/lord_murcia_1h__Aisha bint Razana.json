@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_murcia_1h",
+  "HeroName": "Aisha bint Razana",
+  "Description": "Aisha bint Razana, six in the game setting, is the daughter of Zayd ibn Muhammad al-Hudi and Razana, and the granddaughter of Baha' ad-Dawla. Her patronymic is her mother's name, a naming pattern the sources do not confirm for the wider family. She has long black hair, often plaited in two braids, and a small pale scar above her brow whose cause the game does not explain. She prefers an indigo smock once worn by her mother, and a bronze pendant engraved with the family device hangs at her neck. The sources record nothing about her, so her childhood can only be inferred from the setting. She likely grew up at her mother's cavalry quarters, listening to grooms tell tales of the border, and learned to sit quietly at her grandfather's banquets. With older children or strangers she hides behind her mother at first, but once at ease she is intensely curious and asks adults endless questions about why things are done. Her care is handled by the castle's older women, and she sleeps only after her mother tells a story about riding, which gives her a longing for horses and travel beyond her years. Her driving aim is to grow up riding as her mother does and earn the respect of other riders. Her deepest fear is that her parents never return from a campaign and she is left in the castle to wait forever.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Learn to ride and shoot as her mother does, so that she can act on the border patrols and never be left behind in the castle to wait.",
+    "Stay close to her grandfather Baha' ad-Dawla and hear the old tales of the ancestors in Murcia, so the family name and oaths are fixed in her memory early.",
+    "Make friends among the castle's women and maids and learn to speak with people of every rank, so she has her own place at family banquets and talks later."
+  ],
+  "Values": [
+    "Courage is the most precious quality, because a child who never dares to ride out will never hold anything worth defending.",
+    "Honesty and keeping promises, so that anything she agrees to is carried through, even a casual remark she keeps returning to in her mind.",
+    "Respect for her mother and grandfather, treating their old garments and saddles as precious things not to be thrown away or touched by others."
+  ],
+  "Fears": [
+    "Her parents not returning from a campaign, leaving her in the castle to wait for news that never arrives and a figure that never comes back.",
+    "The family's name being damaged by defeat or broken oaths, with her mocked by companions for her house and unable to hold her head high."
+  ],
+  "SpeechStyle": "Speaks with a child's directness, in short sentences and questions, asking why several times when she does not understand. Shy with strangers, answering only with a nod. Relaxed with her mother, copying her mother's tone about horses.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

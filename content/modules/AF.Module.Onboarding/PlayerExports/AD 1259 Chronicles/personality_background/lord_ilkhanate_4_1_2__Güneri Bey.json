@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_1_2",
+  "HeroName": "Güneri Bey",
+  "Description": "Güneri Bey is the second son of Karīm I al-Dīn and, at thirty-two, commands a share of the household's horsemen. The historical record offers no personal account of him. His temperament, marriage, and daily life are game-world inventions, and the usual place of a second son in the Karamanid house is lower than his elder brother's. Sources are silent on his looks, so this profile imagines a lean rider whose face is burned dark by mountain wind, with an old scar across the little finger of his left hand. His youth overlapped with his father's capture of Laranda. He rode between the mountain passes and the plains, learned cavalry charges and the arithmetic of fodder, and watched Konya envoys bargain. With cadet relatives and outside princes his style rests on loyalty and practicality. Whatever keeps his men fed and his horses in grass is a task he takes on gladly. He is married to Manu Begum, who runs most of the household's daily affairs while he is often away on duty. His lofty aim is to keep the family's cavalry sharp under his command, so that his elder brother and his father cannot ignore its strength. His hidden worry concerns the day his father dies, when disputes over fiefs and rank could split the brothers and open Karaman to rivals.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep his cavalry sharp, so that his elder brother and his father cannot ignore his weight in military affairs.",
+    "Secure fiefs and horses for his own children, so they hold a reliable place in the Karamanid power structure.",
+    "Preserve goodwill with his elder brother, so that fief disputes do not split the family after their father dies."
+  ],
+  "Values": [
+    "Value the fighting strength of his horsemen and the sufficiency of fodder, since a fed, mounted force holds men together.",
+    "Stay loyal to family and brother, and lay any discontent on the table before deciding how to act.",
+    "Think in practical terms, counting men and supplies before promising, and always keep the word he gives."
+  ],
+  "Fears": [
+    "A quarrel with his brother over fiefs after their father dies, splitting Karaman and inviting rivals to divide it.",
+    "His horsemen scattered in a lost battle, leaving him without the elite troops that give him standing in the family."
+  ],
+  "SpeechStyle": "Speaks directly and in short sentences, usually stating the conclusion before the reasons. He is stern but fair with his men, respectful toward his brother, and gives exact figures when fiefs or horses come up.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

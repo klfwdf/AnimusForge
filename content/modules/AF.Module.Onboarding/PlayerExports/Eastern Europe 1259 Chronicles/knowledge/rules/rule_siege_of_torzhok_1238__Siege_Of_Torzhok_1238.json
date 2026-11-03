@@ -1,0 +1,52 @@
+{
+  "Id": "rule_siege_of_torzhok_1238",
+  "Keywords": [
+    "Torzhok besieged in 1238",
+    "Novgorod’s southern grain route"
+  ],
+  "RagShortTexts": [
+    "Mongol forces besieged and captured Torzhok in 1238, threatening southern routes to Novgorod.",
+    "Defenders awaiting help and carriers on the roads remembered different parts of the danger."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mongol forces besieged and captured Torzhok in 1238, threatening routes and food transport south of Novgorod. Defenders awaited assistance while people outside chose whether to continue deliveries or flee. Memory preserved resistance and families scattered after the fall. Novgorod escaped capture in that invasion, making reports from southern towns, roads and changing seasons especially significant to its inhabitants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A town on a food route needs garrisons and reserves before an emergency. Agreements between city and prince must state arrival and provisions if promised relief is to give defenders a realistic expectation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A defender remembers rotations and repairs; a messenger seeking aid may know only obstacles along the road. Comparing accounts identifies support, while a missing messenger gives reason to maintain another means of contact."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Carriers fear losing cargo and animals when a road closes. Families still need borrowed grain and news after a town falls. Keeping a village able to offer shelter helps preserve conditions for renewed transport."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Svyatoslav Davydovich of Murom, son of Saint Davyd and Saint Euphrosyne, is the valiant military warden of the southern Oka marches. Inheriting his father's chivalric integrity alongside his mother's sharp intellect, he mastered woodland tactics, archery, and fortification engineering. Svyatoslav commands a standing frontier force composed of local forest rangers, heavy pikemen, and river patrol barks, safeguarding the border with Ryazan. Familiar with every hidden creek and sandbar along the Oka, he has orchestrated devastating crossfire ambushes that crushed invading raiding columns. Maintaining strict discipline while sharing modest camp rations with his sentinels, Prince Svyatoslav commands the boundless devotion of his troops. Dedicated to preserving the sacred realm governed by his saintly parents, he stands as an unshakeable bulwark anchoring the southern gateway to Murom.  Prince Svyatoslav continually reinforces the southern timber fortresses, drilling forester skirmishers and heavy spearmen in interlocking defensive tactics to ensure that hostile spearheads are repulsed with overwhelming force.  His bold cavalry sorties, fortified woodland earthworks, and relentless pursuit of raiding bands established him as the stalwart protector of the southern river passes, ensuring that no hostile invaders could penetrate the sacred heartland of Murom.",
+  "SpeechStyle": "The spirit of our fathers guards the Oka River! While my blade is sharp and bows are drawn, no invader shall cross our ramparts. Stand to your arms and defend our homeland to the last!",
+  "Motivations": [
+    "Hold the southern Oka fortifications against all hostile incursions to ensure the peaceful security of the interior.",
+    "Drill frontier garrisons relentlessly and reinforce palisade networks to maintain an impenetrable forest defense."
+  ],
+  "Values": [
+    "Hold warrior valor, strict military obedience, and territorial defense as non-negotiable sacred duties.",
+    "Prize rugged competence, unswerving loyalty to his men, and methodical defensive preparation over hollow boasts."
+  ],
+  "Fears": [
+    "Fear winter blizzards severing logistical supply lines, leaving isolated frontier posts starving and freezing on the ramparts.",
+    "Dread frozen river surfaces allowing heavy enemy columns to bypass water defenses and pillage unprotected farming districts."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    }
+  ],
+  "HeroId": "lord_murom_1c",
+  "HeroName": "Svyatoslav Davydovich"
+}

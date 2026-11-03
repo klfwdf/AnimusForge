@@ -1,0 +1,59 @@
+{
+  "Id": "be_saxon_kingdom_military",
+  "Keywords": [
+    "Saxons Military",
+    "Saxon voyages and Angle-facing land defence"
+  ],
+  "RagShortTexts": [
+    "Wind, water, repair and crews constrain Saxon sailing.",
+    "The Angle land frontier also needs guards left behind."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wind, water, repair and crews constrain sailing, while the Angle frontier also needs guards. Prizes cannot ensure a return without food and water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wind, water, repair and crews constrain Saxon sailing. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. The Angle land frontier also needs guards left behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Angle land frontier also needs guards left behind. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Wind, water, repair and crews constrain Saxon sailing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Wind, water, repair and crews constrain Saxon sailing. Fighters come from households; prolonged loss of labor or animals weakens the next levy. The Angle land frontier also needs guards left behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "The Angle land frontier also needs guards left behind. Repair, carrying and care also use people, while daily supply continues after troops pass. Wind, water, repair and crews constrain Saxon sailing."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

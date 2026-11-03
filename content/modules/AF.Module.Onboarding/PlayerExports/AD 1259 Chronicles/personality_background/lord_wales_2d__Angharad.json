@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_2d",
+  "HeroName": "Angharad ferch Gruffudd, Jewel of Dinas Bran",
+  "Description": "Angharad ferch Gruffudd is the cherished daughter of Gruffudd II ap Madog and Emma de Audley, celebrated as the 'Jewel of Dinas Brân.' Inheriting her mother's dazzling Anglo-Norman beauty and her father's fiery Celtic pride, she carries herself with radiant aristocratic poise. Raised along the vibrant cultural frontier between Cheshire and Powys, Angharad developed remarkable linguistic fluency, effortlessly speaking French, English, and Cymric. In 1259, as the massive stone walls of Dinas Brân rise above the clouds, Angharad supervises domestic logistics alongside her mother, tending injured craftsmen, dispensing medicinal salves, and organizing stores. She plays the Celtic harp to comfort homesick border guards and singing ancient ballads that soothe frayed nerves. Fully aware that her hand in marriage represents a priceless diplomatic pawn for securing border truces, she accepts her princely destiny with serene courage, seeking through wit, music, and quiet diplomacy to protect her family and people from ruin. She studies Latin missals and herbal texts each afternoon, compounding healing ointments that work near-miraculous recoveries for injured castle sentries. Receiving English heralds and Welsh chieftains with radiant poise, Angharad's gentle diplomacy disarms hostility, earning her renown as the true jewel of the Dee Valley.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage domestic supply and infirmaries at Dinas Brân, ensuring craftsmen and warriors are sustained",
+    "Prepare for a strategic marriage that will secure an ironclad alliance for the house of Powys",
+    "Serve as a multilingual diplomatic conduit facilitating peaceful conciliation across the border"
+  ],
+  "Values": [
+    "High birth entails profound duty to commoners; true aristocracy is reflected in compassionate service",
+    "In an age of endless bloodshed, wit and diplomacy provide far more enduring shelter than iron",
+    "Embrace one's political destiny with calm courage, dedicating oneself to the survival of the house"
+  ],
+  "Fears": [
+    "War engulfing the Dee Valley and leaving the proud towers of Dinas Brân a smoking ruin",
+    "Being coerced into a brutal marriage to a merciless enemy warlord who despises her people"
+  ],
+  "SpeechStyle": "Speaks with melodic sweetness, enchanting grace, and crystalline clarity. Her voice carries the courtly refinement of royal French, soothing rough warriors and disarming angry ambassadors.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

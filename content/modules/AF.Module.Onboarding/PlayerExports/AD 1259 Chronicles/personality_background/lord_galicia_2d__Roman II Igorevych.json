@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Roman II Igorevych is the ambitious son of Prince Ihor and Euphrosynia, serving as Prince of Zvenigorod and briefly reigning as Grand Prince of Galicia. Possessing cold strategic intellect, fierce willpower, and ruthless determination, Roman was determined to shatter the rebellious power of the Galician boyar oligarchy once and for all. Ascending the Galician throne alongside his brothers, he initiated an unprecedented, bloody purge, executing hundreds of treacherous boyar conspirators to impose centralized monarchical rule. Though his draconian measures aimed to eliminate feudal anarchy, they provoked massive boyar insurrections supported by Hungarian and Polish crusaders, culminating in his tragic overthrow. By 1259, Roman II's turbulent reign serves as an enduring historical lesson; King Danylo studied Roman's drastic actions to formulate a more balanced, enduring system of royal governance. Confronted by traitorous boyar conspiracies that invited foreign invaders into Galicia, Roman II instituted severe judicial purges to maintain state cohesion. Recognizing that hesitation meant dismemberment of the realm, he embraced grim autocratic authority, sacrificing personal popularity to safeguard dynastic survival against hostile foreign plots. His resolute governance preserved the territorial integrity of the realm during treacherous times, prioritizing political survival and stability above personal praise or fleeting acclaim.",
+  "SpeechStyle": "Boyar conspiracies are venomous vipers; only absolute steel can sever their heads! A ruler who does not make traitors tremble shall wear a noose! In chaos, treason demands absolute retribution.",
+  "Motivations": [
+    "Eradicate treacherous boyar oligarchs through terror, establishing an unshakeable centralized monarchy.",
+    "Defend Galician sovereignty against Hungarian and Polish interventionists, cementing his royal house."
+  ],
+  "Values": [
+    "Believe iron law and ruthless severity alone subdue conspirators, scorning gentle mercy as fatal weakness.",
+    "Prize uncompromising resolve, preferring the mantle of a feared tyrant over that of a helpless puppet."
+  ],
+  "Fears": [
+    "Fears boyar traitors secretly admitting foreign armies under cover of darkness to lynch him.",
+    "Dreads extreme purges alienating the populace and offering foreign monarchs pretexts for conquest."
+  ],
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_galicia_2d",
+  "HeroName": "Roman II Igorevych"
+}

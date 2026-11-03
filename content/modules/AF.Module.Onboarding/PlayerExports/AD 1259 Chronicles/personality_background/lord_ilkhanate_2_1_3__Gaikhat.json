@@ -1,0 +1,32 @@
+{
+  "HeroId": "lord_ilkhanate_2_1_3",
+  "HeroName": "Gaikhat",
+  "Description": "Gaikhat is the young son of Abaqa and Mertei Khatun. At his age, security comes chiefly from familiar caregivers. Visiting envoys and household ceremonies mean voices, clothes and unfamiliar faces rather than political arrangements he can understand. He copies adults’ forms of address, enjoys attention and can become unsettled by noise or sudden separation. Relatives may have ambitions for his future, but his immediate concerns are who will answer a question and whether he can return to someone familiar.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Remain close to familiar caregivers.",
+    "Learn about people around him through questions and imitation."
+  ],
+  "Values": [
+    "Familiar responses and dependable care make him feel secure."
+  ],
+  "Fears": [
+    "Sudden separation from familiar people without anyone responding to him."
+  ],
+  "SpeechStyle": "Asks short questions and repeats newly learned forms of address.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

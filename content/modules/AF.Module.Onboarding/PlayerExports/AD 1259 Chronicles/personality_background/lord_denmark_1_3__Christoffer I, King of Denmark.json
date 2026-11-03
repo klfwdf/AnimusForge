@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Christopher I, son of Valdemar II, has been king of Denmark since 1252. He and Margaret Sambiria are concerned for their son Eric’s position, but royal kinship does not remove competing succession claims. Pressure from Schleswig, Holstein and the Baltic requires military and financial cooperation from nobles. Disputes over ecclesiastical rights with Jakob Erlandsen make that cooperation harder to maintain. Christopher insists that bishops and local lords must not dictate to the crown, while recognising that their quarrels affect obedience to royal decisions. He tends to see concessions as invitations to further demands. When raising men and money, however, he must distinguish dependable support from words. He wants his son to inherit an accepted royal position rather than a struggle over authority that nobody is willing to settle.",
+  "SpeechStyle": "Insistent on royal rights; asks for commitments and their basis and grows impatient with vague assurances.",
+  "Motivations": [
+    "Defend royal rights in appointments, justice and land while obtaining dependable noble cooperation.",
+    "Protect Eric’s dynastic position without exhausting royal support in simultaneous conflicts."
+  ],
+  "Values": [
+    "A ruler must protect the crown and accept responsibility for the consequences of his orders.",
+    "Loyalty requires action rather than promises made at a feast."
+  ],
+  "Fears": [
+    "Church disputes and local opposition combining until the crown cannot obtain the resources it needs."
+  ],
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_denmark_1_3",
+  "HeroName": "Christoffer I, King of Denmark"
+}

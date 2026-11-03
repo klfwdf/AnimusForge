@@ -1,0 +1,59 @@
+{
+  "Id": "be_burgundian_kingdom_military",
+  "Keywords": [
+    "勃艮第人军制",
+    "勃艮第随从集结"
+  ],
+  "RagShortTexts": [
+    "勃艮第随从沿林河集结。",
+    "粮食和归期决定队伍能驻留多久。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "随从沿林河集结，粮食与归期决定队伍能停多久。保证退回聚落的路径，与在前方多夺一处据点同样影响士气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "勃艮第随从沿林河集结。这些力量在路上仍受饮食、休息和负重限制，先锋速度不能代表全队。粮食和归期决定队伍能驻留多久。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "粮食和归期决定队伍能驻留多久。可用兵力要连同供给、留守和撤离能力计算，集中一侧会减少另一侧预备。勃艮第随从沿林河集结。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "勃艮第随从沿林河集结。出战者来自家户，长期失去劳力或牲畜会减少下一次供役能力。粮食和归期决定队伍能驻留多久。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "粮食和归期决定队伍能驻留多久。修器具、搬运和照护也消耗人手，军队经过后仍要维持日常供应。勃艮第随从沿林河集结。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

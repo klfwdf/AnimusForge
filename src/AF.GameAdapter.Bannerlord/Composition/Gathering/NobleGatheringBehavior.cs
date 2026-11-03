@@ -2690,8 +2690,13 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			.Where(kingdom => kingdom != null && !kingdom.IsEliminated)
 			.OrderBy(_ => MBRandom.RandomFloat)
 			.ToList();
+		// Player-hosted gatherings are outside the NPC pacing caps.
+		int activeNpc = _gatherings.Values.Count(record => record != null && !record.IsPlayerHosted
+			&& string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase));
+		int createdToday = 0;
 		bool createdAny = false;
 		List<string> results = new List<string>();
+		List<Kingdom> due = new List<Kingdom>();
 		foreach (Kingdom kingdom in kingdoms)
 		{
 			string kingdomId = (kingdom.StringId ?? "").Trim();
@@ -2703,7 +2708,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			{
 				if (!_npcKingdomNextHostDays.TryGetValue(kingdomId, out double nextEligibleDay))
 				{
-					_npcKingdomNextHostDays[kingdomId] = now + options.NpcIntervalDays;
+					_npcKingdomNextHostDays[kingdomId] = NpcGatheringSchedulePolicy.FirstDueDay(kingdomId, now, options.NpcIntervalDays);
 					continue;
 				}
 				if (now < nextEligibleDay)
@@ -2711,7 +2716,28 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 					continue;
 				}
 			}
-			if (!TryCreateNpcHostedGatheringForKingdom(kingdom, options, out string kingdomStatus))
+			due.Add(kingdom);
+		}
+		if (!force && due.Count > 0 && NpcGatheringSchedulePolicy.RemainingSlots(activeNpc, 0) <= 0)
+		{
+			// Due kingdoms keep their elapsed due day and are reconsidered tomorrow.
+			Log("npc gathering deferred reason=concurrent_cap active=" + activeNpc + " due=" + due.Count);
+			status = "concurrent_cap";
+			return false;
+		}
+		// One world scan per daily tick instead of one per due kingdom.
+		Dictionary<Kingdom, List<Hero>> hostsByKingdom = due.Count > 0 ? BuildNpcHostCandidates(due, options) : null;
+		int deferred = 0;
+		foreach (Kingdom kingdom in due)
+		{
+			string kingdomId = (kingdom.StringId ?? "").Trim();
+			if (!force && NpcGatheringSchedulePolicy.RemainingSlots(activeNpc, createdToday) <= 0)
+			{
+				deferred++;
+				continue;
+			}
+			hostsByKingdom.TryGetValue(kingdom, out List<Hero> candidates);
+			if (!TryCreateNpcHostedGatheringForKingdom(kingdom, options, candidates, out string kingdomStatus))
 			{
 				if (!string.IsNullOrWhiteSpace(kingdomStatus))
 				{
@@ -2720,18 +2746,49 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				continue;
 			}
 			createdAny = true;
-			_npcKingdomNextHostDays[kingdomId] = now + options.NpcIntervalDays;
+			createdToday++;
+			activeNpc++;
+			_npcKingdomNextHostDays[kingdomId] = NpcGatheringSchedulePolicy.NextDueDay(now, options.NpcIntervalDays, MBRandom.RandomFloat);
 			results.Add(kingdomStatus);
 			if (force)
 			{
 				break;
 			}
 		}
+		if (deferred > 0)
+		{
+			Log("npc gathering deferred reason=daily_cap created=" + createdToday + " deferred=" + deferred + " activeNpc=" + activeNpc);
+		}
 		status = results.Count > 0 ? string.Join(" | ", results) : "no_eligible_kingdom";
 		return createdAny;
 	}
 
-	private bool TryCreateNpcHostedGatheringForKingdom(Kingdom kingdom, NobleGatheringOptions options, out string status)
+	/// <summary>Eligible NPC hosts for the due kingdoms, grouped in one pass over the living heroes.</summary>
+	private Dictionary<Kingdom, List<Hero>> BuildNpcHostCandidates(List<Kingdom> dueKingdoms, NobleGatheringOptions options)
+	{
+		HashSet<Kingdom> wanted = new HashSet<Kingdom>(dueKingdoms);
+		Dictionary<Kingdom, List<Hero>> result = new Dictionary<Kingdom, List<Hero>>();
+		foreach (Hero hero in Hero.AllAliveHeroes)
+		{
+			if (hero == null || hero == Hero.MainHero || !hero.IsClanLeader || hero.Clan == null || hero.IsPrisoner || hero.Gold < options.Cost)
+			{
+				continue;
+			}
+			Kingdom kingdom = hero.Clan.Kingdom;
+			if (kingdom == null || !wanted.Contains(kingdom) || hero.Clan.IsEliminated || hero.Clan.IsMinorFaction || hero.Clan.IsBanditFaction)
+			{
+				continue;
+			}
+			if (!result.TryGetValue(kingdom, out List<Hero> list))
+			{
+				result[kingdom] = list = new List<Hero>();
+			}
+			list.Add(hero);
+		}
+		return result;
+	}
+
+	private bool TryCreateNpcHostedGatheringForKingdom(Kingdom kingdom, NobleGatheringOptions options, List<Hero> candidates, out string status)
 	{
 		status = "";
 		if (kingdom == null || kingdom.IsEliminated || !IsKingdomMostlyPeaceful(kingdom))
@@ -2739,9 +2796,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			status = "kingdom_not_peaceful";
 			return false;
 		}
-		List<Hero> possibleHosts = Hero.AllAliveHeroes
-			.Where(hero => hero != null && hero != Hero.MainHero && hero.IsClanLeader && hero.Clan != null && !hero.IsPrisoner && hero.Gold >= options.Cost)
-			.Where(hero => hero.Clan.Kingdom == kingdom && !hero.Clan.IsEliminated && !hero.Clan.IsMinorFaction && !hero.Clan.IsBanditFaction)
+		List<Hero> possibleHosts = (candidates ?? new List<Hero>())
 			.Where(hero => IsHeroEligibleForGatheringInvitation(hero, out _))
 			.Where(hero => !HasActiveGatheringForHost(hero))
 			.OrderBy(_ => MBRandom.RandomFloat)
@@ -4557,13 +4612,28 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		return selector;
 	}
 
+	// Model-written selector lists may use ASCII or full-width separators in either language.
+	private static readonly char[] SelectorValueSeparators = { ',', '\uFF0C', '|', '/', '\u3001' };
+
 	private static List<string> SplitSelectorValues(string value)
 	{
 		return (value ?? "")
-			.Split(new[] { ',', '，', '|', '/', '、' }, StringSplitOptions.RemoveEmptyEntries)
+			.Split(SelectorValueSeparators, StringSplitOptions.RemoveEmptyEntries)
 			.Select(x => x.Trim())
-			.Where(x => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, "none", StringComparison.OrdinalIgnoreCase) && !string.Equals(x, DiplomacyCompatibilityTexts.Get("Gathering_SelectorNone"), StringComparison.OrdinalIgnoreCase))
+			.Where(x => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, "none", StringComparison.OrdinalIgnoreCase) && !IsSelectorNone(x))
 			.ToList();
+	}
+
+	private static bool IsSelectorNone(string value)
+	{
+		foreach (string none in DiplomacyCompatibilityTexts.Variants("Gathering_SelectorNone"))
+		{
+			if (string.Equals(value, none, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static List<string> NormalizeStringList(IEnumerable<string> values)
@@ -4581,7 +4651,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		{
 			return;
 		}
-		Match match = Regex.Match(value ?? "", DiplomacyCompatibilityTexts.Get("Gathering_AgeRangePattern"));
+		Match match = Regex.Match(value ?? "", DiplomacyCompatibilityTexts.Source("Gathering_AgeRangePattern"));
 		if (match.Success && int.TryParse(match.Groups[1].Value, out int min) && int.TryParse(match.Groups[2].Value, out int max))
 		{
 			selector.MinAge = Math.Min(min, max);
@@ -4598,11 +4668,11 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 	private static string NormalizeGenderToken(string value)
 	{
 		string text = (value ?? "").Trim().ToLowerInvariant();
-		if (text == "female" || text == "woman" || text == "women" || text == "f" || text.Contains(DiplomacyCompatibilityTexts.Get("Gathering_SelectorFemale")))
+		if (text == "female" || text == "woman" || text == "women" || text == "f" || text.Contains(DiplomacyCompatibilityTexts.Source("Gathering_SelectorFemale")))
 		{
 			return "female";
 		}
-		if (text == "male" || text == "man" || text == "men" || text == "m" || text.Contains(DiplomacyCompatibilityTexts.Get("Gathering_SelectorMale")))
+		if (text == "male" || text == "man" || text == "men" || text == "m" || text.Contains(DiplomacyCompatibilityTexts.Source("Gathering_SelectorMale")))
 		{
 			return "male";
 		}

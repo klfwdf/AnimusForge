@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_turiv_pinsk_wetland_settlements_7b6dc5c2",
+  "Keywords": [
+    "Turiv and Pinsk water settlements",
+    "Livelihoods beside the Pripiat"
+  ],
+  "RagShortTexts": [
+    "Turiv and Pinsk are distinct settlements linked by waterways supporting carriage and fishing.",
+    "Floodwater alters meadows, crossings and landings, making local guides and boatmen important."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Turiv and Pinsk each connect settlements within the Pripiat waterways. Fish, meadows and transport sustain households and local revenues. Floods open channels while submerging tracks; low water grounds boats. Princes, merchants and envoys need knowledgeable guides, and possession of one landing does not control every route."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Waterside families adjust fishing, hay cutting and delivery to water levels and changing landings. Requisitioning boats and crews removes productive tools and expertise. Residents know marshes offer concealment but unfamiliar channels lack dry fuel, shelter and food; distance across water alone brings little security."
+    }
+  ],
+  "TextMappings": []
+}

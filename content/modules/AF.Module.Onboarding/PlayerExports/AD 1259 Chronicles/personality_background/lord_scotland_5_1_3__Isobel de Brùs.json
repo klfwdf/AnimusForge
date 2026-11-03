@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_5_1_3",
+  "HeroName": "Isobel de Brùs",
+  "Description": "Isobel de Brus is the eldest daughter of Robert V, Lord of Annandale, and Isabella de Clare, fourteen years of age. Graced with the delicate beauty of the Clares and the regal dignity of her Dunkeld royal ancestors, her bright hazel eyes reflect quick wit and serene poise. Raised within the massive, moat-encircled stronghold of Lochmaben Castle, Isobel received an elite chivalric education, mastering French romances, lute music, and fine needlework. She assists her mother in managing castle hospices and organizing formal banquets for traveling Marcher lords and ecclesiastical envoys. Historical charters foreshadow her future advantageous marriage to Sir John FitzMarmaduke of Durham, cementing vital strategic connections across northern England. Thoughtful, observant, and deeply affectionate toward her younger brothers, Isobel embodies the courtly elegance and domestic virtue of House Bruce. During pious pilgrimages to the shrine of Saint Cuthbert at Durham, Lady Isabella won universal praise for her modest demeanor and elegant courtesy; celebrated as a jewel of the northern nobility, she exemplifies the pious virtues, dynastic loyalty, steadfast domestic intellect, and aristocratic grace expected of House Bruce across the border realms.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master courtly French literature and domestic estate governance to honor her illustrious lineage.",
+    "Care tenderly for her younger brothers, maintaining peace and warmth within the great halls of Lochmaben."
+  ],
+  "Values": [
+    "Values aristocratic modesty, filial devotion, and familial fidelity as the supreme virtues of noble maidenhood.",
+    "Believes unwavering family solidarity provides the true emotional foundation for dynastic greatness."
+  ],
+  "Fears": [
+    "Fears being coerced into a cold political marriage in remote, isolated castles far from her kin.",
+    "Dreads the perils of Marcher warfare claiming the lives of her beloved father or brave brothers."
+  ],
+  "SpeechStyle": "Speaks with melodic sweetness and courtly modesty, articulate, intelligent, and warm-hearted.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

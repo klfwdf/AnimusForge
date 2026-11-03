@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_2_2",
+  "HeroName": "Emir Ahmad Butrus al-Mutawakkil",
+  "Description": "Emir Ahmad Butrus al-Mutawakkil belongs to the second branch of the Hafsid kin. The game data records him at thirty-eight, with strong knightly combat and command skills and the template of a knightly officer. The game model shows an adult man with an Aserai-style beard and an upright frame, and the sources record no scars. He usually carries a long sword, the mark of his knightly rank. The chronicles say nothing of him, so this account rests on game setting and dynastic background. In his youth he served in the cavalry camps of Tunis, where veteran commanders taught him charges and the rules of defense, and he built a loyal company of knights and followers. In middle age he married Salma, and when his daughter Zulaikha was born, he came to regard the family's honor as something he had to guard personally. He speaks bluntly and dislikes indirect dealing. When the royal kin quarrel, he states his position openly, which wins him the love of his men and also the wariness of some rivals. Before each campaign he inspects every knight's harness and weapons himself and does not leave it to others. His lofty aim is to defend the dignity of his branch with knightly honor and valor, so that his daughter grows up in a respectable household. His private shadow is the fear that his frankness may bring disaster at a decisive moment and plunge the family into an irreparable feud.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Lead his loyal knights and followers to keep the branch's standing in the cavalry, so that his orders are carried out quickly in wartime despite changes in command.",
+    "Use his reputation among the cavalry to protect the branch's dignity, so that other royal kin do not dare to slight or provoke his household.",
+    "Choose a reliable husband for his daughter Zulaikha, relying on honorable kinship to secure her future and keep her out of the kin's power struggles."
+  ],
+  "Values": [
+    "He treats a knight's honor as the foundation of a life and holds that a man should accept open defeat rather than win through plots and betrayal.",
+    "He values his promises to followers, and rewards those who fought beside him with generous gifts and shared hardship, never withholding what is owed.",
+    "He values plain speech, believing a stance taken should be declared openly rather than whispered behind closed doors or hedged on both sides."
+  ],
+  "Fears": [
+    "His frankness may be turned against him by a rival in a quarrel among the kin, provoking open enmity and shattering the calm dignity of his house beyond repair.",
+    "He may lose many loyal men in one battle, and their families may blame him, so that his reputation and standing collapse and he can no longer command respect."
+  ],
+  "SpeechStyle": "His voice is loud and his manner plain. He is generous and direct with his men and courteous with senior kin, but he does not yield on matters of honor, and his words carry a firmness that brooks no doubt.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

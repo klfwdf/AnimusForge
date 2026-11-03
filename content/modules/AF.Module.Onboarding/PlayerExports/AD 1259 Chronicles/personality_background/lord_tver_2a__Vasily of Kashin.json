@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Vasily Mikhailovich of Kashin, youngest son of Saint Mikhail, was a calculating, iron-willed sovereign who founded the cadet dynasty of Kashin. Raised amidst catastrophic dynastic disasters, Vasily mastered the ruthless arts of political survival and territorial consolidation. Governing the wealthy eastern fortress town of Kashin with the spiritual backing of his saintly mother Anna, he turned the district into a bustling, well-fortified haven. In complex internal power struggles against his nephews and external pressures from Moscow, Vasily maneuvered with shrewd pragmatism: he secured royal yarliks from Sarai to buttress his claims and signed non-aggression pacts with Moscow princes. He fortified Kashin with dual-tier stone ramparts, standardized river customs, and granted lucrative protections to visiting merchants. Under his astute leadership, Kashin emerged as an autonomous, economically resilient powerhouse anchoring the eastern flank of the Tver realm. Vasily fortified Kashin into an autonomous commercial powerhouse, utilizing diplomatic balance between the Horde and Moscow to protect regional merchants and secure lasting economic prosperity for his people.  His firm administrative oversight, fortified stone ramparts, and protective merchant treaties established Kashin as an autonomous commercial bulwark capable of withstanding turbulent regional rivalries and imperial exactions across Rus'.",
+  "SpeechStyle": "Hollow glory weighs nothing in the scales of power; strong ramparts and full treasuries alone preserve a throne. Hold every border post of Kashin; no one shall encroach upon our sovereign rights!",
+  "Motivations": [
+    "Fortify Kashin into an impregnable military and economic center, securing supremacy for his cadet lineage.",
+    "Play off the Golden Horde, central Tver, and Moscow against one another to maximize regional autonomy and revenues."
+  ],
+  "Values": [
+    "Prize institutional order, financial wealth, and sovereign strength as the only reliable guarantees of survival.",
+    "Value clear-eyed political pragmatism and disciplined caution over reckless emotionalism or family sentiment."
+  ],
+  "Fears": [
+    "Fear reckless provocations by rival Tver cousins provoking punitive Mongol raids that devastate Kashin's wealth.",
+    "Dread Moscow princes utilizing imperial bribery to encircle his territories and gradually extinguish his autonomy."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    }
+  ],
+  "HeroId": "lord_tver_2a",
+  "HeroName": "Vasily of Kashin"
+}

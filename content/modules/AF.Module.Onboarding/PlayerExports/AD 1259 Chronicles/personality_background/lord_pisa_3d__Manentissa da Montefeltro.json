@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_3d",
+  "HeroName": "Manentissa da Montefeltro",
+  "Description": "Manentissa da Montefeltro represents the legal and diplomatic acumen of House Montefeltro, expert in Tuscan feudal law and papal judicial suits. Adroitly negotiating with autonomous abbeys and regional counts, she secured tax exemptions and military immunities that preserved dynastic autonomy. Fluent in canon jurisprudence and municipal charters, Manentissa negotiated complex diplomatic treaties between the Pisan Senate, mountain abbeys, and regional barons. Drafting meticulous military subsidy covenants, she repeatedly diffused volatile mercenary mutinies over delayed payrolls, winning deep respect from senior allied commanders. Astute and farsighted, she believed that parchment treaties sealed with legal precision achieved strategic objectives far more securely than blind martial violence. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand lawful feudal boundaries through notarized treaties and diplomatic lawsuits.",
+    "Smooth financial frictions with Pisa and Tuscan communes over military subsidies."
+  ],
+  "Values": [
+    "A lawful charter sealed on parchment achieves more than blind physical clash.",
+    "Dispassionate diplomacy turns acute peril into enduring strategic opportunity."
+  ],
+  "Fears": [
+    "Papal tribunals declaring wholesale confiscation of ancestral ecclesiastical fiefs.",
+    "The collapse of allied communes rendering hard-won treaty privileges void."
+  ],
+  "SpeechStyle": "Speaks with refined legal eloquence and diplomatic tact, highly persuasive in negotiations. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

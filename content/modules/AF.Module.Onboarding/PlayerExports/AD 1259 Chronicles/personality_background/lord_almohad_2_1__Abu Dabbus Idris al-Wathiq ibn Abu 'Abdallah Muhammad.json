@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_2_1",
+  "HeroName": "Abu Dabbus Idris al-Wathiq ibn Abu 'Abdallah Muhammad",
+  "Description": "Idris al-Wathiq, known as Abu Dabbus, is a son of Abu 'Abdallah Muhammad according to the game lineage. He is about forty, tall and broad-shouldered, and years of riding inspection tours along the southern slopes of the Atlas have darkened his skin. A pale whip scar runs across his right cheek, from an early quarrel with a tribal chieftain. He grew up at the Marrakesh court, where he became known for eloquence and the easy manners of a negotiator. As a young man he spoke for his kin in council, and his colleagues considered him persuasive and measured. He belongs to the descendants of Abd al-Mu'min, and the rivalry between his line and that of caliph 'Umar al-Murtada is old, each side knowing the other's weak points. In recent years he has begun secret dealings with the Marinid court and is building loyal men inside the palace, one appointment at a time. Facing his cousin's caution and the old customs of the clan, he starts warmly and then presses, never breaking openly. His highest aim is to reunify the shrinking Almohad domains under one obedient court. His darker side is the fear that Marinid backing could be withdrawn at any time, leaving him to be overthrown. He often counts troops and treaties alone at night, afraid his agreements will collapse overnight.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Reunify the surviving Almohad domains into one state, so Marrakesh, the old Andalusian holdings and the tribes obey a single court and end the clans' independent ways.",
+    "Replace 'Umar's supporters in the palace with his own loyal men, weakening the 'Umar line and paving the way for a claim to the caliphate that elders cannot dismiss.",
+    "Keep his secret channel to the Marinid sultan open, trading tribute and supplies for northern calm and for Marinid support in any future rivalry."
+  ],
+  "Values": [
+    "Authority and order. He believes a caliph's commands exist only when the court and army actually carry them out, and a title alone means nothing.",
+    "Eloquence and intellect. He holds that a negotiation is won by words and timing, with force kept as the last resort when nothing else works.",
+    "Duty to his kin. He treats his cousins' futures as his own responsibility, and he keeps caring for them even after past quarrels and rivalries."
+  ],
+  "Fears": [
+    "Fears that Marinid support will be withdrawn, leaving him isolated in Marrakesh, overthrown by his own followers, and taken prisoner like any fallen prince.",
+    "Fears spies from 'Umar's faction among his own aides, so he rechecks every report, suspects even his closest men, and rarely sleeps well."
+  ],
+  "SpeechStyle": "Measured and eloquent, he favours balanced sentences and scriptural citation to justify decisions. He starts warmly in talks, then presses, hinting at the rival's family interests until the other side follows his rhythm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

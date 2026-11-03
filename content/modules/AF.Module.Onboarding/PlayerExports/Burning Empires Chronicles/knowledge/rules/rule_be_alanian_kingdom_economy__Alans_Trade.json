@@ -1,0 +1,59 @@
+{
+  "Id": "be_alanian_kingdom_economy",
+  "Keywords": [
+    "Alans Trade",
+    "Alan herd exchange"
+  ],
+  "RagShortTexts": [
+    "Alan herds and household wagons move together.",
+    "Alan camps obtain grain, iron and leather through exchange."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alan households move with herds. Lost mounts, breeding females and household wagons affect the next season; silver buys goods but cannot instantly restore tired horses or breeding stock. Exchange brings grain, iron and leatherwork into camp."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Alan herds and household wagons move together. Traveling followers need real food from this production; valuables still require a buyer and exchange. Alan camps obtain grain, iron and leather through exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Alan camps obtain grain, iron and leather through exchange. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Alan herds and household wagons move together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Alan herds and household wagons move together. Households need meals and the means to keep producing after delivering goods. Alan camps obtain grain, iron and leather through exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Alan camps obtain grain, iron and leather through exchange. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Alan herds and household wagons move together."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

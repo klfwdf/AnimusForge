@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_1_7",
+  "HeroName": "Riccardo Sanseverino di Lauro, Count of Caserta",
+  "Description": "Riccardo Sanseverino di Lauro rules as the formidable Count of Caserta and Grand Justiciar (Gran Giustiziere) of Sicily at forty-five years of age. Wedded to Violante, natural daughter of Emperor Frederick II, Riccardo stands as imperial son-in-law and premier judicial magnate of the realm. Controlling expansive, fertile estates and stone keeps around Caserta, he commands encyclopedic mastery over the Constitutions of Melfi and royal mobilization apparatus. Under King Manfred, Riccardo coordinates supreme judicial tribunals, treasury audits, and feudal levies. Highly calculating, cautious, and politically enigmatic, he serves the crown while quietly preparing for every possible outcome in the titanic clash between Rome and the Staufen dynasty, revered across Campania as an unshakeable oligarch. Count Riccardo's encyclopedic legal mastery, cold strategic calculation, and vast feudal influence make him an indispensable judicial titan steering the kingdom through dangerous political tides. His seasoned gravitas and calculated caution ensure that Caserta remains an unshakeable power broker in southern Italy, anchoring feudal legitimacy against papal intrigue. His profound grasp of feudal jurisprudence, vast territorial holdings, and unshakeable political composure make Count Riccardo a towering oligarch steering southern Italy through every crisis. His shrewd statecraft and unyielding baronial pride ensure that Caserta commands the highest respect from kings and popes across Christendom.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To safeguard his sprawling feudal domains and hereditary judicial supremacy through shifting regimes.",
+    "To maintain baronial cohesion across Campania against excessive royal financial demands."
+  ],
+  "Values": [
+    "Cold political calculation and dynamic hedging preserve dynasties; blind zeal invites extinction.",
+    "Rigorous law, formal charters, and institutional order outlast individual kings."
+  ],
+  "Fears": [
+    "King Manfred suffering sudden battlefield annihilation, dragging Caserta into confiscation.",
+    "Centralizing royal commissioners usurping his hereditary judicial privileges."
+  ],
+  "SpeechStyle": "Speaks with low, measured judicial severity, diamond-cut legal precision, and impenetrable diplomatic reserve. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

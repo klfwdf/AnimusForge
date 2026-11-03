@@ -192,42 +192,56 @@ public static class WorldDiplomacyIntentVocabulary
     }
 
     public static string IntentLabel(string intent)
+        => global::AnimusForge.DiplomacyCompatibilityTexts.Get(IntentLabelKey(intent));
+
+    /// <summary>True when <paramref name="text"/> contains the intent label in either language (stored or player text).</summary>
+    public static bool ContainsIntentLabel(string text, string intent)
+    {
+        if (string.IsNullOrEmpty(text)) return false;
+        foreach (string label in global::AnimusForge.DiplomacyCompatibilityTexts.Variants(IntentLabelKey(intent)))
+        {
+            if (label.Length != 0 && text.IndexOf(label, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+        }
+        return false;
+    }
+
+    private static string IntentLabelKey(string intent)
     {
 		return NormalizeIntent(intent) switch
 		{
-			"withdraw_offer" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_withdraw_offer"),
-			"propose_annexation" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_annexation"),
-			"accept_annexation" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_annexation"),
-			"reject_annexation" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_annexation"),
-			"propose_tributary" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_tributary"),
-			"accept_tributary" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_tributary"),
-			"reject_tributary" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_tributary"),
-			"propose_garrison" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_garrison"),
-			"accept_garrison" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_garrison"),
-			"reject_garrison" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_garrison"),
-			"propose_vassal" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_vassal"),
-			"accept_vassal" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_vassal"),
-			"reject_vassal" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_vassal"),
-			"declare_war" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_declare_war"),
-			"propose_peace" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_peace"),
-			"accept_peace" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_peace"),
-			"reject_peace" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_peace"),
-			"propose_alliance" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_alliance"),
-			"accept_alliance" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_alliance"),
-			"reject_alliance" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_alliance"),
-			"break_alliance" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_break_alliance"),
-			"propose_trade" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_propose_trade"),
-			"accept_trade" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_accept_trade"),
-			"reject_trade" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_reject_trade"),
-			"cancel_trade" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_cancel_trade"),
-            "release_subject" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_release_subject"),
-			"comply_ultimatum" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_comply_ultimatum"),
-			"ultimatum" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_ultimatum"),
-			"warning" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_warning"),
-			"condemn" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_condemn"),
-			"apology" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_apology"),
-			"concession" => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_concession"),
-			_ => global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_032")
+			"withdraw_offer" => "IntentLabel_withdraw_offer",
+			"propose_annexation" => "IntentLabel_propose_annexation",
+			"accept_annexation" => "IntentLabel_accept_annexation",
+			"reject_annexation" => "IntentLabel_reject_annexation",
+			"propose_tributary" => "IntentLabel_propose_tributary",
+			"accept_tributary" => "IntentLabel_accept_tributary",
+			"reject_tributary" => "IntentLabel_reject_tributary",
+			"propose_garrison" => "IntentLabel_propose_garrison",
+			"accept_garrison" => "IntentLabel_accept_garrison",
+			"reject_garrison" => "IntentLabel_reject_garrison",
+			"propose_vassal" => "IntentLabel_propose_vassal",
+			"accept_vassal" => "IntentLabel_accept_vassal",
+			"reject_vassal" => "IntentLabel_reject_vassal",
+			"declare_war" => "IntentLabel_declare_war",
+			"propose_peace" => "IntentLabel_propose_peace",
+			"accept_peace" => "IntentLabel_accept_peace",
+			"reject_peace" => "IntentLabel_reject_peace",
+			"propose_alliance" => "IntentLabel_propose_alliance",
+			"accept_alliance" => "IntentLabel_accept_alliance",
+			"reject_alliance" => "IntentLabel_reject_alliance",
+			"break_alliance" => "IntentLabel_break_alliance",
+			"propose_trade" => "IntentLabel_propose_trade",
+			"accept_trade" => "IntentLabel_accept_trade",
+			"reject_trade" => "IntentLabel_reject_trade",
+			"cancel_trade" => "IntentLabel_cancel_trade",
+            "release_subject" => "IntentLabel_release_subject",
+			"comply_ultimatum" => "IntentLabel_comply_ultimatum",
+			"ultimatum" => "IntentLabel_ultimatum",
+			"warning" => "IntentLabel_warning",
+			"condemn" => "IntentLabel_condemn",
+			"apology" => "IntentLabel_apology",
+			"concession" => "IntentLabel_concession",
+			_ => "IntentVocabulary_OriginalTerm_032"
 		};
 	}
 
@@ -288,13 +302,47 @@ public static class WorldDiplomacyIntentVocabulary
             || string.Equals(NormalizeIntent(intent), "ultimatum", StringComparison.OrdinalIgnoreCase)
             || modelRequestedResponse;
     }
+	// Round topics are stored text written in either game language; match both language variants.
+	// Built once (language-independent), so the hot path allocates nothing per call.
+	private static readonly Lazy<string[][]> TopicCategoryNeedles = new Lazy<string[][]>(() => new[]
+	{
+		TopicNeedles("IntentVocabulary_OriginalTerm_033", "IntentVocabulary_OriginalTerm_034"),
+		TopicNeedles("IntentVocabulary_OriginalTerm_035", "IntentVocabulary_OriginalTerm_036", "IntentVocabulary_OriginalTerm_037", "IntentLabel_ultimatum", "IntentLabel_warning", "IntentVocabulary_OriginalTerm_038", "IntentVocabulary_OriginalTerm_039", "IntentVocabulary_OriginalTerm_040"),
+		TopicNeedles("IntentVocabulary_OriginalTerm_041", "IntentVocabulary_OriginalTerm_042", "IntentVocabulary_OriginalTerm_043", "IntentVocabulary_OriginalTerm_044", "IntentVocabulary_OriginalTerm_045", "IntentVocabulary_OriginalTerm_046", "IntentVocabulary_OriginalTerm_047"),
+		TopicNeedles("IntentVocabulary_OriginalTerm_048", "IntentVocabulary_OriginalTerm_049")
+	}, true);
+	private static readonly string[] TopicCategories = { "peace_terms", "war_escalation", "trade_order", "alliance_duties" };
+
+	private static string[] TopicNeedles(params string[] ids)
+		=> ids.SelectMany(id => global::AnimusForge.DiplomacyCompatibilityTexts.Variants(id)).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+
+	// Latin needles must start at a word boundary so that e.g. "war" does not match "toward" and
+	// "pact" does not match "impact"; Chinese needles keep plain substring matching.
+	private static bool ContainsTopicTerm(string text, string needle)
+	{
+		int at = text.IndexOf(needle, StringComparison.OrdinalIgnoreCase);
+		if (at < 0 || !IsLatinLetter(needle[0])) return at >= 0;
+		while (at >= 0)
+		{
+			if (at == 0 || !IsLatinLetter(text[at - 1])) return true;
+			at = text.IndexOf(needle, at + 1, StringComparison.OrdinalIgnoreCase);
+		}
+		return false;
+	}
+
+	private static bool IsLatinLetter(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+
 	public static string InferTopicCategory(string topic, bool initiatorAndTargetAtWar)
 	{
 		string value = topic ?? "";
-		if (value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_033"), StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_034"), StringComparison.OrdinalIgnoreCase) >= 0) return "peace_terms";
-		if (ContainsAny(value, global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_035"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_036"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_037"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_ultimatum"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentLabel_warning"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_038"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_039"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_040"))) return "war_escalation";
-		if (ContainsAny(value, global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_041"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_042"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_043"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_044"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_045"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_046"), global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_047"))) return "trade_order";
-		if (value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_048"), StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf(global::AnimusForge.DiplomacyCompatibilityTexts.Get("IntentVocabulary_OriginalTerm_049"), StringComparison.OrdinalIgnoreCase) >= 0) return "alliance_duties";
+		string[][] needles = TopicCategoryNeedles.Value;
+		for (int category = 0; category < needles.Length; category++)
+		{
+			foreach (string needle in needles[category])
+			{
+				if (ContainsTopicTerm(value, needle)) return TopicCategories[category];
+			}
+		}
 		if (initiatorAndTargetAtWar) return "war_conduct";
 		return "regional_security";
 	}

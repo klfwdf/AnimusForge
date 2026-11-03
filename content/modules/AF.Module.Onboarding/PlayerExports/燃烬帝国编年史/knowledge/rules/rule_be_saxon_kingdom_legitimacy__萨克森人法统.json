@@ -1,0 +1,59 @@
+{
+  "Id": "be_saxon_kingdom_legitimacy",
+  "Keywords": [
+    "萨克森人法统",
+    "弗里温的安全返航与份额"
+  ],
+  "RagShortTexts": [
+    "海岸保护、兑现份额和安全返航支持Freawine。",
+    "只奖战士会使船主与农户不愿再参与。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "保护海岸、兑现份额和保住返航者支持首领威望，若只让战士获利而让船主和农人承担损失，下一次集结便更困难。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "海岸保护、兑现份额和安全返航支持Freawine。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。只奖战士会使船主与农户不愿再参与。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "只奖战士会使船主与农户不愿再参与。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。海岸保护、兑现份额和安全返航支持Freawine。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "海岸保护、兑现份额和安全返航支持Freawine。家户通过家人、土地与求助能否获保护来认识统治。只奖战士会使船主与农户不愿再参与。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "只奖战士会使船主与农户不愿再参与。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。海岸保护、兑现份额和安全返航支持Freawine。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_4_2_2_3",
+  "HeroName": "Nicolas l'Aleman, Lord of Caesarea",
+  "Description": "Nicolas l'Aleman was the second son of John l'Aleman and Marguerite de Brisebarre, serving as the strategic and logistical organizer of Caesarea. Displaying an analytical intellect rather than raw martial aggressiveness, Nicolas recognized early that fortress resilience depended upon rigorous supply chains. Managing the citadel's magazines, he supervised the manufacture of heavy crossbow quarrels, Greek fire barrels, and stone ammunition reserves. In 1259, amidst regional inflation and fiscal strain, Nicolas successfully restructured garrison contracts, ensuring timely mercenary stipends without mutiny. Stationed in Caesarea's keep, he systematically collated intelligence reports arriving from Acre, Damascus, and Cairo, offering insightful strategic assessments to his kin. Combining administrative discipline with forensic composure, Nicolas provided the indispensable organizational intellect sustaining his family's coastal redoubt. Within Caesarea's keep, Nicolas maintained exhaustive weapons registers, accounting for every suit of mail, barrel of Greek fire, and crossbow bolt in the arsenal. Analyzing diplomatic dispatches from across the Levant, he accurately forecasted enemy raiding axes, providing his kin with crucial tactical forewarning. Analytical, quiet, and strategic, his logistical foresight formed the impenetrable intellectual shield defending his house. His systematic administrative vigilance ensured that Caesarea was never caught unprepared by sudden enemy sieges or seasonal supply shortfalls.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Regulate ammunition, naphtha, and grain stores in Caesarea to guarantee uninterrupted endurance throughout severe sieges.",
+    "Analyze incoming diplomatic intelligence and troop movements to formulate prudent defensive strategies for his house.",
+    "Negotiate favorable military credit and weapons procurement contracts with Genoese merchants in the High Court of Acre."
+  ],
+  "Values": [
+    "Victory is determined by logistics and dispassionate foresight long before lances cross; calculation preserves kingdoms.",
+    "Forensic precision and vigilance in administrative duty; a single neglected supply deficiency can doom a mighty fortress.",
+    "Selfless devotion to behind-the-scenes service, taking pride in providing the indispensable logistical backbone of the army."
+  ],
+  "Fears": [
+    "Sabotage detonating the central arsenal of Caesarea, leaving defending archers without bolts during an enemy assault.",
+    "Italian maritime syndicates repudiating weapons supply contracts, cutting off the supply of Continental plate armor."
+  ],
+  "SpeechStyle": "Speaks with quiet, analytical precision and measured authority, reviewing weapons registries and financial accounts with forensic discipline.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Nicolas l'Aleman, Lord of Caesarea"
+}

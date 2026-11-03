@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_3_2",
+  "HeroName": "Dom Gonçalo II Garcia de Sousa",
+  "Description": "Dom Gonçalo II Garcia de Sousa is the high-spirited younger son of Gonçalo Garcia, Lord of Barroso and Neiva, personifying the adventurous martial fervor of his house. Reared amidst the tilt-yards and hunting forests of northern Portugal, young Gonçalo is an accomplished cavalryman skilled in swordsmanship, falconry, and field skirmishing. Unlike his politically calculating father and brother, Don Gonçalo hungers for direct chivalric action, routinely leading agile mounted patrols through the northern frontier passes. In 1259, having earned his golden spurs in tournaments and border skirmishes, he is widely admired among the younger nobility for his open-handed generosity. Candid, fearless, and passionately loyal to his retainers, he treats common footmen with genuine respect, winning the deep devotion of his men. Burning to win martial renown in grand crusades, young Gonçalo stands ready to spearhead the frontline charges of the House of Sousa. Leading light cavalry skirmishers through the treacherous border serras of the Minho, Gonçalo II hunted down outlaw raiding bands with ruthless precision. Generous, courageous, and adored by his horsemen, the young knight burned to win combat laurels on distant battlefields, carrying the battle standard of Sousa to triumph. His open-handed generosity, fearless swordsmanship, and chivalric enthusiasm endear young Gonçalo to knights and commoners alike across the realm.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win martial laurels in holy warfare to prove worthy of the legendary martial honor of Sousa",
+    "Train an elite troop of agile mountain cavalry to provide swift strike capabilities for his house",
+    "Forge deep chivalric bonds with young knights across Iberia, building an unbreakable brotherhood"
+  ],
+  "Values": [
+    "A knight's true glory is forged in the fury of combat; cowardice and greed are stains upon the soul",
+    "Generosity and unwavering loyalty to comrades-in-arms create an invincible bond on the battlefield",
+    "Cherish chivalric integrity, defend the defenseless, and avenge dishonor without hesitation"
+  ],
+  "Fears": [
+    "Protracted peacetime dulling his combat edge and denying him the glory of the battlefield",
+    "Suffering a humiliating defeat on patrol that compromises the military prestige of his lineage"
+  ],
+  "SpeechStyle": "Dynamic, candid, and passionate; speaks with the vibrant confidence, knightly idealism, and bold swagger of an eager young cavalry champion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

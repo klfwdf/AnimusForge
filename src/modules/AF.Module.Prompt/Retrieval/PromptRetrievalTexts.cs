@@ -8,27 +8,27 @@ namespace AnimusForge;
 
 internal static class PromptRetrievalTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> Compatibility = new Lazy<Dictionary<string, string>>(() =>
-    {
-        using (Stream stream = typeof(PromptRetrievalTexts).Assembly.GetManifestResourceStream("AnimusForge.Prompt.RetrievalCompatibility.json"))
-        using (StreamReader reader = new StreamReader(stream, new UTF8Encoding(false, true)))
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
-    }, true);
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly BilingualTextTable Compatibility =
+        BilingualTextTable.FromEmbedded(typeof(PromptRetrievalTexts).Assembly, "AnimusForge.Prompt.RetrievalCompatibility.json");
+    private static readonly PromptLanguageFile<Dictionary<string, string>> Values = new PromptLanguageFile<Dictionary<string, string>>("PromptRetrievalTexts.json", path =>
         JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("PromptRetrievalTexts.json"), new UTF8Encoding(false, true))), true);
+            path, new UTF8Encoding(false, true))));
 
     internal static string OptionalHeader(string rawTitle)
     {
-        if (string.Equals(rawTitle, Raw("Raw_a7699de9c855"), StringComparison.Ordinal)) return Prompt("NpcItemsHeader");
-        if (string.Equals(rawTitle, Raw("Raw_e22aa87ba2c7"), StringComparison.Ordinal)) return Prompt("PlayerEquipmentHeader");
-        if (string.Equals(rawTitle, Raw("Raw_667cf12fa5e8"), StringComparison.Ordinal)) return Prompt("DebtHeader");
-        if (string.Equals(rawTitle, Raw("Raw_674366dba38e"), StringComparison.Ordinal)) return Prompt("PlayerMarriageHeader");
-        if (string.Equals(rawTitle, Raw("Raw_47744bca4c99"), StringComparison.Ordinal)) return Prompt("TargetMarriageHeader");
-        if (string.Equals(rawTitle, Raw("Raw_edf50fd9fd51"), StringComparison.Ordinal)) return Prompt("RuntimeFactsHeader");
+        if (IsRaw(rawTitle, "Raw_a7699de9c855")) return Prompt("NpcItemsHeader");
+        if (IsRaw(rawTitle, "Raw_e22aa87ba2c7")) return Prompt("PlayerEquipmentHeader");
+        if (IsRaw(rawTitle, "Raw_667cf12fa5e8")) return Prompt("DebtHeader");
+        if (IsRaw(rawTitle, "Raw_674366dba38e")) return Prompt("PlayerMarriageHeader");
+        if (IsRaw(rawTitle, "Raw_47744bca4c99")) return Prompt("TargetMarriageHeader");
+        if (IsRaw(rawTitle, "Raw_edf50fd9fd51")) return Prompt("RuntimeFactsHeader");
         return rawTitle;
     }
 
-    internal static string Raw(string id) => Compatibility.Value[id];
+    internal static string Raw(string key) => Compatibility.Get(key);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string RawSource(string key) => Compatibility.Chinese(key);
+    internal static string[] RawVariants(string key) => Compatibility.Variants(key);
+    internal static bool IsRaw(string value, string key) => Compatibility.Is(value, key);
     internal static string Prompt(string id) => Values.Value[id];
 }

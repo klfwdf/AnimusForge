@@ -1,0 +1,59 @@
+{
+  "Id": "be_slavic_kingdom_legitimacy",
+  "Keywords": [
+    "Venedians Legitimacy",
+    "Lekh’s fields and passage protection"
+  ],
+  "RagShortTexts": [
+    "Protecting fields, crossings and passage supports Lekh.",
+    "Related names do not make neighbors accept one jurisdiction."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Protecting fields, crossings and passage supports recognition. Related neighbors also contest land; jurisdiction requires cooperation rather than names alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Protecting fields, crossings and passage supports Lekh. Military recognition also rests on rewards and relief; a title needs willing action. Related names do not make neighbors accept one jurisdiction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Related names do not make neighbors accept one jurisdiction. Nominal rights require local execution, with consent and supply both shaping authority. Protecting fields, crossings and passage supports Lekh."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protecting fields, crossings and passage supports Lekh. Households judge rule through protected families, land and responses to appeals. Related names do not make neighbors accept one jurisdiction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Related names do not make neighbors accept one jurisdiction. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protecting fields, crossings and passage supports Lekh."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

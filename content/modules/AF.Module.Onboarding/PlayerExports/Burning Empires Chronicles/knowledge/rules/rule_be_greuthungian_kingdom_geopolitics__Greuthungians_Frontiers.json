@@ -1,0 +1,59 @@
+{
+  "Id": "be_greuthungian_kingdom_geopolitics",
+  "Keywords": [
+    "Greuthungians Frontiers",
+    "Greuthungian Dnieper crossings"
+  ],
+  "RagShortTexts": [
+    "Dnieper crossings and forest-steppe roads connect Black Sea approaches.",
+    "Eastern and Bosporan wars threaten food along different routes."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dnieper crossings, forest-steppe and coastal roads connect routes. Eastern pressure and Bosporan war may approach grain from different directions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Dnieper crossings and forest-steppe roads connect Black Sea approaches. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Eastern and Bosporan wars threaten food along different routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Eastern and Bosporan wars threaten food along different routes. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Dnieper crossings and forest-steppe roads connect Black Sea approaches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Dnieper crossings and forest-steppe roads connect Black Sea approaches. Closed routes may separate families from goods, imposing costs on those remaining at home. Eastern and Bosporan wars threaten food along different routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Eastern and Bosporan wars threaten food along different routes. Cargo passes different carriers, making distant route changes become local shortages through delay. Dnieper crossings and forest-steppe roads connect Black Sea approaches."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

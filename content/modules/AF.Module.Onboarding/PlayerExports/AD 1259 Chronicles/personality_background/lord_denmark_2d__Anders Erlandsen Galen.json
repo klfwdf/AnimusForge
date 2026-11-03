@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2d",
+  "HeroName": "Anders Erlandsen Galen",
+  "Description": "Sir Anders Erlandsen Galen of Scania, third brother of Archbishop Jakob, was the consummate judicial administrator and logistical coordinator of the Galen house. While his brothers handled grand politics and cavalry shock combat, Anders governed their strategic network of waterborne castles straddling Zealand and Scania. Highly versed in traditional Nordic customary law, Anders repeatedly outmaneuvered royal bailiffs in regional assemblies (landsting), thwarting monarchical attempts to infringe upon baronial jurisdictional immunities. During active hostilities, he organized the maritime transport of grain, siege timber, and pitch across the Sound. Prudent, calculating, and emotionally disciplined, Anders acted as the calming voice of moderation, ensuring that tactical battlefield victories were permanently cemented through advantageous legal treaties. Versed in both customary Danish law and Holy Roman imperial jurisprudence, Anders served as the chief ambassador of the Galen affinity across the Hanseatic ports and the courts of northern Germany. Leveraging Scanian commercial toll exemptions, he negotiated substantial financial loans and armaments shipments from Lübeck and Visby to reinforce the baronial resistance against royal centralization. In tense diplomatic conferences with royal envoys, Anders maintained an aristocratic composure, systematically unraveling crown arguments through incisive legal reasoning, proving himself an indispensable diplomatic counselor.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Mobilize customary law and provincial assemblies to block royal attempts to usurp traditional baronial judicial privileges.",
+    "Coordinate maritime supply corridors, ensuring Galen fortresses and naval squadrons maintain overflowing arsenals and food caches."
+  ],
+  "Values": [
+    "Values codified custom, signed charters, and patient realpolitik, believing violent triumphs are wasted without judicial consolidation.",
+    "Champions emotional restraint and strategic moderation, translating transient battlefield victories into enduring institutional rights."
+  ],
+  "Fears": [
+    "Fears overconfident baronial allies overextending into deep royalist territory, walking into devastating ambushes."
+  ],
+  "SpeechStyle": "Speaks with quiet, forensic deliberateness, each precise legal argument weighed and delivered with unshakeable diplomatic authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

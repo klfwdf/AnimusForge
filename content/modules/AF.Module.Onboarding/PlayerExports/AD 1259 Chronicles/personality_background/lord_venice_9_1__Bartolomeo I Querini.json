@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_9_1",
+  "HeroName": "Bartolomeo I Querini",
+  "Description": "Bartolomeo I Querini commands as the formidable patriarch of the ancient Querini dynasty, feudal lord of the island citadel of Stampalia in the Aegean and fierce defender of patrician prerogatives in the Senate. Proud, aristocratic, and unyielding, he champions ruthless confrontation against Genoa and Byzantium while viewing ducal expansionism with deep jealousy. Perched atop the rocky crags of Stampalia, Bartolomeo erected a formidable stone fortress, ruling the maritime fief with absolute feudal authority and garrisoning Latin men-at-arms to command key Cycladic shipping routes. Within the Senate, he stands as an uncompromising champion of ancient patrician liberties, leading traditional magnates to block populist reforms and defending feudal insular baronies from state centralization with icy arrogance. Viewing lineage prestige and aristocratic sovereignty as sacred, this haughty Querini dynast is resolved to wield sword and feudal charter to guard his house's ancient dominance against all imperial and domestic foes. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend Querini hereditary fiefs and feudal dominance across the Aegean isles.",
+    "Check ducal encroachments upon the sovereign prerogatives of the high nobility."
+  ],
+  "Values": [
+    "The ancient blood and liberties of the patriciate are sacred and untouchable.",
+    "Tolerating weakness before rivals invites inevitable humiliation."
+  ],
+  "Fears": [
+    "Populist upstarts eroding ancient patrician hegemony in the Great Council.",
+    "Byzantine naval resurgence overrunning his ancestral island barony of Stampalia."
+  ],
+  "SpeechStyle": "Speaks with haughty aristocratic grandeur and sharp disdain for populist compromise. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

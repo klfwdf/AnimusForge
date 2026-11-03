@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_6_1",
+  "HeroName": "Guy III de Châtillon, Count of Saint-Pol",
+  "Description": "Guy III de Châtillon is the Count of Saint-Pol, standing as one of the preeminent military captains of the high Capetian nobility. At twenty-nine, he rules from the strategic stronghold of Saint-Pol, anchoring the border defense between Artois and the County of Flanders. Belonging to the martial dynasty of Châtillon that supplied marshals and constables to the French kings, Guy embodies unyielding loyalty to the royal lilies of Saint Louis. His marriage to Mathilde of Brabant, widow of Count Robert I of Artois, bound his fortunes with the ducal house of Brabant while placing him in stewardship over the vast county of Artois as guardian of the young Robert II. A disciplined warrior and veteran jouster, Guy maintains an elite standing retinue of crossbowmen and dismounted men-at-arms, repeatedly repelling raids along the Flemish borders. He stands as a rock of northern royal security. At Saint-Pol, Count Guy established a dedicated stud farm and armorers' guild, testing the temper of every forged breastplate himself. Austere yet intensely generous to his troopers, he rewarded battlefield valor with golden belts and fine chargers, winning the fanatical, unyielding loyalty of the northern French frontier garrisons. His iron resolve and unwavering commitment to the Capetian cause guarantee that the northern marches of France stand resilient against all hostile incursions.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Guard the march of Saint-Pol against Flemish aggression to protect northern France.",
+    "Nurture his stepson Robert of Artois to secure Châtillon dominance across the north."
+  ],
+  "Values": [
+    "Chivalric martial valor and unswerving fealty sworn to the Capetian Crown.",
+    "Rigorous discipline and leading from the forefront of the battle line in crisis."
+  ],
+  "Fears": [
+    "A sudden Flemish offensive breaching the frontier to devastate the fields of Artois.",
+    "Slanderous courtiers claiming he mismanaged the heritage of his stepson Robert."
+  ],
+  "SpeechStyle": "Speaks with booming military authority, his northern French phrasing crisp, blunt, and commanding, radiating the fearless discipline of a frontline marcher count.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_angle_kingdom_geopolitics",
+  "Keywords": [
+    "Angles Frontiers",
+    "Angulus bay anchorages"
+  ],
+  "RagShortTexts": [
+    "Angulus links southern peninsula routes and bay landings.",
+    "Saxon conflict threatens both land travel and landing."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Narrow southern peninsula routes meet bays and landing places. Inland roads supply food and water; conflict toward Saxons can threaten both land travel and landing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Angulus links southern peninsula routes and bay landings. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Saxon conflict threatens both land travel and landing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Saxon conflict threatens both land travel and landing. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Angulus links southern peninsula routes and bay landings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Angulus links southern peninsula routes and bay landings. Closed routes may separate families from goods, imposing costs on those remaining at home. Saxon conflict threatens both land travel and landing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Saxon conflict threatens both land travel and landing. Cargo passes different carriers, making distant route changes become local shortages through delay. Angulus links southern peninsula routes and bay landings."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

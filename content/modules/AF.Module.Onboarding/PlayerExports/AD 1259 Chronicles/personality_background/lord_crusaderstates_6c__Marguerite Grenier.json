@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_6c",
+  "HeroName": "Marguerite Grenier of Sidon",
+  "Description": "Marguerite Grenier was the noble daughter of Count Julian of Sidon and Princess Euphemia of Armenia, uniting Frankish crusader chivalry with Caucasian royalty. Educated within the cloisters of Sidon and the soaring halls of Beaufort, she was deeply versed in Latin poetry, Armenian chronicles, and devotional liturgy. Throughout the tumultuous decades marked by hostile raids and crushing feudal debts, Marguerite remained a steadfast companion to her mother. In 1259, as saracen raids threatened coastal settlements, Marguerite coordinated charitable relief, weaving wool cloaks and distributing bread to displaced nuns. Celebrated for her quiet fortitude and gentle Christian virtue, her reputation for piety and modesty spread across Acre and the Cypriot high nobility. Serene, devout, and resilient, she provided constant moral support to her family, standing as an enduring symbol of hope amidst adversity. Having witnessed the turbulence of coastal warfare from childhood, Marguerite possessed sophisticated insight into Levantine power struggles and maritime trade treaties. Within the baronial palace, she assisted her mother in auditing harbor tariffs and Genoese merchant concessions, executing financial duties with sharp precision. In 1259, as hostile smoke darkened coastal horizons, she organized medical bandages and domestic grain rations for wounded garrison soldiers. Poised, decisive, and astute, she stood as an exemplary crusader noblewoman capable of guiding feudal estates.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Devote her life to monastic charity and religious patronage in Beaufort, elevating the honorable name of her lineage.",
+    "Support her mother Euphemia with filial devotion, maintaining domestic peace and stability within their embattled castle.",
+    "Master classical scriptures and herbal medicine, offering comfort and healing to displaced Christian casualties of war."
+  ],
+  "Values": [
+    "A noblewoman's true nobility lies in inner spiritual purity and selfless love for the vulnerable amidst wartime storms.",
+    "Cherishing familial bonds above all, acting as a gentle moral anchor preserving domestic harmony through adversity.",
+    "Devotion to divine scripture, enduring earthly hardships with quiet grace as spiritual purification toward eternal salvation."
+  ],
+  "Fears": [
+    "Beaufort Castle capitulating to hostile siege engines, resulting in the captivity and dishonor of her noble family.",
+    "Creditors and rival baronies dispossessing her brothers entirely, leaving them landless wanderers in Outremer."
+  ],
+  "SpeechStyle": "Speaks with melodic courtly refinement and gentle aristocratic grace, discussing devotional texts and family chronicles with modest, composed eloquence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Marguerite Grenier of Sidon"
+}

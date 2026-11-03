@@ -1,0 +1,52 @@
+{
+  "Id": "rule_wayside_chasovnya_crossroads_chapel",
+  "Keywords": [
+    "prayer at a wayside cross",
+    "small worship places by a crossing"
+  ],
+  "RagShortTexts": [
+    "Wayside crosses and small worship sites serve prayer, memory and route finding through local care.",
+    "Travelers still need food, shelter and local safety information beyond a religious marker."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A cross near a village, road or ferry lets travelers pray and can commemorate a death or local event. A small worship place may have a keeper or occasional clergy, but entry and services need local inquiry. Timber decays and approaches grow muddy; a marker still needs repair and does not mean a town has been reached.\n\nPeople pray, ask directions and meet travelers whose news covers only their own route. A religious marker provides no automatic grain store, dry bed or guards. Rainy nights need shelter and injured people need help. Gifts of wax or food support upkeep, alongside local labour and materials seldom noticed by visitors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Patrons need upkeep and access behind their gifts. Any promise to host travelers needs a key keeper and actual food and shelter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops use crosses as landmarks without dropping vigilance. Meeting plans need the precise junction and waiting time to avoid confusion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Local repairs help visitors arrive, while hosting strangers competes with fuel and food for dependants."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

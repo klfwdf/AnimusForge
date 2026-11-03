@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v9",
+  "Keywords": [
+    "岩道辎重与退路"
+  ],
+  "RagShortTexts": [
+    "高加索狭路上先后通过的不是只有战士，还包括牲畜、粮袋和随行家庭。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "高加索狭路上先后通过的不是只有战士，还包括牲畜、粮袋和随行家庭。进军时留在后面的辎重，撤退时可能堵住前路。行列安排因而要同时考虑前进和回返，而非只算前锋一天能走多远。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

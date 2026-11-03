@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_2_2",
+  "HeroName": "Jardine Cuimean, Lord of Inverallochy",
+  "Description": "Jardine Comyn, Lord of Inverallochy, is a capable baron of Clan Comyn and cousin to John I Comyn of Badenoch, governing the windswept northeastern coast of Aberdeenshire. Broad-shouldered, rugged, with a neatly trimmed auburn beard and alert brown eyes, Jardine was forged amidst the fierce North Sea gales. Anchoring Comyn dominance over Buchan and the Moray Firth, he established a formidable stone stronghold at Inverallochy, overseeing vital fishing harbors and coastal trade. In 1259, as tensions with Norway raise fears of amphibious raids along the eastern coastline, Jardine collaborates closely with his kinsman Alexander, Earl of Buchan, reinforcing coastal watchtowers and drilling local longbow levies. Pragmatic, vigilant, and fiercely loyal to clan interests, Jardine secures the northern maritime approaches, standing as an unyielding bulwark defending Comyn sovereignty against foreign aggression. A seasoned chivalric captain of the Comyn kin stationed upon the windswept headlands of Buchan, Jardine expertly supervised the stone defenses of Inverallochy; commanding trusted men-at-arms along the North Sea coasts, he maintained coastal trade and fortified harbors, standing as an unshakeable and loyal bulwark for the Earl of Buchan's council against maritime raiders and Highland competitors alike in every campaign.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold Inverallochy Castle and northeastern ports, repelling probing Norse raids along the Aberdeenshire coast",
+    "Support the Earl of Buchan in maintaining Clan Comyn's undisputed supremacy across the northeast",
+    "Develop local fisheries and wool trade to provide continuous silver revenues for the garrison"
+  ],
+  "Values": [
+    "Coastal vigilance is the foundation of peace; never yield an inch of shoreline to foreign reivers",
+    "Iron discipline and well-stocked granaries win wars; empty rhetoric achieves nothing",
+    "Unconditional fealty to Clan Comyn; stand shoulder-to-shoulder with kinsmen to defend the realm"
+  ],
+  "Fears": [
+    "Norse landing parties slipping through North Sea squalls and reducing his harbor villages to ashes",
+    "Rival factions in Edinburgh convincing the King to confiscate Comyn maritime franchises"
+  ],
+  "SpeechStyle": "Speaks with a deep, rasping voice weathered by salty sea gales. His words are practical, direct, and unpretentious, delivering defensive instructions with calm professional command.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

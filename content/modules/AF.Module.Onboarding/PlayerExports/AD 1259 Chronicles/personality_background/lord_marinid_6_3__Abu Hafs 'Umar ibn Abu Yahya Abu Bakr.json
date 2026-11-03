@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_6_3",
+  "HeroName": "Abu Hafs 'Umar ibn Abu Yahya Abu Bakr",
+  "Description": "Hafs is about twenty-two years old, a son of Abu Yahya Abu Bakr and Salma, and in the game's setting he is known for documents and law. He is tall and thin, with pale skin and narrow, observant eyes. He usually wears an unadorned grey linen robe with a plain black cloak. A pouch of ink cakes and a small knife hangs at his belt, which he says he bought from an old clerk. He grew up in his father's study, learned contract and litigation, and can recite long passages of legal text from memory. When a matter needs a written basis, he reads every document through before deciding what to say. He does not like open confrontation. He is skilled at letting an opponent expose a flaw on paper. In council he is careful with his brothers and rarely argues in public. Those who know him say his words read like the most complete contract in the room, each clause able to bear scrutiny. He does not lecture about his own views at feasts, but he keeps the key terms in memory and waits for the right moment to use them. Sometimes his attention to every clause makes companions think he is overly cautious. His deepest drive is to ground the power of the Abu Bakr branch in contract, account, and law rather than old prestige alone. His greatest fear is that a minor clause will be exploited by his brother or uncles, undoing years of careful work overnight.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants the Abu Bakr branch's power to rest on contract, account, and legal authority, not merely on old prestige and the number of its riders.",
+    "He personally reviews every agreement with clans and neighbouring towns, closing any loophole a brother or uncle might later exploit against the family.",
+    "He plans to train young clerks versed in documents and law, so the family has reliable written support in council and need not depend on outsiders."
+  ],
+  "Values": [
+    "An agreement not written down does not truly exist, and a written clause must be read to its last word, a rule he has kept since boyhood.",
+    "A negotiation is often decided by the smallest appended term, so care with detail is worth more than a show of force at the table.",
+    "Learning and documents endure longer than swords, and whoever guards the contracts often guards the family's estates and standing as well."
+  ],
+  "Fears": [
+    "A clause he failed to see through may be turned against him by his brother or uncles, and the contract system he built could collapse overnight.",
+    "His caution may be mistaken for timidity, so kinsmen bypass him in matters of war and give command to a brother who only knows how to charge."
+  ],
+  "SpeechStyle": "He speaks precisely and slowly, often saying 'by the terms' or 'read the third clause'. When a claim is vague he asks for exact sums and dates. In disputes his tone stays mild while he lays out flaws step by step.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

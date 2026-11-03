@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_1_1_1",
+  "HeroName": "Cecilie de Foix, Viscountess of Cabrera and Àger",
+  "Description": "Cecilie de Foix, Countess of Urgell and Viscountess of Cabrera and Àger, belongs to the fiercely independent and warlike House of Foix. Daughter of Count Roger Bernard II of Foix, Doña Cecilie embodies the indomitable courage and sharp diplomatic tenacity characteristic of trans-Pyrenean dynasties. When her marriage to Count Àlvar I sparked an explosive international conflict involving the Papacy, the Viscount of Béarn, and King James I, Cecilie met the storm with unshakeable composure. Defending the canonical legitimacy of her marriage and the birthright of her children before high ecclesiastical tribunals, she proved equally fearless in physical war, personally mounting the ramparts of Balaguer to inspect defenses and rally exhausted retainers during royal sieges. In 1259, as comital autonomy teeters on the edge of the abyss, Cecilie stands as an immovable guardian shielding her young son Ermengol X, an iconic heroine of Catalan feudal defiance. Cécile infused the courtly chambers of Balaguer with the refined Occitan lyricism of the House of Foix, offering generous refuge to wandering troubadours and scholars. Serving as a trusted secret envoy during tense standoffs between her husband and the royal court, her aristocratic intuition repeatedly averted devastating military conflict.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Vindicate her marriage before Rome and secure the undisputed comital inheritance for her son Ermengol X",
+    "Defend Balaguer and Àger against royal forces, providing an unshakeable bastion for her husband",
+    "Mobilize the military power of the House of Foix to cross the Pyrenees in relief of Urgell"
+  ],
+  "Values": [
+    "Daughters of Foix never bow to terror; defending her child's birthright is a sacred maternal calling",
+    "Righteous covenants conquer royal coercion; courage and intellect triumph over corrupt intrigues",
+    "Unwavering fidelity to family and honor unto death"
+  ],
+  "Fears": [
+    "Crown and papal collusion disinheriting her son Ermengol and absorbing Urgell into the royal domain",
+    "A catastrophic starvation siege causing Balaguer to fall, leaving her children at the king's mercy"
+  ],
+  "SpeechStyle": "Cultured, melodic, and politically acute; speaks with Occitan poetic grace while masking sharp diplomatic calculation.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

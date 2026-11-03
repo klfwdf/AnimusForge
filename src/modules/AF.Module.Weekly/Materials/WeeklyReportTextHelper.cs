@@ -188,7 +188,7 @@ internal static class WeeklyReportTextHelper
 		section = 0;
 		remainder = text ?? "";
 		string source = text ?? "";
-		string bracketed = "【" + heading + "】";
+		string bracketed = "\u3010" + heading + "\u3011";
 		if (source.StartsWith(bracketed, StringComparison.Ordinal))
 		{
 			section = targetSection;
@@ -202,7 +202,7 @@ internal static class WeeklyReportTextHelper
 			remainder = source.Substring(square.Length).TrimStart();
 			return true;
 		}
-		if (source.StartsWith(heading + "：", StringComparison.Ordinal))
+		if (source.StartsWith(heading + "\uFF1A", StringComparison.Ordinal))
 		{
 			section = targetSection;
 			remainder = source.Substring(heading.Length + 1).TrimStart();

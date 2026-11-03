@@ -1,0 +1,52 @@
+{
+  "Id": "rule_halych_hungary_peace_treaty_1247",
+  "Keywords": [
+    "Lev and Constance’s marriage",
+    "Galician and Hungarian reconciliation"
+  ],
+  "RagShortTexts": [
+    "Lev’s marriage to Béla IV’s daughter Constance linked the Romanovych and Árpád houses.",
+    "Marriage opened channels between courts without deciding every request for aid or frontier dispute."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After conflict over influence in Galicia, Danylo’s house and the Hungarian court reconciled, and Lev married Constance, daughter of Béla IV. Relatives could now convey requests between the houses. Marriage and accompanying embassies brought gifts, hospitality and expectations. Different people still controlled mountain routes and borderlands; kinship did not settle every dispute over land or service. Danylo, Béla and their followers continued to make specific decisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Family connections can secure a hearing for aid, followed by negotiations over returns and supplies. An envoy’s authority and delivery terms matter if goodwill is not to become an obligation local people cannot perform."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts need routes, lodging and fodder. Marriage does not make every frontier guard recognise a visitor. Documents, hosts and identity must agree, while servants and baggage affect travel time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villagers hope reconciliation reduces raids and restores markets. They still provide reception, food and shelter for embassies. An extra night costs provisions, making departure dates more immediate than admiration of rich wedding gifts."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

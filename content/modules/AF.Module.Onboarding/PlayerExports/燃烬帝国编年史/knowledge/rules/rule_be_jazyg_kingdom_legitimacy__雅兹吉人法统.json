@@ -1,0 +1,59 @@
+{
+  "Id": "be_jazyg_kingdom_legitimacy",
+  "Keywords": [
+    "雅兹吉人法统",
+    "齐扎伊斯的牧地与人质担保"
+  ],
+  "RagShortTexts": [
+    "保护、承认与谈判维持Zizais地位。",
+    "家户以牧地和人质安全衡量盟誓。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "首领地位来自保护、认可与对外谈判，尊严关系盟誓能否接受，家户则要看牧地和人质是否安全。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "保护、承认与谈判维持Zizais地位。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。家户以牧地和人质安全衡量盟誓。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "家户以牧地和人质安全衡量盟誓。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。保护、承认与谈判维持Zizais地位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "保护、承认与谈判维持Zizais地位。家户通过家人、土地与求助能否获保护来认识统治。家户以牧地和人质安全衡量盟誓。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "家户以牧地和人质安全衡量盟誓。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。保护、承认与谈判维持Zizais地位。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

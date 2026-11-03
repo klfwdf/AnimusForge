@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_2c",
+  "HeroName": "Jovan",
+  "Description": "Jovan (Jovan Dragaš), aged ten in 1259, is the promising eldest son of Lord Dejan and Princess Teodora, future ruler of the eastern marches. Combining the imperial blood of the Nemanjić house with frontier military heritage, he spent his boyhood amidst cavalry horns and mountain gales. Remarkably tall and athletic for his age, Jovan handles the recurve bow and hunting spear with natural precision, frequently accompanying seasoned guardsmen on mountain patrols. Educated in Slavonic chronicles and tactical maneuvers, he absorbs the art of frontier warfare. In 1259, watching his father mobilize mountain cohorts from the parapets of Zemen, the young prince burns with desire to prove his valor and establish his name as a heroic champion of the Serbian realm. Young Jovan trains relentlessly at the archery butts of Zemen, his focused gaze burning with desire for future battlefield glory. Fascinated by heroic chronicles of Nemanjić conquests, he sketches cavalry flanking maneuvers in the sand with tactical ingenuity. Guided by his battle-hardened father, the young warrior matures rapidly, prepared to draw steel whenever war threatens his homeland. Brimming with martial ambition, young Jovan trains tirelessly with lance and composite bow across the high pastures of Zemen. His natural tactical intuition and spirited courage mark him as a future commander capable of leading Serbia's eastern armies to victory.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with clear youthful confidence and soldierly eagerness, spirited and bold, impatient to join genuine military campaigns.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

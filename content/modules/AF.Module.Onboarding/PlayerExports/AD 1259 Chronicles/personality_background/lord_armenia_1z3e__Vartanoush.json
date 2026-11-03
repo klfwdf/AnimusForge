@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z3e",
+  "HeroName": "Vartanoush",
+  "Description": "Vartanoush was a spirited noblewoman of the Hetoumid royal house, proudly named in honor of Vardan Mamikonian, the immortal martyr of Avarayr. Steeped from girlhood in epic traditions of heroic national defense against pagan empires, she embodied the fierce, unbroken pride of mountain nobility. Skilled in horsemanship and archery, Vartanoush frequently rode across estate perimeter lines in light mail, drilling peasant levies and handmaidens in archery. Beyond martial training, she sponsored the preservation of Armenian chivalric epics and gold-thread embroidery workshops commemorating historical battles. In 1259, as war raged along the southern horizons, Vartanoush mobilized village looms and smithies to supply thousands of quilted jerkins and arrows for royal troops. Proud, defiant, and fierce in her convictions, Vartanoush was celebrated across Cilicia as the 'Heroic Rose of Vardan upon the Taurus Peaks.' Within her ancestral baronial hall, Vartanoush displayed an antique tapestry depicting the Battle of Avarayr, gathering village youth to recount the epic martyrdom of Saint Vardan. She personally embroidered linen cross talismans onto combat jerkins for departing horsemen while directing blacksmiths to forge thousands of armor-piercing bodkin arrowheads. When border alerts flared, Vartanoush mounted her courser bow in hand, rallying villagers along watchtowers with indomitable patriotic spirit.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Embody the heroic defiance of Vardan Mamikonian, dedicating spirit and estate to the defense of Armenian independence.",
+    "Mobilize agrarian textile guilds and armories to manufacture armor undergarments and munitions for frontline soldiers.",
+    "Sponsor bardic recitations and illumination of epic historical chronicles, keeping the flame of patriotic valor alive."
+  ],
+  "Values": [
+    "National liberty and dignity are sacred; honorable death on the battlefield far exceeds subjugation to foreign conquerors.",
+    "Martial valor, uncompromising pride, and contempt for cowardice define true aristocratic honor.",
+    "Total, unswerving devotion to the homeland, ready to sacrifice all comfort to ensure the realm's survival."
+  ],
+  "Fears": [
+    "Generations losing their warrior spirit and cultural defiance under prolonged foreign subjugation, succumbing to passive servitude.",
+    "Hostile desecration of ancestral mountain valleys, extinguishing the hard-won flame of Christian liberty in the Taurus."
+  ],
+  "SpeechStyle": "Speaks with spirited alpine defiance and patriotic pride, celebrating the immortal legacy of Armenian national heroes with passionate eloquence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Vartanoush"
+}

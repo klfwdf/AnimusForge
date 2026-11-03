@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_elbing_lagoon_port_dedeb0a1",
+  "Keywords": [
+    "Elbing's access to the lagoon",
+    "Ship supplies at Elbing"
+  ],
+  "RagShortTexts": [
+    "Elbing reaches the Vistula Lagoon and sea routes through river access and usable berths.",
+    "Order and merchants need shipping sustained by local unloading, lodging and repair labor."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Elbing's river access connects the Vistula Lagoon with local strongpoints and trade. Depth, wind and guides govern arrivals. The Order needs supplies, merchants turnover and residents work feeding crews, carrying cargo and repairing craft. Predictable charges and deliveries encourage return visits; blocked shipping also deprives inland posts. Elbing received Lubeck law in 1246, giving townsmen recognized urban rights in property and trade that still need coordination with the Order's garrison demands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Elbing families welcome ships' earnings but face late payment and demands for equipment. Repairs need wood, rope and skilled time amid competing work. Inland buyers may hurry a delivery, but crews still judge wind and water; damaging a boat also destroys its owner's livelihood."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

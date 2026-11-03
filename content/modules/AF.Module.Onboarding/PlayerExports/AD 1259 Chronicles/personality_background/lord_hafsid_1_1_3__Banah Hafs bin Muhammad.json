@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_1_1_3",
+  "HeroName": "Banah Hafs bin Muhammad",
+  "Description": "Banah Hafs bin Muhammad is the daughter of Muhammad I al-Mustansir. The game data records her at thirteen, trained by a court tutor in diplomacy, and her name carries the dynasty's own name, Hafs. The game model shows a clear-faced girl with dark hair and no ornaments, and her bearing is more composed than that of most girls her age. The chronicles say nothing of her life, so her early years rest on game setting alone. She grew up in the inner quarters of the Tunis palace, learning poetry, etiquette, and writing from her mother and the palace women, and sometimes followed her father's messengers into the outer audience halls. She is curious about the people and affairs of the court, often listening to officials argue from behind a screen, and then asking an unexpected question in private. She writes the names and offices she overhears on small slips of paper and studies them at night. Her study sits beside her mother's dressing table, where she keeps poems and names she has copied out. She checks what she hears against each speaker's seat at court. She keeps strangers at a distance and speaks little, but once she trusts someone she shows it openly. Her sacred aim is to understand how the realm truly works, so that she can one day advise the family. Her private shadow is the fear that, being so young, the secrets she hears could bring harm to her mother and brothers. She rarely voices this, and only reads palace documents alone.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Study poetry, writing, and court etiquette with her mother and the palace women, so that she can speak in court without causing her family any trouble.",
+    "Watch quietly from behind the audience screens while officials argue, and work out how the finances and army of the realm truly function.",
+    "Stay close to her elder brothers and become a listener they can trust, so that palace news moves accurately and misunderstandings do not start quarrels."
+  ],
+  "Values": [
+    "She values knowledge and understanding, believing that a person must grasp how affairs unfold before judging the fates of others, and she is slow to conclude.",
+    "She values loyalty within the family and hopes her siblings will never turn against each other over rank, seeing kinship as the most reliable support.",
+    "She values restraint and tact, holding that some words belong only at the right moment, since careless speech can cost a person a whole future."
+  ],
+  "Fears": [
+    "A secret she overhears may spread between rival factions, and someone at court may be executed because of a word she once spoke, with no chance to explain.",
+    "Her mother or elder brother may fall in a power struggle, forcing her to leave the palace she knows and lose the shelter she has always had."
+  ],
+  "SpeechStyle": "Soft and clear, with short sentences, often opening a topic with a question. Before elders she is courteous and deferential, freer with her brothers, and sometimes surprises them with a mature question, then lowers her head, flushed.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

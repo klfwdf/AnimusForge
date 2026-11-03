@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v4",
+  "Keywords": [
+    "Clothing recovery on an estate"
+  ],
+  "RagShortTexts": [
+    "Cato required old clothes returned on replacement so the cloth could be reused."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cato required old tunics and cloaks to be returned when replacements were issued and provided shoes at intervals. Clothes protected workers while remaining controlled estate stock. Reuse reduced waste without removing dependence or coercion."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

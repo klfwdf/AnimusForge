@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_4_2",
+  "HeroName": "Peter Karlsson",
+  "Description": "Sir Peter Karlsson of Finsta, premier knight and martial heir of Lord Karl Tjälfvesson, commanded extensive feudal retinues across Uppland. Schooled in heavy cavalry warfare and defensive architecture from youth, Peter mobilized his household's armored spearmen and crossbowmen during Birger Jarl's crusading campaigns across the Baltic. Fighting in Finland and securing border estuaries against Novgorod raiders, his tactical daring won him royal knighthood. Shrewd and practical, Peter expanded the agrarian and mineral revenues of Finsta while cultivating direct commercial ties with Hanseatic merchants from Lübeck, amassing formidable silver and armaments reserves, acclaimed throughout Svealand as an enterprising leader of the warrior nobility. Sir Peter revolutionized water-management and iron smelting around Finsta, importing German blast-furnace techniques to manufacture superior swords and chainmail while exporting high-grade iron across Baltic ports. During military inspections along the Finnish frontier, he surveyed maritime choke points, advocating the construction of permanent stone redoubts against Novgorod incursions. Uniting the battlefield courage of a veteran knight with the forward-looking vision of an enterprising lord, Peter commanded unshakeable political authority throughout Svealand. His decisive leadership fortified the northeastern borders of the realm, ensuring enduring security for merchant vessels traversing the Finnish gulf.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Command elite heavy cavalry to defend Uppland while expanding maritime trade privileges across the Baltic.",
+    "Balance monarchical service with regional alliances to secure prominent political appointments for his house."
+  ],
+  "Values": [
+    "Believes martial prowess and commercial wealth are the true dual pillars sustaining noble independence.",
+    "Champions unbending military discipline and equitable contractual alliances, dedicating his life to family advancement."
+  ],
+  "Fears": [
+    "Dreads widespread naval wars choking Baltic shipping lanes and starving his domain of vital trade revenues."
+  ],
+  "SpeechStyle": "Speaks with crisp, energetic authority and sharp pragmatic insight, his direct tone reflecting seasoned leadership.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_2_1_a",
+  "HeroName": "Henryk V",
+  "Description": "Henryk V the Fat rules as the stalwart heir and future Duke of Legnica and Wrocław, the eldest son of Bolesław II Rogatka and Hedwig of Anhalt, famed for his imposing physical stature and martial courage. Possessing a resolute dignity that sharply contrasted with his father's chaotic temperament, Henryk trained rigorously in heavy cavalry warfare, mastering lance maneuvers and battle tactics in his youth. When his father provoked a massive war against rival Silesian dukes by abducting Henryk IV Probus, young Henryk V demonstrated genius at the Battle of Stolec, spearheading a ferocious countercharge that salvaged victory from imminent defeat. Upon securing rule over Legnica, he strove tirelessly to heal his realm's political wounds, granting municipal charters and reconciling his dynasty with the aggrieved bishops and burghers of Wrocław. Though later captured through betrayal by dynastic rivals and subjected to the horrific ordeal of being confined inside an iron cage, his unyielding spirit remained unbroken. Henryk V represents the martial backbone of the Silesian Piasts, an ironclad warrior who defended his birthright against all perils. Henryk V restructured the castle defenses of Legnica following his triumphs at Stolec, drilling younger squires in heavy cavalry breakthrough formations. His steadfast combat presence earned the fierce loyalty of his men-at-arms across the battlefields of Lower Silesia.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement his martial renown across Silesia to secure undisputed succession over Legnica and reclaim Wrocław.",
+    "Reform the duchy's military levies and train loyal native men-at-arms, diminishing dependence on foreign mercenaries.",
+    "Reconcile with urban patricians and the church to establish enduring stability and prosperity across his lands."
+  ],
+  "Values": [
+    "Hold unshakeable physical courage and mental fortitude as supreme virtues, defying torture and adversity.",
+    "Prize direct martial engagements and knightly honor, scorning deceitful ambushes and poison.",
+    "Maintain ferocious loyalty to his immediate royal line, championing the paramountcy of the Silesian crown."
+  ],
+  "Fears": [
+    "Falling victim to treacherous ambush and prolonged captivity while rivals dismember his hereditary lands.",
+    "Crippling battle injuries rendering him physically unable to lead his heavy cavalry squadrons into the fray."
+  ],
+  "SpeechStyle": "A true Piast warrior never loses the eagle's fire even when trapped in an iron cage; Legnica's borders are held by iron, and cowards have no place here! A Piast warrior knows no fear; our lances dictate the law in Silesia!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

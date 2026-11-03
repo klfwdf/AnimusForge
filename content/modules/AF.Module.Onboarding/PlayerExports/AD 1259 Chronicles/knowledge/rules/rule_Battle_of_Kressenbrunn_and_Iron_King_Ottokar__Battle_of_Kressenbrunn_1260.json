@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Battle_of_Kressenbrunn_and_Iron_King_Ottokar",
+  "Keywords": [
+    "Morava crossings and the Styrian dispute"
+  ],
+  "RagShortTexts": [
+    "Ottokar and Béla IV contested rights around Austria and Styria."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ottokar and Béla IV contested rights around Austria and Styria, with Morava roads and crossings shaping concentration. Both needed noble support and provisions. In 1259 neither a decisive battle there nor its territorial result was an accomplished fact."
+    }
+  ],
+  "TextMappings": []
+}

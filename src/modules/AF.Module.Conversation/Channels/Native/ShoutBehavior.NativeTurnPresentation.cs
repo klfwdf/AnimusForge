@@ -84,7 +84,9 @@ namespace AnimusForge;
                     // Only record the intent here; the order is armed after the reply is accepted.
                     cleaned = StripStageDirectionsForPassiveShout(postprocessReply);
                     nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
-                    if (DuelSettings.GetSettings()?.TtsUseGptSoVits != true && nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
+                    var speechSettings = DuelSettings.GetSettings();
+                    bool directMainReplySpeech = speechSettings?.TtsWaitForPostprocessEmotion == false;
+                    if ((directMainReplySpeech || (speechSettings?.TtsUseGptSoVits != true && nativeTargetAgentIndex < 0)) && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
                     {
                         _ports.TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts, localSpeech);
                         nativeTtsDispatchedBeforePostprocess = true;

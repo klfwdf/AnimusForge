@@ -50,9 +50,10 @@ internal sealed class MemoryEntityIdentityBannerlordAdapter
 		{
 			return AdapterSceneTexts.Raw("SettlementFallback");
 		}
-		if (settlement?.IsTown == true && !text.EndsWith(AdapterSceneTexts.Raw("SettlementTownSuffix"), StringComparison.Ordinal))
+		string townSuffix = AdapterSceneTexts.Raw("SettlementTownSuffix");
+		if (settlement?.IsTown == true && townSuffix.Length > 0 && !text.EndsWith(townSuffix, StringComparison.Ordinal))
 		{
-			return text + AdapterSceneTexts.Raw("SettlementTownSuffix");
+			return text + townSuffix;
 		}
 		return text;
 	}
@@ -613,7 +614,7 @@ internal static string AnnotateWeeklyReportRulerInMaterialText(string materialTe
 		Kingdom kingdom = FindKingdomById(group?.KingdomId);
 		Hero ruler = kingdom?.Leader ?? kingdom?.RulingClan?.Leader;
 		string rulerName = GetHeroDisplayName(ruler);
-		if (ruler == null || string.IsNullOrWhiteSpace(rulerName) || string.Equals(rulerName, AdapterSceneTexts.Raw("HeroFallback"), StringComparison.OrdinalIgnoreCase) || rulerName.Trim().Length < 2)
+		if (ruler == null || string.IsNullOrWhiteSpace(rulerName) || AdapterSceneTexts.EqualsRaw(rulerName, "HeroFallback", StringComparison.OrdinalIgnoreCase) || rulerName.Trim().Length < 2)
 		{
 			return text;
 		}
@@ -661,11 +662,11 @@ internal static bool ShouldIncludeKingdomPreviewAction(Hero hero, NpcActionEntry
 			return true;
 		}
 		string text2 = (entry.StableKey ?? "").Trim();
-		if (text2.IndexOf("raidsettlement", StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf(AdapterSceneTexts.Raw("ActionToken_Raid"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text2.IndexOf("raidsettlement", StringComparison.OrdinalIgnoreCase) >= 0 || AdapterSceneTexts.ContainsRaw(entry.Text, "ActionToken_Raid", StringComparison.OrdinalIgnoreCase))
 		{
 			return true;
 		}
-		if (text2.IndexOf("defendsettlement", StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf(AdapterSceneTexts.Raw("ActionToken_Defend"), StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf(AdapterSceneTexts.Raw("MemoryIdentityRaw_007"), StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text2.IndexOf("defendsettlement", StringComparison.OrdinalIgnoreCase) >= 0 || AdapterSceneTexts.ContainsRaw(entry.Text, "ActionToken_Defend", StringComparison.OrdinalIgnoreCase) || AdapterSceneTexts.ContainsRaw(entry.Text, "MemoryIdentityRaw_007", StringComparison.OrdinalIgnoreCase))
 		{
 			return true;
 		}
@@ -726,7 +727,7 @@ internal static bool ShouldSuppressWeeklyPreviewAction(NpcActionEntry entry)
 			return true;
 		}
 		string text = (entry.Text ?? "").Trim();
-		return text.IndexOf(AdapterSceneTexts.Raw("ActionToken_Defeat"), StringComparison.OrdinalIgnoreCase) >= 0 && CampaignBattleRecordCaptureAdapter.ContainsRoutineBanditText(text);
+		return AdapterSceneTexts.ContainsRaw(text, "ActionToken_Defeat", StringComparison.OrdinalIgnoreCase) && CampaignBattleRecordCaptureAdapter.ContainsRoutineBanditText(text);
 	}
 
 internal static bool IsBanditClanId(string clanId)
@@ -766,7 +767,7 @@ internal static void TryAddKingdomCurrentRulerMaterial(List<EventMaterialReferen
 		}
 		Hero ruler = kingdom.Leader ?? kingdom.RulingClan?.Leader;
 		string rulerName = GetHeroDisplayName(ruler);
-		if (ruler == null || string.IsNullOrWhiteSpace(rulerName) || string.Equals(rulerName, AdapterSceneTexts.Raw("HeroFallback"), StringComparison.OrdinalIgnoreCase))
+		if (ruler == null || string.IsNullOrWhiteSpace(rulerName) || AdapterSceneTexts.EqualsRaw(rulerName, "HeroFallback", StringComparison.OrdinalIgnoreCase))
 		{
 			return;
 		}
@@ -776,7 +777,7 @@ internal static void TryAddKingdomCurrentRulerMaterial(List<EventMaterialReferen
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.Append(AdapterSceneTexts.Format("Identity_Ruler_Kingdom", "Current kingdom: {KINGDOM}.", ("KINGDOM", kingdomName)));
 		stringBuilder.Append(AdapterSceneTexts.Format("Identity_Ruler_Name", "Current ruler: {RULER}.", ("RULER", rulerName.Trim())));
-		if (rulingClan != null && !string.IsNullOrWhiteSpace(rulingClanName) && !string.Equals(rulingClanName, AdapterSceneTexts.Raw("ClanFallback"), StringComparison.OrdinalIgnoreCase))
+		if (rulingClan != null && !string.IsNullOrWhiteSpace(rulingClanName) && !AdapterSceneTexts.EqualsRaw(rulingClanName, "ClanFallback", StringComparison.OrdinalIgnoreCase))
 		{
 			stringBuilder.Append(AdapterSceneTexts.Format("Identity_Ruler_Clan", "Ruling clan: {CLAN}.", ("CLAN", rulingClanName.Trim())));
 		}
@@ -1487,15 +1488,30 @@ internal static string BuildNpcActionActorNarrativeText(NpcActionEntry entry)
 		{
 			return text;
 		}
-		if (text.StartsWith(AdapterSceneTexts.Raw("Pronoun_Your"), StringComparison.Ordinal))
+		string yourZh = AdapterSceneTexts.RawSource("Pronoun_Your");
+		if (text.StartsWith(yourZh, StringComparison.Ordinal))
 		{
-			return text2 + AdapterSceneTexts.Raw("ExternalObservation_015") + text.Substring(2);
+			return text2 + AdapterSceneTexts.RawSource("ExternalObservation_015") + text.Substring(yourZh.Length);
 		}
-		if (text.StartsWith(AdapterSceneTexts.Raw("ExternalObservation_056"), StringComparison.Ordinal))
+		string youZh = AdapterSceneTexts.RawSource("ExternalObservation_056");
+		if (text.StartsWith(youZh, StringComparison.Ordinal))
 		{
-			return text2 + text.Substring(1);
+			return text2 + text.Substring(youZh.Length);
 		}
-		return text.Replace(AdapterSceneTexts.Raw("Pronoun_Space_You"), " " + text2).Replace(AdapterSceneTexts.Raw("Pronoun_Semicolon_You"), "；" + text2).Replace(AdapterSceneTexts.Raw("Pronoun_Comma_You"), "，" + text2);
+		if (text.StartsWith("Your ", StringComparison.Ordinal))
+		{
+			return text2 + "'s " + text.Substring(5);
+		}
+		if (text.StartsWith("You were ", StringComparison.Ordinal))
+		{
+			return text2 + " was " + text.Substring(9);
+		}
+		if (text.StartsWith("You ", StringComparison.Ordinal))
+		{
+			return text2 + text.Substring(3);
+		}
+		// Mid-sentence pronouns are rewritten only in Chinese records; English records keep "you".
+		return text.Replace(AdapterSceneTexts.RawSource("Pronoun_Space_You"), " " + text2).Replace(AdapterSceneTexts.RawSource("Pronoun_Semicolon_You"), "\uFF1B" + text2).Replace(AdapterSceneTexts.RawSource("Pronoun_Comma_You"), "\uFF0C" + text2);
 	}
 
 internal static string ResolveHeroDisplay(string heroId)

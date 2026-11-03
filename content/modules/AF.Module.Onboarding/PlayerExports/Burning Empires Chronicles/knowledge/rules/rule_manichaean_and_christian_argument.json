@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v8",
+  "Keywords": [
+    "Manichaean and Christian argument"
+  ],
+  "RagShortTexts": [
+    "Manichaeans and Christians disputed the meanings of shared religious words."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Manichaean use of words such as apostle, savior and comforter did not satisfy Christian opponents, who disputed their meaning. Shared vocabulary enabled contact and misunderstanding without establishing identical doctrine or organization."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

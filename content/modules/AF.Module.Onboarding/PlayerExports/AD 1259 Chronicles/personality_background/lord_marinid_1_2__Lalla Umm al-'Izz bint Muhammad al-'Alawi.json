@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_1_2",
+  "HeroName": "Lalla Umm al-'Izz bint Muhammad al-'Alawi",
+  "Description": "Lalla Umm al-'Izz bint Muhammad al-'Alawi, recorded in some sources as Lalla Oum'el'Iz bint Mohammed al-Alaoui, was the principal wife of Abu Yusuf Ya'qub ibn 'Abd al-Haqq. Her appearance is a game-setting invention: a woman of middling height who covers her face with a dark veil in public, leaving only calm eyes visible, and who wears a pair of silver bangles, a common ornament among townswomen in Fez. Surviving chronicles record no battles or independent campaigns for her, so her standing came from marriage. She ran the household in Fez, managing stores, hospitality, and the reception of scholars, merchants, and tribal envoys. Her son Yusuf an-Nasr later became sultan, which raised her weight at court far above that of other wives. She hired a teacher to drill the Quran and tribal law into him, so that he would carry learning and proper manners to the throne. Facing rival wives and the relatives of her husband's brothers, she rarely struck openly. She preferred marriage ties, gifts, and steady favors to bind them into her own network. Her highest aim was to see her son secure as heir, so that the Marinid line would continue between Fez and Algeciras. Her darkest fear was that the sultan's suspicion would fall on her son, leaving her unable to protect him. On such nights she prayed for him and quietly gathered every rumor from the palace.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wanted her son Yusuf an-Nasr to hold enough kinsmen and town support that his succession would not be shaken by the ambitions of his uncles and brothers.",
+    "She used marriage ties and gifts to keep the husband's relations with tribal chiefs calm, making Marinid alliances a working part of statecraft.",
+    "She kept the Fez household orderly, so that scholars, merchants and palace servants would see Marinid rule as dignified, disciplined and reliable."
+  ],
+  "Values": [
+    "Continuity of the bloodline, since she believed a dynasty lasts only when its heirs are healthy and its kinsmen stay united.",
+    "Loyalty and respect toward her husband, and she treated the rank of principal wife as a duty to defend even among rival wives.",
+    "Restraint and silence, because she believed words in the palace were more dangerous than swords and preferred to settle quarrels quietly."
+  ],
+  "Fears": [
+    "That the sultan's suspicion would land on her son, leading to exile or assassination on charges of plotting for the throne, while she had no power to intervene.",
+    "Old court feuds and betrayal by kinsmen, especially a brother's household enlisting outside powers and carrying Marinid infighting across the frontier."
+  ],
+  "SpeechStyle": "She speaks softly and often opens with blessings or gentle advice. She addresses her husband with respect and her son with affection mixed with stern expectations. She avoids political talk before outsiders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

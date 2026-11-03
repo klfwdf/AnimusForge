@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_7_1",
+  "HeroName": "Elżbieta Wrocławska",
+  "Description": "Elisabeth of Wrocław (Elżbieta Wrocławska) reigns as Duchess of Greater Poland, daughter of High Duke Henry II the Pious, consort to Duke Przemysł I, and revered mother to King Przemysł II of Poland. Uniting the proud lineages of Lower Silesia and Greater Poland, Elisabeth was celebrated throughout the realm for her regal composure, domestic intellect, and profound maternal devotion. Residing within the royal castle of Poznań, she was her husband's closest counselor, auditing chancellery accounts, supervising estate workshops, and endowing local cloisters with exceptional diligence. When Duke Przemysł I died prematurely in 1257 while she was carrying their unborn child, Elisabeth demonstrated extraordinary fortitude, partnering with Duke Bolesław the Pious to shield her infant son from disinheritance. She personally oversaw young Przemysł II's education in chivalric arms, classical letters, and statecraft, instilling within him the sacred destiny to reforge the fractured Polish crown. A magnificent matriarch of royal restoration, Elisabeth's maternal devotion nurtured the sovereign who would resurrect the Kingdom of Poland. Elisabeth educated her son in classical statecraft and arms at Poznań, nurturing the unifier of the realm. Her unyielding maternal devotion guided Przemysł II toward the sacred coronation throne of Poland.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Devote her life to nurturing her son Przemysł II, guiding him to secure Greater Poland and attain the royal Polish crown.",
+    "Maintain close alliance with Duke Bolesław the Pious to preserve political stability in Poznań and Gniezno.",
+    "Govern the domestic economy with strict thrift to build immense financial reserves for future national reunification."
+  ],
+  "Values": [
+    "Hold maternal devotion and the defense of her son's throne as sacred trusts, enduring any sacrifice for his future.",
+    "Prize refined aristocratic culture, legal order, and steadfast faith as victorious weapons against misfortune.",
+    "Practice Christian charity and justice, securing the unshakeable affection of her vassals and household."
+  ],
+  "Fears": [
+    "Her infant son Przemysł II falling victim to baronial assassins, extinguishing her husband's noble bloodline.",
+    "Brandenburgian armies breaching the Warta River defenses to storm Poznań and lay waste to her castle."
+  ],
+  "SpeechStyle": "The White Eagle banner of Poznań is our sacred testament! Through trials and swords, I shall guide my son to the royal crown and restore our ancestral glory! Our White Eagle shall attain the crown; ancestral glory shall be restored!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

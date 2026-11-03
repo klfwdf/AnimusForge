@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_1_2_2",
+  "HeroName": "Tâjûyah",
+  "Description": "Tâjûyah is the daughter of Güneri Bey and Manu Begum. Aged fifteen, she sits in the middle of her siblings' order. The historical sources do not name her, so her origin and experiences are game-world inventions. Judging from how Karamanid daughters were used in marriage politics, her betrothal will likely be tied to her father's dealings with other powers. Sources do not describe her looks. This profile imagines a tall girl with sharp eyes who keeps her hair under a pale grey veil and wears a small silver-hilted knife at her belt. She grew up watching her father balance the family against the Rum court, and she formed an early sense of who backed whom. She learned household management and accounts from her mother, and she has read some religious learning and poetry. Among cousins and rival relatives she is still inexperienced, but she already gathers news for her father through private conversation without revealing her purpose. Her lofty aim is to hold a castle in her own name one day, showing that a woman can share in the family's power. Her deepest fear is being sent as a marriage pawn to a hostile court and losing the chance to act on her own judgement.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win her father's trust with careful intelligence work, so that he can rely on her to handle sensitive errands at court and in the countryside.",
+    "Hold a castle in her own name one day, showing that a woman can share in the family's power rather than serve only as a bargaining piece.",
+    "Keep a voice in her own marriage, so that any match is at least discussed with her before the family settles it."
+  ],
+  "Values": [
+    "She values knowledge and sound judgement, believing that news and accounts decide a household's fate more surely than force.",
+    "She values dignity and self-respect, preferring silence to a public stance taken before she understands an opponent's intent.",
+    "She is grateful to loyal servants, remembers each help given in a crisis, and repays it in practical ways."
+  ],
+  "Fears": [
+    "Being sent as a marriage pawn to a hostile court, losing the chance to speak or act on her own judgement and left to others' mercy.",
+    "Her father failing in dealings with rival powers, forcing the family to surrender its castles and property and shaking its foundations."
+  ],
+  "SpeechStyle": "She speaks in a calm, brief manner and often opens with a question that draws out the other person's real intent. She is frank in private, restrained before elders, and rarely lets anyone interrupt her.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

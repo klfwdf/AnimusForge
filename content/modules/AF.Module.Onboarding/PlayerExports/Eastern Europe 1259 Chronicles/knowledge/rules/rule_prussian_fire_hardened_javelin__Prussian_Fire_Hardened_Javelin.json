@@ -1,0 +1,53 @@
+{
+  "Id": "rule_prussian_fire_hardened_javelin",
+  "Keywords": [
+    "Prussian throwing spears",
+    "Prussian javelin shafts",
+    "Throwing spear volleys and exits"
+  ],
+  "RagShortTexts": [
+    "Prussian javelins need sound shafts, heads and practice, with defense after the throw.",
+    "Woods and wetlands constrain throwing space, requiring shafts and replacements in advance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Prussian javelins combine shafts, fitted heads and familiar handling. A light weapon can be thrown during approach but then leaves the hand. Branches, shields and companions constrain movement, while wet ground affects footing. Sound dry shafts and practiced use both matter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A thrower needs an exit and support and should not leave companions merely to recover a weapon. Short visibility and wet footing complicate range. A retained close weapon, shield and reachable group provide protection after the cast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Prussian leader needs shafts, fittings, practice and close support. Woods conceal but hinder coordinated throwing and orders, so positions need exits. Whatever wood a household can find does not replace inspection or cooperation, and damaged weapons still need repair."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households supply shafts, iron and service from labor also needed for carts, buildings and cultivation. Lost weapons bring renewed material demands. Communities balance defense with workers left for farming, fishing and animal care."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

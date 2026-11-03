@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_2_4",
+  "HeroName": "Knut Jonsson",
+  "Description": "Sir Knut Jonsson of Aspenäs, Lord High Chancellor (Drots) of Sweden and Chief Justiciar of Östergötland, was the brilliant son of Lord Johan Filipsson. Having narrowly survived the bloody downfall and execution of his father during the Third Folkung Rebellion, Knut turned adversity into triumph through profound juristic intellect and strategic patience. Rebuilding the wealth and prestige of the Aspenäs dynasty, he rose to become the kingdom's supreme judge and regent (Drots). Learning from his father's catastrophic armed defiance, Knut mastered constitutional law, operating through the national council to check royal autocracy. Serving as primary regent during the minority of King Magnus Eriksson, he consolidated nationwide legal codes, venerated across Sweden as a monumental architect of constitutional governance. As Regent and Drots, Sir Knut Jonsson spearheaded the monumental harmonization of national customary law, establishing the Council of the Realm as a permanent constitutional counterweight to monarchical overreach. Incorruptible and judicious, he navigated Sweden through three existential succession crises, preserving territorial integrity without recourse to fratricidal war, honored by generations of Swedish historians as a founding father of constitutional governance. His encyclopedic legal wisdom and equitable governance safeguarded the realm from civil collapse, securing his stature as an immortal pillar of the Swedish constitution.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Restore the fallen fortunes of his lineage through masterly legal statesmanship and rise to the regency of Sweden.",
+    "Codify nationwide statutes and judicial councils to institutionalize checks on autocratic royal tyranny."
+  ],
+  "Values": [
+    "Believes patient endurance, institutional law, and masterly diplomacy accomplish far more than reckless rebellion.",
+    "Champions constitutional governance and judicial integrity, dedicating his life to shielding the realm from anarchy."
+  ],
+  "Fears": [
+    "Dreads rash military rebellions repeating his father's tragic catastrophe and dragging his dynasty back to ruin."
+  ],
+  "SpeechStyle": "Speaks with calm, measured judicial gravitas and impenetrable composure, his arguments carved in iron logic.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

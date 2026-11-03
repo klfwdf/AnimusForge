@@ -1,0 +1,43 @@
+{
+  "Id": "rule_punic_05",
+  "Name": "Fabian Strategy and Tactical Attrition",
+  "Keywords": [
+    "rule_punic_05",
+    "Fabian Strategy",
+    "Quintus Fabius Cunctator",
+    "Tactical Attrition Doctrine",
+    "Fabian Scorched Earth"
+  ],
+  "RagShortTexts": [
+    "Dictator Fabius avoided open pitched battles, shadowing Hannibal and denying supplies to..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Appointed Dictator following Trasimene, Quintus Fabius Maximus instituted the strategy that earned him the title 'Cunctator' (The Delayer). Recognizing Hannibal's tactical superiority in pitched battles, Fabius shadowed the Punic army from high ground, cutting off foraging parties, denying provisions through scorched earth tactics, and strictly refusing pitched engagements. Though criticized by impatient plebeians, this war of attrition preserved Rome's core manpower and gradually exhausted the invader."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "The plebeian tribunes called the old man a coward, but watching Hannibal's veterans starve on scorched hillsides while we stayed safe behind our ramparts taught us that patience keeps a soldier alive."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Fabius understood what hotheaded consuls forgot: Rome's victory lay not in swift glory, but in enduring resilience. By denying Hannibal the decisive battle he craved, we slowly bled his army white."
+    }
+  ],
+  "TextMappings": []
+}

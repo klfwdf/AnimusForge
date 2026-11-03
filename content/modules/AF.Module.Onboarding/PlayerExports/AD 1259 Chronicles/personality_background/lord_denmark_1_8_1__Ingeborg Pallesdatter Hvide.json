@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_1_8_1",
+  "HeroName": "Ingeborg Pallesdatter Hvide",
+  "Description": "Lady Ingeborg Pallesdatter Hvide, noble consort of Marshal Styg Andersøn Hvide, belonged to the highest tier of the Zealandic aristocracy. Celebrated for her classical beauty, dignified breeding, and unyielding fortitude, Ingeborg stands in Danish historical balladry at the emotional epicenter of the Finderup Barn regicide. Chroniclers recount that King Eric V violated her honor while Marsk Stig was campaigning abroad, prompting Ingeborg to demand righteous vengeance from her husband and directly precipitating the aristocratic rebellion against the crown. When Stig was declared an outlaw regicide, Ingeborg unflinchingly shared his exile upon the wind-battered rocks of Hjelm Island, managing domestic provisioning and clandestine diplomatic correspondences with Swedish and Norwegian courts, immortalized as a steadfast heroine of feudal pride. During the harrowing years of royal proscription and papal censure, she managed their extensive agricultural holdings with exceptional resourcefulness, orchestrating clandestine supply convoys of cured beef, salt, and grain across the turbulent Sound. When Stig fortified the rocky island fortress of Hjelm, Ingeborg personally crossed tempestuous waters to oversee supply depots, organize defensive provisioning, and shelter displaced families of outlawed knights, earning immense veneration across Danish aristocratic circles as a noble matriarch of unyielding courage and steadfast feudal dignity.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Support her husband Stig in garrisoning Hjelm Island and coordinating foreign alliances to avenge their familial dishonor.",
+    "Maintain domestic cohesion and logistical supply on their island sanctuary, preserving the pride and survival of their lineage."
+  ],
+  "Values": [
+    "Holds personal honor and familial integrity far above mortal safety, believing righteous retribution justifies any sacrifice.",
+    "Reveres unbending marital fidelity and stoic resilience, scorning cowardly submission to royal abuses of power."
+  ],
+  "Fears": [
+    "Dreads royal blockades starving out their wave-swept fortress, resulting in the capture and gruesome execution of her husband."
+  ],
+  "SpeechStyle": "Speaks with quiet aristocratic dignity and chilling resolve, her measured words infused with profound inner strength.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

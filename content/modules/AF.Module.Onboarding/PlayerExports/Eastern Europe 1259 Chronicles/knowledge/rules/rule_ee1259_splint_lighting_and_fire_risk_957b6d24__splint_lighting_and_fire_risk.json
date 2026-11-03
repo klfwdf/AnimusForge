@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_splint_lighting_and_fire_risk_957b6d24",
+  "Keywords": [
+    "splint lighting and fire risk",
+    "Splint lights and timber house fire"
+  ],
+  "RagShortTexts": [
+    "Splint lighting is inexpensive but needs tending.",
+    "Sparks and smoke create risks in timber buildings."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Thin wood splints light evening work but need replacement and clear space. Shavings, hay and cloth catch sparks. Longer working hours require tending, and fire in adjoining timber houses threatens neighbors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Night guards balance visibility with concealment and keep dry shafts away from flames. An untended light can destroy their own shelter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Night work costs light and fire tending. Warehouse lamps risk others’ cargo, making responsibility as important as extra working hours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Splint light extends sewing and craftwork, but someone tends it and clears tinder. Working after everyone sleeps can risk more than the extra earnings."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

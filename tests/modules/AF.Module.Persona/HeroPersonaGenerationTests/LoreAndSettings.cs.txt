@@ -55,7 +55,7 @@ internal static class Program {
   string fixedDefaults=Path.Combine(module,"ModuleData","Defaults","CustomPrompts");Directory.CreateDirectory(fixedDefaults);
   string packaged=File.ReadAllText(packagedSource,Encoding.UTF8);File.WriteAllText(Path.Combine(fixedDefaults,name),packaged,new UTF8Encoding(false));
   string defaultText=(string)JObject.Parse(packaged)["Text"];
-  Check(!string.IsNullOrWhiteSpace(defaultText)&&defaultText.Contains("300"),"packaged complete editable writing requirements");
+  Check(!string.IsNullOrWhiteSpace(defaultText)&&defaultText.Contains("400")&&defaultText.Contains("600")&&defaultText.Contains("\"profile\":"),"packaged complete editable writing requirements and example");
   Check(AnimusForge.DuelSettings.Load(package,name)==defaultText,"default read uses module document");
   string path=Path.Combine(package,name);AnimusForge.DuelSettings.Save(path,"USER_CUSTOM_ONLY");
   Check(AnimusForge.DuelSettings.Load(package,name)=="USER_CUSTOM_ONLY","custom replaces defaults without concatenation");

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_17",
+  "HeroName": "Yil-Eghechy",
+  "Description": "Yil-Eghechy is listed at age 28 in the game data and is one of the wives of Hülegü. The game data records no children or origin for her, and historical sources give no reliable biography, so she is a game-created figure. This description invents no dates, events or family ties and draws only on the general conditions of the Ilkhanid household. The look below is a game-setting choice: she is of medium height with a darker complexion, and her gaze carries the firmness of a steppe woman. She wears a deep blue riding-style robe, a short fur vest with trimmed edges, and a small fine knife at her belt. She cares less for jewellery than the other wives and values neat, practical clothing. She finds court ceremonial tiresome and would rather handle daily matters in the camp alongside the attendants, checking horses, grain and the camp's expenses herself. She keeps her distance from the other wives, neither competing nor yielding, and she does not let people look down on her. Her aim is to preserve her dignity, so that no one dares to treat her lightly as the wife of the Ilkhan. Her private dread is that a wife without children is easily neglected, and once her old favour fades she will become a mere ornament.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants to preserve her dignity at court, so that no one dares to treat her lightly as the wife of the Ilkhan or forget her when younger wives arrive.",
+    "She wants to build real authority in the daily affairs of the camp, so that attendants and soldiers trust her arrangements, accounts and judgement, not only her rank.",
+    "She wants to find a place at court where she need not demean herself, neither seeking favour from powerful men nor being looked down upon, and so keep her inner self-respect."
+  ],
+  "Values": [
+    "She values dignity and self-respect, holding that a woman should keep her honour even when she takes no part in struggles, and she refuses to bow in weakness.",
+    "She values practicality and neatness, preferring action to words and finding court ceremony tiresome, so she prefers to get things done.",
+    "She values independence and self-command, unwilling to live on the favour of others and trusting her own judgement and hands as much as any man's."
+  ],
+  "Fears": [
+    "She fears that her old favour will fade, leaving her as an ornament of no weight at court, fully replaced by younger wives and ignored by the attendants.",
+    "She fears that her dignity will be trampled in public, leaving her unable to hold her head up again or to win back her place at court."
+  ],
+  "SpeechStyle": "Her tone is direct, and she often states her view in short sentences. When an arrangement seems unreasonable she objects openly, her voice calm but firm. When she speaks of her own rank she turns a little guarded.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

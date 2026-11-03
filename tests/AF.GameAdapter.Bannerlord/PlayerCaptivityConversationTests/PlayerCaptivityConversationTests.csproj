@@ -7,7 +7,9 @@
     <Compile Include="$(CaptivityAdapterSource)" Link="Production/PlayerCaptivityConversation.cs" />
     <Compile Include="../../../src/AF.GameAdapter.Bannerlord/Compatibility/CaptivityMapVisibilityCompat.cs" Link="Production/CaptivityMapVisibilityCompat.cs" />
     <Compile Include="../../../src/modules/AF.Module.Encounter/EncounterReleaseOwner.cs" Link="Production/EncounterReleaseOwner.cs" />
+    <Compile Include="../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
     <Compile Include="../../../src/modules/AF.Module.Encounter/Escort/EncounterPromptTexts.cs" Link="Production/EncounterPromptTexts.cs" />
+    <Compile Include="../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" Link="Production/PromptComposerTexts.cs" />
     <Compile Include="../../../src/modules/AF.Module.Prompt/Composition/MemorySystemFactProjection.cs" Link="Production/MemorySystemFactProjection.cs" />
     <EmbeddedResource Include="../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json" LogicalName="AnimusForge.Prompt.Compatibility.json" />

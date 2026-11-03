@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_2_2",
+  "HeroName": "Przemko Ścinawski",
+  "Description": "Przemko of Ścinawa reigns as Duke of Ścinawa, the valiant second son of Duke Konrad I of Głogów, remembered in Polish chivalric chronicles as an unyielding paragon of knightly honor and battlefield self-sacrifice. Raised within the disciplined masonry bastions of Głogów, Przemko mastered heavy lance charges, greatsword dueling, and shield-wall formations from early adolescence. Governing the vital crossing of the Oder at Ścinawa, he fortified the town with deep ditches and stone gate towers, transforming his principality into an active shield against aggression. Honorable, blunt, and fiercely loyal to his lineage, he repeatedly deployed his men-at-arms to crush invading bands and uphold territorial integrity. A pure and fearless warrior, Przemko held chivalric fidelity higher than life itself, cementing his eternal glory in the annals of Silesian chivalry. Przemko inspected iron portcullises along the Oder bridgeheads and shared camp rations with his foot soldiers while conducting grueling drill exercises. Holding chivalric honor as his sacred lodestar, he pledged his blood to defend the sovereign independence of his ancestral lands.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Transform Ścinawa into an impregnable bridgehead along the Oder to protect the eastern flank of Głogów.",
+    "Lead every engagement from the vanguard, proving himself a warrior worthy of ancestral Piast renown.",
+    "Forge a disciplined retinue of heavy cavalrymen ready to defend the duchy's sovereignty at any cost."
+  ],
+  "Values": [
+    "Hold chivalric honor, sacred oaths, and defiance in death as supreme virtues, scorning shameful surrender.",
+    "Prize strict combat order and honorable combat, despising cowardice, treason, and retreat.",
+    "Maintain boundless fidelity to sworn allies, gladly offering his lifeblood to keep his word intact."
+  ],
+  "Fears": [
+    "Being captured alive through treacherous ally abandonment and paraded as a humiliated hostage.",
+    "His ultimate sacrifice failing to protect his people from being pillaged and subjugated by ruthless conquerors."
+  ],
+  "SpeechStyle": "A true knight never turns his back to the foe! At Ścinawa upon the Oder, we die with swords drawn rather than plead for life; forward to victory or death! Death in battle is supreme honor; Ścinawa fights to the final breath!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

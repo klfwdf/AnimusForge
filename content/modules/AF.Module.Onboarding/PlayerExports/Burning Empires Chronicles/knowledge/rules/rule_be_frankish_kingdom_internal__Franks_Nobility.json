@@ -1,0 +1,59 @@
+{
+  "Id": "be_frankish_kingdom_internal",
+  "Keywords": [
+    "Franks Nobility",
+    "Frankish warbands and Roman office"
+  ],
+  "RagShortTexts": [
+    "Franks have different chiefs and warbands.",
+    "Individual Roman service does not place everyone in one command."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Franks have different chiefs and warbands, with some serving in Rome. An office raises one family’s standing without placing every chief in one command."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Franks have different chiefs and warbands. Followers retain family ties; decisions about guards and distant service affect common participation. Individual Roman service does not place everyone in one command."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Individual Roman service does not place everyone in one command. Coordination allocates actual supply and protection duties, not merely titles. Franks have different chiefs and warbands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Franks have different chiefs and warbands. Households compare burdens with neighbors; unmatched protection weakens cooperation. Individual Roman service does not place everyone in one command."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Individual Roman service does not place everyone in one command. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Franks have different chiefs and warbands."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

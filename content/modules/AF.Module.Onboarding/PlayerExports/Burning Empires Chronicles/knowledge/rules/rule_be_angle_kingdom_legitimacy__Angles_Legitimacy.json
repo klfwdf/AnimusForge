@@ -1,0 +1,59 @@
+{
+  "Id": "be_angle_kingdom_legitimacy",
+  "Keywords": [
+    "Angles Legitimacy",
+    "Wihtlaeg’s return guarantees"
+  ],
+  "RagShortTexts": [
+    "Safe return and home protection support Wihtlaeg’s standing.",
+    "Shares favoring kin make other households question cooperation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Protection includes home security and safe return. Gifts favoring a few families make other households question further men and vessels."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Safe return and home protection support Wihtlaeg’s standing. Military recognition also rests on rewards and relief; a title needs willing action. Shares favoring kin make other households question cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Shares favoring kin make other households question cooperation. Nominal rights require local execution, with consent and supply both shaping authority. Safe return and home protection support Wihtlaeg’s standing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Safe return and home protection support Wihtlaeg’s standing. Households judge rule through protected families, land and responses to appeals. Shares favoring kin make other households question cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Shares favoring kin make other households question cooperation. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Safe return and home protection support Wihtlaeg’s standing."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

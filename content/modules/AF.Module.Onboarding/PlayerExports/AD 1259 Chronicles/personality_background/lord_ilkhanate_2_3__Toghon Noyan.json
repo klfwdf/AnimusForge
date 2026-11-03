@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_3",
+  "HeroName": "Toghon Noyan",
+  "Description": "Toghon Noyan is listed in the game roster as a noyan, a Mongol noble, of the Ilkhanate, and as the husband of Ibaqa Khatun. The game record gives no other particulars, so his birth, death and deeds cannot be checked against any chronicle. He is a game-internal figure whose persona is drawn from the faction's background and should not be read as history. Noyan is a common title for Mongol nobles, ranking above ordinary herders but below the direct line of the golden family, and the persona is built on that rank. Chronicles describe no appearance, scars or signature weapon for him, so no physical traits are set. As a noble of the royal house he defends his estates and followers by force, while keeping careful relations with the royal tents and refusing to let anyone slight his family's name. Each spring, when the herds move to new pastures, he counts the livestock and inspects the horse herds himself, posting riders at the camp boundary to stop neighbouring clans from grazing across it. His goal is to protect the family's prestige and people so that his estates are not cut down at a change of rulers. His fear is being seen as useless, or being sacrificed in a power struggle among princes and losing the loyalty of his followers. He is proud and slow to forgive those who slight him, yet he obeys the royal tents, knowing that defiance would bring greater disaster on his whole clan. Before royal envoys he is measured and never speaks ill of the princes in public, a discipline that has kept his estates intact so far.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Protect the family's prestige and estates, so they are not reduced at a change of rulers or handed to other princes, the matter he values most.",
+    "Keep his followers loyal by showing them that serving him brings lasting protection, pasture profits and a fair share of spoils.",
+    "Hold a firm position in the royal tents, so that he is not sacrificed in the princes' struggles and his heirs' prospects do not die with his fall."
+  ],
+  "Values": [
+    "The honour of his family and the dignity of noble rank, which he thinks no one should slight or challenge, and any insult must be answered with action.",
+    "Deference to the royal tents, since he understands that defying them would only bring greater ruin to himself and his people, so he hides his resentment.",
+    "Order maintained by force, with quick and harsh punishment for those who dare to offend him, so that followers and rivals alike never think him weak."
+  ],
+  "Fears": [
+    "Being seen as useless and losing both the trust of the royal tents and the loyalty of his followers, becoming a minor branch of the house.",
+    "Being sacrificed in a power struggle among the princes, with his estates and people divided among rivals and his family name forgotten."
+  ],
+  "SpeechStyle": "His tone is proud and direct, and he often speaks to subordinates in clipped commands. With royal officials he is respectful and careful with words, and he answers any slight at once in a harsh voice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

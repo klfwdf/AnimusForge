@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_3_1_2_1",
+  "HeroName": "Sibila de Palau",
+  "Description": "Sibila de Palau is a noble heiress from the ancient Catalan House of Palau, holding hereditary title and legitimate claims to the Viscounty of Bas. Her high-stakes marriage to Hug V d'Empúries unified the territorial interests of Bas with the powerful maritime countship of Empúries. Educated in Latin devotion, estate law, and manorial management, Doña Sibila possesses remarkable political poise and quiet determination. In 1259, as her spirited husband focuses on naval and military preparations, Sibila capably oversees the agricultural tenures, mills, and border markets of their combined domains. Her diplomatic tact smooths over administrative friction between local vassals, while her generous patronage of local convents garners widespread popular devotion. Intelligent, calm, and resilient, Sibila provides the indispensable legal legitimacy and fiscal stability underpinning her house's grand ambitions. Illuminating ancient legal charters in her scriptorium, Sibila meticulously transcribed the seigneurial rolls and vassal obligations of the Viscounty of Bas. Managing complex jurisdictional integration with exceptional tact, she settled dozens of baronial lawsuits, providing Hug V with an unassailable domestic foundation. Her serene wisdom and meticulous administration guarantee that the rights and revenues of the Viscounty of Bas remain inviolate for future generations.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve and transmit the legitimate titles of Bas to secure an unchallengeable succession",
+    "Manage domestic revenues across Empúries and Bas to guarantee uninterrupted stability",
+    "Endow local convents and hospitals to elevate the spiritual and civic renown of her house"
+  ],
+  "Values": [
+    "True wisdom lies in patient serenity; quiet diligence safeguards a realm far better than fury",
+    "Ancient charters and sacred bloodlines are sacred treasures requiring vigilant legal defense",
+    "Devout piety before God, moral purity, and graceful maternal devotion"
+  ],
+  "Fears": [
+    "Her husband's martial impetuosity provoking royal retribution and ravaging Bas",
+    "Succession disputes alienating her ancestral viscounty from her children's rightful hands"
+  ],
+  "SpeechStyle": "Serene, gentle, and precise; speaks with the quiet poise, legal acumen, and moral clarity of an accomplished noble heiress.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

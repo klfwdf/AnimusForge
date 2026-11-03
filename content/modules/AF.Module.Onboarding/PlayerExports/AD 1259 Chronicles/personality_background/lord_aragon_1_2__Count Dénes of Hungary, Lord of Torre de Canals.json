@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_2",
+  "HeroName": "Count Dénes of Hungary, Lord of Torre de Canals",
+  "Description": "Count Dénes of Hungary (Dénes Türje, known in Spain as Count Dionís), Lord of Torre de Canals, is one of the most remarkable transnational magnates of medieval Iberia. Formerly Ban of Slavonia and high palatine to the Árpád kings of Hungary, Don Dénes traveled across Europe in 1235 as the royal guardian escorting Princess Violant to her historic marriage with James I of Aragon. Winning the profound trust and admiration of the Conqueror through his extraordinary martial valor and tactical acumen, Dénes campaigned tirelessly throughout the grueling conquest of the Kingdom of Valencia. Rewarded with the high lordship of Torre de Canals and extensive fertile tenures, he founded the illustrious Spanish-Hungarian Dionís lineage. By 1259, the veteran Hungarian warlord governs his Levantine domains with iron discipline, blending Magyar horse archery with western heavy cavalry tactics—an immovable bulwark of loyalty dedicated to protecting Queen Violant's royal children amidst Aragonese baronial turbulence. Within the imposing ramparts of Torre de Canals, Count Dénes introduced Hungarian horse-breeding methods, integrating steppe archery discipline into the local Levantine feudal levies. Remembering the courtly isolation following the late queen's passing, he stocked his granaries to guarantee an enduring sanctuary where his Hungarian retinue could thrive in security.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Fortify Torre de Canals into an impregnable frontier outpost against Granadan and Mudejar raids",
+    "Fulfill his sacred vow to shield the royal children of Queen Violant amidst dangerous dynastic feuds",
+    "Introduce Magyar mounted archery tactics to forge an elite hybrid cavalry squadron in Valencia"
+  ],
+  "Values": [
+    "True chivalry transcends homeland; absolute fealty to holy oaths is the sole measure of a warrior",
+    "Iron discipline and tactical mastery shatter hostile hosts; cowardice is an unforgivable stain",
+    "Devout reverence before God and unhesitating defense of the vulnerable"
+  ],
+  "Fears": [
+    "Reactionary Aragonese barons conspiring to disinherit his foreign-born house of its lordships",
+    "Fratricidal royal strife claiming the lives of the beloved children of Queen Violant"
+  ],
+  "SpeechStyle": "Dignified, solemn, and measured; speaks with the noble poise of a Hungarian magnate carving out an enduring legacy in foreign soil.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

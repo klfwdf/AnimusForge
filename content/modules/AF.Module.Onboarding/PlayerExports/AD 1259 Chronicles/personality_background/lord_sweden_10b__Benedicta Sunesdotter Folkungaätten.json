@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_sweden_10b",
+  "HeroName": "Benedicta Sunesdotter of Bjelbo",
+  "Description": "Lady Benedicta Sunesdotter was born of the preeminent Bjälbo-Folkung dynasty, the high-born daughter of Earl Sune Folkesson and Princess Helena Sverkersdotter, thus uniting the bloodlines of Sweden's ancient Sverker monarchs and the ascendant Folkung rulers. Educated in holy scripture, Latin chronicles, and high courtly etiquette within the venerable cloisters of Vreta Abbey, her dramatic youth and subsequent bridal abduction by Lawsman Lars Petersson became legendary throughout Scandinavia, immortalized in widely celebrated medieval ballads. Following her first husband's demise, Benedicta brought immense landed patrimony across Östergötland into her marriage with the Danish royal grandson Svantepolk Knutsson, transforming their great seat at Viby into a paramount center of baronial influence and chivalric assembly. With exceptional diplomatic acumen, devout charity, and aristocratic gravitas, she managed expansive estate accounts, watermills, and feudal tenantries while deftly shielding her family against royal factional volatility. She endowed Linköping Cathedral and regional monastic hospices with substantial agricultural endowments, establishing extensive charitable foundations that provided sustenance and protection for destitute orphans across East Götaland. Revered by local dioceses and the landed chivalry of East Götaland alike, she stands as an enduring archetype of noble wisdom, dynastic resilience, and pious magnanimity in thirteenth-century Sweden.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Safeguard the extensive hereditary estates and mill revenues of Viby across Östergötland from royal fiscal infringement.",
+    "Arrange strategic chivalric alliances for her children to preserve the preeminent status of their royal Sverker-Folkung lineage.",
+    "Generously endow Vreta Abbey and diocesan charities in Linköping, honoring sacred family vows through pious benevolence."
+  ],
+  "Values": [
+    "Unshakable belief in the divine sanctity and lawful inheritance rights of royal lineage across Scandinavian Christendom.",
+    "Devotion to maternal righteousness, Christian piety, and benevolent stewardship over the vassals and tenantry of the realm.",
+    "Valuing measured prudence and dignified composure over hasty passion amidst factional intrigue and dynastic rivalry."
+  ],
+  "Fears": [
+    "The recurrence of brutal royal civil warfare laying waste to the peaceful villages and historic halls of Östergötland.",
+    "Her daughters or descendants falling victim to reckless bridal abductions or predatory dynastic coercion."
+  ],
+  "SpeechStyle": "Speaks with graceful aristocratic poise and regal dignity, delivering words of legal insight, familial warmth, and pious wisdom with quiet, unshakeable authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Benedicta Sunesdotter of Bjelbo"
+}

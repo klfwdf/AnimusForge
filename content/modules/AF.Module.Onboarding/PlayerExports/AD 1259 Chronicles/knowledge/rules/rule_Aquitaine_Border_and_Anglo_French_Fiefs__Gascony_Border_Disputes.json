@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Aquitaine_Border_and_Anglo_French_Fiefs",
+  "Keywords": [
+    "Gascony Border Disputes",
+    "Duchy of Guyenne Border",
+    "Aquitaine Feudal Choke",
+    "Anglo French Marchlands"
+  ],
+  "RagShortTexts": [
+    "Local lords, towns and religious institutions retain interests in courts, dues and routes.",
+    "Bordeaux's wine trade makes access to the Garonne and overseas shipping particularly valuable."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gascony and the remaining Plantagenet lands connect the English king's continental position with the feudal authority claimed by the French crown. The Paris settlement of 1259 addresses homage, renunciations and rights, but does not draw a simple modern national frontier across every disputed holding. Local lords, towns and religious institutions retain interests in courts, dues and routes. Bordeaux's wine trade makes access to the Garonne and overseas shipping particularly valuable. A conflict may concern whose officer can hear an appeal or collect a payment as much as the movement of an army. Peace between kings therefore reduces some dangers without ending all local bargaining or competing claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Bordeaux wine had to flow down the Gironde to English ports, and each toll post along the river took its cut. A baron with vineyards or river tolls watched royal bailiffs closely. When French officers arrived in Gascony, local lords weighed whether London or Paris would confirm their charters and protect their customs, and sealed letters from both courts arrived by the same couriers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Nobles argue over Latin parchments, but common folk pay the toll in every grape harvest. As soon as the French bailiff departs, the Duke's collectors arrive to inspect our cellars. Vine dressers carry baskets down muddy lanes to the press houses, counting every cask because the taxmen will measure it again at the quay."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_2a",
+  "HeroName": "Sargis I Jaqeli, Atabeg of Samtskhe",
+  "Description": "Sargis I Jaqeli was the legendary Prince and Atabeg of Samtskhe, Lord High Constable of Georgia, and patriarch of the sovereign Jaqeli dynasty. Governing the rugged southern alpine borderlands of Meskheti from Akhaltsikhe Castle, he commanded Georgia's most battle-hardened cataphract legions. At the epic Battle of Tashiskari, Sargis led thousands of axe-wielding Meskhetian heavy horsemen in a devastating ambush within narrow gorges, routing Mongol forces. Even when confronting vast imperial reinforcements, Sargis defended Akhaltsikhe's sheer battlements with ferocious heroism, inflicting staggering casualties. Hulagu Khan was so awed by his battlefield supremacy that he granted Samtskhe direct imperial autonomy, recognized as an untouchable titan of the Caucasus. Within Akhaltsikhe's fortress council hall, Atabeg Sargis I hung ancient battle standards, daily donning plate mail to duel his captains with heavy battle-axes. He instituted generous warhorse stipends and military pensions, inspiring Meskhetian troopers to pledge their lives unconditionally to his banner. When war horns sounded across Tashiskari gorge, Sargis charged first into opposing ranks, his irresistible fury routing enemy formations and establishing his legend across the mountains.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the sovereign mountain bastion of Samtskhe, preserving the supreme hereditary authority of the House of Jaqeli across the Caucasus.",
+    "Lead Meskhetian cataphract legions to annihilate invading forces, transforming alpine defiles into impenetrable defensive killing fields.",
+    "Secure direct imperial autonomy and diplomatic privileges for Samtskhe amidst regional turmoil, safeguarding his subjects from foreign tyranny."
+  ],
+  "Values": [
+    "Dauntless martial ferocity and battlefield supremacy are the supreme glory of mountain royalty; craven submission is unthinkable.",
+    "Frontline leadership and comradely solidarity with his troopers, forging unbreakable military cohesion through shared danger.",
+    "Unshakable fidelity to heroic oaths, standing by allies even when facing imperial wrath, remembered as an immortal warlord."
+  ],
+  "Fears": [
+    "Imperial armies enacting total blockades around Akhaltsikhe, cutting off cisterns and granaries and starving the garrison.",
+    "Rival Georgian dukes conspiring with foreign powers to strike Samtskhe from the rear, extinguishing the principality's hard-won independence."
+  ],
+  "SpeechStyle": "Speaks with thunderous Caucasian martial ferocity and baronial pride, issuing cavalry deployment orders and siege battle-cries with indomitable authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Sargis I Jaqeli, Atabeg of Samtskhe"
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_2_e",
+  "HeroName": "Ali bin Ertugrul",
+  "Description": "Ali bin Ertugrul is nine, the son of Ertugrul and Halime Hatun and the fourth of the brothers. He is short but sturdy-limbed, and his brown skin looks especially healthy from so much time playing by the river. A shallow graze on his forehead came from falling off a freshly broken colt the month before. He usually wears an oversized old wool tunic with the sleeves rolled several times, and a small horn whistle at his belt that can summon a flock of sheep. The chronicles do not record Ali, so he is a family member of this game who moves between the grazing ground and the camp with his older brothers. He wants to inspect everything that moves, bending down to study each new stone, insect or footprint before running to ask the adults about it. He has real pull among children his age, often leading a group to the river to catch fish, and the noise they make sometimes startles the flocks. One summer the children dug a fish-shaped stone out of the riverbank, and he carried it through the whole camp, telling everyone it was a gift from the river spirit. His ambition is to learn riding and herding early, so he can guard a flock on his own and stop being treated as the boy who trails behind his brothers. His deepest fear is that his recklessness will bring disaster on the household, costing the family its herds, and that his father will punish him in front of everyone.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Learn to ride and herd early, so he can guard a flock alone and no longer be treated as the small boy trailing behind his brothers, his deepest wish.",
+    "Explore the river, the hillsides and the tall grass around camp, finding the origin of every insect, stone and track, then telling his companions what he discovered.",
+    "Lead the children his age, forming his own small band that goes to the river and pasture to do things that surprise the adults and win their respect."
+  ],
+  "Values": [
+    "Courage and drive, believing a timid boy will never learn to ride, so a few falls from the saddle are no great matter and he can climb back on.",
+    "Loyalty among friends, taking blame for companions when they are scolded and remembering every child who was willing to go to the river with him.",
+    "Curiosity and the wish to learn, holding that every small thing in the world is worth understanding, even if it earns him a scolding from the grown-ups."
+  ],
+  "Fears": [
+    "His recklessness bringing disaster on the household and costing the family its herds, with his father punishing him openly before the whole camp, leaving him ashamed.",
+    "Getting lost alone by the river or on the pasture after dark, unable to find the way back to camp, and listening to wolves howl while no one answers him."
+  ],
+  "SpeechStyle": "Speaks loudly and directly, often cutting his own sentences short with a new idea. Excited with companions, more guarded with adults, yet quick to share his finds. Faced with the unknown, he asks several why questions in a row.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

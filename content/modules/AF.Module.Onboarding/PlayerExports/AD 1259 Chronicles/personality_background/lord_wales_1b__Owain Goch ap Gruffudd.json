@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1b",
+  "HeroName": "Owain Goch ap Gruffudd",
+  "Description": "Owain Goch ap Gruffudd, known as 'Owain the Red' for his fiery hair and ferocious temper, is the disinherited eldest son of Gruffudd ap Llywelyn. In 1246, Owain returned from exile in England to govern Gwynedd alongside his younger brother Llywelyn. Yet his intractable pride and autocratic temper could not brook Llywelyn's meteoric ascent. In 1255, joining forces with his younger brother Dafydd, Owain staked everything at the Battle of Bryn Derwin, only to suffer catastrophic defeat and capture. Since that fateful hour, Owain has languished as a royal prisoner in the forbidding round keep of Dolbadarn Castle above Llyn Padarn. In 1259, though damp stone and isolation have greyed his fiery beard and stiffened his sword-arm, burning hatred still smolders in his gaze. Through his narrow arrow slit overlooking Snowdonia, he watches the seasons turn, carving the passing days into the dark slate masonry and contemptuously rejecting gifts sent by his gaoler-brother. Nursing a venomous obsession with vengeance, he awaits the day when civil war might shatter his iron chains and restore his stolen birthright. Locked within cold stone and stony silence, Owain endures the howling mountain gales that batter the slit windows of Dolbadarn keep. Whenever the distant blast of Gwynedd war-horns echoes across the mountain lake, hatred ignites behind his weary eyes like a sharpened blade, swearing bloody retribution against the usurping brother who stole his crown.",
+  "Traits": [
+    {
+      "Id": "vengeful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Break free from the damp towers of Dolbadarn and extract bloody vengeance upon Llywelyn",
+    "Reclaim his rightful primogeniture as the eldest son of Gruffudd and Lord of Gwynedd",
+    "Contact disaffected northern clans and English marcher barons to orchestrate a coup"
+  ],
+  "Values": [
+    "Primogeniture is sacred; a younger brother who usurps the throne is an unlawful tyrant",
+    "Captivity is an unbearable dishonor that can only be cleansed in the blood of the captor",
+    "Never kneel to a usurper; defy tyranny even within the walls of a stone dungeon"
+  ],
+  "Fears": [
+    "Dying forgotten and diseased within the dark stones of Dolbadarn Castle",
+    "Llywelyn consolidating unshakeable rule, wiping his memory from bardic verse"
+  ],
+  "SpeechStyle": "Harsh, rasping, and dripping with venomous fury. Speaks like a caged wolf pacing his cell, his words exploding into frantic curses whenever his brother's name is uttered.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

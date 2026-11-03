@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_2_3",
+  "HeroName": "Corrado Spinola",
+  "Description": "Corrado Spinola stands as the brilliant martial scion of Oberto. Combining battlefield ferocity on horseback with brilliant tactical command aboard war galleys, he leads lightning strikes across land and sea, hailed as a military prodigy. Campaigning in armor since youth, Corrado displayed ruthless tactical genius while suppressing mountain brigands and defeating Guelf mercenary contingents, winning fanatical loyalty from the heavy cavalry of the Ligurian highlands. He organized private war galleys in Genoa's harbor, launching lightning raids against Pisan convoys and personally cutting down enemy captains during desperate boarding melees across the Tyrrhenian Sea. Ambitious and proud, this young commander vowed to avenge his family's temporary political eclipse, determined to forge an undisputed naval empire for House Spinola across the Western Mediterranean. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Eclipse his father's renown through unprecedented victories and claim supreme rule.",
+    "Annihilate Pisan and Venetian maritime rivalry in open, decisive battle."
+  ],
+  "Values": [
+    "Decisive annihilation on the battlefield resolves all diplomatic impasses.",
+    "Where the sword cuts, there lies the sovereign domain of the Spinola."
+  ],
+  "Fears": [
+    "Being shackled by petty communal politics while grand campaigns await abroad.",
+    "Suffering humiliating naval reverses at the hands of the Venetian fleet."
+  ],
+  "SpeechStyle": "Commands with incisive tactical brilliance and fierce aristocratic swagger, born for battle. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

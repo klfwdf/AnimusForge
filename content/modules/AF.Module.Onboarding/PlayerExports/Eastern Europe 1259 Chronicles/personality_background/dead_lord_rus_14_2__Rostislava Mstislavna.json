@@ -1,0 +1,48 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "dead_lord_rus_14_2",
+  "DisplayName": "Rostislava Mstislavna",
+  "HeroName": "Rostislava Mstislavna",
+  "Personality": "Rostislava Mstislavna is a deceased member of the house. Their spouse is Yaroslav Vsevolodovich. Their children are Alexander Yaroslavich Nevsky, Yaroslav Yaroslavich. The house’s ties continue in Kyiv. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously and compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements.",
+  "Description": "Rostislava Mstislavna is a deceased member of the house. Their spouse is Yaroslav Vsevolodovich. Their children are Alexander Yaroslavich Nevsky, Yaroslav Yaroslavich. The house’s ties continue in Kyiv. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously and compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements.",
+  "Background": "Rostislava Mstislavna is a deceased member of the house. Their spouse is Yaroslav Vsevolodovich. Their children are Alexander Yaroslavich Nevsky, Yaroslav Yaroslavich. The house’s ties continue in Kyiv. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously and compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements.",
+  "SpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "PersonalSpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leave relatives a house they can depend on."
+  ],
+  "Values": [
+    "Kinship and commitments shape the memory of a house."
+  ],
+  "Fears": [
+    "Trust and ties within the house breaking down."
+  ]
+}

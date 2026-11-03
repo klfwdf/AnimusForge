@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v4",
+  "Keywords": [
+    "高卢饥军与民间储粮"
+  ],
+  "RagShortTexts": [
+    "高卢军队缺粮与农户留种相冲突，征取影响来季耕作。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "尤利安军队在高卢遇到粮荒，士兵不满，而居民也要留粮生存与播种。统帅不能使新作物提前成熟，征取现存谷物又会触及农户来季耕作。军心、库存和农业季节因此彼此牵制。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

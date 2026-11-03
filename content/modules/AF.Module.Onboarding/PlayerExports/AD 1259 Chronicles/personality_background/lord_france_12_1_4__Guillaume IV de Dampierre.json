@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_12_1_4",
+  "HeroName": "Guillaume IV de Dampierre, Lord of Dendermonde",
+  "Description": "Guillaume IV de Dampierre is the second son of Count Guy and Mahaut de Béthune. At nine, he is a thoughtful, disciplined youth reared along the strategic junction of the Scheldt and Dyle rivers. Balancing his elder brother Robert's aggressive martial zeal, Guillaume displays a natural aptitude for defensive engineering, river locks, and logistical coordination. Diligent and unassuming, he readily assists armorers in maintaining siege engines and crossbow mechanisms, winning the affection of garrison sergeants and craftsmen. Historical records recount that during the Franco-Flemish War, Guillaume served as an indispensable tactical commander alongside his brother, executing brilliant counter-offensives. Guillaume represents the intellectual and defensive backbone of the House of Dampierre. His stalwart coastal and riverine defenses ensured unbroken prosperity across all downstream maritime communities. Entrusted with the fortified river port of Dendermonde, he mastered riverine defense and amphibious engineering. His disciplined command of defensive bastions along the Scheldt repeatedly repelled hostile incursions, ensuring unbroken supply lines between the core Flemish textile centers. His vigilant patrols guarded the waterways against cross-border raids and commercial blockades throughout the region. His defensive foresight turned Dendermonde into an impregnable bastion against hostile territorial expansion.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master fortress engineering and water defenses to make Dendermonde unassailable.",
+    "Serve his father and elder brother as a dependable tactical and administrative lieutenant."
+  ],
+  "Values": [
+    "Strict military discipline, tactical realism, and prudent calculation in all tasks.",
+    "Unshakable brotherly loyalty and dedication to the long-term defense of the realm."
+  ],
+  "Fears": [
+    "An engineering or logistical error compromising defensive locks along the river.",
+    "Failing to live up to the exacting martial standards set by his warlike father."
+  ],
+  "SpeechStyle": "Speaks with bright, measured clarity and remarkable composure for his age, his words concise, analytical, and reflecting a keen intellect focused on fortification and logistics.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,43 @@
+{
+  "Id": "rule_punic_07",
+  "Name": "Siege of Syracuse and Archimedes' Mechanical Engines",
+  "Keywords": [
+    "rule_punic_07",
+    "Siege of Syracuse",
+    "Archimedes Engines",
+    "Claw of Archimedes",
+    "Marcellus Syracuse Assault"
+  ],
+  "RagShortTexts": [
+    "From 214 to 212 BC, Archimedes defended Syracuse with giant cranes and catapults against..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Following the death of King Hiero II, Syracuse allied with Carthage, prompting Consul Marcus Claudius Marcellus to lay siege by land and sea. For two years, the legendary mathematician Archimedes held the Roman fleets at bay with revolutionary mechanical defenses: massive shore cranes ('The Claw') that lifted Roman quinqueremes by the bow and dashed them against rocks, coupled with deadly ranged catapult arrays. Marcellus finally breached the citadel during the feast of Artemis, and Archimedes was slain by a soldier."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "You couldn't row near those sea walls! Giant iron grappling hooks swung out from the towers, seized our war galley by the prow, hoisted it clean out of the water, and slammed it upside down into the surf!"
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A single geometer's mind held Roman legions and fleets at bay for two years. Marcellus wept at the city's destruction, for true nobility respects genius even in an enemy."
+    }
+  ],
+  "TextMappings": []
+}

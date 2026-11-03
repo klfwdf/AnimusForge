@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v4",
+  "Keywords": [
+    "摩擦琥珀吸引轻物"
+  ],
+  "RagShortTexts": [
+    "摩擦后的琥珀吸引草屑和轻纤维。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "古人知道摩擦后的琥珀能吸引细草、叶屑和轻纤维，因而给它取带“抓取”意味的称呼。表演这种现象可使买家惊讶，但轻物被吸起不等于佩戴者能施法、治病或赢得诉讼。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_marcomannic_kingdom_legitimacy",
+  "Keywords": [
+    "马科曼尼人法统",
+    "瓦尼乌斯的地方承认"
+  ],
+  "RagShortTexts": [
+    "保护与地方承认维持Vannius的权威。",
+    "罗马馈赠和有限服务也可能带来新义务。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "王廷的保护和地方承认互相依赖，罗马市场、馈赠或有限服务也能增添声望，但伙伴会衡量得到的安全是否抵得过义务。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "保护与地方承认维持Vannius的权威。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。罗马馈赠和有限服务也可能带来新义务。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "罗马馈赠和有限服务也可能带来新义务。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。保护与地方承认维持Vannius的权威。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "保护与地方承认维持Vannius的权威。家户通过家人、土地与求助能否获保护来认识统治。罗马馈赠和有限服务也可能带来新义务。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "罗马馈赠和有限服务也可能带来新义务。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。保护与地方承认维持Vannius的权威。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

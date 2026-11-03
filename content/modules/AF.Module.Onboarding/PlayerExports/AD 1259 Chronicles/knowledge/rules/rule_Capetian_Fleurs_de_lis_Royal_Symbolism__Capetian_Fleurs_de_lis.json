@@ -1,0 +1,40 @@
+{
+  "Id": "rule_Capetian_Fleurs_de_lis_Royal_Symbolism",
+  "Keywords": [
+    "Capetian Fleurs de lis",
+    "French Royal Iris Heraldry",
+    "Sacred Oriflamme War Banner",
+    "Saint Denis Royal Sovereignty"
+  ],
+  "RagShortTexts": [
+    "The fleurs-de-lis and Oriflamme served royal identification, ceremony and campaigning."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Under Louis IX, gold fleurs-de-lis on blue marked the French monarchy, while the red Oriflamme was associated with Saint-Denis and royal campaigning. Banners, arms and seals served identification, ceremony and documents in different ways. Their making depended on patron, materials and cost; recognizing royal symbols did not reveal every authority of the bearer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The lilies of France commanded deference from barons across Christendom. A vassal who held his fief from the Crown measured his standing by how near his own arms sat to the royal shield. A baron who quarrelled with the king could expect his dues to be questioned, so the lily carried an unspoken threat along with its honour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "For an embroiderer or seal cutter, the royal lilies are a pattern whose arrangement must suit the commission. Clergy connect the emblem with sacred kingship and devotion, while pilgrims may believe in the king's healing touch. The artisan makes the object that carries those claims; a costly banner is neither proof of a miracle nor a guarantee of lawful government."
+    }
+  ],
+  "TextMappings": []
+}

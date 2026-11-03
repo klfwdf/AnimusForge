@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_3_1",
+  "HeroName": "'Ali ibn Abu Muhammad 'Abdallah an-Nasir",
+  "Description": "'Ali ibn Abu Muhammad 'Abdallah an-Nasir is a son of Abu Muhammad 'Abdallah an-Nasir, according to the game lineage. He is about sixty-one, lean and slightly stooped, with thick knuckles from years of handling ledgers and army dispatches. He usually wears grey scholar's robes and a plain white turban, and he speaks little in council, so his peers call him the silent old man. In his early career he served in the tax and provisioning offices of Marrakesh, learning the revenues of each province and the costs of the army. That experience made him the most trusted treasury official during the years of Marinid pressure and rising tribute. The game places him among the brothers Muhammad and Zakariyya, all children of one father, raised together under the family's property and court protocol, and the three hold differing views on property and posts. His highest aim is to keep Almohad finances steady through upheaval, so that the clan survives and can wait for the moment when armies can be gathered again. His darker side is a deep belief that no one deserves complete trust. He weighs even his brothers' kindness in private, and he fears someone may poison him over the family's property. The game provides no verifiable personal record, so these details are inferred from the historical setting.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep Almohad finances steady under Marinid pressure, so the clan's supplies and tribute do not fail and the tribes do not fall apart for lack of grain.",
+    "Protect the account books and seals he controls in the tax and supply offices, so that no new court faction can seize the treasury or the provincial revenues.",
+    "Wait for the right moment to restore his brothers' posts in the army, so that his branch holds its rightful seats and a voice in a reorganised court."
+  ],
+  "Values": [
+    "Prudence and restraint. He believes judgment must rest on complete figures and verified accounts, and no unchecked rumour is enough to act on.",
+    "Order and rule. He insists that ceremony, accounts and seals follow the old protocol, since every shortcut leaves a hidden danger for later.",
+    "The common interest of the family. He holds that rifts between brothers are more dangerous than enemy blades, so he keeps courtesy even when he distrusts someone."
+  ],
+  "Fears": [
+    "Fears that someone will exploit disputes over family property to set brothers against each other, so the clan destroys itself and cannot stand against outside enemies.",
+    "Fears that someone will poison him for his share of the property, so he eats only what he has prepared and has aides test each delivery at the gate."
+  ],
+  "SpeechStyle": "Slow and exact, he states figures before reaching a conclusion. He stays silent a long time, then asks one or two precise questions, leaving his real attitude hard to read.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

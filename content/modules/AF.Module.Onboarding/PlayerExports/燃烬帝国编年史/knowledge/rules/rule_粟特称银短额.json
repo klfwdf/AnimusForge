@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v4",
+  "Keywords": [
+    "粟特称银短额"
+  ],
+  "RagShortTexts": [
+    "古藏商人称银发现原说二十的款项仅四又二分之一。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "古藏的一封信记载，原称二十斯塔特尔的银款到手后称出只有四又二分之一。收款人当面质问差额，并把交涉写回给上级商人。币额口述、实际称量与转交人的解释是不同凭据；远地债权须面对运输和经手环节。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

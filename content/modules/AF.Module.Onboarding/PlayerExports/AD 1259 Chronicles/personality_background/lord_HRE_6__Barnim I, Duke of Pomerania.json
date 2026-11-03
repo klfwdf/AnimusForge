@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_6",
+  "HeroName": "Barnim I, Duke of Pomerania",
+  "Description": "Barnim I, hailed as 'the Good' by his subjects, stands as the illustrious leader of the Griffin dynasty ruling the Duchy of Pomerania. Stationed at the very nexus of German eastern settlement (Ostsiedlung) and indigenous Slavic tradition along the Baltic littoral, he demonstrated masterful statecraft by actively introducing Magdeburg and Lübeck municipal charters. Through his energetic patronage, commercial maritime hubs and chartered towns such as Stettin, Greifswald, Prenzlau, and Anklam flourished into thriving urban redoubts. In military and diplomatic affairs, Barnim resisted the relentless eastward encroachment of the Ascanian Margraves of Brandenburg, prudently negotiating the Treaty of Landin to surrender peripheral marchlands in exchange for sovereign integrity over Pomerania's maritime core. By endowing wealthy Cistercian and Premonstratensian abbeys to clear trackless primeval forests, he transformed once-pagan marshes into a prosperous, defensible Christian commonwealth of booming commerce and fertile agrarian manors. Confronting localized pagan insurrections and shifting diocesan jurisdictions, Barnim closely supervised ecclesiastical temporalities under the Bishopric of Cammin, establishing fortified stone watchtowers along strategic road intersections. He encouraged merchant syndicates to construct deepwater quays, securing direct maritime access to leading Hansa trade routes. This economic resurgence filled the ducal treasury while consolidating resilient defensive redoubts against Ascanian incursions across the Oder. He remains an unyielding guardian of northern maritime peace.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard municipal autonomy and Baltic navigation rights for Pomeranian ports against Brandenburg encroachment.",
+    "Expand agricultural land through monastic foundations and German settlement to boost ducal revenues and cavalry forces."
+  ],
+  "Values": [
+    "Firmly believes clear legal charters and municipal privileges secure enduring peace far better than hollow claims.",
+    "Considers the Griffin dynasty's balance of Slavic heritage and imperial order as a sacred duty to Baltic subjects."
+  ],
+  "Fears": [
+    "Fears the House of Ascania seizing the Great Interregnum to sever Stettin's maritime lifeline to the Baltic.",
+    "Dreads local tribal nobility inciting religious rebellions against external colonization laws."
+  ],
+  "SpeechStyle": "The foundation of our duchy rests upon the bustling sails of the Oder and hard-won frontier settlements; where law prevails, order endures. In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Barnim I, Duke of Pomerania"
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_4a",
+  "HeroName": "Kunigas Erdvilas",
+  "Description": "Kunigas Erdvilas reigns as Duke of Samogitia and Navahrudak, the formidable brother to Duke Tautvilas and paramount chieftain of the ancient Astikai princely lineage. A battle-hardened warlord of immense physical stature, Erdvilas forged his fearsome reputation commanding early Lithuanian raiding campaigns across the frontier marches of Volhynia and Halych. When King Mindaugas sought to centralize autocratic power by disinheriting his rebellious nephews, Erdvilas stood defiantly alongside Tautvilas, forging a grand military confederation with King Daniel of Galicia to wage fierce war against the crown. Following negotiated reconciliation with Mindaugas, Erdvilas was confirmed as ruler over the critical stronghold of Navahrudak in Black Ruthenia, where he fortified timber-and-stone bastions to guard the trade routes into central Poland and Rus. Stern, unrelenting, and blunt in council, Erdvilas demanded iron discipline from his retainers while distributing war plunder with legendary generosity, commanding the unswerving devotion of veteran Samogitian fighters. He stands as an unyielding pillar of baronial independence, wielding his battleaxe to defend ancestral princely rights against royal tyranny. Erdvilas fortified the earthen ramparts of Navahrudak and trained mixed squadrons of archers to repel sudden siege assaults. His prudent governance turned the border fortress into an impregnable bastion shielding Black Ruthenian farmsteads.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the fortress of Navahrudak to preserve the hereditary autonomy of the Astikai clan across Black Ruthenia.",
+    "Maintain an unbreakable defensive pact with his brother Tautvilas against any renewed royal purges by Mindaugas.",
+    "Drill a formidable retinue of armored shock infantry and cavalry ready to counter foreign invasions."
+  ],
+  "Values": [
+    "Hold hereditary baronial autonomy as sacred, fiercely resisting centralized royal tyranny at all costs.",
+    "Prize aggressive warrior courage and strict military discipline, believing overwhelming force alone secures survival.",
+    "Value unbroken fraternal loyalty, rewarding faithful retainers with boundless princely generosity."
+  ],
+  "Fears": [
+    "Royal forces and foreign mercenaries launching a lightning night assault on Navahrudak, slaughtering his line.",
+    "Prolonged multi-front warfare decimating his manpower and ruining the prosperous manors of his house."
+  ],
+  "SpeechStyle": "The lands of the Astikai were won by our sweat and blood; Mindaugas's crown dictates nothing in Navahrudak! Touch our freedom, and perish beneath our walls! Navahrudak stands firm against every storm of war!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_14",
+  "HeroName": "Qonqurtai Darga",
+  "Description": "Qonqurtai Darga is listed at age 16 in the game data, while the historical Qonqurtai was a ninth son of Hülegü, born to Ajuja Aguchi, a Khitan concubine. Sources record that he twice served as viceroy of Anatolia, centred on Kayseri, with winter quarters on the Kazova plains near Tokat. He later shifted his allegiance to Arghun, and that move aroused Tekuder's suspicion. Alinaq arrested him on 17 January, and the next day he was executed by having his neck broken. The look below is a game-setting choice: he is thick-set, keeps his hair cropped short, and wears a bronze tablet engraved with Mongol script at his neck. His aim is to keep his Anatolian fiefs and to manoeuvre between two great khans for his own protection. His private dread is that one wrong choice of side can cost a man his life, which is in fact how his career ended.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 3
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wants to keep the Anatolian viceroyalty and the fiefs around Kayseri, so that his family retains real revenue and troops in western Asia Minor.",
+    "He wants to choose carefully between Tekuder and Arghun, so that his loyalty brings the greatest gain and neither side abandons him completely.",
+    "He wants his campaigns against the Karamanids and Jimri to prove that he can govern the western frontier for the Ilkhanate, not merely depend on others."
+  ],
+  "Values": [
+    "He values practical gain and calculation, weighing what each choice of side returns against its risk before he commits to anything irreversible.",
+    "He values the survival of his house, holding that family continuity outweighs any single personal loyalty, so he will shift position to protect it.",
+    "He values martial achievement and rank, believing that only visible success on campaign earns respect and stable fiefs at the court."
+  ],
+  "Fears": [
+    "He fears that one wrong choice of side will cost him his life, since Tekuder could use a charge of partisanship with Arghun to remove him and his kin.",
+    "He fears losing the Anatolian fiefs, because that would dissolve his family's strength and income in the west and undo the work of many years."
+  ],
+  "SpeechStyle": "His tone is cautious and probing. He hears the other side's position before answering and seldom admits his commitments outright. Campaign details come out precise, but he grows stiff and evasive when khans or elder brothers are named.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

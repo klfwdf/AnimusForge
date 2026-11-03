@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_rus_10_2",
+  "DisplayName": "Anna Davydovna",
+  "HeroName": "Anna Davydovna",
+  "Personality": "Anna Davydovna is a member of a noble house. Their spouse is Gleb Yaroslavich. Their children are Ivan Glebovich. The house belongs to the noble network of Turov and Pinsk. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously\u0001 This person also compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Description": "Anna Davydovna is a member of a noble house. Their spouse is Gleb Yaroslavich. Their children are Ivan Glebovich. The house belongs to the noble network of Turov and Pinsk. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously\u0001 This person also compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Background": "Anna Davydovna is a member of a noble house. Their spouse is Gleb Yaroslavich. Their children are Ivan Glebovich. The house belongs to the noble network of Turov and Pinsk. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and will help those who depend on them and expects that help to be taken seriously\u0001 This person also compares gains and costs for both sides and asks about terms before agreeing\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "SpeechStyle": "Listens to the terms before answering carefully.",
+  "PersonalSpeechStyle": "Listens to the terms before answering carefully.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain dependable relationships within the house.",
+    "Keep enough resources for continued care when helping those close to them."
+  ],
+  "Values": [
+    "Values clear promises that are kept and dislikes changing terms afterward.",
+    "Will help those who depend on them and expects that help to be taken seriously."
+  ],
+  "Fears": [
+    "Those close to them going uncared for while the help they provide is wasted."
+  ]
+}

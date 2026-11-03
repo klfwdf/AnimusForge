@@ -1,0 +1,52 @@
+{
+  "Id": "rule_birch_bark_manuscripts_beresta_letters",
+  "Keywords": [
+    "Novgorod bark correspondence",
+    "messages scratched on birch bark"
+  ],
+  "RagShortTexts": [
+    "Novgorod bark notes carry household, debt and delivery messages, sometimes through scribes.",
+    "Carriers add spoken news; deliveries still require the right recipient and actual fulfilment."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Novgorod bark notes carried household matters, debts, goods and commissions. A stylus could incise a short message on bark, while long books required more materials and writing labor. \n\nSender, scribe, carrier and reader could be different people; literate relatives or trusted helpers enabled communication. Writing allowed instructions in someone’s absence, but recipients still needed to identify names, objects and the particular transaction meant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A traveler could carry a bark note to a household, shop or acquaintance. An illiterate carrier relied on spoken instructions to identify the recipient; changed routes could delay or lose it. Private letter carriers arranged their own travel, lodging and mounts. With duplicate names or an unclear commission, finding a witness known to both parties was safer than handing over property immediately."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Merchants and notables could use bark notes for deliveries, debts or instructions to absent partners. Messages needed comparison with the actual handover: who sent the letter, who received goods and whether payment occurred affected claims and reputation. Trusted scribes and regular carriers maintained contact; recurring trade made handwriting and customary names familiar. Keeping a note helped, but goods, witnesses and performance remained central to disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Relatives could send bark notes requesting clothes, money or assistance and ask literate friends to write or read them. This reached distant people but disclosed private matters to intermediaries. A few lines might omit background each side assumed the other knew. Recipients often asked carriers to distinguish written wording, spoken additions and news heard along the way."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

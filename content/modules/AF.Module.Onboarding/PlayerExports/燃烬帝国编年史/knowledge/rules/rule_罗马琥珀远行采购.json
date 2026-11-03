@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v9",
+  "Keywords": [
+    "罗马琥珀远行采购"
+  ],
+  "RagShortTexts": [
+    "普林尼记述尼禄时期为公开装饰远行采购琥珀。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "普林尼记述尼禄时期有人远行取得大批琥珀，供公开场合装饰。宫廷动员能把远方原料集中起来，却不说明沿途一直由一个国家管理。采购、护送与最后分配的权力和成本并不相同。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

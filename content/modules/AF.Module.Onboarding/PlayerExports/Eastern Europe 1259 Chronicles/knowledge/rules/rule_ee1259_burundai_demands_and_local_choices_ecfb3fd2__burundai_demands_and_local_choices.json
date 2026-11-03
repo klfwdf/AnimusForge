@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_burundai_demands_and_local_choices_ecfb3fd2",
+  "Keywords": [
+    "Burundai's demands and defensive choices",
+    "Pressure on southwestern Rus defenses"
+  ],
+  "RagShortTexts": [
+    "Mongol demands on southwestern Rus concern military service and defenses, with costly choices.",
+    "Pressure to dismantle defenses affects princely independence and residents differently by town."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Burundai's pressure confronts southwestern Rus princes with military obedience and defenses. A demand to dismantle works reduces independent protection if accepted and risks attack if refused. Towns differ in manpower, food and aid. Leaders weigh sustained resistance and negotiation, with consequences for residents' homes and work."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households under dismantling demands need road guards, stores and refuge arrangements as well as information about walls. Workers need food, and removed timber has owners. Residents require plans before changed defenses leave families, animals and provisions without support."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_2_1",
+  "HeroName": "Gutkeled nembeli Pál",
+  "Description": "Gutkeled nembeli Pál (son of Miklós I) is an accomplished garrison commander and estate lord across the Lake Balaton and Zala regions. Steeped in his father's traditions of equity and unswerving duty, Pál commands widespread affection from both soldier retainers and rural burghers. Having led numerous operations to purge robber-bands from the western marshlands, he possesses intimate familiarity with the waterways, causeways, and forested defiles around Balaton. He engineered the outer dykes and signal towers surrounding Zala Castle, instituting a vigilant water-patrol network that protects merchants and farmsteads. In 1259, amidst rising wartime mobilization and refugee movements, Pál maintains strict law and order across his districts, ensuring safe transit for royal supplies. Pál organized armed river flotillas along Lake Balaton, constructing stone watchtowers and reinforced embankments to suppress smuggling. His practical administrative methods maintained civic order and secure commercial transit across western Hungarian highways. Working in close harmony with his father, he ensured that family estates remained tranquil and economically flourishing throughout turbulent seasons. His waterborne patrols and defensive engineering secured the shores of Balaton against marauders, safeguarding merchant caravans and regional markets, ensuring steady customs revenues and civic order across all districts.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard peace and civic order around Zala and Lake Balaton, protecting family estates from unrest.",
+    "Faithfully execute his father's decrees, establishing a sterling reputation for upright governance."
+  ],
+  "Values": [
+    "Hold diligence, practical competence, and civil order as supreme guides, seeking results over vanity.",
+    "Respect the rights of yeomen and knights, convinced unwavering legality preserves the realm."
+  ],
+  "Fears": [
+    "Fears seasonal floods or pestilence sweeping through lakeside manors, causing severe famine.",
+    "Dreads border infiltration compromising royal granaries through saboteur plots."
+  ],
+  "SpeechStyle": "The waterways and ramparts of Zala answer to our vigilance! Any lawless troublemaker attempting mischief in our rear shall be swiftly brought to justice! Balaton's waters answer to our patrols; our rear corridors remain safe!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

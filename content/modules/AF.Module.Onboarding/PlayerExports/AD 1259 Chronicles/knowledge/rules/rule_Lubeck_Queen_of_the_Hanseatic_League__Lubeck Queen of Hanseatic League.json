@@ -1,0 +1,33 @@
+{
+  "Id": "rule_Lubeck_Queen_of_the_Hanseatic_League",
+  "Keywords": [
+    "Lubeck Queen of Hanseatic League",
+    "Trave River Brick Gothic",
+    "Lubeck Law Codification",
+    "Baltic Salt Herring Guilds"
+  ],
+  "RagShortTexts": [
+    "Lubeck merchants pursue trade privileges and cooperation among northern towns.",
+    "Town law does not imply one permanent fleet commanding every Baltic port in 1259."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lübeck stood as the undisputed capital of the Hanseatic League, a city on the Trave whose merchants dominated the Baltic trade. Its ships and caravans carried salt from the Lüneburg saltworks, grain from the eastern estates and herring for the markets of the north, and these goods made the city rich beyond most German towns. Its municipal patricians drafted Lübeck Law, a codified body of town rights that more than a hundred merchant towns across the North Sea and Baltic adopted as their own. Brick Gothic churches rose along the river, and their stone towers marked the city for ships approaching from the sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk"
+        ]
+      },
+      "Content": "A Lubeck sailor thinks of freight, wages, weather and the terms offered in the next harbour. The town's merchants seek shared privileges and protection, yet each dispute still needs allies, money and negotiation. A distant town's adoption of Lubeck law does not put its ships under one permanent league fleet or remove the risks of blockade and piracy."
+    }
+  ],
+  "TextMappings": []
+}

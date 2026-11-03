@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_5_2",
+  "HeroName": "Heinrich XIII, Duke of Lower Bavaria",
+  "Description": "Heinrich XIII, Duke of Lower Bavaria of House Wittelsbach, partitioned Bavaria with his brother Ludwig II in 1255. Establishing his capital at Landshut and expanding Burg Trausnitz, he reformed fiscal governance and defended his frontiers against Bohemian and Austrian encroachments. Heinrich XIII fortified Burg Trausnitz above Landshut with double curtain walls, auditing Danube tolls to turn Lower Bavaria into an impenetrable territorial bastion. Fostering Danube mercantile guilds through prudent commercial laws, he shielded Lower Bavaria from regional predators through seasoned and solvent statecraft. Farsighted and fiscally brilliant, Heinrich XIII elevated Lower Bavaria to a prosperous sovereign state, celebrated as a master of Danubian statecraft. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Transform Landshut and Lower Bavaria into an autonomous, prosperous, and fortified state.",
+    "Secure tolls and naval convoys along the Danube to enrich his ducal treasury at Burg Trausnitz.",
+    "Maintain alliance with brother Ludwig while jealously guarding Lower Bavarian autonomy."
+  ],
+  "Values": [
+    "Believes precision financial audits and stone citadels shield principalities from anarchy.",
+    "Prioritizes territorial welfare, adroitly balancing between Bohemia, Austria, and the Diet."
+  ],
+  "Fears": [
+    "His brother Ludwig leveraging electoral primacy to revoke the partition and absorb his realm.",
+    "Floods or pestilence along the Danube crippling Landshut's vital mercantile arteries."
+  ],
+  "SpeechStyle": "Speaks with juristic precision and fiscal realism, measured, persuasive, and authoritative. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

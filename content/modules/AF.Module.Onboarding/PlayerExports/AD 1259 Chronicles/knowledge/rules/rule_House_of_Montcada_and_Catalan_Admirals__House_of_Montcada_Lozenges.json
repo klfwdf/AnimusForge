@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Montcada_and_Catalan_Admirals",
+  "Keywords": [
+    "House of Montcada Lozenges",
+    "Catalan Seneschal Lineage",
+    "Balearic and Valencia Vanguards",
+    "Sicilian Maritime Expansion"
+  ],
+  "RagShortTexts": [
+    "The House of Montcada bore lozenges, serving as hereditary seneschals of the Crown of Aragon."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gold and red lozenges marked the House of Montcada, whose members held the hereditary office of Great Seneschal of Catalonia and sat at the center of the Catalan nobility. Its members fought in James I's great conquests, taking Majorca in 1229 and Valencia in 1238, and the amphibious assaults on Majorca cost senior commanders their lives. After the conquests the family pushed its naval power into the western Mediterranean, backing expeditions that reached Sicily. Montcada wealth rested on rents from Catalan estates and on profits from the galley fleets they financed. Their ships carried troops, supplies, and merchants, so the family's naval contracts were tied to the crown's own war budget."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Dominating the Corts of Barcelona, the Montcadas championed naval statecraft, integrating merchant syndicates with shock knightly contingents. Each galley subsidy was negotiated with the urban councilors, and a Montcada speaker could tie the city's merchants to the crown's wars."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Aboard Montcada war galleys, Catalan seamen fight alongside feral Almogavars. When grapple hooks lock ships together, their cleavers make quick work of the boarding party. Every oarsman on the benches draws the same pay from the same muster roll, and a sailor who jumps ship before the next port forfeits the pay owed to him."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Fieschi_Counts_of_Lavagna",
+  "Keywords": [
+    "House of Fieschi Genoa",
+    "Counts of Lavagna Fieschi",
+    "Innocent IV Papal Dynasty",
+    "Genoese Guelph Fieschi"
+  ],
+  "RagShortTexts": [
+    "The Fieschi Counts of Lavagna gave the Church Innocent IV, anchoring Genoese Guelph naval."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Fieschi, Counts of Lavagna, gave the Church Pope Innocent IV, who deposed Emperor Frederick II at the Council of Lyon in 1245. As premier Guelph oligarchs of Genoa, the family combined maritime banking with curial connections that reached into the papal court. Their merchant galleys carried cargo to the Black Sea, where they competed with the Ghibelline Doria family for control of trading posts and contracts. Genoese law and commerce were run by interlocking families of this kind, and the Fieschi used their papal ties to win privileges for Genoese traders. Their wealth came from shipping, banking, and the revenues of their Ligurian castles and villages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Papal bulls shielded Fieschi merchant convoys, granting them privileges in Rome and at the Crimean trade ports. Each privilege was copied into the family's account books, and a notary who misread a clause could cost a convoy its right to unload. Genoese captains carried the papal letters aboard in sealed oilcloth, since a wet or broken seal could void the exemption at the next port."
+    }
+  ],
+  "TextMappings": []
+}

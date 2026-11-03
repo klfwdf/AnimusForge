@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_4c",
+  "HeroName": "Marsk Jens Kalf",
+  "Description": "Sir Jens Kalf, Marshal of the Realm (Marsk), held supreme military authority over the armies of Denmark under King Christoffer I and Queen Regent Margaret Sambiria. As marshal, Jens stood at the apex of martial administration, directing nationwide mobilizations and fortress defense. When Copenhagen was sacked in 1259 by Slavic sea-raiders from Rügen and baronial rebellions swept across Jutland, Marshal Jens mobilized royal heavy cavalry and loyalist feudal contingents, conducting desperate counter-offensives to safeguard the ten-year-old King Eric V. Enforcing ruthless tactical discipline, he crushed insurrectionist cells allied with German warlords while securing major coastal strongpoints, acclaimed throughout the kingdom as an indispensable shield of legitimate monarchical succession. Although the battle ended in defeat due to allied collapse, Jens personally commanded the rear-guard, braving multiple arrow wounds to ensure Queen Regent Margaret Sambiria and royal remnants escaped encirclement. Following his release from captivity, he reorganized nationwide garrison rosters and reconstructed coastal citadels, venerated by Danish soldiers as an indomitable warlord who sacrificed everything to preserve the kingdom.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Suppress rebellious baronial factions across Denmark to secure the royal crown for the young King Eric V.",
+    "Coordinate swift military deployments and logistical supply lines to repel hostile foreign invasions along the coast."
+  ],
+  "Values": [
+    "Reveres sworn allegiance to the legitimate crown as a soldier's sacred duty, upholding unbending military discipline.",
+    "Champions unyielding courage on the field of combat, scorning treason and dedicating his life to monarchical survival."
+  ],
+  "Fears": [
+    "Dreads rebel coalitions and foreign mercenaries routing royal armies and extinguishing legitimate monarchical rule."
+  ],
+  "SpeechStyle": "Speaks with thunderous martial authority and terse, unyielding commands that inspire absolute obedience across the battle lines.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

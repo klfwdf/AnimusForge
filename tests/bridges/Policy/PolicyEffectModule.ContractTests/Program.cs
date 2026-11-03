@@ -17533,6 +17533,7 @@ internal static partial class Program
 		Type entryType = SutType("AnimusForge.NpcPolicyHistoryEntry");
 		Type filterType = SutType("AnimusForge.NpcPolicyHistorySelectionFilter");
 		Type routerType = SutType("AnimusForge.PolicyEffects.PolicyEffectModuleRouter");
+		float minimumSimilarity = Convert.ToSingle(serviceType.GetField("MinimumSimilarity", All).GetRawConstantValue(), CultureInfo.InvariantCulture);
 		Dictionary<string, string[]> stabilityResults = new Dictionary<string, string[]>(StringComparer.Ordinal);
 		foreach (string line in File.ReadLines(baselinePath, Encoding.UTF8).Where(value => !string.IsNullOrWhiteSpace(value)))
 		{
@@ -17596,7 +17597,7 @@ internal static partial class Program
 				SetProperty(filterType, filter, "RequiredStatus", quota.Status);
 				SetProperty(filterType, filter, "RequireOwnerMatch", true);
 				SetProperty(filterType, filter, "MaxCount", quota.Limit);
-				SetProperty(filterType, filter, "MinimumScore", 0.52f);
+				SetProperty(filterType, filter, "MinimumScore", minimumSimilarity);
 				object selected = InvokeStatic(serviceType, "SelectEntries",
 					new[] { entries, filter }, 2);
 				selectedIds.AddRange(Items(selected).Select(item => (string)Property(entryType, item, "EntryId")));
@@ -17693,7 +17694,7 @@ internal static partial class Program
 			&& dialogueSelected.Length > 0
 			&& string.Equals(dialogueSelected[0], "onnx-dialogue-east-grain", StringComparison.Ordinal)
 			&& !dialogueSelected.Contains("onnx-dialogue-west-grain", StringComparer.Ordinal)
-			&& eastGrainScore >= 0.52f
+			&& eastGrainScore >= minimumSimilarity
 			&& eastGrainScore > eastGarrisonScore,
 			"Existing ONNX dialogue retrieval must rank the scoped grain policy above a newer same-owner garrison policy and exclude foreign owners. selected="
 			+ string.Join(",", dialogueSelected)

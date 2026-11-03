@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1n",
+  "HeroName": "Stefan Vladislav",
+  "Description": "Stefan Vladislav, aged sixty-one in 1259, is the second son of Stefan the First-Crowned, who reigned as King of Serbia from 1234 to 1243 before peacefully relinquishing the supreme crown to his younger brother Uroš I and ruling Zeta in regional autonomy. Renowned as the sacred founder of Mileševa Monastery, Vladislav achieved everlasting glory in 1237 by bringing the holy relics of Saint Sava back from Veliko Tarnovo to rest in his grand church beneath the famous White Angel fresco. Reconciled with King Uroš, Vladislav governs the strategic coastal realm of Zeta from Lake Skadar with patriarchal wisdom. In 1259, revered across Serbia and Bulgaria alike, the elder monarch maintains internal royal concord and safeguards the maritime marches. Former King Vladislav reflects quietly in his coastal retreat by Lake Skadar, gazing across the shimmering expanse of the Adriatic. Revered by coastal merchants and mountain clansmen alike, he arbitrates regional disputes with consummate patriarchal benevolence. Dedication to safeguarding Saint Sava's relics at Mileševa crowns his illustrious life, standing as a living monument of Serbian history. Having guided Serbia through tumultuous decades before retiring to Zeta, former King Vladislav personifies reconciliation and holy wisdom. His enduring legacy at Mileševa Monastery anchors the Orthodox soul of the South Slavic peoples for centuries to come.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with patriarchal grandeur and seasoned gravitas, unruffled by political storms, commanding absolute reverence from old warriors.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

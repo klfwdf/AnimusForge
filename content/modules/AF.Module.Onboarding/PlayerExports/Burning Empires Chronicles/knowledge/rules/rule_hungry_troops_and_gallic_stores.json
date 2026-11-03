@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v4",
+  "Keywords": [
+    "Hungry troops and Gallic stores"
+  ],
+  "RagShortTexts": [
+    "Shortages in Gaul set military needs against household food and seed for the next crop."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Julian’s army faced shortages in Gaul and discontent among soldiers, while residents needed grain for food and sowing. A commander could not hasten the harvest, and taking existing stores threatened the next crop. Morale, stocks and agricultural seasons constrained one another."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

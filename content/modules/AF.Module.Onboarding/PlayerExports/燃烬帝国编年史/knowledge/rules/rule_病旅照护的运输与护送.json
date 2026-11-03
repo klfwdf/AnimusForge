@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v10",
+  "Keywords": [
+    "病旅照护的运输与护送"
+  ],
+  "RagShortTexts": [
+    "病旅照护还需运输工具与护送者，不能只供床和食物。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "病旅者需要能到达医者，也可能无力独自离开。卡帕多西亚的接待设施把运输与护送纳入照护，供给因此不只包括床和食物，还需要车辆、牲畜与承担旅途的人。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

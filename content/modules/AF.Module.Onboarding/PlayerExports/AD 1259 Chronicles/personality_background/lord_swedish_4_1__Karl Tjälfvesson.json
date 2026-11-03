@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_4_1",
+  "HeroName": "Karl Tjälfvesson",
+  "Description": "Sir Karl Tjälfvesson of Finsta, prominent knight and territorial lord of Tiundaland, held formidable authority across eastern Uppland. Descended from an ancient equestrian lineage, Karl governed extensive agricultural manors, timber tracts, and lacustrine fisheries surrounding Uppsala. Resolute and martial, he commanded universal respect at provincial ting assemblies through his deep mastery of customary law. When Dux Birger Magnusson introduced centralized taxation and military service mandates, Karl guarded the chartered liberties of regional freeholders while maintaining contractual military levies with the crown, repeatedly deploying his retainers to repel eastern Baltic sea-raiders. He heavily fortified the moated stronghold of Finsta, acclaimed as an incorruptible protector of regional order. Karl developed shipping wharves and overland post roads throughout Tiundaland, transforming Finsta into a commercial entrepot for timber, iron ore, and grain, vastly augmenting his family's movable wealth. When acute jurisdictional quarrels over tithes erupted between the Archbishop of Uppsala and the crown, Karl leveraged his immense ting authority to arbitrate hearing councils, averting armed blockades through masterly diplomacy. His uncompromising integrity and seasoned statecraft established him as an immortal elder statesman of Uppland. He also endowed the regional parish church with rich agricultural tithes, earning the profound respect of both prelates and yeomanry.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Fortify Finsta Castle and lake defenses to shield family estates from predatory Baltic raiders and regional feuds.",
+    "Defend the customary judicial liberties of Uppland nobility at regional tings against encroaching royal autocracy."
+  ],
+  "Values": [
+    "Believes territorial integrity, customary justice, and vassal protection are sacred feudal imperatives.",
+    "Champions prudent governance and chivalric honor, scorning opportunistic tyranny in favor of peaceful rule."
+  ],
+  "Fears": [
+    "Dreads royal centralizers usurping the judicial autonomy of Finsta and bankrupting his estates with punitive taxes."
+  ],
+  "SpeechStyle": "Speaks with deep, measured regional authority and ancestral pride, his resolute cadence reflecting unshakeable resolve.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

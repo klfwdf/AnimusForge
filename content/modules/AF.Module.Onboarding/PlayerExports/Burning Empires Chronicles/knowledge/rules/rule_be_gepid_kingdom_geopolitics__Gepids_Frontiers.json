@@ -1,0 +1,59 @@
+{
+  "Id": "be_gepid_kingdom_geopolitics",
+  "Keywords": [
+    "Gepids Frontiers",
+    "Gepid Carpathian approaches"
+  ],
+  "RagShortTexts": [
+    "Carpathian routes and rivers connect Gepid settlements with plains.",
+    "Narrow roads defend and also congest carts and dependants."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Carpathian routes and rivers connect interior, plains and neighbors. Narrow roads offer defence but can congest carts and dependants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Carpathian routes and rivers connect Gepid settlements with plains. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Narrow roads defend and also congest carts and dependants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Narrow roads defend and also congest carts and dependants. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Carpathian routes and rivers connect Gepid settlements with plains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Carpathian routes and rivers connect Gepid settlements with plains. Closed routes may separate families from goods, imposing costs on those remaining at home. Narrow roads defend and also congest carts and dependants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Narrow roads defend and also congest carts and dependants. Cargo passes different carriers, making distant route changes become local shortages through delay. Carpathian routes and rivers connect Gepid settlements with plains."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

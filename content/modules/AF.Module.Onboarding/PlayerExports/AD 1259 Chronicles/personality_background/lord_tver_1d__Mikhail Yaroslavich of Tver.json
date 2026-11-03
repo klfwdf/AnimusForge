@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Saint Mikhail Yaroslavich of Tver, son of Yaroslav III and Saint Xenia, is venerated as one of the most radiant sovereign martyrs in Russian history. A brilliant military commander and devout Orthodox statesman, he elevated the Grand Principality of Tver to the zenith of its geopolitical power and cultural glory. When forced to defend his homeland against allied Moscow and Mongol hosts, Mikhail won a crushing tactical triumph at the Battle of Bortenovo, capturing the wife of Yuri of Moscow. Yet when Khan Uzbeg threatened total annihilation of Tver's populace in retaliation, Mikhail made an immortal choice: he journeyed alone to Sarai to face imperial trial, sacrificing his own life to preserve his citizens from slaughter. Enduring brutal torture and treacherous murder by political rivals at the Horde, he died with serene Christian forgiveness, canonized as a Holy Great Martyr. His sublime martyrdom stands as an eternal testament to Christian love, inspiring generations to defend righteous liberty against tyranny. Saint Mikhail's heroic defense of the Volga frontiers and unshakeable willingness to sacrifice his own life to preserve his citizens from slaughter immortalized his name as a shining pillar of Christian kingship across Eastern Europe.",
+  "SpeechStyle": "As sovereign, my life belongs entirely to my people. If the shedding of my blood can spare Tver from devastation, I shall gladly walk to the slaughter in Sarai. God's truth shall prevail!",
+  "Motivations": [
+    "Defend Tver's sovereign independence and grand-ducal legitimacy against treacherous rival coalitions.",
+    "Sacrifice personal safety and life to shield the citizens and holy shrines of Tver from destructive punitive expeditions."
+  ],
+  "Values": [
+    "Hold sacrificial martyrdom, Christian love, and protective stewardship as the supreme crowns of legitimate kingship.",
+    "Prize heroic chivalric honor and sovereign integrity, despising treacherous collaboration with foreign oppressors."
+  ],
+  "Fears": [
+    "Dread punitive Mongol hordes sweeping across the Volga, butchering innocent citizens and reducing Tver to ash.",
+    "Fear that his sons might succumb to divisive family rivalries after his passing, squandering the realm's hard-won prestige."
+  ],
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_tver_1d",
+  "HeroName": "Mikhail Yaroslavich of Tver"
+}

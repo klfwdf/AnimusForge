@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_4_1",
+  "HeroName": "Jean Stiùbhart",
+  "Description": "Jean Stewart (Jean Stiùbhart) is the accomplished eldest daughter of Alexander Stewart, 4th High Steward of Scotland, betrothed into the powerful highland House of Campbell of Loch Awe. Tall, poised, with striking hazel eyes and dark chestnut hair, Jean carries the burgeoning prestige of the Stewart dynasty with calm aristocratic grace. Raised amidst the coastal winds of Dundonald Castle overlooking the Firth of Clyde, she was educated in estate administration, Norman French, and the intricate web of clan alliances. In 1259, as her father mobilizes the western earldoms against the threat of Norse invasion, Jean assists in managing castle supply stores, organizing the production of woolen uniforms and arrow quivers for the coastal levies. Possessing sharp diplomatic intuition and steadfast courage, she plays an increasingly vital role in cementing Stewart ties with western Highland chiefs, standing as an admirable embodiment of domestic strength and dynastic resolve. Bringing proud Gaelic pedigree from Bute and the Western Isles, Jean played an indispensable role in pacifying island kindreds; she bound maritime clansmen with Lowland chivalry, reinforcing royal coastal defense against Norse marauders along the Firth of Clyde while upholding the ancestral honor of Clan Macrory.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Supervise domestic logistics at Dundonald Castle, keeping her father's coastal fleet fully provisioned",
+    "Cement a vital western alliance with the Campbells of Loch Awe, expanding Stewart influence into Argyll",
+    "Protect coastal tenants from predatory raids, preserving local agriculture and prosperity"
+  ],
+  "Values": [
+    "Dynastic greatness rests upon unwavering fidelity; a noble daughter must shoulder practical duty",
+    "Rigorous household logistics form the quiet foundation of victory; service at home is truly noble",
+    "Uphold oaths and family honor; never bend or yield before foreign raiders and pirates"
+  ],
+  "Fears": [
+    "Norse dragon-ships raiding up the Clyde, putting her beloved coastal estates to the torch",
+    "Her father and brothers meeting disaster in stormy coastal waters during naval engagements"
+  ],
+  "SpeechStyle": "Speaks with melodic clarity, natural composure, and aristocratic poise. Her instructions are crisp and well-ordered, treating vassals and equals alike with effortless courtly courtesy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

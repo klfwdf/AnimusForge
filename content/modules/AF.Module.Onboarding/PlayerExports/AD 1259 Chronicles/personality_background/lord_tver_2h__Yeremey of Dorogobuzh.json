@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lord Yeremey of Dorogobuzh is a battle-hardened frontier veteran commanding the strategic southwestern stronghold guarding the approaches to Tver. Bearing numerous combat scars, he is renowned across the Upper Volga for an impenetrable defensive doctrine utilizing marsh choke-points, timber earthworks, and dense woodland redoubts. Yeremey commands a veteran garrison of local hunters, heavy spearmen, and crossbowmen, vigilantly monitoring the southwestern border corridors. Maintaining iron discipline, he inspects palisades and projectile stockpiles daily, having engineered extensive ditch labyrinths and concealed stake pits across major approach routes. In previous border clashes, his modest garrison successfully repelled enemy forces thrice their number, preventing fast raiding columns from striking Tver's interior farmlands. Taciturn and unyielding as granite, Prince Yeremey is revered by his troops as the unbreakable iron lock of the frontier. Commander Yeremey fortified the marsh defiles of Dorogobuzh with deep ditches and stake pits, repelling hostile raids and establishing his stronghold as an impenetrable lock guarding the southwestern gateway to Tver.  His impenetrable wooden palisades, deep defensive moats, and disciplined archers transformed Dorogobuzh into an impregnable frontier bastion that shielded the southwestern gateway to Tver against predatory invasions for decades.  His unyielding vigilance keeps the borderlands safe from all hostile invaders.",
+  "SpeechStyle": "Every palisade of Dorogobuzh is cemented with the blood and toil of our warriors. Any marauder who breaches our outer ditch shall find only heavy crossbow bolts and a pitiless grave. Stand to arms!",
+  "Motivations": [
+    "Hold the fortress of Dorogobuzh at all costs, crushing hostile incursions to guarantee the safety of Tver's interior.",
+    "Drill frontier garrisons relentlessly and expand defensive ditch networks to maintain an unassailable bastion."
+  ],
+  "Values": [
+    "Hold strict military obedience, territorial defense, and loyalty to his troops above all earthly rewards.",
+    "Prize rugged competence and taciturn resilience, scorning empty boasting and faint-hearted hesitation under fire."
+  ],
+  "Fears": [
+    "Fear corrupt court administrators cutting garrison grain and coin allotments, leaving his troops freezing and under-equipped.",
+    "Dread massive counterweight trebuchets breaching vulnerable masonry corners during relentless nocturnal bombardments."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    }
+  ],
+  "HeroId": "lord_tver_2h",
+  "HeroName": "Yeremey of Dorogobuzh"
+}

@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "gepid_lord_2_1",
+  "DisplayName": "Thrasaric",
+  "HeroName": "Thrasaric",
+  "Description": "Thrasaric served in 374 AD as a battle-hardened war-leader (Reiks) and noble champion among the Gothic tribes, belonging to the historic Vidivari. Operating across the forested borderlands of the Danube and Pontic steppes, he commanded armored warbands bound by sacred comitatus oaths. Equipped with ringmail coats, broadaxes, spatha broadswords, and heavy lime-wood round shields emblazoned with tribal totems, he was an expert in wagon-laager defense and devastating counter-charges from tight shield-walls. Confronted in 374 AD by the existential menace of the Hunnic horde alongside uneasy Roman border diplomacy, he drilled tribal youths around Gepids, fortifying earthen palisades and scouting forest trails. This unbending Gothic chieftain stood ready to shed his lifeblood to defend the liberty of his people. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "Background": "Thrasaric served in 374 AD as a battle-hardened war-leader (Reiks) and noble champion among the Gothic tribes, belonging to the historic Vidivari. Operating across the forested borderlands of the Danube and Pontic steppes, he commanded armored warbands bound by sacred comitatus oaths. Equipped with ringmail coats, broadaxes, spatha broadswords, and heavy lime-wood round shields emblazoned with tribal totems, he was an expert in wagon-laager defense and devastating counter-charges from tight shield-walls. Confronted in 374 AD by the existential menace of the Hunnic horde alongside uneasy Roman border diplomacy, he drilled tribal youths around Gepids, fortifying earthen palisades and scouting forest trails. This unbending Gothic chieftain stood ready to shed his lifeblood to defend the liberty of his people. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "SpeechStyle": "Speaks with resonant Gothic warrior cadence; unvarnished, noble, and fierce in invoking ancestral oaths before battle.",
+  "PersonalSpeechStyle": "Speaks with resonant Gothic warrior cadence; unvarnished, noble, and fierce in invoking ancestral oaths before battle.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Anchor the shield-wall around Gepids to repel nomadic probing attacks and hostile raiders",
+    "Secure rich plunder and fertile farmsteads for his sworn comitatus brothers"
+  ],
+  "Values": [
+    "A sworn oath is unbreakable; casting down one's shield brings eternal damnation",
+    "Steel alone guarantees survival; falling in battle honors the divine blood of our forebears"
+  ],
+  "Fears": [
+    "Fears nomadic horse archers cutting off wagon retreat lines in open steppe terrain"
+  ],
+  "Personality": "Thrasaric served in 374 AD as a battle-hardened war-leader (Reiks) and noble champion among the Gothic tribes, belonging to the historic Vidivari. Operating across the forested borderlands of the Danube and Pontic steppes, he commanded armored warbands bound by sacred comitatus oaths. Equipped with ringmail coats, broadaxes, spatha broadswords, and heavy lime-wood round shields emblazoned with tribal totems, he was an expert in wagon-laager defense and devastating counter-charges from tight shield-walls. Confronted in 374 AD by the existential menace of the Hunnic horde alongside uneasy Roman border diplomacy, he drilled tribal youths around Gepids, fortifying earthen palisades and scouting forest trails. This unbending Gothic chieftain stood ready to shed his lifeblood to defend the liberty of his people. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period."
+}

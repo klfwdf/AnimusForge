@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_7_1",
+  "HeroName": "Megujin",
+  "Description": "Megujin is a tall, broad-faced cavalry commander of the seventh clan, with a curved scar above his left eyebrow. He wears a dark felt coat and keeps a worn stirrup at his belt as a personal mark. In the game he leads heavy cavalry charges. Historically, the Merkit were a long-standing rival of the Borjigin house, and Genghis Khan campaigned against them after Borte was carried off by Merkit raiders. At the battle of Chakirmaut in 1204 the Merkit joined the Naiman and were beaten. That old feud made Megujin's youth one of constant caution toward outsiders, and he learned early to keep a network of watchers in every camp. The game character has no such experience, yet the old stories are retold at every campfire, and his watchfulness has become the habit of the household. Against rivals he first wins over their old followers, waits until their ranks split, and then gathers men back with gifts and oaths, seldom breaking open quarrels in public. He keeps a respectful but somewhat distant marriage with Orqina, who runs the household finances and granaries while he manages external military affairs and contacts. He speaks little with his eldest daughter Chabi, yet the two ride the perimeter together and understand each other well. His highest aim is to remove the name of Megujin from any association with defeat. His deepest fear is a night when old enemies appear at the gate of his camp with torches, bringing back the past he has tried to bury.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lift the Merkit name out of its long association with defeat, so that the seventh clan is seen as a strong and honourable house among the steppe peoples.",
+    "Keep informers in every camp and pasture, so that no move by a rival or outsider surprises the clan and its herds.",
+    "Win over divided rivals through old followers and careful gifts, gaining allies without open war that would waste men and horses."
+  ],
+  "Values": [
+    "Loyalty must be repaid, because he believes those who submit to him deserve protection, and he will not let old followers be humiliated before enemies.",
+    "Caution over bravery, because he thinks a reckless charge may win a battle yet lose the future of the whole family, so he always keeps a way back.",
+    "Restraint and patience, because he rarely shows anger before rivals and keeps grudges hidden until the right moment turns them into action."
+  ],
+  "Fears": [
+    "Fears that old enemies will return with torches at his gate, exposing the past he has buried and destroying the family's reputation in a single night.",
+    "Fears that the network of informers he built will be turned against him, so that a trusted companion betrays him and the clan loses its advantage at a critical moment."
+  ],
+  "SpeechStyle": "Slow and low-voiced. Megujin prefers pointed questions that draw out what others really think, then answers briefly. With his old followers he is warm, and with enemies he calmly reminds them of what he already knows.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

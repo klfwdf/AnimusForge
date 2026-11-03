@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v4",
+  "Keywords": [
+    "Brochs across Mousa Sound"
+  ],
+  "RagShortTexts": [
+    "Mousa and the broch at Burraland face one another across the same sound."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mousa and the broch at Burraland face one another across the same sound. Shore communities could watch vessels while depending on landings and suitable weather for contact. A visible opposite shore was not always a reachable shore, and maritime conditions constrained local authority."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

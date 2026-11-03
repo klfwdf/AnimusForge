@@ -313,7 +313,7 @@ internal static class WorldDiplomacyPolicyContext
 			.ToList();
 		if (effects.Count > 0)
 		{
-			text.AppendLine().Append(PolicyCompatibilityTexts.Get("PublishedPolicyRawMechanicalEffects")).Append(string.Join("；", effects));
+			text.AppendLine().Append(PolicyCompatibilityTexts.Get("PublishedPolicyRawMechanicalEffects")).Append(string.Join(PolicyCompatibilityTexts.Semicolon, effects));
 		}
 		return text.ToString().Trim();
 	}
@@ -406,7 +406,7 @@ internal static class WorldDiplomacyPolicyContext
 			foreach (NpcRulerPolicyRecord record in own)
 			{
 				string effectSummary = BuildEffectSummary(record, null, promptText: true);
-				sb.AppendLine("- 《" + Limit(FirstNonEmpty(record.PolicyName, PolicyGenerationPromptTexts.Get("PolicySnapshotUnnamed", "Unnamed policy")), 60) + "》："
+				sb.AppendLine("- " + PolicyCompatibilityTexts.OpenTitleQuote + Limit(FirstNonEmpty(record.PolicyName, PolicyGenerationPromptTexts.Get("PolicySnapshotUnnamed", "Unnamed policy")), 60) + PolicyCompatibilityTexts.CloseTitleQuote + PolicyCompatibilityTexts.Colon
 					+ Limit(FirstNonEmpty(record.PolicyDigest, record.PolicyContent), 180)
 					+ (string.IsNullOrWhiteSpace(effectSummary) ? "" : PolicyGenerationPromptTexts.Get("PolicySnapshotImpact", "; policy impact: ") + Limit(effectSummary, 120)));
 			}
@@ -419,7 +419,7 @@ internal static class WorldDiplomacyPolicyContext
 			{
 				string effectSummary = BuildEffectSummary(record, targetId, promptText: true);
 				sb.AppendLine("- " + Limit(FirstNonEmpty(record.KingdomName, record.KingdomId), 50)
-					+ "《" + Limit(FirstNonEmpty(record.PolicyName, PolicyGenerationPromptTexts.Get("PolicySnapshotUnnamed", "Unnamed policy")), 60) + "》："
+					+ PolicyCompatibilityTexts.WordGap + PolicyCompatibilityTexts.OpenTitleQuote + Limit(FirstNonEmpty(record.PolicyName, PolicyGenerationPromptTexts.Get("PolicySnapshotUnnamed", "Unnamed policy")), 60) + PolicyCompatibilityTexts.CloseTitleQuote + PolicyCompatibilityTexts.Colon
 					+ Limit(FirstNonEmpty(record.PolicyDigest, record.PolicyContent), 150)
 					+ (string.IsNullOrWhiteSpace(effectSummary) ? "" : PolicyGenerationPromptTexts.Get("PolicySnapshotDirectMeasures", "; direct measures: ") + Limit(effectSummary, 100)));
 			}
@@ -524,7 +524,7 @@ internal static class WorldDiplomacyPolicyContext
 		IEnumerable<string> descriptions = promptText
 			? PolicyEffectSaveCodec.DescribePromptInstances(instances)
 			: instances.Select(PolicyEffectSaveCodec.DescribeInstance);
-		return string.Join(promptText ? PolicyGenerationPromptTexts.Get("FieldSeparator", "; ") : "；", descriptions
+		return string.Join(promptText ? PolicyGenerationPromptTexts.Get("FieldSeparator", "; ") : PolicyCompatibilityTexts.Semicolon, descriptions
 			.Where(text => !string.IsNullOrWhiteSpace(text))
 			.Distinct(StringComparer.Ordinal));
 	}

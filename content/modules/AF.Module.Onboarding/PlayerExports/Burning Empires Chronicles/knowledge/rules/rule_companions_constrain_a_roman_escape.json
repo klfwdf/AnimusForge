@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v9",
+  "Keywords": [
+    "Companions constrain a Roman escape"
+  ],
+  "RagShortTexts": [
+    "Parties escaping Amida in 359 balanced routes, thirst and stragglers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After Amida fell in 359, escape parties needed routes avoiding enemy forces, with thirst and fatigue restricting their choices. Distance could not be planned only around the strongest walker. Injuries, stragglers and care for companions could force a halt."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

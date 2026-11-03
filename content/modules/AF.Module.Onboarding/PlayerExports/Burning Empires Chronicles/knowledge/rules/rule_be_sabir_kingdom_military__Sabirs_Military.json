@@ -1,0 +1,59 @@
+{
+  "Id": "be_sabir_kingdom_military",
+  "Keywords": [
+    "Sabirs Military",
+    "Sabir remounts and camp return"
+  ],
+  "RagShortTexts": [
+    "Sabir operations depend on horses, forage and remounts.",
+    "Pursuit toward Greuthungi lengthens routes back to camp."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Horses, forage and remounts set endurance. Pursuit toward Greuthungi lengthens the return, while sieges add provisioning burdens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sabir operations depend on horses, forage and remounts. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Pursuit toward Greuthungi lengthens routes back to camp."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Pursuit toward Greuthungi lengthens routes back to camp. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Sabir operations depend on horses, forage and remounts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Sabir operations depend on horses, forage and remounts. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Pursuit toward Greuthungi lengthens routes back to camp."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Pursuit toward Greuthungi lengthens routes back to camp. Repair, carrying and care also use people, while daily supply continues after troops pass. Sabir operations depend on horses, forage and remounts."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

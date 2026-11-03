@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_kyiv_siege_narratives_and_urban_continuity_21489567",
+  "Keywords": [
+    "kyiv siege narratives and urban continuity",
+    "Kyiv’s fall in 1240 and life afterward"
+  ],
+  "RagShortTexts": [
+    "Kyiv fell in 1240.",
+    "Defence and church destruction remain in people’s memory."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kyiv fell in 1240, with Dmytro’s defence and ruined churches remembered painfully. Losses included lives, housing and supplies. Survivors still live and exchange; food routes, shelter and trust need rebuilding afterward."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kyiv’s memory highlights food and access within crowded defences. Messages and wounded people need protection; news of one breach must not destroy every remaining contact."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Recovery needs residents, suppliers and fed craftsmen. Functioning food connections serve the city better than declarations that former prosperity has already returned."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Residents seek kin, belongings and shelter amid damaged property claims. Worship gathers people, but shared fuel, food and repairs sustain urban life."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

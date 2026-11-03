@@ -21,8 +21,8 @@ internal sealed partial class SceneConversationSessionRuntime
         private readonly SceneConversationSessionRuntime _owner;
         internal FixturePorts(SceneConversationSessionRuntime owner){_owner=owner;}
         internal int SceneSessionId()=>_owner._sceneHistorySessionId;
-        internal bool RecordResponseForAllNearbySafe(List<NpcDataPacket> a,int i,string n,string t,bool r)=>_owner.RecordResponseForAllNearbySafe(a,i,n,t,r);
-        internal bool PersistNpcSpeechToNamedHeroes(int i,string n,string t,List<NpcDataPacket> a,bool r)=>_owner.PersistNpcSpeechToNamedHeroes(i,n,t,a,r);
+        internal bool RecordResponseForAllNearbySafe(List<NpcDataPacket> a,int i,string n,string t,bool r,int ti=-1,string tn=null)=>_owner.RecordResponseForAllNearbySafe(a,i,n,t,r);
+        internal bool PersistNpcSpeechToNamedHeroes(int i,string n,string t,List<NpcDataPacket> a,bool r,int ti=-1,string tn=null)=>_owner.PersistNpcSpeechToNamedHeroes(i,n,t,a,r);
     }
 
     internal sealed class PrecomputedShoutRagContext { }

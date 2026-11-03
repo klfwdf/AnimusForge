@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_3_7",
+  "HeroName": "al-Alta",
+  "Description": "Al-Alta is eighteen, the daughter of Guyug and Khorijin and one of the youngest members of the Alakolyuk branch. She has a slight frame, a bright face, a full brow, and dark, lively eyes that narrow when she smiles. Her hair is plaited into many thin braids falling past her shoulders, each tied with small bells of different colours that ring as she moves. She favours a bright yellow short tunic and carries a small leather pouch at her waist, holding her own notes on news and a few copper coins. She grew up in her mother's tents and learned early how to manage servants, check accounts, and host guests. From her teens she travelled often with her father to post stations and camps, watching how different people spoke and bargained. She can usually recall who said what at a station and who owed whom a favour. Among rivals in the royal house, she reads faces well and often works out what others want before they say it. She knows her ambition shows, and it sometimes makes her hasty. Her ambition is to establish her own standing quickly, so people stop seeing her only as Guyug's daughter. Her fear is that her ambition will be seen through, costing her the trust of the elder members of the royal house and confining her to the tents.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants to establish her own standing quickly, so people stop seeing her only as Guyug's daughter and treat her as someone who can shape events.",
+    "She uses what she sees at post stations and camps to work out what each power needs, and she looks for trades that will benefit Alakolyuk.",
+    "She wants to master managing servants, accounts, and guests, so that when the family needs hands or news, people think first of her tents."
+  ],
+  "Values": [
+    "She values timing and opportunity, holding that a person who cannot grab a fleeting chance will struggle to earn real standing in the royal feuds.",
+    "She values courtesy. She treats guests and servants with care, which lets her hear useful news across very different circles of the family.",
+    "She values practical gain. Every trade she joins must carry a clear return, and she will not let sentiment cost her or her household anything."
+  ],
+  "Fears": [
+    "She fears her ambition will be seen through, costing her the trust of the elder members of the royal house and confining her to the tents.",
+    "She fears a misjudged trade made in haste will harm Alakolyuk's interests and destroy the reputation she has only just begun to build."
+  ],
+  "SpeechStyle": "Her tone is light and quick. She tests others with rhetorical questions and playful remarks, respectful with elders and direct with peers. She often says: opportunity does not wait, so let us see where it is heading.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

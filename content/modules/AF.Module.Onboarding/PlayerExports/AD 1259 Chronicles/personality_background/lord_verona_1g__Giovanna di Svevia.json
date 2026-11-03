@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1g",
+  "HeroName": "Giovanna di Svevia",
+  "Description": "Giovanna di Svevia, daughter of Conrad of Antioch and Hohenstaufen royal descendant, was the consort of Cangrande I della Scala. Governing court administration while her husband swept across the Veneto, she welcomed foreign embassies with regal splendor, anchoring the dynasty's home front. Lady Giovanna governed the home front with imperial calm while Cangrande campaigned abroad, securing arsenals and neutralizing clandestine conspiracies against the dynasty. Funding solemn masses in the cathedral, her radiant charity comforted fallen soldiers' families, anchoring unwavering popular devotion beneath Cangrande's expanding empire. Possessing iron domestic fortitude, Lady Giovanna anchored Verona's civil stability while Cangrande conquered the Veneto, standing as an indispensable pillar of empire. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Support Cangrande's sweeping territorial conquests to secure Scaliger mastery over the Veneto.",
+    "Maintain imperial Hohenstaufen courtly ceremonial in Verona to overawe rival embassies.",
+    "Fund magnificent basilicas and theological lectures to sanctify her husband's martial victories."
+  ],
+  "Values": [
+    "Believes sovereign majesty arises from the perfect union of royal pedigree and martial valor.",
+    "Holds serene composure under siege as the ultimate duty of a noble consort."
+  ],
+  "Fears": [
+    "Cangrande perishing of sudden poison amidst his triumph, fracturing his newly forged realm.",
+    "Venetian and Paduan counter-leagues marching upon Verona to exact apocalyptic revenge."
+  ],
+  "SpeechStyle": "Speaks with haughty imperial elegance and poised restraint, exuding majestic authority. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

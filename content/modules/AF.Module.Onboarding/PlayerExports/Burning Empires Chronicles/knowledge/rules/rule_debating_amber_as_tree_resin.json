@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v2",
+  "Keywords": [
+    "Debating amber as tree resin"
+  ],
+  "RagShortTexts": [
+    "Pliny discussed amber’s resin origin through smell and burning."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pliny argues for a tree exudation origin, drawing on its pine-like smell and behavior when burned, while listing rival accounts. Craftspeople and buyers could recognize a material’s appearance and smell without agreeing about its origin."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

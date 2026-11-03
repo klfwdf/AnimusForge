@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_5_1_a",
+  "HeroName": "Eufemia Kujawska",
+  "Description": "Eufemia of Kuyavia is an accomplished princess of the Piast dynasty, the eldest daughter of Duke Casimir I of Kuyavia and half-sister to future King Władysław I the Elbow-high. Raised amidst the strategic river junctions of Brześć Kujawski, Eufemia observed the brutal realities of frontier statecraft, developing exceptional diplomatic maturity and keen geopolitical acumen. Fluent in Polish, Old East Slavic, and Latin chancery scripts, she subsequently married Yuri I of Galicia, ruler of Halych-Volhynia, becoming a vital diplomatic bridge connecting Catholic Poland with the Orthodox principalities of Rus. Whenever border disputes flared across the Bug and Dniester rivers over timber rights or salt caravans, Eufemia utilized her royal prestige and articulate letters to reconcile conflicting lords, safeguarding commercial highways. Graceful, devout, and deeply educated, she generously patronized monastic hospitals and scriptoriums, earning universal reverence from both Latin and Ruthenian prelates. Eufemia stands as an enduring diplomat whose wisdom and kinship wove a resilient tapestry of peace across Eastern Europe. Eufemia founded fortified waystation hospices along the arterial trade routes and mediated bitter forest disputes between neighboring dukes. Her diplomatic grace bound Catholic Poland and Orthodox Rus in fruitful commercial and political harmony.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement a powerful strategic alliance with Halych-Volhynia to safeguard Poland's eastern marcher frontier.",
+    "Guarantee unobstructed transit for lucrative trade caravans journeying between the Black Sea and the Baltic.",
+    "Act as an impartial diplomat reconciling Eastern Slavic princes to establish enduring regional stability."
+  ],
+  "Values": [
+    "Prize peaceful arbitration and diplomatic fidelity, believing reasoned dialogue far surpasses mindless war.",
+    "Champion cross-cultural tolerance, reconciling differing traditions to maintain social concord.",
+    "Maintain deep loyalty to both her birth house and marital dynasty, striving for collective prosperity."
+  ],
+  "Fears": [
+    "Full-scale war erupting between Poland and Halych-Volhynia, shattering the diplomatic bonds she nurtured.",
+    "Mongol hordes surging across the frontier, laying waste to the flourishing towns and cloisters of both realms."
+  ],
+  "SpeechStyle": "The White Eagle of Poland and the Lion of Halych must guard the frontier together; compacts of honor protect our peoples far better than bloodshed. Truth and compassion unite our peoples, guarding the frontier with honor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

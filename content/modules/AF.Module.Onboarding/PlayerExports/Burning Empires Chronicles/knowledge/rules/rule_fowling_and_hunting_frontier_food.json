@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v10",
+  "Keywords": [
+    "Fowling and hunting frontier food"
+  ],
+  "RagShortTexts": [
+    "Birds and game supplemented household food alongside livestock and stores."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Arabian frontier households could obtain food from birds, hunting, milk and gathering. A catch was uncertain, while livestock and stores offered other safeguards. Enough for one household might not supply a force on a long march."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

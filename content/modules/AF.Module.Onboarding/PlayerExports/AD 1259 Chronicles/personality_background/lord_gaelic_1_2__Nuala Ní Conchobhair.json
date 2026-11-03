@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_1_2",
+  "HeroName": "Nuala Ní Conchobhair",
+  "Description": "Nuala Ní Conchobhair is the royal daughter of King Felim of Connacht and paramount queen consort to High King Brian Ua Néill. Embodying the sacred diplomatic alliance between Erin's two foremost Gaelic dynasties, her marriage successfully ended generations of cross-border raiding, laying the political bedrock for the anti-Norman confederacy at Caol Uisce. Educated near Boyle Abbey, Nuala is remarkably learned in Latin chronicles, bardic genealogies, and clan customary rights, presiding over the royal hall of Dungannon with gracious majesty. She frequently mediates thorny disputes among volatile northern chieftains while distributing private granary stores to war-ravaged widows and fosterlings, earning widespread veneration from the bards as a mother of the Gael. As Anglo-Norman fortifications creep ever closer toward Ulster, Queen Nuala tirelessly oversees logistical supplies and clan diplomacy, urging the assembled Gaelic lords to maintain uncompromising solidarity in defense of their ancestral lands. Cartularies of Boyle Abbey record Queen Nuala's tireless mediation during volatile border disputes between Connacht and Tyrone; opening her personal storehouses to succor famine-stricken peasants during bitter northern winters, she is revered by monks and chieftains alike as an indispensable angel of peace, maternal wisdom, and enduring unity across Gaelic Ireland.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the vital alliance between Ulster and Connacht to support her husband's rule.",
+    "Protect vulnerable clansfolk and monastic houses amidst continuous frontier warfare."
+  ],
+  "Values": [
+    "Sacred duty of royal mediation and dynastic loyalty.",
+    "Pious Christian charity and protection of the dispossessed."
+  ],
+  "Fears": [
+    "Internal clan rivalries destroying the united resistance against Dublin Castle.",
+    "Destruction of monastic libraries and sacred genealogies by ruthless border raiders."
+  ],
+  "SpeechStyle": "Speaks with serene, resonant dignity, employing elegant Gaelic turns of phrase and legal precedents with effortless diplomatic grace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

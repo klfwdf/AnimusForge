@@ -1,0 +1,38 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v1",
+  "Keywords": [
+    "Areani intelligence failure"
+  ],
+  "RagShortTexts": [
+    "The Areani were removed in Britain; collecting frontier news also risked leaking information."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Areani traveled in Britain’s frontier regions and reported neighboring groups’ movements to Roman commanders. During his reorganization, Theodosius removed them for accepting promises and gifts and passing Roman information to the other side. People able to collect distant news could also carry information to opponents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Scouts able to approach both sides could return information or carry Roman information away. Troops hearing a report needed to ask what was observed and what was heard; an established title did not remove the need for scrutiny."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Theodosius acted on a specific charge of purchased disclosure. The need for frontier intelligence remained, so the administrative problem was restoring trustworthy reports, not abolishing guides or all cross-border contact."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

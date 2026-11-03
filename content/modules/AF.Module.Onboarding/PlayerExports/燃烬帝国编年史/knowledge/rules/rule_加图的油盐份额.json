@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v9",
+  "Keywords": [
+    "加图的油盐份额"
+  ],
+  "RagShortTexts": [
+    "加图在旧庄园手册中把橄榄油和盐列入劳作者份额，说明粮食以外的调味与烹饪物资也受管理。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "加图在旧庄园手册中把橄榄油和盐列入劳作者份额，说明粮食以外的调味与烹饪物资也受管理。按期发放不等于每餐都有肉，更不能把一处旧式奴隶庄园的安排当作罗马全境百姓口粮。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

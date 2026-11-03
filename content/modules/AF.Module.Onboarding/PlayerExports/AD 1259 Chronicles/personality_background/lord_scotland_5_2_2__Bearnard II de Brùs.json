@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_5_2_2",
+  "HeroName": "Bearnard II de Brùs",
+  "Description": "Bernard II de Brus is the eldest son and heir of Bernard I, Lord of Connington and Exton, and Alicia de Beauchamp, nine years of age. Sturdy, quick-witted, and spirited, his bright hazel eyes reveal an instinctive fascination with destriers, shields, and knightly arms. Within the courtyards of Connington Castle, young Bernard undergoes rigorous junior squire training, practicing horsemanship, archery, and shield-wall drills under veteran men-at-arms. Deeply proud of his illustrious ancestry tracing to the Earls of Huntingdon, he already displays natural authority among his fellow noble pages. Household rolls praise his early equestrian skill in riding across rugged ditches and accompanying his father on manorial inspections across Rutland. Brave, protective toward his little brother John, and eager to prove his worth, young Bernard dreams of charging in tournament van. Wielding his notched training sword against wooden quintains in the castle courtyard, young Peter relentlessly practices knightly footwork and shield deflection; displaying innate martial ferocity, keen tactical curiosity, and stubborn courage, the lad promises to become a formidable battlefield champion worthy of the storied Bruce warrior tradition, inspiring all who watch him train with fervent martial pride.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master riding and arms drill to distinguish himself as a worthy heir to the lordships of Connington and Exton.",
+    "Protect his younger brother and bring honor to his parents through brave and obedient conduct."
+  ],
+  "Values": [
+    "Values physical courage, knightly honor, and unswerving obedience to parental authority.",
+    "Believes true nobility is defined by battlefield bravery and steadfast defense of family lands."
+  ],
+  "Fears": [
+    "Fears failing to meet his stern father's high expectations in arms and equestrian training.",
+    "Dreads violent raiders attacking his family's peaceful manors and harming his beloved pony."
+  ],
+  "SpeechStyle": "Speaks with boyish martial enthusiasm, crisp, spirited, and eager to prove his developing chivalric mettle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "Id": "rule_Welsh_Spearmen_and_Mountain_Guerillas",
+  "Keywords": [
+    "Welsh Mountain Spearmen",
+    "Snowdonia Crag Guerillas",
+    "Welsh Light Javelin and Long Spear",
+    "Anti Norman Marcher Resistance"
+  ],
+  "RagShortTexts": [
+    "Welsh tribesmen armed with long ash spears and javelins ambushed Anglo-Norman cavalry in."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Steep slopes, wet ground and narrow tracks in the Welsh uplands shaped deployment as well as the movement of food and animals. Lords in Gwynedd and neighboring districts depended on local followers, with familiar routes aiding scouting, ambush and withdrawal. Men carrying spears or javelins still needed awareness of comrades, cover and exits. Rain and mist could conceal movement while hindering orders. Households supplying food and labor also tended fields and herds; prolonged campaigns required provisions, negotiation and protection to retain followers, not knowledge of terrain alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord"
+        ]
+      },
+      "Content": "Llywelyn ap Gruffudd is using the title Prince of Wales, while recognition by the English king remains disputed. Support from upland followers helps him oppose the Marcher lords, but maintaining them requires livestock, grain and actual local service. Longer summonses take labour away from household cultivation and herding. Sustaining support requires coordination with local powers and followers' needs, giving the princely title a continuing practical strength."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wet ground, slopes and narrow tracks hinder cavalry deployment but also make carrying one's own food difficult. Welsh fighters with spears and javelins use familiar terrain while watching companions and exits. Mist conceals men but can also separate friends. An ambush that consumes all the supplies leaves the same difficult route to travel home. Guides and reconnaissance matter as much as the spear in a fighter's hand."
+    }
+  ],
+  "TextMappings": []
+}

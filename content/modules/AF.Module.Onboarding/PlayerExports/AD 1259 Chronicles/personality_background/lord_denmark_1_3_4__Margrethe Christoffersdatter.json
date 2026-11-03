@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Countess Margrethe Christoffersdatter of Holstein-Kiel, younger daughter of King Christoffer I and Margaret Sambiria, served as a crucial instrument of pacification along Denmark's volatile southern frontier. In an effort to heal generational blood feuds between the Danish monarchy and the House of Schauenburg, Margrethe married Count John II of Holstein-Kiel. Gentle, observant, and deeply compassionate, she acted as a vital mediator along the Eider River marchlands where border raids and jurisdictional friction were chronic. Margrethe sponsored joint arbitration courts and border parishes to resolve knightly disputes peacefully while endowing convents and municipal hospices. Her quiet beneficence and moral integrity bridged the cultural divide between Danish yeomen and German knights as an angelic border peacemaker. Constructing stone bridges, post houses, and arbitration chapels across the Eider River, Margrethe suppressed lawless knightly feuds with patient compassion, her moral grace healing generational scars between Danes and Germans as a saintly peacemaker. Suppressing knightly feuds and building cross-border parishes, Margrethe's saintly compassion healed generational scars between Danes and Germans along the historic Eider frontier, celebrated by all communities as a noble protectress of regional harmony, righteous Christian charity, and enduring peace throughout northern Europe.",
+  "SpeechStyle": "Speaks with soft, musical serenity and deep heartfelt empathy, her gentle words defusing anger and instilling peace.",
+  "Motivations": [
+    "Alleviate generational hostility between Denmark and Holstein, fostering peaceful trade and judicial order along the Eider River.",
+    "Endow charitable hospices and monastic refuges to shelter destitute war victims and wounded veterans along the frontier."
+  ],
+  "Values": [
+    "Believes devoutly in Christian forgiveness, holding that reconciling historic enemies is the highest spiritual duty.",
+    "Champions humility and impartial compassion, judging rulers by their ability to protect common people from devastation."
+  ],
+  "Fears": [
+    "Dreads hot-headed border knights provoking violent skirmishes that shatter fragile treaties between Denmark and Holstein."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_denmark_1_3_4",
+  "HeroName": "Margrethe Christoffersdatter"
+}

@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Natasha Dmitriyevna of Pereslavl, daughter of Grand Prince Dmitrij Alexandrovich and sister to Saint Ivan, is a cherished noblewoman of the House of Nevsky. Raised amidst the epic memories of her grandfather's Baltic victories and her family's princely responsibilities, she embodies royal grace, deep Orthodox piety, and gentle humility. Natasha patronized lakeside convents and scriptoria along Lake Pleshcheyevo, personally supporting the preservation and copying of illuminated liturgical codices. During seasons of conflict and winter distress, she directed municipal charitable dispensaries, providing herbal remedies, warm wool garments, and food stores to war orphans and wounded sentinels. Modest and devoid of worldly vanity, she commanded universal reverence among townspeople and boyars as the 'White Lily of Lake Pleshcheyevo.' Her selfless compassion, patient listening, and generous spirit provided an enduring haven of peace and moral elevation amidst the turbulent currents of medieval Rus'.  Princess Natasha's selfless devotion to preserving sacred illuminated codices and comforting impoverished families along Lake Pleshcheyevo transformed her into an enduring symbol of pure Christian hope and maternal tenderness.  Her gentle humility, active philanthropy, and dedication to sacred monastic scriptoria along Lake Pleshcheyevo created an enduring haven of peace and moral elevation amidst the turbulent historical currents of medieval Rus'.",
+  "SpeechStyle": "Earthly swords turn to dust, but holy love and mercy endure forever in God's sight. So long as we care for one another, the light of hope shall never fade along our lakeside home. God bless the pure in heart!",
+  "Motivations": [
+    "Sponsor lakeside convents and scriptoria to preserve sacred manuscripts, theological learning, and sacred art.",
+    "Maintain permanent medical dispensaries and orphanages to comfort afflicted refugees and impoverished families."
+  ],
+  "Values": [
+    "Treasure holy compassion, moral purity, and selfless philanthropy as the supreme virtues of noble life.",
+    "Prize quiet humility, peaceable speech, and active mercy over arrogant power and court ostentation."
+  ],
+  "Fears": [
+    "Fear predatory invaders breaching town defenses to sack convents and murder vulnerable orphans under her care.",
+    "Dread the brutalizing effects of constant siege warfare eroding human empathy into bitter cruelty and despair."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_vladimir_3d",
+  "HeroName": "Natasha Dmitriyevna"
+}

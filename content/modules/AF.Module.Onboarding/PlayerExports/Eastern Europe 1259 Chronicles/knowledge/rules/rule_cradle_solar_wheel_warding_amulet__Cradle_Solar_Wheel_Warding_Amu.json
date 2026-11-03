@@ -1,0 +1,52 @@
+{
+  "Id": "rule_cradle_solar_wheel_warding_amulet",
+  "Keywords": [
+    "prayers beside an infant cradle",
+    "baptism and care of infants"
+  ],
+  "RagShortTexts": [
+    "Infant care combines feeding, warmth and prayer; protective objects express family hopes.",
+    "Baptism and household customs coexist with practical care for the child and mother."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A cradle’s place depends on fire, smoke, draughts and whether carers can hear crying. Families prepare swaddling and washable cloths, arrange feeding and find food and rest for the mother. Poor homes crowd cooking, sleeping and work together, so several relatives may share watching the child.\n\nChristian households seek baptism and godparents, whose religious duties extend the family’s support. Prayer and the sign of the cross express hopes of protection. An inherited ornament or ribbon may also be treasured as a safeguard, although clergy may dispute such customs. Whatever protection the family trusts, cold, hunger, wet cloth and an exhausted mother still require hands-on care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A noble infant concerns inheritance and kinship, and choosing godparents matters. Servants can share care, but feeding and night watches still need clear responsibility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Billeting and requisitions particularly burden families with infants. Lodgers must leave space around cradles and hearth routes; night movements disturb carers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Kin watching a child free a mother for field or market work. Dry cloth and a sheltered sleeping place require time and materials alongside blessings."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

@@ -1,0 +1,52 @@
+{
+  "Id": "rule_battle_of_streva_1249",
+  "Keywords": [
+    "Lithuanian river valley crossings",
+    "Boats at Lithuanian crossings"
+  ],
+  "RagShortTexts": [
+    "Lithuanian crossings and forest roads shaped movements of troops and carts.",
+    "Floods and narrow approaches could separate troops from baggage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Crossings and forest roads in Lithuanian river valleys shaped movement of troops and carts. Floods, wet ground and narrow paths changed travel times and separated people, animals and baggage. Knowledge of the far bank and available boats mattered more than distance alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Crossings and forest roads in Lithuanian river valleys shaped movement of troops and carts. Floods, wet ground and narrow paths changed travel times and separated people, animals and baggage. Knowledge of the far bank and available boats mattered more than distance alone. A crossing could separate the advance party from baggage, requiring escorts to watch both banks and the remaining column. Urgency could not replace boats or workable water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Crossings and forest roads in Lithuanian river valleys shaped movement of troops and carts. Floods, wet ground and narrow paths changed travel times and separated people, animals and baggage. Knowledge of the far bank and available boats mattered more than distance alone. Controlling a crossing offered income and influence but required guards, boats and repair. Requisitioning boatmen interrupted their livelihood and needed arrangements for provisions and return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Crossings and forest roads in Lithuanian river valleys shaped movement of troops and carts. Floods, wet ground and narrow paths changed travel times and separated people, animals and baggage. Knowledge of the far bank and available boats mattered more than distance alone. Households crossing for markets, kin or livestock faced waiting and fares. A blocked passage meant longer travel, more food and lost fieldwork."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_city_14",
+  "Name": "Metropolis of Gades Atlantic Trading Post",
+  "Keywords": [
+    "rule_punic_city_14",
+    "Urban Center Gades Atlantic Trading Post",
+    "Citadel of Gades Atlantic Trading Post",
+    "Harbor of Gades Atlantic Trading Post"
+  ],
+  "RagShortTexts": [
+    "The fortified urban center of Gades Atlantic Trading Post served as a vital strategic,..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The ancient metropolis of Gades Atlantic Trading Post represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Behind the stone towers of Gades Atlantic Trading Post, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Possession of Gades Atlantic Trading Post anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+    }
+  ],
+  "TextMappings": []
+}

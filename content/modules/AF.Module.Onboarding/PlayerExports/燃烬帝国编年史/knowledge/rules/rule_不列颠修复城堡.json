@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v9",
+  "Keywords": [
+    "不列颠修复城堡"
+  ],
+  "RagShortTexts": [
+    "不列颠据点修复需要人手、材料与粮食，通路仍须守护。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狄奥多西在不列颠整修被破坏的城镇和防御设施，恢复守备与行政联系。修复需要重新分派人手、材料和粮食，驻军还要维持通路；一处据点恢复，并不使所有乡村立即免于劫掠。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

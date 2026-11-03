@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v1",
+  "Keywords": [
+    "穆萨石塔厚壁入口"
+  ],
+  "RagShortTexts": [
+    "穆萨厚墙包围小内室，进出须经长入口。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "穆萨石塔以厚重干砌石壁围住很小的内室，入口也须穿过这层厚墙。长通道限制进出，使搬粮、燃料和器物都要经过狭窄口。塔能展示地位并提供庇护，却不能像露天村落一样同时容纳大量活动。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

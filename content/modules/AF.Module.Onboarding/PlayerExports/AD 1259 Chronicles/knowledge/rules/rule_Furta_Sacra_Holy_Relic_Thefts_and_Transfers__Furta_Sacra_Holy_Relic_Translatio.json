@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Furta_Sacra_Holy_Relic_Thefts_and_Transfers",
+  "Keywords": [
+    "Furta Sacra Holy Relic Translatio",
+    "Saint Mark Body Smuggled Under Pork",
+    "Saint Nicholas Relics Seized for Bari",
+    "Civic Patron Saint Relic Protection"
+  ],
+  "RagShortTexts": [
+    "Relic transfers connect devotion with rivalry among churches and cities.",
+    "Reliquary craft and public belief do not independently establish a relic's provenance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Medieval civic piety treated furta sacra, the holy theft, as an act of divine providence rather than a crime. A city's prestige and the revenue from pilgrims depended on owning miraculous relics, so stealing a saint was a way of winning one. The Venetians who carried the body of Saint Mark out of Alexandria hidden under pork in 828, and the Bari sailors who seized the relics of Saint Nicholas, were praised as men whom the saints had chosen to move to new shrines. Such thefts were recorded in chronicles and celebrated in liturgy, and they gave the receiving town a sacred legitimacy that money could not buy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Possessing premier relics transformed towns. Cologne acquired the bones of the Three Magi from Milan, and that acquisition helped establish its archbishopric as the centre of northern pilgrimage. The sack of Constantinople in 1204 flooded Western churches with looted fragments of the True Cross and the teeth of martyrs, and each new relic brought offerings, prestige, and a claim to divine favour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Goldsmiths fashioned crystal and cloisonné reliquaries to house sacred bones, and the finest work came from Mosan workshops. Parading the reliquary across city walls during sieges inspired unshakeable civic faith in divine protection. The Shrine of the Three Kings at Cologne held relics brought from Milan in 1164."
+    }
+  ],
+  "TextMappings": []
+}

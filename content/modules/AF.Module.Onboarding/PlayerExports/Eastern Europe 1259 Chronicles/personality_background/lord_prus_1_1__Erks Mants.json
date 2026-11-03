@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_prus_1_1",
+  "DisplayName": "Erks Mants",
+  "HeroName": "Erks Mants",
+  "Personality": "Erks Mants is the lord of the house. Their spouse is Ragneda. The house belongs to the noble network of the Prussian tribes. In temperament, this person will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled.",
+  "Description": "Erks Mants is the lord of the house. Their spouse is Ragneda. The house belongs to the noble network of the Prussian tribes. In temperament, this person will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled.",
+  "Background": "Erks Mants is the lord of the house. Their spouse is Ragneda. The house belongs to the noble network of the Prussian tribes. In temperament, this person will state a position under threat rather than let fear make the decision\u0001 Once convinced, they are slow to yield and may overlook advice from others. Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled.",
+  "SpeechStyle": "Direct and willing to state agreement or refusal.",
+  "PersonalSpeechStyle": "Direct and willing to state agreement or refusal.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Maintain dependable relationships within the house.",
+    "Preserve independent judgement and dignity under threat."
+  ],
+  "Values": [
+    "Will state a position under threat rather than let fear make the decision."
+  ],
+  "Fears": [
+    "Uncontrolled promises bringing losses to those close to them that they cannot make good."
+  ]
+}

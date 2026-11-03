@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_1_1",
+  "HeroName": "Arwa bint Ahmad al-Aswad, Emira of Málaga",
+  "Description": "Arwa bint Ahmad al-Aswad is the noble consort of Emir Abu Muhammad and reigning Emira of Málaga, exercising formidable influence at thirty-five years of age. Belonging to the illustrious Banu al-Aswad, she is sister to Crown Princess Umayma and Dona Safya, situating her at the absolute diplomatic nexus of Andalusia. Resolute, calculating, and domestically brilliant, Arwa superintends the fortress treasury, port registers, and civil administration of Gibralfaro. Navigating the delicate friction between her ambitious husband and the Nasrid Sultan, she acts as both chief strategist and diplomatic moderating voice, urging vigilance while cautioning against treacherous Castilian alliances. Deeply revered across maritime guilds for her fair justice and generous patronage, Emira Arwa stands as the indispensable brain and matriarchal pillar of the Banu Ashqilula. Her masterly fiscal foresight, diamond-sharp intellect, and diplomatic fortitude ensure that Emira Arwa remains celebrated across the southern coast as an indispensable architect of dynastic supremacy. Her consummate courtly polish and political wisdom establish Dona Arwa as an immortal pillar of baronial solidarity and maternal fortitude. Her consummate courtly polish and political wisdom establish Dona Arwa as an immortal pillar of baronial solidarity and maternal fortitude. Her sharp managerial oversight and diplomatic poise cement her stature as an immortal matriarch of southern Iberia.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To secure the perpetual supremacy of the Banu Ashqilula in Málaga and safeguard her children's inheritance.",
+    "To expertly balance Nasrid demands against Castilian aggression, preventing dynastic destruction."
+  ],
+  "Values": [
+    "Clear-eyed comprehension of political interest is the only salvation amid feudal anarchy.",
+    "A matriarch must rule with steely intellect and strategic composure, untouched by sentimentality."
+  ],
+  "Fears": [
+    "Her husband's fiery pride precipitating a fatal two-front war against both Granada and Castile.",
+    "Her children falling victim to poisoning or civil war in the looming dynastic clash."
+  ],
+  "SpeechStyle": "Speaks with diamond-sharp intellect, icy aristocratic composure, and calculated diplomatic discretion. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

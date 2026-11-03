@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Hospitaller_Infirmary_and_Leper_Lazar_Houses",
+  "Keywords": [
+    "Hospitaller Grand Infirmary",
+    "Acre Saint John Field Care",
+    "Saint Lazarus Leper House",
+    "Crusader Battlefield Triage"
+  ],
+  "RagShortTexts": [
+    "Hospitaller care joins religious service with the practical needs of sick pilgrims.",
+    "Beds, food, washing and staff require continuing resources rather than devotion alone."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At Acre, the Knights Hospitaller ran infirmaries that could hold over a thousand patients. Their hospital drew on Byzantine and Islamic medical practice, requiring daily linen changes, ventilated wards, nourishing meat broths, and systematic triage. Afflicted crusaders with leprosy were cared for in lazar facilities run in alliance with the Order of Saint Lazarus, which kept them apart from the general wards. The infirmary's upkeep depended on donations from Western estates and the Order's own revenues, so every new bed had to be paid for by lands far away from Acre."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Even noble knights afflicted with leprosy rode into combat under the green cross of Saint Lazarus, and rank did not spare them from the disease. The memory of King Baldwin IV of Jerusalem, who ruled while suffering from leprosy, made their suffering a holy trial rather than a shame."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Black-mantled Hospitallers tend penniless pilgrims as if serving the Lord Himself. A fever-stricken camp follower receives clean water, fresh bread, and compassionate nursing denied by his own village elders. The infirmary keeps straw pallets, washing basins, and herb stores. Those who recover are sent back on the road with bread and a blessing."
+    }
+  ],
+  "TextMappings": []
+}

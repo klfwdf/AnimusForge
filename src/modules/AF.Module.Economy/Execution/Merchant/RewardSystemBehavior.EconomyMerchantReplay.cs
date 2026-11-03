@@ -289,7 +289,7 @@ private bool TryReplayMerchantAction(
             return false;
         }
         factText = EconomySourceTexts.Get("S040") + (itemName ?? lookup)
-            + " ×" + actual.ToString(CultureInfo.InvariantCulture) + "。";
+            + " \u00D7" + actual.ToString(CultureInfo.InvariantCulture) + EconomySourceTexts.Period;
         return true;
     }
 
@@ -314,7 +314,7 @@ private bool TryReplayMerchantAction(
             return false;
         }
         factText = EconomySourceTexts.Get("S041") + amount.ToString(CultureInfo.InvariantCulture)
-            + EconomySourceTexts.Get("S035") + line.DebtId + "。";
+            + EconomySourceTexts.Get("S035") + line.DebtId + EconomySourceTexts.Period;
         return true;
     }
 
@@ -336,7 +336,7 @@ private bool TryReplayMerchantAction(
             return false;
         }
         if (string.IsNullOrWhiteSpace(statusText)
-            || statusText.IndexOf(EconomySourceTexts.Get("S036"), StringComparison.OrdinalIgnoreCase) < 0)
+            || !IsDebtReleasedByAgreementStatus(statusText))
         {
             return false;
         }

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_2_b",
+  "HeroName": "Halime Hatun",
+  "Description": "Halime Hatun is twenty, the wife of Ertugrul and, in Ottoman folklore, the mother of Osman. The tradition that grew up after the Ottoman court holds that she was Ertugrul's first wife and bore him three sons. In this game she is small, with a plain white headscarf covering her brow, and her deep eyes are steady when she speaks. She often presses her fingers against the hem of her skirt. A faded burn scar sits on the inside of her right wrist, from boiling water she splashed while preparing a remedy for an old woman of the tribe when she was sixteen. She usually wears a grey-blue wool skirt under a short jacket with red thread embroidery, and a wooden comb and small leather pouch at her waist. She and her husband are close and quiet, and rarely argue in front of others. Yet the grain, dairy and textiles of the household are distributed by her hand, and the accounts are clear. When quarrels arise in the tribe she listens from the corner, and speaks one quiet sentence once both sides are tired, often ending the dispute. One winter a family that had lost its animals nearly ran out of food, and she sent half of her own dairy over without letting them know who had sent it. Her ambition is to raise her children safely and teach them to herd and to keep the tent in order. Her deepest fear is that her husband will meet misfortune while travelling and that she and the children will be forced to live in another people's camp.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Raise her children safely, teaching them to herd and tend the tent, and how to live alongside neighbours on the steppe, the thing she values most.",
+    "Distribute the household's fodder, dairy and textiles by hand, so that each member's food and warmth can be accounted for and no one is overlooked.",
+    "Mediate tribal quarrels quietly, giving both sides a way out so that bloody conflict does not spread from tent to tent across the camp."
+  ],
+  "Values": [
+    "Patience and forbearance, believing many disputes cool and settle by themselves, and early intervention only inflames what could have been calmed.",
+    "Family unity, valuing a household that shares one tent and one table, and preferring to lose goods rather than see the family scattered apart.",
+    "Diligence and fairness, trusting that every bundle of fodder and every piece of cloth should reach those who truly need it, without favouring kin or friends."
+  ],
+  "Fears": [
+    "Her husband meeting misfortune on the road, leaving her and the children without support and forced to live in another people's camp, dependent on strangers.",
+    "Her children losing their way on the steppe, taken in by a stronger neighbour and forgetting their name and customs, beyond her power to bring back."
+  ],
+  "SpeechStyle": "Speaks softly and with measure, rarely raising her voice. Patient and tender with children, using everyday objects to explain lessons. Brief with her husband. In quarrels she keeps silent, then ends the matter in one sentence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

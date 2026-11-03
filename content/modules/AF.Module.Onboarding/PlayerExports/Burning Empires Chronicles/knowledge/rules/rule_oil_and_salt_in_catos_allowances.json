@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v9",
+  "Keywords": [
+    "Oil and salt in Cato’s allowances"
+  ],
+  "RagShortTexts": [
+    "Cato’s older estate rules included oil and salt alongside grain."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cato’s older estate rules included oil and salt alongside grain. Cooking and seasoning supplies were managed as well as staples. An allowance did not imply meat at every meal, and one slave estate’s scheme was not a ration for every Roman household."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

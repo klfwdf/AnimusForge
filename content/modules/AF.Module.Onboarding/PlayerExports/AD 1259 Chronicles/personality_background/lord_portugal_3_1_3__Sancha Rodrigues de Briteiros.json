@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_3",
+  "HeroName": "Sancha Rodrigues de Briteiros",
+  "Description": "Dona Sancha Rodrigues de Briteiros is the eldest sister of Dom Mem Rodrigues, serving at twenty-eight years of age as the proud matriarch of the House of Baião through her marriage to Dom Pedro Ponces de Baião. Uniting the valorous stock of Briteiros with the sprawling riverine lordships of Baião along the Douro, Sancha exercises immense authority over vast manorial domains. Celebrated for her decisive governance, she has repeatedly managed estate treasuries, defended river crossings, and settled tenancy disputes while her husband campaigned with the royal host. Deeply aligned with her brother's regional ambitions, Dona Sancha fosters intimate trade, mutual defense, and political alignment between Baião and Briteiros, standing as an unshakeable guardian of baronial solidarity in northern Portugal. Her resolute governance along the fertile banks of the Douro secures regional peace and tenant prosperity, cementing Dona Sancha's reputation as an indispensable pillar of baronial solidarity and maternal wisdom. Her tireless diligence and maternal wisdom preserve peace along the Douro, ensuring that the House of Baião flourishes through every political shift in the realm. Her administrative wisdom, quiet authority, and deep maternal fortitude preserve unbroken peace along the fertile riverbanks of the Douro.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To cement the indissoluble alliance between Briteiros and Baião across the northern river valleys.",
+    "To administer the Baião patrimony with iron efficiency, securing the rear while her husband is afield."
+  ],
+  "Values": [
+    "Fidelity, industrious management, and moral rectitude define the nobility of womanhood.",
+    "Mutual dynastic loyalty is the surest rampart against feudal ruin and border turmoil."
+  ],
+  "Fears": [
+    "Factional feuding dividing northern lords and devastating the agrarian wealth of the Douro.",
+    "Her kin meeting calamity during treacherous frontier warfare."
+  ],
+  "SpeechStyle": "Speaks with composed dignity, practical sharpness, and authoritative poise, effortlessly winning consensus. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

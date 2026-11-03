@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_3j",
+  "HeroName": "Krisztina",
+  "Description": "Krisztina is the formidable noble chatelaine and wife of Master of the Stewards Peter I Csák, revered in history as the mother of Matthew III Csák. Born into an illustrious Transdanubian aristocratic lineage, she brought significant landed connections, intellectual refinement, and political acumen to the Csák household. Throughout her husband's rise within the royal administration at Buda, Krisztina deftly navigated high-society networks, gathering crucial court intelligence to bolster her family's standing. Possessing immense foresight, she personally supervised the rigorous education of young Matthew in martial arts, castle architecture, and high diplomacy, forging the ambitious character of the future northern hegemon. In 1259, amidst mounting political tensions across Hungary, Krisztina manages clan treasuries and household security with regal poise, unyielding in her devotion to dynastic supremacy. Krisztina managed clan treasuries and household finances with impeccable skill, educating young Matthew in royal statutory law, siegecraft, and interstate diplomacy. Her sharp political intelligence and high-society connections enabled her to gather vital intelligence from court ladies across the courts of Central Europe. Her regal composure and maternal guidance provided an unshakeable moral and intellectual foundation for Clan Csák's dramatic ascent to territorial dominance across Central Europe.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Aid her husband in securing paramount offices at court, multiplying clan revenues and landed estates.",
+    "Nurture her son Matthew into a transcendent territorial sovereign, elevating Clan Csák across Europe."
+  ],
+  "Values": [
+    "Hold dynastic ascendancy, foresight, and exceptional talent as sacred virtues, scorning mediocrity.",
+    "Prize patient political calculation, convinced long-term vision triumphs over reckless impulse."
+  ],
+  "Fears": [
+    "Fears volatile court coups and assassination plots cutting short her husband's ascending career.",
+    "Dreads pestilence or poison claiming her children, endangering the dynasty's future."
+  ],
+  "SpeechStyle": "The blood of Csák is destined to command the storm! Deep waters harbor true dragons; with wisdom and firm resolve, ultimate glory shall be ours! Foresight and gold build dynasties; the renown of Csák shall echo through Europe!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

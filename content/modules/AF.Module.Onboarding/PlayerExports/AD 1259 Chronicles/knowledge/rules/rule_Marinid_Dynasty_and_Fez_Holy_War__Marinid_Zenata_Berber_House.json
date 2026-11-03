@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Marinid_Dynasty_and_Fez_Holy_War",
+  "Keywords": [
+    "Marinid Zenata Berber House",
+    "Fes Jdid Royal Citadel Fortress",
+    "Almohad Caliphate Overthrow",
+    "Moroccan Trans Strait Jihad Ambition"
+  ],
+  "RagShortTexts": [
+    "The Marinid dynasty conquered Morocco, establishing their capital at Fez to wage holy war."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Marinid dynasty came out of Zenata Berber pastoral tribes and swept across Morocco after the Almohad Caliphate lost its grip on the north. Their court was rooted in Fez, where the sultans presented themselves as champions of strict Maliki Sunni orthodoxy. That religious claim gave them a justification for holy war, and they used it to call desert and mountain tribes to campaigns against Christian-held Andalusia. Religious legitimacy mattered as much as the sword in a state built from tribal confederations. A sultan who could say he defended the faith could hold together clans that had little other reason to obey one throne. The result was a dynasty that tied the Maghreb's internal order to the fate of the Iberian frontier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Sultans such as Abu Yusuf Ya'qub turned tribal levies into a more disciplined royal army, paid and commanded from the centre. That army let Fez project power across the Strait of Gibraltar and meddle in Iberian politics. Each message from Granada or Seville was read closely at court, since an alliance or a withdrawal could shift the balance on the Nasrid frontier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Black camel-hair tents spread over the hills outside Fez, and the men under them live rough. When the tribal drums sound the call to muster, horsemen saddle in the dark and ride out with a wild, unhurried ferocity. A soldier learns quickly that the tribal horse does not wait for the foot, so keep close to your own banner and watch the flanks, where the desert riders will strike first."
+    }
+  ],
+  "TextMappings": []
+}

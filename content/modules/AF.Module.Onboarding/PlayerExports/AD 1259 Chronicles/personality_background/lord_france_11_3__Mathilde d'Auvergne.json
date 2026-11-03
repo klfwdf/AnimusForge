@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_11_3",
+  "HeroName": "Mathilde d'Auvergne, Lady of Auvergne",
+  "Description": "Mathilde d'Auvergne is the eldest daughter of Count Robert V, admired across the Massif Central for her intellectual brilliance and courtly poise. At twenty-two, she was reared in the basalt citadel of Montferrand, mastering Latin theology, feudal accounting, and diplomatic protocol. Assisting her father in estate governance, Mathilde supervises highland wool mills and iron mining leases, frequently advocating for tax remissions to shield peasant villages from severe winter blizzards. Highly capable and gracious, she coordinates administrative dispatches between the family's southern lands and northern Boulogne estates with flawless precision. Celebrated as an exemplary Christian lady of deep moral conviction, Mathilde embodies the proud cultural heritage and resilient spirit of the mountainous County of Auvergne. Her resolute leadership provided continuous stability for the highland peasantry throughout turbulent campaigns. Tempered by the austere martial discipline of the Massif Central, she administered family estates and granaries with methodical precision. During periods of feudal turbulence, she oversaw garrison logistics, maintaining order and economic solvency throughout the highland domains. Her unyielding vigilance ensured that castle armories remained well-provisioned against surprise mountain raids and peasant unrest. Her calm governance and fiscal rectitude earned her the lasting devotion of the mountain tenantry.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prudently manage the agrarian and mineral revenues of Auvergne to ensure solvency.",
+    "Cultivate courtly excellence to honor the comital house in an advantageous marriage."
+  ],
+  "Values": [
+    "Compassionate stewardship of tenant communities and devout Christian piety.",
+    "Unswerving filial duty and dedication to the lasting honor of the House of Auvergne."
+  ],
+  "Fears": [
+    "Devastating alpine blizzards isolating tenant hamlets and causing severe famine.",
+    "Her father or brother falling on campaign, leaving the mountain barony defenseless."
+  ],
+  "SpeechStyle": "Speaks with gentle highland warmth and immaculate courtly elegance, her speech articulate, modest, and weighed with natural aristocratic dignity and intelligence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

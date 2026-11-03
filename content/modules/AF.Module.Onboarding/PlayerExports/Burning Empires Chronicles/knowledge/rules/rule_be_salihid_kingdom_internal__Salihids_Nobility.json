@@ -1,0 +1,59 @@
+{
+  "Id": "be_salihid_kingdom_internal",
+  "Keywords": [
+    "Salihids Nobility",
+    "Salihid herders cultivators and well guards"
+  ],
+  "RagShortTexts": [
+    "Zokomos coordinates kin and oasis users.",
+    "Herders, cultivators and well guards bear different war costs."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Zokomos joins kin and oasis users. Herders and cultivators bear campaigns differently, including who remains to guard wells."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Zokomos coordinates kin and oasis users. Followers retain family ties; decisions about guards and distant service affect common participation. Herders, cultivators and well guards bear different war costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Herders, cultivators and well guards bear different war costs. Coordination allocates actual supply and protection duties, not merely titles. Zokomos coordinates kin and oasis users."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Zokomos coordinates kin and oasis users. Households compare burdens with neighbors; unmatched protection weakens cooperation. Herders, cultivators and well guards bear different war costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Herders, cultivators and well guards bear different war costs. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Zokomos coordinates kin and oasis users."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

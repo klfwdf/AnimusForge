@@ -1,6 +1,8 @@
-using System;
+﻿using System;
 using System.Linq;
 using RichExecutions.Core;
+using RichExecutions.Customization;
+using TaleWorlds.Library;
 using RichExecutions.Diagnostics;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Encounters;
@@ -42,7 +44,7 @@ internal static class ExecutionSessionCoordinator
         }
 
         RexLog.Info(
-            $"Prepared session {request.SessionId} for venue '{request.Venue.StringId}' " +
+            $"Prepared session {request.SessionId} for venue '{request.VenueId}' " +
             $"and prisoner '{request.Victim.StringId}'.");
         return true;
     }
@@ -102,6 +104,17 @@ internal static class ExecutionSessionCoordinator
         if (mission is null)
         {
             mismatchReason = "mission was null";
+            return false;
+        }
+
+        if (request.IsFieldCamp)
+        {
+            if (VengeanceIntegration.FieldCampMissionProbe?.Invoke(mission) == true)
+            {
+                return true;
+            }
+
+            mismatchReason = "the field-camp request was not claimed by a field-camp mission";
             return false;
         }
 
@@ -174,6 +187,52 @@ internal static class ExecutionSessionCoordinator
             deathLogic,
             controller,
             downstreamDecider);
+    }
+
+    // Field-camp chained ceremony: the previous controller has already settled
+    // and removed itself, so the mission holds exactly one controller again.
+    // The new request is begun by the caller; this only adds its behaviors.
+    internal static TownExecutionMissionBehavior InjectChainedSession(
+        Mission mission,
+        ExecutionRequest request,
+        ExecutionService service,
+        ExecutionSitePreset preset,
+        Vec3 origin,
+        Vec2 forward,
+        TownExecutionMissionBehavior? retainedSite = null)
+    {
+        RexLog.Info(
+            $"Injecting chained field-camp session {request.SessionId} into mission scene " +
+            $"'{mission.SceneName ?? "<null>"}'.");
+        var downstreamDecider = mission.MissionBehaviors
+            .OfType<IAgentStateDecider>()
+            .FirstOrDefault();
+        var deathLogic = new ExecutionVictimDeathMissionLogic(request, downstreamDecider);
+        var controller = new TownExecutionMissionBehavior(
+            request,
+            service,
+            RichExecutionApi.SceneActs,
+            deathLogic);
+        controller.PrepareChainedLayout(preset, origin, forward);
+        if (retainedSite is not null) controller.AdoptRetainedFieldCampSite(retainedSite);
+        AddExecutionMissionBehaviorsAtomically(mission, deathLogic, controller, downstreamDecider);
+        try
+        {
+            // AddMissionBehavior only invokes OnCreated on an already-running
+            // mission. Its original startup passes will never visit these two.
+            VengeanceIntegration.FieldCampControllerChanged?.Invoke(mission, controller);
+            deathLogic.OnBehaviorInitialize();
+            controller.OnBehaviorInitialize();
+            deathLogic.AfterStart();
+            controller.AfterStart();
+            return controller;
+        }
+        catch
+        {
+            TryRemoveInjectedBehavior(mission, controller);
+            TryRemoveInjectedBehavior(mission, deathLogic);
+            throw;
+        }
     }
 
     private static void AddExecutionMissionBehaviorsAtomically(

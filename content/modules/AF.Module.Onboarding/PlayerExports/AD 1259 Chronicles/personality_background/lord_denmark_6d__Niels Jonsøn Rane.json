@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_6d",
+  "HeroName": "Niels Jonsøn Rane",
+  "Description": "Sir Niels Jonsøn Rane, prominent knight of Zealand, was the second son of Sir Jon Ranesøn and brother to the infamous Rane Jonsøn. Unlike his courtier brother, Niels was a soldier through and through, dedicated to martial horsemanship, tactical reconnaissance, and fortification design. Commanding household retinues guarding the strategic maritime passes between Zealand and Møn, Niels repelled numerous raiding flotillas from the Baltic littoral, earning widespread renown for relentless combat efficiency. Deeply honorable and devoted to ancestral kin, Niels maintained a disciplined focus upon estate defense while royal court politics degenerated into factional murder, acting as an indispensable shield protecting the Rane family's landed foundation. Niels inspected the marksmanship and equestrian conditioning of every archer in his retinue, transforming the Rane household levies into a formidable defensive brigade respected across Zealand. When bitter tensions erupted between royalists and baronial conspirators, Niels flatly refused to participate in his brother's reckless intrigues, focusing instead on fortifying stone breastworks and deepening granary cellars at Gjorslev. Reticent and upright, he intercepted roving mercenary bands, defending rural communities with uncompromising soldierly valor and securing the survival of thousands of vassals. His unbending dedication to defensive fortification shielded the coastal settlements of Zealand through years of civil chaos.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Maintain iron defense over the maritime straits and manors of southern Zealand to secure civilian livelihoods.",
+    "Keep the family's armed retinue battle-ready to deter factional retribution amidst shifting political fortunes."
+  ],
+  "Values": [
+    "Reveres soldierly honesty and martial courage above perfidious courtly intrigue, valuing blood spilt in defense of hearth.",
+    "Champions fierce filial loyalty, vowing to defend his kinsmen through the grimmest tribulations without wavering."
+  ],
+  "Fears": [
+    "Dreads the royal treason charges leveled against his brother encompassing the whole Rane lineage in confiscation and ruin."
+  ],
+  "SpeechStyle": "Speaks with blunt soldierly brevity and gravelly force, his honest demeanor brooking no patience with deceit.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

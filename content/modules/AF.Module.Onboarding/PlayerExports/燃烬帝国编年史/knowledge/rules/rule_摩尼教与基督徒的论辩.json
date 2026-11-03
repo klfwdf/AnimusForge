@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v8",
+  "Keywords": [
+    "摩尼教与基督徒的论辩"
+  ],
+  "RagShortTexts": [
+    "摩尼教和基督徒会对共有宗教词语赋予不同解释。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "摩尼教使用使徒、救主与安慰者等词语，基督教反对者却认为其中含义违背自己的信仰。共有词汇给交流提供入口，也可能造成误解。不能因为使用相同称呼便认定两社群拥有同样教义和组织。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

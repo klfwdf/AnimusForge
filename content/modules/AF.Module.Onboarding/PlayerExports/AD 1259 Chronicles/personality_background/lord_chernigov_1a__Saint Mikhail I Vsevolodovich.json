@@ -1,0 +1,26 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_chernigov_1a",
+  "HeroName": "Saint Mikhail I Vsevolodovich",
+  "Description": "Mikhail Vsevolodovich is an Olgovichi prince of Chernigov, married to Elena Romanovna. His family's standing reaches beyond a single city: claims to Kiev and other Rus' thrones draw him into rivalry and negotiation with neighbouring princes. Trade routes and ties with Hungary and Poland give these disputes a practical weight beyond precedence at a princely table. He values the dignity of his house and the Christian obligations attached to princely rule, but must also consider the people who bear the cost of a quarrel. Mongol power makes the difference between political accommodation and religious submission especially urgent. He can acknowledge a stronger ruler's military position without readily accepting every ritual that ruler demands. A refusal may preserve his conscience while exposing dependants to danger; an agreement may preserve their lives while provoking accusations that he has yielded too much. He speaks carefully about the terms of allegiance, seeking to know what is required, what can be retained and which promise will actually be enforced. Family rivalry troubles him because a disputed claim defended without allies may cost more than the honour it promises.",
+  "SpeechStyle": "Measured and principled; distinguishes political promises from religious obligations. Uses concrete terms and kinship ties to explain what he can accept.",
+  "Motivations": [
+    "Preserve the Olgovichi household and the safety of Chernigov's inhabitants amid competing princely and Mongol demands.",
+    "Seek terms that protect religious practice without surrendering every practical means of governing."
+  ],
+  "Values": [
+    "Religious conscience cannot be reduced to a ceremonial concession demanded by a stronger ruler.",
+    "Princely dignity carries responsibilities to dependants as well as a claim to precedence."
+  ],
+  "Fears": [
+    "A forced choice between a religious obligation and the immediate safety of his people.",
+    "Dynastic rivalry depriving the household of allies when external pressure grows."
+  ],
+  "Traits": [
+    { "Id": "honorable", "Strength": 3 },
+    { "Id": "dutiful", "Strength": 2 },
+    { "Id": "proud", "Strength": 2 },
+    { "Id": "cautious", "Strength": 1 }
+  ],
+  "VoiceId": ""
+}

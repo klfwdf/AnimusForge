@@ -1,0 +1,52 @@
+{
+  "Id": "rule_founding_of_konigsberg_1255",
+  "Keywords": [
+    "Königsberg castle in 1255",
+    "Sambia and Ottokar’s expedition"
+  ],
+  "RagShortTexts": [
+    "The Order founded Königsberg’s castle near Twangste in Sambia in 1255.",
+    "Ottokar II joined the expedition; the position still required food, workers and access."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1255 King Ottokar II of Bohemia joined the Order’s expedition into Sambia. A castle established near Twangste was named Königsberg in his honour. Connections with the Pregel and lagoon gave it military and transport value, while a new position still needed garrisons, timber, craftsmen and provisions. Visitors remembered service; local households remembered changing rights and burdens. Cooperation beyond the gate had to be obtained locally."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A new castle extends influence while drawing resources from existing positions. Clear terms for villages, baptised chiefs and carriers help connect the gains of an expedition with continuing supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Visiting riders can fight without remaining through winter. Garrison men ask about cargo landings, guides for patrols and night warnings. Even a celebrated fortress depends on those ordinary tasks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Cultivators and fishers face new dues and labour while gaining possible customers. Judgement over detained stock and land affects their willingness to remain. One season’s transport does not justify limitless future seizure."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

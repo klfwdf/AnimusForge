@@ -1,0 +1,59 @@
+{
+  "Id": "be_vandal_kingdom_legitimacy",
+  "Keywords": [
+    "Vandals Legitimacy",
+    "Godigisel’s land protection and shares"
+  ],
+  "RagShortTexts": [
+    "Land, shares and people’s safety support Godigisel’s recognition.",
+    "Forced prolonged departure undermines trust."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Recognition rests on land protection, distributions and people. Forcing every family away makes followers question whose livelihoods fund royal prestige."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Land, shares and people’s safety support Godigisel’s recognition. Military recognition also rests on rewards and relief; a title needs willing action. Forced prolonged departure undermines trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Forced prolonged departure undermines trust. Nominal rights require local execution, with consent and supply both shaping authority. Land, shares and people’s safety support Godigisel’s recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Land, shares and people’s safety support Godigisel’s recognition. Households judge rule through protected families, land and responses to appeals. Forced prolonged departure undermines trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Forced prolonged departure undermines trust. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Land, shares and people’s safety support Godigisel’s recognition."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

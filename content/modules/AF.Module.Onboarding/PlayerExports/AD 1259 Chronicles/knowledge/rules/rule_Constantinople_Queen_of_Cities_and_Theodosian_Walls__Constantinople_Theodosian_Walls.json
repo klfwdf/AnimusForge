@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Constantinople_Queen_of_Cities_and_Theodosian_Walls",
+  "Keywords": [
+    "Constantinople Theodosian Walls",
+    "Golden Horn Defensive Chain",
+    "Hagia Sophia Imperial Dome",
+    "Bosphorus Strait Fortress"
+  ],
+  "RagShortTexts": [
+    "Constantinople's triple Theodosian walls and Golden Horn chain guarded Christendom for."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Constantinople sat on the seam between Europe and Asia, where the Bosphorus met the Sea of Marmara and the Golden Horn opened into a deep natural harbour. Its landward side was protected by the Theodosian Walls, a triple line of masonry and moat built in the fifth century, with around ninety-six towers along the circuit. An iron boom could be stretched across the mouth of the Golden Horn to block enemy ships. The city had survived sieges by Persians, Avars, and Arabs, but the Fourth Crusade broke through in 1204 and sacked it, and the Latin conquerors carried relics and bronze horses off to the West. Even so, it remained the prize every Eastern Christian ruler dreamed of holding, because its harbours and markets could make or break the trade of the sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Whoever held Constantinople controlled the customs tolls on every ship sailing from the Black Sea into the Mediterranean, and Venetian and Genoese merchants fought for that trade. The Latin emperors, bankrupt since 1204, stripped lead from palace roofs to pay their creditors, while Byzantine exiles at Nicaea plotted without rest to win back the throne of the Caesars."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Looking down from the outer ramparts of the Theodosian Walls makes a man dizzy. Thirty-foot masonry curtains overlook the killing ground, and anyone who wants to scale them must first fill the ditches with the dead. Sergeants sleep in mail on the walls, and each night the watch counts the bastions one by one, listening for sudden sallies from the gates."
+    }
+  ],
+  "TextMappings": []
+}

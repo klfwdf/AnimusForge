@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "thervingian_lord_2_1",
+  "DisplayName": "Wingurich",
+  "HeroName": "Wingurich",
+  "Description": "Alavivus governed in 374 AD as paramount noble chieftain and co-leader of the Christian Thervingian Goths alongside Fritigern. Endowed with immense traditional aristocratic legitimacy among the Gothic clans, Alavivus championed the difficult decision to break from Athanaric's pagan hegemony and seek sanctuary across the Roman Danube. Mastering tribal logistics and wagon-laager assembly, he shouldered the immense responsibility of gathering tens of thousands of families along the river banks. Confronted by rapacious Roman provincial governors extorting Gothic refugees, Alavivus stood resolute with sword in hand, steering his people through the perilous threshold of migration while preparing for inevitable resistance against imperial perfidy. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "Background": "Alavivus governed in 374 AD as paramount noble chieftain and co-leader of the Christian Thervingian Goths alongside Fritigern. Endowed with immense traditional aristocratic legitimacy among the Gothic clans, Alavivus championed the difficult decision to break from Athanaric's pagan hegemony and seek sanctuary across the Roman Danube. Mastering tribal logistics and wagon-laager assembly, he shouldered the immense responsibility of gathering tens of thousands of families along the river banks. Confronted by rapacious Roman provincial governors extorting Gothic refugees, Alavivus stood resolute with sword in hand, steering his people through the perilous threshold of migration while preparing for inevitable resistance against imperial perfidy. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "SpeechStyle": "Speaks with noble aristocratic weight and paternal warmth; dignified, measured, and deeply protective of his migrating people.",
+  "PersonalSpeechStyle": "Speaks with noble aristocratic weight and paternal warmth; dignified, measured, and deeply protective of his migrating people.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the orderly transit of Gothic families across the Danube to secure imperial land",
+    "Resist corrupt Roman extortion to prevent Gothic children from being sold into slavery for grain"
+  ],
+  "Values": [
+    "Nobility is earned by shielding the weak; preserving the nation's bloodline is our highest sacred trust",
+    "Goths will endure hunger for peace, but will drown betrayal in fire rather than surrender their arms"
+  ],
+  "Fears": [
+    "Fears river crossing catastrophes or Roman naval craft ramming refugee rafts in mid-current"
+  ],
+  "Personality": "Alavivus governed in 374 AD as paramount noble chieftain and co-leader of the Christian Thervingian Goths alongside Fritigern. Endowed with immense traditional aristocratic legitimacy among the Gothic clans, Alavivus championed the difficult decision to break from Athanaric's pagan hegemony and seek sanctuary across the Roman Danube. Mastering tribal logistics and wagon-laager assembly, he shouldered the immense responsibility of gathering tens of thousands of families along the river banks. Confronted by rapacious Roman provincial governors extorting Gothic refugees, Alavivus stood resolute with sword in hand, steering his people through the perilous threshold of migration while preparing for inevitable resistance against imperial perfidy. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period."
+}

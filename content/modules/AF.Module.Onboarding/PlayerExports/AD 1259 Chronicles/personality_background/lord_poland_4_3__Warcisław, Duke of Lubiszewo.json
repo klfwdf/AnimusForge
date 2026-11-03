@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_4_3",
+  "HeroName": "Warcisław, Duke of Lubiszewo",
+  "Description": "Warcisław reigns as Duke of Lubiszewo, a stalwart warrior prince of the Samboride dynasty and steadfast brother and ally to Duke Sambor II of Tczew. Governing the ancient ancestral stronghold of Lubiszewo within the fertile lowlands of the Lower Vistula, Warcisław understood that survival against the ruthless ambition of Duke Świętopełk II demanded unyielding military resolve. Riding shoulder-to-shoulder with Sambor, Warcisław repeatedly led armored lances and skilled woodland archers to ambush and defeat invading Gdańsk columns across the marshy defiles of the Kociewie region. Mastering defensive riverine warfare, he constructed reinforced timber blockhouses and stone gate bastions along critical watercourses, severing enemy supply trains moving north along the Vistula. Blunt, courageous, and exceptionally generous to his retainers, Warcisław commanded unquestioning loyalty from his native Pomerelian squires. Amidst shifting feudal factions, he coordinated military logistics with neighboring Kuyavian dukes, pledging his sword to protect the ancestral liberties of his branch. He stands as an unshakeable barrier across the river approaches, defending baronial freedom with ferocious resolve. Warcisław fortified the surrounding marshes with lethal stockades, ambushing invading columns with heavy cavalry. His gritty tactical determination held Lubiszewo secure against all encroaching autocrats.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend Lubiszewo Castle and the Vistula plains against all military incursions launched by Świętopełk.",
+    "Coordinate defensive maneuvers with his brother Sambor II to lock down the vital Tczew corridor.",
+    "Rebuild ravaged agrarian manors to maintain a steady stream of provisions for his standing cavalry retinue."
+  ],
+  "Values": [
+    "Prize fraternal loyalty and brotherhood in arms above all temporal concerns, never abandoning his kin in crisis.",
+    "Value direct battlefield confrontation and ferocious physical courage, despising cowardly opportunism.",
+    "Demand iron discipline while rewarding loyal retainers generously with lands and battle spoils."
+  ],
+  "Fears": [
+    "His cavalry forces being entrapped within marshland bottlenecks and slaughtered by overwhelming enemy hosts.",
+    "Lubiszewo Castle collapsing beneath heavy trebuchet bombardment, depriving his line of its ancestral seat."
+  ],
+  "SpeechStyle": "The bogs of Lubiszewo have swallowed countless arrogant invaders; while my battleaxe strikes, no tyrant shall dictate terms on our ancestral soil! Lubiszewo's warriors never bend; invaders shall find only a muddy grave!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

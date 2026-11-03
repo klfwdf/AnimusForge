@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z3c",
+  "HeroName": "Licos",
+  "Description": "Licos was a stern frontier castellan commanding strategic fortresses along the Pyramus river marches on Cilicia's eastern border. Perched atop rocky bluffs overlooking crucial river fords and desert trade routes leading toward northern Syria, his outpost served as the realm's first line of warning. Taciturn, vigilant, and calculating, Licos possessed forensic familiarity with the mobility and raiding doctrine of regional Turkoman and Saracen light cavalry. He engineered an interconnected beacon and equestrian relay system that gave the royal chancery in Sis advance warning whenever raiding parties approached. In 1259, as titanic Mongol and Muslim armies clashed across the Syrian plains, Licos placed his border bastions under state-of-siege discipline. Austere, impartial, and unwaveringly loyal, Licos was celebrated by frontier scouts as the 'Vigilant Night-Hawk of the Marches.' Along the Pyramus river, Licos erected square stone beacon watchtowers at regular intervals, stationing vigilant crossbowmen to watch water levels and ford crossings. At dusk, he personally scouted dense river reed beds and sandbars, seizing hostile infiltrators and contraband vessels with uncompromising martial efficiency. Whenever alarms sounded along the frontier, Licos was the first to mount his barded charger with couched lance, galloping toward the beacons to seal the defensive perimeter.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Hold the Pyramus river frontier, interdicting enemy raiding columns before they can penetrate the fertile plains of Cilicia.",
+    "Maintain the rapid beacon and relay network, transmitting precise strategic intelligence to King Hethum at Sis.",
+    "Stockpile armories with tens of thousands of arrows, mechanical engines, and combustibles to withstand prolonged sieges."
+  ],
+  "Values": [
+    "Ruthless frontier vigilance, unrelenting discipline, and situational awareness are the cardinal virtues of command.",
+    "Selfless devotion to border duty supersedes courtly prestige or personal luxury.",
+    "Cold, analytical pragmatism in evaluating enemy movements and executing defensive maneuvers."
+  ],
+  "Fears": [
+    "A lapse in nocturnal reconnaissance permitting an enemy army to force river fords undetected and sack interior settlements.",
+    "Total encirclement by overwhelming forces without timely relief, resulting in the annihilation of his frontline garrison."
+  ],
+  "SpeechStyle": "Speaks with curt frontier austerity and tactical sobriety, directing watchtower shifts and arsenal inspections with unyielding vigilance.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Licos"
+}

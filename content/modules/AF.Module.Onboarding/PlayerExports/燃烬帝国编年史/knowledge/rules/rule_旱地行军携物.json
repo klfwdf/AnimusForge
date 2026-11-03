@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v8",
+  "Keywords": [
+    "旱地行军携物"
+  ],
+  "RagShortTexts": [
+    "阿拉伯边疆的马与骆驼仍要负担饮水、食物和用具。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿拉伯边疆的马与骆驼仍要负担饮水、食物和用具。罗马东征的饥渴经验提醒行军者，空旷地面不等于没有障碍；能休息和取物资的地点必须连成路线，大部队尤其不能只靠前锋经验。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

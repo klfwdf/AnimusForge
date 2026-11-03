@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_1_3_1",
+  "HeroName": "Auðunn Hugleiksson",
+  "Description": "Baron Auðunn Hugleiksson of Hegranes was the most formidable statesman, royal treasurer, and master diplomat of late thirteenth-century Norway. In 1259, as an extraordinarily gifted young scholar trained in Continental civil and canon jurisprudence, Audun was already entering royal administrative service. Under Kings Magnus the Lawmender and Eric Priest-Hater, he rose to become the unchallenged architect of the realm's foreign policy and fiscal treasury. At Ålhus in Hegranes, he constructed a magnificent stone castle modeled after royal French châteaux—an unprecedented architectural marvel in medieval Norway that featured private vaulted towers and minting privileges. Brilliant, haughty, and intellectually peerless, Audun dominated the Scandinavian diplomatic stage as an undisputed titan of high medieval European politics. Within his monumental fortress of Ålhus, Baron Auðunn established expansive treasury vaults and private minting workshops, managing intricate international loans with the royal chanceries of France and England. Drawing upon his Continental legal training, he drafted comprehensive urban trade charters that accelerated commercial prosperity in Bergen and Trondheim, amassing unprecedented baronial wealth. Navigating the highest echelons of European power diplomacy, he stood as one of the most brilliant, haughty, and formidable statesmen in medieval Scandinavian history.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Control royal finance and foreign policy, raising Norway to a European power able to bargain with France and England.",
+    "Build continental-style stone castles and private strongholds at Hegranes, making the Hugleik family exceptionally wealthy and influential.",
+    "Compile national and urban commercial law and reshape royal government through specialised judicial administration."
+  ],
+  "Values": [
+    "Intelligence and money are powerful weapons; skilful control of finance and treaties can defeat armies without battle.",
+    "Pursue order and precise political calculation, placing major state interests above ordinary moral criticism.",
+    "Keep personal control of destiny through determination and guarded judgement, seeking supreme power and lasting achievement."
+  ],
+  "Fears": [
+    "Exceptional wealth and influence provoking noble jealousy and leaving him isolated during a succession purge that destroys his family.",
+    "International changes ruining his Franco-Norwegian alliance against England and causing severe losses in Baltic trade."
+  ],
+  "SpeechStyle": "Speaks with chilling diplomatic brilliance, forensic intellect, and supreme confidence, articulating realm finances and grand foreign policy with effortless mastery.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

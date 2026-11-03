@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_2h",
+  "HeroName": "Giacomina della Gherardesca",
+  "Description": "Giacomina della Gherardesca is the youngest maiden of Count Ugolino, reared in sheltered aristocratic opulence and cherished by elder siblings. Unaware of the gathering political storms, she immerses herself in sacred hymns and Tuscan folk songs, her innocent warmth softening the austere halls of power. Reared amidst holy hymns and garden flowers, Giacomina sang sacred canticles in the family chapel, her innocent spirit pure as the morning dew over Tuscan hills. Sketching merchant sails upon the Arno, she brought light and sweet laughter into the tense, brooding chambers of Count Ugolino's fortified residence. Knowing nothing of the murderous hatred circling her family, the gentle child prayed daily for her kin, an emblem of radiant innocence amidst dark tragedy. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Sing hymns beside her mother to pray for the safe return of her brothers.",
+    "Preserve a tranquil sanctuary of music and beauty away from war's alarms."
+  ],
+  "Values": [
+    "The laughter and unity of family form the sweetest blessing on earth.",
+    "God forever shelters innocent and spotless hearts beneath His wings."
+  ],
+  "Fears": [
+    "Terrifying sounds of nocturnal riots and clash of arms echoing through the street.",
+    "Her beloved father and brothers marching to war and never returning home."
+  ],
+  "SpeechStyle": "Speaks with sweet youthful innocence and naive affection, untouched by courtly malice. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_12_1_1",
+  "HeroName": "Mahaut de Béthune, Countess consort of Flanders",
+  "Description": "Mahaut de Béthune is the Countess consort of Flanders and sovereign heiress of the strategic Barony of Béthune. At twenty-nine, she brought into the House of Dampierre rich agricultural estates, bustling cloth-weaving towns, and critical stone fortresses along the frontier of Artois and Flanders. A brilliant administrator of immense wealth, Mahaut personally audited comital treasuries and municipal grain reserves, ensuring that the baronial treasury remained solvent through decades of high military expenditures. Pious, compassionate, and widely respected by urban patricians, she endowed Dominican and Cistercian hospices while distributing bread during spring famines. Her steady administrative hand and generous patronage formed an indispensable bedrock of stability supporting her husband Count Guy's governance. Her enduring devotion to the welfare of Flanders solidified her legacy among both townspeople and rural tenants. She brought rich territorial inheritances in Béthune and Dendermonde to the Dampierre line. In her husband's frequent absences on campaign, she directed administrative councils and adjudicated burgher disputes with calm dignity, earning universal admiration from the Flemish nobility. Her meticulous accounting safeguarded seigneurial revenues, allowing the county to sustain heavy military expenditures and maintain defensive garrisons across northern strongholds. Her prudent counsel and generous almsgiving endeared her to both commoners and nobles.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the hereditary lands of Béthune for transmission to her son Robert.",
+    "Manage estate granaries to guarantee ironclad food security against siege and famine."
+  ],
+  "Values": [
+    "Prudent, honest stewardship of wealth coupled with active charity toward urban laborers.",
+    "Fidelity to marital compacts and providing an unshakeable domestic anchor in crisis."
+  ],
+  "Fears": [
+    "Border warfare between Artois and Flanders devastating her ancestral estates at Béthune.",
+    "Epidemic pestilence sweeping through crowded textile cities to strike down her children."
+  ],
+  "SpeechStyle": "Speaks with serene, aristocratic warmth and impeccable clarity, her words courteous, methodical, and reflecting the composed authority of a wealthy sovereign heiress.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

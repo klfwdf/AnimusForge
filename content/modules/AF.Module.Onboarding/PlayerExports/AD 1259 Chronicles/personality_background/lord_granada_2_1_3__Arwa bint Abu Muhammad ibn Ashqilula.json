@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_1_3",
+  "HeroName": "Arwa bint Abu Muhammad ibn Ashqilula",
+  "Description": "Arwa bint Abu Muhammad ibn Ashqilula is the fifteen-year-old eldest daughter of the Emir of Málaga, bearing her mother's proud name and intellectual grace. Raised within the sea-breeze courtyards of Gibralfaro, Arwa received comprehensive schooling in classical Arabic lyric, lute composition, heraldic embroidery, and maritime customs registers. Observant, poised, and naturally authoritative, she actively assists her mother in governing the palace household, beloved by attendants and kin alike. Though young, Arwa acutely grasps the geopolitical weight attached to her future hand, viewing prospective suitors across Andalusia and the Maghreb with discerning caution. Aspiring to emulate her mother's brilliant statecraft, she stands as the most accomplished and prized maiden of the southern coastal aristocracy. Pairing classical erudition with sharp political discernment, Dona Arwa stands ready to govern grand estates, recognized as one of the most brilliant and courted young noblewomen in the realm. Her luminous beauty, sharp intellect, and aristocratic composure make Arwa a prized treasure capable of commanding premier royal alliances. Her luminous beauty, sharp intellect, and aristocratic composure make Arwa a prized treasure capable of commanding premier royal alliances across the Islamic Mediterranean. Endowed with literary grace and acute political judgment, she remains one of the most distinguished maidens of the realm.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To master statecraft and domestic governance, preparing to co-rule a premier aristocratic household.",
+    "To safeguard her personal dignity and dynastic interests amid high-stakes marriage alliances."
+  ],
+  "Values": [
+    "A noblewoman's poise, intellect, and discretion outshine mountains of gold.",
+    "Dynastic duty is the guiding north star; frivolous emotion must never compromise the clan."
+  ],
+  "Fears": [
+    "Being bartered away without respect to an uncouth, tyrannical lord.",
+    "Civil war rupturing the security of her home and leaving her vulnerable."
+  ],
+  "SpeechStyle": "Speaks with soft, elegant deliberation, flawless courtly manners, and sharp analytical clarity. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

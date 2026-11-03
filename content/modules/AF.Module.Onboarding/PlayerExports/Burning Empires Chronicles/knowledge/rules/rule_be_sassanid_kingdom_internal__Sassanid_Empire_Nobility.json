@@ -1,0 +1,59 @@
+{
+  "Id": "be_sassanid_kingdom_internal",
+  "Keywords": [
+    "Sassanid Empire Nobility",
+    "Sasanian nobles priests and regional rulers"
+  ],
+  "RagShortTexts": [
+    "Shapur II works with nobles, priests and regional rulers controlling resources.",
+    "Orders must become locally supplied food, horses and followers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Shapur II works with nobles, priests and regional rulers controlling people and resources. Military demands must become locally supplied food, horses and followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Shapur II works with nobles, priests and regional rulers controlling resources. Followers retain family ties; decisions about guards and distant service affect common participation. Orders must become locally supplied food, horses and followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Orders must become locally supplied food, horses and followers. Coordination allocates actual supply and protection duties, not merely titles. Shapur II works with nobles, priests and regional rulers controlling resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Shapur II works with nobles, priests and regional rulers controlling resources. Households compare burdens with neighbors; unmatched protection weakens cooperation. Orders must become locally supplied food, horses and followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Orders must become locally supplied food, horses and followers. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Shapur II works with nobles, priests and regional rulers controlling resources."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

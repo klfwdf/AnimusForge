@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_4c",
+  "HeroName": "Albrecht Cimburský",
+  "Description": "Albrecht of Cimburk is the eldest son and primary heir of Lord Bernard I, embodying the martial discipline and leadership of his lineage. Scaling the sheer cliffs of Nový Cimburk alongside his father since youth, he mastered defensive engineering and shock cavalry combat, gaining early admission to King Přemysl Otakar II's royal guard along the Austrian Danubian frontier. Resolute, disciplined, and strictly fair, Albrecht commands heavy lances and crossbow detachments with steady authority, repeatedly repulsing border raiders with surgical counter-strikes. Aspiring to match his sire's legendary reputation, he vows to carry the three-battlement banner into the heart of royal campaigns, determined to win higher titles and expansive fiefs for the House of Cimburk. Leading night raids against rebel camps along the Slovak and Austrian marches, Albrecht captured enemy scouts alive for trial, winning wide renown for daring tactical leadership. Heeding his father's maxims, he shared bivouacs with ordinary infantrymen while drilling combined-arms shield formations, determined to smash every hostile obstacle before the royal army and elevate his family's battlement banner. His battlefield ferocity, unswerving loyalty, and tactical precision made him an indispensable vanguard captain and champion of the royalist host across the marches.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve outstanding combat glory in royal wars, winning knightly honors and hereditary manors.",
+    "Command family defenses and maintain the Cimburk lances as Moravia's most formidable shock company."
+  ],
+  "Values": [
+    "Regards battlefield valor, strict discipline, and loyalty to the king as the sole true knightly standards.",
+    "Values the honor of the three battlements above life itself, striving for victory through open steel."
+  ],
+  "Fears": [
+    "Fears tactical errors in siege assaults costing veteran troops and failing his father's deep trust.",
+    "Worries court intrigues will marginalize his family's estates, resolving to shatter rumors through glory."
+  ],
+  "SpeechStyle": "Where the battlements fly, an iron wall advances! The axes of Cimburk are honed, ready to shatter enemy lines for the crown! In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Albrecht Cimburský"
+}

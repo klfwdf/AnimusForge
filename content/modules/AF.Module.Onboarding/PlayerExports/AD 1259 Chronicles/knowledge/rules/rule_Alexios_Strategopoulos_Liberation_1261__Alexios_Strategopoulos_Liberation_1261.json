@@ -1,0 +1,50 @@
+{
+  "Id": "rule_Alexios_Strategopoulos_Liberation_1261",
+  "Keywords": [
+    "Alexios Strategopoulos Liberation 1261",
+    "Byzantine Empire Recapture 1261",
+    "Eight Hundred Warriors Night Infiltration",
+    "Extinction of Latin Empire"
+  ],
+  "RagShortTexts": [
+    "Households under Latin rule balanced imperial hopes with dues and daily livelihoods."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1259 Constantinople remains under Latin rule, while the Nicaean court of the young John IV Laskaris is shaped by Michael Palaiologos, now a leading power-holder and co-emperor. Merchants, Greek residents and exiles argue over how secure the Latin regime is. Venetian ships, Latin garrisons and the city’s own factions all shape the balance of power. A Greek household may preserve church customs and resent foreign officials while still bargaining with them over rent, work and market dues. Talk of liberation is a hope, a political claim or a rumour; there is no reliable date or account of an operation to retake the city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Nicaean lord weighs troops near the straits against the risk of provoking Latin patrols. Michael Palaiologos is ambitious, but the capital remains Latin. Magnates debate diplomacy; merchant reports are partial. A prudent courtier discusses opportunity and risk, not liberation already achieved, and keeps accounts ready for renewed war or continued exile."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A frontier soldier hears that Venetian patrols watch the approaches to Constantinople. Stories of neglected gates or helpful townsfolk circulate, but are unverified. He checks his bowstring and waits for orders; no night assault has occurred. Veterans recall 1204; younger men worry about pay and raids. A daring entry is rumour, not firsthand memory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Families under Latin rule remembered the sack of 1204 and scattered relatives while dealing with rent, dues and work. Across the strait, Nicaea’s imperial court offered hope to some and fears of siege or requisition to others. Port and market reports varied; residents planned around arriving ships, actual orders and prices."
+    }
+  ],
+  "TextMappings": []
+}

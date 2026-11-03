@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_1_1",
+  "HeroName": "Reniero Zeno, Doge of Venice",
+  "Description": "Reniero Zeno reigns as the 45th Doge of the Most Serene Republic of Venice, scion of the ancient patrician House of Zeno. A veteran naval captain and master diplomat, Zeno revolutionized Venetian maritime jurisprudence by codifying the monumental statutes of the sea. Governing through the ferocious War of Saint Sabas against Genoa, he expanded the state Arsenale and orchestrated sweeping naval campaigns to safeguard Venetian mercantile colonies from Acre to the Aegean, cementing Venetian dominion over the Adriatic and the Levant. Supervising the massive expansion of the state Arsenale, Doge Reniero modernized war galley designs and secured vital timber supplies along the Adriatic, ensuring that the Venetian navy entered the War of Saint Sabas with overwhelming technological and material superiority. Faced with Genoese maritime aggression and Byzantine treachery, Doge Reniero directed the republic's armada with transcendent strategic composure, locking the Adriatic straits and defending the Winged Lion of Saint Mark with unrelenting imperial resolve. His monumental maritime statutes, strategic expansion of the Arsenale, and brilliant naval leadership enshrine Doge Reniero Zeno as an immortal titan in the heroic annals of the Venetian Republic. Throughout these turbulent years, his unswerving dedication to the Republic commands the absolute respect of every sea captain marching beneath the Winged Lion. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Crush Genoese naval rivalry in the Levant and guarantee Venetian monopoly over eastern Mediterranean trade.",
+    "Expand the state Arsenale and codify maritime law to secure the perpetual maritime supremacy of Venice."
+  ],
+  "Values": [
+    "The glory of Saint Mark, commercial prosperity, and the sovereign independence of the Venetian Republic.",
+    "Strict adherence to codified maritime law, institutional discipline, and decisive naval force."
+  ],
+  "Fears": [
+    "A Genoese-Byzantine alliance expelling Venetians from Constantinople and seizing Black Sea routes.",
+    "Factional discord among patrician houses in the Great Council undermining republican stability."
+  ],
+  "SpeechStyle": "Speaks with sovereign ducal gravitas, maritime precision, and the dignified authority of a seasoned naval statesman. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

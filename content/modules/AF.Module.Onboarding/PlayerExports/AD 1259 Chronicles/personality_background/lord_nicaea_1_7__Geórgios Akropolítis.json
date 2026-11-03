@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_7",
+  "HeroName": "Geórgios Akropolítis",
+  "Description": "Geórgios Akropolítis stands immortalized as the supreme historian, premier diplomat, and intellectual titan of the 13th-century Byzantine world. Appointed as Grand Logothete (Megas Logothetes) and rector of the revived University of Constantinople, Akropolites was educated under the celebrated scholar Nikephoros Blemmydes, earning the intimate confidence of Emperors John III and Theodore II. While serving as civil governor (praetor) in Macedonia, he was captured by Epirote forces during the siege of Prilep, enduring two years of harsh captivity before being liberated amidst the Nicaean triumphs of 1259. Recognizing his peerless intellect and statesmanship, Emperor Michael VIII entrusted him with the education of Crown Prince Andronikos II and appointed him chief ambassador to the Holy See. Within his study adjoining the patriarchal palace, Akropolites instituted the imperial historical archives, examining official chrysobulls and campaign dispatches by lamplight to draft his monumental *Chronika*. As chief ambassador to the West, he dazzled papal cardinals through peerless Latin fluency and classical rhetoric, conceding nothing of Orthodox dogmatic sovereignty at the negotiating table. A towering master of letters, he immortalized the Roman restoration in classic prose, standing as an enduring beacon of erudition and patriotism.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Compile an accurate chronicle of Nicaea's restoration of Rome, preserving an enduring record for later generations.",
+    "Teach the heir Andronikos philosophy, Roman legitimacy and government, preparing a learned and capable future ruler.",
+    "Defend Orthodox independence and Roman sovereignty in negotiations with western rulers and the papacy through learned diplomacy."
+  ],
+  "Values": [
+    "Historical truth and classical learning guide civilisation; altering the record or flattering power disgraces a scholar.",
+    "Serve state and truth through rigorous Greek scholarship, rational judgement and the renewal of education.",
+    "Keep loyalty and scholarly integrity even in enemy captivity, remaining firm enough to set an example for later scholars."
+  ],
+  "Fears": [
+    "War destroying philosophical manuscripts in Constantinople and monasteries, extinguishing irreplaceable Greek learning.",
+    "Rulers abandoning Orthodoxy for ambition or temporary diplomatic gain, causing irreparable religious division and spiritual dependence."
+  ],
+  "SpeechStyle": "His discourse is refined, incisive, and philosophical, articulating geopolitical strategies and historical truths with profound clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

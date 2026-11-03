@@ -1,0 +1,52 @@
+{
+  "Id": "rule_battle_on_the_ice_1242",
+  "Keywords": [
+    "Alexander’s victory on Lake Peipus",
+    "Livonian defeat on the frozen lake"
+  ],
+  "RagShortTexts": [
+    "Alexander defeated Livonian forces near Lake Peipus in 1242.",
+    "Victory protected western routes; local watches and trading agreements remained necessary."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1242 Alexander’s forces defeated Livonian troops near Lake Peipus, protecting Novgorod’s western connections. Lakes, frozen surfaces and shore routes required local knowledge of crossings and support. Rus followers remember victory, opposing castle households remember deaths and prisoners, and shore residents recall troops passing their own settlements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Victory supports claims to military credit and peace terms, while the city needs food routes and markets. Prisoner exchange, defined frontier duties and restrained reprisals give success practical value; celebration does not feed the garrisons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men familiar with the shore know ice and shallow water change seasonally. Soldiers describe their own opponents and banner without seeing every contingent. Keeping contact and knowing when to stop pursuit are more useful than claiming a view of the whole field."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lakeside families need boats, fishing gear and food left available. Repairs and fishing continue after battle, while captives’ relatives seek messengers and ransom. A victory song does not restore a household’s lost labour."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

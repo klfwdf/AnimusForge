@@ -1,0 +1,59 @@
+{
+  "Id": "be_sassanid_kingdom_economy",
+  "Keywords": [
+    "Sassanid Empire Trade",
+    "Mesopotamian irrigation and Sasanian grain transport"
+  ],
+  "RagShortTexts": [
+    "Ctesiphon and Mesopotamian irrigation supply Sasanian tax grain.",
+    "Canals, labor and transport sustain continued revenue."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ctesiphon and Mesopotamian irrigation supply court and armies, with estates, gifts and routes linking the plateau. Canals, labor and transport sustain income; excess collection damages continued provision."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ctesiphon and Mesopotamian irrigation supply Sasanian tax grain. Traveling followers need real food from this production; valuables still require a buyer and exchange. Canals, labor and transport sustain continued revenue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Canals, labor and transport sustain continued revenue. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Ctesiphon and Mesopotamian irrigation supply Sasanian tax grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Ctesiphon and Mesopotamian irrigation supply Sasanian tax grain. Households need meals and the means to keep producing after delivering goods. Canals, labor and transport sustain continued revenue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Canals, labor and transport sustain continued revenue. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Ctesiphon and Mesopotamian irrigation supply Sasanian tax grain."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

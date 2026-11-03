@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_forest_honey_rights_and_penalties_faeb2c6f",
+  "Keywords": [
+    "forest honey rights and penalties",
+    "Tree-hive marks and honey rights"
+  ],
+  "RagShortTexts": [
+    "Forest honey and wax involve tree and woodland rights.",
+    "Harvesters balance colony survival with claims to shares."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hive trees supply honey and wax under claims marked by location and signs. Climbing is risky and excessive harvest damages future returns. Theft or ruined marks entangles harvesters, woodland holders and buyers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops avoid damaging hive trees and recurring local income. During claims over trees, guards protect people and goods rather than enforce uncertain rights by force."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Honey and wax collection needs recognized sources and shares. Preserving trees and colonies protects recurring revenue better than emptying seemingly unoccupied woodland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Harvesters climb, carry containers and decide what to leave. Witnessing a damaged mark costs time but protects a household’s continuing livelihood."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

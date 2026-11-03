@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_4_2_1",
+  "HeroName": "Werner von Egesheim, 'The German'",
+  "Description": "Werner 'the German' von Egesheim (Garnier l'Aleman) originated from the venerable Alsatian comital house of Egisheim within the Holy Roman Empire, migrating to Outremer as a veteran crusader. Renowned for the unbending discipline and formidable personal valor characteristic of high Germanic chivalry, he achieved rapid prominence as a fortress castellan and infantry commander. Within the military councils of the High Court of Acre, Werner commanded universal respect across French, Norman, and Italian factions for his tactical impartiality. In 1259, entrusted with reinforcing the coastal marches alongside John l'Aleman of Caesarea, Werner directed the engineering of deep dry moats and reinforced ballista platforms. Clad in heavy double mail and wielding a massive broadsword, he repeatedly led armored infantry formations that repelled lightning ambushes by swarming saracen skirmishers. A consummate professional soldier who demanded absolute obedience from his men, Werner stood as the unyielding Germanic anvil anchoring the coastal frontier of Outremer. At Caesarea, Werner engineered massive defensive moats and concealed subterranean sally ports, implementing the finest traditions of imperial Germanic siege warfare. On the drill fields, he enforced unbending discipline, transforming diverse multinational mercenaries into an elite infantry phalanx that never wavered under archer fire. Stern, impartial, and incorruptible, he stood as the terrifying shield guarding the crusader frontier.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Implement imperial Germanic fortification techniques and heavy crossbow tactics across Outremer's coastal strongholds.",
+    "Instill unbending professional discipline into multinational mercenary garrisons, molding them into elite defensive units.",
+    "Serve the crusading ideal with spotless chivalric honor, fulfilling his holy vows through selfless dedication in combat."
+  ],
+  "Values": [
+    "Military efficacy resides solely in unyielding discipline and absolute obedience; cowardice on the battlements warrants instant death.",
+    "A knight's broadsword serves faith and duty; holding the breach against impossible odds is the highest sacred calling.",
+    "Contempt for courtly flatteries and factional posturing, commanding absolute loyalty through veteran battlefield leadership."
+  ],
+  "Fears": [
+    "Mercenary garrison troops panicking under relentless Mamluk artillery bombardment and abandoning vital breach parapets.",
+    "Petty civil wars among crusader barons forcing honorable knights into dishonorable, fratricidal internecine butchery."
+  ],
+  "SpeechStyle": "Speaks with curt, thunderous martial discipline and seasoned composure, issuing tactical dispositions with the unbending precision of a veteran Germanic castellan.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Werner von Egesheim, 'The German'"
+}

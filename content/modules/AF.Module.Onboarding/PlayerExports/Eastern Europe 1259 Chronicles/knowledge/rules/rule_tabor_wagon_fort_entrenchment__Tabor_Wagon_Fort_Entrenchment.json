@@ -1,0 +1,53 @@
+{
+  "Id": "rule_tabor_wagon_fort_entrenchment",
+  "Keywords": [
+    "Guarding a wagon camp",
+    "Leaving exits among camp wagons",
+    "Supply carts and camp animals"
+  ],
+  "RagShortTexts": [
+    "Gathered wagons ease guarding but need passages for water collection and withdrawal.",
+    "Wagons require animals, fodder and wheel repairs; camp sites need firm ground and watchfulness."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Eastern European campaigns move food, shelters and tools by carts and pack animals. Gathering wagons aids counting and guarding, but they obstruct friendly movement as well as approaches. Camp sites need sound ground, water and grazing, with scouts outside. Frightened animals and disabled carts require handlers and clear passages, not merely a dense collection of vehicles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Baggage guards need to know night passages, tethered animals and available drivers. Pursuit can leave stores unguarded; fire or panicked horses require separation and clear movement. Men repairing wheels, fetching water or handling animals outside also need support. Watching only the enemy-facing edge leaves other openings unattended."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander accounts for guards, drivers, fodder and roads when planning baggage. More carts carry supplies but slow passage through ditches and woods; exhausted local forage limits a stay. Camps need routes for movement and withdrawal. In difficulty, abandoning nonessential loads may keep food, wounded men and serviceable animals moving."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Drivers and accompanying households need places for feeding animals, repairs and cooking as well as defense. A damaged requisitioned cart may miss the harvest at home. Crowding puts children, sick people and animals in one another's way. Watches and open passages reduce disputes and let urgent transport leave promptly."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

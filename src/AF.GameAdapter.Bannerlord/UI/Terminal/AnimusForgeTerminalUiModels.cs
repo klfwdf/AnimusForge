@@ -836,21 +836,12 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 
 
-	[DataSourceProperty]
-
-	public string AF_UI_Terminal_Prefab_017Text => new TextObject("{=AF_UI_Terminal_Prefab_017}Open with hotkey").ToString();
 
 
 
-	[DataSourceProperty]
-
-	public string AF_UI_Terminal_Prefab_018Text => new TextObject("{=AF_UI_Terminal_Prefab_018}Icon entry").ToString();
 
 
 
-	[DataSourceProperty]
-
-	public string AF_UI_Terminal_Prefab_019Text => new TextObject("{=AF_UI_Terminal_Prefab_019}Save after editing; press ESC or Close to exit").ToString();
 
 
 
@@ -2058,100 +2049,6 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 			RefreshItems();
 
 		}
-
-	}
-
-
-
-	[DataSourceProperty]
-
-	public bool IsHotkeyEnabled => AnimusForgeTerminalSettings.IsHotkeyEnabled;
-
-
-
-	[DataSourceProperty]
-
-	public bool IsMapIconEnabled => AnimusForgeTerminalSettings.IsMapIconEnabled;
-
-
-
-	public void ExecuteToggleHotkey()
-
-	{
-
-		if (AnimusForgeTerminalSettings.IsHotkeyEnabled)
-
-		{
-
-			if (!AnimusForgeTerminalSettings.IsMapIconEnabled)
-
-			{
-
-				InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_KeepEntry}At least one terminal entry (key or icon) must remain.").ToString(), Colors.Red));
-
-				return;
-
-			}
-
-			AnimusForgeTerminalSettings.IsHotkeyEnabled = false;
-
-			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_HotkeyOff}Terminal hotkey access disabled (U key).").ToString(), Colors.Yellow));
-
-		}
-
-		else
-
-		{
-
-			AnimusForgeTerminalSettings.IsHotkeyEnabled = true;
-
-			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_HotkeyOn}Terminal hotkey access enabled (U key).").ToString(), Colors.Green));
-
-		}
-
-		OnPropertyChanged(nameof(IsHotkeyEnabled));
-
-	}
-
-
-
-	public void ExecuteToggleMapIcon()
-
-	{
-
-		if (AnimusForgeTerminalSettings.IsMapIconEnabled)
-
-		{
-
-			if (!AnimusForgeTerminalSettings.IsHotkeyEnabled)
-
-			{
-
-				InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_KeepEntry}At least one terminal entry (key or icon) must remain.").ToString(), Colors.Red));
-
-				return;
-
-			}
-
-			AnimusForgeTerminalSettings.IsMapIconEnabled = false;
-
-			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_MapIconOff}World-map terminal icon entry disabled.").ToString(), Colors.Yellow));
-
-		}
-
-		else
-
-		{
-
-			AnimusForgeTerminalSettings.IsMapIconEnabled = true;
-
-			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Terminal_MapIconOn}World-map terminal icon entry enabled.").ToString(), Colors.Green));
-
-		}
-
-		AFWarStatsTerminal.UI.AfWarStatsMapNavigationEntry.SyncVisibility();
-
-		OnPropertyChanged(nameof(IsMapIconEnabled));
 
 	}
 

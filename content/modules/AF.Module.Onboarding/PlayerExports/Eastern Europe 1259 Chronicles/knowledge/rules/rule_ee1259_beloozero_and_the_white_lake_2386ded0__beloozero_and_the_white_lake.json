@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_beloozero_and_the_white_lake_2386ded0",
+  "Keywords": [
+    "White Lake fishing and waterways",
+    "Seasonal transport around Beloozero"
+  ],
+  "RagShortTexts": [
+    "White Lake settlements depend on fish, forest products and seasonally changing water routes.",
+    "Boats, nets and food stores sustain winter life alongside exchange with other districts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Beloozero draws on White Lake fisheries, forest products and waterways. Open-water carriage and winter travel need different preparations; break-up and freeze-up make journeys uncertain. Money alone cannot replace boatmen, lodging and food. Local authority depends on supplies arriving from scattered settlements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Fishing households mend nets, tend boats and store winter food. A traveler takes labor away from fishing and carriage. Purchasers bring useful goods, while requisitioned boats may miss fishing days. Uncertain ice makes a trusted route worth waiting for rather than risking the household's craft and catch."
+    }
+  ],
+  "TextMappings": []
+}

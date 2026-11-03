@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Arpad_Dynasty_and_Crown_of_St_Stephen",
+  "Keywords": [
+    "Arpad Dynasty Stripes and Patriarchal Cross",
+    "Bela IV Second Founder of Hungary",
+    "Post Mongol Stone Castle Network",
+    "Crown of Saint Stephen Apostolic Realm"
+  ],
+  "RagShortTexts": [
+    "The Arpad crown faces the military and fiscal legacy of the Mongol invasion of 1241.",
+    "Castle building requires labour, supplies and agreements over refuge in danger."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Arpad dynasty's Hungarian kingship draws legitimacy from Christian royal tradition and the crown associated with Saint Stephen. After the Mongol invasion of 1241, Bela IV faces the practical work of recovery: restoring people and production, strengthening defences and obtaining cooperation from powerful supporters. Stone castles and settlements require labour and resources rather than appearing through a royal wish alone. Great lords and churches may help while seeking confirmation of their own rights. Relations with neighbouring powers and different populations within the realm complicate that bargaining. The dynasty's symbols express continuity, but cannot make every dispute over land, service or protection disappear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Béla tried to bind steppe auxiliaries to the crown through royal marriages, which gave the court a foothold among the horse nomads on the eastern frontier. The Austrian succession pulled the court into a costly struggle with Ottokar II of Bohemia, and the western duchies drained the treasury. A lord near the border had to watch whose letters reached the king first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "The invasion of 1241 remains a warning whenever horsemen appear beyond the fields. A peasant helping to cart lime or stone wants to know whether the nearest castle will admit the household's children and animals. Strong walls offer a chance of shelter, but an unfinished enclosure or an empty storehouse gives little comfort during a siege."
+    }
+  ],
+  "TextMappings": []
+}

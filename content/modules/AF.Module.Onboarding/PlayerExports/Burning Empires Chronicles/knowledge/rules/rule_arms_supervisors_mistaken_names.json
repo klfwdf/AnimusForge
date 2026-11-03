@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v1",
+  "Keywords": [
+    "Arms supervisors mistaken names"
+  ],
+  "RagShortTexts": [
+    "Montius named men without their offices, leading searchers to arrest namesakes."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After violence at Gallus’s court, the dying Montius named Epigonius and Eusebius without identifying their offices. Searchers brought in a philosopher and an orator with those names, although the men meant were supervisors of arms production. Fragmentary information caused mistaken arrests; names needed checking against office, location and activity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A messenger recording only names could draw unrelated people into a prosecution. Identification also required office, place and activity; a shared name proved neither arsenal work nor conspiracy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "An investigator needed to match the arms-supervision office to the persons produced. Fragmentary dying words became an arrest list through violence and transmission, showing the danger of widening liability from incomplete information."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_1",
+  "HeroName": "Abaġa Noyan",
+  "Description": "Abaqa was the son of Hulagu and the second ruler of the Ilkhanate. The sources describe him as one of his father's favoured sons, and he was made governor of Turkestan early on, which gave him experience of Central Asian administration and of governing a mixed population. The sources record nothing about his appearance or scars, so his persona rests on his governing style and beliefs. He was a Buddhist. He never trusted Parwana's double-dealing diplomacy, yet he depended on the man's control of the region. His rule was marked by tense relations with the princes of his house, and he dealt with revolt and betrayal quickly and severely. His ambition was to finish the work of Hulagu and secure the Ilkhanate across Iran and Anatolia. His fear was betrayal by brothers and princes, together with local officials who grew too powerful to control.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Continue the work of his father Hulagu and consolidate Ilkhanid rule over Iran and Anatolia, so that no prince can divide the realm.",
+    "Keep diplomatic contact with the Christian West through his marriage to a Byzantine princess, leaving room for campaigns against the Mamluks.",
+    "Suppress regional power in Anatolia and western Asia, so that the Ilkhanate holds the initiative in its rivalry with the Mamluks."
+  ],
+  "Values": [
+    "Respect for his father's testament and the legitimacy of his house, since order within the royal family matters more than personal grudges.",
+    "Respect for Buddhist monks and belief that a balance between religion and power helps govern a multi-ethnic realm.",
+    "Military force as the base of rule, with quick and severe punishment of revolt and betrayal and little forgiveness."
+  ],
+  "Fears": [
+    "Brothers and the Chagatai or Qaidu princes joining forces, plunging the Ilkhanate into war on both its eastern and western fronts.",
+    "Regional ministers like Parwana growing powerful enough to undermine Mongol control of the west through double-dealing."
+  ],
+  "SpeechStyle": "Calm and imposing, he gives orders in a commanding tone and rarely explains his decisions. He speaks of his father with respect, and turns direct and wary with princes and governors.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

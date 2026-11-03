@@ -516,6 +516,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 		List<PostprocessRuleEntry> lordsHallRules = lordsHallRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("lords_hall_access"), AIConfigHandler.BuildRuntimeLordsHallAccessPostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> captivityReleaseRules = PlayerCaptivityConversation.BuildPostprocessRules(targetHero ?? targetCharacter?.HeroObject, resolvedChainName, HasPreprocessRuleHit(preprocessRuleHits, PlayerCaptivityConversation.RuleId));
 		List<PostprocessRuleEntry> meetingReleaseRules = meetingReleaseRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("encounter_release_player"), LordEncounterBehavior.BuildMeetingPlayerReleasePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject)) : null;
+		vanillaIssueRuleInjected = vanillaIssueRuleInjected || (AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.VanillaIssueRuleId, targetAgentIndex) && HorseQuestDeliveryOwner.TryGet(targetHero ?? targetCharacter?.HeroObject, out var horseQuestForRules) && HorseQuestDeliveryOwner.IsReady(horseQuestForRules));
 		List<PostprocessRuleEntry> vanillaIssueRules = vanillaIssueRuleInjected ? (VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> heroJoinPartyRules = heroJoinPartyRuleInjected ? (AIConfigHandler.BuildRuntimeHeroJoinPartyPostprocessRules(!ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject), targetHero ?? targetCharacter?.HeroObject, entityPostprocessContext) ?? new List<PostprocessRuleEntry>()) : null;
 		if (heroJoinPartyRuleInjected && (heroJoinPartyRules == null || heroJoinPartyRules.Count == 0))
@@ -534,6 +535,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 				targetHero ?? targetCharacter?.HeroObject,
 				targetAgentIndex)
 			: new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> fieldCampOrderRules = FieldCampOrderTags.BuildRuntimePostprocessRules(replyIsDirectPlayerResponse, targetAgentIndex);
 		List<PostprocessRuleEntry> partyTransferRules = partyTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("party_transfer") ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> voteDealRules = voteDealRuleInjected ? VoteDealBehavior.BuildAgendaVotePostprocessRulesForExternal() : null;
 		List<PostprocessRuleEntry> customPolicyAgendaRules = customPolicyAgendaRuleInjected ? TeamModuleServices.Policy.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) : null;
@@ -583,7 +585,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 		}
 		List<PostprocessRuleEntry> mergedRules = siegeInterventionExclusive
 			? MergePostprocessRulesForScene(siegeInterventionRules, nobleExecutionOrderRules)
-			: MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, captivityReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, nobleExecutionOrderRules, partyTransferRules, voteDealRules, customPolicyAgendaRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, siegeSurrenderRules, npcSurrenderRules, siegeInterventionRules, relayRules, intimacyRules, sceneActionRules, executionRules);
+			: MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, captivityReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, nobleExecutionOrderRules, fieldCampOrderRules, partyTransferRules, voteDealRules, customPolicyAgendaRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, siegeSurrenderRules, npcSurrenderRules, siegeInterventionRules, relayRules, intimacyRules, sceneActionRules, executionRules);
 		bool captivitySession = resolvedChainName == "native_conversation" && PlayerCaptivityConversation.HasSession;
 		if (captivitySession) mergedRules.RemoveAll(rule => PlayerCaptivityConversation.IsRestrictedTag(rule?.Tag));
 		bool royalPostprocessRuleInjected = (royalRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), "[ACTION:KING_ABDICATE_TO_PLAYER]", StringComparison.OrdinalIgnoreCase));
@@ -905,6 +907,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 			string text16 = heroJoinPartyRuleInjected ? NormalizeHeroJoinPartyPostprocessTagsForScene(content, heroJoinPartyRules) : "";
 			string text17 = sceneMechanismRuleInjected ? NormalizeSceneMechanismPostprocessTagsForScene(content, mechanismRules, sceneSummonTargets, sceneGuideTargets) : "";
 			string nobleExecutionOrderTags = NoblePrisonerExecutionOrderBehavior.NormalizePostprocessTags(content, nobleExecutionOrderRules);
+			string fieldCampOrderTags = FieldCampOrderTags.NormalizePostprocessTags(content, fieldCampOrderRules);
 			string text18 = partyTransferRuleInjected ? NormalizePartyTransferPostprocessTagsForScene(content, partyTransferTroopOptions, partyTransferPrisonerOptions, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions) : "";
 			string voteDealTags = (voteDealRules != null && voteDealRules.Count > 0) ? NormalizeVoteDealPostprocessTagsForScene(content, voteDealRules) : "";
 			string customPolicyAgendaTags = customPolicyAgendaRuleInjected ? NormalizeCustomPolicyAgendaPostprocessTag(content, customPolicyAgendaRules) : "";
@@ -930,7 +933,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 			}
 			string text21 = siegeInterventionExclusive
 				? MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(content), siegeInterventionTags, nobleExecutionOrderTags)
-				: MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(content), text10, text11, text12, royalTags, vassalageTags, text13, text14, captivityReleaseTags, text15, text16, text17, nobleExecutionOrderTags, text18, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags, sceneActionTags, executionTags);
+				: MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(content), text10, text11, text12, royalTags, vassalageTags, text13, text14, captivityReleaseTags, text15, text16, text17, nobleExecutionOrderTags, fieldCampOrderTags, text18, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags, sceneActionTags, executionTags);
 			if (captivitySession) text21 = PlayerCaptivityConversation.FilterRestrictedTags(text21);
 			text21 = AfGcczShoutBridge.ValidateTownPostprocessDecision(text21);
 			if (string.IsNullOrWhiteSpace(text21))
@@ -1049,7 +1052,8 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 			List<PostprocessRuleEntry> lordsHallRules = lordsHallRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("lords_hall_access"), AIConfigHandler.BuildRuntimeLordsHallAccessPostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> captivityReleaseRules = PlayerCaptivityConversation.BuildPostprocessRules(targetHero ?? targetCharacter?.HeroObject, resolvedChainName, HasPreprocessRuleHit(preprocessRuleHits, PlayerCaptivityConversation.RuleId));
 			List<PostprocessRuleEntry> meetingReleaseRules = meetingReleaseRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("encounter_release_player"), LordEncounterBehavior.BuildMeetingPlayerReleasePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject)) : null;
-			List<PostprocessRuleEntry> vanillaIssueRules = vanillaIssueRuleInjected ? (VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
+			vanillaIssueRuleInjected = vanillaIssueRuleInjected || (AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.VanillaIssueRuleId, targetAgentIndex) && HorseQuestDeliveryOwner.TryGet(targetHero ?? targetCharacter?.HeroObject, out var horseQuestForRules) && HorseQuestDeliveryOwner.IsReady(horseQuestForRules));
+		List<PostprocessRuleEntry> vanillaIssueRules = vanillaIssueRuleInjected ? (VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> heroJoinPartyRules = heroJoinPartyRuleInjected ? (AIConfigHandler.BuildRuntimeHeroJoinPartyPostprocessRules(!ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject), targetHero ?? targetCharacter?.HeroObject, entityPostprocessContext) ?? new List<PostprocessRuleEntry>()) : null;
 			if (heroJoinPartyRuleInjected && (heroJoinPartyRules == null || heroJoinPartyRules.Count == 0))
 			{
@@ -1459,7 +1463,7 @@ internal static void AppendCompactPartyTransferPostprocessSectionForScene(String
 				orderby g.Any((MyBehavior.PartyTransferPromptEntry x) => x.IsHero) descending, g.Max(GetScenePartyTransferTroopTier) descending, g.Key
 				select g)
 			{
-				string text = string.Join("、",
+				string text = string.Join(ConversationRuntimeTexts.ListSeparator,
 					from x in item
 					orderby x.DisplayName
 					select BuildCompactPartyTransferEntryTextForScene(x, isPrisoner: true) into x
@@ -1467,7 +1471,7 @@ internal static void AppendCompactPartyTransferPostprocessSectionForScene(String
 					select x);
 				if (!string.IsNullOrWhiteSpace(text))
 				{
-					sb.AppendLine(item.Key + "：" + text);
+					sb.AppendLine(item.Key + ConversationRuntimeTexts.Colon + text);
 				}
 			}
 			return;
@@ -1480,7 +1484,7 @@ internal static void AppendCompactPartyTransferPostprocessSectionForScene(String
 			orderby g.Max(GetScenePartyTransferTroopTier) descending, g.Key
 			select g)
 		{
-			string text2 = string.Join("、",
+			string text2 = string.Join(ConversationRuntimeTexts.ListSeparator,
 				from x in item2
 				orderby x.DisplayName
 				select BuildCompactPartyTransferEntryTextForScene(x, isPrisoner: false) into x
@@ -1488,7 +1492,7 @@ internal static void AppendCompactPartyTransferPostprocessSectionForScene(String
 				select x);
 			if (!string.IsNullOrWhiteSpace(text2))
 			{
-				sb.AppendLine(item2.Key + "：" + text2);
+				sb.AppendLine(item2.Key + ConversationRuntimeTexts.Colon + text2);
 			}
 		}
 	}
@@ -1587,7 +1591,7 @@ internal static string BuildCompactPartyTransferEntryTextForScene(MyBehavior.Par
 		if (isPrisoner && entry.IsHero)
 		{
 			string sourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(entry);
-			return entry.PromptIndex + ". " + text + "x1" + (string.IsNullOrWhiteSpace(sourceLabel) ? "" : (ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0347") + sourceLabel + "）"));
+			return entry.PromptIndex + ". " + text + "x1" + (string.IsNullOrWhiteSpace(sourceLabel) ? "" : (ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0347") + sourceLabel + ConversationRuntimeTexts.CloseParen));
 		}
 		string text2 = entry.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0348") : "";
 		return entry.PromptIndex + ". " + text + "x" + num + text2;
@@ -1730,7 +1734,7 @@ internal static List<PostprocessRuleEntry> BuildPersistentAdpDebtPostprocessRule
 			string description = (rule.Description ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(description))
 			{
-				description += "；";
+				description += ConversationRuntimeTexts.Semicolon;
 			}
 			description += ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0362");
 			result.Add(new PostprocessRuleEntry
@@ -1766,7 +1770,7 @@ internal static string BuildPostprocessRuleTextForScene(IEnumerable<PostprocessR
 			stringBuilder.Append(entry.Tag.Trim());
 			if (!string.IsNullOrWhiteSpace(entry.Description))
 			{
-				stringBuilder.Append("：").Append(entry.Description.Trim());
+				stringBuilder.Append(ConversationRuntimeTexts.Colon).Append(entry.Description.Trim());
 			}
 			stringBuilder.AppendLine();
 		}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_pine_tar_and_timber_maintenance_02b5dfa9",
+  "Keywords": [
+    "pine tar and timber maintenance",
+    "Pine tar coating and timber boat repairs"
+  ],
+  "RagShortTexts": [
+    "Pine tar helps maintain timber boats and objects.",
+    "Producing and applying it uses wood, fuel and labor."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pine tar serves timber and boat maintenance but must be produced, carried and properly applied. Coating does not replace inspection of cracks and joints. Its wood and fuel compete with heating and construction needs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A leaking ferry needs its damaged joints located, not another coating before full loading. Repairs delay food carriage and require room for boatworkers to work."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Tar orders belong with timber, caulking and downtime plans. Adequate coating supplies without repair time still leave boats unavailable when crossing is urgent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tar production consumes wood, fire tending and containers. Craftspeople ask how an object is damaged; indiscriminate coating can conceal rather than repair a fault."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

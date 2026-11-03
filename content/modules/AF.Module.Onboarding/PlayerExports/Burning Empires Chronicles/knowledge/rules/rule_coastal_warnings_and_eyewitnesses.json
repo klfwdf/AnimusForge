@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v10",
+  "Keywords": [
+    "Coastal warnings and eyewitnesses"
+  ],
+  "RagShortTexts": [
+    "Seeing a coastal boat did not identify its passengers or intentions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "British defenses relied on travelers reporting neighboring movements, while the Areani scandal showed how incentives could corrupt reporting. Seeing a boat did not identify its passengers or intentions. Orders required further inquiry rather than assigning a motive from hull shape alone."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_3_1_1_3",
+  "HeroName": "Emir Sulayman Abd-Allah ibn Hashim ibn Gamal",
+  "Description": "Sulayman Abd-Allah ibn Hashim ibn Gamal is the second son of Hashim ibn Gamal. The game data records him at seventeen, with a knightly template and early training in swordsmanship and command already in place. The game model shows a youth's face with dark hair cropped short, and no battle scars are recorded, though his shoulders are broader than those of his peers. His mark is an old sword scabbard, carved with the house emblem, that his father gave him. The chronicles say nothing of him, so the account below rests on game setting and dynastic background. As a boy his mother Jaida made him study, and later he followed his father and brother into the camp to learn horsemanship and the sword. He is frank and eager to win, fascinated by the stories of veteran officers, and often practices alone in the stables and on the drill ground until dark. Once he wrenched his wrist in the stables and told no one, binding it with cloth and returning to the drill ground the next morning. In the quarrels of the kin he is quicker than his brother Ahmad to declare a stance, believing a position should be spoken aloud rather than hidden behind ledgers. His lofty aim is to win the respect of his men through martial deeds and prove he deserves the knightly name of his house. His private shadow is the fear that his impetuosity will be exploited by rivals, and that one unnecessary clash will ruin his future.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Train in horsemanship and swordsmanship under veteran officers, so that the cavalry will follow his commands in battle and not treat him as Hashim's young son.",
+    "Declare his stance openly in the kin's quarrels, showing his uncles and cousins that he is a man of responsibility and not a child to be set aside.",
+    "Keep his bond with his elder brother Ahmad, finding a way to combine Ahmad's caution with his own boldness so that the branch's strength does not scatter."
+  ],
+  "Values": [
+    "He believes a man's place is earned through martial skill and responsibility, and that when trouble comes one should meet it rather than wait for others to decide.",
+    "He values the knight's honor, holding that a spoken promise must be fulfilled in deed, even at a cost, and that he will not accept the name of a faithless man.",
+    "He treasures his bonds with his mother and brother, believing loyalty within the family is worth more than any praise from outsiders."
+  ],
+  "Fears": [
+    "His boldness may be exploited by rivals in the kin, and one unnecessary clash may cost him men and leave him unable to face the camp again or his mother.",
+    "His quarrel with his brother may split the two of them apart, forcing their father into a painful choice between his sons, all because of his impetuosity."
+  ],
+  "SpeechStyle": "His voice is loud and direct, and he often acts before he finishes speaking. He argues with his mother and brother, speaks respectfully but frankly to his father, and eagerly asks veteran officers for advice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

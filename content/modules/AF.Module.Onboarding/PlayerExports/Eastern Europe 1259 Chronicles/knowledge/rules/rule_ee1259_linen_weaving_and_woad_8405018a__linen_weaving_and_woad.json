@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_linen_weaving_and_woad_8405018a",
+  "Keywords": [
+    "linen weaving and woad",
+    "Flax spinning weaving and woad dye"
+  ],
+  "RagShortTexts": [
+    "Linen requires fiber preparation, spinning and weaving.",
+    "Plant dyeing adds materials and labor."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Turning flax into cloth requires separating prepared fibers, spinning yarn, arranging the warp and weaving. Blue dyeing adds preparation of woad and care of the bath. Yarn quality, weaving and color each cost labor; a fine color cannot conceal uneven cloth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Worn cloth lets straps rub skin. Travelers inspect weave and seams rather than color alone. Wet garments need airing; even light repair cloth takes space otherwise available for food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Linen buyers examine yarn, width and dye across the shipment. A bright sample does not represent every piece; dyeing costs affect prices, and unpaid labor interrupts later deliveries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Spinning can be done in households, but weaving needs sufficient usable yarn. A spoiled dye bath loses labor and materials, forcing choices between added color and spare working clothes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

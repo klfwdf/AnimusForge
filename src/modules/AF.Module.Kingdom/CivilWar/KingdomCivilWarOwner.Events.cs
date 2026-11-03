@@ -351,7 +351,7 @@ internal sealed partial class KingdomCivilWarOwner
 		f.LastDemandDay = day;
 		if (candidate == null || candidate.Id == f.DemandId || DemandAffinity(candidate, record) <= DemandAffinity(current, record) * 1.25f) return;
 		f.DemandId = candidate.Id; f.TargetId = ResolveTargetId(candidate, k, s); f.TargetName = ResolveTargetName(candidate, k, s); f.WarGoal = (int)CivilWarCatalog.EffectiveWarGoal(candidate);
-		PublishPoliticalResult(k, s, f, leader, f.Id + ":demand:" + day, KingdomCivilWarTexts.Raw("KW_Raw_152") + FormatDemand(candidate, f.TargetName),
+		PublishPoliticalResult(k, s, f, leader, f.Id + ":demand:" + day, KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.Raw("KW_Raw_152") + FormatDemand(candidate, f.TargetName)),
 			displayText: CivilWarUiText.T("AF_KINGDOM_CW_Event_DemandChanged", "The faction changes its demand to {DEMAND}", ("DEMAND", CivilWarUiText.DemandDisplayText(candidate, ResolveDemandTargetDisplay(candidate, f, k)))));
 	}
 

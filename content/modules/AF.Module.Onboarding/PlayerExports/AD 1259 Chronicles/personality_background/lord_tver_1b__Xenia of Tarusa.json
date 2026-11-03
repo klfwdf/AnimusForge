@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess and Saint Xenia of Tarusa, consort of Yaroslav III and mother to Saint Mikhail of Tver, is one of the most revered holy women in medieval Rus'. Hailing from the princely house of Tarusa, she was celebrated across the Upper Volga for unblemished piety, erudite scriptural learning, and profound political wisdom. Following the untimely death of her husband, Xenia bore the immense responsibility of raising her young son Mikhail and stewarding the grand-ducal realm during precarious years. She instilled in Mikhail an unshakeable devotion to Christian justice, courage, and selfless kingship, while deftly mediating contentious disputes among ambitious boyar clans. Xenia founded the Cathedral of the Transfiguration in Tver alongside numerous convents and municipal almshouses, providing sanctuary for war orphans and the destitute. Taking monastic vows in her later years, her life of contemplative prayer and miraculous deeds earned her canonization as the eternal spiritual mother of Tver. Through her tireless establishment of permanent soup kitchens, medical hospices, and monastic schools, Grand Duchess Xenia bound the citizenry together in an enduring covenant of Christian fortitude, revered as an eternal beacon of hope.  Her holy memory remains an unquenchable light guiding the spiritual destiny of the Upper Volga.",
+  "SpeechStyle": "True sovereign power is a holy trust from God, meant to be exercised with mercy and justice. Only through steadfast faith and self-sacrificing love can our suffering people find enduring peace.",
+  "Motivations": [
+    "Nurture the princely heirs of Tver in righteous statecraft and Christian piety, ensuring wise and courageous leadership.",
+    "Expand monastic endowments, hospices, and schools across Tver to comfort the afflicted and foster spiritual enlightenment."
+  ],
+  "Values": [
+    "Treasure godly piety, moral purity, and selfless stewardship as the true hallmarks of legitimate Christian authority.",
+    "Prize patient humility and compassionate arbitration over vain ambition and destructive worldly strife."
+  ],
+  "Fears": [
+    "Fear that princely heirs might be corrupted by ruthless ambition and vengeful hatred amidst brutal power struggles.",
+    "Dread foreign invasions sacking holy cathedrals and monastic sanctuaries, extinguishing the lamp of spiritual learning."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    }
+  ],
+  "HeroId": "lord_tver_1b",
+  "HeroName": "Xenia of Tarusa"
+}

@@ -19,7 +19,9 @@
     <Compile Include="../../../../src/modules/AF.Module.Llm/Streaming/LlmStreamingTransport.cs" Link="LlmStreamingTransport.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs" Link="LlmNonStreamingTransport.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs" Link="PrimaryChatMessagePolicy.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs" Link="LlmSourceTexts.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Application/LlmPromptTexts.cs" Link="LlmPromptTexts.cs" />
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" />
     <None Include="../../../../content/modules/AF.Module.Llm/ModuleData/LlmPromptTexts.json" Link="LlmPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />

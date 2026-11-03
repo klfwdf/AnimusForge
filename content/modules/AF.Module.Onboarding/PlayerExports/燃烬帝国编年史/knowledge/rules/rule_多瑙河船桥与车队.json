@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v4",
+  "Keywords": [
+    "多瑙河船桥与车队"
+  ],
+  "RagShortTexts": [
+    "瓦伦斯跨多瑙河使用船桥，通行必须经桥面逐步完成。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦伦斯跨多瑙河使用船桥，通行必须经桥面逐步完成。车辆与马匹不能按开阔地的宽度展开，后方等候会延长补给与警戒。先头部队渡过不代表所有辎重已到岸。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

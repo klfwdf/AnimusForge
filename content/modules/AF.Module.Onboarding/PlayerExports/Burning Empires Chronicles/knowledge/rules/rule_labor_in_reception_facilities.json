@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v4",
+  "Keywords": [
+    "Labor in reception facilities"
+  ],
+  "RagShortTexts": [
+    "Receiving sick travelers needed physicians, transport, cooking, hauling and repairs."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Facilities for sick travelers in Cappadocia needed physicians, carriers and suitable buildings. Care also depended on cooking, hauling and repairs, while practitioners needed subsistence. After a church was built, reception and transport still required daily organization."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

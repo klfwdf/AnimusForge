@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Tyre_Sur_Crusader_Naval_Citadel",
+  "Keywords": [
+    "Tyre Sur Island Peninsula Keep",
+    "Crusader Sea Stronghold Tyre",
+    "Montfort Lords of Tyre",
+    "Venetian Third District Tyre"
+  ],
+  "RagShortTexts": [
+    "Tyre resisted Saladin behind artificial causesways, anchoring premier crusader maritime."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tyre stood on a peninsula projecting into the Mediterranean, and it became the most formidable port the crusaders held after the fall of Acre's neighboring coastline and the defeat at Hattin in 1187. A narrow causeway linked the island city to the mainland, and its sea walls resisted Saladin's siege in 1187 and 1188. Venetian merchants kept deep trading docks in its harbor, and the city's fortifications were rebuilt and reinforced by the lords who came after the Third Crusade. Its ports supplied the Latin states with grain, arms, and pilgrims, and the sea approaches gave it a line of communication that inland garrisons could not match."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "The Montfort lords governed Tyre, and their catapult batteries on the sea walls guarded the supply route between Acre, Beirut, and Cyprus. Galleys from the island carried grain, arms, and wine along that line, and the lord who controlled the batteries controlled the shipping that fed the coast. A Templar captain posted to the walls watched the tower lookouts for sails in every season."
+    }
+  ],
+  "TextMappings": []
+}

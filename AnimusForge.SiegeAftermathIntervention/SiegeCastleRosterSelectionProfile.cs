@@ -105,7 +105,7 @@ public static class SiegeCastleRosterSelectionProfile
 
     public const string DecisionPolicyMessageEn = "[Castle aftermath] Enter the scene to negotiate with defeated garrison troops and captive lords, and issue recruitment or slaughter orders; leaving directly without clear orders settles as mercy by default. Town civilian looting, reassurance, massacre, and colonization rules do not apply to castles.";
 
-    public const string DecisionPolicyMessage = "[Castle aftermath] After entering, you may negotiate with defeated defenders and captured lords, and issue recruitment or slaughter orders; leaving directly without a decision defaults to mercy. Town civilian plunder, reassurance, massacre, and colonization do not apply to castles.";
+    public static readonly string DecisionPolicyMessage = CastleAftermathCompatibilityTexts.Raw("roster_decision_policy");
 
 
 

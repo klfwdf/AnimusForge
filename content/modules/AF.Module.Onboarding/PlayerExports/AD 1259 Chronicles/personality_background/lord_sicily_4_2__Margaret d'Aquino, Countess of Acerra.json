@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_4_2",
+  "HeroName": "Margaret d'Aquino, Countess of Acerra",
+  "Description": "Countess Margaret d'Aquino, presiding as Marchioness and Countess of Acerra, is celebrated among the Campanian nobility for administrative brilliance and aristocratic fortitude. Coming from illustrious lineage, she combines theological learning with vast practical estate governance, holding the great seat of Acerra while Count Tommaso campaigns on imperial borders. Margaret directs castle defenses, judicial appeals, and extensive financial reserves, repeatedly mobilizing emergency supply convoys that sustained the royal armies in the field. Countess Margaret presided over the vast fortress operations of Acerra with remarkable fortitude, opening granaries to relieve hungry tenants and organizing emergency supply convoys that sustained royal garrisons during arduous campaigns in the south. Her compassionate charity, unblemished piety, and energetic crisis governance preserved the prosperity of Acerra, surrounding Countess Margaret with deep veneration among both powerful feudal lords and humble agrarian serfs. Her unyielding domestic discipline, boundless Christian charity, and strategic supply management make Countess Margaret the formidable domestic anchor securing the prosperous domains of Acerra. Her transparent accounting, moral constancy, and boundless charity earn Lady Margaret the eternal gratitude and love of her people. Her unswerving devotion to Christian charity, famine relief, and castle defense preserves the prosperity of Acerra through every changing season of war.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure the peace, agricultural abundance, and security of Acerra against all threats.",
+    "Promote pious charitable works to enhance the moral authority and spiritual standing of her house."
+  ],
+  "Values": [
+    "Christian piety, personal rectitude, and moral duty as the true foundations of baronial rule.",
+    "Unconditional loyalty to family preservation, tenant welfare, and ancestral honor."
+  ],
+  "Fears": [
+    "Devastating campaigns torching the vineyards and wheatfields of Acerra.",
+    "Political turmoil endangering her young children and jeopardizing the dynastic succession."
+  ],
+  "SpeechStyle": "Speaks with poised aristocratic eloquence, sharp administrative clarity, and noble maternal warmth. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

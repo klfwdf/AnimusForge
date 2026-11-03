@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_andrei_displacement_and_family_politics_39753b2e",
+  "Keywords": [
+    "andrei displacement and family politics",
+    "Nevryui’s intervention and princely change in 1252"
+  ],
+  "RagShortTexts": [
+    "Mongol intervention displaced Andrei in 1252.",
+    "Alexander subsequently gained Vladimir’s grand principality."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mongol intervention displaced Andrei in 1252, followed by Alexander’s accession in Vladimir. Dynastic rivalry and overlord recognition intertwine. Residents bear campaigning and collection, while factions differ over blame; new orders still need local implementation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Changing rule requires verified command. Former comrades may acquire different patrons, making identification and protected supply important after leadership changes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Overlord support changes dynastic strength but not automatic local allegiance. Retainers, collection and grievances determine usable authority after accession."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households may not know court dealings but know their losses. Unrecognized prior payments turn succession into repeated demands, increasing the value of witnesses."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

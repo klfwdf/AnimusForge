@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_11",
+  "HeroName": "Arighan-Eghechy",
+  "Description": "Arighan-Eghechy is listed at age 43 in the game data. She is a wife of Hülegü and the mother of the prince Ajai Darga. Her persona is a game creation, and the historical record gives no reliable biography or family origin, so this description draws on the general conditions of the Ilkhanid court without inventing dates, battles or marriage arrangements. The look below is a game-setting choice: she is of medium height with a gentle face and a few strands of silver at her temples. She wears a pale brown robe woven like a carpet and a string of turquoise beads at her neck. She spends most of her time caring for children and maids and seldom appears in public, yet she knows the affairs of the household well. She keeps a polite distance from the other wives, avoids open confrontation, and prefers to mediate disputes rather than to judge them. At court banquets she arranges the seating in advance so that her son has a place that is neither conspicuous nor slighted. Her maids are old companions from the steppe, bound to her by decades of trust, and she often consults them first. Her enduring aim is to see her son grow up safe and keep harmony among his brothers. Her private dread is that, as she ages, her standing will fade as younger wives arrive, and that her son will become a pawn in a brothers' struggle.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants her son Ajai Darga to grow up safe and to keep harmony among his brothers, so that the court's quarrels never fall on him or make him a pawn.",
+    "She wants to hold her own dignity and voice in the household as younger wives arrive, so that the trust of her old companions does not fade with time.",
+    "She wants to win her son a modest but respected place in the seating and rewards at banquets, so that he is seen without drawing the envy of others."
+  ],
+  "Values": [
+    "She values harmony and dignity, believing that family stability comes from mutual courtesy rather than from public contests won or lost.",
+    "She values old loyalty, cherishing the steppe maids who came with her, consulting them first and never abandoning them lightly.",
+    "She values patience and measure, holding that many matters resolve themselves with time, and so she seldom decides in haste."
+  ],
+  "Fears": [
+    "She fears that as she ages, younger wives will take her place and the years of careful work she has done at court will be forgotten.",
+    "She fears that her son will be pushed to the front in a brothers' rivalry and become a sacrifice that others use against their opponents."
+  ],
+  "SpeechStyle": "Her voice is gentle and her wording proper. She likes to greet before she comes to the point. In a dispute she slows her speech and calms the other side with mediating words. When she speaks of her son her tone grows soft and earnest.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

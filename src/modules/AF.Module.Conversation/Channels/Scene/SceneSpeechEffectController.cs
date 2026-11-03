@@ -310,6 +310,8 @@ internal void Publish(SceneSpeechQueueItem item)
 
 								ref content);
 
+						FieldCampOrderTags.Consume(allowPlayerDirectedActions, matchedNpc.AgentIndex, ref content);
+
 						if (allowPlayerDirectedActions)
 
 						{
@@ -937,6 +939,8 @@ internal void Publish(SceneSpeechQueueItem item)
 									_ports.HoldSceneConversationParticipants(allNpcData);
 
 									_ports.AddAgentToStareList(agent, interruptCurrentUse: false);
+
+									_ports.ApplyRelaySpeechGaze?.Invoke(agent, allNpcData);
 
 								}
 

@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v3",
+  "Keywords": [
+    "Insects enclosed in amber"
+  ],
+  "RagShortTexts": [
+    "Pliny discusses enclosed small creatures as signs of a substance once sticky and fluid."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pliny discusses enclosed small creatures as signs of a substance once sticky and fluid. Such inclusions could make a small piece remarkable, with value not proportional to weight. A merchant’s story might enhance its appeal, but the insect was not evidence of a soul imprisoned in stone."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

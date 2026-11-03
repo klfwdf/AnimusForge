@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_8_1_a",
+  "HeroName": "John of Savoy",
+  "Description": "John of Savoy is a promising young knight of the House of Savoy, serving as an elite captain of Peter of Savoy's household guard in England. Athletic, sharp-featured, with intense dark eyes and swift, predatory grace, John was hardened in the high alpine passes of Faucigny and Vaud. Trained in heavy cavalry charges, mountain scouting, and fortified urban defense, he accompanied his kinsman Peter across the Channel to secure the lucrative English honors bestowed by King Henry III. In 1259, as anti-alien riots stoke xenophobic fury across London, John commands the armed perimeter of the Savoy Palace along the Strand with unbending vigilance. He repels probing agitators from the city guilds, enforces strict watch rotations, and keeps dispatch riders ready to ride for Dover. Brave, disciplined, and fiercely loyal to his Savoyard kinsmen, John views England not as a home, but as a dangerous imperial frontier to be held through unyielding vigilance and superior martial discipline. Leading mounted patrols along the Strand, he constructs barricades around the palace, inspecting boat traffic along the River Thames. Disciplined and unshakeable under pressure, John arrests provocative agitators in street skirmishes, defending family honor with the fierce loyalty and lethal precision of an Alpine knight.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold the Savoy Palace on the Strand securely, protecting his noble kinsmen from London mobs",
+    "Display superior Savoyard military discipline against municipal agitators, deterring armed incursions",
+    "Win Peter of Savoy's permanent patronage, securing hereditary knightly fiefs across the Alpine valleys"
+  ],
+  "Values": [
+    "Loyalty is a knight's soul; defending one's kinsmen in foreign lands requires an unshakeable iron shield",
+    "Strict discipline outmatches riotous mobs; cold tactical vigilance guarantees survival amidst enemies",
+    "The white cross banner of Savoy is sacred; strike down any trespasser attempting to violate the palace"
+  ],
+  "Fears": [
+    "A coordinated assault by the London mob trapping his garrison within a burning palace",
+    "Kingdom-wide pogroms against foreigners overwhelming his outnumbered alpine cavalrymen"
+  ],
+  "SpeechStyle": "Speaks with crisp, soldierly precision and the sharp, clipped accent of the Franco-Provençal Alps. His defensive commands are rapid and decisive, inspiring absolute confidence among his guards.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

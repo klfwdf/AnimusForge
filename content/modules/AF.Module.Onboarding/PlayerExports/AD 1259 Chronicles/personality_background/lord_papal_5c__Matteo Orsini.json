@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_5c",
+  "HeroName": "Matteo Orsini",
+  "Description": "Matteo Orsini stands as a dashing frontline cavalry warlord of the House of Orsini, repeatedly serving as Senator of Rome and marshal of the curial cavalry. Reared in the armed citadel of Monte Giordano, Matteo combines fierce chivalric pride with lethal tactical aggression, leading heavy cavalry squadrons across the frontier between Latium and Tuscany. Having repeatedly crushed Ghibelline ambushes with devastating mounted counter-charges, he is recognized as the sharpest military spearhead of his clan. Lord Matteo commanded elite Orsini heavy cavalry squadrons patrolling the borders between Latium and Tuscany, renowned for lethal shock charges, aggressive ambuscades, and unflinching martial courage that shattered hostile Ghibelline raiding contingents. Fearless in the saddle and adored by his troopers, Matteo leads his lances from the front, eager to carve his legend upon the battlefields of Italy and defend the Orsini heraldry with blood. His fearless audacity in the saddle, martial vigor, and passionate fidelity establish Matteo Orsini as a dashing vanguard champion of the realm, celebrated in chivalric song. His ringing warcry and fierce swordsmanship inspire his troopers, ready to capture enemy colors on any field and cement his family's chivalric renown. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve battlefield glory at the head of his heavy lances, intimidating all rival clans and communes.",
+    "Maintain ironclad Orsini authority over the Roman Senate and municipal civil government."
+  ],
+  "Values": [
+    "Martial lethality, personal courage in the saddle, and uncompromising baronial pride.",
+    "Absolute fidelity to the Orsini standard, answering treachery with immediate destruction."
+  ],
+  "Fears": [
+    "Being ambushed in narrow Roman alleys by cowardly snipers and riotous street mobs.",
+    "Protracted urban attrition depleting his cavalry reserves and allowing the Colonna to counterattack."
+  ],
+  "SpeechStyle": "Speaks with booming confidence, fierce knightly bravado, and aristocratic Roman arrogance. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2f",
+  "HeroName": "Erland Erlandsen, Archbishop of Lund",
+  "Description": "Archbishop Erland Erlandsen of Lund, nephew and intellectual heir to the great Archbishop Jakob, was a towering canon lawyer and prince of the northern church. Educated at the University of Paris and Rome, Erland mastered the Decretum Gratiani and papal jurisprudence, standing as the intellectual engine of Danish clerical resistance against monarchical centralization. During his uncle's epic confrontations with King Christoffer I, Erland directed the cathedral chapter of Lund, authoring devastating canonical briefs that prosecuted the crown's violations of ecclesiastical immunities before papal legates. Ascending the archiepiscopal throne of Lund after Jakob's turbulent tenure, Erland preserved the sacred legal doctrines of the Constitutions of Vejle while introducing measured diplomatic pragmatism. Balancing canonical immunities with the political realities of the realm, he negotiated discreet settlements with Queen Regent Margaret Sambiria and papal legates, lifting decades-long church interdicts. He reformed clerical discipline across Scania, reconstructed war-damaged sanctuaries, and wielded profound scholarly erudition to secure a lasting era of peace and institutional stability for the Danish church.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the fiscal exemptions and judicial supremacy of the Archdiocese of Lund before papal legates using canonical statutes.",
+    "Codify uniform provincial canon law while reforming monastic discipline, cementing the Galen house's theological legacy."
+  ],
+  "Values": [
+    "Holds the divine authority of the Roman Church and apostolic succession above all earthly kings, scorning secular encroachment.",
+    "Champions scholarly erudition, ascetic discipline, and canonical logic, constructing unassailable legal ramparts to protect the faith."
+  ],
+  "Fears": [
+    "Dreads the crown forcibly imposing secular royal creatures upon the Archiepiscopal throne of Lund, corrupting the holy see."
+  ],
+  "SpeechStyle": "Speaks with scholastic gravity and papal resonance, his flawless Latinate syntax and biblical citations commanding reverent submission.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

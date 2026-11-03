@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_4_4",
+  "HeroName": "Eòin Stiùbhart, Sir John Stewart of Bonkyll",
+  "Description": "Sir John Stewart of Bonkyll (Eòin Stiùbhart) is the valiant second son of Alexander Stewart. Broad-shouldered, muscular, with piercing hawk-like eyes and an unyielding warrior's jaw, John is endowed with immense physical strength and relentless courage. Trained across the rugged coastline of the Firth of Clyde, he became a supreme master of the heavy yew longbow, greatsword melee combat, and forest skirmishing. In 1259, young John commands companies of highland archers and border yeomen, actively patrolling the windswept cliffs of Ayrshire. He monitors offshore movements of Norse reconnaissance longships, setting deadly ambushes along rocky coves. Beloved by common archers for his rough egalitarian camaraderie and unpretentious leadership, John shares their coarse camp rations and cold watchfires. A warrior of impeccable honor, he views military service as a sacred calling, determined to shield Scotland with flight after flight of whistling arrows. Lord of Bonkyll and a formidable border commander, Sir John combined heavy cavalry mastery with the famous archers of the Forest of Selkirk; strictly disciplined and bound by sacred oath, he patrolled the Tweed borderlands to safeguard Scottish frontiers.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Drill an elite force of yew longbowmen to annihilate Norse landing parties upon coastal beaches",
+    "Hold the Firth of Clyde beside his father and brother, achieving renown through heroic combat",
+    "Champion the martial prestige of the Stewart dynasty, proving the devastating power of Scottish archery"
+  ],
+  "Values": [
+    "True heroes bleed beside their men; defending native soil with arrows outshines empty court words",
+    "Confront invaders with lethal ferocity; hesitation or retreat brings indelible dishonor",
+    "Loyalty is sealed in blood; defend the Scottish people against foreign tyranny at all costs"
+  ],
+  "Fears": [
+    "His archery line being overwhelmed by heavy infantry, suffering catastrophic casualties among his men",
+    "Failing to prevent Norse raiders from pillaging defenseless coastal farming hamlets"
+  ],
+  "SpeechStyle": "Speaks with a booming, hearty roar and rough soldierly directness. He cuts straight to the tactical point, his ferocious laughter echoing across the camp to fire the courage of his archers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

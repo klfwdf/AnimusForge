@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_7",
+  "HeroName": "Simón Ruiz de los Cameros, Lord of Cameros",
+  "Description": "Simón Ruiz de los Cameros, Lord of Cameros, is the proud and fiercely independent sovereign of the mountainous Riojan marches along the upper Ebro river. Controlling the critical borders between Castile, Navarre, and Aragon, his house commands immense wealth derived from extensive transhumance grazing routes, sheep tithes, and river customs. Don Simón embodies the classic unyielding feudal baron, jealously guarding his seigneurial liberties against monarchical encroachment and skillfully balancing the competing interests of neighboring kings. By 1259, infuriated by Alfonso X's aggressive fiscal levies and the imposition of uniform royal legal codes over local fueros, Simón throws his formidable military weight behind the baronial resistance, forming a fateful pact with the king's estranged brother, Infante Fadrique. Refortifying his stone citadels across the Sierra de Cameros, he openly defies royal tax collectors. Supervising the refortification of twelve stone beacon towers across the heights of Los Cameros, Simón gathers hundreds of veteran pikemen along the Ebro. Publicly burning royal tax demands, he boldly threatens to ride south against corrupt court ministers, his fiery defiance echoing through history as an immortal baronial battle cry for traditional feudal independence.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve ancient seigneurial exemptions across Los Cameros and bar royal tax collectors from his land",
+    "Unite with Infante Fadrique and allied magnates to compel the king to rescind centralizing legal codes",
+    "Defend lucrative transhumance sheep routes and cross-border trade across the upper Ebro"
+  ],
+  "Values": [
+    "True barons are born free; dying with sword in hand is a thousand times better than cowardly servitude",
+    "Sacred pledges made to fellow knights and vassals must be upheld unto death",
+    "Ancestral mountain soils must be defended to the last drop of blood against any royal tyrant"
+  ],
+  "Fears": [
+    "Falling victim to treacherous royal arrest and summary execution without chivalric trial",
+    "The historic fueros and lordships of Cameros being abolished by royal military conquest"
+  ],
+  "SpeechStyle": "Blunt, thunderous, and fiercely defiant; speaks with uncompromised baronial pride and searing indignation against royal injustice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

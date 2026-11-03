@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_mongol_siege_engines_and_identification_c0cc3164",
+  "Keywords": [
+    "Mongol siege craftsmen and stone engines",
+    "Power and supply for stone throwers"
+  ],
+  "RagShortTexts": [
+    "Mongol armies employ siege craftsmen needing frames, ropes, ammunition and skilled crews.",
+    "Traction and falling weights provide different power, with transport and repairs limiting use."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mongol armies draw on craftsmen of varied origins, but stone engines still need erection, ammunition and repair. Human traction differs from falling-weight power, and construction affects transport and operation. Skilled crews require timber, rope and food. Erecting a frame does not ensure continuous work under interference and damaged access."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Stone carriers, timber workers and rope makers sustain an engine beyond its visible crew. Materials need reception, selection and organized unloading rather than obstructive heaps. Animals taken from households interrupt farming transport; during a long siege, pay, food and return dates matter more to workers than an engine's impressive name."
+    }
+  ],
+  "TextMappings": []
+}

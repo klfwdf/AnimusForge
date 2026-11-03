@@ -1,0 +1,59 @@
+{
+  "Id": "be_burgundian_kingdom_internal",
+  "Keywords": [
+    "Burgundians Nobility",
+    "Burgundian kin cooperation"
+  ],
+  "RagShortTexts": [
+    "Gebicca coordinates kin chiefs retaining local responsibilities.",
+    "Groups set separate terms on passage, rewards and neighbors."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gebicca coordinates kin chiefs, whose followers still answer for their settlements. Groups set different terms on passage, reward and neighbors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gebicca coordinates kin chiefs retaining local responsibilities. Followers retain family ties; decisions about guards and distant service affect common participation. Groups set separate terms on passage, rewards and neighbors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Groups set separate terms on passage, rewards and neighbors. Coordination allocates actual supply and protection duties, not merely titles. Gebicca coordinates kin chiefs retaining local responsibilities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gebicca coordinates kin chiefs retaining local responsibilities. Households compare burdens with neighbors; unmatched protection weakens cooperation. Groups set separate terms on passage, rewards and neighbors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Groups set separate terms on passage, rewards and neighbors. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Gebicca coordinates kin chiefs retaining local responsibilities."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

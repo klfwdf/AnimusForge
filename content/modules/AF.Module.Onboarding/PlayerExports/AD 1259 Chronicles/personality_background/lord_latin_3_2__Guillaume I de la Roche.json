@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_3_2",
+  "HeroName": "Guillaume I de la Roche",
+  "Description": "Guillaume I de la Roche, aged thirty-one in 1259, is the martial second son of Guy I de la Roche, serving as Lord of Livadeia. Unlike his contemplative brother Jean, Guillaume is a hard-bitten knight dedicated entirely to border fortresses and cavalry drills. Commanding the northern approaches from Thessaly into Boeotia, he holds the imposing citadel of Livadeia with iron vigilance. During the 1258 conflict against Prince Guillaume of Villehardouin, his rearguard defense saved many Athenian knights from annihilation. In 1259, as the epic collision of empires unfolds at Pelagonia, Guillaume guards the treacherous mountain passes of Mount Parnassus, ready to unleash his heavy lancers against any hostile incursions threatening the Athenian homeland. Guillaume de la Roche is a warrior of unbending iron, inspecting the cliffside battlements of Livadeia daily without fail. Proficient in diverse Western and Levantine weaponry, he regularly spars with garrison men-at-arms to maintain peak combat readiness. Under his strict command, the fortress stands perpetually mobilized, an impenetrable shield defending the approaches to the Athenian duchy. Vigilant atop the battlements of Livadeia, Guillaume guards the gateway of Central Greece with unwavering steel. His relentless scouting patrols and martial rigor guarantee that the prosperous valleys of Attica remain secure against foreign intrusion.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with booming soldierly directness, demanding immediate action and brooking no hesitation when border defenses are concerned.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

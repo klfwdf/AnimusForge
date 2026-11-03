@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_5_1",
+  "HeroName": "Anna von Glogau, Duchess of Upper Bavaria",
+  "Description": "Anna of Glogau, daughter of Duke Konrad I of Glogau in Silesia, was the second consort of Ludwig II the Strict of Bavaria. Reared in high Piast blood, she comforted her husband's brooding grief with Christian grace, governing ducal courts in Munich and Heidelberg with gentle wisdom. Anna endowed perpetual charity foundations at the Munich cathedral, soothing Ludwig's brooding remorse with Christian grace to restore domestic tranquility. Practicing pious thrift in Munich, she clothed war orphans and distributed grain, softening the iron heart of Duke Ludwig the Strict with radiant Christian charity. Radiating Christian charity, Anna dissolved the shadows of grief over Munich, remembered across Bavaria as a compassionate and beloved duchess. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Soothe Ludwig's brooding remorse through Christian empathy, creating domestic peace.",
+    "Endow monastic chapels across Munich to pray for souls consumed by harsh judicial edicts.",
+    "Foster enduring dynastic friendship between the Piast dukes of Silesia and Bavaria."
+  ],
+  "Values": [
+    "Believes sincere penance, forgiveness, and mercy alone redeem souls and lift courtly curses.",
+    "Holds patient domestic grace and Christian humility as the crowning virtues of a duchess."
+  ],
+  "Fears": [
+    "Ludwig's explosive temper recurring, shattering the fragile domestic tranquility they forged.",
+    "Bohemian armies overrunning her native Silesian duchies, putting her kin to the sword."
+  ],
+  "SpeechStyle": "Speaks with soothing tenderness, spiritual humility, and radiant Christian empathy. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

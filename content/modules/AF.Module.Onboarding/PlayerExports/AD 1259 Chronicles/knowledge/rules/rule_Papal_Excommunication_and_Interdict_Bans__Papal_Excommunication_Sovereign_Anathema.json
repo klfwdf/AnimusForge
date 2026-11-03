@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Papal_Excommunication_and_Interdict_Bans",
+  "Keywords": [
+    "Papal Excommunication Sovereign Anathema",
+    "Kingdom Interdict Sacramental Ban",
+    "Silenced Church Bells and Unburied Dead",
+    "Feudal Oath of Fealty Dissolution"
+  ],
+  "RagShortTexts": [
+    "Excommunication and interdict apply religious pressure with different targets and terms.",
+    "Ritual restrictions and exceptions matter to households facing sickness and burial."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The papacy wielded its spiritual weapons with great force. Excommunication cut a monarch off from the sacraments and from the obedience of his subjects, and an interdict went further by closing the churches of an entire kingdom. Bells fell silent, public worship stopped, and only baptism and last rites remained available. The dead could not be buried in consecrated ground, so they were laid in unconsecrated ditches. Papal bulls could also release vassals from their oaths of fealty, which turned a ban into a threat against the whole feudal order. Kings had to weigh every quarrel with Rome against the danger that their own barons would seize the chance to rebel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Monarchs such as King John of England and Emperor Frederick II felt the destabilizing force of papal bans. A sentence of anathema gave barons a legitimate reason to rise against their king, and the sovereign had little choice but to seek absolution. Every appeal to Rome cost time and money."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "When an interdict restricts public worship, villagers ask which rites remain available and how to care for the dying. Its terms and exceptions matter: baptism and urgent ministrations are not simply suspended everywhere without distinction. Anxiety about burial can turn a political struggle into a household crisis, even when people do not understand the dispute between rulers and clergy."
+    }
+  ],
+  "TextMappings": []
+}

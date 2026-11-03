@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Mikhail Vasilyevich of Kashin, eldest son of Prince Vasily and Princess Elena of Bryansk, is the dynamic vanguard commander of the Kashin principality. Raised with strict chivalric discipline and battlefield training, he combines athletic combat prowess with bold tactical aggression. Mikhail commands the elite armored cavalry and spearmen garrison of Kashin, patrolling the sensitive frontier marshes between Tver and Moscow. Familiar with every river crossing and concealed forest trail, he has repeatedly routed brigand warbands and neutralized hostile reconnaissance patrols with decisive force. Deeply devoted to the honor of his family, he assisted his father in supervising weapon manufacturing, stockpiling siege engines, and drilling municipal militias. His charismatic bravery and shared hardships on the march make him deeply popular among the troops, standing as the shield of Kashin's frontier. Mikhail led relentless cavalry sweeps along the frontier waterways, neutralizing enemy scouts and securing the vital marsh crossings of Kashin with fearless audacity and sharp tactical skill.  His tactical daring, personal bravery, and aggressive border reconnaissance repeatedly discouraged enemy commanders from mounting surprise assaults across the vulnerable frontier waterways and marsh approaches of the Kashin principality.  He remains a loyal champion defending the sovereignty of Kashin.",
+  "SpeechStyle": "The banner of Kashin flies wherever the danger is greatest! While my cavalry guards the river crossings, no intruder shall trespass upon our soil. Charge forward to victory!",
+  "Motivations": [
+    "Seal border defiles with elite cavalry units, building military renown and safeguarding the security of Kashin.",
+    "Expand his family's martial legacy by forging an incorruptible, battle-hardened standing army to protect the realm."
+  ],
+  "Values": [
+    "Value heroic martial valor and strict battlefield discipline, regarding the defense of his realm as his highest oath.",
+    "Prize brotherhood with his troops and transparent directness, scorning cowardly court intrigues and hollow excuses."
+  ],
+  "Fears": [
+    "Fear overextending a counter-attack into treacherous bogs and falling into an ambush that decimates his cavalry.",
+    "Dread dynastic rivalries among princely kinsmen fracturing military unity and allowing rivals to overrun the realm."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_tver_2c",
+  "HeroName": "Mikhail Vasilyevich"
+}

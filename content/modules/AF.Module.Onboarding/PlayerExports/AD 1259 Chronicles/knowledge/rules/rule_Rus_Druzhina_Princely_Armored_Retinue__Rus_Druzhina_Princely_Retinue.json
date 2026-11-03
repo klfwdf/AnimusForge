@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Rus_Druzhina_Princely_Armored_Retinue",
+  "Keywords": [
+    "Rus Druzhina Princely Retinue",
+    "Conical Gilded Helm and Mail Hauberk",
+    "Broad Double Edged Slavic Battleaxe",
+    "Novgorod and Vladimir Boyar Guard"
+  ],
+  "RagShortTexts": [
+    "Rus Druzhina boyars served princely retinues with conical iron helms, mail, and heavy."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The druzhina was the close warrior brotherhood and political council that surrounded the Rus princes. Its senior boyars and younger retainers wore riveted mail coats and pointed conical helms. They fought with broad Slavic axes and with lances, and that mix let them meet both Western knights and steppe nomads on equal terms. The druzhina also advised the prince on policy, so its members took part in war and in government alike. Loyalty to the prince bound the retinue together, and a leader who lost that loyalty lost his followers as well."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Senior druzhinniki sat as councillors in the prince's duma and collected land revenues through the kormlenie system of feeding, which paid them for local administration. Their loyalty made Alexander Nevsky's defensive victories against the Livonian crusaders possible, since the retinue would fight beside him on the field and in council."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "These northern veterans carry great bulk beneath fur-lined mantles, and they fight as hard as they look. Two-handed bearded axes swing with crushing force, and their melee charges split a shield wall before it can close. Keep your shield up when they come, and remember that a single good blow from one of them can end your fight."
+    }
+  ],
+  "TextMappings": []
+}

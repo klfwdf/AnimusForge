@@ -1,0 +1,59 @@
+{
+  "Id": "be_alemannic_kingdom_legitimacy",
+  "Keywords": [
+    "阿勒曼尼人法统",
+    "马克里安的盟誓"
+  ],
+  "RagShortTexts": [
+    "Makrian依靠军功、盟誓和参与者支持。",
+    "对罗马的盟约需要地方首领愿意履行。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Makrian的认可来自军功、盟誓与参与者支持；同罗马谈条件可以保住市场，但单个首领的誓言要靠各地方愿意执行才有效。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Makrian依靠军功、盟誓和参与者支持。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。对罗马的盟约需要地方首领愿意履行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "对罗马的盟约需要地方首领愿意履行。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。Makrian依靠军功、盟誓和参与者支持。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Makrian依靠军功、盟誓和参与者支持。家户通过家人、土地与求助能否获保护来认识统治。对罗马的盟约需要地方首领愿意履行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "对罗马的盟约需要地方首领愿意履行。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。Makrian依靠军功、盟誓和参与者支持。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

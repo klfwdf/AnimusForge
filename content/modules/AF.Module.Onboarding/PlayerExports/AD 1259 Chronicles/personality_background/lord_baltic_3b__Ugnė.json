@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_3b",
+  "HeroName": "Ugnė",
+  "Description": "Duchess Ugnė reigns as the formidable consort to Duke Treniota of Samogitia, revered across the northern forests as a high priestess (Vaidilutė) and eternal keeper of the sacred flame of Perkūnas. Her name derived from the ancient Baltic word for sacred fire (*ugnis*), Ugnė was raised within the secluded oak sanctuaries of Samogitia, mastering astrological divination, herbal antidotes, and the sacred consecration of battle weapons. Far more than a spiritual guide, Ugnė was an indispensable organizer of clandestine mountain logistics, supervising hidden cavern storehouses of cured meats, salt, and smelted bog-iron that sustained Treniota's partisans through scorched-earth warfare. Fierce, unyielding, and consumed by righteous wrath against crusader desecration, she believed with religious zeal that foreign chains would never bind the Baltic soul. Ugnė stands as the living flame of pagan resistance, anchoring her husband's holy war in the unshakeable bedrock of ancestral faith. Ugnė maintained sacred fires atop ancient wooded hillforts and performed divinations that stiffened warrior resolve before decisive engagements. Her spiritual authority unified fractured clans into a single unstoppable force dedicated to ancestral preservation.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the perpetual sacred altar fires of Perkūnas, inspiring Baltic warriors to purge the land of crusaders.",
+    "Oversee hidden forest cavern caches of arms, cured grain, and herbs to sustain long-term partisan warfare.",
+    "Root out faint-hearted collaborators seeking foreign baptism, preserving the absolute purity of the ancient faith."
+  ],
+  "Values": [
+    "Hold veneration of nature gods and sacred soil as supreme, defying the encroachment of foreign religions.",
+    "Prize fearless self-sacrifice in holy battle and ruthless blood vengeance, washing defiled groves in enemy blood.",
+    "Maintain fanatical loyalty to her husband's crusade and her people, ready to die defending the holy flame."
+  ],
+  "Fears": [
+    "Crusaders breaking into Samogitian holy sanctuaries, cutting down millennial sacred oaks and trampling holy fires.",
+    "Duke Treniota falling to poisoned arrows in battle, causing the united anti-crusader front to collapse."
+  ],
+  "SpeechStyle": "The sacred oaks blaze with the fire of vengeance! Perkūnas has smelled the blood of invaders; take your consecrated spears and drown the crusaders in the bogs! Sacred fires guide our blades and doom all invading crusaders!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

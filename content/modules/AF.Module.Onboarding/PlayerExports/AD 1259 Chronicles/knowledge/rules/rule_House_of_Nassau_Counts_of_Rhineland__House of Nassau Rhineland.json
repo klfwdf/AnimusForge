@@ -1,0 +1,18 @@
+{
+  "Id": "rule_House_of_Nassau_Counts_of_Rhineland",
+  "Keywords": [
+    "Nassau counts and Rhenish ties"
+  ],
+  "RagShortTexts": [
+    "Nassau standing involved Rhenish estates, castles and princely ties."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nassau standing involved Rhenish estates, castles and princely ties. Royal candidates sought support through rights and promises. Participation did not guarantee a future crown; present marriage and service commitments retained their own conditions."
+    }
+  ],
+  "TextMappings": []
+}

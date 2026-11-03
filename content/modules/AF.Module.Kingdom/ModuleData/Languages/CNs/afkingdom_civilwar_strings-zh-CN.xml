@@ -15,7 +15,7 @@
     <string id="AF_KINGDOM_CW_Demand_continue_war" text="对{TARGET}战事不许议和" />
     <string id="AF_KINGDOM_CW_Demand_revoke_policy" text="废除{TARGET}" />
     <string id="AF_KINGDOM_CW_Demand_redress" text="赔偿损失并追究责任" />
-    <string id="AF_KINGDOM_CW_Demand_autonomy" text="承认本派封地自治" />
+    <string id="AF_KINGDOM_CW_Demand_autonomy" text="准许本派携封地脱离王国" />
     <string id="AF_KINGDOM_CW_Demand_usurp" text="国王退位，由本派领袖继位" />
     <string id="AF_KINGDOM_CW_Demand_unknown" text="追求派系诉求" />
     <string id="AF_KINGDOM_CW_Target" text="目标" />

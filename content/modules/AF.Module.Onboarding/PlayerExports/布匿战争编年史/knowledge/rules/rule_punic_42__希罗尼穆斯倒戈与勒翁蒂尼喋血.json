@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_42",
+  "Name": "希罗尼穆斯遇刺政变与勒翁蒂尼屠城惨案",
+  "Description": "公元前214年，暴虐的年轻国王希罗尼穆斯在勒翁蒂尼街头遭刺客伏击身亡；随后罗马马塞卢斯强攻勒翁蒂尼并处决两千名逃兵，激起叙拉古全城同仇敌忾抗罗决心。",
+  "Tags": [
+    "希罗尼穆斯遇刺",
+    "勒翁蒂尼屠城",
+    "马塞卢斯",
+    "埃皮基德斯",
+    "希波克拉底",
+    "反罗同盟"
+  ],
+  "Category": "History",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前214年叙拉古少主希罗尼穆斯在勒翁蒂尼巡视时遭密谋刺客当街斩杀。",
+    "马塞卢斯强攻下勒翁蒂尼并用皮鞭鞭笞后残忍处决两千名罗马逃兵与守军。",
+    "勒翁蒂尼惨案的血腥消息传回叙拉古彻底激起全体市民誓死抗罗的决死意志。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "希罗尼穆斯狂妄暴虐死有余辜，可罗马人的残暴更是禽兽不如！勒翁蒂尼开城之后，马塞卢斯竟然下令把两千名放下武器的希腊战士绑在木桩上用荆条活活抽死，然后斩首示众！血水流满了勒翁蒂尼的石阶！汉尼拔派来的使臣埃皮基德斯与希波克拉底在市民大会上痛陈血仇，全叙拉古的公民都在怒吼：如果开城投降，勒翁蒂尼的今天就是我们妇孺的明天！拿起武器，誓死血战！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马塞卢斯将军在勒翁蒂尼执行的是纯粹的神圣军法！那些被处死的是从坎尼和特雷比亚战场逃亡叛变的罗马逃兵，他们不仅背叛誓言，更拿起武器帮助希腊叛贼对抗祖国军团！任何背叛鹰旗的叛徒唯有绞刑与断头！将军对合法公民秋毫无犯，是迦太基间谍散布谎言煽动了叙拉古暴民的恐慌！"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "少国王在狭窄的胡同里被乱刀捅死，身上的紫袍都被血浸透了。紧接着勒翁蒂尼那边的难民哭喊着逃进城，说罗马人进城就砍人头，连投降的守军都被扒光衣服用皮鞭抽得露出了骨头。全城的老百姓都在发抖，铁匠铺日夜赶造长矛，谁都知道大难临头了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前214年，叙拉古国王希罗尼穆斯在勒翁蒂尼巡视时遭刺客当街刺杀，城内陷入混乱。随后罗马统帅马塞卢斯强攻下勒翁蒂尼并处决两千名叛变逃兵。此举彻底激怒并恐吓了叙拉古全城，促使迦太基派代表埃皮基德斯与希波克拉底掌握叙拉古政权，开启对罗马的全面抗战。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "希罗尼穆斯遇刺政变与勒翁蒂尼屠城惨案",
+    "rule_punic_42"
+  ]
+}

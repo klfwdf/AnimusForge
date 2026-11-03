@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_2_5",
+  "HeroName": "Dokez",
+  "Description": "Dokez is a twenty-two-year-old woman, the daughter of Tudun and Ulakci. She has a sturdy build, broad shoulders, and long legs, and the steppe wind has darkened her skin to deep brown. A fine line between her brows comes from years of squinting at distant horizons. She wears a narrow-sleeved riding dress under a short dark green cloak, with a hunting knife at her waist and a short bow and quiver hanging from her saddle. The knife was a gift from her brother, with her name carved on the sheath. She grew up hunting with her brothers, and by fourteen she could lead a party after wolf packs alone, often staying out for several days across the snowfields in winter. Her talent for management showed early. She split hunters and horse-keepers into rotating watch groups, and her ledgers were cleaner than those of many adult stewards. She never boasts of a kill. She writes a short record of each hunt, with the riders, the route, and the game taken, and gives it to her mother to check. Facing rivals in the royal branches, she avoids open argument. Instead she builds her own network among hunting grounds and post stations, so that an opponent's riders find no supplies when they need them most. She remembers who wronged her and keeps that account until the time is right. Her ambition is to make her stud and hunting band the most dependable unit in the Mirhan line, without leaning on her father's name or her mother's betrothals. Her fear is a single misjudged chase that costs a whole party, after which her brothers would see her only as a woman who charges. That fear makes her check every night camp herself.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants her stud and hunting band to become the most dependable unit in the Mirhan line, so her brothers think of her first when they muster troops.",
+    "She builds steady ties among hunting grounds and post stations, so rival retinues are squeezed on supplies and news and never need a direct quarrel with her.",
+    "She guards one link in her mother's betrothal network, so promised marriages and alliances are honored later and not erased by feuds in the royal house."
+  ],
+  "Values": [
+    "She values horsemanship and nerve, believing a person who cannot survive a night alone on the snowfields has no right to give orders, and she holds herself to that rule.",
+    "She keeps clear accounts. She records game, horses, and hands herself, accepts no vague estimate, and does not tolerate subordinates who hide losses.",
+    "She treats every hunter and horse-keeper alike, rewarding whoever earns it with real goods, and she favours no one by birth or sex."
+  ],
+  "Fears": [
+    "She fears one misjudged chase will cost a whole party and that her brothers will then see her only as a woman who charges, shutting her out of household decisions.",
+    "She fears feuds in the royal branches will dissolve her mother's betrothal network, scattering the contacts she has built and leaving her nothing to show for them."
+  ],
+  "SpeechStyle": "Her tone is direct and short. She gives the conclusion first and names places and dates. When provoked she does not rush to answer. She asks one calm question: have you written that debt down properly?",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -3,6 +3,8 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Compile Include="Program.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../src/Core/IllustratorText.cs" Link="IllustratorText.cs" />
     <Content Include="../../../../content/modules/AnimusForge.Illustrator/ModuleData/IllustratorCompatibilityTexts.json" Link="ModuleData/IllustratorCompatibilityTexts.json" CopyToOutputDirectory="PreserveNewest" />
     <Using Include="BulletinTestTask" Alias="Task" />

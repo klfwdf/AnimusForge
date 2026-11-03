@@ -1,0 +1,59 @@
+{
+  "Id": "be_slavic_kingdom_geopolitics",
+  "Keywords": [
+    "Venedians Frontiers",
+    "Venedian woodland rivers"
+  ],
+  "RagShortTexts": [
+    "Venedian rivers, woods and settlement crossings form routes.",
+    "Rain, seasons and disputes redirect boats and walkers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rivers, woods and crossings form routes, with rain, seasons and disputes affecting boats and walkers. Shore stops also need provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Venedian rivers, woods and settlement crossings form routes. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Rain, seasons and disputes redirect boats and walkers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Rain, seasons and disputes redirect boats and walkers. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Venedian rivers, woods and settlement crossings form routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Venedian rivers, woods and settlement crossings form routes. Closed routes may separate families from goods, imposing costs on those remaining at home. Rain, seasons and disputes redirect boats and walkers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Rain, seasons and disputes redirect boats and walkers. Cargo passes different carriers, making distant route changes become local shortages through delay. Venedian rivers, woods and settlement crossings form routes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

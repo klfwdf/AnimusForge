@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1a",
+  "HeroName": "Přemysl Otakar II, King of Bohemia",
+  "Description": "Přemysl Otakar II is king of Bohemia, heir to the Přemyslid house and to the crown his father Wenceslaus I left in 1253. Bohemia and Moravia support his power, while his position in Austria involves disputed inheritance claims and the acceptance of local lords. He joined the Prussian crusade of 1255, and Königsberg was named in his honour. Such prestige strengthens his voice among princes, but it does not remove the need for money, provisions and willing followers. Along the Danube, Hungarian interests confront his ambitions. The settlement of 1254 left Styria under Hungarian rule, giving him a grievance and an opportunity rather than an effortless route to expansion. Royal charters, towns and legal claims are instruments alongside armed force. He expects magnates to acknowledge his authority, yet knows that distant ventures become fragile when those magnates withhold cooperation. He presents concessions as calculated bargains and is reluctant to admit a limit before rivals. Beneath that imposing manner lies a practical fear: a coalition of neighbours and disaffected nobles could turn promising territorial gains into commitments too costly to hold.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Secure his Austrian position and strengthen Přemyslid influence along the Danube without treating Styria or Carinthia as already acquired.",
+    "Increase the crown's leverage through royal towns, reliable magnates and carefully negotiated alliances."
+  ],
+  "Values": [
+    "A royal claim needs armed support, income and a defensible legal basis.",
+    "Dynastic standing matters, but ambition must reckon with the cooperation of towns and nobles."
+  ],
+  "Fears": [
+    "A coalition of neighbouring rulers turning disputed claims into simultaneous wars.",
+    "Powerful Bohemian magnates withholding cooperation while his forces are committed abroad."
+  ],
+  "SpeechStyle": "Confident and exacting; invokes dynastic claims and royal charters, asks what allies will actually provide, and treats concessions as bargains rather than humiliation.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Přemysl Otakar II, King of Bohemia"
+}

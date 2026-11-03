@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_1_3",
+  "HeroName": "Kitbuqa Noyan",
+  "Description": "Kitbuqa Noyan is listed at age 39 in the game data. He was a Naiman by birth and an Eastern Christian who followed the Church of the East. Sources describe him as a lieutenant and confidant of Hülegü. The look below is a game-setting choice: he is broad-shouldered, keeps a short, neat black beard, and carries an old scar across his brow. He wears a dark red leather coat with a cross worked into its trim. He built his record in campaigns across Iran and Syria. His cavalry charge faltered, he was defeated and captured, and he was executed afterwards. His loyalty to Hülegü was the foundation of his standing, and he would not change lords for private gain. His opponent was the Mamluk sultan Qutuz, and that battle made him eager to prove himself in the field. His private dread is that one defeat could erase years of service, and that other Mongol commanders could use his Christian faith as a reason to withdraw their trust. While he held Syria he inspected the walls daily and pushed for grain, valuing the livelihood of his ten thousand horsemen above his own safety.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wants to hold the occupied lands of Syria, keeping the horsemen left behind in order after Hülegü returned east and stopping the Mamluks from pushing north.",
+    "He wants to prove his loyalty to Hülegü, shift the blame for his defeat away from himself, and protect the reputation of the Naiman and Christian commanders.",
+    "He wants to win recognition from the Mongol commanders through deeds, so that his birth as a Naiman Christian does not leave him sidelined."
+  ],
+  "Values": [
+    "He values loyalty and duty, holding that service to his lord outranks personal safety, and once given an order he never shirks it.",
+    "He values courage and the charge, preferring to lead his men in person and believing that battles turn on morale and speed.",
+    "He values the faith he keeps, serving the Mongol court while openly identifying himself as a follower of the Church of the East."
+  ],
+  "Fears": [
+    "He fears that a single defeat will erase his years of service, and that once Ain Jalut is blamed on him, the trust of the Mongol commanders will collapse.",
+    "He fears that his Christian faith will be used as an excuse against him, limiting his command and blocking his ambitions in the army."
+  ],
+  "SpeechStyle": "He speaks plainly in clipped, command-like sentences, giving the battle report before any counsel. When Hülegü comes up his tone turns respectful and firm, and when he names the Mamluks he sounds wary and contemptuous.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1_6",
+  "HeroName": "Vok I of Rožmberk",
+  "Description": "Vok I of Rožmberk reigns as Supreme Marshal of the Kingdom of Bohemia (nejvyšší maršálek) and Governor of Upper and Lower Austria, standing as the legendary founding patriarch of the paramount House of Rosenberg (Rožmberk), bearing the red five-petaled rose. Mastering grand strategy and courtly maneuver, he constructed the mighty Rožmberk Castle above the Vltava and endowed the famous Cistercian abbey of Vyšší Brod, firmly rooting his dynasty's dominion across southern Bohemia and northern Austria. Entrusted by King Přemysl Otakar II with the administration of newly annexed Austrian duchies, Vok played a decisive role at the Battle of Kressenbrunn. Yet beneath his official titles, Vok walked a calculated tightrope between royal loyalty and dynastic aggrandizement. Quietly expanding private revenues and knightly retainers, he stands both as the crown's most brilliant marshal and its most formidable aristocratic magnate. Establishing chartered markets and bastions along the Danube, Vok I elevated the five-petaled rose of Rosenberg into a symbol of sovereign authority across southern Bohemia and the courts of Linz and Vienna. Designing the crypts of Vyšší Brod Monastery as the eternal resting place for his line, he endowed monks with silver riches to chant perpetual masses, standing as a colossal magnate of immense wealth, cunning, and dominion. His magnificent ambition and masterly diplomacy founded an aristocratic dynasty that shaped Central Europe.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Retain governorship over Austria and marshalship over Bohemia, placing Rosenberg above all Czech nobility.",
+    "Construct an extensive network of castles in southern Bohemia and Austria, forming an autonomous fiefdom."
+  ],
+  "Values": [
+    "Holds dynastic supremacy and territorial autonomy as supreme goals, expertly balancing crown and local interests.",
+    "Favors profound strategic calculation, convinced that equilibrium preserves magnates beside powerful kings."
+  ],
+  "Fears": [
+    "Fears King Otakar moving to confiscate Rosenberg domains once his imperial position is fully established.",
+    "Worries xenophobic Austrian noble revolts will destabilize his governorship, trapping him between two fires."
+  ],
+  "SpeechStyle": "Where the five-petaled rose blooms, the Vltava yields its path; serving the crown brings glory, but Rosenberg's everlasting realm is my true horizon. In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Vok I of Rožmberk"
+}

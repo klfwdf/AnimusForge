@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v8",
+  "Keywords": [
+    "敦煌母女与债务依附"
+  ],
+  "RagShortTexts": [
+    "莎因在母亲信上补述，因法尔洪德的债务，她与母亲成为当地人的役使者。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "莎因在母亲信上补述，因法尔洪德的债务，她与母亲成为当地人的役使者。母亲则反复请求返回丈夫或母家，求援没有立刻变成可行旅程。债务、亲属担保和移动权在这个家庭身上相互牵制，并非所有粟特女性共有一种境遇。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

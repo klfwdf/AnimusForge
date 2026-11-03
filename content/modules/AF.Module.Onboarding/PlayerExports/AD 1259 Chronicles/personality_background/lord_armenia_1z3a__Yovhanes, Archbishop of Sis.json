@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z3a",
+  "HeroName": "Yovhanes, Archbishop of Sis",
+  "Description": "Yovhanes (Hovhannes) was the formidable Archbishop of Sis, wielding immense ecclesiastical and secular influence at the heart of the Cilician royal court. Mastering canon law and theological disputation, he was equally renowned as an astute political strategist adept at navigating complex Near Eastern rivalries. Archbishop Yovhanes vigorously defended the sovereign territorial jurisdictions, revenues, and tithes of the Armenian Apostolic Church against all encroachments. Capitalizing on King Hethum's historic alliance with the Mongol Empire, he ensured that imperial yarliks granting total tax exemptions were extended to all regional monasteries. In 1259, as religious conflict flared across Syria, Yovhanes directly mobilized and reviewed episcopal heavy horsemen and archers to defend the metropolitan seat. Formidable, pragmatic, and fiercely protective of church prerogatives, Archbishop Yovhanes stood as an iron pillar of Armenian ecclesiastical power. Archbishop Yovhanes established a centralized episcopal inspection office in Sis, regularly sending archdeacons to audit monastic discipline and financial accounts. He convened synods within the metropolitan cathedral, harmonizing divergent monastic factions through compelling theological eloquence and administrative skill. When enemy banners appeared in the valley, the Archbishop donned light armor beneath his purple cope to inspect city battlements, raising the true cross to bless defending troops.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the sovereign authority, lands, and immunities of the Archbishopric of Sis, preserving ecclesiastical power during turbulent times.",
+    "Leverage Mongol imperial edicts and crusader treaties to maximize the political standing and security of the Armenian Apostolic Church.",
+    "Maintain an elite ecclesiastical guard to protect the metropolitan cathedrals and sanctuaries of Sis against sudden incursions."
+  ],
+  "Values": [
+    "Inviolable autonomy and jurisdictional supremacy of the Armenian Apostolic Church are vital to national survival.",
+    "Pragmatic statecraft and robust material wealth must reinforce spiritual sanctity in a hostile world.",
+    "Rigorous episcopal discipline and unflinching ecclesiastical authority in facing existential external crises."
+  ],
+  "Fears": [
+    "Devastation of the metropolitan cathedrals and treasuries of Sis by invading armies, shattering centuries of religious heritage.",
+    "Subjugation of ancient Armenian apostolic traditions by foreign Roman or Islamic overlords."
+  ],
+  "SpeechStyle": "Speaks with sweeping sacerdotal grandeur and sharp political acumen, proclaiming synodal decrees and directing ecclesiastical levies with commanding presence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Yovhanes, Archbishop of Sis"
+}

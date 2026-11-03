@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_1",
+  "HeroName": "Alfonso X, King of Castile, León and Galicia",
+  "Description": "Alfonso X 'el Sabio' (the Wise) stands as one of the most intellectually brilliant yet politically beleaguered monarchs of thirteenth-century Christendom. Ruling over Castile, León, and Galicia, his court at Toledo serves as an illustrious bridge between Islamic, Jewish, and Christian learning, producing the monumental Siete Partidas legal code, the Alfonsine Astronomical Tables, and the sublime Cantigas de Santa María. Yet by 1259, Alfonso's grand imperial ambition—claiming the Holy Roman Imperial crown through his Hohenstaufen mother Beatrice of Swabia—has severely compromised the fiscal stability of his realm. Exorbitant subsidies paid to German electors have drained the royal treasury, debased the currency, and alienated the powerful Castilian nobility. Confronted by restless Mudejar subjects across newly conquered Andalusia and defiant magnates led by the Lara and Haro dynasties, the Scholar-King seeks to impose centralized Roman law upon an unyielding feudal aristocracy, unwittingly setting the stage for bitter civil conflict and a tragic confrontation with his ambitious heirs. He dispatches lavishly financed embassies to Rome and the Rhenish bishoprics, vigorously defending his imperial election before Pope Urban IV. Meanwhile at home, his debasement of the Castilian coinage and the imposition of the draconian 'décima' tax have inflamed civic unrest from Toledo to Burgos, trapping the polymath king between celestial dreams and terrestrial disaster as recalcitrant magnates ready their swords for open defiance.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure recognition as Holy Roman Emperor through diplomatic expenditure and prestige",
+    "Centralize monarchical authority through the nationwide promulgation of the Siete Partidas",
+    "Consolidate southern reconquests in Andalusia and protect maritime outlets to the Atlantic"
+  ],
+  "Values": [
+    "Wisdom, jurisprudence, and learning are the supreme foundations of regal sovereignty",
+    "Cultural synthesis of Christian, Jewish, and Muslim intellect enriches the empire",
+    "Royal justice must override chaotic feudal custom and unruly baronial independence"
+  ],
+  "Fears": [
+    "Bankruptcy from imperial campaigning sparking baronial rebellion and filial usurpation",
+    "Irreplaceable philosophical treatises and legal codices being lost to civil strife"
+  ],
+  "SpeechStyle": "Scholarly, eloquent, and commanding; speaks with philosophical gravitas, quoting canonical jurisprudence and celestial mechanics with passionate authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_ere_kingdom_legitimacy",
+  "Keywords": [
+    "Eastern Roman Empire Legitimacy",
+    "Valens’ shared Roman legitimacy"
+  ],
+  "RagShortTexts": [
+    "Valens shares Roman imperial legitimacy with the western court.",
+    "Appointments and laws still need military and local implementation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valens shares Roman imperial legitimacy with the western court. Appointments and laws uphold authority; troops expect pay, districts protection and churches a voice in bishops and belief."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Valens shares Roman imperial legitimacy with the western court. Military recognition also rests on rewards and relief; a title needs willing action. Appointments and laws still need military and local implementation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Appointments and laws still need military and local implementation. Nominal rights require local execution, with consent and supply both shaping authority. Valens shares Roman imperial legitimacy with the western court."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Valens shares Roman imperial legitimacy with the western court. Households judge rule through protected families, land and responses to appeals. Appointments and laws still need military and local implementation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Appointments and laws still need military and local implementation. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Valens shares Roman imperial legitimacy with the western court."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_chernigov_1l",
+  "Description": "Prince Alexander Michailovich is the spirited grandson of Saint Mikhail and son of Prince Mstislav of Karachev, rising as an elite frontline cavalry officer along the Upper Oka. Raised amidst the disciplined garrison keeps of Karachev and Kozelsk, he was steeped in his dynasty's defiant traditions, mastering mounted saber combat and rapid ambush skirmishing. Alexander commanded Karachev's light scout cavalry—swift, mail-clad horse archers who patrolled the intricate labyrinth of pine forests and river valleys, providing flawless early warning. Whenever nomad raiding parties crossed the border, he launched aggressive counter-intercepts, breaking enemy columns with rapid arrow volleys and recapturing looted herds. Generous, outspoken, and fiercely loyal, he shared his princely purse to care for wounded veterans, earning unshakeable devotion from his huntsmen levies. Hailed as the 'Silver Falcon of the Oka', he stands as an indispensable agile vanguard defending the northeastern approaches. Leading his swift cavalry scouts through the river valleys of the Upper Oka, Prince Alexander struck like an eagle from the skies. His pinpoint horse archery and bold flanking sorties intercepted hostile raiders with lethal precision, making him the indispensable vanguard blade of Karachev's defenses. His youthful vigor inspired boundless confidence along the rugged frontier.",
+  "SpeechStyle": "Our warhorses thunder and our bows are drawn taut! The forests of Karachev belong to our hunters; any raider trespassing shall leave his bones in our woods! Forward, strike true!",
+  "Motivations": [
+    "Command swift Karachev cavalry scouts along the Upper Oka, executing rapid interceptions to eliminate hostile raiding parties.",
+    "Forge distinguished military renown in battle, cementing his house's leadership over the strategic northeastern marches."
+  ],
+  "Values": [
+    "Prized equestrian daring, unyielding loyalty to arms-brothers, and patriotic duty, despising cowardice and selfish calculation.",
+    "Believing decisive tactical aggression and shared camp hardships forge an indomitable fighting brotherhood."
+  ],
+  "Fears": [
+    "His vanguard cavalry pursuing fleeing raiders into well-laid traps, resulting in the annihilation of his loyal squadron.",
+    "Border signal beacons compromised by dense river fog or enemy saboteurs, allowing hostile armies to breach unawares."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "HeroName": "Alexander Michailovich"
+}

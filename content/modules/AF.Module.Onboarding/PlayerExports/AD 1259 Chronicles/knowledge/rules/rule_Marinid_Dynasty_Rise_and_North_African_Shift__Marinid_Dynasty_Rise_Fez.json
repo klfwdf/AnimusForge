@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Marinid_Dynasty_Rise_and_North_African_Shift",
+  "Keywords": [
+    "Marinid and Almohad competition"
+  ],
+  "RagShortTexts": [
+    "The Almohads still held Marrakesh amid Marinid expansion and contested local support."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "As Marinid power expanded in North Africa, the Almohads still held Marrakesh. Pastoral alliances, urban revenue and roads all mattered, requiring cooperation from local leaders and residents. Merchants watched dues and safety, while towns weighed garrisons, provisions and political recognition."
+    }
+  ],
+  "TextMappings": []
+}

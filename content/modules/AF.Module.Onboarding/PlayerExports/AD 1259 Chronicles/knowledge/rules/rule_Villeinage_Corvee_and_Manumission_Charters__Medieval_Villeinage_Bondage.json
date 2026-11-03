@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Villeinage_Corvee_and_Manumission_Charters",
+  "Keywords": [
+    "Medieval Villeinage Bondage",
+    "Manorial Demesne Corvee Forced Labor",
+    "Heriot Death Tax and Merchet Marriage Fine",
+    "Urban Liberty One Year and a Day"
+  ],
+  "RagShortTexts": [
+    "Villein obligations and opportunities for manumission depend on particular rights and courts.",
+    "A year-and-a-day town custom is not a universal automatic release from bondage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Medieval serfs, called villeins in English custom, were bound to the soil and owed their lords a set of unfree dues. They had to work on the lord's demesne as corvée labor, and they paid customary fines: merchet on marriage, and heriot, the best beast of the household, on death. Yet the growth of chartered boroughs produced a legal principle that gave some serfs a way out. A serf who escaped to a town and lived there unclaimed for a year and a day could win permanent civic freedom, which was summed up in the maxim that city air makes a man free. Lords watched the towns closely, because each runaway was a loss of labor and dues."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "As markets grew, lords began to commute labor services into money rents, and many accepted a manumission deed in return for cash. The coins let the lord buy arms, pay retainers, or fund a campaign, while the freed peasant kept his holding under a fixed rent. A lord who held out for old services risked losing tenants to the nearest borough."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A runaway considering a town asks whether its charter protects newcomers and whether a lord can still reclaim a tenant. The saying about a year and a day expresses a custom found in some places, not a universal release from bondage. Work, lodging and recognition by the town matter as much as reaching the gate with a bundle of clothes."
+    }
+  ],
+  "TextMappings": []
+}

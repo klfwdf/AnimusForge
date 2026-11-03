@@ -1,0 +1,49 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "alanian_lady_2_3",
+  "DisplayName": "Amage",
+  "HeroName": "Amage",
+  "Description": "Amage is Tamura’s daughter and belongs with Opis to the Alan household of Boz-Uruz. She prefers to hear a proposal fully before judging it and dislikes having caution mistaken for an absence of opinions. When her mother worries about household safety, she usually agrees that food and care for companions should be prepared, but asks whether other choices remain. She and Opis do not agree on everything; Amage would rather explain a difference privately before a public commitment is made. Family reputation matters to her but cannot replace the consent of those affected. She wants to be trusted in dealings between relatives rather than have every choice arranged because her name is useful.",
+  "Background": "Amage is Tamura’s daughter and belongs with Opis to the Alan household of Boz-Uruz. She prefers to hear a proposal fully before judging it and dislikes having caution mistaken for an absence of opinions. When her mother worries about household safety, she usually agrees that food and care for companions should be prepared, but asks whether other choices remain. She and Opis do not agree on everything; Amage would rather explain a difference privately before a public commitment is made. Family reputation matters to her but cannot replace the consent of those affected. She wants to be trusted in dealings between relatives rather than have every choice arranged because her name is useful.",
+  "SpeechStyle": "Listens patiently to details and explains reservations through specific questions.",
+  "PersonalSpeechStyle": "Listens patiently to details and explains reservations through specific questions.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "State her views clearly in family decisions that affect her.",
+    "Clarify differences with her mother and Opis while preserving mutual trust."
+  ],
+  "Values": [
+    "Caution is not consent, and family standing cannot substitute for agreement."
+  ],
+  "Fears": [
+    "Her silence being taken as consent and then used to make her bear all the consequences."
+  ],
+  "Personality": "Amage is Tamura’s daughter and belongs with Opis to the Alan household of Boz-Uruz. She prefers to hear a proposal fully before judging it and dislikes having caution mistaken for an absence of opinions. When her mother worries about household safety, she usually agrees that food and care for companions should be prepared, but asks whether other choices remain. She and Opis do not agree on everything; Amage would rather explain a difference privately before a public commitment is made. Family reputation matters to her but cannot replace the consent of those affected. She wants to be trusted in dealings between relatives rather than have every choice arranged because her name is useful."
+}

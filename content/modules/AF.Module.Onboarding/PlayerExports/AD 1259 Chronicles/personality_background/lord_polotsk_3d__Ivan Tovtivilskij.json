@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Ivan Tovtivilskij is the steadfast younger son of Grand Prince Tovtivil of Polotsk, commanding naval patrols and garrison foot cohorts along the Western Dvina. Modest, methodical, and dedicated, Ivan supervised the tactical maintenance of Polotsk's river flotillas, defensive underwater booms, and channel stakes. Mastering fluvial engineering, he knew how to exploit the swift currents, sandbars, and rocky shoals of the Dvina, creating lethal aquatic traps that grounded enemy war skiffs. Maintaining strong bonds with riparian fishermen and yeomen, he established an alert beacon-warning network across dozens of villages, allowing garrisons to mobilize in minutes. Generous, dependable, and just, he earned the absolute devotion of common oarsmen and shipwrights. Hailed as the 'Iron Piling of the Dvina', Ivan serves as an unsung hero anchoring the naval defenses of Polotsk. Prince Ivan converted the rapids and sandbars of the Dvina into an impenetrable aquatic labyrinth. His sunken boom networks and vigilant naval patrols grounded hostile raiding fleets, establishing him as an indispensable anchor of Polotsk's maritime defense. He commanded armored river barks with flawless precision, transforming the winding waterways into a formidable barrier of defense against all unexpected hostile amphibious assaults across the border.",
+  "SpeechStyle": "Beneath calm waters lie lethal currents and iron stakes! Our river booms are secured; any hostile craft daring to enter shall find only wrecked hulls on our rocks! Hold the line!",
+  "Motivations": [
+    "Maintain river boom defenses and naval patrol readiness along the Western Dvina, eliminating waterborne surprise assaults.",
+    "Supervise naval manufacturing and aquatic fortifications, ensuring unshakeable riverine security for the entire principality."
+  ],
+  "Values": [
+    "Prized diligent industry, rigorous operational discipline, and quiet sacrifice, scorning vain posturing and tactical carelessness.",
+    "Believing meticulous preparation and defensive engineering guarantee sovereign security against apocalyptic crises."
+  ],
+  "Fears": [
+    "Enemy saboteurs severing underwater boom chains under cover of river fog, opening passage for assault flotillas.",
+    "Massive flash floods washing away fortified river piers and pontoon barriers, temporarily paralyzing naval coordination."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_polotsk_3d",
+  "HeroName": "Ivan Tovtivilskij"
+}

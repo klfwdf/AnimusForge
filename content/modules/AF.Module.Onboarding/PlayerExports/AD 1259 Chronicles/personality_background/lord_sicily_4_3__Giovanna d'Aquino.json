@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_4_3",
+  "HeroName": "Giovanna d'Aquino",
+  "Description": "Lady Giovanna d'Aquino is the tender young daughter of Count Tommaso II and Countess Margaret, cradled within the ancient stone fortresses of Acerra. Though merely a child in 1259, her joyful innocence and gentle disposition bring unmeasured warmth to her parents and household attendants. As a high-born scion of the legendary Aquino house, her future represents invaluable dynastic capital for cementing noble federations across southern Italy. Shielded from the ominous storm clouds of war, little Giovanna represents the pure hope of her lineage. Sheltered within the massive stone halls of Acerra, little Giovanna grows surrounded by loving attendants and holy nuns, her innocent laughter and gentle temperament bringing sweet tranquility to her war-weary noble family. In the sunlit halls of the great stone citadel, gentle Giovanna listens to moral romances of ancestral saints, her tender heart absorbing the sacred virtues and chivalric duties of her illustrious lineage. Flourishing in innocent grace and serene familial affection, little Giovanna shines as a precious pearl of the ancient Aquino lineage, surrounded by loving guardians and holy blessings. Her delicate smiles, sweet innocence, and gentle demeanor illuminate the great stone halls with perpetual warmth, joy, and peace. Her sweet childish laughter, pure prayers, and radiant smiles illuminate the ancient fortress halls with perpetual warmth, joy, and peace.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Grow happily in the loving protection of her family, listening to sacred tales of ancestral knights.",
+    "Play safely alongside her brother in the fortress gardens, sheltered from earthly conflicts."
+  ],
+  "Values": [
+    "Filial devotion, innocence, and profound trust in the loving protection of her parents.",
+    "Gentle Christian piety, offering simple daily prayers for her father's safety in battle."
+  ],
+  "Fears": [
+    "Loud alarms, clashing steel, and sudden chaos disrupting the peaceful serenity of home.",
+    "Being separated from her mother or witnessing the grim wounded returning from the field."
+  ],
+  "SpeechStyle": "Speaks with innocent childlike sweetness, gentle wonder, and the natural courtesy of high birth. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_visby_maritime_law_dating_ddfdbbc7",
+  "Keywords": [
+    "Visby shipping and maritime loss",
+    "Maritime losses and Visby shipowners"
+  ],
+  "RagShortTexts": [
+    "Visby shipowners and merchants agreed freight, handovers and voyage responsibilities.",
+    "Loss claims needed testimony and accounts, with extra lodging and delay abroad."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Visby merchants and shipowners agreed freight, handovers and responsibility during a voyage. Storm, grounding or damaged cargo brought disputes over crews' reports, delivered quantities and prior terms, potentially harming relationships between partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Visby merchants and shipowners agreed freight, handovers and responsibility during a voyage. Storm, grounding or damaged cargo brought disputes over crews' reports, delivered quantities and prior terms, potentially harming relationships between partners. Crews and guards maintained vessel and cooperation, with fighting constrained by space. Saving goods and people competed for capacity, requiring explanations of losses afterward."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Visby merchants and shipowners agreed freight, handovers and responsibility during a voyage. Storm, grounding or damaged cargo brought disputes over crews' reports, delivered quantities and prior terms, potentially harming relationships between partners. Merchants sharing risk identified vessel, goods and route decisions across ports. Delay affected later payments, and claims needed an accessible authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Visby merchants and shipowners agreed freight, handovers and responsibility during a voyage. Storm, grounding or damaged cargo brought disputes over crews' reports, delivered quantities and prior terms, potentially harming relationships between partners. Seafarers' families awaited income while preparation spent stores first. Loss and delay affected household food, debts and the next voyage as well as merchant accounts."
+    }
+  ],
+  "TextMappings": []
+}

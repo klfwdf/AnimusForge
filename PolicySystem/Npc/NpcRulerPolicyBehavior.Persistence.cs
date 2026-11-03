@@ -232,7 +232,7 @@ public sealed partial class NpcRulerPolicyBehavior
 			? FirstNonEmpty(policy?.IssuerKingdomName, playerKingdom?.Name?.ToString(), issuerKingdomId)
 			: FirstNonEmpty(policy?.KingdomName, targetKingdomName, issuerKingdomId);
 		string publisherLabel = isPlayerVassalPolicy
-			? string.IsNullOrWhiteSpace(issuerKingdomName) ? PolicyNpcCompatibilityTexts.Get("Npc_Legacy_4d0df8e2a78c9427") : PolicyNpcCompatibilityTexts.Get("Npc_Legacy_89d05cdf620a7818") + issuerKingdomName + "）"
+			? string.IsNullOrWhiteSpace(issuerKingdomName) ? PolicyNpcCompatibilityTexts.Get("Npc_Legacy_4d0df8e2a78c9427") : PolicyNpcCompatibilityTexts.Get("Npc_Legacy_89d05cdf620a7818") + issuerKingdomName + PolicyCompatibilityTexts.CloseParen
 			: FirstNonEmpty(issuerKingdomName, PolicyNpcCompatibilityTexts.Get("Npc_Legacy_c88b0bdd8b263a57"));
 		return new UnifiedPolicyWeeklyAttribution
 		{
@@ -272,9 +272,9 @@ public sealed partial class NpcRulerPolicyBehavior
 				+ PolicyNpcCompatibilityTexts.Get("Npc_Legacy_d3d3d7a79df86965")
 			: PolicyNpcCompatibilityTexts.Get("Npc_Legacy_5cc8392f49af3534") + Limit(FirstNonEmpty(attribution?.IssuerKingdomName, policy?.KingdomName, policy?.KingdomId), 50)
 				+ PolicyNpcCompatibilityTexts.Get("Npc_Legacy_c26893bf9ff6adb9") + Limit(policy?.RulerName, 50);
-		return Limit(prefix + PolicyNpcCompatibilityTexts.Get("Npc_Legacy_327f28092a13c419") + policyName + "》"
+		return Limit(prefix + PolicyNpcCompatibilityTexts.Get("Npc_Legacy_327f28092a13c419") + policyName + PolicyCompatibilityTexts.CloseTitleQuote
 			+ PolicyNpcCompatibilityTexts.Get("Npc_Legacy_90bebf0cffdad40e") + Limit(policy?.PolicyDigest, 140) + PolicyNpcCompatibilityTexts.Get("Npc_Legacy_2dd7425af34e6823") + Limit(policy?.FeedbackDigest, 70)
-			+ PolicyNpcCompatibilityTexts.Get("Npc_Legacy_cd1cdfee0f18bfcb") + Limit(targetName, 50) + PolicyNpcCompatibilityTexts.Get("Npc_Legacy_661657fda8932b61") + Limit(effectSummary, 120) + "。", 420);
+			+ PolicyNpcCompatibilityTexts.Get("Npc_Legacy_cd1cdfee0f18bfcb") + Limit(targetName, 50) + PolicyNpcCompatibilityTexts.Get("Npc_Legacy_661657fda8932b61") + Limit(effectSummary, 120) + PolicyCompatibilityTexts.Period, 420);
 	}
 
 	private static bool TryDeserializePolicyRecords(string json, out List<NpcRulerPolicyRecord> records, out Exception exception)
@@ -1442,7 +1442,7 @@ public sealed partial class NpcRulerPolicyBehavior
 		{
 			return "";
 		}
-		return Limit(string.Join("；", recent.Select(x => x.GameDate + "《" + x.PolicyName + "》" + FirstNonEmpty(x.ImpactSummary, x.PolicyContent))), 500);
+		return Limit(string.Join(PolicyCompatibilityTexts.Semicolon, recent.Select(x => x.GameDate + PolicyCompatibilityTexts.WordGap + PolicyCompatibilityTexts.OpenTitleQuote + x.PolicyName + PolicyCompatibilityTexts.CloseTitleQuote + PolicyCompatibilityTexts.WordGap + FirstNonEmpty(x.ImpactSummary, x.PolicyContent))), 500);
 	}
 
 	private static string BuildDiplomacyNeighborSummary(Kingdom kingdom)

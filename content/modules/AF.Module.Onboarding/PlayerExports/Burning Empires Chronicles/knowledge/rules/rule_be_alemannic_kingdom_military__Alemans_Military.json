@@ -1,0 +1,59 @@
+{
+  "Id": "be_alemannic_kingdom_military",
+  "Keywords": [
+    "Alemans Military",
+    "Rhine crossing watches"
+  ],
+  "RagShortTexts": [
+    "Woods and Rhine crossings support warning and ambush.",
+    "Food, farm work and return dates limit service."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Woods and Rhine crossings support warnings and ambush. Assembly removes farm labor; how long followers remain depends on food and return dates as well as commands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Woods and Rhine crossings support warning and ambush. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Food, farm work and return dates limit service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Food, farm work and return dates limit service. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Woods and Rhine crossings support warning and ambush."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Woods and Rhine crossings support warning and ambush. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Food, farm work and return dates limit service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Food, farm work and return dates limit service. Repair, carrying and care also use people, while daily supply continues after troops pass. Woods and Rhine crossings support warning and ambush."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

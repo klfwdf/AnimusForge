@@ -9,17 +9,17 @@ namespace AnimusForge;
 // Package selection supplies CN or EN at the same path, independently of UI language.
 internal static class EconomyPromptTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(
-        () => JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("EconomyPromptTexts.json"), Encoding.UTF8)));
+    private static readonly PromptLanguageFile<Dictionary<string, string>> Values = new PromptLanguageFile<Dictionary<string, string>>("EconomyPromptTexts.json",
+        path => JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
+            path, Encoding.UTF8)));
 
     internal static string Get(string id) => Values.Value[id];
 
-    private static readonly Lazy<Dictionary<string, string>> SourceProjection = new Lazy<Dictionary<string, string>>(() =>
+    private static readonly PromptLanguageValue<Dictionary<string, string>> SourceProjection = new PromptLanguageValue<Dictionary<string, string>>(() =>
     {
         var result = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var entry in Values.Value)
-            if (EconomySourceTexts.TryGet(entry.Key, out string source))
+            if (EconomySourceTexts.TryGetSource(entry.Key, out string source))
                 result[source] = entry.Value;
         return result;
     });

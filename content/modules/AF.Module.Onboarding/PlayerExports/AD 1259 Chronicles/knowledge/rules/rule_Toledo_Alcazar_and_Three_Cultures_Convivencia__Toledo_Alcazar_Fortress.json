@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Toledo_Alcazar_and_Three_Cultures_Convivencia",
+  "Keywords": [
+    "Toledo Alcazar Fortress",
+    "Toledo Translation School",
+    "Tagus River Chasm Enceinte",
+    "Three Cultures Convivencia"
+  ],
+  "RagShortTexts": [
+    "Toledo's learned work draws on Arabic texts and readers able to move between languages.",
+    "Translators depend on patrons, manuscripts and collaborators with different skills."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Toledo stands on granite bluffs enclosed on three sides by the deep gorge of the Tagus, and the Alcázar crowns the highest point of the city. Under Alfonso X, the Translation School gathered Christian scholars, Jewish translators, and Muslim sages who rendered Arabic science, medicine, and astronomy, along with Greek philosophy transmitted through Arabic, into Castilian and Latin. The Alcántara Bridge, a Roman structure spanning the gorge, carried traffic into the city, and the surrounding slopes held mosques, churches, and synagogues that had long shared the same streets. The city's position made it a gateway between the Christian north and the Muslim south, and its scholars carried texts that shaped European learning for generations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Toledo's learned work draws on Arabic texts and readers able to move between languages. Translators depend on patrons, manuscripts and collaborators with different skills. That cooperation does not erase legal inequality or religious conflict, and not every author being translated lives in the city. A particular commission is stronger evidence than a tale of universal harmony."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Crossing the arched Alcántara Bridge, a soldier looks up at granite crags looming over the gorge. Armourers' forges line the hill terraces, and the hammer clatter fills the gorge as they turn out Toledo blades. Keep your boots dry on the wet stone, check the river crossing for loose planks, and learn which gate the watch will open before dusk."
+    }
+  ],
+  "TextMappings": []
+}

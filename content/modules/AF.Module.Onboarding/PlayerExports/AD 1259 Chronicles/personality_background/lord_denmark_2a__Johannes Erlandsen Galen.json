@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2a",
+  "HeroName": "Johannes Erlandsen Galen",
+  "Description": "Johannes Erlandsen Galen, senior magnate of Scania and patriarch of the Galen cadet branch of the mighty Hvide clan, was the eldest brother of Archbishop Jakob Erlandsen. Controlling sprawling manorial estates and waterborne castles across Scania and eastern Zealand, Johannes reigned as one of the wealthiest feudal lords in Scandinavia. When his archbishop brother clashed with King Christoffer I over church taxation, Johannes mobilized his vast private army and municipal courts against the crown. He blockaded maritime straits, strangling royal revenues and logistical communications between Copenhagen and Scania. Following the archbishop's arrest in 1259, Johannes joined forces with Prince Jaromar of Rügen to storm Zealand, crushing royalist garrisons. Shrewd, wealthy, and diplomatically formidable, Johannes served as the unyielding secular iron shield behind the Danish Catholic Church. Anchored within his moated stone fortress of Faurholm, Johannes transformed hundreds of Scanian freeholders into heavily armored household retinues that routinely expelled royal collectors and bailiffs. Recognizing the strategic wealth of Baltic commerce, he cultivated commercial alliances with Hanseatic merchants from Lübeck, exchanging Scanian grain privileges for advanced cross-handled crossbows and armor plates. Whenever King Christoffer attempted to impose arbitrary war levies, Johannes convened the provincial ting assembly, deploying customary feudal charters to shield his vassals, standing as the unyielding military spearhead of the Galen house.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the ancestral tax exemptions and judicial monopolies of the Galen house in Scania against royal encroachments.",
+    "Deploy armed retinues to enforce the ecclesiastical privileges of his brother Archbishop Jakob against royal interference."
+  ],
+  "Values": [
+    "Regards aristocratic autonomy and ecclesiastical immunity as superior to royal decrees, upholding customary regional liberties.",
+    "Champions calculating strategic leverage and clan solidarity, believing heavy lancers and silver compel kings to yield."
+  ],
+  "Fears": [
+    "Dreads royalist armies crossing the Sound to wage scorched-earth campaigns across Scania, burning his ancestral estates."
+  ],
+  "SpeechStyle": "Speaks with unhurried aristocratic composure and chilling political calculation, his commanding voice that of a kingmaker.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

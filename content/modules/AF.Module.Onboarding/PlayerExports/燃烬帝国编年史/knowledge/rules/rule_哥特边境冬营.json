@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v9",
+  "Keywords": [
+    "哥特边境冬营"
+  ],
+  "RagShortTexts": [
+    "瓦伦斯在作战季后退到马尔恰诺波利斯冬营。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦伦斯在作战季后退到马尔恰诺波利斯冬营。部队集中要依靠住处、粮食与重新准备，冷季并非只在地图上暂停。对岸居民也须承受此前作战和贸易中断留下的负担。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

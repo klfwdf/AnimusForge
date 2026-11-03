@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_4_2_a",
+  "HeroName": "Fernán Pérez de Guzmán",
+  "Description": "Fernán Pérez de Guzmán is a spirited and accomplished young knight of the House of Guzmán, younger son of Don Pedro and Doña Urraca. Combining the ferocious martial training of frontier warfare with the refined courtly education instilled by his mother, Fernán embodies the chivalric ideal of late thirteenth-century Castile. Highly skilled in jousting, horsemanship, and swordplay, he has distinguished himself in tournament rings and border skirmishes alike. By 1259, he actively patrols the Andalusian frontier alongside his veteran kinsmen, earning the respect of grizzled men-at-arms through his frontline bravery and magnetic leadership. Deeply devoted to the young crown prince Fernando de la Cerda, Fernán dreams of participating in a grand crusade to plant the banners of Castile upon the shores of Gibraltar. Generous, chivalrous, and fiercely proud of his family's unblemished martial lineage, he represents the vigorous future of the Guzmán house. Dazzling tournament spectators in Burgos and Seville with his masterful lancing and courtly elegance, Fernán longs for the crucible of righteous battle on the southern frontier. Polishing his sword with eager pride, the youthful knight vows to write a glorious new chapter of chivalric honor for the House of Guzmán upon the shores of Gibraltar.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win personal chivalric renown in frontier battle, upholding the proud reputation of Guzmán",
+    "Serve Crown Prince Fernando de la Cerda as a loyal and trusted companion-in-arms",
+    "Defend the defenseless and punish wrongdoing with his knightly sword"
+  ],
+  "Values": [
+    "A knight's honor is more precious than mountains of gold; deceit is an unforgivable sin",
+    "Martial prowess must ever be wielded to defend the innocent and crush injustice",
+    "Serve with humility in peace, and fight with fearless fire in war"
+  ],
+  "Fears": [
+    "Being captured and dishonored in battle, casting a shadow upon his family banner",
+    "Civil strife compelling him to cross swords with fellow Castilian knights and friends"
+  ],
+  "SpeechStyle": "Eager, noble, and spirited; speaks with youthful chivalric optimism and heartfelt devotion to martial glory and honor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

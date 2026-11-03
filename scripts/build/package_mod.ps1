@@ -1,12 +1,15 @@
 param(
     [string]$ModuleDir = "",
     [string]$BannerlordRoot = "",
-    # Default ZIP output stays beside the one-click .bat entry points. The folder name is built from
+    # Default extreme 7z output stays beside the one-click .bat entry points. The folder name is built from
     # code points so this BOM-less script stays ASCII-only under Windows PowerShell 5.1 (ANSI decoding).
     [string]$OutputDir = (Join-Path (Join-Path (Join-Path $PSScriptRoot "..\..") (-join ([char[]](0x4E00, 0x952E, 0x7F16, 0x8BD1, 0x8986, 0x76D6, 0x63A8, 0x9001)))) "packages"),
     [string]$SourceModuleDir = "",
     [string]$Version,
     [string]$PackageLabel,
+    [ValidateSet("7z", "zip")]
+    [string]$ArchiveFormat = "7z",
+    [string]$OnnxModelDir = "",
     [switch]$UseFirstMatch,
     [switch]$Build,
     [ValidateSet("Debug", "Release")]
@@ -25,8 +28,14 @@ $ErrorActionPreference = "Stop"
 if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
     throw "Canonical CN/EN package filenames do not accept -PackageLabel. Remove -PackageLabel."
 }
-if ($IncludeOnnx -or $IncludeReranker) {
-    throw "Unified client packages never include the ONNX model folder. Remove -IncludeOnnx/-IncludeReranker."
+if ($IncludeReranker) {
+    throw "The retired reranker is not supported. Use -OnnxModelDir to include a selected bekko payload."
+}
+if ($IncludeOnnx -and [string]::IsNullOrWhiteSpace($OnnxModelDir)) {
+    throw "Select the exact bekko directory with -OnnxModelDir when including ONNX."
+}
+if ($ExcludeOnnx -and -not [string]::IsNullOrWhiteSpace($OnnxModelDir)) {
+    throw "-ExcludeOnnx cannot be combined with -OnnxModelDir."
 }
 if ($ExcludeCustomPrompts) {
     throw "AF2 packages require the locked Prompt defaults; -ExcludeCustomPrompts is no longer supported."
@@ -40,6 +49,7 @@ if (-not (Test-Path -LiteralPath $contentLayoutHelper -PathType Leaf)) {
 }
 . $contentLayoutHelper
 . (Join-Path $PSScriptRoot "package_localization.ps1")
+. (Join-Path $PSScriptRoot "package_sevenzip.ps1")
 $VersionPattern = "^(?<prefix>v?)(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?:\.(?<micro>\d))?$"
 $ModuleName = "AnimusForge"
 $BootstrapAssemblyName = "AnimusForge.Bootstrap"
@@ -613,6 +623,9 @@ function Assert-ZipLayout {
     $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
     try {
         $names = @($archive.Entries | ForEach-Object { $_.FullName })
+        if ($names | Where-Object { Test-AnimusForgePlayerPackageOmission -RelativePath ($_ -replace '^AnimusForge/', '') } | Select-Object -First 1) {
+            throw "Player packages must not contain PDB debug symbols or the Calradia Chronicles Lite worldbook; retain them in source/local Stage."
+        }
         $outsideRoot = $names | Where-Object { -not $_.StartsWith("AnimusForge/", [System.StringComparison]::Ordinal) }
         if ($outsideRoot) {
             throw "ZIP contains an entry outside the AnimusForge root: $($outsideRoot[0])"
@@ -620,25 +633,19 @@ function Assert-ZipLayout {
 
         $subModuleEntryName = "AnimusForge/SubModule.xml"
         $bootstrapDllEntryName = "AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll"
-        $bootstrapPdbEntryName = "AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.pdb"
         $bootstrapMarkerEntryName = "AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.build.json"
         $dll13EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll"
-        $pdb13EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.pdb"
         $marker13EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.build.json"
         $dll14EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll"
-        $pdb14EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.pdb"
         $marker14EntryName = "AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.build.json"
         $shippingPrefix = "AnimusForge/bin/Win64_Shipping_Client/"
         $requiredEntries = @(
             $subModuleEntryName,
             $bootstrapDllEntryName,
-            $bootstrapPdbEntryName,
             $bootstrapMarkerEntryName,
             $dll13EntryName,
-            $pdb13EntryName,
             $marker13EntryName,
             $dll14EntryName,
-            $pdb14EntryName,
             $marker14EntryName
         )
         foreach ($required in $requiredEntries) {
@@ -650,10 +657,8 @@ function Assert-ZipLayout {
 
         $allowedVersionEntries = @(
             $dll13EntryName,
-            $pdb13EntryName,
             $marker13EntryName,
             $dll14EntryName,
-            $pdb14EntryName,
             $marker14EntryName
         )
         $versionPrefix = "AnimusForge/bin/Win64_Shipping_Client/versions/"
@@ -665,7 +670,6 @@ function Assert-ZipLayout {
         }
 
         $allowedShippingRootEntries = @($AllowedPackageRootDllNames | ForEach-Object { $shippingPrefix + $_ }) + @(
-            $bootstrapPdbEntryName,
             $bootstrapMarkerEntryName
         )
         $unexpectedShippingEntry = $names | Where-Object {
@@ -748,7 +752,10 @@ function Assert-ZipMatchesCleanStage {
     )
 
     $stageFull = (Get-FullPathSafe -Path $StageModuleDir).TrimEnd('\', '/')
-    $stageFiles = @(Get-ChildItem -LiteralPath $stageFull -Recurse -File -Force)
+    $stageFiles = @(Get-ChildItem -LiteralPath $stageFull -Recurse -File -Force | Where-Object {
+        $relative = $_.FullName.Substring($stageFull.Length).TrimStart('\', '/') -replace '\\', '/'
+        -not (Test-AnimusForgePlayerPackageOmission -RelativePath $relative)
+    })
     $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
     try {
         if ($archive.Entries.Count -ne $stageFiles.Count) {
@@ -806,16 +813,19 @@ function Write-ZipFromModule {
     if ($null -ne $parts.Micro) { $versionForName += ".$($parts.Micro)" }
     $timestamp = Get-Date -Format "MMdd_HHmm"
     $baseName = "AnimusForge_$versionForName"
+    $archiveExtension = if ($ArchiveFormat -eq '7z') { '7z' } else { 'zip' }
+    if ($archiveExtension -eq '7z') { $null = Resolve-AnimusForgeSevenZip }
     $zipPaths = @{}
     $suffix = 1
     $releaseStamp = $timestamp
-    while ((Test-Path -LiteralPath (Join-Path $outputFull ("{0}_CN_{1}.zip" -f $baseName, $releaseStamp))) -or
-        (Test-Path -LiteralPath (Join-Path $outputFull ("{0}_EN_{1}.zip" -f $baseName, $releaseStamp)))) {
+    while ((Test-Path -LiteralPath (Join-Path $outputFull ("{0}_CN_{1}.{2}" -f $baseName, $releaseStamp, $archiveExtension))) -or
+        (Test-Path -LiteralPath (Join-Path $outputFull ("{0}_EN_{1}.{2}" -f $baseName, $releaseStamp, $archiveExtension)))) {
         $releaseStamp = "{0}_{1}" -f $timestamp, $suffix
         $suffix += 1
     }
     $releaseBaseName = "{0}_{1}" -f $baseName, $releaseStamp
     $temporaryPaths = @{}
+    $encodedPaths = @{}
     $published = [System.Collections.Generic.List[string]]::new()
     try {
         Assert-AnimusForgeEnglishRuntimeSource -ProjectRoot $projectRoot
@@ -824,15 +834,32 @@ function Write-ZipFromModule {
             Assert-AnimusForgeEnglishRuntimeDll -DllPath (Join-Path $moduleFull ('bin/Win64_Shipping_Client/' + $relative)) -SharedTextResourceHashes $sharedTextResourceHashes
         }
         $projections = @{}
+        $selectedOnnx = @()
+        if (-not [string]::IsNullOrWhiteSpace($OnnxModelDir)) {
+            $modelDirectory = Get-FullPathSafe -Path $OnnxModelDir
+            Assert-AnimusForgeNoReparsePoint -Path $modelDirectory -Label 'Selected bekko directory'
+            foreach ($name in @('model.onnx', 'tokenizer.json', 'config.json')) {
+                $source = Join-Path $modelDirectory $name
+                Assert-AnimusForgeNoReparsePoint -Path $source -Label 'Selected bekko file'
+                if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Selected bekko file is missing: $source" }
+                $selectedOnnx += [pscustomobject]@{ Target = ('ONNX/bekko/' + $name); SourcePath = $source; Bytes = $null; Hash = (Get-FileSha256 -LiteralPath $source) }
+            }
+        }
         foreach ($language in @('CN', 'EN')) {
-            $zipPaths[$language] = Join-Path $outputFull ("{0}_{1}_{2}.zip" -f $baseName, $language, $releaseStamp)
+            $zipPaths[$language] = Join-Path $outputFull ("{0}_{1}_{2}.{3}" -f $baseName, $language, $releaseStamp, $archiveExtension)
             $temporaryPaths[$language] = Join-Path $outputFull (".{0}.{1}.{2}.tmp" -f $releaseBaseName, $language, [Guid]::NewGuid().ToString('N'))
-            $projections[$language] = @(Get-AnimusForgePackageProjection -ProjectRoot $projectRoot -StageModuleDir $moduleFull -Language $language -PackageVersion $PackageVersion)
+            $projections[$language] = @(Get-AnimusForgePackageProjection -ProjectRoot $projectRoot -StageModuleDir $moduleFull -Language $language -PackageVersion $PackageVersion) + @($selectedOnnx)
         }
         foreach ($language in @('CN', 'EN')) {
             Write-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
-            Assert-ZipLayout -ZipPath $temporaryPaths[$language] -ExpectedVersion $PackageVersion -OnnxMustBeAbsent:$true -CustomPromptsMustBeAbsent:$false
+            Assert-ZipLayout -ZipPath $temporaryPaths[$language] -ExpectedVersion $PackageVersion -OnnxMustBeAbsent:($selectedOnnx.Count -eq 0) -CustomPromptsMustBeAbsent:$false
             Assert-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
+        }
+        if ($archiveExtension -eq '7z') {
+            foreach ($language in @('CN', 'EN')) {
+                $encodedPaths[$language] = $temporaryPaths[$language] + '.7z'
+                Write-AnimusForgeProjectedSevenZip -VerifiedZipPath $temporaryPaths[$language] -ArchivePath $encodedPaths[$language] -Projection $projections[$language]
+            }
         }
         Assert-AnimusForgeCleanStage -ProjectRoot $projectRoot -StageModuleDir $moduleFull -RequireCurrentArtifacts
         foreach ($language in @('CN', 'EN')) {
@@ -840,22 +867,27 @@ function Write-ZipFromModule {
             Assert-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
         }
         foreach ($language in @('CN', 'EN')) {
-            [System.IO.File]::Move($temporaryPaths[$language], $zipPaths[$language])
+            $publishSource = if ($archiveExtension -eq '7z') { $encodedPaths[$language] } else { $temporaryPaths[$language] }
+            [System.IO.File]::Move($publishSource, $zipPaths[$language])
             $published.Add($zipPaths[$language])
         }
-        Write-Host "Package Mode : CN and EN ZIPs, each with both supported game versions"
+        if ($archiveExtension -eq '7z') {
+            foreach ($path in $temporaryPaths.Values) { Remove-Item -LiteralPath $path -Force }
+        }
+        Write-Host "Package Mode : CN and EN $archiveExtension archives, each with both supported game versions"
+        if ($archiveExtension -eq '7z') { Write-Host 'Compression  : LZMA, 512MiB dictionary, fb273, bt4, mc1000000, lc4/lp2/pb0, solid, 2 threads' }
         Write-Host "Module Path  : $moduleFull"
         Write-Host "Module Detect: $(if ($AutoDetected) { 'Auto' } else { 'Manual' })"
         Write-Host "Output CN    : $($zipPaths['CN'])"
         Write-Host "Output EN    : $($zipPaths['EN'])"
         Write-Host "Input Rule   : verified clean Stage plus locked language projection"
-        Write-Host "ONNX ZIP     : Excluded by unified client package policy"
+        Write-Host "ONNX payload : $(if ($selectedOnnx.Count -gt 0) { $modelDirectory } else { 'Excluded; use -OnnxModelDir to select bekko explicitly' })"
         return @($zipPaths['CN'], $zipPaths['EN'])
     }
     catch {
         $zipFailure = $_
         $cleanupFailures = New-Object System.Collections.Generic.List[string]
-        foreach ($candidate in @($temporaryPaths.Values) + @($published)) {
+        foreach ($candidate in @($temporaryPaths.Values) + @($encodedPaths.Values) + @($published)) {
             if (Test-Path -LiteralPath $candidate -PathType Leaf) {
                 try { Remove-Item -LiteralPath $candidate -Force }
                 catch { $cleanupFailures.Add("${candidate}: $($_.Exception.Message)") }

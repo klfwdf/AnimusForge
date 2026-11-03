@@ -1,0 +1,40 @@
+{
+  "Id": "rule_Paris_Cite_Island_and_Sorbonne_Scholars",
+  "Keywords": [
+    "Paris Ile de la Cite",
+    "Seine River Latin Quarter",
+    "Robert de Sorbon College",
+    "Capetian Heart of France"
+  ],
+  "RagShortTexts": [
+    "Paris links royal institutions, river commerce and a large scholarly population.",
+    "Tolls, housing, book production and markets connect urban wealth with daily household costs."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Encircled by the Seine, the Ile de la Cite stood at the heart of Capetian royal power. Notre-Dame rose there beside the royal palace, and the jewel-box Sainte-Chapelle, consecrated in 1248, housed the relics that Louis IX had brought to Paris. On the Left Bank, the College de Sorbonne, founded in 1257 by Robert de Sorbon, drew masters such as Thomas Aquinas. Together these institutions made the Latin Quarter the intellectual capital of Western Europe, and the crown's protection of the schools gave masters a status few other cities could match, which kept students coming from across the kingdom and beyond."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Students from four nations (French, Picard, Norman, and English) sit on straw-covered floors debating Aristotelian dialectic. Vellum parchment dressers and illuminated book copyists drive a booming trade, because each lecture text must be copied slowly by hand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A farmer bringing butter or other produce into Paris counts gate dues, market fees and the hours spent away from the holding. A busy bridge may offer many customers and little room for a cart. Coin must still be accepted and reckoned by its local value; the size of the city does not make its silver immune from changes in money or prices."
+    }
+  ],
+  "TextMappings": []
+}

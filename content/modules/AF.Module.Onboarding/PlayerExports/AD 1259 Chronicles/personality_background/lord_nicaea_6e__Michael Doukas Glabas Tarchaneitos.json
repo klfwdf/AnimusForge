@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_6e",
+  "HeroName": "Michaíl Doúkas Glabás Tarchaneiótis, Protostrator of Nicaea",
+  "Description": "Michaíl Doúkas Glabás Tarchaneiótis, aged twenty-four, is an exceptionally gifted young general and Protostrator of the Empire of Nicaea. Inheriting martial valor from both the Doukas and Tarchaneiotes lineages, he rose rapidly through the ranks through audacious campaigns along the Bulgarian frontier. A master of mountain infiltration, nocturnal ambuscades, and stubborn defensive stands, he has repeatedly outmaneuvered Slavic raiders and Western mercenary knights. During the strategic mobilization of 1259, Michaíl commanded the imperial northern corps, brilliantly shielding Nicaea's Thracian flank from hostile diversionary raids. Beyond his formidable combat prowess, he is deeply pious and modest, later immortalized as the generous founder of the magnificent Pammakaristos Church in Constantinople. Devoted to his men, he leads shock cavalry wedges from the vanguard, sharing their rations and winning the undying devotion of his cataphracts. As one of the brightest martial stars of the Palaiologan dawn, Michaíl is resolved to secure the Balkan borders and guarantee imperial resurgence. Prior to every critical clash, he painstakingly surveys local topography, river crossings, and mountain defiles, devising multiple contingency plans to guarantee decisive tactical supremacy and minimize bloodshed among his cataphracts. His tactical brilliance ensures that the imperial borders remain unbreached by foreign enemies.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 6e lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with crisp, authoritative force and vibrant tactical clarity, issuing battlefield orders with razor-sharp precision and indomitable courage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

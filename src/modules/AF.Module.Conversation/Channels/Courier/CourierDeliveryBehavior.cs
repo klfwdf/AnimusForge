@@ -2335,15 +2335,16 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			parts.Add((item.Character.Name?.ToString() ?? item.Character.StringId ?? "unknown") + "×" + item.Number);
 		}
-		return parts.Count == 0 ? "none" : string.Join("，", parts);
+		return parts.Count == 0 ? "none" : string.Join(ConversationRuntimeTexts.Comma, parts);
 	}
 
 	private static string PrepareNpcReplyForActionPostprocess(string text)
 	{
 		string value = LlmVisibleReplyNormalizer.NormalizeComplete(text).Trim();
 		value = Regex.Replace(value, "<think>.*?</think>", "", RegexOptions.Singleline | RegexOptions.IgnoreCase).Trim();
-		value = Regex.Replace(value, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0422"), "", RegexOptions.IgnoreCase).Trim();
-		if (value == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0423") || value == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0424") || value == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0425"))
+		foreach (Regex pattern in ConversationRuntimeTexts.RawRegexes("AF_CONV_Runtime_0422", RegexOptions.IgnoreCase))
+			value = pattern.Replace(value, "").Trim();
+		if (ConversationRuntimeTexts.IsRaw(value, "AF_CONV_Runtime_0423") || ConversationRuntimeTexts.IsRaw(value, "AF_CONV_Runtime_0424") || ConversationRuntimeTexts.IsRaw(value, "AF_CONV_Runtime_0425"))
 		{
 			return "";
 		}
@@ -2364,13 +2365,14 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		string value = LlmVisibleReplyNormalizer.NormalizeComplete(text).Trim();
 		value = Regex.Replace(value, "<think>.*?</think>", "", RegexOptions.Singleline | RegexOptions.IgnoreCase).Trim();
-		value = Regex.Replace(value, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0426"), "", RegexOptions.IgnoreCase).Trim();
+		foreach (Regex pattern in ConversationRuntimeTexts.RawRegexes("AF_CONV_Runtime_0426", RegexOptions.IgnoreCase))
+			value = pattern.Replace(value, "").Trim();
 		value = StripCourierActionTags(value).Trim();
 		if (!LooksLikeApiError(value))
 		{
 			value = CourierVisibleLetterSanitizer.CleanNpcLetter(value);
 		}
-		if (!string.IsNullOrWhiteSpace(value) && value != ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0427") && value != ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0428") && value != ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0429"))
+		if (!string.IsNullOrWhiteSpace(value) && !ConversationRuntimeTexts.IsRaw(value, "AF_CONV_Runtime_0427") && !ConversationRuntimeTexts.IsRaw(value, "AF_CONV_Runtime_0428") && !ConversationRuntimeTexts.IsRaw(value, "AF_CONV_Runtime_0429"))
 		{
 			return value;
 		}
@@ -2412,8 +2414,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		string extra = extras ?? "";
 		bool hasPersona = role.IndexOf(PromptComposerTexts.Get("persona_scene_npc_personality"), StringComparison.Ordinal) >= 0
             || role.IndexOf(PromptComposerTexts.Get("persona_system_npc_personality"), StringComparison.Ordinal) >= 0;
-		bool hasKnowledge = extra.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0443"), StringComparison.Ordinal) >= 0
-			|| extra.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0444"), StringComparison.Ordinal) >= 0;
+		bool hasKnowledge = ConversationRuntimeTexts.ContainsRaw(extra, "AF_CONV_Runtime_0443")
+			|| ConversationRuntimeTexts.ContainsRaw(extra, "AF_CONV_Runtime_0444");
 		int persistentMemoryCount = persistentMemoryRoleMessages?.Count() ?? 0;
 		Log("[ContextAlignment] chain=courier_" + (chain ?? "unknown")
 			+ " session=" + (sessionId ?? "")
@@ -2499,8 +2501,10 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return value;
 		}
-		string pattern = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0445") + id + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0446");
-		return Regex.Replace(value, pattern, "").Trim();
+		// Rule headers may come from a Chinese or an English prompt; strip both forms.
+		value = Regex.Replace(value, ConversationRuntimeTexts.RawSource("AF_CONV_Runtime_0445") + id + ConversationRuntimeTexts.RawSource("AF_CONV_Runtime_0446"), "");
+		value = Regex.Replace(value, ConversationRuntimeTexts.RawEnglish("AF_CONV_Runtime_0445") + id + ConversationRuntimeTexts.RawEnglish("AF_CONV_Runtime_0446"), "");
+		return value.Trim();
 	}
 
 	private static string StripCourierActionTags(string text)

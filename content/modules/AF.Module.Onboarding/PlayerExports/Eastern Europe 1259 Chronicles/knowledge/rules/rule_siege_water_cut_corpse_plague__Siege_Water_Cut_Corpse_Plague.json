@@ -1,0 +1,53 @@
+{
+  "Id": "rule_siege_water_cut_corpse_plague",
+  "Keywords": [
+    "Water and sickness during a siege",
+    "Wells and stored water in a fortress",
+    "Removing waste inside besieged walls"
+  ],
+  "RagShortTexts": [
+    "Outside supplies can be cut off; wells, stores and access sustain a garrison's water supply.",
+    "Crowding, accumulated waste and hunger burden sick people in both garrison and besieging camp."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A siege can cut access to streams and water paths, increasing dependence on wells, stored water and distribution inside the walls. Refugees, animals, fires and casualties add demand. Rus strongholds and Baltic forts occupy different ground; a nearby river may still be inaccessible. Waste, spoiled food and dead animals around crowded quarters worsen an already difficult life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Guards at water points protect carriers and their routes and need relief after a watch. Wounded companions still require drink and care while others defend the walls. Besiegers also need separation between water collection and waste disposal. Rain, a camp move or an attack can require new access arrangements for men and carts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A castellan needs a continuing supply rather than merely full buckets at the outset. Guards, residents, casualties and animals compete for it; well repairs, carrying and firefighting require labor. Besiegers blocking water must sustain their own camp. Sickness and hauling costs can eventually make negotiation or withdrawal worth considering."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Refugee households share limited collection points, where queues, lost buckets and blocked passages delay cooking and care. Waste and dead animals need removal by workers who also require provisions and relief. As a siege continues, families need reliable news about usable wells and sick relatives as much as reports from the walls."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

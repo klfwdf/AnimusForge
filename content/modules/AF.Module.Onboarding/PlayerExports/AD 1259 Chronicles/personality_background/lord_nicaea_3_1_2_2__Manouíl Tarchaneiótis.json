@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_3_1_2_2",
+  "HeroName": "Manouíl Tarchaneiótis",
+  "Description": "Manouíl Tarchaneiótis was a stalwart frontline cavalry officer whose battlefield grit fortified the European frontier defenses of the restored empire. Reared in saddle and armor amidst the Sangarios River clashes and Macedonian border wars, Manuel mastered shock cataphract formations, couched lance charges, and siege rampart defense under veteran kin. At Pelagonia in 1259, he commanded an elite squadron of armored cavalry that drove straight into the Frankish infantry line under withering missile fire, disorganizing enemy ranks and precipitating the capture of Prince William of Achaea. Demanding absolute discipline yet fiercely protective of his troopers, Manuel shared rough camp bivouacs and moldy rations with his men, forging unshakeable operational cohesion. Patrolling the Thracian hinterlands following the liberation of Constantinople, he consistently routed incursions by Latin outlaws, standing as a premier frontline guardian of the empire's European provinces. At Thracian staging bases, Manuel maintained strict remount rosters, drilling cavalry recruits in spear tactics at sunrise. Demanding iron cohesion, he trained troopers to deliver dense wall charges through howling gales, severely punishing looting or cowardice. Ambushed by Frankish chivalry in several narrow defiles, Manuel fought on despite multiple arrow wounds, cutting down opposing captains, his indomitable battlefield fury inspiring his men to hail him as a god of war.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead heavy cavalry against invaders in Thrace and Macedonia, protecting European lands and earning distinction for his ancestors.",
+    "Train rapid cavalry attacks and coordinated encirclement, keeping a dependable force ready for imperial service.",
+    "Remain loyal to the Tarchaneiotes house and help recover Constantinople through military achievement, restoring Roman cavalry's reputation."
+  ],
+  "Values": [
+    "Military service requires courage and achievement; a soldier must advance against danger rather than retreat.",
+    "Combine strict discipline with comradeship, care for soldiers and lead personally to earn their resolve under fire.",
+    "Keep his oath to the emperor, treating defence of the frontier and Roman recovery as duties worth his life."
+  ],
+  "Fears": [
+    "Poor cavalry reconnaissance leading the column into a mountain ambush, destroying carefully trained troops and disgracing the family.",
+    "Courtiers stealing military pay and cutting fodder and weapons supplies, weakening soldiers' resolve and losing frontier fortresses."
+  ],
+  "SpeechStyle": "His voice is rough, resonant, and decisive, projecting the unflinching command authority of an officer seasoned by fierce melee combat.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

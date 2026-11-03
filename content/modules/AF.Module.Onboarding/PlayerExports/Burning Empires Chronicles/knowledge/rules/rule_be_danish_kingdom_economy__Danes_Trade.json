@@ -1,0 +1,59 @@
+{
+  "Id": "be_danish_kingdom_economy",
+  "Keywords": [
+    "Danes Trade",
+    "Danish fish and repair timber"
+  ],
+  "RagShortTexts": [
+    "Danpsted farming, herds, fish and timber sustain crews.",
+    "Ship requisition affects fishing and grain transport together."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Danpsted fields, herds, fish and timber sustain crews. Vessels carry cargo and fighters, so requisition affects fishing and grain; long voyages endanger harvest labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Danpsted farming, herds, fish and timber sustain crews. Traveling followers need real food from this production; valuables still require a buyer and exchange. Ship requisition affects fishing and grain transport together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ship requisition affects fishing and grain transport together. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Danpsted farming, herds, fish and timber sustain crews."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Danpsted farming, herds, fish and timber sustain crews. Households need meals and the means to keep producing after delivering goods. Ship requisition affects fishing and grain transport together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ship requisition affects fishing and grain transport together. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Danpsted farming, herds, fish and timber sustain crews."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

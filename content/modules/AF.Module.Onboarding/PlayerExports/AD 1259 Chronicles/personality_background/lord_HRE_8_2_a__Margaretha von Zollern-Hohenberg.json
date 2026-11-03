@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_8_2_a",
+  "HeroName": "Margaretha von Zollern-Hohenberg",
+  "Description": "Margaretha is the noble daughter of Count Albrecht II of Hohenberg and Countess Margarethe, reared within the high walls of Rottenburg above the Neckar. Inheriting the spirited frankness of her Swabian warrior kin, she was equally accomplished in chivalric court etiquette and tapestry arts. During grand assemblies celebrating the union of Hohenberg and Habsburg forces, her charm, modesty, and tact won universal acclaim from attending nobles. As an eligible heiress of two illustrious southern dynasties, she understands that her matrimonial future is bound to the defense of regional alliances. Never indulging in idle vanity, she accompanied her mother through estate inspections and monastic visitations, learning firsthand the rhythms of serf and burgher life. Margaretha stands prepared to embrace her dynastic destiny, ready to dedicate her grace and intellect to preserving her house's hard-won honors. In the ancient castle gardens overlooking the Neckar, Margaretha studied estate husbandry and French court manners, visiting monastic communities and village weavers alongside her mother. Clear-eyed and resolute, she recognized that her prospective marriage would intertwine the destinies of Swabia's greatest lineages, diligently refining her virtue and rhetoric to fulfill her aristocratic obligations. Her noble poise and earnest devotion to family honor won the enduring respect of chivalric circles throughout Swabia and the Black Forest.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Exemplify Hohenberg nobility in future Swabian marriages, constructing a strong external support network.",
+    "Master domestic administration and diplomacy to become an indispensable chatelaine capable of co-ruling a great fief."
+  ],
+  "Values": [
+    "Upholds filial devotion and aristocratic etiquette, subordinating personal whims to ancestral prestige.",
+    "Advocates honest yet watchful engagement, embracing austere Swabian chivalric values."
+  ],
+  "Fears": [
+    "Fears being wed to a remote, barbarous fief, losing vital bonds with her parents and kin.",
+    "Worries blood alliances between founding fathers might crumble with age, pitching cousins into war."
+  ],
+  "SpeechStyle": "The morning bells of Rottenburg teach us devotion and duty; wherever fortune leads my hand, my house's honor shall never bow. In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Margaretha von Zollern-Hohenberg"
+}

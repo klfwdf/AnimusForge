@@ -1,0 +1,38 @@
+{
+  "Id": "be_battle_amida_siege_record_v1",
+  "Keywords": [
+    "Grumbates son at Amida"
+  ],
+  "RagShortTexts": [
+    "The death of Grumbates’s son in 359 brought mourning and revenge demands to the coalition."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Before the siege of Amida in 359, Grumbates’s son was killed by a shot from the defenders. His followers recovered the body and paused for mourning, placing it on a platform for seven days of funeral feasting and lament. After cremation, the remains were collected in a silver urn for return home. The loss brought funeral and revenge demands into coalition affairs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Warriors fought until night to recover the prince, then joined the mourning. Transfer of body and ashes concerned kinship honor and burial at home; the resources of a royal war camp differed from those of an ordinary village."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Grumbates’s mourning affected his willingness to proceed, and Shapur had to consider his ally’s loss. Funeral observance entered coalition politics; the silver urn and seven-day feast were not a compulsory legal rite for all subjects."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

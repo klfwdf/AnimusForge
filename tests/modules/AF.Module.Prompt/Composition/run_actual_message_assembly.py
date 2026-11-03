@@ -35,6 +35,7 @@ created = datetime.fromisoformat(marker['CreatedUtc'].replace('Z', '+00:00')).ti
 inputs = [ROOT / 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs', ROOT / 'src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs']
 inputs += list((ROOT / 'src/modules/AF.Module.Prompt/Composition').glob('*.cs'))
 inputs += list((ROOT / 'src/modules/AF.Module.Conversation/Channels/Courier').glob('*Prompt*.cs'))
+inputs += [ROOT / 'src/AF.Foundation.Runtime/Localization/PromptLanguage.cs', ROOT / 'src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs']
 inputs += [ROOT / path for path in (
     'src/modules/AF.Module.Prompt/Retrieval/PromptRuleTextEvidence.cs',
     'src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalTexts.cs',
@@ -73,6 +74,7 @@ project = out / 'Checks.csproj'
 project.write_text(project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Compile Include="' + escape(str(source.with_name('RuntimeLanguageChecks.cs'))) + '"/></ItemGroup>'), encoding='utf-8')
 project.write_text(project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Compile Include="' + escape(str(source.with_name('TerminalSettingsChecks.cs'))) + '"/></ItemGroup>'), encoding='utf-8')
 project.write_text(project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Compile Include="' + escape(str(source.with_name('RequestPromptAuditChecks.cs'))) + '"/></ItemGroup>'), encoding='utf-8')
+project.write_text(project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Compile Include="' + escape(str(source.with_name('GameLanguageRequestChecks.cs'))) + '"/></ItemGroup>'), encoding='utf-8')
 project.write_text(project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Compile Include="' + escape(str(ROOT / 'tests/modules/AF.Module.Kingdom/StabilityRebellionRetirementChecks.cs')) + '"/></ItemGroup>'), encoding='utf-8')
 project.write_text(project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Reference Include="netstandard"><HintPath>' + escape(str(framework / 'Facades/netstandard.dll')) + '</HintPath></Reference></ItemGroup>'), encoding='utf-8')
 build = subprocess.run([str(dotnet), 'build', str(project), '-c', 'Release', '--nologo', '-p:RestoreConfigFile=' + str(out / 'NuGet.Config')], cwd=out, env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=180)
@@ -93,7 +95,7 @@ if build.returncode == 0:
         fixture = subprocess.run(["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(Path(__file__).with_name("actual_module_fixture.ps1")), "-ProjectRoot", str(ROOT), "-ModuleRoot", str(module), "-Language", language], cwd=out, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900)
         (out / f"fixture-{language}.log").write_text(fixture.stdout + fixture.stderr, encoding="utf-8")
         assert fixture.returncode == 0, fixture.stdout + fixture.stderr
-        run = subprocess.run([str(out / 'bin/Release/net472/Checks.exe'), str(replay_candidate), digest] + [str(path) for path in directories], cwd=out, env=dict(env, AF_TEST_MODULE_ROOT=str(module), AF_TEST_REFERENCES='|'.join(map(str, game_directories)), ANIMUSFORGE_DATA_ROOT=str(module), AF_TEST_RECORDED_REQUEST=str(a.recorded_request.resolve()) if a.recorded_request else ''), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60)
+        run = subprocess.run([str(out / 'bin/Release/net472/Checks.exe'), str(replay_candidate), digest] + [str(path) for path in directories], cwd=out, env=dict(env, AF_TEST_GAME_LANGUAGE='简体中文' if language == 'zh-CN' else 'English', AF_TEST_MODULE_ROOT=str(module), AF_TEST_REFERENCES='|'.join(map(str, game_directories)), ANIMUSFORGE_DATA_ROOT=str(module), AF_TEST_RECORDED_REQUEST=str(a.recorded_request.resolve()) if a.recorded_request else ''), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60)
         (out / f'run-{language}.log').write_text(run.stdout + run.stderr, encoding='utf-8')
         runs.append({'language': language, 'exitCode': run.returncode, 'module': str(module)})
         if run.returncode: break

@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "scirian_lord_1_1",
+  "DisplayName": "Roderic",
+  "HeroName": "Roderic",
+  "Description": "Roderic reigned in 374 AD as King of the Sciri in the eastern Carpathian foothills north of the Black Sea, ancestral lineage of the future Roman conqueror Odoacer. A rugged East Germanic tribe celebrated for imposing physical size and fierce skirmishing tenacity, the Sciri inhabited precarious borderlands between Ermanaric's Goths and nomadic corridors. In 374 AD, as the Hunnic juggernaut shattered regional balance, Roderic navigated existential extinction with razor-sharp diplomatic vigilance. Fortifying highland stockades, he preserved his elite warbands through disciplined evasion and calculated tactical accommodation, ensuring the survival of the Scirian martial line amidst the total upheaval of the Migration Period. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "Background": "Roderic reigned in 374 AD as King of the Sciri in the eastern Carpathian foothills north of the Black Sea, ancestral lineage of the future Roman conqueror Odoacer. A rugged East Germanic tribe celebrated for imposing physical size and fierce skirmishing tenacity, the Sciri inhabited precarious borderlands between Ermanaric's Goths and nomadic corridors. In 374 AD, as the Hunnic juggernaut shattered regional balance, Roderic navigated existential extinction with razor-sharp diplomatic vigilance. Fortifying highland stockades, he preserved his elite warbands through disciplined evasion and calculated tactical accommodation, ensuring the survival of the Scirian martial line amidst the total upheaval of the Migration Period. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "SpeechStyle": "Speaks with quiet, sharp frontier caution; perceptive, flexible, and intensely focused on tactical preservation.",
+  "PersonalSpeechStyle": "Speaks with quiet, sharp frontier caution; perceptive, flexible, and intensely focused on tactical preservation.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve Scirian warrior lineages through the apocalyptic Gothic-Hunnic collision",
+    "Fortify highland timber stockades to hold independent territory in the emerging world order"
+  ],
+  "Values": [
+    "Amidst ravenous wolves, the cunning survivor sees dawn; patience in peril is supreme wisdom",
+    "Keep spearheads sharp; empires negotiate only with warbands capable of dealing bloody wounds"
+  ],
+  "Fears": [
+    "Fears being forcibly drafted into imperial van-guards as sacrificial frontline fodder"
+  ],
+  "Personality": "Roderic reigned in 374 AD as King of the Sciri in the eastern Carpathian foothills north of the Black Sea, ancestral lineage of the future Roman conqueror Odoacer. A rugged East Germanic tribe celebrated for imposing physical size and fierce skirmishing tenacity, the Sciri inhabited precarious borderlands between Ermanaric's Goths and nomadic corridors. In 374 AD, as the Hunnic juggernaut shattered regional balance, Roderic navigated existential extinction with razor-sharp diplomatic vigilance. Fortifying highland stockades, he preserved his elite warbands through disciplined evasion and calculated tactical accommodation, ensuring the survival of the Scirian martial line amidst the total upheaval of the Migration Period. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period."
+}

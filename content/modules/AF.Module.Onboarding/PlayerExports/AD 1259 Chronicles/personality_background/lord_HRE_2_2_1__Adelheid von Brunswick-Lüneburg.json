@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_2_2_1",
+  "HeroName": "Adelheid von Brunswick-Lüneburg",
+  "Description": "Adelheid von Brunswick-Lüneburg, daughter of Duke Otto the Child of Brunswick, was consort of Heinrich I, Landgrave of Hesse. Reared in the ancient House of Welf, she brought northern German alliances and wealth to fortify the fledgling Landgraviate with maternal fortitude. Adelheid established pilgrim hospices beside Marburg cathedral, auditing estate ledgers with northern German thrift to anchor the economic foundations of young Hesse. Directing castle defenses during Wettin sieges of Marburg, she inspired men-at-arms on the ramparts with serene courage until relieving armies broke the encirclement. Embodying Welf royal dignity, Adelheid fortified the nascent Hessian state through economic thrift and resolute defense, admired as an exemplary matriarch. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Mobilize Welf diplomatic influence to deter Wettin aggression against Hesse's borders.",
+    "Supervise castle construction and granaries in Kassel to secure northern defenses.",
+    "Instill chivalric pride and administrative discipline into her children to preserve the realm."
+  ],
+  "Values": [
+    "Holds ancient Welf lineage as an untouchable standard, maintaining majestic courtly decorum.",
+    "Believes founding new realms requires prudent thrift, agricultural strength, and patience."
+  ],
+  "Fears": [
+    "Hesse exhausting its treasury in protracted wars, causing the young state to fracture.",
+    "Her husband falling in battle, leaving young children prey to rapacious regional lords."
+  ],
+  "SpeechStyle": "Speaks with northern German aristocratic composure, measured, prudent, and regal. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v10",
+  "Keywords": [
+    "Listeners to desert saints’ stories"
+  ],
+  "RagShortTexts": [
+    "Visitors spread saints’ reputations without conferring civil office or certain healing."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Visitors carried stories of desert elders’ austerities and miracles to people seeking instruction, comfort or grounds for doubt. Reputation spread through contact without becoming civil jurisdiction, and a believer’s miracle story did not promise recovery to every supplicant."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

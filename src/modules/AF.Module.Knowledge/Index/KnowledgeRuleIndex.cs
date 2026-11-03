@@ -13,6 +13,8 @@ internal interface IKnowledgeIndexPorts
 {
 	bool EmbeddingAvailable { get; }
 	bool TryGetEmbedding(string text, out float[] vector);
+	/// <summary>Index-build embedding of many seeds at once; result[i] is null when text i failed.</summary>
+	float[][] EmbedDocuments(IReadOnlyList<string> texts);
 	bool RerankerAvailable { get; }
 	bool TryScoreBatch(string query, IReadOnlyList<string> documents, out List<float> scores);
 	/// <summary>Configured semantic top-K (clamped to 1..12 by the index).</summary>
@@ -618,6 +620,8 @@ internal sealed class KnowledgeRuleIndex
 				List<VectorDoc> docs = new List<VectorDoc>();
 				Dictionary<string, int> df = new Dictionary<string, int>(StringComparer.Ordinal);
 				IReadOnlyList<LoreRule> rules = detachedRules ?? _rules();
+				// Null means the snapshot has not been published, not a completed empty library.
+				if (rules == null) return;
 				if (rules != null)
 				{
 					foreach (LoreRule rule in rules)
@@ -708,8 +712,8 @@ internal sealed class KnowledgeRuleIndex
 	}
 
 	/// <summary>
-	/// Legacy commit rule: engine unavailable → index null; otherwise commit when any embedding succeeded,
-	/// or when there were no rules / no seeds (empty index is valid); embeddings all failed → stay unbuilt
+	/// Unpublished rules stay unbuilt. Engine unavailable → index null; otherwise commit when any embedding succeeded,
+	/// or when published rules have no entries / no seeds (empty index is valid); embeddings all failed → stay unbuilt
 	/// and skip that same version for <see cref="OnnxFailureCooldown"/> (sparse fallback meanwhile).
 	/// Lock order: _onnxIndexLock → _publicationLock.
 	/// </summary>
@@ -754,10 +758,13 @@ internal sealed class KnowledgeRuleIndex
 				IReadOnlyList<LoreRule> rules = null;
 				try
 				{
-					engineAvailable = _ports.EmbeddingAvailable;
 					rules = detachedRules ?? _rules();
-					if (engineAvailable && rules != null)
+					// Do not cache a missing snapshot as a ready empty index for this version.
+					if (rules == null) return;
+					engineAvailable = _ports.EmbeddingAvailable;
+					if (engineAvailable)
 					{
+						var pending = new List<(LoreRule Rule, string Seed, bool IsEvidence)>();
 						for (int i = 0; i < rules.Count; i++)
 						{
 							LoreRule r = rules[i];
@@ -777,12 +784,20 @@ internal sealed class KnowledgeRuleIndex
 									string text = (seed ?? "").Trim();
 									if (!string.IsNullOrWhiteSpace(text))
 									{
-										seedCount++;
-										if (_ports.TryGetEmbedding(text, out var vector) && vector != null && vector.Length != 0)
-										{
-											entries.Add(new OnnxRuleEntry { Rule = r, Seed = text, Vector = vector, IsEvidence = isEvidence });
-										}
+										pending.Add((r, text, isEvidence));
 									}
+								}
+							}
+						}
+						seedCount = pending.Count;
+						if (pending.Count > 0)
+						{
+							float[][] vectors = _ports.EmbedDocuments(pending.Select(p => p.Seed).ToList());
+							for (int i = 0; i < pending.Count && vectors != null && i < vectors.Length; i++)
+							{
+								if (vectors[i] != null && vectors[i].Length != 0)
+								{
+									entries.Add(new OnnxRuleEntry { Rule = pending[i].Rule, Seed = pending[i].Seed, Vector = vectors[i], IsEvidence = pending[i].IsEvidence });
 								}
 							}
 						}
@@ -790,11 +805,14 @@ internal sealed class KnowledgeRuleIndex
 				}
 				catch
 				{
+					// A failed snapshot/seed capture must not publish an empty completed index.
+					if (rules == null || seedCount <= 0) return;
+					// Preserve the existing cooldown when embedding failed after seed capture.
 				}
 				lock (_publicationLock)
 				{
 					if (Version != buildVersion) return;
-					bool noRules = rules == null || rules.Count == 0;
+					bool noRules = rules.Count == 0;
 					bool noSeeds = seedCount <= 0;
 					if (!engineAvailable)
 					{

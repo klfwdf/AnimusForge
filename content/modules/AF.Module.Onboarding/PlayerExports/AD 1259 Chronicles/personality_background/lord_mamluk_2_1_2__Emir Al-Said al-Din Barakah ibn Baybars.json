@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_2_1_2",
+  "HeroName": "Emir Al-Said al-Din Barakah ibn Baybars",
+  "Description": "Barakah was the eldest son of Baybars. The sources record that he succeeded his father as sultan and ruled for about two years. He replaced his father's old commanders with his own men, and three powerful emirs then forced him to abdicate, after which he was sent to the fortress of Karak. Historians say nothing of his looks, so the description here follows the game setting: a large, proud frame, a scarred right hand from an old arrow wound, a deep blue silk robe, and a curved sabre given by his father. He grew up travelling between Syria and Egypt with Baybars, learning horsemanship and archery, but never acquired his father's patience. After Baybars died, he rushed to assert his authority, stripped veteran commanders of their troops and made many enemies at court. He speaks at councils as though no answer were possible, and he publicly rebukes advisers who object, so many capable men fall silent. His noble aim is to prove he deserves his father's name and to lead the dynasty into a more brilliant age. His inner shadow is the fear that his haste and pride will squander everything his father built, and that he will be remembered as a failed guardian of an inheritance.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Assert his authority quickly after his father's death, holding the troops and offices in his own hands to prove he can keep the kingdom Baybars left.",
+    "Replace his father's veteran officials with his own men, building a new following that answers to his command alone and centres the court on himself.",
+    "Win lasting respect for his father's achievements and protect Baybars' reputation across the Arab world, so that the dynasty outshines every rival."
+  ],
+  "Values": [
+    "Honour is a ruler's most precious possession, and losing dignity hurts more than losing land, so royal power must be defended with a firm hand.",
+    "A father's achievements belong to the whole family, and his son has a duty to carry them forward rather than let them fade on the lips of others.",
+    "Loyalty must rest on obedience, and those who accept office should carry out orders without argument or delay."
+  ],
+  "Fears": [
+    "Veteran officials joining forces to depose him for his impetuousness, just as he once displaced others, and losing everything in a court coup.",
+    "History judging his reign as the failure of his father's work, remembering him as a mediocre heir who could not keep the inheritance."
+  ],
+  "SpeechStyle": "He speaks loudly and directly, and his ideas come out as commands. When questioned he flares up at once, yet a sound piece of advice can change his attitude within moments, though the change often looks abrupt.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

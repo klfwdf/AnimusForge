@@ -11,30 +11,49 @@ public static class WorldDiplomacyPromptContractRules
 {
 	internal const int MaxGeneratedDraftRepairAttempts = 1;
 	internal const string CanonicalHistoryCacheAffinityKey = "diplomacy-history:v33";
-	internal static readonly string CanonicalHistoryContractMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_000"];
-	internal static readonly string DiplomaticDeclarationWritingContractMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_001"];
-	internal static readonly string DiplomacyModeDispatchContractMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_002"];
-	internal static readonly string DiplomaticDeclarationModeContractMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_003"];
-	internal static readonly string CanonicalHistoryCompressionModeContractMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_004"];
-	internal static readonly string DiplomacyAnalysisTaskMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_005"];
-	internal static readonly string RoundPlanTaskMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_006"];
+	// Section markers follow the current game language when composed. A stored job built in the other
+	// language fails HasCurrentCanonicalPromptContract and is rebuilt; extraction accepts both variants.
+	internal static string CanonicalHistoryContractMarker => CompatibilityContractText.Get("AF_DIP_Compatibility_000");
+	internal static string DiplomaticDeclarationWritingContractMarker => CompatibilityContractText.Get("AF_DIP_Compatibility_001");
+	internal static string DiplomacyModeDispatchContractMarker => CompatibilityContractText.Get("AF_DIP_Compatibility_002");
+	internal static string DiplomaticDeclarationModeContractMarker => CompatibilityContractText.Get("AF_DIP_Compatibility_003");
+	internal static string CanonicalHistoryCompressionModeContractMarker => CompatibilityContractText.Get("AF_DIP_Compatibility_004");
+	internal static string DiplomacyAnalysisTaskMarker => CompatibilityContractText.Get("AF_DIP_Compatibility_005");
+	internal static string RoundPlanTaskMarker => CompatibilityContractText.Get("AF_DIP_Compatibility_006");
 
     internal static string ContractText(Func<string, string, string> localize, string id, string englishFallback)
         => localize != null ? localize(id, englishFallback)
-            : id.StartsWith("AF_DIP_Source_", StringComparison.Ordinal) ? CompatibilityContractText.Values[id]
+            : id.StartsWith("AF_DIP_Source_", StringComparison.Ordinal) ? CompatibilityContractText.Word(id)
             : DiplomacyPromptTexts.Get(id, englishFallback);
 
-    // Parser tokens and historical source patterns retain their original identity.
-    // Prompt contracts, including calls without an explicit resolver, use the current package.
+    // Parser tokens and historical source patterns keep their Chinese identity (English value "=").
+    // Composed fragments follow the current game language; matching uses Variants (both languages).
     private static class CompatibilityContractText
     {
-        internal static readonly Dictionary<string, string> Values = Load();
-        private static Dictionary<string, string> Load()
+        private static readonly AnimusForge.BilingualTextTable Table = AnimusForge.BilingualTextTable.FromEmbedded(
+            typeof(WorldDiplomacyPromptContractRules).Assembly, "AnimusForge.Diplomacy.PromptCompatibility.json");
+        internal static string Get(string id) => Table.Get(id);
+        internal static string[] Variants(string id) => Table.Variants(id);
+        /// <summary>Current-language fragment; translated English gains spaces at Latin word edges so it can sit between names.</summary>
+        internal static string Word(string id) => AnimusForge.DiplomacyCompatibilityTexts.PadEnglish(Table.Get(id), Table.Chinese(id));
+    }
+
+    private static bool TryExtractCommonContractBeforeAnyMarker(string systemPrompt, string markerId, out string contract)
+    {
+        foreach (string marker in CompatibilityContractText.Variants(markerId))
+            if (TryExtractCommonContractBeforeMarker(systemPrompt, marker, out contract)) return true;
+        contract = "";
+        return false;
+    }
+
+    private static int IndexOfAny(string text, string markerId, int startIndex)
+    {
+        foreach (string marker in CompatibilityContractText.Variants(markerId))
         {
-            using (var stream = typeof(WorldDiplomacyPromptContractRules).Assembly.GetManifestResourceStream("AnimusForge.Diplomacy.PromptCompatibility.json"))
-            using (var reader = new System.IO.StreamReader(stream, System.Text.Encoding.UTF8))
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(reader.ReadToEnd());
+            int index = text.IndexOf(marker, startIndex, StringComparison.Ordinal);
+            if (index >= 0) return index;
         }
+        return -1;
     }
 
 	public static string StablePromptHash(string text)
@@ -131,10 +150,11 @@ public static class WorldDiplomacyPromptContractRules
 			&& systemPrompt.IndexOf(CanonicalHistoryCompressionModeContractMarker, StringComparison.Ordinal) >= 0
 			&& systemPrompt.IndexOf(CanonicalHistoryContractMarker, StringComparison.Ordinal) >= 0
 			&& modePrompt.IndexOf(expectedMode, StringComparison.Ordinal) >= 0
-			&& modePrompt.IndexOf(DiplomaticDeclarationWritingContractMarker, StringComparison.Ordinal) < 0
-			&& modePrompt.IndexOf(DiplomacyModeDispatchContractMarker, StringComparison.Ordinal) < 0
-			&& modePrompt.IndexOf(DiplomaticDeclarationModeContractMarker, StringComparison.Ordinal) < 0
-			&& modePrompt.IndexOf(CanonicalHistoryCompressionModeContractMarker, StringComparison.Ordinal) < 0;
+			// The dynamic mode prompt must carry no system-contract marker in either language.
+			&& IndexOfAny(modePrompt, "AF_DIP_Compatibility_001", 0) < 0
+			&& IndexOfAny(modePrompt, "AF_DIP_Compatibility_002", 0) < 0
+			&& IndexOfAny(modePrompt, "AF_DIP_Compatibility_003", 0) < 0
+			&& IndexOfAny(modePrompt, "AF_DIP_Compatibility_004", 0) < 0;
 	}
 
 	public static bool TryExtractCommonContractFromJob(WorldDiplomacyJob job, out string contract)
@@ -145,19 +165,19 @@ public static class WorldDiplomacyPromptContractRules
 		{
 			string generateMessageSystem = job.LlmMessages?.FirstOrDefault(x => x != null
 				&& string.Equals(x.Role, "system", StringComparison.OrdinalIgnoreCase))?.Content;
-			return TryExtractCommonContractBeforeMarker(generateMessageSystem, DiplomaticDeclarationWritingContractMarker, out contract)
-				|| TryExtractCommonContractBeforeMarker(job.SystemPrompt, DiplomaticDeclarationWritingContractMarker, out contract)
-				|| TryExtractCommonContractBeforeMarker(generateMessageSystem, CanonicalHistoryContractMarker, out contract)
-				|| TryExtractCommonContractBeforeMarker(job.SystemPrompt, CanonicalHistoryContractMarker, out contract);
+			return TryExtractCommonContractBeforeAnyMarker(generateMessageSystem, "AF_DIP_Compatibility_001", out contract)
+				|| TryExtractCommonContractBeforeAnyMarker(job.SystemPrompt, "AF_DIP_Compatibility_001", out contract)
+				|| TryExtractCommonContractBeforeAnyMarker(generateMessageSystem, "AF_DIP_Compatibility_000", out contract)
+				|| TryExtractCommonContractBeforeAnyMarker(job.SystemPrompt, "AF_DIP_Compatibility_000", out contract);
 		}
 		string marker;
 		if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "round_plan"))
 		{
-			marker = RoundPlanTaskMarker;
+			marker = "AF_DIP_Compatibility_006";
 		}
 		else if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "analyze"))
 		{
-			marker = DiplomacyAnalysisTaskMarker;
+			marker = "AF_DIP_Compatibility_005";
 		}
 		else
 		{
@@ -165,8 +185,8 @@ public static class WorldDiplomacyPromptContractRules
 		}
 		string messageSystem = job.LlmMessages?.FirstOrDefault(x => x != null
 			&& string.Equals(x.Role, "system", StringComparison.OrdinalIgnoreCase))?.Content;
-		return TryExtractCommonContractBeforeMarker(messageSystem, marker, out contract)
-			|| TryExtractCommonContractBeforeMarker(job.SystemPrompt, marker, out contract);
+		return TryExtractCommonContractBeforeAnyMarker(messageSystem, marker, out contract)
+			|| TryExtractCommonContractBeforeAnyMarker(job.SystemPrompt, marker, out contract);
 	}
 
 	public static bool TryExtractCommonContractBeforeMarker(string systemPrompt, string marker, out string contract)
@@ -339,7 +359,7 @@ public static class WorldDiplomacyPromptContractRules
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_051", "Compression batch=") + (batchId ?? "") + ContractText(localize, "AF_DIP_Contract_052", "; coverage cutoff seq=") + Math.Max(0L, throughSequence).ToString(CultureInfo.InvariantCulture)
 			+ ContractText(localize, "AF_DIP_Contract_053", "; current estimated tokens=") + Math.Max(0L, tokenCount).ToString(CultureInfo.InvariantCulture)
 			+ ContractText(localize, "AF_DIP_Contract_054", "; recent hard-fact budget consumption tokens=") + Math.Max(0L, protectedTokens).ToString(CultureInfo.InvariantCulture)
-			+ ContractText(localize, "AF_DIP_Contract_055", "; summary target ceiling tokens=") + Math.Max(1, summaryTargetTokens).ToString(CultureInfo.InvariantCulture) + "。");
+			+ ContractText(localize, "AF_DIP_Contract_055", "; summary target ceiling tokens=") + Math.Max(1, summaryTargetTokens).ToString(CultureInfo.InvariantCulture) + AnimusForge.DiplomacyCompatibilityTexts.Period);
 		sb.AppendLine("【MODE=COMPACT】");
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_056", "Activate only the fixed MODE=COMPACT task contract in the first system message and output only the JSON object specified by that contract."));
 		return sb.ToString().TrimEnd();
@@ -402,7 +422,7 @@ public static class WorldDiplomacyPromptContractRules
 			.ToList();
 		return lines.Count == 0
 			? ContractText(localize, "AF_DIP_Contract_106", "Currently available actions: none; do not generate a filler declaration.")
-			: ContractText(localize, "AF_DIP_Contract_107", "Currently available actions: ") + string.Join("；", lines) + "。";
+			: ContractText(localize, "AF_DIP_Contract_107", "Currently available actions: ") + string.Join(AnimusForge.DiplomacyCompatibilityTexts.Semicolon, lines) + AnimusForge.DiplomacyCompatibilityTexts.Period;
 	}
 
 	public static string DescribePotentialDiplomaticActions(IEnumerable<string> intents)
@@ -412,10 +432,10 @@ public static class WorldDiplomacyPromptContractRules
 	{
 		List<string> labels = WorldDiplomacyRoundLifecycleRules.NormalizeOrderedIdList((intents ?? Enumerable.Empty<string>())
 			.Select(WorldDiplomacyIntentVocabulary.NormalizeIntent));
-		return labels.Count == 0 ? ContractText(localize, "AF_DIP_Contract_108", "No actual diplomatic action can be published in the current technical state") : string.Join("、", labels);
+		return labels.Count == 0 ? ContractText(localize, "AF_DIP_Contract_108", "No actual diplomatic action can be published in the current technical state") : string.Join(AnimusForge.DiplomacyCompatibilityTexts.ListSeparator, labels);
 	}
-	internal static readonly string KingdomStrategicProfileMarkerPrefix = CompatibilityContractText.Values["AF_DIP_Compatibility_007"];
-	internal static readonly string KingdomStrategicIntentRule = CompatibilityContractText.Values["AF_DIP_Compatibility_008"];
+	internal static readonly string KingdomStrategicProfileMarkerPrefix = CompatibilityContractText.Get("AF_DIP_Compatibility_007");
+	internal static readonly string KingdomStrategicIntentRule = CompatibilityContractText.Get("AF_DIP_Compatibility_008");
 
 public static bool GenerationJobContainsKingdomStrategicProfile(WorldDiplomacyJob job, string authorId, string marker, string currentProfilePrompt)
 	{
@@ -442,7 +462,8 @@ public static bool GenerationJobContainsKingdomStrategicProfile(WorldDiplomacyJo
 	}
 public static string BuildKingdomStrategicProfileMarker(string kingdomId)
 	{
-		return KingdomStrategicProfileMarkerPrefix + (kingdomId ?? "").Trim() + "】";
+		// Language-invariant marker identity (AF_DIP_Compatibility_007 is "=").
+		return KingdomStrategicProfileMarkerPrefix + (kingdomId ?? "").Trim() + "\u3011";
 	}
 public static string UpsertKingdomStrategicProfilePrompt(string existing, string profilePrompt, string authorId, Func<string, string, string> localize = null)
 	{
@@ -486,8 +507,8 @@ public static int FindKingdomStrategicProfileInsertionIndex(string prompt, strin
 	{
 		if (string.IsNullOrEmpty(prompt)) return -1;
 
-		string institutionalHeading = CompatibilityContractText.Values["AF_DIP_Compatibility_009"];
-		string familyHeading = CompatibilityContractText.Values["AF_DIP_Compatibility_010"];
+		string institutionalHeading = CompatibilityContractText.Get("AF_DIP_Compatibility_009");
+		string familyHeading = CompatibilityContractText.Get("AF_DIP_Compatibility_010");
 		int institutionalIndex = prompt.IndexOf(institutionalHeading, StringComparison.Ordinal);
 		if (institutionalIndex < 0) institutionalIndex = prompt.IndexOf("[Institutional, legitimacy and ceremonial voice of the issuing kingdom]", StringComparison.Ordinal);
 		if (institutionalIndex >= 0)
@@ -497,19 +518,19 @@ public static int FindKingdomStrategicProfileInsertionIndex(string prompt, strin
 			if (familyIndex >= 0) return familyIndex;
 		}
 
-		string actorProfileHeading = CompatibilityContractText.Values["AF_DIP_Compatibility_011"];
+		string actorProfileHeading = CompatibilityContractText.Get("AF_DIP_Compatibility_011");
 		int actorProfileIndex = prompt.IndexOf(actorProfileHeading, StringComparison.Ordinal);
 		if (actorProfileIndex >= 0)
 		{
-			int actorFamilyIndex = prompt.IndexOf(CompatibilityContractText.Values["AF_DIP_Compatibility_012"], actorProfileIndex + actorProfileHeading.Length, StringComparison.Ordinal);
+			int actorFamilyIndex = prompt.IndexOf(CompatibilityContractText.Get("AF_DIP_Compatibility_012"), actorProfileIndex + actorProfileHeading.Length, StringComparison.Ordinal);
 			if (actorFamilyIndex >= 0) return actorFamilyIndex + 1;
 		}
 
-		string relayProfileHeading = CompatibilityContractText.Values["AF_DIP_Compatibility_013"];
+		string relayProfileHeading = CompatibilityContractText.Get("AF_DIP_Compatibility_013");
 		int relayProfileIndex = prompt.IndexOf(relayProfileHeading, StringComparison.Ordinal);
 		if (relayProfileIndex >= 0)
 		{
-			int relayFamilyIndex = prompt.IndexOf(CompatibilityContractText.Values["AF_DIP_Compatibility_014"], relayProfileIndex + relayProfileHeading.Length, StringComparison.Ordinal);
+			int relayFamilyIndex = prompt.IndexOf(CompatibilityContractText.Get("AF_DIP_Compatibility_014"), relayProfileIndex + relayProfileHeading.Length, StringComparison.Ordinal);
 			if (relayFamilyIndex >= 0) return relayFamilyIndex + 1;
 		}
 
@@ -522,10 +543,10 @@ public static int FindKingdomStrategicProfileInsertionIndex(string prompt, strin
 			{
 				int participantEnd = prompt.IndexOf("\n-- ", participantIndex + participantAnchor.Length, StringComparison.Ordinal);
 				if (participantEnd < 0) participantEnd = prompt.Length;
-				int participantInstitutionIndex = prompt.IndexOf(CompatibilityContractText.Values["AF_DIP_Compatibility_015"], participantIndex, StringComparison.Ordinal);
+				int participantInstitutionIndex = prompt.IndexOf(CompatibilityContractText.Get("AF_DIP_Compatibility_015"), participantIndex, StringComparison.Ordinal);
 				if (participantInstitutionIndex >= 0 && participantInstitutionIndex < participantEnd)
 				{
-					int participantFamilyIndex = prompt.IndexOf(CompatibilityContractText.Values["AF_DIP_Compatibility_016"], participantInstitutionIndex, StringComparison.Ordinal);
+					int participantFamilyIndex = prompt.IndexOf(CompatibilityContractText.Get("AF_DIP_Compatibility_016"), participantInstitutionIndex, StringComparison.Ordinal);
 					return participantFamilyIndex >= 0 && participantFamilyIndex < participantEnd
 						? participantFamilyIndex + 1
 						: participantEnd;
@@ -584,7 +605,7 @@ public static List<WorldDiplomacyLlmMessage> CloneLlmMessages(IEnumerable<WorldD
 		return ContractText(localize, "AF_DIP_Contract_109", "[Public policy event that has already occurred]\n")
 			+ ContractText(localize, "AF_DIP_Contract_110", "Event key=") + (signal.SignalKey ?? "") + "\n"
 			+ (signal.IssuerKingdomName ?? signal.IssuerKingdomId) + ContractText(localize, "AF_DIP_Contract_111", " has enacted \"") + (signal.PolicyName ?? ContractText(localize, "AF_DIP_Contract_112", "Unnamed policy")) + ContractText(localize, "AF_DIP_Contract_113", "\", ")
-			+ ContractText(localize, "AF_DIP_Contract_114", "and this policy directly affects ") + (signal.TargetKingdomName ?? signal.TargetKingdomId) + "。\n"
+			+ ContractText(localize, "AF_DIP_Contract_114", "and this policy directly affects ") + (signal.TargetKingdomName ?? signal.TargetKingdomId) + AnimusForge.DiplomacyCompatibilityTexts.Period + "\n"
 			+ ContractText(localize, "AF_DIP_Contract_115", "Public policy summary: ") + (signal.PolicySummary ?? "") + "\n"
 			+ (string.IsNullOrWhiteSpace(signal.DirectEffect) ? "" : ContractText(localize, "AF_DIP_Contract_116", "Direct measures affecting this kingdom: ") + signal.DirectEffect + "\n")
 			+ ContractText(localize, "AF_DIP_Contract_117", "This policy is already in effect, but it has not automatically produced war, a peace treaty, an alliance or any other diplomatic outcome. Rulers may defend, assess or oppose it, demand changes, seek compensation, propose terms of exchange or exploit it for advantage.");
@@ -624,7 +645,7 @@ public static List<WorldDiplomacyLlmMessage> CloneLlmMessages(IEnumerable<WorldD
         correctionBuilder.AppendLine(ContractText(localize, "AF_DIP_Contract_069", "[Hard-fact corrections for the unpublished draft]"));
         correctionBuilder.AppendLine(ContractText(localize, "AF_DIP_Contract_070", "The previous assistant content is only an unpublished draft, not diplomatic history. Do not cite or continue it or assume its events have occurred."));
         correctionBuilder.AppendLine(ContractText(localize, "AF_DIP_Contract_071", "The draft failed JSON, field or factual validation. Draft it again following the instructions below."));
-        correctionBuilder.AppendLine(ContractText(localize, "AF_DIP_Contract_072", "Current issuing kingdom=") + authorId + "=" + authorName + "。"
+        correctionBuilder.AppendLine(ContractText(localize, "AF_DIP_Contract_072", "Current issuing kingdom=") + authorId + "=" + authorName + AnimusForge.DiplomacyCompatibilityTexts.Period
             + (string.IsNullOrWhiteSpace(repairTargetId) ? ContractText(localize, "AF_DIP_Contract_073", "This request may choose 1 to 4 legal targets from the original task's authorized scope, with one actual diplomatic action per target.")
                 : ContractText(localize, "AF_DIP_Contract_074", "Target kingdom of the invalid item=") + repairTargetId + "=" + repairTargetName + ContractText(localize, "AF_DIP_Contract_075", "; current relationship=") + bilateralState + ContractText(localize, "AF_DIP_Contract_076", "; other legal targets may be retained.")));
         if ((reason ?? "").StartsWith("diplomatic_action_terms_shape_invalid:", StringComparison.Ordinal))

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_navahrudak_and_black_ruthenia_bdeee59b",
+  "Keywords": [
+    "Navahrudak's Black Ruthenian ties",
+    "Envoys and local land at Navahrudak"
+  ],
+  "RagShortTexts": [
+    "Navahrudak matters to Black Ruthenia amid cooperation and rivalry between princely families.",
+    "Marriage and aid do not replace local recognition; land and collections affect residents."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Navahrudak stands amid competing claims in Black Ruthenia, where Mindaugas's family and the Romanovych use kinship as well as rivalry. Territorial claims require local cooperation and provisions for followers. Envoys can ease disputes, while outside military demands shift interests, making a visitor's actual authority important."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Navahrudak residents need to know land claims, recipients of dues and which retinue will stay. Kin across princely territories need introductions for travel. Rapidly changing demands can bring competing claims on one household, making witnesses and clear obligations valuable."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

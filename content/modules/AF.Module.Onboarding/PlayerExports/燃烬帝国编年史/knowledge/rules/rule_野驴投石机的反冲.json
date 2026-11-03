@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v3",
+  "Keywords": [
+    "野驴投石机的反冲"
+  ],
+  "RagShortTexts": [
+    "野驴投石机发射震动强烈，须稳固支撑与操作空间。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "被称为野驴的投石机在发射时产生强烈震动，需要稳固支撑和足够操作空间。器械运到城墙旁以后，还须设置承托、检查机件并保护操作者，不能省掉这些准备便反复发射。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

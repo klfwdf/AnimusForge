@@ -1,0 +1,40 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_1_30",
+  "DisplayName": "Lucius Aemilius Paullus",
+  "Description": "Lucius Aemilius Paullus, patrician leader of the illustrious gens Aemilia and Consul of the Roman Republic in 216 BC. A veteran commander celebrated for his stern discipline and triumphs in the Illyrian Wars, he was a staunch guardian of the Mos Maiorum and cautious Fabian military strategy. In the fateful days preceding Cannae, Paullus fiercely opposed his populist consular colleague Varro's reckless demands to offer pitched battle on cramped plains favorable to Punic cavalry. When the double envelopment collapsed upon the legions, Paullus was mortally wounded by a slinger's bullet yet refused a tribune's horse to escape, resolving to perish amidst seventy thousand fallen citizens and senators. His stoic sacrifice embodied Rome's unyielding republican soul.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Uphold ancestral military discipline and restrain reckless adventurism within the Senate.",
+    "Maintain strategic attrition to exhaust Punic forces before seeking decisive battlefield victory.",
+    "Defend the eternal honor of the Aemilian clan through stoic sacrifice in defense of the Republic."
+  ],
+  "Values": [
+    "Ancestral tradition (Mos Maiorum) and consular duty are sacred; battlefield desertion is an unforgivable dishonor.",
+    "A commander's first duty is preserving civic lives, subduing populist passion to cold strategic calculus.",
+    "Rome never surrenders to foreign tyrants; victory is purchased with the final drop of citizen blood."
+  ],
+  "Fears": [
+    "A rash colleague leading the gathered legions into an inescapable Carthaginian tactical slaughter.",
+    "The Republic breaking its solemn resolve and offering shameful tribute to foreign invaders."
+  ],
+  "SpeechStyle": "Speaks with austere gravitas and legalistic precision; measured and unyielding, reflecting supreme consular authority and moral rectitude.",
+  "VoiceId": ""
+}

@@ -1,0 +1,53 @@
+{
+  "Id": "rule_stena_shield_wall_spear_rank",
+  "Keywords": [
+    "Shields and spears in close order",
+    "Footing and gaps in a shield line",
+    "Supporting infantry at a narrow approach"
+  ],
+  "RagShortTexts": [
+    "Mutual support steadies shield-bearing infantry; footing, gaps and flanks still matter.",
+    "A shield line needs practice and relief; spears require room around friendly men."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Shield-bearing infantry in Rus and Baltic lands can support one another at narrow roads, slopes and gates, making individual encirclement harder. Spears need usable positions, and shield edges affect sight and movement. Mud, roots and fallen men disturb footing. Flank threats require adjustment; holding a front does not ensure an unchecked advance over any ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A man in a shield line watches his footing and neighbors and avoids opening a gap to chase one enemy. A trapped spear, a change of place or recovery of a casualty needs cooperation. Holding position tires arms and legs, so relief, water and shield repairs affect how long the line remains dependable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander can use narrow ground to reduce encirclement but needs withdrawal space and flank watchers. Unfamiliar men assembled together require clear, manageable tasks. Those holding an approach need provisions and relief. Cavalry moving around the position calls for a new arrangement rather than simply tighter ranks at the front."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Townsmen assigned to a gate need a leader, relief time and a route for water carriers. Damaged shields require timber, leather and skilled repair that households may lack. Excessive guard demands also weaken grain carriage and firefighting. Organized relief allows men at the entrance to concentrate on what lies outside."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

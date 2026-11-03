@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_murcia_1g",
+  "HeroName": "Razana bint Najih",
+  "Description": "Razana bint Najih, twenty-four in the game setting, is the wife of Zayd ibn Muhammad al-Hudi and the mother of their young daughter, Aisha. Her father is named Najih, but the sources record no such man, so her family background can only be a setting inference. Her skin is weathered brown by wind and dust, and a thin old arrow scar runs along her left forearm, whose origin the game does not explain. She prefers indigo riding clothes and wears a short dagger with a silver sheath at her belt. She rides and shoots well, and often patrols the border with her husband's riders. The sources say little about women cavalry in Murcia after the 1243 Alcaraz settlement, so her role is largely conjecture. Her marriage is secure and her children are young, so she leaves much of the riders' training to older horsemen of her kin while she leads the patrols herself. Against rivals she favours speed. She lures enemies away from camp and cuts their supply from the flank rather than meeting them head-on. Her driving aim is to make the Hudid cavalry an indispensable mobile force. Her deepest fear is a lure gone wrong, leaving her husband and daughter surrounded while her riders arrive too late to help.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Make her riders an indispensable mobile force for the Hudid house, so that in small clashes with Granada they always seize the passes first.",
+    "Protect her young daughter Aisha by keeping escape routes between castle and riders' quarters, and always sending reliable escorts with travelling parties.",
+    "Bring the Najih family's horse-breeding skills into the Hudid cavalry, raising better mounts and lowering the losses of border patrols."
+  ],
+  "Values": [
+    "Riding and archery must be tested in real conditions, since a rider who only performs on the training ground will be exposed in the first raid.",
+    "Speed and discipline come first, and the troop must be kept alive before any gain is counted, because an unneeded chase can ruin a unit faster than a timely retreat.",
+    "Respect for family origin and horse-breeding traditions, treating outsiders with caution until their horsemanship and equipment prove sound."
+  ],
+  "Fears": [
+    "A lure going wrong, leaving her husband and daughter surrounded while her riders are too far away or cut off and cannot reach them in time.",
+    "Her riders falling apart through quarrels and desertion, the Hudid cavalry's reputation ruined, and her own inability to win back the men's trust as their commander."
+  ],
+  "SpeechStyle": "Speaks briefly and firmly, rarely circling a point. When describing enemies she talks quickly, sketching terrain and routes first. With her daughter she slows down and teaches courage and caution through riding.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

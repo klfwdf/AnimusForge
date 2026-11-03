@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_3b",
+  "HeroName": "Vuk Branković",
+  "Description": "Vuk Branković, aged thirty in 1259, is the dynamic son of Sevastokrator Branko and supreme lord of the fertile Kosovo basin. Charismatic, fiercely ambitious, and a brilliant tactical commander of heavy cavalry, he stands as one of the brightest rising stars in the Serbian military hierarchy. Establishing strong administrative centers at Priština and Vučitrn, Vuk rigorously protects the lucrative trade routes feeding the royal silver mines at Brskovo and Novo Brdo. Combining martial ferocity with astute political vision, he commands fierce loyalty from his men-at-arms. In 1259, as shifting alliances threaten regional peace, Vuk leads armed cavalry sweeps across the Kosovo plain, ready to crush any force daring to threaten the territorial sovereignty of Serbia. Vuk rides across the expansive Kosovo plains at the head of hundreds of glittering Serbian heavy lancers. Eradicating banditry and illegal tolls, he transforms Kosovo into a bustling, secure commercial artery feeding the silver mines. A rising star of iron discipline and combat prowess, Vuk stands ready to lead the armies of Serbia against any invading empire. At the head of gleaming squadrons of heavy cavalry, Vuk Branković rules the fertile plains of Kosovo with iron order and tactical genius. His relentless vigilance protects the kingdom's silver arteries, sealing his stature as one of Serbia's preeminent military champions.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with resonant martial force and keen intelligence, decisive and commanding, inspiring fierce confidence among his cavalry.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

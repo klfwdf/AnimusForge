@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_5e",
+  "HeroName": "Margherita Orsini",
+  "Description": "Countess Margherita Orsini is an esteemed matriarch of the House of Orsini, celebrated across Rome for administrative wisdom, financial acumen, and extensive ecclesiastical influence. Directing vast agrarian manors, vineyards, and livestock studs across the Roman Campagna, Margherita coordinates food supplies and warhorse breeding that sustain the family's armored cavalry. A devout benefactor of the Franciscan Order, she sponsors urban hospices, balancing baronial power with compassionate charity. Countess Margherita supervised the extensive agricultural manors, vineyards, and warhorse breeding studs of the Roman Campagna, coordinating abundant provisions for Orsini knights while generously endowing Franciscan hospices and charitable hospices throughout Rome. Her tireless dedication to agrarian abundance and Christian charity preserved the prosperity of her people, surrounding Countess Margherita with deep veneration among both powerful feudal lords and humble Roman citizens. Her prudent stewardship, compassionate famine relief, and unyielding domestic fortitude have sustained the domains of the Orsini through decades of border strife and changing seasons. Her transparent accounting, moral constancy, and boundless charity earn Lady Margherita the eternal gratitude and love of her people across Rome. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maximize agricultural abundance and cavalry provisions across all Orsini rural estates.",
+    "Support charitable works and religious orders to soften baronial rivalries and earn divine favor."
+  ],
+  "Values": [
+    "Christian charity, prudent domestic stewardship, and pious reverence for divine law.",
+    "Unconditional dedication to family preservation, tenant welfare, and ancestral honor."
+  ],
+  "Fears": [
+    "Drought or blights devastating agrarian production across the Roman Campagna.",
+    "Seeing beloved young kin butchered in the pitiless cycle of Roman baronial vendettas."
+  ],
+  "SpeechStyle": "Speaks with warm maternal composure, gentle Christian grace, and articulate administrative clarity. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_tanukhid_kingdom_internal",
+  "Keywords": [
+    "Tanukhids Nobility",
+    "Tanukhid kin and camp distribution"
+  ],
+  "RagShortTexts": [
+    "Mavia coordinates kin and chiefs, with her spouse sharing protection duties.",
+    "Merchants, herders and followers assess war costs differently."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mavia joins kin and chiefs; she and her spouse share protection and distribution duties. Merchants, herders and followers assess war costs differently."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mavia coordinates kin and chiefs, with her spouse sharing protection duties. Followers retain family ties; decisions about guards and distant service affect common participation. Merchants, herders and followers assess war costs differently."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Merchants, herders and followers assess war costs differently. Coordination allocates actual supply and protection duties, not merely titles. Mavia coordinates kin and chiefs, with her spouse sharing protection duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Mavia coordinates kin and chiefs, with her spouse sharing protection duties. Households compare burdens with neighbors; unmatched protection weakens cooperation. Merchants, herders and followers assess war costs differently."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Merchants, herders and followers assess war costs differently. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Mavia coordinates kin and chiefs, with her spouse sharing protection duties."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

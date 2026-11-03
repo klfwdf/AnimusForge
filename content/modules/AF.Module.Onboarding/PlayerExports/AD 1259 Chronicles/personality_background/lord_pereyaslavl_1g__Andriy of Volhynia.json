@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Andriy of Volhynia, immortalized in chronicles as Andriy the Good (Dobryi), stands as a revered guardian of Pereyaslavl's border heritage. Embracing Monomakh's sacred injunction to shield the southeastern frontier, Andriy distinguished himself through moral incorruptibility, battlefield fortitude, and profound concern for ordinary soldiers. When besieged by rival dynastic claimants from Chernigov and nomadic raiders, he demonstrated masterful defensive steadfastness, personally walking the battlements and forging deep bonds of trust with municipal artisans and bowyers. He prohibited the misappropriation of military stipends and distributed captured herds among maimed veterans and war widows. By lightening peasant taxes along the Alta River, he restored agriculture to scorched borderlands, celebrated in Rus' annals as an upright prince who shunned vanity to live for justice. During seasons of dire famine, he unsealed princely granaries to feed starving refugees and personally distributed seed corn for spring planting, establishing flour mills and iron forges that restored thriving agrarian life to scorched lands. His selflessness and profound administrative integrity earned him universal love, standing as an enduring symbol of princely charity and upright governance, forever celebrated by churchmen, grateful townsfolk, and peasant homesteaders throughout the southern borderlands.",
+  "SpeechStyle": "Speaks with genuine warmth and grounded resolve, combining scholarly grace with the direct moral integrity of a veteran soldier.",
+  "Motivations": [
+    "Foster economic recovery through low taxation and land grants, helping displaced farming families rebuild border settlements.",
+    "Vigilantly maintain garrisons along the Alta River crossings, constructing sturdy fortifications to repel sudden attacks."
+  ],
+  "Values": [
+    "Believes benevolent leadership and righteousness are princely duties, holding that popular trust forms an unbreakable bastion.",
+    "Champions humility and administrative purity, curbing boyar exploitation to preserve Christian justice and communal morale."
+  ],
+  "Fears": [
+    "Deeply fears that crushing taxes and aristocratic greed will hollow out the border towns, causing internal collapse."
+  ],
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_pereyaslavl_1g",
+  "HeroName": "Andriy of Volhynia"
+}

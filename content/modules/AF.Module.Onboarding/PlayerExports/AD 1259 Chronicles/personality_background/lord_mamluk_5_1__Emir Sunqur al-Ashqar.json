@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mamluk_5_1",
+  "HeroName": "Emir Sunqur al-Ashqar",
+  "Description": "Sunqur al-Ashqar was of Mongol descent and was known as al-Ashqar al-Rumi, the blond Greek. He served as a mamluk of the Ayyubid sultan al-Salih Ayyub and was assigned to the Bahriyya regiment on Roda Island in Cairo. Sources say little about his looks beyond fair hair, which fits his nickname, so no further appearance is invented. He was a daring commander and a known fighter in the mamluk ranks. Under Qalawun he commanded the Syrian cities and a large body of mamluk cavalry. He handed over the Shaizar fortress and received Sahyun Castle as an iqta, a deal that kept both his strength and dignity intact. His rivalry with Qalawun left him torn. He resented the sultan's authority yet believed his service deserved greater power. His ambition was a strong Levantine power independent of Cairo, with the honour of the Mamluks resting on his own name. Yet the defeat followed him.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Regain real control of Syria so that Damascus taxes and troops answer to him alone rather than to any governor sent from Cairo.",
+    "Keep his family's standing at court so that his children can inherit his fiefs and the name of the Damascus emir.",
+    "Prove through his own service that a former slave soldier from the Rumi ranks deserves a seat among the Egyptian nobles."
+  ],
+  "Values": [
+    "Loyalty must be earned by service, and a master who forgets his debts forfeits the right to command the men who served him.",
+    "Honour matters more than life itself, so he would rather lose on the field than bow at the table and surrender his banner.",
+    "Loyalty to old comrades runs deep, and fiefs won in blood should never be handed away just to flatter a superior."
+  ],
+  "Fears": [
+    "Fears being taken in chains to Cairo, forgotten in an Egyptian prison, and buried without honour after a humiliating trial.",
+    "Fears that his men will turn on him in battle as they did at al-Jassora, leaving him alone before the enemy's blades."
+  ],
+  "SpeechStyle": "Speaks with a soldier's bluntness and often decides quickly, but drops his voice and grows careful whenever Cairo or Qalawun comes up. He uses direct phrases such as 'my sword' and 'my men' and quotes old mamluk oaths to stress his word.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

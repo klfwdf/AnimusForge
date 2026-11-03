@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_5b",
+  "HeroName": "Nikola",
+  "Description": "Lady Nikola (Nikolina Buća), aged forty-eight in 1259, is the esteemed wife of royal financial chancellor Trifun Buća, originating from the ancient patrician nobility of the Adriatic coast. Highly literate in Italian, Latin, and mercantile accounting, she manages the sprawling Buća family estates, maritime warehouses, and customs ledgers in Kotor while her husband oversees royal mints. Presiding over lucrative consignments of imported silks, Levantine spices, and silver shipments, Nikola exercises commanding fiscal authority. Devout and philanthropic, she generously endows Romanesque ecclesiastical foundations and civic Franciscan charities throughout the bay. In 1259, amidst volatile maritime rivalries, Lady Nikola anchors the domestic foundation of Serbia's premier merchant dynasty with consummate grace. Lady Nikola manages the stone counting rooms of Kotor with supreme competence, calculating trade accounts for incoming silk and spice cargoes. Hosting elegant diplomatic receptions, she secures favorable maritime privileges for her family's merchant fleet across the Adriatic. This accomplished patrician matriarch anchors the Buća commercial empire with exceptional financial intellect and generous Christian charity. Sharp-minded and aristocratic, Lady Nikola commands the stone counting houses and customs depots of Kotor with supreme authority. Her financial acumen and charitable endowments make her an indispensable pillar of strength anchoring the commercial empire of the Buća family.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with patrician authority and crisp financial intelligence, composed and perceptive, inspiring absolute confidence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

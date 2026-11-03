@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_1_3",
+  "HeroName": "Hugrleikr 'Hestakorn'",
+  "Description": "Hugrleikr 'Hestakorn' (Horse-Grain) was the indispensable master of the royal horse, chief marshal of supplies, and foundational patriarch of the illustrious Hegranes lineage. In 1259, Hugleik managed the critical breeding programs, tactical logistics, and cavalry mounts of the Norwegian crown from his estate at Hegranes in Sunnfjord. Renowned for his unyielding pragmatism and meticulous oversight of supplies—which earned him his affectionate military epithet—he ensured that royal expeditions never faltered for lack of provisions or mounts. His brilliant logistical engineering underpinned King Hákon IV's ambitious naval mobilizations across the stormy western oceans. A man of incorruptible loyalty, iron discipline, and profound administrative competence, he rose from landed service into the inner circle of the royal council. His accumulation of strategic fiefdoms and unblemished administrative reputation provided the springboard that enabled his son, Baron Audun Hugleiksson, to become the foremost statesman of the realm. At Hegranes, Hugrleikr developed extensive stud farms and advanced dry-grain storage facilities, upgrading selective breeding techniques to provide the royal cavalry with exceptional warhorses. During King Hákon IV's ambitious naval expeditions across the Atlantic, Hugleik's mathematical foresight ensured that thousands of retainers never suffered supply shortages amidst arctic storms. His lifetime of tireless administrative diligence and incorruptible loyalty laid the durable economic and political foundation for the ascendancy of the Hegranes lineage.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage royal warhorse breeding and army supply networks so that household troops can mobilise even in harsh weather.",
+    "Develop Hegranes into a prosperous western fjord transport hub and supply base, benefiting family and local communities.",
+    "Teach his son Audun precise calculation, political judgement and loyal service, preparing him for advancement at court."
+  ],
+  "Values": [
+    "Logistics decide campaigns as much as combat; even a missing horseshoe or grain measure can undermine a strong army.",
+    "Serve frugally and honestly, rejecting display and relying on practical work and proven results to retain royal trust.",
+    "Keep absolute loyalty to the king and ensure that every account and commission withstands exact scrutiny."
+  ],
+  "Fears": [
+    "Storms or lost grain ships cutting expeditionary supplies and leaving soldiers stranded on barren islands without food or means of victory.",
+    "Growing court luxury and corruption producing empty accounts and neglected equipment, destroying Haakon IV's hard-won military strength."
+  ],
+  "SpeechStyle": "Speaks with laconic efficiency, military precision, and practical shrewdness, articulating quartermaster logistics and tactical needs with unadorned clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

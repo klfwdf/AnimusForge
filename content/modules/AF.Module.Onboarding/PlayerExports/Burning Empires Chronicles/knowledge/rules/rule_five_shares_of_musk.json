@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v3",
+  "Keywords": [
+    "Five shares of musk"
+  ],
+  "RagShortTexts": [
+    "Nanai-vandak ordered delivered musk divided into shares of three, one and one."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nanai-vandak instructed that a consignment of musk be divided into five shares after delivery: three to one recipient and one each to two others. Ownership, carriage and allocation appeared together. Arrival of a caravan did not itself settle the partners’ accounts; the goods still had to be handed over."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

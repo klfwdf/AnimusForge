@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_1_2",
+  "HeroName": "Knútr Jarl Hákonarson",
+  "Description": "Knútr Jarl Hákonarson was the highest-ranking magnate, royal cousin, and hereditary Jarl of medieval Norway, occupying a singular position of authority beneath the crown. In 1259, Knut held vast territorial domains across the Oslofjord region and the eastern marches, commanding private knightly retainers that rivaled the royal host. Having contested the throne during the bitter Ribbung rebellions of his youth, he reconciled with King Hákon IV in a historic peace pact, ascending to the office of realm Jarl and trusted viceroy. Knut governed southeastern Norway with an iron hand, modernizing border fortresses, suppressing piracy, and maintaining diplomatic equilibrium with Swedish lords across the frontier. When the king campaigned abroad, Knut repeatedly served as the supreme regent of the realm, presiding over royal councils and provincial tings with consummate statecraft. His aristocratic grandeur, strategic cunning, and deep commitment to political stability made him an immovable pillar of the Norwegian high medieval monarchy. At his southeastern seat in Oslo, Knútr Jarl maintained an elite cavalry retinue clad in Continental plate mail, erecting fortified checkpoints that eradicated piracy across the strategic waters of the Oslofjord. Representing the Norwegian crown during tense boundary negotiations with Swedish and Danish ambassadors, Knut defended maritime customs jurisdictions and frontier borders with formidable eloquence. Uniting the battlefield prowess of an experienced warlord with the seasoned statecraft of a supreme regent, he anchored decades of security across southern Norway.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve the Haakonsson earls' inherited senior position, estates and privileges in lasting partnership with the dynasty.",
+    "Keep the Oslofjord and eastern Swedish frontier secure against foreign probes and domestic rebellion.",
+    "Exercise decisive influence in royal council while maintaining a workable balance between great nobles and the crown."
+  ],
+  "Values": [
+    "Noble authority rests on ancestry and real military power; strength earns the respect that rank alone cannot guarantee.",
+    "Timely and honourable compromise allows a family to survive political storms and retain its standing.",
+    "Keep sworn loyalty and govern decisively when entrusted with regency, protecting public peace and the state."
+  ],
+  "Fears": [
+    "Royal officials gradually stripping hereditary earls of land and command until they are powerless dependants with empty titles.",
+    "Renewed civil war on the eastern frontier destroying the towns and trade he has built around the Oslofjord over many years."
+  ],
+  "SpeechStyle": "Speaks with cold baronial authority and regal gravitas, measuring his words with the haughty composure of a seasoned royal Jarl.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_arran_kingdom_internal",
+  "Keywords": [
+    "Arran Nobility",
+    "Albanian community service burdens"
+  ],
+  "RagShortTexts": [
+    "Vachagan II joins communities of different languages and beliefs.",
+    "Mountain chiefs and valley elites differ over service."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vachagan II joins communities of different languages and beliefs. Mountain chiefs, valley elites and court differ over service; cooperation rests on practical patronage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Vachagan II joins communities of different languages and beliefs. Followers retain family ties; decisions about guards and distant service affect common participation. Mountain chiefs and valley elites differ over service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mountain chiefs and valley elites differ over service. Coordination allocates actual supply and protection duties, not merely titles. Vachagan II joins communities of different languages and beliefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Vachagan II joins communities of different languages and beliefs. Households compare burdens with neighbors; unmatched protection weakens cooperation. Mountain chiefs and valley elites differ over service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Mountain chiefs and valley elites differ over service. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Vachagan II joins communities of different languages and beliefs."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

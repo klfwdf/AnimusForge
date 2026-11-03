@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v10",
+  "Keywords": [
+    "书写身份与同名误认"
+  ],
+  "RagShortTexts": [
+    "加卢斯案只报姓名不报职务，导致同名者误捕。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "加卢斯案中，未说明职务的两个名字让哲人与演说家代替兵工监督者被抓。识字者记录姓名还要带上身份和地点，翻译名字后也不能把相似拼写当成同一个人。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

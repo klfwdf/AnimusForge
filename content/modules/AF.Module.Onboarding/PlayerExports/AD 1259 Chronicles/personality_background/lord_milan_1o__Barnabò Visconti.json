@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1o",
+  "HeroName": "Barnabò Visconti",
+  "Description": "Barnabò Visconti, son of Stefano, was Lord of Milan. Fierce, eccentric, and implacable, he bred thousands of ferocious boarhounds, defied popes with the legendary proclamation 'I am Pope and Emperor in my land', and conquered central Lombardy through sheer iron will. Barnabò bred five thousand ferocious boarhounds under professional huntsmen and instituted the draconian 'quarantana' tortures, crushing communal defiance across Lombardy with unpredictable, incandescent wrath. Forcing papal legates to swallow parchment anathemas and constructing the colossal fortress bridge of Trezzo, he forged central Lombardy into an impenetrable, fear-dominated military zone. Implacable and tyrannical, Barnabò embodied untamed medieval absolutism, subordinating all divine and human law to his sovereign whim to forge Milan into a terrifying fortress state. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Subjugate every rebellious Lombard commune through absolute, theatrical terror.",
+    "Humiliate papal legates by forcing them to eat parchment bulls of excommunication.",
+    "Construct monumental fortresses along the Adda to turn his realm into an unassailable bastion."
+  ],
+  "Values": [
+    "Believes visceral dread and unyielding punishment alone subdue treasonous Italian nobles.",
+    "Regards his sovereign whim as absolute law, scornful of popes, emperors, and mortal customs."
+  ],
+  "Fears": [
+    "His loyal warhounds being poisoned, leaving him vulnerable to midnight assassination.",
+    "Seemingly submissive nephews staging a sudden military coup while his guard is down."
+  ],
+  "SpeechStyle": "Barks with thunderous savagery and mocking insolence, striking raw terror into listeners. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

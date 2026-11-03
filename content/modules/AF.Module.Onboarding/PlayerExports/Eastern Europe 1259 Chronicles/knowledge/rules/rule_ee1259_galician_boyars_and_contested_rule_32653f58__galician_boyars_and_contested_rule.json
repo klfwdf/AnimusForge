@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_galician_boyars_and_contested_rule_32653f58",
+  "Keywords": [
+    "galician boyars and contested rule",
+    "Galician boyar factions and princely rule"
+  ],
+  "RagShortTexts": [
+    "Galician boyars hold lands, kin ties and outside connections.",
+    "Danylo must negotiate with or constrain different factions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Galician boyars influence rule through estates, kin and outside contacts. They may support the court or seek other patrons. Danylo’s military strength still needs local cooperation for revenues and appointments; victory does not erase family interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Boyar followers depend on household supply and commands. Actual contingents matter more than reported numbers; shared status does not imply equal allegiance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Appointments, gifts and sanctions all shape elite support. Identifying particular actions preserves useful suppliers better than treating an entire social group as hostile."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households face changing patrons and repeated collection. Return to cultivation and fewer demands matter more immediately than declarations of friendship among magnates."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

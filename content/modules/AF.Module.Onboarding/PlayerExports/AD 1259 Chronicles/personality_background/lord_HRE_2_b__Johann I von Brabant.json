@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_2_b",
+  "HeroName": "Johann I von Brabant",
+  "Description": "Johann I of Brabant, known as 'John the Victorious', was Duke of Brabant and Limburg. Johann I spearheaded heavy knight charges at Worringen, capturing the Archbishop of Cologne and annexing Limburg to establish Brabant as the supreme titan of the Low Countries. He hosted magnificent chivalric tournaments in Brussels, defeating dozens of German and French champions while pardoning captives with magnanimous princely honor. The supreme champion of his age, John the Victorious routed coalition armies at Worringen, catapulting Brabant to the pinnacle of Low Countries supremacy. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush the coalition of Cologne and Luxembourg at Worringen to annex Limburg into Brabant.",
+    "Transform Brussels and Louvain into Europe's premier jousting and mercantile metropolises.",
+    "Secure unhindered trade corridors linking the Rhine to the North Sea, dominating the Low Countries."
+  ],
+  "Values": [
+    "Believes fearless battlefield shock charges and codified justice earn eternal chivalric renown.",
+    "Values the devotion of burghers and knights, sharing hardships with troopers in feast and fray."
+  ],
+  "Fears": [
+    "Suffering fatal wounds in close melee, depriving Brabant of its victorious commander.",
+    "Envious imperial princes forging massive counter-leagues to dismantle Brabant's hegemony."
+  ],
+  "SpeechStyle": "Speaks with roaring chivalric passion, charismatic laughter, and inspiring battlefield command. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

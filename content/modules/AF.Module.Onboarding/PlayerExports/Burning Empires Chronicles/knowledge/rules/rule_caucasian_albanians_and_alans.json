@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v8",
+  "Keywords": [
+    "Caucasian Albanians and Alans"
+  ],
+  "RagShortTexts": [
+    "Caucasian Albania and the Alans were not one political community despite similar names."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Caucasian Albania and the Alans were not one political community despite similar names. Eastern valleys, Caspian approaches and northern pastoral groups had different rulers and livelihoods. Envoys needed to identify their partner rather than assume one treaty bound everyone with a similar name."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

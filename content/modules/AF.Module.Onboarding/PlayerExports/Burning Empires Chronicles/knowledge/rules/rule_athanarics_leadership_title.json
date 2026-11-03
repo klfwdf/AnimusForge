@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v8",
+  "Keywords": [
+    "Athanaric’s leadership title"
+  ],
+  "RagShortTexts": [
+    "Athanaric represented his following; Gothic groups did not all share the same ties."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Athanaric was a powerful Gothic leader with whom the Roman emperor negotiated peace. His following did not encompass every Gothic group. Households, armed retinues and religious ties formed different relationships; a command still needed identifiable recipients."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

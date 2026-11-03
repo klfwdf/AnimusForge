@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1_3",
+  "HeroName": "Jarek of Waldenberka",
+  "Description": "Jarek of Waldenberka stands as a veteran Moravian courtier and steadfast royalist retainee dedicated to the Přemyslid crown. Governing the strategic bastion of Waldenberk, he long served as royal chamberlain and fiscal supervisor on the Moravian march, earning the deep confidence of both the late King Wenceslaus I and King Přemysl Otakar II through unimpeachable integrity. Reserved, methodical, and even-handed, Jarek adjudicated complex jurisdictional disputes between native Slavic landholders and Saxon mining colonists, strictly enforcing royal decrees to safeguard silver transit routes and ensure timely revenue flows to the treasury of Prague. While King Otakar led colossal field armies abroad, Jarek anchored home garrisons and supply lines with meticulous diligence, providing the indispensable bureaucratic stability upon which victorious campaigns depended. Inspecting crown estates and granaries across the Moravian borders, Lord Jarek audited stone quarrying and warhorse requisitions, ensuring garrisons held at least three months of emergency rations. Balancing discipline with paternal equity toward tenants, he ruthlessly suppressed unlawful toll barriers set up by robber barons, winning the deep respect of burghers as the crown's most dependable administrative rock. His unbending integrity and fiscal prudence preserved law and order across the frontier marches.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Supervise Moravian tax barriers and silver routes, ensuring uninterrupted supply trains reach Danubian armies.",
+    "Reconcile German mining settlers with Slavic landholders, preventing unrest from destabilizing the rear."
+  ],
+  "Values": [
+    "Regards faithful execution of royal oaths and total fiscal incorruptibility as foundational duties.",
+    "Favors prudent, conservative governance, scorning reckless speculation and court intrigue."
+  ],
+  "Fears": [
+    "Fears continuous foreign wars will exhaust Moravian wealth, sparking widespread tax revolts among barons.",
+    "Dreads Hungarian light cavalry raids burning unprotected frontier villages and mining works."
+  ],
+  "SpeechStyle": "Crown majesty lies not in boisterous rhetoric, but in every full sack of minted coin and every well-provisioned granary. In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Jarek of Waldenberka"
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_2",
+  "HeroName": "Jorma Güregen Darga",
+  "Description": "Jorma Güregen Darga is listed at age 55 in the game data. His title borrows the name of Chormaqan Noyan, the Mongol governor who restarted the campaigns in Persia under Ögedei around 1230 and set up the tamma military administration in Azerbaijan. Chormaqan died around 1241, so this game figure is a different person who only inherits the name and the legacy of that office. The appearance below is a game-setting choice: he is lean, keeps a neatly trimmed white beard, wears a dark red headcloth, and hangs a bronze seal at his neck that marks him as keeper of tax rolls and grain stores. As a young man he served as a minor clerk across Azerbaijan and Georgia, learning to govern conquered towns through ledgers and numbers, and that training made him famous at court for exact accounts. In Azerbaijan he is remembered as a man who checked every granary himself before the harvest was counted. He does not beat rival officials in open argument. He lets their promises and expenses appear in his books until the contradictions are plain. His aim is a durable financial order that keeps Ilkhanate revenues steady. His private dread is a single error in the accounts, since one such failure could destroy decades of reputation.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wants to build a durable financial order so that tax revenue from Azerbaijan and western Iran stays reliable, even after a bad harvest year.",
+    "He wants to keep real control of tax rolls and grain logistics against rival civil officials, including the Juvayni circle, so that no one else handles these matters.",
+    "He wants his exact accounts to win Hülegü's trust, so that his counsel carries more weight in state and military decisions beyond money matters."
+  ],
+  "Values": [
+    "He values precision and verifiability, holding that every income and expense should have a record, and that errors are harder to forgive than defeat.",
+    "He values thrift and reserves, believing that surplus in the treasury and granaries is the foundation of a ruler's security, not something to be spent at feasts.",
+    "He values practical order, caring more whether provinces function and taxes reach the treasury on time than whether the court enjoys empty praise or rhetoric."
+  ],
+  "Fears": [
+    "He fears that a single error in his accounts will cost him trust, and years of reputation will collapse overnight with no easy way to rebuild it.",
+    "He fears that rivals will attack his origins or religious standing, dismissing his professional skill and leaving him no place at court."
+  ],
+  "SpeechStyle": "He speaks slowly and rarely raises his voice. He gives figures before any conclusion. In a dispute he lays the ledger out and lets the other side stop on its own.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

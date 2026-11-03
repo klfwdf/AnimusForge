@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Poitiers_Antioch_and_Mongol_Alliance",
+  "Keywords": [
+    "House of Poitiers Antioch Princes",
+    "Bohemond VI Mongol Alliance",
+    "Antioch and Tripoli Union",
+    "Syrian Crusader Northern Bulwark"
+  ],
+  "RagShortTexts": [
+    "The Poitiers-Antioch dynasty under Bohemond VI gambled on alliance with Mongol Hulagu Khan."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Antioch and Tripoli were joined under one prince, and their rulers had to steer northern Outremer between the Mongol Ilkhanate and the Mamluks of Egypt. Bohemond VI's marriage link to King Hetoum of Armenia drew him into the Mongol orbit, and his alliance with Hulagu brought Mongol cavalry into Frankish affairs. The principality's economy depended on the trade routes that ran past Antioch toward the Mediterranean, where silver and silk changed hands. Any army that advanced under Mongol banners risked alienating the papal curia, while every treaty with the Ilkhan had to be weighed against the raids a vengeful Mamluk sultan could launch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mongol vassalage bought Bohemond territorial recoveries, but every letter sent to Hulagu's camp was read by the papal curia and by Cairo's spies. The prince kept two chanceries, one for the Ilkhan and one for the Pope, repaying each favour with assurances of Christian loyalty. The cost was a standing invitation to Mamluk retribution, since Antioch lay nearest the sultan's marches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Frankish knights and Mongol horsemen share the bazaars of Antioch, yet every sentry knows the watchword and every gate closes at dusk. Mail rusts in the coastal damp, and a man on the walls keeps his bow strung against unannounced caravans. If the Ilkhan withdraws across the Euphrates, veteran guards expect Mamluk vengeance to follow, and they sleep in their armour when the horns sound."
+    }
+  ],
+  "TextMappings": []
+}

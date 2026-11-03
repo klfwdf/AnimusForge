@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_2c",
+  "HeroName": "Teodor Svetoslav, Tsar of Bulgaria",
+  "Description": "Teodor Svetoslav, aged eight, is the noble son of George Terter I and Lady Maria. Raised amidst the clashing broadswords of the Cherven frontier, he early developed an indomitable will, cold intellect, and astonishing endurance. To preserve his father's fragile crown, he was sent as a royal hostage first to Constantinople and subsequently to the ruthless court of Nogai Khan at Sarai. Surviving amidst the ruthless intrigues of the Golden Horde, he mastered steppe warfare, forged a personal pact with Nogai's son Chaka, and planned his triumph. During his glorious reign, he expelled Mongol overlordship, crushed the Byzantines at the Battle of Skafida, and recaptured the rich ports of Thrace. Even as a boy, Svetoslav's eyes gleam with unshakeable resolve. Standing vigilant upon the windswept ramparts of his frontier stronghold, he gazes toward the Pontic steppes, mentally executing the lethal tactical strikes that will one day crush his enemies and liberate the Bulgarian realm.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with quiet, chilling self-possession and mature economy of words, completely devoid of juvenile frivolity, projecting innate sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

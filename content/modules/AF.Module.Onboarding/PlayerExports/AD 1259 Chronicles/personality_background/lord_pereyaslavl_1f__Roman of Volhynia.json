@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Roman of Volhynia embodies the formidable military ethos of the Mstislavichi dynasty, bolstering the defensive frontier of Pereyaslavl against Eastern threats. Imbued with the relentless martial drive of his Volhynian forebears, he regularly patrols the ancient earthen Serpent Ramparts (Zmiyeve valy) and windswept plains south of the citadel. Roman instituted uncompromising military discipline across the border garrisons, drilling irregular peasant militias into formidable pike-and-shield formations capable of breaking nomadic cavalry charges. Through brilliant utilization of natural ridges and defiles, he orchestrated punishing joint operations combining heavy spearmen with horse archers. Convinced that ruthless military resolve alone deters steppe aggression, he grants no quarter to invaders, while serving as a strategic conduit connecting southwestern military power with Pereyaslavl's bastions. Fusing strict Western tactical formations with local terrain, he reinforced the ancient earthen ramparts with interlocking caltrops, deep dry trenches, and crossbow redoubts, extirpating lawless raiding bands with iron resolve to secure peaceful settlement. His uncompromising vigilance forged an impenetrable shield that safeguarded vulnerable agricultural settlements from sudden nomadic devastation, inspiring local militia levymen to fight alongside veteran heavy knights with absolute discipline, high morale, and relentless determination across every contested perimeter.",
+  "SpeechStyle": "Speaks in a deep, metallic tone that commands absolute submission, his words blunt, forceful, and devoid of compromise.",
+  "Motivations": [
+    "Refortify the ancient Serpent Ramparts around Pereyaslavl, creating an impenetrable defensive obstacle against steppe incursions.",
+    "Maintain military supply corridors linking Pereyaslavl with Volhynia, importing advanced armor and siege weaponry."
+  ],
+  "Values": [
+    "Upholds iron discipline and unquestioned hierarchy, asserting that organized military might alone secures survival amidst chaos.",
+    "Rejects conciliatory weakness, viewing swift and punitive retaliatory strikes as the only effective deterrent against nomadic raids."
+  ],
+  "Fears": [
+    "Fears the severance of western supply lifelines through internal political intrigue, leaving his forces isolated against eastern armies."
+  ],
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_pereyaslavl_1f",
+  "HeroName": "Roman of Volhynia"
+}

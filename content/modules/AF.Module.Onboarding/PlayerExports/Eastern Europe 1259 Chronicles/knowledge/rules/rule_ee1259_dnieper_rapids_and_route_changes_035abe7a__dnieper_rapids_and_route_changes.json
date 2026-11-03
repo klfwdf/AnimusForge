@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_dnieper_rapids_and_route_changes_035abe7a",
+  "Keywords": [
+    "dnieper rapids and route changes",
+    "Dnieper rapids unloading and transfer"
+  ],
+  "RagShortTexts": [
+    "Dnieper rapids interrupt continuous navigation.",
+    "Unloading, portage and guides add time and cost."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Some Dnieper rapids require sounding, lighter loads or carriage ashore. Every transfer needs guards and labor. A lightly loaded boat passing does not establish a route for the whole shipment; current water conditions decide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Rapids split guards between boats, cargo and carriers. A defined reunion point prevents the advance from moving on while food remains behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "River freight includes guides and transfer labor. Pricing by water distance alone leaves shipments without willing workers at difficult reaches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Shore carriers face injury and loss claims. Counting parcels and assigning watchers takes time but clarifies responsibility when goods go missing."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_langobard_kingdom_economy",
+  "Keywords": [
+    "Langobards Trade",
+    "Mesovium seed grain and woodland goods"
+  ],
+  "RagShortTexts": [
+    "Mesovium farming, herding, woodland and exchange sustain households.",
+    "Taking seed grain damages the next year’s livelihood."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mesovium households farm, herd and exchange woodland goods. Requisitioned seed affects the next year; chiefly gifts also depend on limited surplus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mesovium farming, herding, woodland and exchange sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Taking seed grain damages the next year’s livelihood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Taking seed grain damages the next year’s livelihood. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Mesovium farming, herding, woodland and exchange sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Mesovium farming, herding, woodland and exchange sustain households. Households need meals and the means to keep producing after delivering goods. Taking seed grain damages the next year’s livelihood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Taking seed grain damages the next year’s livelihood. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Mesovium farming, herding, woodland and exchange sustain households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

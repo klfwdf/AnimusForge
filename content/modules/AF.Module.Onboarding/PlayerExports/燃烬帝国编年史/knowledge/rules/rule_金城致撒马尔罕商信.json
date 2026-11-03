@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v1",
+  "Keywords": [
+    "金城致撒马尔罕商信"
+  ],
+  "RagShortTexts": [
+    "粟特商人纳奈万达克从金城把消息寄给撒马尔罕的同业。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "粟特商人纳奈万达克从金城把消息寄给撒马尔罕的同业。信里既报告东方城市的破坏，又安排留在家乡的资金，远地代理与本乡账目因而连在一起。消息要经人携带，收信者无法像在场者一样核对每项传闻。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

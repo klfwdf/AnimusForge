@@ -1,0 +1,59 @@
+{
+  "Id": "be_thervingian_kingdom_legitimacy",
+  "Keywords": [
+    "西哥特人法统",
+    "阿塔纳里克的裁决认可"
+  ],
+  "RagShortTexts": [
+    "阿塔纳里克的裁决威望需要地方承认。",
+    "祖传信仰和家户安全可能产生取舍。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "首领的裁决威望需要参与者承认，保护祖传信仰与保护家户可能产生取舍，强迫服从不能消除粮食与分配争执。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "阿塔纳里克的裁决威望需要地方承认。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。祖传信仰和家户安全可能产生取舍。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "祖传信仰和家户安全可能产生取舍。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。阿塔纳里克的裁决威望需要地方承认。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "阿塔纳里克的裁决威望需要地方承认。家户通过家人、土地与求助能否获保护来认识统治。祖传信仰和家户安全可能产生取舍。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "祖传信仰和家户安全可能产生取舍。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。阿塔纳里克的裁决威望需要地方承认。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

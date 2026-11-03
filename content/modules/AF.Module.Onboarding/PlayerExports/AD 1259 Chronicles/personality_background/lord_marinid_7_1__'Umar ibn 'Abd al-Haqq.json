@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_7_1",
+  "HeroName": "'Umar ibn 'Abd al-Haqq",
+  "Description": "Umar is about forty-eight years old and serves as head of his branch of the house. He is the husband of Salma and the father of Subh and Sukayna. He is lean, with greying temples, and he usually wears a plain dark brown linen robe under a grey cloak washed nearly white. A bronze medicine chest hangs at his belt, holding herbs, fine needles, and linen bandages. He walks slowly and often stops to watch other people's hands before he speaks. On his left forefinger he wears a bronze ring engraved with a verse, a reward he received for copying scripture in a mosque when young. In his youth he studied in a city medical school under an old physician, and he learned to set bones and treat wounds with real skill. Later, when a dispute with a neighbouring tribe left several herdsmen hurt, he tended their wounds in camp, and that work earned him an almost sacred standing in the clan. He often treats herdsmen and copies medical books by lamplight, his fingers stiff from years of holding a pen. When clansmen argue over the effect of a remedy, he turns to two or three medical books until both sides are satisfied. Rivals find that he never rushes to attack. He quotes scripture and law, taking the other side's argument apart layer by layer until nothing is left to say. His deepest drive is to ground the family's name in learning and healing rather than in battle alone. His greatest fear is that his refinement will be mistaken for weakness, drawing young riders toward the more warlike uncles while he lacks the force to stop it. His calm is partly a mask, and the more peaceful he appears at a feast, the tighter his mind is wound.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants the family's name grounded in learning and healing, so people think first of the care this branch gives, not only of its warriors.",
+    "He intends to train physicians and copyists from among the young clansmen, so the household holds skills that rival branches cannot easily take.",
+    "He plans to give his two daughters a full education, so that they can read contracts and speak in council in their own voices."
+  ],
+  "Values": [
+    "Learning must reach the sick and wounded, since knowledge that only fills shelves does nothing for those suffering in camp. He learned this from his old physician.",
+    "An argument should be won by reason and evidence, and a man who wins by intimidation has already lost the respect of his listeners.",
+    "Caution is owed to those who depend on you, because a leader who acts in haste gambles with the life of every rider in his charge."
+  ],
+  "Fears": [
+    "His refinement may be taken for weakness, so young riders drift toward warlike uncles, and he lacks the force to hold them, which would cost the house its weight in council.",
+    "A fever or wound may strike someone in his household, and if his learning cannot save them, years of study will look like failure to his people."
+  ],
+  "SpeechStyle": "He speaks slowly and often opens with a proverb before the practical point. With the sick he is soft-voiced, and with rivals he stays calm and never mocks. When unsure, he says plainly, 'I must check that.'",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

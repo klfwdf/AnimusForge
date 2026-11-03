@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v2",
+  "Keywords": [
+    "车队营地与牲畜"
+  ],
+  "RagShortTexts": [
+    "载家大车需要畜力，营地选择也要顾到水和草。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "载家大车需要畜力，营地选择也要顾到水和草。停车能暂时集中家人，却不能让牧群长期挤在没有饲料的地方。保卫车队还须保护牵引和繁殖牲畜。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_bosporan_kingdom_geopolitics",
+  "Keywords": [
+    "Bosporan Kingdom Frontiers",
+    "Both shores of the Kerch Strait"
+  ],
+  "RagShortTexts": [
+    "Kerch links the Black Sea and Sea of Azov.",
+    "Ports on both shores still need inland fields and roads."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kerch links Black Sea and Azov. Both shores need crossings, anchorages and hinterland roads; vessels cannot replace every land food route."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kerch links the Black Sea and Sea of Azov. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Ports on both shores still need inland fields and roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ports on both shores still need inland fields and roads. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Kerch links the Black Sea and Sea of Azov."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kerch links the Black Sea and Sea of Azov. Closed routes may separate families from goods, imposing costs on those remaining at home. Ports on both shores still need inland fields and roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ports on both shores still need inland fields and roads. Cargo passes different carriers, making distant route changes become local shortages through delay. Kerch links the Black Sea and Sea of Azov."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v1",
+  "Keywords": [
+    "不列颠皮舟木骨"
+  ],
+  "RagShortTexts": [
+    "凯撒仿不列颠轻舟以木为骨、编条蒙皮。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "凯撒记述一种仿不列颠舟只：龙骨和肋骨用木，余部编条后蒙皮。木骨承担形状，蒙皮隔水；这种轻舟适合运送人员，不能把轻便直接等同于能承受任何海浪。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_8_2_1",
+  "HeroName": "Margarethe von Fürstenberg",
+  "Description": "Margarethe traces her descent from the ancient Black Forest dynasty of Fürstenberg, daughter of Count Heinrich I, ruling as the esteemed châtelaine of Hohenberg beside her valiant husband Albrecht II. Reserved, pious, and extraordinarily capable in estate administration, she expertly managed the revenues of timberlands, mines, and tenant dues across the Baar plateau. While Count Albrecht campaigned far afield along the Rhine and across the Swabian marches, Margarethe oversaw fortress granaries, garrison armaments, and home defense militias with unwavering vigilance. Eschewing ostentatious palace luxury, she channeled resources into local abbeys and charitable hospices, sheltering wounded retainers and orphaned serfs. Her steadfast virtue and quiet fortitude established her as an indispensable domestic anchor safeguarding the Hohenberg-Habsburg alliance. Managing the treasury of Rottenburg, Countess Margarethe audited every manifest of Black Forest timber and iron ore production, ensuring silver was judiciously allocated to masonry repairs and veterans' pensions. Extending compassionate relief to serfs through tax remissions during bad harvests, she established almshouses within local abbeys, preserving domestic peace throughout the turbulent Interregnum. Her quiet fortitude and prudent stewardship preserved the prosperity and peace of Hohenberg throughout decades of relentless regional conflict and noble feuds.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure fortress granaries remain stocked and domestic order prevails while her husband campaigns abroad.",
+    "Preserve the close alliance between House Fürstenberg and Hohenberg, reinforcing southern mountain nobility."
+  ],
+  "Values": [
+    "Regards diligent estate governance, frugality, and marital fidelity as the crowning virtues of a chatelaine.",
+    "Views domestic tranquility and pious Christian charity as a spiritual rampart against outer turmoil."
+  ],
+  "Fears": [
+    "Fears her husband falling in siege warfare, exposing their young heirs to predatory partition.",
+    "Worries trade routes and mountain mines will be severed by war, crippling comital revenues."
+  ],
+  "SpeechStyle": "The pines of the Black Forest withstand every winter gale, and household accounts demand absolute fidelity; only secure keeps bring soldiers home in triumph. In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Margarethe von Fürstenberg"
+}

@@ -2649,13 +2649,18 @@ internal bool RecordPlayerMessageCaptured(string text, List<NpcDataPacket> nearb
 
 	}
 
-internal bool RecordResponseForAllNearbySafeCaptured(List<NpcDataPacket> nearbyData, int speakerAgentIndex, string speakerName, string response, bool requireMemoryReceipt = false)
+internal bool RecordResponseForAllNearbySafeCaptured(List<NpcDataPacket> nearbyData, int speakerAgentIndex, string speakerName, string response, bool requireMemoryReceipt = false, int targetAgentIndex = -1, string targetName = null)
 
 	{
 
 		List<int> visibleAgentIndices = BuildVisibleAgentSnapshot(nearbyData);
 
 		string text = SceneAgentIdentityPromptCaptureAdapter.ResolveSceneHistorySpeakerNameForPrompt(speakerAgentIndex, speakerName, nearbyData);
+
+		// A relay line addressed to another NPC keeps that addressee; -1 stays the player-directed default.
+		bool npcAddressee = targetAgentIndex >= 0 && targetAgentIndex != speakerAgentIndex;
+		int messageTargetAgentIndex = npcAddressee ? targetAgentIndex : -1;
+		string messageTargetName = npcAddressee ? SceneAgentIdentityPromptCaptureAdapter.ResolveSceneTargetNameForPrompt(targetAgentIndex, targetName, nearbyData) : "";
 
 		long eventSequence = SceneConversationHistoryOwner.NextEventSequence();
 
@@ -2683,6 +2688,10 @@ internal bool RecordResponseForAllNearbySafeCaptured(List<NpcDataPacket> nearbyD
 
 					SpeakerAgentIndex = speakerAgentIndex,
 
+					TargetAgentIndex = messageTargetAgentIndex,
+
+					TargetName = messageTargetName,
+
 					VisibleAgentIndices = visibleAgentIndices
 
 				}));
@@ -2704,6 +2713,10 @@ internal bool RecordResponseForAllNearbySafeCaptured(List<NpcDataPacket> nearbyD
 				SpeakerName = text,
 
 				SpeakerAgentIndex = speakerAgentIndex,
+
+				TargetAgentIndex = messageTargetAgentIndex,
+
+				TargetName = messageTargetName,
 
 				VisibleAgentIndices = visibleAgentIndices
 
@@ -3657,7 +3670,7 @@ internal async Task<MyBehavior.HistoryPromptSnapshot> AwaitPrecomputedPersistedH
 
 	}
 
-internal bool PersistNpcSpeechToNamedHeroes(int speakerAgentIndex, string speakerName, string response, List<NpcDataPacket> nearbyData, bool requireMemoryReceipt = false)
+internal bool PersistNpcSpeechToNamedHeroes(int speakerAgentIndex, string speakerName, string response, List<NpcDataPacket> nearbyData, bool requireMemoryReceipt = false, int targetAgentIndex = -1, string targetName = null)
 
 	{
 
@@ -3670,6 +3683,18 @@ internal bool PersistNpcSpeechToNamedHeroes(int speakerAgentIndex, string speake
 		}
 
 		string text = SceneAgentIdentityPromptCaptureAdapter.ResolveSceneHistorySpeakerNameForPrompt(speakerAgentIndex, speakerName, nearbyData);
+
+		// Relay lines addressed to another NPC keep that addressee in the overheard text.
+		bool npcAddressee = targetAgentIndex >= 0 && targetAgentIndex != speakerAgentIndex;
+		string addresseeLabel = npcAddressee ? SceneAgentIdentityPromptCaptureAdapter.ResolveSceneTargetNameForPrompt(targetAgentIndex, targetName, nearbyData) : "";
+		string OverheardLine(int listenerAgentIndex)
+		{
+			string prefix = AdapterPromptCaptureTexts.PcapCompat("SceneHistoryCompat_e8876b7571b1") + text + ": ";
+			if (!npcAddressee) return prefix + response;
+			return prefix + (listenerAgentIndex == targetAgentIndex
+				? AdapterPromptCaptureTexts.PcapText("SceneHistory_AddressedToYou", "(to you) ")
+				: AdapterPromptCaptureTexts.PcapFormat("SceneHistory_AddressedToTarget", "(to {TARGET}) ", ("TARGET", addresseeLabel))) + response;
+		}
 
 		HashSet<string> persistedNonHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -3687,7 +3712,7 @@ internal bool PersistNpcSpeechToNamedHeroes(int speakerAgentIndex, string speake
 
 				{
 
-					string aiText = nearbyDatum.AgentIndex == speakerAgentIndex ? response : AdapterPromptCaptureTexts.PcapCompat("SceneHistoryCompat_e8876b7571b1") + text + ": " + response;
+					string aiText = nearbyDatum.AgentIndex == speakerAgentIndex ? response : OverheardLine(nearbyDatum.AgentIndex);
 
 					if (requireMemoryReceipt)
 
@@ -3715,7 +3740,7 @@ internal bool PersistNpcSpeechToNamedHeroes(int speakerAgentIndex, string speake
 
 			{
 
-				string aiText = nearbyDatum.AgentIndex == speakerAgentIndex ? response : AdapterPromptCaptureTexts.PcapCompat("SceneHistoryCompat_e8876b7571b1") + text + ": " + response;
+				string aiText = nearbyDatum.AgentIndex == speakerAgentIndex ? response : OverheardLine(nearbyDatum.AgentIndex);
 
 				if (requireMemoryReceipt)
 

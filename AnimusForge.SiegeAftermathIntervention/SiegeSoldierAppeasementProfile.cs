@@ -8,7 +8,7 @@ public sealed class SiegeSoldierAppeasementProfile
 {
     public const uint ValidationMessageColor = 0xFFFFD27Fu;
 
-    public const string TargetValidationMessage = "[Siege aftermath] Appeasing soldier morale must be directed to an allied soldier.";
+    public static readonly string TargetValidationMessage = SiegeAftermathCompatibilityTexts.Raw("appease_target_validation");
     public const string TargetValidationMessageEn = "[Siege aftermath] Appeasing soldier morale must target allied soldiers who entered the town.";
 
     public int MoralePenalty { get; } = 20;

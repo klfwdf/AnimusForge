@@ -1,0 +1,59 @@
+{
+  "Id": "be_kartli_kingdom_economy",
+  "Keywords": [
+    "Kartli Trade",
+    "Mtskheta grain herds and mountain transport"
+  ],
+  "RagShortTexts": [
+    "Mtskheta and Kura grain and herds sustain Kartlian guards.",
+    "Pass supply and foreign garrisons burden roadside households."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mtskheta and Kura grain, herds and pass exchange supply the court. Mountain guards depend on valley transport, while outside garrisons add burdens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mtskheta and Kura grain and herds sustain Kartlian guards. Traveling followers need real food from this production; valuables still require a buyer and exchange. Pass supply and foreign garrisons burden roadside households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Pass supply and foreign garrisons burden roadside households. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Mtskheta and Kura grain and herds sustain Kartlian guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Mtskheta and Kura grain and herds sustain Kartlian guards. Households need meals and the means to keep producing after delivering goods. Pass supply and foreign garrisons burden roadside households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Pass supply and foreign garrisons burden roadside households. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Mtskheta and Kura grain and herds sustain Kartlian guards."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

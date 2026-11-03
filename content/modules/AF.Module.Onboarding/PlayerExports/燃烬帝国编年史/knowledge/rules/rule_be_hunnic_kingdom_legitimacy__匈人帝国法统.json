@@ -1,0 +1,59 @@
+{
+  "Id": "be_hunnic_kingdom_legitimacy",
+  "Keywords": [
+    "匈人帝国法统",
+    "巴兰伯尔的胜利馈赠"
+  ],
+  "RagShortTexts": [
+    "胜利、馈赠和保护支持巴兰伯尔的认可。",
+    "归附者关心家户与生计能否保留。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "胜利、馈赠和保护使首领取得认可，威慑能促成服从，但部众要知道归附后是否还能保有家户与生计。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "胜利、馈赠和保护支持巴兰伯尔的认可。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。归附者关心家户与生计能否保留。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "归附者关心家户与生计能否保留。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。胜利、馈赠和保护支持巴兰伯尔的认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "胜利、馈赠和保护支持巴兰伯尔的认可。家户通过家人、土地与求助能否获保护来认识统治。归附者关心家户与生计能否保留。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "归附者关心家户与生计能否保留。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。胜利、馈赠和保护支持巴兰伯尔的认可。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

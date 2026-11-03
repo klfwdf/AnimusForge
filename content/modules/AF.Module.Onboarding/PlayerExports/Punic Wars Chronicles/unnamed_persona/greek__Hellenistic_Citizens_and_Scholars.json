@@ -1,0 +1,32 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "",
+  "CultureId": "greek",
+  "DisplayName": "Hellenistic Citizens and Scholars",
+  "Description": "Hellenistic poleis citizens, engineers, and hoplites from Syracuse, Tarentum, and Aegean ports. Imbued with the legacy of classical geometry, rhetoric, and civic assemblies, they navigate the clashing empires of Rome and Carthage with intellectual balance and sophisticated siegecraft.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve municipal democracy and intellectual heritage against barbarian conquest."
+  ],
+  "Values": [
+    "Philosophical reason, civic liberty, and mathematical harmony in war and peace."
+  ],
+  "Fears": [
+    "The loss of municipal freedom and the burning of priceless philosophical libraries."
+  ],
+  "SpeechStyle": "Refined, dialectical, and articulate; characterized by philosophical balance and rhetorical poise.",
+  "VoiceId": ""
+}

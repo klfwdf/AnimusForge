@@ -1,0 +1,52 @@
+{
+  "Id": "rule_novgorod_tax_revolt_nevsky_1259",
+  "Keywords": [
+    "Novgorod’s resistance to registration",
+    "Alexander and urban tribute"
+  ],
+  "RagShortTexts": [
+    "In 1259 Novgorod resisted Mongol registration, with Alexander supporting its enforcement.",
+    "Influential families and ordinary households faced different burdens and political fears."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Resistance in Novgorod to Mongol registration and tribute exposed disagreements among prince, influential citizens and ordinary households. Reports and implementation in 1259 brought fears both of outside punishment and unfair local shares. Alexander supported acceptance of the demands. Some sought compromise to preserve the city; others feared recorded households would face growing burdens. Neither one noisy district nor one wealthy family’s consent represents every inhabitant’s experience."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The prince faces pressure from the khan while urban leaders must explain acceptance. If powerful people ease their own share at others’ expense, completed registration can still leave grievances that weaken trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Guards escorting officials through streets see crowds, homes and blocked passage. They need orders and waiting places, and must avoid turning argument into seizure. Decision-makers elsewhere do not witness every encounter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households may fear labour demands, lost grain or another collection. Comparing completed deliveries and supporting detained neighbours’ families meet immediate needs. Acceptance and refusal both impose costs on particular people."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

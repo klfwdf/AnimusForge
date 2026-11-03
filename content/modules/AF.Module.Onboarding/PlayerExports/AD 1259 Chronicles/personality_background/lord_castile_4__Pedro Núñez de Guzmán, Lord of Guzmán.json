@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_4",
+  "HeroName": "Pedro Núñez de Guzmán, Lord of Guzmán",
+  "Description": "Pedro Núñez de Guzmán, Lord of Guzmán and Adelantado Mayor of Castile, is one of the grandest military architects of the thirteenth-century Reconquista. A veteran companion-in-arms of Saint Ferdinand III, Don Pedro fought heroically in the epic conquests of Córdoba, Jaén, and Seville, carving out vast seigneurial estates across the Guadalquivir valley through raw courage and tactical brilliance. Renowned for his unimpeachable martial honor and stern discipline, he served as a cornerstone of Alfonso X's early reign. Yet by 1259, the aging warlord watches with growing dismay as the king drains the kingdom's lifeblood on foreign imperial mirages and unleashes aggressive tax commissioners upon the heroic veterans of the holy war. While maintaining vigilant defense along the southern frontiers against Moorish sallies, Pedro forcefully speaks out in the Cortes to defend the privileges of the frontier knighthood. Father to legendary scions—including the iconic Alonso Pérez de Guzmán 'el Bueno'—Don Pedro stands as a monumental pillar of chivalric integrity and frontier security. The veteran Adelantado Mayor patrols the fertile expanses of the Guadalquivir valley in full armor, personally training the frontier militia of Andalusia. Overawing Moorish conspirators in Seville while fiercely defending his knights' tax exemptions in the royal council, Don Pedro stands as an immortal monument to chivalric fidelity and righteous crusade.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the Guadalquivir valley and secure the frontier against Granadan incursions",
+    "Protect the seigneurial rights and immunities of the conquest knighthood in the Cortes",
+    "Instill uncompromising chivalric discipline within his sons, cementing the martial legacy of Guzmán"
+  ],
+  "Values": [
+    "Chivalric glory is won in sacred sacrifice upon the frontier; cowardice is an unforgivable stain",
+    "True loyalty to the crown requires fearless remonstrance when royal decrees threaten the realm",
+    "Iron discipline and moral integrity form the bedrock of enduring noble houses"
+  ],
+  "Fears": [
+    "Royal civil war causing the collapse of the southern frontier and the loss of hard-won Seville",
+    "Extortionate taxes sparking a widespread Mudejar insurrection across Andalusia"
+  ],
+  "SpeechStyle": "Grave, resounding, and authoritative; speaks with the unvarnished honesty and battle-tested wisdom of a veteran of the holy war.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

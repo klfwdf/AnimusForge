@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_5_1_2",
+  "HeroName": "Emir Ismail al-Mansur ibn al-Ashqar",
+  "Description": "Ismail al-Mansur ibn al-Ashqar is twenty-one years old and the eldest son of Sunqur al-Ashqar and Ittifaq. He is lean-faced with sharp eyes, and usually wears a dark silk robe with a silver amulet at his neck. The game marks him as a scholar and politician, and he speaks in clear sequences, often quoting law and old verse at feasts to show his learning. From boyhood he helped his father's clerks sort the accounts. His youth coincided with his father's revolt and fall. That upheaval convinced him that power must be held by one's own wit and allies, since a father's name alone would not last. Against court rivals and old enemies he plays a cold, calculating game. He is skilled at setting pieces in motion at banquets and negotiations, first finding an opponent's weak point and then choosing between bribe and courtesy. He keeps ambiguous ties with several senior emirs, so he has a way out if the wind changes. His ideal is to restore the Ashqar family's standing and make the name Mansur heard again at court. His darkest fear is that the network he has built will be exposed, and that he will be cast out as the remnant of his father's revolt.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Recover the Ashqar family's lost fiefs and standing, so the house regains a seat befitting its rank at court.",
+    "Weave a dependable network of contacts in the palace, leaving the family allies and a line of retreat for the future.",
+    "Win the favour of Cairo through learning and skill at negotiation, proving he is not merely the son of a rebel general."
+  ],
+  "Values": [
+    "Power must be held by wit and by allies, since a father's name alone will not last and standing must be continually maintained.",
+    "Learning and law are the foundation of a man's standing, and one who can cite them with reason wins respect at any feast.",
+    "Promises and deals should be recorded clearly, because vague arrangements become a weapon for enemies at the decisive moment."
+  ],
+  "Fears": [
+    "Fears that his past contacts with former allies will be exposed, marking him as a remnant of his father's revolt and bringing a full purge.",
+    "Fears that his learning and network will not be enough to halt the family's decline, and that the Ashqar name will be lost to history."
+  ],
+  "SpeechStyle": "Speaks in orderly sequences, backing points with law or verse. At feasts he stays unhurried and drops a pointed question that leaves the other side thinking. When his father comes up he lowers his voice and answers only with a careful sigh.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

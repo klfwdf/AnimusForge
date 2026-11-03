@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_1_1",
+  "HeroName": "Àlvar I, Count of Urgell, Viscount of Cabrera and Àger",
+  "Description": "Àlvar I, Count of Urgell, Viscount of Cabrera and Àger (historically born Rodrigo de Cabrera), is the most defiant, turbulent, and charismatic feudatory of thirteenth-century Catalonia. Governing from the massive ramparts of Balaguer and the rugged defiles of Àger, he commands the fiercest inland cavalry and mountaineer contingents in the realm. Proud, passionate, and bitterly resistant to the centralizing ambition of King James I, Count Àlvar repeatedly repudiated royal feudal demands, forging bold alliances with dissident Castilian grandees to protect Urgell's ancient sovereign-like immunities. His tumultuous personal life mirrored his political defiance; repudiating his first wife Constance of Béarn, he wed Cecilie de Foix without papal dispensation, triggering sensational ecclesiastical and territorial litigation across the Pyrenees. By 1259, confronted by royal armies and papal censure, Àlvar stands immovably behind the battlements of Balaguer, a tragic yet magnificent titan fighting tooth and nail for the vanishing independence of the Catalan comital houses. From the mountain redoubts of Àger and Balaguer, Count Àlvar rallied his cavalry levies to shield the historic autonomy of Urgell against royal encroachment. Haughty and defiant yet adored by the traditionalist Catalan nobility, he remained the most unyielding northern obstacle challenging King James's centralizing ambitions.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the comital sovereignty of Urgell and Àger against royal annexation by King James I",
+    "Vindicate his marriage to Cecilie de Foix and secure papal recognition for his heir Ermengol X",
+    "Coordinate with Castilian and Navarrese allies to form an impenetrable barrier against royal forces"
+  ],
+  "Values": [
+    "The comital coronet of Urgell was won by ancestral swords; an autonomous count bows to no royal tyrant",
+    "A true lord lives and dies with blade in hand; craven submission to centralism is eternal dishonor",
+    "Fight for sovereignty and honor to the last breath, yielding to no earthly king"
+  ],
+  "Fears": [
+    "Royal siege artillery breaching the walls of Balaguer, extinguishing the independence of Urgell",
+    "Papal excommunication invalidating his marriage and disinheriting his legitimate offspring"
+  ],
+  "SpeechStyle": "Fierce, haughty, and thunderous; speaks with uncompromising defiance against royal centralization, embodying ancient feudal rebellion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

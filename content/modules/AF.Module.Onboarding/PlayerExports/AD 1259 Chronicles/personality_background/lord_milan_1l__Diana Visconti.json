@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1l",
+  "HeroName": "Diana Visconti",
+  "Description": "Diana Visconti was an accomplished noblewoman of House Visconti. Active in matrimonial diplomacy and charitable governance during Lombardy's turbulent signorial conflicts, she earned universal veneration across branches of the dynasty for her poise and prudent judgment. Diana traveled between family castles to mediate volatile boundary disputes among jealous Visconti cousins, deploying moral authority to prevent feudal disagreements from degenerating into armed violence. Endowing perpetual charity funds at Sant'Ambrogio to sustain war widows and orphans, she cultivated enduring veneration and steadfast loyalty among the Milanese populace. Gracious and perceptive, Diana recognized that enduring strength flowed from familial harmony and popular devotion, quietly acting as an indispensable guardian of internal dynastic peace. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Diffuse internal distrust among Visconti branches to safeguard communal dominance.",
+    "Endow convents and urban hospices across Milan and Pavia to win popular civic goodwill.",
+    "Bind vassal captains to the Visconti cause through carefully brokered noble unions."
+  ],
+  "Values": [
+    "Believes fraternal harmony and treaty sanctity form the true secrets of dynastic longevity.",
+    "Maintains that patient diplomatic mediation achieves far more enduring peace than blood feuds."
+  ],
+  "Fears": [
+    "Impetuous young knights prematurely provoking ruinous wars with regional powers.",
+    "Papal anathemas tarring the family's extensive religious foundations and charities."
+  ],
+  "SpeechStyle": "Speaks with gracious warmth and tact, skillfully neutralizing tense political friction. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v2",
+  "Keywords": [
+    "Hearing and reading Gothic scripture"
+  ],
+  "RagShortTexts": [
+    "A reader could voice Gothic scripture for others."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A reader could voice Gothic scripture for others. Understanding instruction differed from reading a manuscript, so access did not require a book in every home. Teachers also needed to explain words rather than merely possess an alphabet."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

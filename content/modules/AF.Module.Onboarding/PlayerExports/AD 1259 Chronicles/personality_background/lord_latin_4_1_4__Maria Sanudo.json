@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_1_4",
+  "HeroName": "Maria Sanudo",
+  "Description": "Maria Sanudo, aged thirty-six in 1259, is the daughter of Duke Angelo I Sanudo of Naxos, wed to Paolo Navigajoso, Lord of the strategic northern Aegean island of Lemnos. Her marriage represents a vital geopolitical alliance bridging the Duchy of the Archipelago with the Mega Doux lordship of Lemnos guarding the entrance to the Dardanelles. Resolute, administratively sharp, and proud, Maria manages the granaries, fiscal books, and garrison supply lines at the formidable Kastro citadel of Lemnos. In 1259, as Nicaean fleets mount aggressive campaigns to clear the northern Aegean, Maria stands steadfast alongside her husband, maintaining communication with Naxos and fortifying the island's defenses. Standing firm against bitter northern Aegean gales, Maria directs castle stewards stocking underground stone vaults with rye and cured pork. Blessed with patrician resolve, she inspects Lemnos's stone artillery during hostile naval alarms, inspiring defenders with unshakeable courage. Her resolute vigilance ensures the fortress remains an insurmountable obstacle blocking Byzantine warships from the Dardanelles. Standing watch at the gateway to the Hellespont, Maria defends the strategic island of Lemnos with iron determination. Her logistical efficiency and courage under siege ensure that the northern outpost holds firm as a bastion of Latin power.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with calm, measured authority and clear tactical foresight, commanding absolute respect within the island fortress.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

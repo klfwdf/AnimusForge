@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_6_3_e",
+  "HeroName": "Gunnhild Gunnarsdatter",
+  "Description": "Lady Gunnhild Gunnarsdatter was the high-born noble daughter of Sir Gunnar Bolt and a celebrated young heiress of the emerging Bolt dynasty. In 1259, Gunnhild was an admired figure within the aristocratic society of southeastern Norway, known for her gentle beauty, cultured intelligence, and pious nature. Raised amidst the martial traditions and orderly discipline of the Bolt household, she was educated in Old Norse sagas, Latin devotional psalms, and fine needlework. She assisted her mother in supervising the domestic textile ateliers and managing medicinal dispensaries that provided free herbal salves to tenant cottars. Devoted to her father and brothers, she carried herself with modest dignity, conscious of her strategic importance in future inter-clan marital alliances. Her charitable warmth, moral purity, and graceful composure established her as a radiant jewel of the high medieval Norwegian nobility. From childhood at Haavarstad and the Bolt estates, Gunnhild studied ancient Norse sagas and Christian histories, mastering the intricate genealogies of Scandinavian aristocratic dynasties. During ceremonial visits and high-level social exchanges with western Norwegian nobility, her refined demeanor and sharp intellect reflected the distinguished heritage of her clan. Her compassionate insight and noble elegance established her widespread reputation as one of the most accomplished young noblewomen in Viken.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Study Scandinavian heroic tales and saints' lives, drawing insight from northern history and literature.",
+    "Represent the family at Viken gatherings and help her mother find capable, suitable spouses for her brothers.",
+    "Help ordinary people and artisans on family lands, giving the martial Bolt house a reputation for kindness."
+  ],
+  "Values": [
+    "Noble birth entails responsibility toward the weak and dignity in adversity as well as wealth and authority.",
+    "Learning and integrity protect a noble daughter, allowing her to see beyond changing fortune and live with independent dignity.",
+    "Value siblings and kinship, serving as a patient emotional link that preserves family unity under political pressure."
+  ],
+  "Fears": [
+    "Being made a pawn in reckless family expansion and forced to marry a cruel, unknown warlord at the expense of her scholarly hopes.",
+    "Civil war reaching the estate and burning her treasured saga manuscripts and quiet study."
+  ],
+  "SpeechStyle": "Speaks with charming courtly grace, gentle poise, and modest reserve, demonstrating cultivated noble breeding and natural warmth.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Gunnhild Gunnarsdatter"
+}

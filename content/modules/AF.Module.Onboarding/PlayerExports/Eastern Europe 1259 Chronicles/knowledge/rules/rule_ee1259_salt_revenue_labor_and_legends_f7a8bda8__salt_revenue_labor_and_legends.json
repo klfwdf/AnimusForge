@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_salt_revenue_labor_and_legends_f7a8bda8",
+  "Keywords": [
+    "Salt income and local work",
+    "Salt sale proceeds and household costs"
+  ],
+  "RagShortTexts": [
+    "Wieliczka output needed labor, fuel, tools and transport before sale.",
+    "Salt workers still fed families while proceeds met carriage and upkeep costs."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wieliczka salt required labor, fuel, tools and transport, and income depended on sale. Workers needed food and payment, while households divided time among salt work, fields and care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wieliczka salt required labor, fuel, tools and transport, and income depended on sale. Workers needed food and payment, while households divided time among salt work, fields and care. Troops planned salt and preserved food around weight and containers; damp and leaks damaged stores. Valuable salt cargo also consumed animals and guards needed for grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Wieliczka salt required labor, fuel, tools and transport, and income depended on sale. Workers needed food and payment, while households divided time among salt work, fields and care. Salt revenue depended on production and shipment, not nominal output. Requisitioned workers, fuel shortage and blocked routes reduced receipts and promised payments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Wieliczka salt required labor, fuel, tools and transport, and income depended on sale. Workers needed food and payment, while households divided time among salt work, fields and care. Households balanced salt for food storage against other expenses, while workers depended on continuing production. Higher prices changed plans for meat, grain and livestock sales."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

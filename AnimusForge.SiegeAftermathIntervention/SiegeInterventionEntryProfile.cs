@@ -27,7 +27,7 @@ public static class SiegeInterventionEntryProfile
 
     public const uint SummonedTroopsMessageColor = 0xFFB6F7A8u;
 
-    public const string EntryMenuOptionText = "Decide in person at town";
+    public static readonly string EntryMenuOptionText = SiegeAftermathCompatibilityTexts.Raw("incident_enter_town");
     public const string EntryMenuOptionTextEn = "Decide in person at town";
     
     public const string SelectionUnavailableMissionSource = "selection_unavailable";
@@ -36,31 +36,31 @@ public static class SiegeInterventionEntryProfile
     public const string AutoEnterSummonSource = "auto_enter";
     public const string EnsureAlliedTroopsSummonSource = "ensure";
 
-    public static readonly string EnabledTooltip = "Do not immediately settle aftermath affairs; enter the town in battle gear leading about " + DefaultAutoSummonCount + " healthy troops, while civilians remain in the streets, deciding reassurance, mercy, plunder, or massacre through dialogue or action.";
+    public static readonly string EnabledTooltip = SiegeAftermathCompatibilityTexts.Raw("entry_tooltip_town_prefix") + DefaultAutoSummonCount + SiegeAftermathCompatibilityTexts.Raw("entry_tooltip_town_suffix");
     public static readonly string EnabledTooltipEn = "Do not immediately settle aftermath affairs; enter the town in battle gear leading about " + DefaultAutoSummonCount + " healthy troops, while civilians remain in the streets, deciding reassurance, mercy, plunder, or massacre through dialogue or action.";
 
-    public const string MissingSceneTooltip = "No victorious siege settlement scene is currently available to enter.";
+    public static readonly string MissingSceneTooltip = SiegeAftermathCompatibilityTexts.Raw("entry_missing_scene_tooltip");
     public const string MissingSceneTooltipEn = "No victorious siege settlement scene is currently available to enter.";
     
-    public const string EntryMemoryTitle = "Entry disposition";
+    public static readonly string EntryMemoryTitle = SiegeAftermathCompatibilityTexts.Raw("entry_memory_title");
     public const string EntryMemoryTitleEn = "Entry disposition";
     
-    public const string MissingSceneMessage = "[Siege aftermath] No captured settlement scene is currently available to enter.";
+    public static readonly string MissingSceneMessage = SiegeAftermathCompatibilityTexts.Raw("entry_missing_scene");
     public const string MissingSceneMessageEn = "[Siege aftermath] No captured settlement scene is currently available to enter.";
     
-    public const string DecisionPolicyMessage = "[Siege aftermath] Disposition is decided by you on-site: departing directly settles as plunder; explicit mercy, reassurance, or relief protects civilians; massacre or colonization may be ordered.";
+    public static readonly string DecisionPolicyMessage = SiegeAftermathCompatibilityTexts.Raw("entry_decision_policy");
     public const string DecisionPolicyMessageEn = "[Siege aftermath] Disposition is decided by you on-site: departing directly settles as plunder; explicit mercy, reassurance, or relief protects civilians; massacre or colonization may be ordered.";
 
-    public const string EntryFailedMessage = "[Siege aftermath] Temporarily unable to enter the captured settlement scene.";
+    public static readonly string EntryFailedMessage = SiegeAftermathCompatibilityTexts.Raw("entry_failed");
     public const string EntryFailedMessageEn = "[Siege aftermath] Temporarily unable to enter the captured settlement scene.";
     
-    public const string SelectionFallbackMessage = "[Siege aftermath] No followers selected; healthy regular troops will be brought automatically.";
+    public static readonly string SelectionFallbackMessage = SiegeAftermathCompatibilityTexts.Raw("entry_selection_fallback");
     public const string SelectionFallbackMessageEn = "[Siege aftermath] No followers selected; healthy regular troops will be brought automatically.";
 
-    public const string BattleEquipmentAppliedMessage = "[Siege aftermath] You entered the city in battle gear.";
+    public static readonly string BattleEquipmentAppliedMessage = SiegeAftermathCompatibilityTexts.Raw("entry_battle_equipment");
     public const string BattleEquipmentAppliedMessageEn = "[Siege aftermath] You entered the city in battle gear.";
     
-    public const string NoHealthyTroopsMessage = "[Siege aftermath] The main party has no healthy soldiers or companions eligible to enter.";
+    public static readonly string NoHealthyTroopsMessage = SiegeAftermathCompatibilityTexts.Raw("entry_no_healthy_troops");
     public const string NoHealthyTroopsMessageEn = "[Siege aftermath] The main party has no healthy soldiers or companions eligible to enter.";
     
     public static string BuildEntryMemoryText(string settlementName)

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_3_2_1",
+  "HeroName": "Hawa bint Muhammad",
+  "Description": "Hawa bint Muhammad is the vivacious nineteen-year-old wife of cavalry officer Yahya, hailing from a distinguished family of citadel garrison commanders in Granada. Her union strengthened fraternal ties among the officer corps defending the Alcazaba. High-spirited, warm-hearted, and resourceful, Hawa pairs traditional domestic accomplishments in fine embroidery and accounting with practical knowledge of battlefield bandages and leather armor repair gained from growing up in military quarters. Within the Banu al-Mun'im household, she enthusiastically assists her mother-in-law Fatima with estate affairs, quickly winning deep affection from the entire clan. Proud of her young husband's military zeal, Hawa personally inspects his armaments and prays for his triumph before every watch, standing as an energetic and courageous soldier's consort. Her spirited warmth, practical knowledge of garrison welfare, and unyielding fortitude in the face of frontier hazards establish Hawa as an exemplary soldier's consort, deeply cherished throughout the fortress community. Her spirited cheerfulness, practical knowledge of garrison welfare, and unyielding fortitude in frontier hazards establish Hawa as an exemplary soldier's consort, beloved throughout the fortress. Her spirited cheerfulness, practical knowledge of garrison welfare, and unyielding fortitude in frontier hazards establish Hawa as an exemplary soldier's consort.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To manage her household with energetic care, providing an unshakeable domestic anchor for her husband.",
+    "To foster warmth and solidarity among military families in the garrison quarter."
+  ],
+  "Values": [
+    "Resilience and loving devotion are the greatest virtues of a warrior's wife; fear has no place in her heart.",
+    "Mutual trust, patience, and unwavering loyalty are the bedrock of lasting marriage."
+  ],
+  "Fears": [
+    "Escalating frontier warfare inflicting catastrophic wounds upon her beloved husband.",
+    "A protracted siege starving the garrison and breaking defensive morale."
+  ],
+  "SpeechStyle": "Speaks with bright, spirited warmth and candid charm, blending youthful affection with brave soldierly pragmatism. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

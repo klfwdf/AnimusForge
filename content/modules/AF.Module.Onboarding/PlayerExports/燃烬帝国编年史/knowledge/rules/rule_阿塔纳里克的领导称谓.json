@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v8",
+  "Keywords": [
+    "阿塔纳里克的领导称谓"
+  ],
+  "RagShortTexts": [
+    "阿塔纳里克代表自己的追随者，哥特各群体关系并不一致。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿塔纳里克是有实力的哥特首领，罗马皇帝须同他商议停战。他能代表的追随者与其他哥特群体并不完全重合，家户、武装随从和宗教关系也各有联系；听见他的命令仍须问清传给哪些人。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

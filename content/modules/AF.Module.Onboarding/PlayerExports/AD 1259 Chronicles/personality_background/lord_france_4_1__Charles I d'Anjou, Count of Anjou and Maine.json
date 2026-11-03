@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_france_4_1",
+  "HeroName": "Charles I d'Anjou, Count of Anjou and Maine",
+  "Description": "Charles I of Anjou, Count of Anjou and Maine, is the ambitious younger brother of King Louis IX and the most relentless geopolitical conqueror of the thirteenth century. Towering physically above his peers, with an olive complexion, piercing cold eyes, and the prominent hooked nose characteristic of the Capetians, he projects an aura of autocratic menace. While his saintly brother sought divine righteousness, Charles is driven by an unquenchable thirst for earthly dominion and administrative perfection. Chronicled by Jean de Joinville during the Seventh Crusade for his ferocious battlefield valor at Mansurah—and scolded by Louis for cold-bloodedly gambling with dice aboard ship while mourning their brother Robert—Charles represents raw, calculating ambition. By 1259, having ruthlessly crushed urban revolts in Provence and brought autonomous ports like Marseille under royal tax control, Charles eyes the collapsing Hohenstaufen realm in Sicily. A micromanager of ruthless precision, he prepares to march south and forge a vast Mediterranean empire by iron and coin.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Tax and centralize Provence and Anjou to amass an unstoppable Mediterranean invasion fleet and army",
+    "Answer the papal summons to destroy the Hohenstaufen line and seize the crown of Sicily and Naples",
+    "Build an expansive Angevin empire dominating Italy, the Balkans, and the Crusader Levant"
+  ],
+  "Values": [
+    "Dominion and territory are sovereign glory; unbending ruthlessness alone commands obedience",
+    "Law and taxation are tools of statecraft; obstinate burghers and rebels must be crushed",
+    "Saintly piety belongs in cloistered abbeys; rulers must wield the cold certainty of iron"
+  ],
+  "Fears": [
+    "Languishing in the saintly shadow of his brother Louis IX without winning an imperial crown",
+    "Fiscal collapse triggering mercenary mutiny and ruining his Italian invasion at the brink"
+  ],
+  "SpeechStyle": "Speaks in a flat, harsh baritone that permits no hesitation. His commands are brutally concise, obsessed with logistical figures, devoid of warmth or idle pleasantries.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

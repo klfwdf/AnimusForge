@@ -231,7 +231,7 @@ internal static bool TryGetUnnamedSceneInlineState(PatiencePromptCapturePorts po
 		{
 			text4 = AdapterPromptCaptureTexts.PcapText("Project_Unknown", "unknown");
 		}
-		displayName = text2 + text4;
+		displayName = PersonaIntroTextRules.BuildAnonymousPersonLabel(text2, text4, mainHero.IsFemale);
 		return !string.IsNullOrWhiteSpace(displayName);
 	}
 	internal static bool TryBuildPlayerPublicDisplayNameForPrompt(string observerKey, string cultureId, out string displayName, out bool isCompleteIdentity)
@@ -280,7 +280,7 @@ internal static bool TryGetUnnamedSceneInlineState(PatiencePromptCapturePorts po
 		{
 			text4 = AdapterPromptCaptureTexts.PcapText("Project_Unknown", "unknown");
 		}
-		displayName = text2 + text4;
+		displayName = PersonaIntroTextRules.BuildAnonymousPersonLabel(text2, text4, mainHero.IsFemale);
 		return !string.IsNullOrWhiteSpace(displayName);
 	}
 	internal static Hero ResolveCurrentPlayerIdentityObserverForPrompt()
@@ -564,7 +564,7 @@ internal static bool TryGetUnnamedSceneInlineState(PatiencePromptCapturePorts po
 	internal static string GetPlayerDisplayNameForRelationshipPrompt(Hero mainHero)
 	{
 		string text = (BuildPlayerPublicDisplayNameForPrompt() ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text) || (string.Equals(text, AdapterPromptCaptureTexts.PcapCompat("Compat_Player"), StringComparison.Ordinal) || string.Equals(text, "the player", StringComparison.OrdinalIgnoreCase)))
+		if (string.IsNullOrWhiteSpace(text) || (AdapterPromptCaptureTexts.PcapCompatVariants("Compat_Player").Any(label => string.Equals(text, label, StringComparison.OrdinalIgnoreCase)) || string.Equals(text, "the player", StringComparison.OrdinalIgnoreCase)))
 		{
 			text = (mainHero?.Name?.ToString() ?? "").Trim();
 		}

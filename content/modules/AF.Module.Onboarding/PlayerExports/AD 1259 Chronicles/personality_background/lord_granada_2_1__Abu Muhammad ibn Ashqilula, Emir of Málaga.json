@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_1",
+  "HeroName": "Abu Muhammad ibn Ashqilula, Emir of Málaga",
+  "Description": "Abu Muhammad ibn Ashqilula is the formidable head of clan_granada_2 and hereditary Emir of Málaga, holding supreme sway over the southern maritime coast at thirty-seven years of age. Originating from Arjona, the Banu Ashqilula were the indispensable confederate brothers-in-arms of Sultan Muhammad I al-Ahmar during his earliest rebellions, rewarded with semi-autonomous lordships over Málaga, Guadix, and Baza. Operating from the towering Gibralfaro fortress overlooking Málaga harbor, Abu Muhammad governs vital maritime customs, shipyards, and grain warehouses. A battle-hardened cavalry warlord endowed with fierce baronial pride, he views his dynasty not as subservient vassals, but as co-founders of the realm. Deeply suspicious of royal centralization emanating from the Alhambra, Abu Muhammad vigilantly defends his seigneurial privileges while cultivating discreet diplomatic channels with Castile and North African potentates, standing as a colossal titan in Andalusian politics. His towering aristocratic presence, unyielding territorial defiance, and masterly command over the sea lanes of Málaga establish Emir Abu Muhammad as an immortal titan in Andalusian baronial history. His unyielding defense of seigneurial liberties ensures that the House of Ashqilula commands universal respect throughout the maritime provinces. His unyielding defense of seigneurial liberties ensures that the House of Ashqilula commands universal respect throughout the maritime provinces.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To fiercely defend the hereditary autonomy of the Banu Ashqilula across Málaga and Guadix against royal inquests.",
+    "To expand private mercenary hosts and naval revenues, maintaining parity with the central court."
+  ],
+  "Values": [
+    "Sovereignty and feudal freedom are preserved solely by heavy cavalry and gold, never naive trust.",
+    "Dynastic continuity and familial honor supersede blind obedience to the crown."
+  ],
+  "Fears": [
+    "The Nasrid Sultan orchestrating a royal purge to seize Banu Ashqilula domains.",
+    "A Christian naval blockade choking off Málaga's maritime commerce."
+  ],
+  "SpeechStyle": "Speaks with imperious baronial pride, biting skepticism, and resonant authority that brooks no condescension. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

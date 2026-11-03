@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_3f",
+  "HeroName": "Isabella",
+  "Description": "Princess Isabella was a cherished younger daughter of King Hethum I and Queen Isabella, proudly bearing the revered name and pious spirit of her mother. Educated in theological scholarship within the monastic sanctuaries of Sis, she developed profound compassion for the poor, displaced war orphans, and the sick. Princess Isabella frequently toured public relief shelters surrounding the capital, converting her personal royal stipends into linen garments, flour, and medicines. She sponsored the construction of alpine chapels and stone cottages across mountain valleys, providing homes and tools for Christian refugees fleeing border conflicts. In 1259, as war clouds darkened the southern horizon, Isabella spent long nights in prayer for her campaigning kinsmen while organizing bandage-making guilds. Generous, modest, and deeply devout, she was affectionately hailed by the common folk of Cilicia as the 'Second Isabella of Mercy.' Princess Isabella established civic textile workshops in Sis, employing impoverished war widows to weave wool cloaks for fair wages and lifting families out of destitution. She regularly rode into mountain farming hamlets to assess local hardship, presenting personal petitions to King Hethum to remit taxes on drought-stricken villages. When frontier warfare escalated, Isabella led handmaidens in rolling surgical linen bandages, her radiant selflessness comforting a war-torn nation.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Emulate her mother's sacred legacy of Christian charity, devoting her royal revenues to relieve the suffering of war refugees.",
+    "Endow monastic sanctuaries in the Taurus valleys, providing shelter, tools, and farmland for displaced Christian families.",
+    "Maintain unceasing intercessory prayers in the cathedral of Sis for the protection of her father and brothers campaigning abroad."
+  ],
+  "Values": [
+    "Generosity, tender mercy, and self-sacrifice are the truest reflections of Christ's love in a war-torn world.",
+    "Compassionate solidarity with the impoverished and afflicted; wealth exists solely to serve human welfare.",
+    "Pious modesty, filial devotion, and unwavering fidelity to the royal house and Apostolic faith."
+  ],
+  "Fears": [
+    "Hostile raiders breaching mountain valleys to torch refugee shelters and slaughter helpless convalescents and children.",
+    "Pestilence and starvation overwhelming emergency hospices, turning sanctuaries of mercy into chambers of death."
+  ],
+  "SpeechStyle": "Speaks with radiant gentleness and aristocratic benevolence, coordinating monastic charities and grain distributions with graceful warmth.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Isabella"
+}

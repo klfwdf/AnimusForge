@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v2",
+  "Keywords": [
+    "Tanukhid frontier connections"
+  ],
+  "RagShortTexts": [
+    "Tanukhid groups connected Syrian and Iraqi frontiers through service and exchange."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tanukhid groups connected Syrian and Iraqi frontiers through service and exchange. Routes, settlement and resources gave chiefs different choices; one negotiation was not a permanent common policy."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

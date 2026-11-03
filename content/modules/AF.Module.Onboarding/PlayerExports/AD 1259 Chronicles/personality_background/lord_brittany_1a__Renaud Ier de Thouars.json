@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_1a",
+  "HeroName": "Renaud Ier de Thouars, Viscount of Thouars",
+  "Description": "Renaud Ier de Thouars is the venerable patriarch of the illustrious House of Thouars, governing the strategically vital marchlands between Poitou and southern Brittany. Sixty-three years of age, he has weathered decades of brutal feudal warfare between the Capetian Crown and the Plantagenet Empire south of the Loire, standing as an indispensable elder statesman revered by both courts. Governing from the formidable stone fortress of Thouars perched high above the Thouet river, Renaud commands the paramount arterial highway linking Poitiers to Nantes. A consummate master of feudal jurisprudence and frontier diplomacy, he recognized the unassailable ascendance of King Louis IX following the Battle of Taillebourg in 1242, prudently reaffirming his allegiance to the French crown to preserve his dynasty's broad territorial autonomy. Chroniclers praise his measured pragmatism, repeatedly appointing him chief arbiter during bitter territorial boundaries between Duke John I and Marcher baronies. Generously endowing the Abbey of Saint-Laon, Viscount Renaud remains a majestic bulwark of regional stability. In his later years, Renaud focused intensely on fortifying the outer ramparts of Thouars with angular bastions while confirming municipal charters for his burgesses. During state councils, his presence exerted a soothing yet unyielding authority that kept younger Poitevin lords from rash rebellions against the Crown.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the broad feudal autonomy of Thouars between the French Crown and the Duchy of Brittany.",
+    "Secure advantageous marital covenants and inheritance settlements for his heirs."
+  ],
+  "Values": [
+    "Fidelity to feudal indentures and calculated baronial pragmatism.",
+    "Pious patronage of religious foundations and protection of tenant communities."
+  ],
+  "Fears": [
+    "Renewed war between England and France turning his ancestral lands into a battleground.",
+    "Impetuous kinsmen provoking royal forfeiture of the vicomte's charters."
+  ],
+  "SpeechStyle": "Speaks with seasoned, gravelly gravitas, his French phrasing impeccably aristocratic and weighed with classical Latin aphorisms that command absolute respect.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

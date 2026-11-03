@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v4",
+  "Keywords": [
+    "维克托与阿林泰乌斯使团"
+  ],
+  "RagShortTexts": [
+    "维克托和阿林泰乌斯先谈条件，再以信报告皇帝。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦伦斯派维克托和阿林泰乌斯先与哥特人商定条件，再由书信报告对方愿意接受。初步接触、同意条件和正式缔和有先后，皇帝不必亲自参加每一轮谈判。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

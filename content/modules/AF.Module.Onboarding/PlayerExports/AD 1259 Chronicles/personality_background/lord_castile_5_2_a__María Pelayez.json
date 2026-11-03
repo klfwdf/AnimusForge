@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_5_2_a",
+  "HeroName": "María Pelayez",
+  "Description": "María Peláez is the spirited, resolute young daughter of Captain Pelayo Peláez and Doña María Arnulfo de Miranda, flourishing amidst the rugged alpine expanses of Asturias. Inheriting her father's fearless martial fortitude and her mother's administrative precision, she has ridden across highland trails since early childhood, highly capable with the crossbow and in mountain horsemanship. Endowed with a frank, honorable nature and deep empathy for the common folk, young María commands the genuine admiration of local retainers. Whenever mountain wolves or marauding brigands threaten outlying hamlets, she energetically organizes defensive palisades and helps shepherd villagers into stone watchtowers. In 1259, as unrest stirs the northern marches, María disdains the frivolous fashions of the Toledo court, preferring the honest simplicity of her ancestral peaks. Assisting in the daily inspection of arms and provisions, she stands ever prepared to defend her family's soil, epitomizing the untamed courage of northern Iberian maidenhood. When winter blizzards sweep the northern crags, young María rides fearlessly beside her father, delivering warm wine and bread to isolated charcoal-burners and shepherds. Her cheerful spirit and brave demeanor bring warmth to the grim stone redoubts, ready at a moment's notice to string her hunting bow and shed her blood in defense of her ancestral mountain home.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master alpine combat and equestrian skills to protect her family and estates in times of peril",
+    "Patrol vulnerable tenant settlements and distribute firewood and provisions during harsh winters",
+    "Win the enduring respect of northern noble houses through unwavering honor and bravery"
+  ],
+  "Values": [
+    "Highland honor is proven in steadfast deeds and honesty; courtly hypocrisy is beneath contempt",
+    "Defending ancestral soil and loved ones is the highest duty of nobility",
+    "Reverence before God and generous compassion toward the humble define a worthy soul"
+  ],
+  "Fears": [
+    "Being coerced into a distant, gilded marriage in southern courts, far from her native peaks",
+    "Hostile raiders breaching the mountain passes and laying waste to her beloved homeland"
+  ],
+  "SpeechStyle": "Crisp, lively, and fearless; speaks with straightforward candor and the vibrant chivalric optimism of a highland noble maiden.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

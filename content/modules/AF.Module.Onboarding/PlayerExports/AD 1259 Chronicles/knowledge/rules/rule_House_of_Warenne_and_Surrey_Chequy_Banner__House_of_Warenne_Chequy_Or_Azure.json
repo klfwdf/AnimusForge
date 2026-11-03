@@ -1,0 +1,18 @@
+{
+  "Id": "rule_House_of_Warenne_and_Surrey_Chequy_Banner",
+  "Keywords": [
+    "Warenne arms and identification"
+  ],
+  "RagShortTexts": [
+    "Blue-and-gold checks identified the Warenne family publicly."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Blue-and-gold checks identified the Warenne family publicly, without giving every follower equal rights. Land and service relations determined obligations. Seeing a banner did not reveal every person’s political position."
+    }
+  ],
+  "TextMappings": []
+}

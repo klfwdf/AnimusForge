@@ -1,0 +1,59 @@
+{
+  "Id": "be_quadian_kingdom_geopolitics",
+  "Keywords": [
+    "夸迪人边塞",
+    "夸迪北岸争议筑垒"
+  ],
+  "RagShortTexts": [
+    "多瑙河渡连接夸迪聚落与后方山道。",
+    "争议筑垒加重土地与通行不安。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "多瑙河渡、北岸聚落与后方山道相连，罗马在争议土地筑垒使通行与土地安全更加敏感，收割时的暴露田地尤其难护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "多瑙河渡连接夸迪聚落与后方山道。行路者与守卫接触的是具体岸段、入口和停留地，前方可走也不保证回程仍通。争议筑垒加重土地与通行不安。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "争议筑垒加重土地与通行不安。通行关系需要有人真正护住相接的路段，领地相邻不代表担保范围相同。多瑙河渡连接夸迪聚落与后方山道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "多瑙河渡连接夸迪聚落与后方山道。路被封时家人和物产未必能一同转移，留守者承担的代价也要计算。争议筑垒加重土地与通行不安。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "争议筑垒加重土地与通行不安。来货经过不同承运者，换运和等候会使远处的道路变化成为本地缺货。多瑙河渡连接夸迪聚落与后方山道。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

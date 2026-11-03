@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v6",
+  "Keywords": [
+    "摩尼教纪念座与空椅"
+  ],
+  "RagShortTexts": [
+    "摩尼纪念礼中的高座空椅表达宗教权威。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "纪念摩尼的仪式以高座和空椅表达宗教权威，伴随祈祷与读诵。象征性的在场并不意味着死者心智真实附着于椅子，参与者的感受也可能从敬畏到疑惑不等。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

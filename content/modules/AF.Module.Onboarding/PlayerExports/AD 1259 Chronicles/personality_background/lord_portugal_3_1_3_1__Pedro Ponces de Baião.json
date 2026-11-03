@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_3_1",
+  "HeroName": "Pedro Ponces de Baião",
+  "Description": "Dom Pedro Ponces de Baião is a renowned magnate and battle-hardened warlord of mid-thirteenth-century Portugal, leading the ancient and wealthy House of Baião at twenty-nine years of age. Controlling strategic river tolls, sprawling vineyards, and cliffside keeps along the lower Douro, his lineage forms a premier bulwark of the kingdom's military power. Clad in heavy mail and commanding elite mounted retainers, Dom Pedro repeatedly led spearhead charges during King Afonso III's campaigns across southern frontiers, earning high royal distinction for unyielding courage. His union with Dona Sancha Rodrigues de Briteiros fused the fortunes of Baião with Maia and Briteiros. Straightforward, fiery, yet fiercely loyal to baronial covenants, Dom Pedro never hesitates to voice baronial rights during royal councils, standing as a revered protector of northern knightly freedoms. Fierce, unyielding, and revered across the northern marches, Dom Pedro stands as an incorruptible champion of noble autonomy, leading his armored riders with terrifying ferocity against any who dare threaten the borders of Baião. With unshakeable resolve and thunderous heavy cavalry assaults, Dom Pedro defends the ancient seigneurial liberties of Baião against all foes and rivals. His thunderous battlefield charges and iron discipline ensure that no enemy penetrates the fortified frontiers of Baião.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To lead the heavy cavalry of Baião to decisive battlefield victories, protecting his river domains.",
+    "To safeguard northern noble charters and resist excessive royal levies in high council."
+  ],
+  "Values": [
+    "A nobleman's worth is proven by cold steel and unflinching valor under fire.",
+    "Allied oaths are sacred bonds to be defended unto death."
+  ],
+  "Fears": [
+    "Royal centralization stripping away centuries of hereditary river tolls and judicial rights.",
+    "Suffering a tactical defeat that decimates his loyal veteran knightly retinue."
+  ],
+  "SpeechStyle": "Speaks with a booming, resonant voice and blunt martial directness, cutting through courtly subtleties with fierce soldierly conviction. He speaks with calm aristocratic assurance, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

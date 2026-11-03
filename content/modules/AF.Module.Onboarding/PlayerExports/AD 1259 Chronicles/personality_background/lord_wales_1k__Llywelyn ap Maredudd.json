@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1k",
+  "HeroName": "Llywelyn ap Maredudd, Lord of Meirionnydd",
+  "Description": "Llywelyn ap Maredudd is the battle-hardened chieftain of Meirionnydd, representing an ancient princely branch of southern Gwynedd. Weather-beaten and grizzled, with a deep scar slicing across his brow, he personifies the feral endurance of the Welsh highland clans. Having spent decades resisting the predations of the Marcher lords across the Mawddach estuary, Llywelyn knows the bitter taste of exile and dispossession. In 1259, recognizing Prince Llywelyn ap Gruffudd's undisputed supremacy, he placed his mountain warbands under the Prince of Wales's banner. Appointed guardian of the critical passes guarding southern Snowdonia, he wields intimate knowledge of every peat bog and cliffside ambush route. He constructed formidable drystone barricades across narrow defiles, turning highland gorges into death traps for unwary invaders. Utterly ruthless in border defense, his skirmishers strike terror into English cavalry, anchoring the southern flank of the principality with stone-wall tenacity. He surveys the precipitous defiles of Meirionnydd on foot, inspecting watchposts in midnight downpours and ruthlessly punishing any sentry found sleeping. Knowing the clumsy vulnerability of barded Norman destriers amidst mountain scree, he amasses massive rock chutes along the cliffs, resolved that no foreign trespasser shall survive the ascent.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expel all Norman garrisons from Meirionnydd and reclaim his ancestral valleys and mines",
+    "Secure unshakeable hereditary tenure from Prince Llywelyn through distinguished battle service",
+    "Guard the southern passes of Snowdonia, annihilating any English vanguard venturing into the crags"
+  ],
+  "Values": [
+    "These mountains belong to the sons of Cymru; trespassers deserve only the spear and the gallows",
+    "Clan survival rests upon absolute discipline and unyielding ferocity; pity is fatal weakness",
+    "Fealty once sworn must be paid in blood; only conquerors earn immortality in bardic verse"
+  ],
+  "Fears": [
+    "Being trapped in mountain ravines by traitorous Welsh clans colluding with the Marchers",
+    "Peace treaties sacrificing southern chieftains to satisfy English demands"
+  ],
+  "SpeechStyle": "Booms with a deep, rasping growl forged by shouting over howling mountain winds. He wastes no breath on courtly flattery, demanding swift action and speaking solely of ambushes and spears.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

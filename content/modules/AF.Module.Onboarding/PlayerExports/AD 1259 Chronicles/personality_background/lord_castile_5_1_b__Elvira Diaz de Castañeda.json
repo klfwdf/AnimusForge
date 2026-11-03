@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_5_1_b",
+  "HeroName": "Elvira Diaz de Castañeda",
+  "Description": "Elvira Díaz de Castañeda is the graceful and sharp-minded daughter of Diego Gómez and Doña Mayor, celebrated across Cantabria as an exemplary maiden of the northern aristocracy. Raised within mist-wreathed mountain towers, she received a comprehensive education from her mother, mastering Latin scripture, manorial accounts, embroidery, and herbal medicine. Combining stoic mountain resilience with innate aristocratic poise, Doña Elvira is highly sought after by prominent Iberian noble houses. Active in the administration of castle infirmaries, she personally treats wounded frontier guards with medicinal salves, earning deep affection and veneration from the peasantry and men-at-arms alike. In the politically tense climate of 1259, her keen observational powers help decipher the covert agendas of visiting envoys. Serving as a trusted confidante to her parents in delicate matrimonial and diplomatic considerations, Elvira brings gentle wisdom and moral clarity to her family's martial council. Within the quiet stone courtyards of the castle herbarium, Elvira cultivates rare medicinal plants and prepares linen bandages to treat wounded sentries. Greeting injured mountain guards with tender compassion and expert medical care, her selfless charity and serene intelligence command universal reverence, bringing gentleness, moral courage, and radiant aristocratic grace to her family's martial stronghold.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Heal wounded frontier defenders and comfort the sick poor in accordance with Christian charity",
+    "Assist her mother in safeguarding domestic manorial accounts and food provisions during crises",
+    "Form a prestigious and protective marital alliance that reinforces her house's feudal independence"
+  ],
+  "Values": [
+    "Charity toward the afflicted is the supreme duty of high birth; vanity leads to spiritual ruin",
+    "Domestic harmony and family honor eclipse shallow ambitions of courtly glamour",
+    "Steadfast loyalty to kin, piety, and pure moral integrity must guide every choice"
+  ],
+  "Fears": [
+    "Being seized as a political hostage in violent baronial clashes to blackmail her parents",
+    "Devastating pestilence or siege warfare breaking out across the mountain valleys"
+  ],
+  "SpeechStyle": "Gentle, lucid, and articulate; speaks with modest courtly elegance, genuine empathy, and deep Christian conviction.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

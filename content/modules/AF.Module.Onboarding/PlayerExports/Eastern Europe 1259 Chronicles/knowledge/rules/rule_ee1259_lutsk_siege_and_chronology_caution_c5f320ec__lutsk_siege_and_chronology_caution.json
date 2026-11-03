@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_lutsk_siege_and_chronology_caution_c5f320ec",
+  "Keywords": [
+    "Lutsk defenses under Mongol pressure",
+    "Refuge stores for Lutsk inhabitants"
+  ],
+  "RagShortTexts": [
+    "Lutsk's defenses, food stores and outside supplies mattered under military pressure.",
+    "Defense negotiations affected refuge and repair work while orders required execution."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lutsk's defenses affected princely resistance to outside forces, with internal stores, external supply and refuge all important. Mongol pressure posed difficult choices between resistance and lives, while envoys' demands needed comparison with military conditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lutsk's defenses affected princely resistance to outside forces, with internal stores, external supply and refuge all important. Mongol pressure posed difficult choices between resistance and lives, while envoys' demands needed comparison with military conditions. Guards arranged watches, messages and entry checks; pursuit reduced defenders. Escorts needed closing times, waiting places and arrangements for injured mounts and cargo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lutsk's defenses affected princely resistance to outside forces, with internal stores, external supply and refuge all important. Mongol pressure posed difficult choices between resistance and lives, while envoys' demands needed comparison with military conditions. Lords balanced repair, stores and retainers against revenue. Requisitioned work advanced repairs at a cost to harvests, while relief required reliable reports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lutsk's defenses affected princely resistance to outside forces, with internal stores, external supply and refuge all important. Mongol pressure posed difficult choices between resistance and lives, while envoys' demands needed comparison with military conditions. Outlying households chose what to move, with animals, seed and kin competing for carts. Refuge inside required shelter, food and water, while staying home brought other risks."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

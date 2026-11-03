@@ -1,0 +1,38 @@
+{
+  "Id": "be_wre_foederati_treaty_system",
+  "Keywords": [
+    "Roman frontier agreements and obligations"
+  ],
+  "RagShortTexts": [
+    "The Roman-Gothic settlement of 369 involved a river meeting, trade restrictions and hostages."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Agreements with frontier leaders could cover peace, trade, captives or hostages, depending on the parties. In 369 Valens and Athanaric met on boats in the Danube. War and interrupted trade had burdened Gothic communities, and the settlement placed restrictions on commercial access."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Frontier residents felt a settlement through access to markets and safer roads. Guards still needed to know the permitted crossing places and travelers, while hostages were not visitors free to leave. News of peace did not open every former route to every caravan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Negotiators needed to establish who could bind particular followers and how orders reached garrisons. Trade and hostages formed part of the 369 negotiations, with performance depending on leaders and frontier personnel. One agreement did not grant identical rights to every border community."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

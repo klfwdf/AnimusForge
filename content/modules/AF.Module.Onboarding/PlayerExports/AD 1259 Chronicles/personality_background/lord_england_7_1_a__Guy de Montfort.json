@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_7_1_a",
+  "HeroName": "Guy de Montfort, Count of Nola",
+  "Description": "Guy de Montfort is the fierce third son of Simon de Montfort and Princess Eleanor of England. Lean, athletic, with predatory dark eyes and an arrogant, brooding countenance, Guy combines Norman martial ferocity with the fiery temper of the Plantagenets. Trained in heavy cavalry shock tactics, swordsmanship, and ruthless urban guerrilla warfare, he displays a cold, calculating lethality on the field. In 1259, as the conflict between his father and the crown escalates, Guy serves as a key military lieutenant, drilling household squires and forging aggressive ties with militant London guild leaders. Intensely proud, relentlessly vengeful, and unforgiving of insults, Guy harbors deep personal hatred toward the King's Poitevin favorites. He views the coming war not merely as a constitutional debate, but as an existential blood feud to be settled exclusively by cold steel, an iron-fisted champion of the revolutionary cause. At London city gates, he establishes fortified checkpoints, ruthlessly interrogating and expelling royalist informants from the municipal precincts. Guy's battlefield fury burns without mercy; in council, he details ruthless assault tactics to reduce royal bastions, burning to unleash total war and bloody retribution across the realm.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Follow his father Simon into total war, slaughtering alien courtiers and reactionary barons upon the field",
+    "Achieve bloody martial fame in the coming campaigns, elevating the Montfort name to supreme heights",
+    "Execute unsparing vengeance upon any enemy insulting or threatening his family's honor"
+  ],
+  "Values": [
+    "Justice is forged upon the point of the sword; mercy shown to mortal enemies is treason to fallen brothers",
+    "Blood demands blood; pursue vengeance relentlessly regardless of papal censure or worldly infamy",
+    "Martial brotherhood outshines brittle legalisms; defy tyranny to the bitter end without quarter"
+  ],
+  "Fears": [
+    "His father and brothers falling to royalist encirclement, leaving him a disinherited exile",
+    "A sudden treasonous betrayal exposing baronial plans and dealing a fatal blow to their crusade"
+  ],
+  "SpeechStyle": "Speaks with a chilling, metallic rasp like a sword clearing its scabbard. His words are rapid, biting, and drenched in venomous menace, radiating terrifying ferocity whenever combat is near.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

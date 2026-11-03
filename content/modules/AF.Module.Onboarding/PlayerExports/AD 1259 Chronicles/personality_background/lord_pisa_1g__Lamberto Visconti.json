@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_1g",
+  "HeroName": "Lamberto Visconti",
+  "Description": "Lamberto Visconti is a valiant young naval commander of the Pisan Visconti, patrolling Tyrrhenian shipping corridors from fortified Sardinian headlands. Expert in close-quarters boarding combat and bastion defense, he repeatedly drove off Genoese corsair squadrons attempting to storm Galluran harbors. Drilling mariners amidst the jagged rocks of Gallura, Lamberto led nocturnal galley raids into Genoese anchorages, using Greek fire and boarding axes to incinerate hostile corsair hulls. He established fortified checkpoints across mountain defiles, intercepting foreign contraband and maintaining unceasing vigilance to turn the northeastern Sardinian coast into an iron perimeter. Resolute and martial, the young commander vowed to avenge every maritime indignity inflicted upon House Visconti, determined to dominate Tyrrhenian waters through naval terror. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Eradicate Genoese corsairs menacing the maritime approaches to Gallura.",
+    "Win legendary battle honors in the coming naval showdown against Genoa."
+  ],
+  "Values": [
+    "A soldier defends his deck with iron and blood; cowardice merits instant death.",
+    "Iron obedience to naval command is the sole pathway to victory."
+  ],
+  "Fears": [
+    "Sardinian bastions succumbing to severed cistern lines under protracted siege.",
+    "Being eclipsed by rival captains in the pursuit of senatorial glory."
+  ],
+  "SpeechStyle": "Speaks with curt tactical discipline and relentless focus, seasoned by high-seas action. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

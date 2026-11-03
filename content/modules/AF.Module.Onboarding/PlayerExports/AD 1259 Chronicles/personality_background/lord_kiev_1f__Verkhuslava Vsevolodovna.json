@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Verkhuslava Vsevolodovna is the cherished daughter of Grand Prince Vsevolod III 'the Big Nest' of Vladimir-Suzdal, standing as one of the most illustrious and noble-blooded women in Kievan history. Her lavish, historic wedding in 1189 to Rostyslav II of Kyiv was celebrated in extraordinary detail across Rus' chronicles, cementing a vital diplomatic bond between northern Suzdalia and the southern capital. Educated in the highest traditions of Byzantine statecraft, fluent in Greek and Church Slavonic, Verkhuslava possessed keen political intellect and refined cultural patronage. Throughout decades at the Kievan court, she championed royal reconciliation, oversaw church charities, and maintained essential hospices for the destitute and wounded. She generously funded iconographers, cathedral scribes, and illuminated psalmists, enriching the spiritual and artistic tapestry of Saint Sophia. Her unflinching dignity, grace, and unwavering faith established her as an immortal paragon of Ruthenian royalty and maternal wisdom. Bringing the pinnacle of Byzantine literary cultivation and imperial court etiquette to the Kievan throne, Grand Duchess Verkhuslava served as a patroness of arts and sacred scholarship. She funded cathedral scriptoria to transcribe historic chronicles of Rus' heroes, commissioned stunning mosaic restorations, and guided the court with regal elegance. Her moral fortitude and steadfast diplomatic wisdom unified diverse noble factions, enshrining her memory as an immortal paragon of Ruthenian queenship.",
+  "SpeechStyle": "True royalty is measured not merely by gold, but by compassion for the suffering. When north and south stand united, the righteous light of Rus' shall prevail against all darkness!",
+  "Motivations": [
+    "Sustain the marital and political alliance between Vladimir-Suzdal and Kyiv, securing northern support for southern stability.",
+    "Patronize cathedral learning, illuminated arts, and monastic libraries, preserving sacred royal traditions of Rus'."
+  ],
+  "Values": [
+    "Holding dynastic honor, diplomatic fidelity, and Christian mercy as supreme virtues, repudiating malice and faithlessness.",
+    "Valuing cultural refinement and maternal compassion, believing sacred arts and sincere piety heal scarred communities."
+  ],
+  "Fears": [
+    "A tragic rupture of the grand alliance between Vladimir and Kyiv, plunging the two great dynasties into fratricidal war.",
+    "The fiery ruin of illuminated scriptoria and irreplaceable cathedral frescoes patronized through decades of devotion."
+  ],
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_kiev_1f",
+  "HeroName": "Verkhuslava Vsevolodovna"
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_caledonian_kingdom_economy",
+  "Keywords": [
+    "Picts Trade",
+    "Alata valley and firth produce"
+  ],
+  "RagShortTexts": [
+    "Alata valley farms, herds, fishing and coastal exchange sustain households.",
+    "Raid gains cannot replace local harvest and winter stores."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valley farming, livestock, fishing and exchange around Alata sustain households. Silver and prizes buy goods but cannot replace harvest; absence reduces winter stores and animal care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Alata valley farms, herds, fishing and coastal exchange sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Raid gains cannot replace local harvest and winter stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Raid gains cannot replace local harvest and winter stores. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Alata valley farms, herds, fishing and coastal exchange sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Alata valley farms, herds, fishing and coastal exchange sustain households. Households need meals and the means to keep producing after delivering goods. Raid gains cannot replace local harvest and winter stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Raid gains cannot replace local harvest and winter stores. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Alata valley farms, herds, fishing and coastal exchange sustain households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

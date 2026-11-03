@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v2",
+  "Keywords": [
+    "Wagon camps and animals"
+  ],
+  "RagShortTexts": [
+    "Household wagons needed draught animals, water and grazing."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Household wagons needed draught animals, water and grazing. A stop concentrated people without sustaining herds indefinitely on bare ground. Protecting a column included draught and breeding stock as well as the carts."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_4c",
+  "HeroName": "Margherita Colonna",
+  "Description": "Lady Margherita Colonna is the saintly nine-year-old maiden of Palestrina. In stark contrast to her clan's ruthless worldly ambitions and blood-feuds, Margherita exhibits an extraordinary spiritual purity, mystical devotion, and angelic compassion. Frequently distributing her clothes and bread to impoverished peasant children, she brings spiritual peace and tender prayers to her battle-hardened kin, revered as a living miracle of grace. Nine-year-old Margherita exhibits extraordinary mystical piety and angelic compassion within the castle chapel, distributing her food and clothing to impoverished serf children and soothing the violent tempers of her battle-hardened kin with gentle prayers. Rejecting worldly luxury, she embraced the holy path of evangelical poverty and divine contemplation, her miraculous grace shining amidst the grim horrors of baronial warfare as an immortal beacon of Catholic sanctity. Her sublime purity, mystical contemplation, and miraculous charity make Blessed Margherita Colonna an angelic, immortal figure shining amidst the dark ruins of medieval Italian warfare. Her sweet childish laughter, pure prayers, and gentle smiles illuminate the ancient stone halls with perpetual warmth, heavenly grace, and spiritual peace. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Offer constant prayers in the fortress chapel for peace and relief for the suffering poor.",
+    "Soothe the martial fury of her battle-weary father and kin through innocent love and tender care."
+  ],
+  "Values": [
+    "Evangelical poverty, mystical prayer, and boundless Christian compassion over earthly riches.",
+    "Forgiveness, spiritual purity, and gentle charity as the true path to eternal salvation."
+  ],
+  "Fears": [
+    "Witnessing the suffering of wounded soldiers and the cruelty inflicted upon innocent peasants.",
+    "Being coerced into a worldly political marriage that denies her holy vocation of religious contemplation."
+  ],
+  "SpeechStyle": "Speaks with serene childlike sweetness, angelic gentle grace, and deep compassionate sincerity. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

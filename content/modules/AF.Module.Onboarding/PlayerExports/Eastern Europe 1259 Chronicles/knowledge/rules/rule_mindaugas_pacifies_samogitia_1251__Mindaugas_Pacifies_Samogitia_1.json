@@ -1,0 +1,52 @@
+{
+  "Id": "rule_mindaugas_pacifies_samogitia_1251",
+  "Keywords": [
+    "Voruta and the dynastic struggle",
+    "Tautvila against Mindaugas"
+  ],
+  "RagShortTexts": [
+    "Mindaugas resisted Tautvila and allied forces at Voruta in 1251.",
+    "The struggle involved Galicia, Samogitia and Livonia, with changing diplomatic connections."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1251 Tautvila and his allies attacked Mindaugas at Voruta without taking the position. The dynastic struggle involved support from Galicia, Samogitian chiefs and Livonian forces. Mindaugas’s dealings with the Order altered the connections available to opponents. The end of one engagement did not remove claims to land and succession; people formerly under opposing banners still had to decide how to coexist."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Opponents had distinct interests. Separate settlements, marriage and confirmation of land rights could restore cooperation. Driving out everyone who once backed a rival also removes future service and supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A defender remembers his own post, relief and sorties; an attacker recalls where he was checked. New allies require confirmation of orders and support rather than yesterday’s assumptions about who is hostile."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villages in a dynastic struggle can face demands from both sides. Families need previous deliveries recognised and reprisals restrained. Reconciliation at court brings little security unless those matters are settled locally."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

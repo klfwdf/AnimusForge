@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Clare_and_Gloucester_Earldom",
+  "Keywords": [
+    "House of Clare Three Chevrons",
+    "Earl of Gloucester and Hertford",
+    "Welsh Marcher Lord Bastion",
+    "Richard de Clare Political Pivot"
+  ],
+  "RagShortTexts": [
+    "Richard's choices carried weight because his retinue could decide a contested county.",
+    "The family's border revenues and its standing with the crown rested on that balance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Displaying three red chevrons on gold, the House of Clare held the earldoms of Gloucester and Hertford alongside extensive Welsh Marcher lordships. Its estates ran from the Severn valley into the mountains of Glamorgan, so the family's castles guarded both the English and Welsh frontiers. Earl Richard de Clare stood as principal arbiter during the baronial reform movement of 1258, balancing between royal allegiance and Simon de Montfort's faction. Reform meant new councils and new oaths, and every Marcher lord had to decide whose orders to follow. Richard's choices carried weight because his retinue could decide a contested county. The family's border revenues and its standing with the crown rested on that balance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Clare's retainers were numerous enough to rival a royal division in the field, so his choice of side could tip the Second Barons' War. Every Marcher lord weighing rebellion first asked whether Clare would ride with Montfort or with the king. His letters to the border lords carried the terms of any truce, and a delayed reply could cost a castle its garrison and its wages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Across Gloucestershire manors, Clare bailiffs maintain rigorous estate ledgers. When Welsh raiders strike across the Severn, chevron-clad riders hunt them down without quarter. Villagers owed weekly labour on the lord's demesne and paid rents in coin or grain at harvest. Reeves kept tallies of every sheaf and bushel, and disputes went before the manor court."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_chernigov_1k",
+  "Description": "Knyaz Oleg of Chernigov (later Saint Leonty) is the illustrious son of Roman the Old, celebrated across Rus' as a renowned warrior-prince who embraced holy monastic asceticism. In his early youth, Oleg fought valiantly alongside his father and brother, distinguishing himself in brutal campaigns that repelled predatory Lithuanian invasions from Bryansk. Deeply shaken by the apocalyptic suffering inflicted upon innocent civilians by perpetual war, Oleg renounced secular power and princely diadems to take monastic vows under the religious name Leonty. He founded the magnificent Svensky Monastery overlooking the Desna River, constructing cathedral sanctuaries, transcribing sacred codices, and personally nursing wounded veterans and orphans. Venerated as a living saint, he was officially canonized by the Orthodox Church as the celestial patron of Bryansk and Chernigov. Combining heroic martial valor with transcendent Christian humility, his holy memory endures as an unquenchable beacon of divine light and solace. Within the peaceful cloisters of Svensky Monastery, Saint Oleg exchanged the broadsword of war for eternal prayer and selfless healing. Tending crippled veterans and transcribing holy scriptures in voluntary poverty, his radiant spiritual purity washed away the bitter scars of conflict across the realm. His venerated tomb became an enduring sanctuary of miracles and divine hope.",
+  "SpeechStyle": "Worldly empires and armed triumphs crumble to dust, but divine love and mercy endure forever. Lay down the sword of hatred, for righteous peace is the truest victory!",
+  "Motivations": [
+    "Found and expand the Svensky Monastery, devoting his life to prayer and scripture transcription to heal the scarred realm.",
+    "Promote widespread charitable relief across the Desna basin, sheltering wounded veterans and comforting war-torn refugees."
+  ],
+  "Values": [
+    "Valuing ascetic poverty, spiritual contemplation, and selfless love, rejecting worldly pride, greed, and military brutality.",
+    "Believing sincere forgiveness and divine enlightenment possess the true power to redeem Rus' from historic suffering."
+  ],
+  "Fears": [
+    "Predatory raiding forces sacking and burning Svensky Monastery, desecrating holy altars and illuminated chronicles.",
+    "That bitter cycles of blood vengeance will extinguish human conscience entirely, plunging society into demonic darkness."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "HeroName": "Knyaz Oleg of Chernigov"
+}

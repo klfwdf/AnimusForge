@@ -1,0 +1,59 @@
+{
+  "Id": "be_frankish_kingdom_geopolitics",
+  "Keywords": [
+    "Franks Frontiers",
+    "Bogadium river crossings"
+  ],
+  "RagShortTexts": [
+    "Bogadium connects Rhine crossings and routes toward Toxandria.",
+    "River transport also exposes expeditions to Roman guards."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bogadium connects crossings and settlements toward Toxandria. Rivers move goods while exposing expeditions to Roman guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Bogadium connects Rhine crossings and routes toward Toxandria. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. River transport also exposes expeditions to Roman guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "River transport also exposes expeditions to Roman guards. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Bogadium connects Rhine crossings and routes toward Toxandria."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Bogadium connects Rhine crossings and routes toward Toxandria. Closed routes may separate families from goods, imposing costs on those remaining at home. River transport also exposes expeditions to Roman guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "River transport also exposes expeditions to Roman guards. Cargo passes different carriers, making distant route changes become local shortages through delay. Bogadium connects Rhine crossings and routes toward Toxandria."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

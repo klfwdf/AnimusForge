@@ -1,0 +1,59 @@
+{
+  "Id": "be_maskut_kingdom_legitimacy",
+  "Keywords": [
+    "Maskuts Legitimacy",
+    "Sanatruk’s pasture protection"
+  ],
+  "RagShortTexts": [
+    "Pasture protection and delivered rewards support Sanatruk.",
+    "Nominal southern relations cannot replace local kin recognition."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Recognition depends on pasture protection and delivered rewards. A southern court’s nominal relationship cannot replace local kin support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Pasture protection and delivered rewards support Sanatruk. Military recognition also rests on rewards and relief; a title needs willing action. Nominal southern relations cannot replace local kin recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Nominal southern relations cannot replace local kin recognition. Nominal rights require local execution, with consent and supply both shaping authority. Pasture protection and delivered rewards support Sanatruk."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Pasture protection and delivered rewards support Sanatruk. Households judge rule through protected families, land and responses to appeals. Nominal southern relations cannot replace local kin recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Nominal southern relations cannot replace local kin recognition. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Pasture protection and delivered rewards support Sanatruk."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_3d",
+  "HeroName": "Schinella I.",
+  "Description": "Schinella I Frankopan, aged twenty in 1259, is the energetic second son of Count Jerindo I and brother of Frederick, governing the southern coastal approaches of Krk from Baška. Steeped in Adriatic seafaring traditions, he is an expert navigator and bold galley commander adept in handling treacherous Kvarner squalls and close-quarters naval boarding actions. Relentlessly patrolling the deep passages between Krk and Rab, Schinella protects island fishing fleets and intercepts illicit smugglers. Spirited, intrepid, and fiercely loyal to his elder brother, he commands immense devotion from the younger island knights and seamen. In 1259, supervising the construction of swift scout galleys at Baška, Schinella stands ready to defend his family's maritime patrimony. Schinella I leads elite scouts across the rugged mountain tracks of Modruš, mastering woodland ambuscades and mobile skirmishing with natural talent. Vigilant and sharp-minded, he monitors troop movements across the Croatian marches, intercepting enemy raiders before they reach coastal settlements. Eager to prove his knightly valor, this young Frankopan lord stands ready to charge at the vanguard of his dynasty's defensive hosts. Vigilant atop the mountain passes of Modruš, Schinella leads his patrols with sharp tactical skill, protecting the frontier against marauders and hostile scouts.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with brisk maritime enthusiasm and youthful vigor, bold and direct, radiating boundless energy and nautical confidence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

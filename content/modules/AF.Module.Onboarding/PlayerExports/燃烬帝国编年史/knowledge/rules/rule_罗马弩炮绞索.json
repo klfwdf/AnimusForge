@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v2",
+  "Keywords": [
+    "罗马弩炮绞索"
+  ],
+  "RagShortTexts": [
+    "弩炮蓄力与牵引须机件完好，弹药不能代替器械维护。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "弩炮靠绞束蓄力，发射前须把机构牵回待发位置。操作需要完好木架、绳束与人员配合；绞束受损或牵引装置卡住时，堆在旁边的重矢也不能自行发射。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

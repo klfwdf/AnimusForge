@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_3",
+  "HeroName": "Lope Díaz III de Haro, Lord of Biscay",
+  "Description": "Lope Díaz III de Haro, Lord of Biscay (Señor de Vizcaya), is one of the most towering, ambitious, and imperious magnates of thirteenth-century Castile. Governing the mountainous Basque country with hereditary sovereign-like prerogatives, he commands the iron mines, timber forests, and booming maritime ports of the Cantabrian coast. Fiercely jealous of the ancient Basque fueros, Don Lope derives immense wealth and military might from his fiercely loyal Basque mountaineers and mercantile fleets. While serving as the King's High Mayordomo (Mayordomo Mayor), his loyalty to Alfonso X is entirely subordinate to the aggrandizement of the House of Haro. By 1259, enraged by royal attempts to tax northern coastal shipping and impose Castilian law over ancestral Basque customs, Lope aligns his formidable house with the rebellious Lara faction. Commanding the unwavering devotion of Basque mountaineers under the sacred Oak of Guernica, Lope monopolizes the maritime trade in iron and wool to northern Europe. Brandishing colossal private wealth and military muscle, he openly confronts Alfonso X in the Cortes, dominating northern Iberian politics with the haughty independence of a sovereign prince.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend and expand the ancestral fueros of Biscay, barring royal collectors from Basque soil",
+    "Monopolize lucrative maritime trade in iron and wool across the Cantabrian ports",
+    "Dominate the royal council and manipulate royal successions to entrench Haro supremacy"
+  ],
+  "Values": [
+    "Biscayan sovereignty is an ancestral birthright, not a revocable favor from the Castilian king",
+    "True nobility rules through iron will and boundless wealth; the weak deserve servitude",
+    "Fearless defiance of kings is the supreme badge of an authentic Castilian grandee"
+  ],
+  "Fears": [
+    "A joint invasion by Castilian and Navarrese royal armies revoking Biscayan autonomy",
+    "Falling victim to treacherous ambush before securing Haro hegemony across the realm"
+  ],
+  "SpeechStyle": "Imperious, aggressive, and blunt; speaks with the haughty confidence of a sovereign lord who brooks no opposition from crowned kings.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

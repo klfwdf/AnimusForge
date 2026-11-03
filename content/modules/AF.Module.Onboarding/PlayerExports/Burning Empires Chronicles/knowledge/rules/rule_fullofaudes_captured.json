@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v3",
+  "Keywords": [
+    "Fullofaudes captured"
+  ],
+  "RagShortTexts": [
+    "Fullofaudes was captured in an ambush in Britain."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fullofaudes was captured in an ambush in Britain. Rank did not ensure safe travel, and subordinates needed continuity of command. Capture, death and loss of contact were different conditions; absence alone did not determine a commander’s fate."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_2_5",
+  "HeroName": "Beatrice di Lancia",
+  "Description": "Beatrice di Lancia is the cherished seventeen-year-old daughter of Count Galvano, christened in honor of her imperial aunt Bianca Lancia. Inheriting her dynasty's famed physical beauty, sharp wit, and courtly grace, Beatrice flourished amidst the poetic splendors of Salerno and Palermo. Highly educated in Latin scripture and the lyric traditions of the Sicilian School, she effortlessly plays the psaltery while reciting romantic verses. Charming, observant, and naturally poised, she assists her mother in managing domestic ledgers, adored by her warrior kin. Conscious that her future hand represents a vital diplomatic link cementing Ghibelline alliances, Beatrice carries herself with impeccable dignity and serene pride, shining as an angelic pearl of southern nobility. With her dazzling beauty, poetic wit, and sharp courtly intellect, Beatrice di Lancia shines as an angelic paragon of southern Italian aristocratic charm. Her radiant poise and lyrical accomplishments ensure that Beatrice remains celebrated in song across the kingdom, capturing the imagination of troubadours. Her radiant poise, courtly wit, gracious hospitality, and musical accomplishments ensure that Beatrice remains celebrated in song across the noble halls of southern Italy. Her courtly refinement, sharp intellect, and poetic gifts make Beatrice a celebrated ornament and admired patron of the royal Sicilian court.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To cultivate estate leadership and courtly accomplishments, preparing to co-rule a premier baronial seat.",
+    "To secure an illustrious marital alliance that elevates the power and glory of the House of Lancia."
+  ],
+  "Values": [
+    "A noblewoman's true power lies in cultivated intellect, serene poise, and self-respect.",
+    "Dynastic honor and blood loyalty are the guiding stars of aristocratic life."
+  ],
+  "Fears": [
+    "Her family suffering political ruin and coercing her into a humiliating marriage.",
+    "Losing her beloved father or brothers to the violent hazards of war."
+  ],
+  "SpeechStyle": "Speaks with soft, melodious elegance, charming courtly wit, and refined aristocratic composure. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

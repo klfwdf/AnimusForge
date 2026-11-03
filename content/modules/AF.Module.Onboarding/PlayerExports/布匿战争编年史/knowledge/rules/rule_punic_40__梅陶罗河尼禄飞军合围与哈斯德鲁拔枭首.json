@@ -1,0 +1,104 @@
+{
+  "Id": "rule_punic_40",
+  "Name": "梅陶罗河尼禄长途奔袭与哈斯德鲁拔枭首",
+  "Description": "公元前207年，执政官克劳狄·尼禄秘密脱离南部防区日夜兼程北上，与北方执政官在梅陶罗河合围哈斯德鲁拔·巴卡大军，斩杀哈斯德鲁拔并将其首级掷入汉尼拔大营，决定了布匿战争终局走向。",
+  "Tags": [
+    "梅陶罗河战役",
+    "克劳狄·尼禄",
+    "哈斯德鲁拔阵亡",
+    "千里奔袭",
+    "绝密情报",
+    "战争转折点"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 90,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前207年梅陶罗河战役中执政官尼禄长途奔袭奇袭斩杀哈斯德鲁拔。",
+    "尼禄截获哈斯德鲁拔联络汉尼拔密信后瞒天过海仅带精锐疾行北上合围。",
+    "哈斯德鲁拔首级被斩下掷入汉尼拔大营标志迦太基胜势彻底断绝覆灭。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 95,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "梅陶罗河战役是罗马统帅天才决断的巅峰杰作！尼禄执政官截获了哈斯德鲁拔的信使，在汉尼拔眼皮底下留空营扎住敌军，亲率七千精锐昼夜兼程疾驰数百里！在梅陶罗河谷，尼禄从右翼无法突破的悬崖后方迂回而出，像雷霆般砸穿了哈斯德鲁拔的后背！哈斯德鲁拔策马冲入罗马军阵战死，尼禄将他的头颅带回南部直接扔进了汉尼拔的大营！汉尼拔凝视着亲弟弟的头颅长叹：‘我在这里看到了迦太基的命运！’"
+    },
+    {
+      "Priority": 92,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是天意对巴卡家族最残酷的捉弄！哈斯德鲁拔历尽千辛万苦从西班牙翻越雪山，只要与汉尼拔的本土大军会师，罗马就必亡无疑！可恨信使竟然在途中迷路被俘，更可怕的是尼禄那疯子般的长途急行军！在梅陶罗河，哈斯德鲁拔发现对面的号角响了两次、罗马军团竟有两个执政官的仪仗时，便知大势已去。他没有苟活逃跑，而是策马冲进罗马短剑丛中力战殉国。巴卡家族最后的救星陨落了，意大利的烽火再也无法烧向罗马！"
+    },
+    {
+      "Priority": 78,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那天早晨，汉尼拔大营前的哨兵捡到了一个从马上扔下来的麻布包裹。解开一看，滚出来的竟然是一颗血肉模糊的头颅——正是他在西班牙镇守十年的亲弟弟哈斯德鲁拔！汉尼拔抱着那颗头颅在帐篷里坐了整整一天一夜，没说一句话。从那之后，大军再也没有发动过一次像样的进攻，只是默默地往意大利最南端的山角里退缩。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前207年，执政官盖乌斯·克劳狄·尼禄截获哈斯德鲁拔·巴卡企图与兄长汉尼拔会师的密信后，冒险率领七千精锐脱离南部防线北上，与执政官萨利纳托尔在梅陶罗河会师。战役中尼禄实施战术绕后背刺彻底消灭迦太基援军，哈斯德鲁拔战死。此战彻底终结了汉尼拔在意大利获得本土以外成建制增援的可能，成为战争的决定性转折点。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "梅陶罗河尼禄长途奔袭与哈斯德鲁拔枭首",
+    "rule_punic_40"
+  ]
+}

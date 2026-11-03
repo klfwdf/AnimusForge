@@ -1,0 +1,56 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "dead_lord_lit_5_5",
+  "DisplayName": "Gaudvydė",
+  "HeroName": "Gaudvydė",
+  "Personality": "Gaudvydė is a deceased member of the house. Their father is Ringaudas. Their spouse is Erdvilas. Their children are Treniota. The house’s ties continue in the Kingdom of Lithuania. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback and will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back.",
+  "Description": "Gaudvydė is a deceased member of the house. Their father is Ringaudas. Their spouse is Erdvilas. Their children are Treniota. The house’s ties continue in the Kingdom of Lithuania. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback and will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back.",
+  "Background": "Gaudvydė is a deceased member of the house. Their father is Ringaudas. Their spouse is Erdvilas. Their children are Treniota. The house’s ties continue in the Kingdom of Lithuania. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback and will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back.",
+  "SpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "PersonalSpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leave relatives a house they can depend on."
+  ],
+  "Values": [
+    "Kinship and commitments shape the memory of a house."
+  ],
+  "Fears": [
+    "Trust and ties within the house breaking down."
+  ]
+}

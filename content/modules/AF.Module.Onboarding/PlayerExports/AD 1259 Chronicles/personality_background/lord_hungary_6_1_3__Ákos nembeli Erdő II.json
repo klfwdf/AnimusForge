@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_6_1_3",
+  "HeroName": "Ákos nembeli Erdő II",
+  "Description": "Ákos nembeli Erdő II is the valiant son of Count Erdő I of Borsod, representing the spirited younger generation of Clan Ákos warriors. Inspired by ancestral legends of the Magyar conquest and the heroic deeds of his kinsman Ban Ernye, Erdő II developed formidable mastery over heavy shock cavalry combat. He commands Borsod county's heavy knightly squadrons, frequently patrolling Tisza river crossings and northern woodland tracks to suppress banditry and foreign scouting parties. Reflecting his father's upright governance, he treats men-at-arms with strict fairness, commanding enthusiastic loyalty throughout the barracks. Deeply mindful of the clan's illustrious heritage, he embraces the solemn duty of defending family domains and royal authority. In 1259, as gathering crises threaten the peace of the realm, Erdő II readies his warhorses and lances, eager to carve his own legendary triumphs in upcoming campaigns. Erdő II drilled young bannerets in close-order lance charges along the Tisza river encampments, inspecting armor fittings and horse shoing with relentless care. Driven by passionate patriotism and ancestral pride, he dedicated himself to the defense of his family's patrimony and royal authority. He eagerly prepared his warhorses and weapons, resolved to win immortal battlefield glory in the impending clashes of the kingdom.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win glorious combat laurels in impending campaigns, exalting three generations of Clan Ákos valor.",
+    "Defend clan estates and river crossings along the Tisza, ensuring absolute territorial security."
+  ],
+  "Values": [
+    "Prize reckless battlefield bravery, shock cavalry aggression, and absolute loyalty to family and crown.",
+    "Hold iron discipline and knightly brotherhood as sacred laws, convinced true valor alone earns eternity."
+  ],
+  "Fears": [
+    "Fears protracted, static attritional warfare robbing young knights of decisive opportunities for glory.",
+    "Dreads sudden equine murrain sweeping camp stables and decimating cavalry readiness."
+  ],
+  "SpeechStyle": "The waves of the Tisza inspire warrior courage, and our lances thirst for glory! Anyone daring to attack our lands shall be crushed beneath our charging hooves! Invaders shall be pulverized beneath our charging hooves!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

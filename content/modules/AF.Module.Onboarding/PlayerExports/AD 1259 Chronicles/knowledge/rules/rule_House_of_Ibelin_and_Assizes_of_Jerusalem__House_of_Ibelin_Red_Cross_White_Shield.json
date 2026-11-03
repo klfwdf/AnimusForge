@@ -1,0 +1,40 @@
+{
+  "Id": "rule_House_of_Ibelin_and_Assizes_of_Jerusalem",
+  "Keywords": [
+    "House of Ibelin Red Cross White Shield",
+    "Old Lord of Beirut Feudal Assizes",
+    "Jerusalem Haute Cour Baronial Leader",
+    "Outremer Jurisprudence Anchor"
+  ],
+  "RagShortTexts": [
+    "Ibelin magnates used kinship and legal experience in disputes over fiefs and the High Court."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Displaying a plain red cross on argent, the House of Ibelin formed the constitutional backbone of Outremer. John of Ibelin, known as the Old Lord of Beirut, resisted the absolutist decrees of Emperor Frederick II in the Holy Land and kept the baronial courts in session. The family anchored baronial governance within the codified Assizes of Jerusalem, a body of customary law that bound the king as well as his vassals. Ibelin lords held key offices in Cyprus and Acre, which gave them influence in both the island and the mainland kingdom. Their legal stand made the Assizes a model of feudal law across the crusader states."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ibelin lords drew on kinship and legal experience in disputes over fiefs, inheritance and the High Court. Leading men such as John of Jaffa could invoke precedents, while other barons and royal representatives advanced competing claims. Influence required alliances, attendance and support; relatives could still quarrel over land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Ibelin chancelleries matched martial prowess with scholastic erudition, turning Outremer's customary law into Western Europe's most sophisticated feudal legal code. Clerks copied court judgments into registers, and advocates argued cases by citing earlier decisions of the high court. Priests who knew canon law often sat beside the lords to settle questions of marriage and inheritance."
+    }
+  ],
+  "TextMappings": []
+}

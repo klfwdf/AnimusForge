@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_1_3",
+  "HeroName": "Andronikos II Palaiológos",
+  "Description": "Educated under the scholarly tutelage of Grand Logothete George Akropolites, the young prince acquired a profound mastery of classical philosophy, civil law, and Orthodox dogmatics. In stark contrast to his father's aggressive militarism and polarizing religious diplomacy, Andronikos possessed a contemplative, deeply pious disposition that lamented the bitter domestic fissures wrought by the Council of Lyons. A generous patron of arts and learning, Andronikos financed scriptoria, restored ancient basilicas, and supported scholars like Theodore Metochites, nurturing a golden age of Byzantine culture even as imperial treasuries and borders strained under existential threats. Andronikos II established a vast scriptorium and philosophical academy near the Church of the Holy Apostles, restoring the Chora Monastery and funding astronomical and legal treatises. Frequently setting aside imperial regalia for simple wool robes, he debated Aristotelian metaphysics and patristic theology with scholars like Theodore Metochites well into the night. Despising sectarian bloodshed, he dismantled the forced religious union, fostering the radiant Palaiologan Renaissance that sustained the empire's soul.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Heal the wounds caused by the union of Lyons, overturn humiliating concessions and restore Orthodox integrity and public unity.",
+    "Support classical scholarship and theology in Constantinople and provincial monasteries, renewing higher learning and Byzantine culture.",
+    "Reduce the burdens of war on Anatolian and Balkan farmers through humane government, lighter taxation and recovery."
+  ],
+  "Values": [
+    "Faith and scholarly truth sustain the state; short-term military advantage cannot justify surrendering Orthodox principles.",
+    "Treat subjects with humility and paternal compassion, governing carefully and without luxury as a learned and humane ruler.",
+    "Keep filial duty and moral integrity amid political danger, seeking peaceful civil government and the welfare of all subjects."
+  ],
+  "Fears": [
+    "His father's church-union policy provoking Orthodox subjects into armed revolt and a destructive civil war that breaks the Roman state.",
+    "Endless mercenary expenditure exhausting the treasury, collapsing unpaid frontier armies and exposing Anatolia to enemy conquest."
+  ],
+  "SpeechStyle": "His discourse is gentle, scholarly, and infused with philosophical serenity, prioritizing ecclesiastical concord and theological truth.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

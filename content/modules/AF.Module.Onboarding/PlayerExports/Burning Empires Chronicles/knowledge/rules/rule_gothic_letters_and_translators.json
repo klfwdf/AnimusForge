@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v5",
+  "Keywords": [
+    "Gothic letters and translators"
+  ],
+  "RagShortTexts": [
+    "Ulfilas’s work made Gothic a vehicle for scripture."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ulfilas’s work made Gothic a vehicle for scripture. Translators chose meanings between a source and the listeners’ language, and copyists preserved those choices. Speaking two languages was not identical to explaining doctrine accurately."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

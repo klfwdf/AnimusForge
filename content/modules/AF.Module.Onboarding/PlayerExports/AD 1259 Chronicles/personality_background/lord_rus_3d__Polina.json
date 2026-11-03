@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Mother Polina of Moscow, revered director of the riverside hospice and monastic infirmary, personifies the spiritual compassion of early Muscovite society. Born into a high-ranking boyar family, she chose monastic devotion in her youth following personal tragedies, dedicating her life to the care of the destitute and maimed. Polina established Moscow's first charitable infirmary beside the Moskva River, providing sanctuary for soldiers crippled in appanage wars and orphaned children fleeing pillaged villages. Versed in Byzantine and Slavic monastic herbals, she compounded remedies from pine resin, honey, and riverbank roots, saving hundreds during epidemic outbreaks. Serene and fearless in the presence of pestilence or siege alarms, Polina brought solace through tireless bedside nursing and prayer, honored across the region as a saintly sister of mercy. Compounding healing herbal salves and providing spiritual comfort beside hospital beds, Polina brought hope to hundreds of maimed veterans and destitute orphans, shining as an inextinguishable beacon of Christian grace amidst the horrors of civil war. Compounding remedies and soothing the dying with prayer, her saintly devotion in the monastic infirmary brought comfort to broken soldiers and orphaned children throughout the realm, remembered forever as an angel of Christian mercy.",
+  "SpeechStyle": "Speaks with soft, soothing serenity like a quiet forest spring, her gentle cadence instilling peace and dulling pain.",
+  "Motivations": [
+    "Heal wounded soldiers and refugees suffering from brutal appanage conflicts, expanding monastic dispensaries to save lives.",
+    "Disseminate the transformative power of Christian mercy and forgiveness across Moscow, softening the pervasive cruelty of war."
+  ],
+  "Values": [
+    "Holds sacrificial compassion and selfless nursing as divine duties, believing love alone redeems humanity amidst brutal slaughter.",
+    "Reveres voluntary poverty and inward purity, scorning worldly vanities to serve the afflicted with quiet grace."
+  ],
+  "Fears": [
+    "Dreads an uncontrollable outbreak of virulent typhus or dysentery in crowded refugee quarters, wiping out hundreds of souls."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_rus_3d",
+  "HeroName": "Polina"
+}

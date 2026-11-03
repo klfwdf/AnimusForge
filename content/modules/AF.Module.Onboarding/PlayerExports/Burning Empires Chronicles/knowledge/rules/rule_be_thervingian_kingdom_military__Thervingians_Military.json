@@ -1,0 +1,59 @@
+{
+  "Id": "be_thervingian_kingdom_military",
+  "Keywords": [
+    "Thervingians Military",
+    "Thervingian defence against Fritigern"
+  ],
+  "RagShortTexts": [
+    "Thervingian woods, rivers and passes offer different defences.",
+    "Fritigern war still needs eastern warnings and food."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Woods, passes and crossings offer defence choices. Fritigern war still needs eastern warnings; followers and dependants require grain, making long concentration costly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Thervingian woods, rivers and passes offer different defences. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Fritigern war still needs eastern warnings and food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Fritigern war still needs eastern warnings and food. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Thervingian woods, rivers and passes offer different defences."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Thervingian woods, rivers and passes offer different defences. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Fritigern war still needs eastern warnings and food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Fritigern war still needs eastern warnings and food. Repair, carrying and care also use people, while daily supply continues after troops pass. Thervingian woods, rivers and passes offer different defences."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

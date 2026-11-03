@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Venetian_Genoese_Maritime_Rivalry",
+  "Keywords": [
+    "Venice Genoa Naval Rivalry",
+    "War of Saint Sabas Naval Duel",
+    "Eastern Mediterranean Maritime Monopoly",
+    "Galata Commercial Concessions"
+  ],
+  "RagShortTexts": [
+    "The conflict of Saint Sabas disrupts Italian commercial access at Acre.",
+    "Venetian gold ducats belong to a later coinage, not the payments of 1259."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "By 1259 Venice and Genoa already rival each other for harbour access, warehouses and influence in Acre. Their conflict around St Sabas disrupts trade and pushes both republics to seek allies, but its course is unknown. Genoese envoys may approach Nicaea, whose ruler hopes to weaken Latin control of Constantinople; no Treaty of Nymphaeum has been concluded. Merchants discuss tolls, safe conduct and naval protection as each city guards its privileges. Rivalry is active, but later treaties and sea battles are not completed episodes in 1259."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Doge and the Genoese captains see the Aegean as a road of silk, alum, and pepper, not a sea of faith. Treaties are bought and dropped according to the profit of trade quarters and galley anchorages, and a lord who holds a harbor can sell his loyalty to the highest bidder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Genoese crossbowmen sweep the galley decks with iron quarrels, and rowers on the benches become easy targets. Boarding parties throw grapnels and pour Greek fire through the hatches. Keep your shield up on the gangway, watch the yard for the signal to cast off, and never leave the deck unless the order comes from the master."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "An Acre porter earns wages moving bales between quay and warehouse while rival Italian communities fight over access and property. Since the conflict of Saint Sabas began, a change of armed control can end a day's work or close a route. Venetian gold ducats belong to a later coinage; in 1259 payment must be described without that anachronism."
+    }
+  ],
+  "TextMappings": []
+}

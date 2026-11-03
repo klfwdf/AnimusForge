@@ -1,0 +1,52 @@
+{
+  "Id": "rule_khren_horseradish_winter_invigoration",
+  "Keywords": [
+    "horseradish roots for the table",
+    "pungent roots in winter meals"
+  ],
+  "RagShortTexts": [
+    "Horseradish supplies a pungent relish and needs harvesting, storage and preparation.",
+    "Pungency and hot meals do not replace warmth, food and care of the sick."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pungent roots add flavour to grain, fish or meat. They need cleaning and chopping or crushing, with even a little sharply felt in the mouth and nose. Excess damp spoils stored roots and excessive dryness shrivels them, so cooks inspect them with other vegetables. Having roots at home differs from finding them at every market, and tastes vary.\n\nWinter meals depend on grain and stores; a relish changes flavour without creating more staple food. For weak people or those with poor teeth, cooks consider swallowing and appetite rather than assume pungency restores strength. A sick person in a cold home still needs dry clothes, shelter, food and watching, while preparing a relish competes with fetching water and fuel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Feast condiments differ from staple provisioning. Hosts need to know what a sick dependant actually eats, beyond serving a sharp relish."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Finding a relish does not mean supplies are adequate. Cold travelers need edible food, fire and shelter; a pungent mouthful does not dry wet boots."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Keeping roots, gifting them or trading for salt are household choices. Sharp-smelling preparation still leaves pots and children needing attention."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Prague_Hradcany_Castle_and_Judith_Stone_Bridge",
+  "Keywords": [
+    "Prague Hradcany Castle Redoubt",
+    "Vltava River Judith Bridge",
+    "Bohemian Royal Seat Prag",
+    "Old Town German Mining Burgher"
+  ],
+  "RagShortTexts": [
+    "Prague straddled the Vltava, and the Premyslid dynasty made the city the seat of Bohemian power.",
+    "From the halls of Hradcany, Ottokar directed armies across Bohemia, Austria and Styria."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Prague straddled the Vltava, and the Premyslid dynasty made the city the seat of Bohemian power. Hradcany Castle rose above the river, while the Romanesque Judith Bridge carried traffic across the water to the Old Town. King Ottokar II granted charters that invited Saxon miners and German merchants into the city, and their work and trade fed royal expansion. Silver from Kutna Hora filled the treasury and paid the armies that kept the king's rivals at bay, so the city's growth and the crown's ambitions moved together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "From the halls of Hradcany, Ottokar directed armies across Bohemia, Austria and Styria. His treasury held refined silver ingots in quantities large enough to outbid rivals for loyalty and loans across the Holy Roman Empire. Lords who wanted a share of royal favour learned quickly that the crown's silver could reward service as readily as its swords could enforce it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Prague's bridge brings people and goods between important parts of the settlement, making tolls and repairs matters of public interest. Churchmen, merchants and Jewish residents maintain different schools and legal traditions. A scholar in 1259 should discuss actual books and communities without treating a later synagogue building or a claim of universal occult study as established fact."
+    }
+  ],
+  "TextMappings": []
+}

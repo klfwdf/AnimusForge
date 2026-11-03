@@ -1,0 +1,42 @@
+{
+  "Id": "rule_House_of_Savoy_and_Alpine_Pass_Keepers",
+  "Keywords": [
+    "House of Savoy White Cross Gules",
+    "Peter II Little Charlemagne Count",
+    "Great St Bernard Pass Alpine Tolls",
+    "English Royal Court Savoyard Counselors"
+  ],
+  "RagShortTexts": [
+    "The counts of Savoy held the western Alps, where mountain passes meet the lowland trade roads.",
+    "They sold passage rights to whichever power paid most."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The counts of Savoy held the western Alps, where mountain passes meet the lowland trade roads. Its counts controlled the Great St Bernard and Mont Cenis routes, which carried wool, salt and wine between Burgundy, Lombardy and the Rhine valleys. Winter closed the high passes for months, so the counts garrisoned fortified valley towns and kept guides and mule drivers on their books. Count Peter II, nicknamed the Little Charlemagne, pressed the family's claims in Piedmont and Vaud and built Chillon on Lake Geneva. Savoyard relatives at Henry III's court in England gained offices and marriages, tying the dynasty to courts on both sides of the mountains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Savoyard castellan collected tolls from trans-Alpine caravans and papal couriers alike, and each payment went into the count's ledgers. Letters from the family's English kin reached the valley castles by the same couriers, so the lords knew what was said at Westminster before the communes did. They sold passage rights to whichever power paid most."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "wanderer"
+        ]
+      },
+      "Content": "An Alpine guide earns payment by knowing a route's weather, bridges and stopping places. After a fall of snow, the safest choice may be to delay a pack train even when a merchant protests. Savoy's control of a pass makes tolls and protection political issues, while the people beside the track must supply fodder and shelter from their own limited stores."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,52 @@
+{
+  "Id": "rule_siege_of_ryazan_1237",
+  "Keywords": [
+    "Ryazan’s fall in 1237",
+    "households and flight along the Oka"
+  ],
+  "RagShortTexts": [
+    "Mongol forces captured Ryazan in 1237, devastating its rulers, churches and inhabitants.",
+    "Survivors and neighbouring households faced flight, lost animals and interrupted cultivation."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1237 Mongol forces invaded Ryazan and devastated the town after a siege. Ruling households, churches and ordinary inhabitants suffered. Nearby settlements along the Oka relayed news and received displaced people; travellers on different roads carried different accounts. Some remembered relatives last seen leaving, others a dwelling still habitable. Grief encouraged stories of revenge, while recognised messengers remained necessary to locate survivors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Commemoration involves the continuity of a house and land that can be protected again. New defence needs population and fields restored alongside it, rather than taking the last reserves from displaced people for ancestral honour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men hearing of Ryazan ask how messages passed a siege and where wounded companions could be recovered. Courage matters alongside verified meeting places, lest a rush for revenge scatter the survivors again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households need seed, working animals and care for vulnerable relatives. Returning may recover only a few tools. Neighbours’ willingness to help determines whether homes and fields support people again."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

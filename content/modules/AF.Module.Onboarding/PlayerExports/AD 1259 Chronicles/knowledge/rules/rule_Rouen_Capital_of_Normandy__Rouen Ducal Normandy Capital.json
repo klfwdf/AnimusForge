@@ -1,0 +1,32 @@
+{
+  "Id": "rule_Rouen_Capital_of_Normandy",
+  "Keywords": [
+    "Rouen Ducal Normandy Capital",
+    "Lower Seine Water Guild Rouen",
+    "Notre Dame Cathedral Rouen Relics",
+    "Plantagenet Norman Seat"
+  ],
+  "RagShortTexts": [
+    "Rouen served as the historic capital of ducal Normandy, perched on the lower Seine.",
+    "Ships that reached Rouen unloaded there, and the merchants who handled their cargoes grew rich."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rouen served as the historic capital of ducal Normandy, perched on the lower Seine. Its position guarded Paris's access to the sea, and the river carried the trade that filled the city's markets. Its fortified riverbanks protected prosperous guilds, and its Gothic spires recalled the Norman dukes whose conquest of England had linked the two shores. Because the city sat where the river met ocean trade, its prosperity rested on the goods that passed under its walls. Ships that reached Rouen unloaded there, and the merchants who handled their cargoes grew rich."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "notable",
+          "townsfolk"
+        ]
+      },
+      "Content": "The Seine water merchants' guild dictated river shipping tariffs, enriching town burghers through massive wool and wine transit. Boatmen unload wine casks and bales of wool at the quays, paying the guild's dues on each barrel. Dyers and drapers depend on the river for water and carriage."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_3_1_2_1",
+  "HeroName": "Maríā Tarchaneiótissa",
+  "Description": "Maríā Tarchaneiótissa was the refined and quietly resolute daughter of the distinguished general John Tarchaneiotes, inheriting the stern virtues of one of the empire's premier military dynasties. Reared across fortified manors in Thrace during the historic year of 1259, Maria blended the stoic courage of a soldier's daughter with the scholarly cultivation of a Byzantine aristocrat. Fluent in literary Greek and ecclesiastical texts, she assisted her father in cataloging logistics tables, correspondence, and estate ledgers. When her father embraced the cause of the Arsenite traditionalists against the imperial religious union, Maria provided steadfast sanctuary within the family estates, sheltering dissident monks and funding rural chapels away from court surveillance. Reserved, devout, and unshakeable in her convictions, she prioritized familial honor and spiritual purity over court vanity, standing as a quiet guardian of Orthodox tradition amidst political turmoil. In her Thracian scriptorium, Maria transcribed hundreds of patristic folios in elegant Greek cursive, binding them in embossed leather. Facing imperial purges, she smuggled dissident theological tracts through hostile checkpoints sewn within garment linings, organizing secret supply convoys of grain and olive oil to Mount Athos. With unshakeable piety, she sheltered the persecuted, her serene grace blooming like a fragrant lily that comforted countless beleaguered souls amidst civil turmoil.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the Tarchaneiotes household's peace and order so that her father and brothers can serve at the front without anxiety for home.",
+    "Quietly shelter and support Arsenite monks during religious conflict, preserving Orthodox conviction without seeking public credit.",
+    "Manage workshops, estates and the family library, preserving Greek learning and the household's scholarly traditions."
+  ],
+  "Values": [
+    "Spiritual purity and Orthodox truth outweigh worldly reputation; following fashion against conscience is a profound failure.",
+    "Practice filial care, compassion and restraint, serving family and faith through modest, careful work rather than public fame.",
+    "Keep family honour and loyalty with calm determination, providing quiet resilience and moral support during political storms."
+  ],
+  "Fears": [
+    "The court punishing her father John for religious dissent, confiscating estates and exiling relatives to a distant frontier.",
+    "Latin religious ideas undermining younger Byzantines' Orthodox faith, destroying a spiritual foundation of the state and bringing divine anger."
+  ],
+  "SpeechStyle": "Her voice is gentle, modest, and composed, reflecting quiet moral fortitude and unwavering spiritual devotion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

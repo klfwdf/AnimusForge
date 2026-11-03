@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Tiepolo_Dukes_of_Candia",
+  "Keywords": [
+    "House of Tiepolo Venice",
+    "Statuto Tiepolo Venice",
+    "Dukes of Candia Tiepolo",
+    "Tiepolo Maritime Magnates"
+  ],
+  "RagShortTexts": [
+    "The Tiepolo dynasty gave Venice two transformative doges, codifying civil statutes and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Tiepolo were among the patrician families who governed Venice through the Great Council, and Giacomo and Lorenzo Tiepolo served as doge and shaped the republic's laws. Venice had taken Crete after the Fourth Crusade, and the family held large feudal estates on the island, where the Duchy of Candia answered to the Venetian Senate. Those estates produced wine, cheese, grain and timber for the arsenal, and their rents helped fund the fleet. The Tiepolo built their power by pairing imperial diplomacy with the support of the guilds and the popular party, a balance that kept patrician rivals divided."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Tiepolo captain commanded galleys whose crews were drawn from the arsenal, and every ship was readied in the yards under the Senate's orders. The family's Cretan revenues covered wages and timber, so when the republic called for ships, the captains could sail at once."
+    }
+  ],
+  "TextMappings": []
+}

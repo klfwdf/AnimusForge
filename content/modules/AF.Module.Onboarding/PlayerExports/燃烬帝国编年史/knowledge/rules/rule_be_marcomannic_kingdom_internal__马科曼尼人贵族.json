@@ -1,0 +1,59 @@
+{
+  "Id": "be_marcomannic_kingdom_internal",
+  "Keywords": [
+    "马科曼尼人贵族",
+    "马科曼尼地方家族与供役"
+  ],
+  "RagShortTexts": [
+    "Vannius依赖地方家族和聚落支持。",
+    "邻部亲缘不代表每场争执都由全体承担。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vannius需要地方家族与聚落支持，邻部亲缘使交涉方便，却不表示每场邻争都能要求全体参与。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Vannius依赖地方家族和聚落支持。随从有自己的家庭联系，留下谁守家、谁承担远行会影响共同服役。邻部亲缘不代表每场争执都由全体承担。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "邻部亲缘不代表每场争执都由全体承担。协调不是只分名号，还要弄清每一集团实际承担的供给与保护责任。Vannius依赖地方家族和聚落支持。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Vannius依赖地方家族和聚落支持。家户会比较自己和邻人的负担，保护与供役不相称会使合作变弱。邻部亲缘不代表每场争执都由全体承担。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "邻部亲缘不代表每场争执都由全体承担。一人的许诺未必约束所有收货、护路与供粮者，交涉要找到实际担责者。Vannius依赖地方家族和聚落支持。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

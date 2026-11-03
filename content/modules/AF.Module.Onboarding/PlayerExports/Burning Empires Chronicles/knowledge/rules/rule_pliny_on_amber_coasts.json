@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v1",
+  "Keywords": [
+    "Pliny on amber coasts"
+  ],
+  "RagShortTexts": [
+    "Pliny relates the gathering of amber cast ashore and its sale to neighboring peoples."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pliny relates the gathering of amber cast ashore and its sale to neighboring peoples. Many hands separated a collecting coast from Roman luxury markets, so possession of the raw material did not give a gatherer the price of a finished ornament."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

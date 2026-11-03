@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_3a",
+  "HeroName": "Leo II of Armenia",
+  "Description": "Crown Prince Leo II of Armenia (later crowned King Leo II/III) was the eldest son of King Hethum I and Queen Isabella, heir to the Cilician throne. Raised on the ramparts of Taurus fortresses under the tutelage of his father and Sparapet Smbat, he mastered mounted lance warfare and Frankish chivalry. In numerous sharp border engagements against Seljuk raiding forces, Leo spearheaded frontline cataphract charges in blackened plate armor, earning martial renown. His diplomatic marriage to Lady Keran (Anna) of Lampron permanently healed the historic rift between the rival Hetoumid branches, cementing dynastic cohesion. In 1259, as regional warfare expanded across Syria, Prince Leo commanded the elite royal cavalry guards at Sis, maintaining unceasing vigilance against Mamluk incursions. Brave, dutiful, and beloved across all social orders, Prince Leo stood as the heroic champion and future savior of Christian Cilicia. In mountain cavalry muster grounds, Crown Prince Leo instituted grueling endurance runs in full mail and obstacle horsemanship across rocky ridges, sharing hardtack and tents with common sergeants. In the armories of Sis, he supervised the forging of heavy composite lances blending Frankish and Eastern designs, giving Armenian cataphracts devastating shock penetration. Whenever border beacons blazed, Leo spurred his barded warhorse to lead counter-assaults, his black armor inspiring defending garrisons.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Lead the royal cataphract squadrons to crush invading forces and preserve the sovereign frontiers won by his royal ancestors.",
+    "Master martial and administrative arts to assume the mantle of kingship, guiding Little Armenia to military supremacy and peace.",
+    "Consolidate the alliance with Lampron and Outremer crusaders, forging an invincible Christian phalanx in the Levant."
+  ],
+  "Values": [
+    "Dauntless valor, chivalric honor, and filial loyalty are the true marks of royal nobility; cowardice in combat is unforgivable.",
+    "Sacred duty to protect his subjects and the Armenian Apostolic faith, leading from the front with personal heroism.",
+    "Fraternal solidarity and unwavering commitment to national unity across the mountainous homeland."
+  ],
+  "Fears": [
+    "Suffering catastrophic defeat or capture on the battlefield, leaving the realm vulnerable to merciless enemy invasion.",
+    "Overwhelming enemy hordes breaching alpine defiles to desecrate holy sanctuaries and massacre the civilian populace."
+  ],
+  "SpeechStyle": "Speaks with dynamic princely charisma and martial fervor, directing cavalry squadrons and tactical council briefings with inspiring chivalric resolve.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Leo II of Armenia"
+}

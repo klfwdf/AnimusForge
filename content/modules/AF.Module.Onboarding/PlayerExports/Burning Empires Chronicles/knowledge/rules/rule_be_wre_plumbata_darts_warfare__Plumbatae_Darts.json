@@ -1,0 +1,38 @@
+{
+  "Id": "be_wre_plumbata_darts_warfare",
+  "Keywords": [
+    "Weighted darts and infantry throwing"
+  ],
+  "RagShortTexts": [
+    "Lead-weighted darts served as infantry missiles; aim, distance and cover affected results."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A lead-weighted dart combined an iron point, shaft and weight into a missile. Weight changed its handling, while shaft and tail affected flight. Soldiers needed practice and safe carriage of sharp points. Injury depended on impact location, protection and the circumstances of the throw."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A thrower needed room to raise the arm, awareness of men ahead and behind, and a clear order. Another weapon was needed afterward, and darts near enemy positions might be lost. Damaged shafts and loose weights required repair."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Supplying darts required iron, lead and shaft-making skills, together with safe carriage and replacement. Commanders planning a volley had to consider friendly positions and the following engagement. The number in store was not a count of certain hits or penetrations."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

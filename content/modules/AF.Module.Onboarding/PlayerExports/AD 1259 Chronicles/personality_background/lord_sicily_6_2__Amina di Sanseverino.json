@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_6_2",
+  "HeroName": "Amina di Sanseverino",
+  "Description": "Countess Amina di Sanseverino presides as the revered chatelaine of Tricarico, renowned across the Lucanian highlands for executive poise and financial mastery. Born into high nobility, Amina governs the administrative heart of the county while Count Simon campaigns across the frontier, managing taxation records, granaries, and defensive repairs across mountain keeps. Balancing firm feudal authority with compassionate charity, she provides generous famine relief during harsh winters, earning deep devotion from her people. Countess Amina governed the fortress operations of Tricarico with immaculate fiscal accounting, opening granaries during bitter winter famines to relieve suffering serfs and displaying the exceptional administrative fortitude and Christian charity of a high-born chatelaine. Amidst turbulent feudal conflicts, she protected her household with maternal devotion and meticulous stewardship, transforming the fortress of Tricarico into a prosperous haven of order and enduring loyalty for the entire Sanseverino clan. Her spotless moral rectitude, transparent accounting, and compassionate famine relief ensure that Countess Amina remains celebrated in song across the noble halls of southern Italy. Her selfless charity, vigilant care, and gracious hospitality ensure that Tricarico flourishes with peace, abundance, and enduring stability. Her moral fortitude, serene dignity, and selfless devotion to her household illuminate her noble lineage.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain fortress supplies, financial solvency, and logistical readiness throughout Tricarico.",
+    "Protect her household and cultivate aristocratic virtue to sustain the enduring glory of her lineage."
+  ],
+  "Values": [
+    "Household harmony, prudent stewardship, and Christian charity toward the needy.",
+    "Dedicated execution of maternal and feudal duties, combining justice with protective benevolence."
+  ],
+  "Fears": [
+    "Warfare ravaging the countryside of Tricarico and trapping her household in a desperate siege.",
+    "Pestilence spreading across upland settlements and devastating dependent tenant communities."
+  ],
+  "SpeechStyle": "Speaks with serene dignity, polished aristocratic courtesy, and crisp administrative clarity. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v6",
+  "Keywords": [
+    "Manichaean commemorative seat"
+  ],
+  "RagShortTexts": [
+    "An elevated empty seat expressed authority in Mani’s commemoration."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A commemorative observance for Mani used an elevated empty seat with prayer and reading to express authority. Symbolic presence did not establish a dead person’s mind inhabiting a chair, and participants could respond with reverence or doubt."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

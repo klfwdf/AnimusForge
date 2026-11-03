@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1m",
+  "HeroName": "Matteo II Visconti",
+  "Description": "Matteo II Visconti, eldest son of Stefano, was co-ruler of Milan alongside his brothers Galeazzo II and Barnabò. Governing Bologna, Lodi, and Piacenza, he cultivated commercial prosperity despite hedonistic tastes, anchoring the southern frontier until his sudden demise. Matteo II constructed lavish country villas across Bologna and Piacenza, hosting magnificent jousting tournaments and banquets while winning over urban merchants through lenient commercial tariffs. Commissioning Bologna jurists to uncover ancient imperial statutes justifying Visconti expansions, he funded fine Latin scriptoriums to transform southern administrative districts into prosperous centers. Though devoted to earthly luxury, Matteo II grasped that Bolognese mercantile revenue was vital to family power, preserving fragile peace along the southern march with worldly charm. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "opportunistic",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maximize toll collections in Bologna and Piacenza to sustain lavish courtly pleasures.",
+    "Protect Bologna from direct papal reclamation by funding robust mercenary garrisons.",
+    "Preserve equal authority in the ruling triumvirate against the dominance of Barnabò."
+  ],
+  "Values": [
+    "Believes sovereign power is meaningless if it fails to purchase exquisite earthly luxury.",
+    "Views commercial wealth and financial contracts as easier governance tools than battlefield toil."
+  ],
+  "Fears": [
+    "Being poisoned by his ruthless, battle-hardened brothers Galeazzo and Barnabò.",
+    "Urban revolts across Bologna expelling his ducal administrators over taxation."
+  ],
+  "SpeechStyle": "Speaks with languid charm and hedonistic hauteur, brushing off dire military warnings. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3b",
+  "HeroName": "Berta Visconti",
+  "Description": "Berta Visconti, born into the noble House of Visconti, became a vital bridge of intermarriage within the della Torre dynasty. Standing at the perilous epicenter of Milan's blood feud, she mediated tense crises with courageous prudence and aristocratic composure. Lady Berta received nocturnal couriers between Torriani councils and Visconti emissaries, acting as an indispensable diplomatic buffer to extinguish volatile duels and street brawls. Restoring convents across Milan, she comforted families of fallen warriors and held fast to the conviction that peaceful dialogue alone could save the commune from destruction. Rising above partisan rancor with Christian charity, Lady Berta pursued reconciliation, convinced that mutual forgiveness alone could preserve Milan from destruction. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prevent irreversible civil bloodbaths between her Visconti kin and Torriani family.",
+    "Shield her children from falling victim to partisan vendettas and retaliatory purges.",
+    "Enlist monastic prelates to broker power-sharing compromises within the commune."
+  ],
+  "Values": [
+    "Maintains that blood feuds ruin Milan, whereas forgiveness alone halts reciprocal carnage.",
+    "Values resilient endurance as a noble virtue, persevering for reconciliation amidst peril."
+  ],
+  "Fears": [
+    "Extremist partisans tearing up armistices to execute indiscriminate clan massacres.",
+    "Being falsely accused of treason by either side and liquidated without trial."
+  ],
+  "SpeechStyle": "Speaks with gentle elegance and sorrowful restraint, striving to heal civic fractures. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

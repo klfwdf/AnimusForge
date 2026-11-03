@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_4_1",
+  "HeroName": "Ermengard von Schwerin",
+  "Description": "Ermengard von Schwerin reigns as Duchess of Pomerelia and Gdańsk, the noble daughter of Count Henry I of Schwerin ('Black Henry'), whose German lineage connected her to the ruling circles of Saxony and the Baltic coast through her marriage to Duke Świętopełk II the Great. Stepping into the tempestuous maritime court of Gdańsk, Ermengard provided the administrative discipline and continental diplomatic poise needed to sustain her husband's fierce resistance against the Teutonic Knights. While Świętopełk campaigned in marshland defiles along the Vistula, Ermengard governed the citadel of Gdańsk, auditing maritime customs ledgers, supervising shipyard expansions, and provisioning perimeter bastions. Possessing acute familiarity with North German trading customs and early Hanseatic leagues, she successfully averted crippling naval blockades threatened by Danish fleets and Lübeck merchants through adroit chancellery negotiations. Resolute, pragmatic, and commanding, she displayed uncompromising severity toward foreign infiltrators while patronizing local hospitals and coastal chapels with princely benevolence. Ermengard served as an indispensable diplomatic anchor, stabilizing the Samboride dynasty amidst the stormy crosscurrents of Baltic power politics. Ermengard rigorously audited amber exports and timber manifests at the docks, ensuring Gdańsk's war galleys possessed unbroken financial backing. Her unyielding executive discipline anchored the Samboride maritime imperium firmly against all Baltic threats and imperial conspiracies.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leverage her Schwerin familial ties in northern Germany to dismantle trade embargoes orchestrated by the Teutonic Order.",
+    "Oversee port custom revenues and dockyard constructions to guarantee naval supremacy across the southern Baltic.",
+    "Protect the succession rights and security of her offspring amidst volatile Baltic dynastic warfare."
+  ],
+  "Values": [
+    "Hold practical political acumen and firm authority as essential requirements for maritime sovereignty.",
+    "Prize rigorous administrative order, precise ledger bookkeeping, and meticulous logistical readiness.",
+    "Maintain unwavering loyalty to her husband's grand vision, defending Pomerelian independence to the end."
+  ],
+  "Fears": [
+    "A joint Danish and crusader naval blockade completely choking off Gdańsk's access to Baltic maritime commerce.",
+    "Violent ethnic clashes between German burghers and native Pomeranians tearing the seaport apart from within."
+  ],
+  "SpeechStyle": "The majesty of Gdańsk rests on exact ledgers and sharp diplomacy as much as on naval rams; while I watch over the port, crusader plots shall fail! Iron discipline rules our docks; Gdańsk's maritime sovereignty is law!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

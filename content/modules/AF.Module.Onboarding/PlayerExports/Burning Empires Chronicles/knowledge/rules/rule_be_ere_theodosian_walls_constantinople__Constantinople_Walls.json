@@ -1,0 +1,38 @@
+{
+  "Id": "be_ere_theodosian_walls_constantinople",
+  "Keywords": [
+    "Constantinian walls and city harbors"
+  ],
+  "RagShortTexts": [
+    "Constantinople had Constantinian land defenses; its harbors and strait served shipping and ferries."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Constantinople occupied a peninsula beside the Bosporus, with anchorage in the Golden Horn to the north and access to the Propontis to the south. Walls dating from Constantine’s city guarded the landward approach. Gates, roads and harbors received people and goods. Sea transport brought food but made urban life dependent on ships, unloading and storage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A traveler needed an open gate or a landing place, while guards identified arrivals and kept passage orderly. Wind and currents could hinder small boats; cargo still needed unloading and carriage after arrival. Roads outside the walls and the shoreline both required attention."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Defending the city required repairs, guards and food arriving through the ports. Anchorage did not replace granaries, and the strait did not stop every hostile vessel by itself. Removing too many troops or delaying grain ships weakened the capital’s ability to respond."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

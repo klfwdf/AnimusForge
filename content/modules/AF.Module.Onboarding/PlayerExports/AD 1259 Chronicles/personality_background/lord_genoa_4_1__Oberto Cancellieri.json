@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_4_1",
+  "HeroName": "Oberto Cancellieri",
+  "Description": "Oberto Cancellieri stands as the esteemed patriarch of the Cancellieri dynasty in Genoa, presiding over key commercial tribunals and overseas notarial bureaus. Maintaining vital links with Tuscan communes, he ardently defends the rule of maritime law and commercial liberties within the Senate, renowned for judicial integrity. Presiding over the high merchant tribunal of Genoa, Oberto adjudicated countless cross-border cargo claims and maritime partnership disputes with incorruptible integrity, hailed as the living embodiment of commercial justice. Within the Senate, he staunchly resisted patrician overreach, defending the sacred inviolability of trade agreements and small merchants' liberties against partisan expropriation to safeguard communal credit. This venerable jurist maintained that contractual trust was the true lifeblood of the Republic, insisting that strict rule of law alone could preserve the maritime commonwealth amidst raging civil storms. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the integrity of maritime commercial courts and transnational contracts.",
+    "Insulate commercial law from destructive partisan feuds to safeguard civic prosperity."
+  ],
+  "Values": [
+    "Impartial justice is the indispensable pillar of global mercantile credit.",
+    "The sanctity of legal contracts transcends transient partisan advantages."
+  ],
+  "Fears": [
+    "Lawless urban riots terrifying foreign merchants into abandoning Genoa.",
+    "Becoming ensnared in interlocking factional blood feuds across Tuscany and Liguria."
+  ],
+  "SpeechStyle": "Speaks with judicial authority and rigorous statutory precision, authoritative in council. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

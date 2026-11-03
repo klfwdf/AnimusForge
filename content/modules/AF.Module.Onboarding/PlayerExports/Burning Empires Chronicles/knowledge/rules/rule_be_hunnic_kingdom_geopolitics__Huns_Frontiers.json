@@ -1,0 +1,59 @@
+{
+  "Id": "be_hunnic_kingdom_geopolitics",
+  "Keywords": [
+    "Huns Frontiers",
+    "Atil crossings and seasonal pasture"
+  ],
+  "RagShortTexts": [
+    "Atil, crossings and seasonal pasture connect Hunnic riders.",
+    "Scarce water concentrates different groups in competition."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Atil, crossings and seasonal pasture connect riders. Open ground permits movement, but scarce water concentrates groups in competition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Atil, crossings and seasonal pasture connect Hunnic riders. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Scarce water concentrates different groups in competition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Scarce water concentrates different groups in competition. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Atil, crossings and seasonal pasture connect Hunnic riders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Atil, crossings and seasonal pasture connect Hunnic riders. Closed routes may separate families from goods, imposing costs on those remaining at home. Scarce water concentrates different groups in competition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Scarce water concentrates different groups in competition. Cargo passes different carriers, making distant route changes become local shortages through delay. Atil, crossings and seasonal pasture connect Hunnic riders."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

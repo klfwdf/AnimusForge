@@ -16,6 +16,7 @@ sources=[
  "src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs",
  "src/modules/AF.Module.Persona/Import/PersonaImportOwner.cs",
  "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs",
+ "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
  "src/AF.GameAdapter.Bannerlord/Persistence/CampaignPersonaPersistenceAdapter.cs",
  "src/AF.Persistence/CampaignSaveChunkHelper.cs"]
 for name in ["Program.cs","Stubs.cs"]:

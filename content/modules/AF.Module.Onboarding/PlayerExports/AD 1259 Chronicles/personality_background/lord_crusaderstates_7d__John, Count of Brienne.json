@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_7d",
+  "HeroName": "John, Count of Brienne",
+  "Description": "John of Brienne was the son of King John of Brienne, Emperor of Constantinople, serving as Grand Butler of France and Count of Brienne. Carrying the prestigious imperial blood of his crusading father, he served as a trusted counselor and military companion to King Saint Louis IX. During the Seventh Crusade in Egypt, John fought valiantly along the branches of the Nile, distinguishing himself in the savage fighting at Al Mansurah. In 1259, administering royal household affairs and aristocratic convocations in Paris, John acted as a primary arbitrator of feudal disputes. He collaborated closely with his brother Alphonse to finance military subsidies for Outremer, endowing knightly fellowships bound for Acre and Cyprus. Generous, honorable, and politically formidable, John stood as a central pillar anchoring the Brienne dynasty's enduring chivalric legacy. John, Count of Brienne ruled his ancestral domain with aristocratic dignity, commanding immense esteem among the nobility of Champagne and Burgundy. In Brienne Castle, he instituted comprehensive training regimens for young squires while regularly inspecting manorial palisades, forest outposts, and customs houses with unbending rigor. In 1259, John dispatched trusted castellans to escort pilgrim convoys to Outremer while purchasing bulk textiles and iron tools at Champagne fairs for export to Acre. He pledged to defend his domain's autonomy while holding his knights ready for royal crusades.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the prestigious prerogatives of the County of Brienne and royal household offices, securing his house's authority.",
+    "Assist King Saint Louis IX in organizing expeditionary reserves, channeling knights and provisions to Acre and Cyprus.",
+    "Arbitrate baronial disputes across France, forging a durable political coalition dedicated to relieving Christian Outremer."
+  ],
+  "Values": [
+    "A royal prince's supreme calling is selfless service to crown and Christendom; high office demands unyielding moral rectitude.",
+    "Upholding feudal covenants and holy vows, treating companions with magnanimous honor while resisting all corrupt inducements.",
+    "Pursuit of enduring chivalric glory, dedicating his lineage and fortunes to the eternal defense of the crusader realms."
+  ],
+  "Fears": [
+    "Outremer collapsing entirely before French reinforcements arrive, forfeiting the Kingdom of Jerusalem won by his father.",
+    "Divisive factional conspiracies at the royal court paralyzing King Saint Louis's strategic plans for eastern crusades."
+  ],
+  "SpeechStyle": "Speaks with seasoned royal authority and aristocratic magnanimity, discussing court appointments and strategic dispositions with dignified, measured composure.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "John, Count of Brienne"
+}

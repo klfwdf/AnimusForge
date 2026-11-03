@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Saracen_Archers_of_Lucera_Hohenstaufen_Guard",
+  "Keywords": [
+    "Lucera Muslim service"
+  ],
+  "RagShortTexts": [
+    "Lucera’s Muslim community was tied to Hohenstaufen rule, with some members serving as archers."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lucera’s Muslim community was tied to Hohenstaufen rule, with some members serving as archers. Service did not erase households, livelihood or worship, and religious identity did not define one tactic. Manfred’s forces required actual orders and personnel."
+    }
+  ],
+  "TextMappings": []
+}

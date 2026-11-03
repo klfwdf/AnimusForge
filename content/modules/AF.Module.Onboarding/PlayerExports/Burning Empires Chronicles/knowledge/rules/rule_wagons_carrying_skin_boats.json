@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v8",
+  "Keywords": [
+    "Wagons carrying skin boats"
+  ],
+  "RagShortTexts": [
+    "Caesar moved light boats by wagon at night, linking land transport to a crossing."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Caesar moved British-style light boats by wagon at night, joining vehicle and boat production in one supply task. A crossing depended on the landward approach; delivery of an individual object did not complete the whole transport operation."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

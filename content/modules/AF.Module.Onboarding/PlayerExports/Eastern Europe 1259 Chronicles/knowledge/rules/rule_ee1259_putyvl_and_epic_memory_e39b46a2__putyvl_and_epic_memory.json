@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_putyvl_and_epic_memory_e39b46a2",
+  "Keywords": [
+    "Putyvl's Seim setting and remembered song",
+    "News of relatives after war at Putyvl"
+  ],
+  "RagShortTexts": [
+    "Putyvl lies on Seim routes and carries memories of princes and families in old song.",
+    "The destruction of 1239 damaged settlement and travel, leaving rebuilding and missing kin."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Putyvl's Seim routes connect frontier settlements, while stories of princes departing and families waiting preserve its name. Warfare in 1239 left survivors and returnees needing shelter, food and news of relatives. Song voices separation and worry, but actual messages, witnesses and assistance still have to be found."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Putyvl households hearing songs of waiting also ask travelers about their own relatives. Rumor differs from having traveled with someone, affecting whether a search is worthwhile. Rebuilding, food and vulnerable relatives still need care, often sustained by neighbors rather than guesses about distant fighting."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v1",
+  "Keywords": [
+    "边疆马与骆驼"
+  ],
+  "RagShortTexts": [
+    "马和骆驼用于骑乘、载物与家户移动，仍须休息和补给。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿拉伯边疆的马与骆驼承担骑乘、载物和家庭迁移等不同需要。它们都要休息与补给，载着家人的牲畜也不能按轻装骑手的速度持续前进。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

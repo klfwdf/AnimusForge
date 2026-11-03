@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_6_1_a",
+  "HeroName": "Nicor Álvarez",
+  "Description": "Nicor Álvarez is a stalwart castellan, seasoned frontier commander, and trusted kinsman to Alvaro Díaz de las Asturias. Entrusted with the defense of the dizzying alpine gorges throughout the Picos de Europa, Don Nicor directs elite companies of mountain crossbowmen, pikemen, and scout patrols. Imbued with an unyielding sense of chivalric fealty, he executes the commands of the Lord of Noreña with flawless military discipline. Having spent decades mastering the rugged terrain, hidden passes, and cavern redoubts of the northern peaks, he has transformed the mountain approaches into a deadly gauntlet of defensive fortifications. In 1259, as political turmoil deepens, Nicor maintains vigilant watch over the mountain trails, intercepting covert crown couriers and royal spies attempting to infiltrate the northern principality. Resolute, vigilant, and lethal in combat, he stands as the silent, immovable guardian gate of the House of Asturias. Stationed upon dizzying crags in the Picos de Europa, Nicor braves freezing gales to watch every ravine and mountain path. Rigidly searching passing pack-trains and ignoring all royal bribes, his iron discipline and deadly crossbow companies transform the alpine approach into an impenetrable gauntlet that shields the principality of Asturias from surprise assaults.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Seal the mountain defiles of the Picos de Europa against royal infiltrators and hostile raiding parties",
+    "Serve the Lord of Noreña with unswerving feudal fidelity, guarding the honor of the Asturian banner",
+    "Drill elite mountain infantry contingents to achieve an impenetrable system of fortress defense"
+  ],
+  "Values": [
+    "A castellan's sacred duty is vigilant defense of his post; negligence is an unforgivable treason",
+    "Mountain fortresses are cemented by iron discipline and sacrificial blood, not hollow words",
+    "Fulfill every command with resolute decisiveness and unwavering courage"
+  ],
+  "Fears": [
+    "A sudden alpine flanking maneuver catching the garrison unawares and compromising the passes",
+    "His lord falling victim to court treachery in Toledo while he is helpless at his mountain post"
+  ],
+  "SpeechStyle": "Grave, vigilant, and spare; speaks with the icy calm and unyielding focus of a frontier castellan guarding deadly mountain passes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_sit_defeat_without_total_extinction_e0176742",
+  "Keywords": [
+    "Princes and households after the Sit",
+    "Loss of people and animals after the Sit"
+  ],
+  "RagShortTexts": [
+    "Yurii II died at the Sit in 1238, reshaping northeastern Rus authority.",
+    "Deaths and broken routes hindered recovery; reorganized defense still needed supplies."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Yurii II died at the Sit in 1238, requiring northeastern Rus houses to rearrange authority, service and defense. Loss of kin and animals and disrupted routes hindered recovery, while news of defeat changed expectations of princes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Yurii II died at the Sit in 1238, requiring northeastern Rus houses to rearrange authority, service and defense. Loss of kin and animals and disrupted routes hindered recovery, while news of defeat changed expectations of princes. Returnees found units, treated wounds and sought food while watches might continue. Those without mounts or weapons needed support to serve again, beyond a muster order."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Yurii II died at the Sit in 1238, requiring northeastern Rus houses to rearrange authority, service and defense. Loss of kin and animals and disrupted routes hindered recovery, while news of defeat changed expectations of princes. Lords needed income and households able to remain and farm. Relief, seed and roads required resources; collecting all arrears too soon could drive more people away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Yurii II died at the Sit in 1238, requiring northeastern Rus houses to rearrange authority, service and defense. Loss of kin and animals and disrupted routes hindered recovery, while news of defeat changed expectations of princes. Returnees sought shelter, repaired tools, obtained seed and contacted kin. Wounds and lost animals made farming difficult without shared work or loans that created new obligations."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -10,11 +10,13 @@ namespace AnimusForge;
 // Stable facts, legacy diagnostics, and input cues retain their original values.
 internal static class PolicyNpcCompatibilityTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(
-        () => JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("PolicyNpcCompatibility.json"), Encoding.UTF8)));
+    private static readonly BilingualTextTable Table = BilingualTextTable.FromModuleData("PolicyNpcCompatibility.json");
 
-    internal static string Get(string id) => Values.Value[id];
+    internal static string Get(string id) => Table.Get(id);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string Source(string id) => Table.Chinese(id);
+    internal static string[] Variants(string id) => Table.Variants(id);
+    internal static bool Is(string value, string id) => Table.Is(value, id);
 
     private static readonly string[] EnglishGovernanceTerms =
     {
@@ -32,9 +34,9 @@ internal static class PolicyNpcCompatibilityTexts
     };
 
     private static readonly Lazy<string[]> Governance = new Lazy<string[]>(() =>
-        Get("Knowledge_GovernanceTerms").Split(',').Concat(EnglishGovernanceTerms).ToArray());
+        Source("Knowledge_GovernanceTerms").Split(',').Concat(EnglishGovernanceTerms).ToArray());
     private static readonly Lazy<string[]> Geography = new Lazy<string[]>(() =>
-        Get("Knowledge_GeographyTerms").Split(',').Concat(EnglishGeographyTerms).ToArray());
+        Source("Knowledge_GeographyTerms").Split(',').Concat(EnglishGeographyTerms).ToArray());
 
     // Each semantic cue contributes at most once even when several word forms occur.
     private static readonly Lazy<Dictionary<string, string[]>> EnglishForms =

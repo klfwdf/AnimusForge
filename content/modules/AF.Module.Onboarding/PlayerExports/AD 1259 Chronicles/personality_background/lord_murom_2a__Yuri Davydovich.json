@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Yuri Davydovich of Murom, son of Saint Davyd and Saint Euphrosyne, is the premier military commander of the principality. Combining chivalric courage with rigorous strategic discipline, he commands the central division of heavy armored cavalry from the white stone citadel. Yuri analyzed regional warfare across the Volga-Oka basin, perfecting combined-arms tactics that integrate dense spear phalanxes with fluid forest mounted archery. During seasons of inter-princely friction and frontier alarms, he rapidly deploys battle-hardened regiments to forward redoubts, repulsing every surprise assault. Incorruptible in discipline yet deeply loyal to his men, he personally inspects weapons manufacture and shares cold camp bivouacs with common sentinels. Embodying the moral integrity of his saintly parents, Prince Yuri commands immense authority as the unbreakable iron shield of Murom.  Yuri personally inspects the iron chain barriers and floating booms across the river approaches, ensuring that surprise naval raids cannot exploit morning mists along the Oka waterways, commanding the total trust of his veterans.  His formidable stone ramparts, experienced heavy lancers, disciplined archer garrisons, and uncompromising defense of the Oka waterways preserved the martial renown, sovereignty, and territorial integrity of the Principality of Murom.  His stern leadership ensures the white stone citadel stands firm against all odds.",
+  "SpeechStyle": "The armor and spears of our knights are the true walls of Murom! While our ranks hold unbroken and faith remains resolute, no invading host shall pierce our line. Stand fast and defend the realm!",
+  "Motivations": [
+    "Maintain total combat readiness of the central heavy cavalry to crush any hostile armed incursion into Murom.",
+    "Enforce strict military drill and modern equipment standards, forging a disciplined standing army to protect the realm."
+  ],
+  "Values": [
+    "Hold iron discipline, patriotic duty, and the protection of citizens as sacred military callings above all else.",
+    "Prize battlefield honor, transparent command, and fraternal solidarity over opportunistic tricks and hollow excuses."
+  ],
+  "Fears": [
+    "Fear overwhelming enemy hosts severing communications between outposts, subjecting the citadel to starvation.",
+    "Dread impetuous cadet lords leading reckless cavalry charges into concealed ambushes, decimating the principality's army."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    }
+  ],
+  "HeroId": "lord_murom_2a",
+  "HeroName": "Yuri Davydovich"
+}

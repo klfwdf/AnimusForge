@@ -1,0 +1,53 @@
+{
+  "Id": "rule_high_cantle_stirrup_mechanics",
+  "Keywords": [
+    "Saddles stirrups and riding",
+    "Saddle support and stirrup leathers",
+    "Tack fit and horse backs"
+  ],
+  "RagShortTexts": [
+    "Saddle support, leathers and girths aid stability; poor fit injures horses on long journeys.",
+    "Steppe and Rus riders adjust tack to mounts and habits, needing repairs and rest."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Steppe and Rus saddles combine frames, supporting bows, stirrups and girths. Secure tack helps a rider turn, use weapons and control a mount. Loose girths or worn padding burden both. Fit varies with the horse, and a rubbed back after a long march can remove an otherwise fit animal from service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A rider watches leathers, girths and padding and checks fit again on a new mount. A secure seat does not permit endless speed. Soreness, lameness or resistance to saddling slows the party. Spare straps and access to a tack worker can be more useful than another costly ornament."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord needs serviceable tack and repair capacity as well as a count of men and mounts. Saddlers, leather, padding and spare straps consume transport but prevent successive losses of usable horses. Schedules need adjustment and rest; stability from saddle and stirrups does not replace skill or stamina."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Saddles need wood, leather, metal and padding from several trades. Carers attend sore backs and dry wet equipment. Requisitioning tack workers reduces civilian transport care, while returning damage needs materials again. A mounted force therefore requires continuing household and workshop labor beyond buying horses."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

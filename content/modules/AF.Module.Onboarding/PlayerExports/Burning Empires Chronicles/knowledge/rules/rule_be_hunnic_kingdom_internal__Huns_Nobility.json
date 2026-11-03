@@ -1,0 +1,59 @@
+{
+  "Id": "be_hunnic_kingdom_internal",
+  "Keywords": [
+    "Huns Nobility",
+    "Older and newer Hunnic followings"
+  ],
+  "RagShortTexts": [
+    "Balamber joins different riders and chiefs.",
+    "Incorporating partners also adds distribution claims."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Balamber joins different chiefs and mounted groups. New partners add forces and reward claims; one tent cannot simply command every following."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Balamber joins different riders and chiefs. Followers retain family ties; decisions about guards and distant service affect common participation. Incorporating partners also adds distribution claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Incorporating partners also adds distribution claims. Coordination allocates actual supply and protection duties, not merely titles. Balamber joins different riders and chiefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Balamber joins different riders and chiefs. Households compare burdens with neighbors; unmatched protection weakens cooperation. Incorporating partners also adds distribution claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Incorporating partners also adds distribution claims. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Balamber joins different riders and chiefs."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

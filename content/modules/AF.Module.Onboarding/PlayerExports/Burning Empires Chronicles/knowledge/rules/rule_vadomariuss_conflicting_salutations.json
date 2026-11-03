@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v6",
+  "Keywords": [
+    "Vadomarius’s conflicting salutations"
+  ],
+  "RagShortTexts": [
+    "Vadomarius used conflicting political salutations to the two emperors."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vadomarius used exalted salutations to Julian while telling Constantius that his Caesar was disobedient. An honorific conveyed the relationship a letter sought to establish rather than proving loyalty. Comparison of separate communications exposed the political difference."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

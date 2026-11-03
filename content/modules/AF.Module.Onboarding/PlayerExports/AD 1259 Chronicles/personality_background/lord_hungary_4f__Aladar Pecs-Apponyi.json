@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_4f",
+  "HeroName": "Aladar Pecs-Apponyi",
+  "Description": "Aladár Péc-Apponyi is the stalwart brother of Ivanka, serving as castellan and vanguard scout captain of the Appony (Oponice) stronghold. Inspired by his brother's pioneering spirit, Aladár is a rugged and charismatic warrior who leads frontier patrols through the dense Carpathian timberlands. Mastering highland ambuscades, shock charges, and coordinated archery, he repeatedly dismantled marauding outlaw bands threatening royal mining tracks. Beloved by garrison retainers for his genuine camaraderie, he nevertheless enforces strict inspection standards upon weapons and cavalry mounts. In 1259, as frontier rumors warn of border clashes and foreign infiltration, Aladár commands forward observation posts guarding the Nitra defiles, prepared to shed his blood in defense of family honor. Aladár planted hidden abatis stakes and snare pits throughout dense forest corridors around Appony, leading light horsemen and archers on rugged patrols. His mastery of woodland ambuscades neutralized enemy scouting detachments long before they could approach the home citadel. His unpretentious camaraderie and fierce combat spirit earned him the devoted loyalty of every mountain tracker serving under his command, inspiring heroic valor across all frontier outposts, securing the mountain passes against unexpected aggressors and hostile scouts, guaranteeing total security for the realm.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold critical defiles guarding Appony Castle, securing his brother's emerging dynastic lordship.",
+    "Forge his highland archers and horsemen into a legendary mountain fighting force through battle."
+  ],
+  "Values": [
+    "Hold reckless bravery, fraternal solidarity, and military discipline as supreme chivalric codes.",
+    "Prize honest martial camaraderie, standing ready to lay down his life for family and retainers."
+  ],
+  "Fears": [
+    "Fears woodland ambushes encircling his vanguard and wiping out his loyal squadron.",
+    "Dreads patrol oversights permitting enemy commandos to sneak past and surprise the home citadel."
+  ],
+  "SpeechStyle": "These dense woods are our hunting grounds; our arrows are nocked! Anyone daring to probe Appony's passes will find only death in the mountain thickets! Ambushers bar the mountain trails; trespassers shall find only death here!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

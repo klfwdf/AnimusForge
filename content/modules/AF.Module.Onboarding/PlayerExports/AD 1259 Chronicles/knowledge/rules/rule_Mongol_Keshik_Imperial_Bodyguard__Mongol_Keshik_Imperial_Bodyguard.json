@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Mongol_Keshik_Imperial_Bodyguard",
+  "Keywords": [
+    "Mongol keshik service and court"
+  ],
+  "RagShortTexts": [
+    "Keshik service joined protection of the khan with court duties and access."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Keshik service joined protection of the khan with court duties and access. Proximity brought prestige and obligations. Court resources mattered politically, without giving members an already completed role in succession struggles still ahead."
+    }
+  ],
+  "TextMappings": []
+}

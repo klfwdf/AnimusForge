@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_5_1_2",
+  "HeroName": "John I of Montfort, Lord of Toron and Tyre",
+  "Description": "John I of Montfort was the eldest son of Philip of Montfort and Maria of Antioch, standing as the charismatic heir to the dual Lordship of Tyre and Toron. Trained from boyhood along the coastal ramparts of Tyre in the highest arts of Frankish chivalry, he early assumed active tactical command over garrison retinues. In 1259, as Mamluk pressure intensified across Upper Galilee, John repeatedly led armored cavalry sorties that repelled saracen advance reconnaissance bands. He would subsequently marry Princess Margaret of Antioch-Lusignan, cementing the House of Montfort's pivotal influence within royal succession politics. Energetic, decisive, and strategically astute, John personally directed the reinforcement of the triple gatehouses defending Tyre's narrow landward causeway. Dedicated to sustaining his father's autonomous baronial empire, John stood as one of the most promising and valiant young captains in the late crusader Levant. Patrolling the sea lanes between Tyre and Acre, John personally boarded enemy privateer craft, using naval assault tactics to preserve commercial shipping. In the city's armories, he inspected counterweight artillery mountings, introducing modern seawall artillery batteries to urban defenses. Charismatic, daring, and generous, he was widely celebrated as one of the most capable young naval commanders in Outremer.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Achieve outstanding military distinction along the coastal frontier, demonstrating his worthiness to inherit the Lordship of Tyre.",
+    "Command elite cavalry retinues beside his father Philip, defending Tyre and Toron against predatory Mamluk incursions.",
+    "Consolidate baronial supremacy through royal Lusignan marital alliances, transforming Tyre into an unassailable capital."
+  ],
+  "Values": [
+    "A commander's authority is won with couched lance on the battlefield; unflinching bravery in melee commands universal respect.",
+    "Fidelity to his dynasty and holy crusading vows, leading every counter-charge personally to protect Christian Outremer.",
+    "Decisive leadership and strict justice, inspiring chivalric camaraderie while fiercely safeguarding his ancestral honor."
+  ],
+  "Fears": [
+    "Tyre's landward isthmus fortifications collapsing under concentrated artillery bombardment, allowing enemy horsemen to breach the city.",
+    "Falling in a tactical ambush before fulfilling his potential, depriving the House of Montfort of its lawful heir."
+  ],
+  "SpeechStyle": "Speaks with brisk chivalric authority and resolute confidence, directing fortress garrisons and cavalry maneuvers with dynamic, inspiring precision.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "John I of Montfort, Lord of Toron and Tyre"
+}

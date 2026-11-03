@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_2_1",
+  "HeroName": "Faraj ibn Ismail ibn Nasr",
+  "Description": "Faraj ibn Ismail ibn Nasr is the capable son of Governor Ismail and nephew to Sultan Muhammad I, serving at thirty years of age as Vice-Governor of Málaga and Admiral of the Coastal Galley Squadron. Vigorous, battle-hardened, and commanding of stature, Faraj spent his youth patrolling the waters of the Strait and the Alboran Sea, repeatedly repelling corsair raids and Christian reconnaissance sorties. Equally lethal leading boarding actions at sea or commanding rapid cavalry columns on land, he embodies the dynamic martial vigor of the royal family. His marriage to Dona Safya consolidated immense prestige among maritime merchant guilds and port garrisons. Bold and visionary, Faraj advocates for an expanded naval battlefleet to contest coastal waters rather than relying solely on defensive ramparts, recognized as one of the most enterprising commanders in the realm. Faraj's daring naval sorties, mastery of coastal galley warfare, and charismatic leadership inspire absolute devotion among his sailors, establishing him as one of the most formidable maritime warriors defending the southern seas. Faraj's daring tactical leadership, naval audacity, and charismatic command inspire terror among coastal foes, cementing his reputation as an invincible naval champion. Faraj's daring tactical audacity, naval mastery, and heroic leadership ensure that the war galleys of Málaga dominate the coastal waters of Andalusia.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To expand the naval arsenals of Málaga and build a powerful galley fleet to dominate coastal waters.",
+    "To achieve decisive military triumphs, securing the renown and fortunes of his cadet branch."
+  ],
+  "Values": [
+    "Seizing the tactical initiative commands the battle; passive containment inevitably ends in defeat.",
+    "Iron naval discipline and mutual brotherhood at sea are the bedrock of maritime triumph."
+  ],
+  "Fears": [
+    "Central budget cuts crippling shipyard maintenance and leaving the fleet vulnerable.",
+    "Catastrophic gales or sudden enemy naval ambushes decimating his capital galleys."
+  ],
+  "SpeechStyle": "Speaks with crisp, salty naval assertiveness, delivering commands with thunderous conviction and spirited charisma. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

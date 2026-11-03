@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_4_1_2_1",
+  "HeroName": "Madalena de Costa",
+  "Description": "Dona Madalena de Costa is the noble wife of Dom Joan Anes de Brito, standing at forty-nine years of age as an astute economic coordinator hailing from the prominent maritime House of Costa. Her marriage injected vital coastal commercial assets into the Brito dynasty, including salt trade concessions, fishing rights, and fluid mercantile credit. Exceptionally skilled in ledger accounting and logistics, Madalena directly supervises estate warehouses, artisan workshops, and supply relays. Calm, pragmatic, and richly experienced, her sharp counsel is deeply valued by her husband and in-laws. During Dom Joan's extended tours of border duty, Madalena runs the castle's logistical apparatus single-handedly, ensuring that arms, horses, and grain flow seamlessly to the front. She acts as the indispensable logistical heart ensuring the financial dominance of the House of Brito. Her astute commercial acumen and logistical mastery transform coastal revenues into military power, ensuring that the keeps of Brito remain impeccably supplied and defended against all external threats. Her masterly fiscal governance, commercial boldness, and tireless logistics guarantee that the keeps of Brito stand fully provisioned and prepared for war. Her masterly fiscal governance, commercial boldness, and tireless logistics guarantee that the keeps of Brito stand fully provisioned against all siege.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To expand coastal and inland commercial conduits, securing boundless liquidity for the estate.",
+    "To guarantee uninterrupted logistical support for her husband's garrisons while maintaining flawless domestic order."
+  ],
+  "Values": [
+    "Even the grandest knightly enterprise collapses without grain and gold; finance is true power.",
+    "Transparent ledgers, strict contracts, and tireless diligence build dynastic eternity."
+  ],
+  "Fears": [
+    "Coastal trade routes falling prey to pirate raids, rupturing mercantile cash flow.",
+    "Administrative negligence or corrupt bailiffs draining the estate's hidden revenues."
+  ],
+  "SpeechStyle": "Speaks with calm, measured articulation and businesslike sharpness, laying out complex logistical details with serene authority. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

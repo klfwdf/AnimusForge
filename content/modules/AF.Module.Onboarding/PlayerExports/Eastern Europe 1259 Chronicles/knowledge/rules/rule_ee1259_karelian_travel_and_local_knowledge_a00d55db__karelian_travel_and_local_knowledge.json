@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_karelian_travel_and_local_knowledge_a00d55db",
+  "Keywords": [
+    "karelian travel and local knowledge",
+    "Karelian snow routes and forest-lake guides"
+  ],
+  "RagShortTexts": [
+    "Karelian travel depends on forest, lake and seasonal knowledge.",
+    "Skis aid movement in suitable snow conditions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Karelian forest-lake routes change with snow, ice and thaw. Ski travel can use ground difficult in summer, but guides still find food, shelter and safe banks. Routes for light travelers may not suit animals or cargo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Skiing parties must account for loaded stragglers and tracks erased by snow. Local knowledge cannot replace food and strength for a return before ice deteriorates."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Hiring Karelian guides requires specifying loads, numbers and destinations. A winter route is not a year-round military road; removing fishers also diminishes local supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Forest-lake households balance guiding with fishing and family work. Repairing travel gear takes time; payment must offset missed seasonal work and care at home."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

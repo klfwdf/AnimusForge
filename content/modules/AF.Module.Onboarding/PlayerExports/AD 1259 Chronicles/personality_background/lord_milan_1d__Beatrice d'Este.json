@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1d",
+  "HeroName": "Beatrice d'Este",
+  "Description": "Beatrice d'Este, daughter of Marquis Obizzo II of Ferrara, married Nino Visconti of Gallura and later Galeazzo I of Milan. Celebrated for beauty, political brilliance, and tragic resilience, Dante immortalized her shifting fortunes and noble soul in Purgatorio VIII. Beatrice established reliable courier networks between Ferrara and Milan, leveraging deep genealogical insight and courtly eloquence to secure her husband's liberation during bitter periods of imperial imprisonment. Commanding respect across Italian chancelleries with consummate diplomatic poise, she secured imperial recognition and strategic backing for the reigns of Galeazzo and young Azzone. Surviving tragic bereavements and political turmoil, Beatrice rose above partisan hatred, deploying immaculate aristocratic dignity and statecraft to secure the fortunes of her lineage. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain an invincible dynastic alliance between the Este and Visconti sovereign houses.",
+    "Protect young Azzone Visconti from assassination and secure his lawful Milanese succession.",
+    "Introduce Ferrara's refined courtly arts to temper Milan's rough military culture."
+  ],
+  "Values": [
+    "Maintains that dynastic nobility must be defended through calculating patience and pride.",
+    "Despises duplicitous courtiers, holding regal poise even amidst exile and misfortune."
+  ],
+  "Fears": [
+    "Her son Azzone falling prey to poison plots engineered by factional pretenders.",
+    "Renewed palace coups fracturing the hard-won unity of the Milanese state."
+  ],
+  "SpeechStyle": "Speaks with immaculate aristocratic distinction, blending poise with sharp political intellect. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

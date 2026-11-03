@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Hulagu_Western_Campaign_and_Baghdad_Fall",
+  "Keywords": [
+    "Hulagu Western Campaign",
+    "Sack of Baghdad 1258",
+    "Abbasid Caliphate Fall",
+    "Tigris Inked and Bloodied"
+  ],
+  "RagShortTexts": [
+    "Hulagu's western campaign culminates in the capture of Baghdad in 1258.",
+    "Destruction of homes and irrigation threatens survivors without a certain exact death toll."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1258 Hulagu Khan's armies took Baghdad and ended the Abbasid Caliphate after five centuries of rule. The Caliph al-Musta'sim was executed in a manner that the Mongol court considered honourable, since no royal blood was shed. The city's libraries and academies were looted or destroyed, and the Tigris ran dark with ink and red with blood. The fall of the capital cleared the way for the Ilkhanate to turn its armies westward toward Syria, where Damascus and Aleppo lay open to the tumens. Mongol administration of Iraq depended on the surviving scribes and the tax registers, while Hulagu's staff planned the next campaign and sent envoys to the Frankish princes and the Armenian kings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The annihilation of Baghdad shattered universal Islamic authority. Christian vassals such as Bohemond of Antioch and Hethum of Cilician Armenia chose survival, kneeling before Hulagu and providing Christian guides for the Mongol tumens against Damascus."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Veterans from Mesopotamia speak of Mongol siege engines hurling jars of naphtha, and of volleys from recurve bows that never seem to end. Against such a host, only disciplined iron formations hold the line, because the Mongol cavalry will not wait for a gap in the shields. A man who lives through one charge still counts every arrow that struck his shield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "People fleeing Baghdad remember relatives, homes and workshops lost in 1258. Reported totals of the dead vary greatly and cannot be counted from a village rumour. For surviving cultivators, damaged canals, missing labour and insecure roads threaten the next harvest as well. Those practical losses explain enduring fear without requiring a precise but unsupported number of victims."
+    }
+  ],
+  "TextMappings": []
+}

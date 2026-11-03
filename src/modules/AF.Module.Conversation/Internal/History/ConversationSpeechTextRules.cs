@@ -14,6 +14,22 @@ internal readonly struct ConversationSpeechTextOptions
 // Pure text rules shared by channel adapters. Settings are captured before entry.
 internal static class ConversationSpeechTextRules
 {
+    // Stage-direction labels in either language; compiled once, reply text is not language-bound.
+    private static readonly Lazy<Regex[]> LabelPatterns = new Lazy<Regex[]>(() =>
+    {
+        string[] patterns = ConversationRuntimeTexts.RawVariants("AF_CONV_Runtime_0293");
+        var compiled = new Regex[patterns.Length];
+        for (int i = 0; i < patterns.Length; i++) compiled[i] = new Regex(patterns[i], RegexOptions.Compiled);
+        return compiled;
+    });
+
+    private static bool MatchesAnyLabelPattern(string text)
+    {
+        foreach (Regex pattern in LabelPatterns.Value)
+            if (pattern.IsMatch(text)) return true;
+        return false;
+    }
+
 internal static bool IsNpcInventorySummaryHeader(string text)
 	{
 		string text2 = (text ?? "").Trim();
@@ -22,14 +38,28 @@ internal static bool IsNpcInventorySummaryHeader(string text)
 			return false;
 		}
 		if (!text2.EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0235"), StringComparison.Ordinal)
-			&& !text2.EndsWith(PromptComposerTexts.Get("inventory_limit_suffix"), StringComparison.Ordinal))
+			&& !EndsWithEdition(text2, "inventory_limit_suffix"))
 		{
 			return false;
 		}
 		return text2.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0236"), StringComparison.Ordinal) > 1 || text2.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0237"), StringComparison.Ordinal) > 1 || text2.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0238"), StringComparison.Ordinal) > 1
-			|| text2.IndexOf(PromptComposerTexts.Get("inventory_shop_phrase"), StringComparison.OrdinalIgnoreCase) > 1
-			|| text2.IndexOf(PromptComposerTexts.Get("inventory_current_phrase"), StringComparison.OrdinalIgnoreCase) > 1
-			|| text2.IndexOf(PromptComposerTexts.Get("inventory_carried_phrase"), StringComparison.OrdinalIgnoreCase) > 1;
+			|| ContainsEdition(text2, "inventory_shop_phrase") || ContainsEdition(text2, "inventory_current_phrase")
+			|| ContainsEdition(text2, "inventory_carried_phrase");
+	}
+
+	// History may hold inventory headers written under either game language.
+	private static bool EndsWithEdition(string text, string key)
+	{
+		foreach (string edition in PromptComposerTexts.Editions(key))
+			if (text.EndsWith(edition, StringComparison.Ordinal)) return true;
+		return false;
+	}
+
+	private static bool ContainsEdition(string text, string key)
+	{
+		foreach (string edition in PromptComposerTexts.Editions(key))
+			if (text.IndexOf(edition, StringComparison.OrdinalIgnoreCase) > 1) return true;
+		return false;
 	}
 
 internal static bool IsLeakedPromptLineForShout(string line)
@@ -103,11 +133,11 @@ internal static bool IsLeakedPromptLineForShout(string line)
 		{
 			return true;
 		}
-		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0257"), StringComparison.Ordinal))
+		if (ConversationRuntimeTexts.StartsWithRaw(text, "AF_CONV_Runtime_0257"))
 		{
 			return true;
 		}
-		if (string.Equals(text, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0258"), StringComparison.Ordinal))
+		if (ConversationRuntimeTexts.IsRaw(text, "AF_CONV_Runtime_0258"))
 		{
 			return true;
 		}
@@ -139,7 +169,7 @@ internal static bool IsLeakedPromptLineForShout(string line)
 		{
 			return true;
 		}
-		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0264"), StringComparison.Ordinal))
+		if (ConversationRuntimeTexts.StartsWithRaw(text, "AF_CONV_Runtime_0264"))
 		{
 			return true;
 		}
@@ -147,7 +177,7 @@ internal static bool IsLeakedPromptLineForShout(string line)
 		{
 			return true;
 		}
-		if (text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0265"), StringComparison.Ordinal) >= 0)
+		if (ConversationRuntimeTexts.ContainsRaw(text, "AF_CONV_Runtime_0265"))
 		{
 			return true;
 		}
@@ -439,7 +469,7 @@ internal static string StripTtsNarrationLines(string text)
 			{
 				continue;
 			}
-			if (Regex.IsMatch(text2, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0293")))
+			if (MatchesAnyLabelPattern(text2))
 			{
 				continue;
 			}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_6_2",
+  "HeroName": "Mathilde de Brabant, Countess of Artois and Saint-Pol",
+  "Description": "Mathilde de Brabant is Countess of Saint-Pol and Dowager Countess of Artois, eldest daughter of Duke Henry II of Brabant. At twenty-seven, she holds immense diplomatic prestige bridging the Imperial Low Countries with the royal Capetian court of France. As the widow of Prince Robert I of Artois—who died heroically alongside Saint Louis at Mansurah—and mother of the young Count Robert II, she commands profound veneration among the peers of France. Her second marriage to Count Guy III de Châtillon created an unshakeable confederacy shielding Artois and Saint-Pol. Mathilde governs family estates with exceptional administrative rigor, safeguarding municipal commerce along the bustling trade roads linking Ghent with Paris. Resolute, dignified, and politically formidable, she repeatedly served as an authoritative mediator between royal chancellors and Flemish towns, standing as a grand matriarch. Countess Mathilde governed regional fairs at Arras with consummate wisdom, reforming weights and measures while defusing volatile clashes between royal bailiffs and Flemish merchant guilds. Resolute, farsighted, and regal in every assembly, she blended maternal protectiveness with steely baronial authority, earning widespread reverence throughout Western European courts. Her extraordinary diplomatic foresight and maternal wisdom ensure that the grand baronial legacy of Artois and Saint-Pol will flourish across future generations.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the vast heritage of Artois for her son Robert II to ensure dynastic glory.",
+    "Foster strategic peace between the Duchy of Brabant and the French Crown."
+  ],
+  "Values": [
+    "Dynastic preservation and maternal protection of her heirs amidst political storms.",
+    "Enlightened territorial administration balanced with profound Christian charity."
+  ],
+  "Fears": [
+    "Communal rebellions in Artois undermining the lawful authority of her son.",
+    "Low Country wars engulfing her native Brabant and adopted France in destructive conflict."
+  ],
+  "SpeechStyle": "Speaks with imperial majesty and aristocratic refinement, her speech measured, authoritative, and illuminated by a lifetime of governance at the heart of European diplomacy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

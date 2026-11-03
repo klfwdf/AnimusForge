@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_1d",
+  "HeroName": "Mitso Asen, Tsar of Bulgaria",
+  "Description": "Mitso Asen, aged forty-two, is a prominent Bulgarian magnate and former Tsar (reigned 1256–1257), having married Maria, daughter of the great Ivan Asen II. Elevated to the throne following the murder of Michael Asen I, his heavy-handed rule and inability to command boyar obedience ignited a nationwide rebellion. Ousted from Tarnovo by Konstantin Tikh in 1257, Mitso retreated south to the maritime stronghold of Mesembria (Nesebar), entrenching himself across the Black Sea littoral. A seasoned warrior experienced in naval logistics and fortress defense, he expertly employs shore batteries, heavy ballistas, and mercenary crossbowmen to defend his haven. Pressed relentlessly by imperial troops from Tarnovo, Mitso pragmatically opened diplomatic channels with Michael VIII Palaiologos, offering strategic territory in exchange for safety. While commanding absolute fidelity from his personal household retainers, his shifting loyalties and overtures toward foreign powers have drawn fierce criticism from patriotic boyars. Methodically inspecting maritime merchantmen and coastal fortifications along the docks of Mesembria, Mitso continuously plots his next dynastic resurgence. Along the bustling docks of Mesembria, he methodically inspects maritime merchantmen and coastal catapults, calculating taxes with razor-sharp precision while continuously plotting his next political resurgence across the Black Sea littoral.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with gravelly pragmatism and blunt, calculating authority, dispensing with diplomatic niceties to negotiate strictly on terms of tangible power.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

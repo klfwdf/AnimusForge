@@ -1,0 +1,52 @@
+{
+  "Id": "rule_pagan_tree_burial_remnants",
+  "Keywords": [
+    "woodland funerals and burial grounds",
+    "cremation and Christian burial"
+  ],
+  "RagShortTexts": [
+    "Baltic traditional and Christian funerals differ; cremation and burial are not one rite.",
+    "Funerals require kin, resources and decisions about possessions that groups may dispute."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Baltic woodland communities with older beliefs and Christian settlements make different arrangements for bodies, fire and graves. Some value cremation and grave goods, while Christians seek burial in recognised church ground and prayers for the dead. Woodland origin alone does not identify a rite: marriage, conversion and mixed kin can divide a family.\n\nFuel or coffins, carrying bodies, digging and receiving relatives all require labour. Clothing, tools and animals also concern the survivors’ livelihood. Relatives and ritual leaders debate what to devote to the funeral and what to keep. Disputes can continue into inheritance; food, child care and household help are practical forms of mourning support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Leaders’ funerary gifts display status and reduce inherited resources. Converted relatives’ funerals require consideration of both kin and clerical claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Campaign dead may be far from home; returning bodies takes carts and time. Belongings and a clear account help kin more than a vague death report."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Funerals interrupt poor households’ work, making neighbours’ food and help essential. Ritual gifts compete with survivors’ food needs."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

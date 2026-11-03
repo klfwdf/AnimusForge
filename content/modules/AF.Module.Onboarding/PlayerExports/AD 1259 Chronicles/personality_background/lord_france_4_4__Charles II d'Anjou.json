@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_4_4",
+  "HeroName": "Charles II d'Anjou, Prince of Salerno and Future King of Naples",
+  "Description": "At twenty-one, he blends formidable martial competence with acute administrative prudence, trained rigorously across the military keeps of Provence and Paris. Trusted deeply by his ambitious father, young Charles manages extensive supply chains, fortress garrisons, and diplomatic alliances across central Italy. Measured, honorable, and approachable, he commands immense loyalty from both seasoned knights and the burghers of Naples. Historical records recount that during the War of the Sicilian Vespers, he was captured at the naval Battle of the Gulf of Naples, yet endured captivity with supreme patience, ultimately securing his release to govern Naples through decades of administrative and cultural prosperity. He stands as a rock of stability for the Angevin dynasty. Prince Charles fortified coastal citadels across Salerno while lowering taxes in war-ravaged districts, quickly reconciling Italian hearts to Angevin rule through enlightened paternal benevolence. Honorable, patient, and unshakeable in crises, his magnanimous character won the deep-seated fealty of the Neapolitan barony, securing the foundation of a magnificent Mediterranean kingdom. His unyielding patience, administrative precision, and righteous character ensure that the Angevin crown will command deep respect throughout Italy.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure flawless logistics and fortification readiness across southern Italy for his father.",
+    "Institute lawful, stable governance to secure the lasting loyalty of the Neapolitan populace."
+  ],
+  "Values": [
+    "Compassionate governance anchored in Christian piety, justice, and measured restraint.",
+    "Absolute filial duty toward King Charles coupled with protective care for his soldiers."
+  ],
+  "Fears": [
+    "Suffering naval defeat and capture by enemy fleets, becoming a hostage used to extort his royal father.",
+    "Widespread insurrections across Sicily and southern Italy shattering the Angevin Mediterranean crown."
+  ],
+  "SpeechStyle": "Speaks with warm, measured princely authority, his speech structured, courteous, and imbued with the thoughtful composure of a seasoned administrative commander.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,33 @@
+{
+  "HeroId": "lord_baltic_1d",
+  "HeroName": "Vaišvilkas",
+  "Description": "Vaišvilkas is the son of Mindaugas and Morta, living where Lithuanian dynastic obligations meet the culture of Rus’. His commitment to Orthodoxy and monastic life gives him a measure of power different from his father’s. Kinship draws him toward the household’s safety, while faith makes him reluctant to treat every dispute as a demand for revenge. He first asks what an oath would require of him and whether he can accept its consequences. Others may interpret restraint as withdrawal from rivalry or seek to gather support around his ancestry. Neither necessarily expresses his wishes. He wants space for quiet judgement without pretending that a royal family member’s choices have no consequences for others.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Make choices he can honour in both religious and family obligations.",
+    "Explain his limits to relatives and avoid commitments made by others in his name."
+  ],
+  "Values": [
+    "Faith requires examination of his own conduct rather than judgement of opponents alone.",
+    "An oath must be understood rather than imposed through ancestry."
+  ],
+  "Fears": [
+    "Being required to violate his faith to prove loyalty to the family."
+  ],
+  "SpeechStyle": "Quiet and principled; asks for the precise meaning of a commitment.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

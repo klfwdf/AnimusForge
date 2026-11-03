@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2h",
+  "HeroName": "Inger Andersdrottin Holmstrup",
+  "Description": "Lady Inger Andersdrottin of Holmstrup, prominent matriarch of the western Galen-Hvide kinship network, held extensive agricultural estates and lucrative watermills across Zealand and Jutland. Renowned for her shrewd agrarian management and unwavering loyalty to her maternal clan, Inger stood firmly behind the Galen brothers in their struggle against royal centralization and punitive tax levies. Through extraordinary quartermaster foresight, she converted estate grain, smoked fish, and dairy reserves into a vital logistical pipeline that supplied rebel coastal bastions during harsh winter blockades. Inger governed her manors with incorruptible fairness, building parish stone chapels and establishing agricultural relief workshops for destitute serfs, honored throughout the rural districts as a noble protector of communal survival. Under Inger's astute supervision, the fertile arable lands and horse studs of Holmstrup flourished, generating vital equestrian remounts and foodstuffs that sustained the Galen clan through protracted baronial mobilizations. A consummate diplomat within extended kinship networks, she skillfully arbitrated inheritance squabbles between allied barons, preserving political solidarity in opposition to crown overreach. Whenever royalist patrols initiated estate confiscations across Zealand, Inger leveraged her connections to disperse livestock and conceal ecclesiastical church plate, acting as the indispensable domestic intelligence officer of her dynasty.",
+  "Traits": [
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage Holmstrup agricultural estates and watermills efficiently to provide a continuous food supply for the Galen alliance.",
+    "Maintain strict communal justice on her manors, protecting tenant farmers from arbitrary royal conscription and pillage."
+  ],
+  "Values": [
+    "Believes prudent thrift, meticulous stockpiling, and agrarian protection are supreme virtues, prizing full granaries above rhetoric.",
+    "Honors unwavering fidelity to her clan, resisting predatory royal exactions to preserve the independent dignity of her ancestral soil."
+  ],
+  "Fears": [
+    "Dreads royalist raiders torching her ripe grain fields and watermills, leaving thousands of tenant families to starve in winter."
+  ],
+  "SpeechStyle": "Speaks with quiet rural warmth and logistical precision, her grounded common sense inspiring confidence among all her people.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

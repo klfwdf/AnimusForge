@@ -1,0 +1,40 @@
+{
+  "Id": "rule_House_of_Toulouse_and_Saint_Gilles_Heritage",
+  "Keywords": [
+    "House of Toulouse Saint Gilles",
+    "Occitan Cross of Toulouse",
+    "Albigensian Annexation Legacy",
+    "Alphonse of Poitiers Regency"
+  ],
+  "RagShortTexts": [
+    "Toulouse's inheritance and religious conflicts shape its relations with northern power.",
+    "Mill dues, patronage and local jurisdiction affect households beyond courtly politics."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Toulouse's counts ruled the counties of Languedoc and the Occitan south for generations, a land of rich farms, trading towns and courts that prized troubadour song. The counts held the golden cross as their emblem and dominated the Garonne valley and the cities around it. The Albigensian Crusade of the early thirteenth century broke their independence, and the Treaty of Paris placed the county under the French crown after the defeat of Count Raymond VII. Countess Jeanne, the heiress, was married to Alphonse of Poitiers, a brother of King Louis IX, so the southern principality was set on a course that led toward absorption by Paris. Royal officials then took over the administration of the old comital estates, and the local nobility learned to serve a distant court."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Toulouse's university emerged from the settlement of 1229, linking higher learning to the contest over religious authority in the south. Masters need students, books and reliable income; church patrons seek orthodox teaching. That setting does not make every lecturer an inquisitor or every song sung in the city a declaration of political resistance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A mill on the Garonne remains important whoever claims authority over Toulouse. Customers reckon with the miller's share, queues at the wheel and the price of carrying flour home. Countal, ecclesiastical and royal rights may overlap in the region. A grain tally is not automatically a record of church attendance, although religious investigation can bring a separate fear."
+    }
+  ],
+  "TextMappings": []
+}

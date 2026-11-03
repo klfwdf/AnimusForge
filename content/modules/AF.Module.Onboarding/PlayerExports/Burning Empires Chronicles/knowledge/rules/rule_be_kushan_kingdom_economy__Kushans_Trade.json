@@ -1,0 +1,59 @@
+{
+  "Id": "be_kushan_kingdom_economy",
+  "Keywords": [
+    "Kushans Trade",
+    "Karnasa coin credit and caravans"
+  ],
+  "RagShortTexts": [
+    "Karnasa connects valley crops, crafts and caravans.",
+    "Excess merchant seizure harms Kushan revenue and coin credit."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Karnasa and valleys toward Kabul and Gandhara connect crops, crafts and caravans. Coin credit helps exchange, while excessive merchant seizure harms income."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Karnasa connects valley crops, crafts and caravans. Traveling followers need real food from this production; valuables still require a buyer and exchange. Excess merchant seizure harms Kushan revenue and coin credit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Excess merchant seizure harms Kushan revenue and coin credit. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Karnasa connects valley crops, crafts and caravans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Karnasa connects valley crops, crafts and caravans. Households need meals and the means to keep producing after delivering goods. Excess merchant seizure harms Kushan revenue and coin credit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Excess merchant seizure harms Kushan revenue and coin credit. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Karnasa connects valley crops, crafts and caravans."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

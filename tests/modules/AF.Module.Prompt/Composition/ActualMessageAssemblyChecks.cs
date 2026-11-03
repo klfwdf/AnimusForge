@@ -42,13 +42,15 @@ internal static class ActualMessageAssemblyChecks
                 return null;
             };
             Assembly product = Assembly.LoadFrom(args[0]);
+            // Fixed prompts follow the game language; the fixture language selects the simulated game language.
+            GameLanguageRequestChecks.Install(product, Environment.GetEnvironmentVariable("AF_TEST_GAME_LANGUAGE") ?? "简体中文");
             Type paths = product.GetType("AnimusForge.AnimusForgeModulePaths", true);
             string resolvedRoot = (string)paths.GetMethod("GetCurrentModuleRoot", BindingFlags.Static | BindingFlags.Public).Invoke(null, null);
             Check(resolvedRoot == Environment.GetEnvironmentVariable("AF_TEST_MODULE_ROOT"), "real module resolver stays in isolated package fixture");
-            JObject corpus = JObject.Parse(File.ReadAllText(Path.Combine(resolvedRoot, "ModuleData", "PromptComposerTexts.json")));
+            JObject corpus = JObject.Parse(File.ReadAllText(GameLanguageRequestChecks.FixedFile(product, resolvedRoot, "PromptComposerTexts.json")));
             string Text(string key) => (string)corpus[key];
             Type owner = product.GetType("AnimusForge.MainPromptMessageAssemblyOwner", true);
-            JObject retrievalText = JObject.Parse(File.ReadAllText(Path.Combine(resolvedRoot, "ModuleData", "PromptRetrievalTexts.json")));
+            JObject retrievalText = JObject.Parse(File.ReadAllText(GameLanguageRequestChecks.FixedFile(product, resolvedRoot, "PromptRetrievalTexts.json")));
             Type rerankerText = product.GetType("AnimusForge.PromptRuleTextEvidence", true);
             string rerank = (string)Call(rerankerText, "RerankText", "rule_id", "group_id", "purpose evidence", new[] { "中文输入", "English input" });
             Check(rerank.Contains((string)retrievalText["RuleIdLabel"] + "rule_id"), "actual rerank label uses package and current key");
@@ -79,7 +81,7 @@ internal static class ActualMessageAssemblyChecks
                 Check(!(bool)host.GetMethod("EditDialogueHistoryLineForExternal", BindingFlags.Public | BindingFlags.Static).Invoke(null, edit), "invalid history remains uneditable");
                 Check((string)edit[2] == (string)historyRows.Single(x => (string)x.Attribute("id") == "AF_MEMORY_UI_HistoryEditUnavailable").Attribute("text"), "actual edit status follows UI language");
                 Type promptReader = product.GetType("AnimusForge.PromptComposerTexts", true);
-                Check((string)Call(promptReader, "Get", "main_courier_reply_system") == Text("main_courier_reply_system"), "UI changes do not switch package prompt");
+                Check((string)Call(promptReader, "Get", "main_courier_reply_system") == Text("main_courier_reply_system"), "UI language changes alone do not switch the game-language prompt");
                 string retainedDetail = "X{NAME}$1";
                 foreach (string prefix in new[] { "Post-coup rebellion registration failed: ", "Rebellion settlement exception; changes made were retained and founding will not be repeated: ", "Coup fact registration not completed: " }) {
                     string projected = (string)Call(coupUi, "LocalizeReason", prefix + retainedDetail);
@@ -155,7 +157,7 @@ internal static class ActualMessageAssemblyChecks
             Check(Field(literalReply[0], "content").Contains(literalName), "dynamic name is not expanded again");
             Check(Field(literalReply[literalReply.Count - 1], "content").Contains(literalBody), "player text and marker remain literal");
             Type equipment = product.GetType("AnimusForge.EquipmentPromptCaptureAdapter", true);
-            JObject captureText = JObject.Parse(File.ReadAllText(Path.Combine(resolvedRoot, "ModuleData", "AdapterPromptCapture.json")));
+            JObject captureText = JObject.Parse(File.ReadAllText(GameLanguageRequestChecks.FixedFile(product, resolvedRoot, "AdapterPromptCapture.json")));
             string unknown = (string)captureText["Project_Unknown"];
             Check((string)Call(equipment, "BuildHeroEquipmentSummaryForPrompt", null, null, 8) == unknown, "null hero equipment uses package");
             Check((string)Call(equipment, "BuildNonHeroEquipmentSummaryForPrompt", null, 8) == unknown, "null NPC equipment uses package");
@@ -212,6 +214,7 @@ internal static class ActualMessageAssemblyChecks
             finally { currentGame.SetValue(null, previousGame); }
             foreach (Assembly loaded in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.StartsWith("TaleWorlds.", StringComparison.Ordinal)))
                 Check(gameDirectories.Contains(Path.GetDirectoryName(loaded.Location), StringComparer.OrdinalIgnoreCase), "matching game dependency " + loaded.GetName().Name);
+            GameLanguageRequestChecks.Run(product, resolvedRoot);
             Console.WriteLine("PASS " + checks + " actual candidate DLL message/history checks; LIVE=NOT_RUN");
             return 0;
         }

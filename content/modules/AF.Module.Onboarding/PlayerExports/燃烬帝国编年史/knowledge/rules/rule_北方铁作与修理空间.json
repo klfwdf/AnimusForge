@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v9",
+  "Keywords": [
+    "北方铁作与修理空间"
+  ],
+  "RagShortTexts": [
+    "石塔附近铁作依赖材料与燃料，修补和制造均需工匠。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "米德豪石塔附近的铁作、居住和储藏空间相互接近。做铁工需要燃料、材料和工具，修补也占用时间。首领要取得兵器，仍须安排工匠和供给，不能只靠聚落有一处炉火。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

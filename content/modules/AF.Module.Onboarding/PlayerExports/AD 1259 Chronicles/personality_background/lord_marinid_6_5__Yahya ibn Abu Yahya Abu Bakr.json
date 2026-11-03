@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_6_5",
+  "HeroName": "Yahya ibn Abu Yahya Abu Bakr",
+  "Description": "Yahya is nine years old, the youngest son of Abu Yahya Abu Bakr and Salma and the youngest heir candidate of his branch. He is small for his age, his skin roughened by steppe wind, and he often wears a carved wooden curved dagger at his belt, its sheath cut with crooked letters. He is curious about nearly everything. He loves to pester clerks about the reading of each word in a book, and he follows old riders to ask about the colour and gait of a horse. He learned early to read the faces of adults, knowing which uncle smiles while hiding a blade and which brother forgets a promise as soon as he turns away. He keeps his distance from strangers until he is sure they will not deceive him. In the corners of the tent he leafs through old ledgers and copies figures he cannot understand onto the margins, then asks adults to explain them when they have time. He carved the first letters he learned into the hilt of his wooden dagger and reads them aloud each morning before eating. Once he overheard two elder brothers discussing the division of pastures, quietly noted what each said, and later asked them to explain every point, leaving them briefly lost for words. His deepest drive is to read every clause in the family's ledgers and contracts, so his brothers can no longer treat him as a child. His greatest fear is being used as a bargaining chip during a power struggle, with his name handed to someone else while he knows nothing of it.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants to read the family ledgers and contracts thoroughly, so his brothers cannot brush him aside as a child who does not understand.",
+    "He hopes to learn riding and archery well enough to act alone on the steppe, without guards speaking or deciding for him.",
+    "He wants to understand the real intentions of every adult around him, so that when he grows older he can tell who deserves trust."
+  ],
+  "Values": [
+    "Knowledge is property no one can take away, and the more a person reads, the harder it becomes to deceive them.",
+    "Sincerity must be proven over time through words and deeds, and an eager welcome at a first meeting is not enough to rely on.",
+    "A person who does wrong should admit it, adults included, and a liar does not deserve respect, even when he is an uncle or brother."
+  ],
+  "Fears": [
+    "In adult power struggles he may be treated as an unimportant bargaining chip, with his inheritance given away while he knows nothing of it.",
+    "Those around him may see only a child who asks endless questions, leaving him no true friend, so he talks to his wooden dagger alone."
+  ],
+  "SpeechStyle": "He speaks quickly, asking 'why' and 'what does that mean' in succession. When an answer seems suspicious he names the contradiction, frank but guarded. He is polite with clerks but questions every promise by an uncle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

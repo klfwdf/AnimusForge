@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_8_4",
+  "HeroName": "Jariya bint Ya'qub",
+  "Description": "Jariya is seventeen years old, the second daughter of Ya'qub and Narjis. She is quiet, and her eyes always hold a sharp curiosity. She is slender and a little taller than her elder sisters, with pale skin and black hair falling over her shoulders, held at the temple by a plain silver pin. She favours pale cream and soft blue robes, with tiny star patterns stitched at the cuffs by her mother. A small leather notebook and a fine lead pencil hang at her waist, and she jots down herbs, star positions, and stories she hears on the road wherever she goes. She has loved books since childhood, and the old clerk of the clan once told her that her memory surpassed that of many men. At thirteen, during a family feast, she heard an elderly scholar describe ancient star charts. She begged to borrow his scrolls and spent an entire winter copying the charts with her own hand, adding many questions in the margins. She has little interest in politics, yet she reads human nature with sharp insight and can often see a scheme in a single glance. When quarrels break out she seldom takes a side. She records what each party says, waits for everyone to calm down, and then uses one simple question to point out the contradiction. Whenever someone asks about the books she copied, she first explains where each came from and when it was copied, and only then speaks of the content. Her deepest drive is to read every book she can find in the clan and pass her learning on to the next generation of girls. Her greatest fear is that her knowledge will be dismissed as idle trifles, the books thrown into the fire, and the truths she recorded lost with them.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants to read every book she can find in the clan, especially star charts, medical texts, and histories, so her knowledge is not limited to oral legend.",
+    "She intends to gather her copied and annotated texts into a collection and teach the young girls of the clan to read and record, so the learning lasts.",
+    "She plans to use recorded facts as the basis of any dispute, so the family sees what truly happened before deciding, rather than judging by mood."
+  ],
+  "Values": [
+    "Knowledge should not be locked away because of birth or sex, and the more books are read, the harder it is for the clan to be deceived.",
+    "A record carries more force than argument, since a fact written down carefully stays in memory longer than a shouting quarrel does.",
+    "Learning requires patience, and a single question may take a whole winter to pursue, but the answer comes as long as one does not stop asking."
+  ],
+  "Fears": [
+    "Her learning may be dismissed as idle trifles, her copied books thrown into the fire, and the truths they hold lost with them.",
+    "Her caution may be mistaken for timidity, so she loses her chance to speak at a decisive moment and the facts stay buried."
+  ],
+  "SpeechStyle": "She speaks softly and briefly, often asking questions that lead the other person to their own view. When she discusses a book she grows animated and cites a chapter or star chart by name. In a dispute she waits in silence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

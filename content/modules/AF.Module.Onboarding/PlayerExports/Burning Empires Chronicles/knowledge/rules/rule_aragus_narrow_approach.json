@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v1",
+  "Keywords": [
+    "Aragus narrow approach"
+  ],
+  "RagShortTexts": [
+    "The narrow Aragus approach constrained troops and loads to move in sequence."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Strabo described the northern approach to Iberia as a difficult ascent followed by a narrow road beside the Aragus. Successive constrictions prevented a broad marching front and forced animals and loads into sequence. A short map distance was not a short journey."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

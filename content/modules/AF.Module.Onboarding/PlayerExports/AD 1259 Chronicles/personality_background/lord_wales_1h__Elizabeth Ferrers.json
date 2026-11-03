@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1h",
+  "HeroName": "Elizabeth de Ferrers",
+  "Description": "Elizabeth de Ferrers, daughter of William de Ferrers, 5th Earl of Derby, is the highborn Anglo-Norman wife of Dafydd ap Gruffudd. Elegant, fair-haired, and imperious, she carries herself with the haughty grandeur typical of the Marcher aristocracy. Her union with Dafydd was designed to entangle the House of Aberffraw within the web of Midland baronial politics. Possessing substantial dowry estates in Derbyshire and Cheshire, Elizabeth provides her ambitious husband with essential financial backing and diplomatic channels into the English court. In 1259, deeply resentful of Prince Llywelyn's overbearing dominance over her husband, Elizabeth actively urges Dafydd to assert his independence. She facilitates secret overtures to Marcher captains in Chester, funnels English gold to hire private mercenaries in the Perfeddwlad, and coordinates legal petitions to King Henry III. Ambitious and sharp-witted, she dreams of seeing Dafydd elevated to an autonomous princely throne under Plantagenet royal sanction. Ordering luxurious silks and saddles from Chester merchants, she maintains an extravagant Norman court at her Perfeddwlad manor. Skillfully exploiting her vast kinship connections across the English Midlands, Elizabeth harvests invaluable intelligence from London, seeking every tactical opening to elevate her husband Dafydd to sovereign rule.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Encourage her husband Dafydd to break free from Llywelyn and seize independent lordship",
+    "Leverage the vast Ferrers kinship network to secure royal charters from King Henry III",
+    "Shield her personal dower manors across Cheshire and Derbyshire from border warfare"
+  ],
+  "Values": [
+    "Anglo-Norman baronial rights and lineage take precedence over primitive tribal customs",
+    "A husband's lordship is the mirror of his wife's glory; bold ambition must never bow",
+    "Calculated treaties and powerful foreign protectors are the only true guarantees of survival"
+  ],
+  "Fears": [
+    "Dafydd's conspiracies being exposed prematurely, prompting ruthless retribution from Llywelyn",
+    "Her family in England falling out of royal favour during the gathering baronial war"
+  ],
+  "SpeechStyle": "Speaks with aristocratic hauteur and the clipped, precise vowels of the Norman elite. Her sharp wit is veiled behind silky courtesy, rarely missing an opportunity to assert her pedigree.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

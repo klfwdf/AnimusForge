@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_7a",
+  "HeroName": "Michaíl Kantakouzīnós, Megas Konostaulos of Nicaea",
+  "Description": "Michaíl Kantakouzīnós, aged forty, serves as the renowned Megas Konostaulos (Grand Constable) of Nicaea and head of the rising Kantakouzenos clan. A brawny, uncompromising warrior who has campaigned across the frontiers of Anatolia and the Balkans, he is a peerless master of heavy cataphract shock warfare. Holding the exalted rank of Megas Konostaulos, he oversees imperial studs, cavalry logistical mobilization, and supreme command of the auxiliary mercenary host. In the aftermath of Pelagonia in 1259, he directed the seizure and integration of captured Western arms, warhorses, and strategic fortresses across Macedonia. Eager to break the Frankish presence across the Peloponnese, Michaíl prepares to lead the imperial expeditionary vanguard into the Morea to secure Monemvasia and Mystras. On the field of slaughter, he leads from the front rank, inspiring fanatical courage among his troopers through his personal disdain for retreat. Possessing fervent devotion to the Roman imperial restoration, Michaíl is determined to shatter Latin crusader fortresses beneath the hooves of his iron squadrons. Inspecting imperial stud farms and smithies, he personally tests the temper of steel blades and cuirass thickness, sternly reprimanding any negligence to guarantee that the imperial shock cavalry remains unmatched across Europe.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 7a lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with booming baritone resonance and blunt soldierly candor, demanding instant execution of duties and despising hesitation on the battlefield.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

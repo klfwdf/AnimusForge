@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_8_1",
+  "HeroName": "Johan Johansson Ängel",
+  "Description": "Sir Johan Johansson Ängel was a preeminent Swedish magnate, royal councilor, and head of the immensely wealthy and influential Ängel family. In 1259, Sir Johan held vast landed lordships across Östergötland and Uppland, commanding one of the largest private retinues of armored knights in the realm. Possessing deep dynastic roots intimately entwined with the ecclesiastical hierarchy—his kinsman Folke Johansson Ängel occupying the archbishopric of Uppsala—Johan exercised formidable influence over royal policy. A master of court diplomacy and strategic baronial alignment, he skillfully defended aristocratic prerogatives against the encroaching centralism of the Bjälbo regency. Johan fortified his administrative seats with modern stone masonry, turning his estates into self-sufficient political strongholds capable of withstanding prolonged sieges. Proud, far-sighted, and intensely conscious of his lineage's exalted destiny, he was universally acknowledged as one of the true kingmakers of thirteenth-century Sweden. Across Östergötland, Sir Johan erected hydraulic blast furnaces and armor workshops, introducing advanced chainmail weaving and sword-smithing techniques to equip his private cavalry brigade. At the royal council of magnates, his commanding eloquence repeatedly blocked unilateral war taxation decrees, fiercely upholding the constitutional veto of the baronial assembly. Uniting formidable martial strength with visionary statecraft, he stood as an immovable pillar of high aristocratic sovereignty in thirteenth-century Sweden.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve and expand the Angel family's decisive voice in royal council so that major legal and military decisions require its agreement.",
+    "Build fortified estates and an armoured retinue, establishing the Angels among Sweden's leading noble houses.",
+    "Maintain a balance between crown and noble council and resist arbitrary royal attacks on inherited freedoms and privileges."
+  ],
+  "Values": [
+    "Noble privileges derive from ancestral service and sworn agreements; centralisation does not justify royal confiscation.",
+    "Strong cavalry and careful political judgement provide security through changing court rivalries.",
+    "The family's dignity and lasting interests outweigh fragile personal alliances with rulers and deserve sustained protection."
+  ],
+  "Fears": [
+    "Central royal power crushing the noble council and abolishing tax privileges and private mobilisation rights.",
+    "Royal forces surrounding and capturing the family's main fortress in civil war, destroying generations of political influence."
+  ],
+  "SpeechStyle": "Speaks with aristocratic hauteur and authoritative weight, combining imperial court polish with the calculated coolness of a master politician.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

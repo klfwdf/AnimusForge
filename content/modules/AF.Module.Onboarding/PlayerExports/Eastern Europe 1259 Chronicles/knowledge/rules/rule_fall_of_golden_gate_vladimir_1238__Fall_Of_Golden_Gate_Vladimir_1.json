@@ -1,0 +1,52 @@
+{
+  "Id": "rule_fall_of_golden_gate_vladimir_1238",
+  "Keywords": [
+    "fall of Vladimir",
+    "Yuri’s house and white-stone churches"
+  ],
+  "RagShortTexts": [
+    "Mongol forces captured Vladimir in 1238, inflicting heavy losses on households and the town.",
+    "Damaged defences, churches and dwellings left survivors needing protection and work."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mongol forces captured Vladimir in 1238, striking the princely household, inhabitants and religious institutions. White-stone churches and prominent gates could not alone stop a force able to sustain an assault. Yuri was gathering men elsewhere, while those awaiting help inside the town had their own experience. Survivors remembered relatives, streets, fires or people asking assistance; some escaped carrying icons and tools."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Princely rank needs living followers, defensible places and provisions. The loss required renewed arrangements for inheritance and protection, showing why a field army and inhabitants inside a town cannot both be assumed provided for."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Defenders remember posts, equipment and relief, while riders outside remember attempts to deliver warnings. Meeting later allows different accounts to fill gaps. No single survivor needs to claim knowledge of every street."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Burned homes leave people needing shelter, fuel and seed. Churches and relatives receive some, while craftsmen retaining tools can work again. Obtaining a title does not itself supply the means of recovery."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

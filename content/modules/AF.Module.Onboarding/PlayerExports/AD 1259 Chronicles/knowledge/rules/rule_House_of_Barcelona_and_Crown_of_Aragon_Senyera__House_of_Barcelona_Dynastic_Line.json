@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Barcelona_and_Crown_of_Aragon_Senyera",
+  "Keywords": [
+    "House of Barcelona Dynastic Line",
+    "Aragonese Four Red Bars Senyera",
+    "James I the Conqueror Deeds",
+    "Consulate of the Sea Maritime Realm"
+  ],
+  "RagShortTexts": [
+    "The House of Barcelona unified Aragon and Catalonia under the red-and-gold Senyera,."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kings of Barcelona governed the confederated Crown of Aragon, flying the Senyera of four red stripes on gold. James I the Conqueror (Jaume I) took Majorca in 1229 and Valencia in 1238, extending his realms across the western Mediterranean. His court gathered maritime customs into the Consolat de Mar, which merchants used to settle disputes between Catalan shippers and foreign partners. Crown revenue depended on port duties and naval levies from Barcelona, and the Aragonese Cortes pressed hard on any royal tax. The wars were costly, so the crown leaned on loans from Catalan merchants and grants voted by the Cortes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "James balanced the urban Catalan merchant syndicates against the conservative Aragonese barons who guarded their own fueros. Every new galley subsidy had to be negotiated in the Cortes, where a city delegation and a baronial bench could each block the other."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "In Barcelona's Drassanes shipyards, shipwrights worked under lantern light to finish light war galleys. Oarsmen drilled on the benches until they could row through a storm. Pay came from the crown's shipyard accounts, and a sailor who deserted lost his wages for the voyage. Sailing under the Senyera promised a share of Levantine and North African cargo, provided the galley came home."
+    }
+  ],
+  "TextMappings": []
+}

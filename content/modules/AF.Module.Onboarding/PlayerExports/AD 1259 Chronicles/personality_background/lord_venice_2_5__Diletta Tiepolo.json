@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_2_5",
+  "HeroName": "Diletta Tiepolo",
+  "Description": "Lady Diletta Tiepolo is the gentle twenty-two-year-old daughter of Admiral Lorenzo, celebrated for deep religious piety, modest demeanor, and intellectual quietude. Educated within the prestigious Benedictine convent of San Zaccaria, Diletta is master of ancient sacred psalmody and illuminated Latin codices, frequently holding prayer vigils for her father's fleet on campaign. Caring, unassuming, and compassionate, she directs family charities for sailors' orphans, beloved by her kin as an oasis of peace. Holding peaceful prayer vigils within the ancient halls of San Zaccaria, Diletta Tiepolo devoted herself to sacred psalmody and the care of war orphans, revered by her family as a tranquil sanctuary of spiritual grace amidst geopolitical strife. Rejecting worldly vanity, Diletta embraced the holy path of contemplative prayer and selfless charity, her miraculous grace shining amidst the grim horrors of naval war as an immortal beacon of Christian compassion. Her sublime purity, serene contemplation, and tragic spiritual fortitude make Diletta Tiepolo an angelic, immortal figure shining amidst the dark ruins of war. Her sweet prayers and gentle tears bring serene comfort to her battle-hardened father amidst relentless naval warfare and regional turmoil. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Offer constant prayers for her father and brothers navigating perilous waters on naval campaigns.",
+    "Devote her life to charitable works, caring for the sick and orphaned across the parishes of Venice."
+  ],
+  "Values": [
+    "Christian humility, contemplative prayer, and selfless charity over worldly vanity and ambition.",
+    "Preserving spiritual serenity amidst the turbulence of politics and warfare."
+  ],
+  "Fears": [
+    "News of catastrophic naval ambushes claiming the lives of her beloved father and brothers.",
+    "Being coerced into worldly political intrigues that compromise her Christian conscience."
+  ],
+  "SpeechStyle": "Speaks with melodic gentleness, humble spiritual warmth, and deep compassionate sincerity. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

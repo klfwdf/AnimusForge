@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v10",
+  "Keywords": [
+    "Tenancy and slave status"
+  ],
+  "RagShortTexts": [
+    "Tenants, people bound by registration and slaves had different statuses."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tenant cultivators, people bound by registration and slaves under an owner’s direct control had different positions. Cato’s rules for chained labor could not automatically govern a rent-paying household. Movement and dues depended on tenancy, registration and personal status."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

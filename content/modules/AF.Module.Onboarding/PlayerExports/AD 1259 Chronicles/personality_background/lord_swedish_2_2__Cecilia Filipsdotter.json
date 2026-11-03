@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_2_2",
+  "HeroName": "Cecilia Filipsdotter",
+  "Description": "Lady Cecilia Filipsdotter of Aspenäs, highborn noblewoman of Östergötland, was the formidable sister of Lord Johan Filipsson. Reared within a paramount baronial stronghold, Cecilia possessed the unyielding pride of the ancient Folkung line paired with sharp administrative capability. While her brother orchestrated high political resistance against royal encroachment, Cecilia commanded the rear echelons of their estates, supervising grain reserves, equestrian stud accounts, and iron mining revenues. Perceptive and discreet, she cultivated courtly intelligence networks that detected royal surveillance, providing vital warnings to her kin. Resolute and fiercely loyal, she served as an indispensable pillar of strength within the Aspenäs dynasty. Cecilia operated a clandestine courier network across Östergötland, relaying political intelligence between allied magnates with remarkable speed. When royal spies infiltrated her estates to seize baronial pacts, she calmly organized ambushes that captured the agents without raising an alarm. Following her brother's tragic execution, Cecilia concealed critical family deeds and sustained the loyalty of their retainers, her iron fortitude preserving the seeds of their dynasty's eventual resurgence. Her unbending resolve and diplomatic discretion protected her surviving kinsmen from crown reprisals, ensuring that the legacy of Aspenäs endured through the grimmest trials of medieval Swedish history.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Maintain financial ledgers and mining logistics to ensure sustained material resources for her brother's cause.",
+    "Operate confidential courtly intelligence rings to detect royal infiltrators and shield her kinship network."
+  ],
+  "Values": [
+    "Believes unwavering clan loyalty and shared sacrifice are sacred imperatives in a hostile world.",
+    "Champions calculating vigilance and stealthy foresight, dedicating her life to preserving her ancestral house."
+  ],
+  "Fears": [
+    "Dreads betrayal from within the baronial coalition exposing their plans and precipitating total royal retribution."
+  ],
+  "SpeechStyle": "Speaks with cool, deliberate precision and aristocratic authority, her perceptive gaze assessing every nuance.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

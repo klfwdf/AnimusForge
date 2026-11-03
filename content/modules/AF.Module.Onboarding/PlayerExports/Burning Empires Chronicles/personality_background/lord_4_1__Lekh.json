@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_4_1",
+  "DisplayName": "Lekh",
+  "HeroName": "Lekh",
+  "Description": "Lekh (Lech) reigned in 374 AD as the legendary founding Duke and sovereign of the Venedi (Lechitic Western Slavs) across the Vistula and Warta river plains, celebrated in the Chronica Polonorum. Inspired by the auspicious omen of the nesting White Eagle, Lekh founded the historic citadel of Gniezno as the heart of his kingdom. A wise and formidable lawgiver, Lekh commanded veteran phalanxes of spearmen and archers armed with lime-wood shields. In 374 AD, confronted by aggressive Germanic expeditions from the south and the distant rumble of nomad hosts to the east, Lekh fortified the river crossings of the Vistula with interconnected log citadels, uniting the West Slavic clans into a resolute defensive commonwealth. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Lekh (Lech) reigned in 374 AD as the legendary founding Duke and sovereign of the Venedi (Lechitic Western Slavs) across the Vistula and Warta river plains, celebrated in the Chronica Polonorum. Inspired by the auspicious omen of the nesting White Eagle, Lekh founded the historic citadel of Gniezno as the heart of his kingdom. A wise and formidable lawgiver, Lekh commanded veteran phalanxes of spearmen and archers armed with lime-wood shields. In 374 AD, confronted by aggressive Germanic expeditions from the south and the distant rumble of nomad hosts to the east, Lekh fortified the river crossings of the Vistula with interconnected log citadels, uniting the West Slavic clans into a resolute defensive commonwealth. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with noble, patriarchal resonance; majestic, inspiring, and radiating the magnetic authority of a legendary founder-monarch.",
+  "PersonalSpeechStyle": "Speaks with noble, patriarchal resonance; majestic, inspiring, and radiating the magnetic authority of a legendary founder-monarch.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify the entire Vistula river line with log ramparts to guard West Slavic farmsteads",
+    "Establish the sacred rule of Gniezno to unite scattered Lechitic tribes under single law"
+  ],
+  "Values": [
+    "The sacred White Eagle soars above; every man of this soil must defend hearth and field",
+    "Justice and equity sustain the crown; those who oppress the weak forfeit honor under heaven"
+  ],
+  "Fears": [
+    "Dreads internal tribal feuds spilling blood over clearing rights and dividing defense lines"
+  ],
+  "Personality": "Lekh (Lech) reigned in 374 AD as the legendary founding Duke and sovereign of the Venedi (Lechitic Western Slavs) across the Vistula and Warta river plains, celebrated in the Chronica Polonorum. Inspired by the auspicious omen of the nesting White Eagle, Lekh founded the historic citadel of Gniezno as the heart of his kingdom. A wise and formidable lawgiver, Lekh commanded veteran phalanxes of spearmen and archers armed with lime-wood shields. In 374 AD, confronted by aggressive Germanic expeditions from the south and the distant rumble of nomad hosts to the east, Lekh fortified the river crossings of the Vistula with interconnected log citadels, uniting the West Slavic clans into a resolute defensive commonwealth. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

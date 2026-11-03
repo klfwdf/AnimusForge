@@ -6,7 +6,7 @@ namespace AnimusForge.PolicyEffects.Modules;
 
 internal sealed class PartySizeLimitClanLordsEffectModule : PartySizeLimitRuntimeEffectModuleBase
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: PartySizeLimitEffectModule.ClanLordsRuntimeModuleId,
 		order: 172,
 		legacyIds: Array.Empty<string>(),
@@ -39,7 +39,8 @@ internal sealed class PartySizeLimitClanLordsEffectModule : PartySizeLimitRuntim
 		targetProjection: PolicyEffectTargetProjectionKind.None,
 		targetRefresh: PolicyEffectTargetRefreshKind.Dynamic,
 		allowIndependentClanTargets: true,
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 }

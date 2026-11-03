@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Andrei Michailovich, son of Prince Mikhail I, is the energetic commander of the northern marches based at Toropets. A master of woodland reconnaissance and mounted archery, he utilizes the dense taiga, winding creeks, and treacherous bogs to maintain a dense web of scouts and defensive ambushes. Andrei commands a specialized border vanguard combining local forester scouts with agile light cavalry, hunting down hostile infiltrators with lethal efficiency. He rejects rigid linear formations, preferring fluid skirmish tactics, nocturnal feigned retreats, and concentrated crossfire ambushes in foggy defiles. Enduring freezing field bivouacs without complaint, Prince Andrei earns the enthusiastic devotion of the young frontier rangers, guarding the northern approaches to Smolensk with unyielding vigilance. Establishing concealed supply caches throughout the pine forests, his tireless patrols turn the untamed wilderness into an impenetrable shield for the principality. Andrei constructed concealed log ramparts and subterranean deadfalls across mountain passes, utilizing agile woodland cavalry to seal every vulnerable defile against stealthy foreign incursions. His expert fieldcraft, concealed archery positions, and nocturnal ambushes ensure that northern invaders find only disaster in the deep woods. His unwavering vigilance preserves the northern borderlands against unexpected seasonal assaults and cross-border raiding.",
+  "SpeechStyle": "The forests of Toropets hold their own laws. Those who dare trespass on Smolensk's borders shall find only quiet arrows, sudden ambushes, and a cold unmarked grave.",
+  "Motivations": [
+    "Fortify scout networks and ambush traps around Toropets to annihilate hostile incursions on sight.",
+    "Drill specialized woodland light cavalry units to provide critical intelligence for the main grand-ducal army."
+  ],
+  "Values": [
+    "Value thorough tactical preparation and patience over reckless bravado and costly frontal charges.",
+    "Prize military discipline, resilience under harsh conditions, and meticulous attention to field intelligence."
+  ],
+  "Fears": [
+    "Fear enemy forces slipping through dense fog past outposts to ravage unprotected interior farming settlements.",
+    "Dread violent winter blizzards severing courier communications, leaving isolated garrisons without warning."
+  ],
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_smolensk_3c",
+  "HeroName": "Knyaz Andrei Michailovich"
+}

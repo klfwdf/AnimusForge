@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v8",
+  "Keywords": [
+    "斯巴达克斯投向海盗的定金"
+  ],
+  "RagShortTexts": [
+    "斯巴达克斯付了海盗定金，却未获得约定渡航。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "普鲁塔克说斯巴达克斯想借奇里乞亚海盗渡到西西里，付出定金后却遭弃约。付钱并不等于获得船位，非法武装间也缺少可强制执行的担保。叛军随后仍须在陆上寻找出路。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v2",
+  "Keywords": [
+    "Manichaean food and beliefs about light"
+  ],
+  "RagShortTexts": [
+    "Vegetarian rules for the Elect were linked to belief in releasing light bound in matter."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vegetarian rules for the Elect were linked to belief in releasing light bound in matter. Fruit and eating acquired religious meaning, not objectively usable magical energy. Providing food became part of the labor supporting ascetic life."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

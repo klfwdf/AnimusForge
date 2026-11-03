@@ -1,0 +1,53 @@
+{
+  "Id": "rule_cheval_de_frise_anti_cavalry",
+  "Keywords": [
+    "Timber barriers and access",
+    "Camp gate timber barriers",
+    "Guarding and moving wooden obstacles"
+  ],
+  "RagShortTexts": [
+    "Timber barriers restrict movement but need guards, anchoring and friendly exits.",
+    "Weight, mud and timber supply shape barriers; food carts and withdrawal still need passage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus camps and Baltic approaches can use branches, stakes and beams to narrow access. Barriers make riders slow, detour or dismount, but guards must observe and prevent removal. Soft ground impedes anchoring and heavy timber consumes labor and animals. Exits for food, messages and withdrawal must remain, or the defenders also become trapped."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A barrier guard needs to know the exit and watch for removal in darkness. Riders halted outside can still shoot, so cover requires shields and support. Relief and night movement need a known passage; wounded men and carriers find piled timber especially difficult to cross."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A leader needs felling, transport, anchoring and guards rather than an order to pile more trunks. Distant timber competes with food for vehicles and animals. The layout must accommodate gates, supply carts and reserves, creating a defensible approach without sealing the camp."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Nearby households may supply cutting, carts and timber while still needing fuel, repairs and cultivation. Beams blocking a market road force goods and animals to detour. Someone must remove barriers and restore access afterward so defensive labor does not become a prolonged closure."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

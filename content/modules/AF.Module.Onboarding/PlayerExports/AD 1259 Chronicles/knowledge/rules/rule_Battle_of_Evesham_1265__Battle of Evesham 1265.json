@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Battle_of_Evesham_1265",
+  "Keywords": [
+    "Evesham river bends and baronial disputes"
+  ],
+  "RagShortTexts": [
+    "Evesham crossings linked fields and markets amid disputes over royal government."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Avon and its crossings near Evesham constrained movement while linking fields and markets. In 1259 the crown and reforming barons disputed government. Local people watched levies, courts and road news, concerned that political conflict would disrupt markets and farm work."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_towpaths_and_workers_05a15068",
+  "Keywords": [
+    "towpaths and workers",
+    "Upstream tow ropes banks and rest"
+  ],
+  "RagShortTexts": [
+    "Upstream towing depends on load, banks and current.",
+    "Ropes, workers and food all need arranging."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Upstream boats may use shore workers and ropes, but broken banks, current and load alter the method. Haulers need footing and relief while someone steers aboard. Rope and manpower do not make every reach passable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts keep haulers’ footing clear and watch changing rope loads. Stabilizing and lightening a boat can prevent loss better than demanding more effort."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Hiring haulers requires reaches, meals and responses to obstruction agreed. Rope checks or waiting for water conditions can preserve the cargo rather than signify idleness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Hauling consumes strength and footwear. A blocked towpath may require carrying instead, making agreement on the additional work necessary before continuing."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

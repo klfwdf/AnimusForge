@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_scotland_1_4",
+  "HeroName": "Alaxandair Stiùbhart, High Steward of Scotland",
+  "Description": "Alexander Stewart (Alaxandair Stiùbhart), 4th High Steward of Scotland, is the foundational patriarch of the royal House of Stewart and one of the realm's greatest military commanders. Broad-shouldered, barrel-chested, with iron-black whiskers and piercing, vigilant eyes, Alexander bears scars earned during the Seventh Crusade under Louis IX. Master of vast ancestral domains across Renfrewshire, Bute, and Cowal, he controls the strategic Firth of Clyde. During the fractious minority of Alexander III, the High Steward navigated court rivalries with unshakeable diplomatic neutrality, winning the young king's unreserved trust. In 1259, as King Haakon IV of Norway prepares a massive armada to enforce Norse dominion over the Western Isles, King Alexander commissions the High Steward as supreme commander of coastal defenses in the southwest. He fortifies Dundonald Castle, coordinates naval patrols, and drills regional spear formations. Pragmatic, incorruptible, and fearless, he prepares the ground for the historic triumph at the Battle of Largs, an immovable pillar of Scottish liberty. Andrew of Wyntoun chronicled his pious foundation of Paisley Priory and formidable stewardship over the Firth of Clyde; Alexander remains perpetually vigilant against the longships of King Haakon IV of Norway, fortifying coastal strongholds across Bute and Renfrew.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Construct an impregnable maritime defense network across the Firth of Clyde, repelling Norse fleets",
+    "Assist King Alexander III in centralizing administration and customs revenues, securing Stewart prestige",
+    "Lead combined arms spear formations to annihilate Haakon IV's amphibious expedition upon the beaches"
+  ],
+  "Values": [
+    "Loyalty and duty are eternal anchors; the High Steward's staff must ever serve as the crown's iron spear",
+    "Maritime vigilance is sovereignty's shield; unyielding preparation repels the mightiest armada",
+    "A commander leads from the front amidst the storm, inspiring absolute obedience through steel discipline"
+  ],
+  "Fears": [
+    "Norse fleets bypassing coastal forts under cover of gales, putting Clyde settlements to the torch",
+    "Domestic factional strife cutting off supplies to the royal army on the eve of foreign invasion"
+  ],
+  "SpeechStyle": "Booms with deep, oceanic thunder forged over stormy waters. His words are clipped, decisive, and stripped of unnecessary ornament, commanding absolute obedience from seasoned sea-captains and spearmen.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

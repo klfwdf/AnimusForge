@@ -1,0 +1,59 @@
+{
+  "Id": "be_bosporan_kingdom_legitimacy",
+  "Keywords": [
+    "博斯普鲁斯王国法统",
+    "萨乌罗马特斯的市场保护"
+  ],
+  "RagShortTexts": [
+    "Sauromates V连接城市与草原伙伴。",
+    "保护市场与处理争执支撑王权认可。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sauromates V的王权处在城市与草原联系之间，王号和传统需要保护市场、仲裁争执与可兑现的盟约支持。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sauromates V连接城市与草原伙伴。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。保护市场与处理争执支撑王权认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "保护市场与处理争执支撑王权认可。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。Sauromates V连接城市与草原伙伴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Sauromates V连接城市与草原伙伴。家户通过家人、土地与求助能否获保护来认识统治。保护市场与处理争执支撑王权认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "保护市场与处理争执支撑王权认可。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。Sauromates V连接城市与草原伙伴。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

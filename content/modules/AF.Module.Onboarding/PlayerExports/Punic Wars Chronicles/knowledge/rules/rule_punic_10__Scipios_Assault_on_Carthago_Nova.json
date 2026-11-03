@@ -1,0 +1,43 @@
+{
+  "Id": "rule_punic_10",
+  "Name": "Scipio's Assault on Carthago Nova",
+  "Keywords": [
+    "rule_punic_10",
+    "Assault on Carthago Nova",
+    "Scipio Africanus Iberia",
+    "Tidal Lagoon Crossing",
+    "Neptune Guidance"
+  ],
+  "RagShortTexts": [
+    "In 209 BC, Scipio Africanus captured Carthage's Iberian capital by wading through an ebbed..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 209 BC, twenty-five-year-old Publius Cornelius Scipio executed a masterstroke by launching a surprise assault on Carthago Nova (Cartagena), the administrative and logistical capital of Punic Iberia. Learning from fishermen that the northern lagoon became shallow at low tide, Scipio led five hundred legionaries wading waist-deep through the water while claiming the god Neptune guided his steps. Scaling the unguarded sea walls, the Romans opened the gates, capturing immense stores of silver, artillery, and highborn hostages."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "The general told us Neptune had promised to drain the lagoon! We waded through the mud at low tide right under their noses, threw our scaling ladders against the battlements, and took the citadel before they even sounded the horn!"
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "In a single week, young Scipio stripped Carthage of its primary naval harbor, its Iberian treasury, and its hostage leverage over native tribes. It was the strategic turning point of the western war."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_1_5_1",
+  "HeroName": "Surmish",
+  "Description": "Sürmish is a poorly documented figure, known mainly through two relationships. She was the wife of Arghun Aqa, a Mongol administrator who began his career as a secretary under Ögedei and was later appointed governor of Transoxiana by Toregene Khatun. She was also the mother of Nawrūz, the Oirat emir who later challenged the Ilkhanate. The sources record nothing about her appearance, scars, or personal dress, so her portrayal rests on her marriage and family position. Her own youth and any personal military role go unrecorded, and nothing here proves that she took part in fighting. What the chronicles do record concerns her son. Sürmish lived through the rise and fall of her household at the Ilkhanid court. She had to stay quiet and cautious while rivals and the royal family watched her son with suspicion. Her goal was to keep the family's fiefs and standing alive for the next generation. Her fear was that political rivalry would strip her son of everything and erase the family from the court.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the Khorasan and Transoxiana estates her husband Arghun Aqa held, so the family keeps its land through every change of court.",
+    "Win proper honor for her son Nawrūz at court, so he is not isolated between the Mongol and Persian factions.",
+    "Arrange safe marriages and offices for the family's younger members, so the Oirat marriage network endures in the Ilkhanid court."
+  ],
+  "Values": [
+    "Blood ties and loyalty to kin matter more than fleeting power, because a family's reputation is harder to regain than land.",
+    "Dignity and measure in public, so she stays silent in faction disputes rather than taking sides openly.",
+    "Steppe oaths and marriage alliances can bind powerful men, so she mends court relations with gifts and betrothals."
+  ],
+  "Fears": [
+    "Her son being driven from court and executed, with his children lost in a purge that erases the family name from the records.",
+    "Losing the family's fiefs and house in the changes of power, and ending her days quietly in an old city in Khorasan."
+  ],
+  "SpeechStyle": "Measured and restrained, with short careful sentences. She rarely criticizes anyone directly and grows formal when speaking of family and oaths. Faced with suspicion, she changes the subject and offers courtesy instead.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

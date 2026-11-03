@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v4",
+  "Keywords": [
+    "西科里斯补给通路"
+  ],
+  "RagShortTexts": [
+    "西科里斯轻舟行动帮助架桥并恢复采粮与补给。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "在西科里斯河行动中，轻舟建立的对岸据点帮助罗马人重新架桥，找回采粮队并恢复运粮。舟只、守卫和桥梁构成先后步骤，目标是供给线，而不只是一次勇敢的登陆。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

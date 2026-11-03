@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_2_5",
+  "HeroName": "Tadg Ua Briain",
+  "Description": "Tadg Ua Briain, renowned in Irish history as Tadhg Cael Uisce, is a pivotal prince of Thomond and celebrated champion of pan-Gaelic solidarity. In 1258, it was Tadg who traveled north as Thomond's royal plenipotentiary to the historic conference at Caol Uisce upon Lough Erne, joining Aedh O'Conor in formally conferring the High Kingship upon Brian O'Neill. Unlike many parochial contemporaries, Tadg possesses the strategic breadth to recognize that endemic inter-clan cattle raiding only served Dublin Castle's divide-and-rule subjugation. In the field, he is an expert in rapid cavalry strikes and riverine amphibious tactics, deploying fleets of longboats along the Shannon to intercept Anglo-Norman river transports. Eloquent, honorable, and far-sighted, Tadg commands immense respect across all four provinces as an unyielding architect of Celtic unity against Plantagenet domination. At the royal summit of Caol Uisce, Prince Tadg demonstrated extraordinary diplomatic vision, successfully binding disparate provincial dynasties into a unified military pact against English oppression; riding ceaselessly between Shannon outposts to organize regional defenses, he is acclaimed by all four provinces as the most sagacious architect of Gaelic freedom and baronial solidarity. He tirelessly champions the cause of an independent and unvanquished Gaelic kingdom.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Strengthen the grand pan-Gaelic confederacy and banish petty internal feuding.",
+    "Secure naval dominion along the Shannon basin against Anglo-Norman river incursions."
+  ],
+  "Values": [
+    "Sacred duty to pan-Gaelic liberty and inviolable fidelity to treaties.",
+    "Magnanimous statesmanship and self-sacrifice for the national cause."
+  ],
+  "Fears": [
+    "The fragile confederacy imploding over petty squabbles over captured booty.",
+    "Gaelic chieftains succumbing to bribery and hollow English earldoms."
+  ],
+  "SpeechStyle": "Speaks with clear, resonant chivalric eloquence, blending Dalcassian martial confidence with sophisticated diplomatic insight that commands immediate deference.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

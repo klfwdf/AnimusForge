@@ -1,0 +1,52 @@
+{
+  "Id": "rule_watermill_monopoly_banalite_tithe",
+  "Keywords": [
+    "watermill charges for grinding grain",
+    "water levels and mill repairs"
+  ],
+  "RagShortTexts": [
+    "Watermills grind grain through maintained waterworks and stones and adequate flow.",
+    "Grinding fees and access depend on local arrangements rather than one universal tithe."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A watermill transmits moving water to grinding stones, but farmers bringing grain must wait until it can work. Low flow, ice, flood damage and worn timber halt milling. Stones need dressing and grain roads need maintenance. Whole grain in store does not become bread without grinding or extra hand labour.\n\nOwners or operators may charge, retain part of grain or flour, or assume repairs under local terms. Amounts delivered and returned need consideration of losses and impurities rather than treating every deduction as one tax. Lordly rights, church demands and milling wages can coexist; households need access, good work and enough food left."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord’s milling income needs waterworks, workers and roads. Higher deductions without repairs delay household food and estate supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A large military grain load displaces local users and requires capacity and water checks. Orders do not repair broken stones."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Milling costs journeys, waiting and weather risks as well as fees, competing with fuel, seed and household meals."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

@@ -1,0 +1,38 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v1",
+  "Keywords": [
+    "Ulfilas Gothic letters"
+  ],
+  "RagShortTexts": [
+    "Ulfilas translated scripture into Gothic; listeners could still depend on literate readers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ulfilas devised letters for Gothic and worked on translating scripture, allowing Gothic-speaking believers to hear texts and instruction in their own language. Copying books required literate people and materials; a reader at a gathering could read aloud to listeners unable to read. Understanding a sermon, reading and writing, and owning a book were different things. Believers might still need help from a bishop or another teacher."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Preaching in Gothic allowed listeners without Greek to hear scripture. A soldier or traveler who understood the spoken words might still need a reader to explain a written text. At another gathering, the visitor had to learn who taught there and how to join worship. Households sharing Gothic speech could still differ in religion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A chief receiving bishops and teachers such as Ulfilas faced the needs of congregations, book copying and contacts across kin groups. Lodging or writing materials could assist teaching without making every believer obey the same chief. One household member’s baptism did not mean that the whole family had accepted the same instruction."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

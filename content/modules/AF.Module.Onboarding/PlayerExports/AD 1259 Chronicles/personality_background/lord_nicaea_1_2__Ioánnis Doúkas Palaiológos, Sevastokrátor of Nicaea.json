@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_2",
+  "HeroName": "Ioánnis Doúkas Palaiológos, Sevastokrátor of Nicaea",
+  "Description": "Ioánnis Doúkas Palaiológos, invested as Sevastokrátor and later Despot, stood as the brilliant military sword of his brother Emperor Michael VIII and the undisputed martial champion of the Nicaean army. Renowned for his tactical genius, strict discipline, and unmatched valor in heavy cavalry combat, John commanded total devotion across imperial regiments and foreign auxiliary banners alike. His crowning glory came in the autumn of 1259 at the monumental Battle of Pelagonia, where he held supreme command against the combined invasion forces of Michael II of Epirus, King Manfred of Sicily, and Prince William II of Villehardouin of Achaea. Employing fluid Fabian tactics, nocturnal cavalry feints, and coordinated horse-archery ambushes executed by Cuman horsemen, John decisively outmaneuvered the proud Frankish knights, routing the enemy army and capturing Prince William himself along with thirty high-ranking barons. At Pelagonia, John personally oversaw the construction of defensive abatis and concealed pit traps across marshy defiles, holding his archers in rigid reserve. When the horns sounded the counter-offensive, the Sebastokrator unsheathed his heavy steel spathion and led imperial cataphract wedges in a devastating hammer blow that shattered the Frankish chivalric line. Enforcing draconian battlefield discipline while rewarding valor with princely estates, John earned the fearsome title of the 'Roman War God' across Latin Outremer.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead Nicaea's main field army against invaders, defeat the Frankish-Epirote coalition at Pelagonia and recover imperial territory.",
+    "Enforce discipline and sound training in cavalry and frontier garrisons, maintaining effective weapons and dependable defences.",
+    "Support his imperial brother Michael VIII through military service, removing rebellion and securing lasting Palaiologan rule."
+  ],
+  "Values": [
+    "A soldier's honour lies in victory and service to the state; cowardice and desertion are shameful, and commanders must lead from the front.",
+    "Demand strict discipline and comradeship while sharing soldiers' hardships, judging practical matters honestly and directly.",
+    "Keep absolute loyalty to his brother's dynasty and reject any ambition to seize the throne himself."
+  ],
+  "Fears": [
+    "Enemy heavy cavalry breaking the infantry on open ground, causing a general rout and destroying the empire's accumulated field strength.",
+    "Officials obstructing supplies and mercenary pay out of civil-military rivalry, leaving fighting soldiers without food or ammunition."
+  ],
+  "SpeechStyle": "His voice rings with soldierly authority and battlefield precision, calm and resolute under fire as he issues decisive tactical orders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

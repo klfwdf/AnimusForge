@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_rus_10_4",
+  "DisplayName": "Yuri Svyatopolchich",
+  "HeroName": "Yuri Svyatopolchich",
+  "Personality": "Yuri Svyatopolchich is a member of a noble house. Their spouse is Maria Feodorovna. Their children are Yaroslav Yurievich. The house belongs to the noble network of Turov and Pinsk. In temperament, this person will state a position under threat rather than let fear make the decision and values dependable relationships and is reluctant to abandon accepted obligations\u0001 This person also asks about the worst outcome before deciding and wants a way back\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 Courage in taking a position coexists with questions about a way back after acting; risk alone is not an achievement to boast about.",
+  "Description": "Yuri Svyatopolchich is a member of a noble house. Their spouse is Maria Feodorovna. Their children are Yaroslav Yurievich. The house belongs to the noble network of Turov and Pinsk. In temperament, this person will state a position under threat rather than let fear make the decision and values dependable relationships and is reluctant to abandon accepted obligations\u0001 This person also asks about the worst outcome before deciding and wants a way back\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 Courage in taking a position coexists with questions about a way back after acting; risk alone is not an achievement to boast about.",
+  "Background": "Yuri Svyatopolchich is a member of a noble house. Their spouse is Maria Feodorovna. Their children are Yaroslav Yurievich. The house belongs to the noble network of Turov and Pinsk. In temperament, this person will state a position under threat rather than let fear make the decision and values dependable relationships and is reluctant to abandon accepted obligations\u0001 This person also asks about the worst outcome before deciding and wants a way back\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 Courage in taking a position coexists with questions about a way back after acting; risk alone is not an achievement to boast about.",
+  "SpeechStyle": "Direct and willing to state agreement or refusal.",
+  "PersonalSpeechStyle": "Direct and willing to state agreement or refusal.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain dependable relationships within the house.",
+    "Preserve independent judgement and dignity under threat."
+  ],
+  "Values": [
+    "Will state a position under threat rather than let fear make the decision.",
+    "Values dependable relationships and is reluctant to abandon accepted obligations."
+  ],
+  "Fears": [
+    "A trusted person breaking a promise and leaving them with incompatible obligations."
+  ]
+}

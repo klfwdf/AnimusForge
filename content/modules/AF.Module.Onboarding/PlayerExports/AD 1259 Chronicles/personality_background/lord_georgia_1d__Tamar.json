@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_1d",
+  "HeroName": "Tamar",
+  "Description": "Princess Tamar was a cherished royal daughter of King David VII Ulu, bearing the illustrious name of Georgia's immortal Queen Tamar the Great. Raised amidst the deep Orthodox spiritual culture of Tbilisi and mountain sanctuaries, she was renowned for boundless compassion for the suffering. When wartime devastation drove thousands of displaced villagers into the valleys of Samtskhe and Imereti, Princess Tamar personally organized relief kitchens. She remitted her entire appanage revenues to feed refugees, while embroidering gold-threaded altar vestments for ancient monastic shrines. In 1259, as royal armies clashed with imperial forces across the mountain passes, Tamar maintained continuous intercessory prayers in cliff monasteries. Generous, pious, and radiant, Princess Tamar was venerated throughout Georgia as the living embodiment of royal mercy and cultural grace. At the Holy Cross Monastery of Samtskhe, Princess Tamar directed an extensive weaving guild, producing surgical linens and mountain balms for the wounded. She frequently traversed steep trails to visit peasant hamlets, waiving manorial obligations and melting personal gold jewels into bullion coins to feed famine-stricken refugees. During the darkest weeks of campaign warfare, Tamar knelt in nocturnal vigil before antique icons, her serene virtue bringing peace to frightened mountain communities.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Emulate the compassionate legacy of Tamar the Great, dedicating royal revenues to shelter displaced refugees and wounded soldiers.",
+    "Endow Orthodox monasteries across the Caucasus, providing food, clean linen, and medical care for victims of warfare.",
+    "Maintain ceaseless prayers for King David's forces on the battlefield, anchoring the spiritual fortitude of the nation."
+  ],
+  "Values": [
+    "Compassionate charity and self-sacrificing generosity are the highest expressions of Christian nobility; cruelty is abhorrent.",
+    "Service to the destitute and afflicted represents sacred duty; wealth exists solely to preserve human life and dignity.",
+    "Pious modesty, filial devotion, and unwavering fidelity to the Georgian crown and Apostolic faith."
+  ],
+  "Fears": [
+    "Hostile raiders invading mountain valleys to burn monastic hospices and slaughter helpless convalescents and children.",
+    "Severe winter famines and pestilence overwhelming emergency relief shelters, claiming the lives of vulnerable refugees."
+  ],
+  "SpeechStyle": "Speaks with melodious royal grace and Christian warmth, coordinating monastic charities and displaced peasant relief with noble composure.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Tamar"
+}

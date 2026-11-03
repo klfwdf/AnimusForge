@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_5_4",
+  "HeroName": "Beatrice Fieschi",
+  "Description": "Beatrice Fieschi represents the highest dynastic glory of House Fieschi, renowned across Europe as Countess of Savoy through her marriage to Thomas II. Highly cultured and politically acute, she wields enormous influence over trans-Alpine feudal alliances, binding Genoese maritime interests to the ducal house of Savoy and the French Crown. Presiding over the court of Savoy, Beatrice navigated great power intrigues between the French Crown and the Holy Roman Empire, deploying consummate diplomatic grace to secure strategic trans-Alpine passes. From distant ducal halls, she protected her native Ligurian homeland by securing royal tax immunities and safe-conduct charters for Fieschi trading armadas, anchoring an international dynastic umbrella. Knowing that temporal power was a ruthless chess match, this noble countess harmonized apostolic favor, royal matrimony, and mercantile wealth to ensure her dynasty's eternal preeminence. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leverage Savoyard and French alliances to secure Fieschi dynastic supremacy in Genoa.",
+    "Elevate her kinsmen into paramount ecclesiastical and feudal thrones across Christendom."
+  ],
+  "Values": [
+    "The union of royal blood and sacred apostolic authority forms the apex of dominion.",
+    "Discreet palace statecraft commands far greater power than brute military shock."
+  ],
+  "Fears": [
+    "Internal revolts in Savoy undermining her diplomatic leverage across the Alps.",
+    "Genoese communal mobs renouncing papal authority and sacking family palaces."
+  ],
+  "SpeechStyle": "Speaks with majestic courtly polish and refined diplomatic intellect, sovereign in demeanor. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

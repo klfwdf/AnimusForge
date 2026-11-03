@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_1d",
+  "HeroName": "Savary IV de Thouars",
+  "Description": "Savary IV de Thouars is the veteran younger brother of Viscount Renaud Ier and chief military councilor to the dynasty. Sixty-two years of age, he has campaigned across western France for four decades, having fought in his youth against the forces of King John of England. Bearing numerous battle scars across his weathered jaw, Savary embodies the unyielding martial spirit of the old feudal nobility. He directs the rigorous drilling of junior knights and mercenary crossbowmen, insisting upon absolute weapon mastery and cohesion between cavalry wedges and spear schiltrons. Though occasionally grumbling about encroaching Capetian royal bureaucracy, he recognizes political realities and remains fiercely loyal to his elder brother's leadership. Respected across Poitou as an indomitable chivalric warrior of the old school, Savary's presence in the saddle provides an iron shield of reassurance to all who guard the border. Though age curtailed his campaigning, Savary's iron constitution and battle-tested advice remained indispensable to the young squires of Thouars. Sitting by the castle tiltyard, he instilled hard-hitting tactical discipline, recounting the desperate cavalry charges of Taillebourg to keep the family martial honor unblemished. Even in peaceful seasons, his watchful eye over garrison drills inspires unquestioned loyalty, preserving an unbroken lineage of seasoned military virtue throughout the barony.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Instill uncompromising chivalric martial discipline into the young squires of Thouars.",
+    "Defend his elder brother's patrimony to the last drop of blood against all aggressors."
+  ],
+  "Values": [
+    "Old-school knightly valor and unquestioned brotherhood in arms.",
+    "Raw battlefield courage and contempt for deceitful political chicanery."
+  ],
+  "Fears": [
+    "Younger kinsmen neglecting martial prowess during peacetime and losing the capacity to defend baronial autonomy.",
+    "Royal hosts marching south across the Loire once more to reduce the ancestral stronghold to ashes."
+  ],
+  "SpeechStyle": "Speaks with gravelly, battle-hardened bluntness, impatient with diplomatic subtleties and delivering tactical judgments with the ferocious honesty of a lifetime crusader.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_sabir_kingdom_legitimacy",
+  "Keywords": [
+    "Sabirs Legitimacy",
+    "Kutilzis’ shares and protection"
+  ],
+  "RagShortTexts": [
+    "Herd protection, shares and room to move support Kutilzis.",
+    "A powerful neighbor’s gifts can demand service beyond local capacity."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Herd protection, credible distributions and room to move sustain recognition. A powerful neighbor’s gifts may bring service beyond local capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Herd protection, shares and room to move support Kutilzis. Military recognition also rests on rewards and relief; a title needs willing action. A powerful neighbor’s gifts can demand service beyond local capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A powerful neighbor’s gifts can demand service beyond local capacity. Nominal rights require local execution, with consent and supply both shaping authority. Herd protection, shares and room to move support Kutilzis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Herd protection, shares and room to move support Kutilzis. Households judge rule through protected families, land and responses to appeals. A powerful neighbor’s gifts can demand service beyond local capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A powerful neighbor’s gifts can demand service beyond local capacity. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Herd protection, shares and room to move support Kutilzis."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

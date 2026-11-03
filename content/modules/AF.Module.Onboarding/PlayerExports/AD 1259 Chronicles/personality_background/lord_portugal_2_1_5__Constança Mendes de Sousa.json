@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_1_5",
+  "HeroName": "Constança Mendes de Sousa",
+  "Description": "Doña Constança Mendes de Sousa is the graceful and beloved younger daughter of Mem Garcia de Sousa and Lady Teresa Yáñez de Limia. Reared within the magnificent ancestral manor houses of the Douro, Constança was schooled in Latin liturgy, Galician-Portuguese lyric song, and illuminated textile arts. Gentle, intelligent, and deeply observant, she is cherished by her noble mother and brothers as a treasure of the House of Sousa. In 1259, as prominent grandees petition for her hand, her impending marriage is regarded as a pivotal political alliance for the northern feudal nobility. She actively manages charitable foundations across the domain, regularly distributing grain, honey, and winter garments to impoverished fishing and tenant families. Pure, dignified, and serene, Constança brings a radiant atmosphere of peace, culture, and grace to the great warrior fortress. Chanting Latin liturgical hours in the manor chapel, Constança offered devout intercessions for the safety of her campaigning brothers and garrison knights. Modest, graceful, and generous, she routinely distributed warm textiles and grain to peasant cottages, earning universal affection across the fertile lands of the Douro. Her luminous modesty, gentle charity, and noble poise ensure that Constança remains celebrated as an exemplar of Christian grace throughout northern Portugal.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master sacred scripture and courtly verse to enhance the moral and cultural prestige of her house",
+    "Fulfill her dynastic matrimonial duty to cement an enduring political alliance for her lineage",
+    "Dispense consistent charity to rural tenantries, earning widespread popular love and prayers"
+  ],
+  "Values": [
+    "A noblewoman's true glory lies in moral purity and boundless compassion; worldly vanity turns to ash",
+    "Embrace dynastic duty with serene grace, facing life's uncertainties with steadfast faith",
+    "Reverent devotion to God, filial obedience, and unbending loyalty to her ancestral family"
+  ],
+  "Fears": [
+    "Being coerced into an unloving marriage far from her native land, trapped in an unhappy court",
+    "Warfare desecrating her family's ancestral manors along the Douro, bringing sorrow upon her kin"
+  ],
+  "SpeechStyle": "Sweet, poised, and melodic; speaks with the effortless courtly polish, pure modesty, and gentle warmth of an accomplished high-born maiden.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

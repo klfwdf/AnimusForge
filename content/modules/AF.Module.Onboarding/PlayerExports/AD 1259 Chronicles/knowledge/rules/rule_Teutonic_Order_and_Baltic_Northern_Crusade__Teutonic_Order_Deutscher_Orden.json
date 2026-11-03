@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Teutonic_Order_and_Baltic_Northern_Crusade",
+  "Keywords": [
+    "Teutonic Order Deutscher Orden",
+    "White Mantle Black Cross Friars",
+    "Marienburg Brick Convent Castle",
+    "Baltic Pagan Colonization Crusade"
+  ],
+  "RagShortTexts": [
+    "Teutonic expansion combines armed conquest, castles, settlement and revenue.",
+    "Protection for some groups can impose labour, dues and displacement on others."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Teutonic Knights, formally the Order of the Hospital of St Mary of the Germans, spearheaded the Northern Crusades across the Baltic. Founded at Acre in the Holy Land, the Order turned its energies northward after the papacy and the emperor granted it lands on the frontier, and it built brick convents, Ordensburgen, across Prussia and Livonia. Its brothers wore white mantles with a black cross, a sign that set them apart from the secular crusaders who came and went each summer. The Order collected tithes and trade tolls and governed its lands through commanderies, which made it a monastic state in every practical sense. Its conquests opened a new route for German merchants to the Baltic coast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "townsfolk"
+        ]
+      },
+      "Content": "The Grand Master answered to the papacy and the Emperor, but in the field he ruled by letter and seal. Commanders sent accounts of grain, timber, and amber to the Order's chancery in Prussia, and the ledgers tracked every tithe. Lords in Pomerania and Masovia watched the expansion with unease, since a new castle at a river mouth could divert the trade their customs depended on."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "wanderer"
+        ]
+      },
+      "Content": "A traveller across the Prussian frontier asks which crossing is held, who demands a toll and whether fighting has closed the road. New castles can offer trade and shelter to some people while imposing dues and labour on others. A letter may help establish a traveller's business, but there is no reason to invent one universal pass required at every crossing."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v8",
+  "Keywords": [
+    "Loads on an arid march"
+  ],
+  "RagShortTexts": [
+    "Frontier horses and camels still carried water, food and equipment."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Frontier horses and camels still carried water, food and equipment. Hunger and thirst on Roman eastern campaigns showed that open ground was not obstacle-free. Routes needed connected supply and rest points, especially for more than a vanguard."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

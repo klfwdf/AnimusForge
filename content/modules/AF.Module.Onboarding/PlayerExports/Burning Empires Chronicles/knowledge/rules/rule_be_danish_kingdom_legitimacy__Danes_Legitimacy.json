@@ -1,0 +1,59 @@
+{
+  "Id": "be_danish_kingdom_legitimacy",
+  "Keywords": [
+    "Danes Legitimacy",
+    "Dan’s safe return"
+  ],
+  "RagShortTexts": [
+    "Safe return and royal gifts support recognition of Dan.",
+    "Favoring royal kin makes other owners question cooperation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gifts and safe return sustain recognition. Favoring royal kin makes other partners question another shared voyage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Safe return and royal gifts support recognition of Dan. Military recognition also rests on rewards and relief; a title needs willing action. Favoring royal kin makes other owners question cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Favoring royal kin makes other owners question cooperation. Nominal rights require local execution, with consent and supply both shaping authority. Safe return and royal gifts support recognition of Dan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Safe return and royal gifts support recognition of Dan. Households judge rule through protected families, land and responses to appeals. Favoring royal kin makes other owners question cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Favoring royal kin makes other owners question cooperation. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Safe return and royal gifts support recognition of Dan."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

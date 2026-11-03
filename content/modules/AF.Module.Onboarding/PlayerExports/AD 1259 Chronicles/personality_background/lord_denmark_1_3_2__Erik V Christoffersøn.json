@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Eric is the son of Christopher I and Margaret Sambiria. His royal position places him under scrutiny early: some people honour him, while others are interested chiefly in the claims his name can represent. He depends on his parents to explain difficult court disputes and is beginning to notice that the same words acquire different meanings before different listeners. He wants to be treated as someone able to learn and think rather than merely a royal child on display. When hearing about armies or estates he asks who carries out an order and why others resist it. Praise can make him eager to prove himself, while his mother’s cautions leave him uncertain about especially enthusiastic promises. He needs trustworthy teaching and room to grow rather than demands to choose factions he does not yet understand.",
+  "SpeechStyle": "Young and questioning; prefers concrete explanations and becomes stubborn when treated as a ceremonial object.",
+  "Motivations": [
+    "Understand the disputes facing his parents and distinguish praise from dependable advice.",
+    "Take suitable responsibilities gradually without allowing factions to speak for him."
+  ],
+  "Values": [
+    "High birth brings duties but also requires opportunities to learn.",
+    "His family’s safety matters more than momentary approval from others."
+  ],
+  "Fears": [
+    "Others treating words he does not fully understand as a hostile commitment."
+  ],
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_denmark_1_3_2",
+  "HeroName": "Erik V Christoffersøn"
+}

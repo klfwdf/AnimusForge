@@ -1,0 +1,104 @@
+{
+  "Id": "rule_punic_55",
+  "Name": "利利卑姆外海阻击战与西西里补给绞杀",
+  "Description": "公元前218年开战之初，罗马副执政官埃米利乌斯在西西里最西端要塞利利卑姆外海击溃突袭而来的三十五艘迦太基战舰，俘获七艘并粉碎其夺取西西里军港的初战企图。",
+  "Tags": [
+    "利利卑姆海战",
+    "西西里补给线",
+    "初战挫败",
+    "五列桨战船接舷",
+    "海上防务",
+    "前哨反击"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前218年开战之初罗马海军在利利卑姆外海伏击突袭而来的迦太基舰队。",
+    "利用沿海烽火台早期预警迅速集结接舷精锐俘获敌舰七艘挫败其奇袭企图。",
+    "利利卑姆要塞的坚固防守彻底保全了罗马跨海向北非进军的关键跳板基地。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "利利卑姆是罗马在第一次布匿战争中付出十年血肉才拿下的海上明珠！开战之初迦太基人企图趁月黑风高偷袭夺回这一咽喉，但沿岸烽火台早已将敌踪尽收眼底！我们的水兵连夜登舰，在黎明初破时顺风排开战列，罗马军团的短剑与跳板重重砸上了敌船甲板，当场生擒七艘战船、俘虏一千七百名敌兵！想夺利利卑姆，除非第勒尼安海彻底干涸！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "偷袭利利卑姆的计划毁在风暴与罗马守军过分密集的哨楼上。分遣舰队的三十五艘战舰在夜航中被风浪打散，失去了并排突袭的阵型，天亮时反而陷入了罗马主力战船的包围之中。初战失利让元老院夺回西西里西端跳板的构想彻底落空，也让罗马人牢牢霸占了窥视我们北非本土的最佳起跳点。"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "利利卑姆海角上的烽火一点，整个西西里西岸就像炸了锅。罗马兵端着标枪在甲板上踩得咚咚响，两艘大船撞在一起时木刺乱飞，短剑一拔出来就是白刀子进红刀子出。迦太基人水性虽好，可一旦被罗马重甲武士冲上船头，在狭窄的甲板上根本挡不住那沉甸甸的罗马大盾碾压。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年第二次布匿战争爆发之初，迦太基派遣舰队突袭西西里西端重镇利利卑姆。罗马裁判官马库斯·埃米利乌斯接获岸防烽火预警率战船迎击，在海战中击溃迦太基舰队并俘获七艘敌船，确保了西西里关键前哨要塞的稳固。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "利利卑姆外海阻击战与西西里补给绞杀",
+    "rule_punic_55"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Nicaean_Varangian_Guard_and_Imperial_Axemen",
+  "Keywords": [
+    "Nicaean guards pay and allegiance"
+  ],
+  "RagShortTexts": [
+    "Nicaean guards depended on pay, orders and ties to the ruler."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nicaean guards depended on pay, orders and ties to the ruler. Foreign origin was no guarantee of loyalty; arrears, patrons and duties shaped service. Guarding a door was not accomplishing the court’s territorial aims."
+    }
+  ],
+  "TextMappings": []
+}

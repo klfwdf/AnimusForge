@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5i",
+  "HeroName": "Abraham Rátot",
+  "Description": "Abraham Rátót is a respected estate administrator and judicial knight of Clan Rátót, overseeing extensive agricultural domains across Heves and Nógrád. Deeply trusted by senior clan patriarchs including Roland I, Abraham is known for his pragmatic competence, judicial fairness, and mastery of feudal land surveys. Presiding over local county assemblies, he arbitrates boundary disputes with incorruptible equity, earning universal acclaim among lesser nobles and freeholders. Equally skilled in military logistics, he inspects clan armories and fortress stores, guaranteeing that muster levies receive well-forged lances and armor. In 1259, amidst heavy royal mobilizations and supply pressures, Abraham coordinates warhorse procurement and grain supply trains from Heves, providing flawless logistical support for his clan's military hosts. Abraham surveyed agrarian estate boundaries across Heves and Nógrád, auditing tax assessments and preventing administrative corruption with rigorous integrity. His upright judicial administration and logistical mastery ensured that muster levies received full supplies of grain, horses, and equipment. His pragmatic diligence provided Clan Rátót with an unbroken logistical foundation capable of supporting heavy military operations across the kingdom during emergency war calls, border alarms, and royal campaigns across all the diverse frontier counties of the kingdom.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain financial resilience and agrarian abundance across clan manors, ensuring flawless logistics.",
+    "Uphold judicial equity and lawful contracts in local governance, preserving his upright reputation."
+  ],
+  "Values": [
+    "Hold diligent stewardship, strict accounting, and conscientious duty as supreme virtues.",
+    "Prize practical competence, convinced solid logistics form the backbone of military victory."
+  ],
+  "Fears": [
+    "Fears severe droughts or hail ruining grain harvests and jeopardizing military levies.",
+    "Dreads enemy ambushes plundering supply convoys and starving frontline garrisons."
+  ],
+  "SpeechStyle": "Clear ledgers and full storehouses are the true foundations of victory! Under my watch, the supply lines of Clan Rátót shall never fail! Clear ledgers and abundant grain guarantee ultimate victory for our hosts!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

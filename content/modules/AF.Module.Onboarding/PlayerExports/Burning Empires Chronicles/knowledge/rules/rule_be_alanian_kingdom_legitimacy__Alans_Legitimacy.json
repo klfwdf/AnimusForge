@@ -1,0 +1,59 @@
+{
+  "Id": "be_alanian_kingdom_legitimacy",
+  "Keywords": [
+    "Alans Legitimacy",
+    "Beler’s protective standing"
+  ],
+  "RagShortTexts": [
+    "Beler gains recognition through protection and credible rewards.",
+    "Safe wagons and winter pasture affect an Alan chief’s standing."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Beler’s standing depends on protecting people and horses and delivering rewards. Courage wins followers, but lost household wagons and winter pasture diminish protection promises."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Beler gains recognition through protection and credible rewards. Military recognition also rests on rewards and relief; a title needs willing action. Safe wagons and winter pasture affect an Alan chief’s standing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Safe wagons and winter pasture affect an Alan chief’s standing. Nominal rights require local execution, with consent and supply both shaping authority. Beler gains recognition through protection and credible rewards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Beler gains recognition through protection and credible rewards. Households judge rule through protected families, land and responses to appeals. Safe wagons and winter pasture affect an Alan chief’s standing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Safe wagons and winter pasture affect an Alan chief’s standing. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Beler gains recognition through protection and credible rewards."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

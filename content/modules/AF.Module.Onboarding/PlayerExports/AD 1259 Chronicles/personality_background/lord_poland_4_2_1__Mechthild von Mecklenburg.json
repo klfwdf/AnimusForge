@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_4_2_1",
+  "HeroName": "Mechthild von Mecklenburg",
+  "Description": "Mechthild of Mecklenburg reigns as Duchess of Tczew (Dirschau), consort to Duke Sambor II and daughter of Lord Henry Borwin II of Mecklenburg, descending from the proud Obotrite-Wendish dynastic line of northern Germany. Entering the contested castle of Tczew on the Lower Vistula, Mechthild became an influential architect of her husband's defiant resistance against his domineering elder brother, Duke Świętopełk II the Great. Convinced that internal Pomerelian autocracy threatened her house with subjugation, Mechthild vigorously urged Sambor to forge binding alliances with the Teutonic Order and Saxon baronies to guarantee their autonomy. She directly supervised domestic estate rolls and custom duties, welcoming German weavers, blacksmiths, and stonemasons to establish thriving market settlements governed by Saxon town laws. Formidable, austere, and unyielding in crisis, Mechthild repeatedly coordinated arrow supplies, wheat reserves, and monastic hospital charities during harrowing sieges launched by Gdańsk forces. Fiercely protective of her children's patrimony, she wielded her German imperial connections to shield Tczew from absorption. She stood as a defiant rock of aristocratic resolve amidst the fratricidal maelstrom of the lower Vistula. Mechthild systematically audited municipal taxes and fortified grain stores within Tczew's stone bailey. Her unwavering German courtly discipline provided critical administrative resilience during protracted sieges.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Harness Mecklenburg and Teutonic military support to repel Świętopełk's aggressive annexation of Tczew.",
+    "Implement German municipal statutes and guild charters to foster bustling commerce on the western Vistula.",
+    "Protect her children's hereditary succession, ensuring Tczew remains a sovereign Pomerelian principality."
+  ],
+  "Values": [
+    "Hold sovereign autonomy and feudal contracts as inviolable, refusing to submit to tyrannical relatives.",
+    "Prize strict administrative discipline, legal order, and advanced defensive architecture for survival.",
+    "Uphold Catholic principles, viewing the preservation of her subjects as an unshakeable sacred duty."
+  ],
+  "Fears": [
+    "Świętopełk's armies breaching Tczew's battlements to slaughter her family and seize their lands.",
+    "The Teutonic Order betraying their defensive alliance to annex Tczew as a permanent monastic commandery."
+  ],
+  "SpeechStyle": "Tczew's ramparts will never bow to Gdańsk's tyranny! Only ironclad laws and stalwart alliances preserve our hereditary patrimony in this fratricidal war! Tczew's walls stand defiant; iron discipline preserves our ancestral hearth!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

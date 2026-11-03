@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_pursuit_cohesion_and_deception_de03e960",
+  "Keywords": [
+    "pursuit cohesion and deception",
+    "Feigned retreat regrouping and pursuit discipline"
+  ],
+  "RagShortTexts": [
+    "Feigned retreat needs formation, horses and room to turn.",
+    "Pursuit discipline and reconnaissance affect its outcome."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Riders may withdraw to draw pursuit and turn again if command, formation and horses remain usable. Scouts and supporting troops can frustrate the maneuver. A confused flight may simply be defeat; judgment depends on contact and terrain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A feigned retreat needs understood signals and reunion points. Pursuers watching only one fleeing horse can lose flank awareness and support from companions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Commanders provide support and turning room and count horse losses. Calling every retreat a clever plan discourages reports when control is genuinely lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families cannot infer safety from departing troops: pursuers and fugitives both take supplies. Gathering dependants and animals matters more than guessing a hidden plan."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

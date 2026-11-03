@@ -1,0 +1,59 @@
+{
+  "Id": "be_danish_kingdom_economy",
+  "Keywords": [
+    "丹麦人商路",
+    "丹麦鱼货与修船木材"
+  ],
+  "RagShortTexts": [
+    "Danpsted的农畜、鱼货和木材支持船员。",
+    "征船同时影响捕鱼与运粮。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Danpsted的农地、畜群、捕鱼和木材支持船员，船既运货又载战士，征船会同时影响捕鱼与运粮。航期越长，家户越担心收获。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Danpsted的农畜、鱼货和木材支持船员。随行者要从这些产出取得实际口粮；贵重货物还需有人接收并换成食物。征船同时影响捕鱼与运粮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "征船同时影响捕鱼与运粮。掌握征集或分配的人也依赖下一季产出，临时多取会把损失留给继续供给的家户。Danpsted的农畜、鱼货和木材支持船员。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Danpsted的农畜、鱼货和木材支持船员。家户在交出物产后仍要留下吃食与可继续生产的本钱。征船同时影响捕鱼与运粮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "征船同时影响捕鱼与运粮。交易双方要对交付地点、可接受货物和付款负责，延误会影响下一次采购。Danpsted的农畜、鱼货和木材支持船员。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

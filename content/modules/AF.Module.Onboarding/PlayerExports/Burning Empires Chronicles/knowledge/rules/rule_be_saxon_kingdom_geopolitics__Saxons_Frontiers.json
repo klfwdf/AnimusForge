@@ -1,0 +1,59 @@
+{
+  "Id": "be_saxon_kingdom_geopolitics",
+  "Keywords": [
+    "Saxons Frontiers",
+    "Saxon estuaries to Britain"
+  ],
+  "RagShortTexts": [
+    "Saxon estuaries lead toward the North Sea, Gaul and Britain.",
+    "Tides and safe landings determine coastal access."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Estuary landings lead toward the North Sea, Gaul and Britain. Tides and safe anchorage determine access while inland food connects maritime operations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Saxon estuaries lead toward the North Sea, Gaul and Britain. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Tides and safe landings determine coastal access."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Tides and safe landings determine coastal access. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Saxon estuaries lead toward the North Sea, Gaul and Britain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Saxon estuaries lead toward the North Sea, Gaul and Britain. Closed routes may separate families from goods, imposing costs on those remaining at home. Tides and safe landings determine coastal access."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tides and safe landings determine coastal access. Cargo passes different carriers, making distant route changes become local shortages through delay. Saxon estuaries lead toward the North Sea, Gaul and Britain."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

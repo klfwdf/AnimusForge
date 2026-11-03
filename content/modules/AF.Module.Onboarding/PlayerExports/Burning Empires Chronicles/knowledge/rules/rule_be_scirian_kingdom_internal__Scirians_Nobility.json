@@ -1,0 +1,59 @@
+{
+  "Id": "be_scirian_kingdom_internal",
+  "Keywords": [
+    "Scirians Nobility",
+    "Scirian small followings and mutual aid"
+  ],
+  "RagShortTexts": [
+    "Roderic’s limited following may seek separate protectors.",
+    "Cooperation needs defined safety, supply and service duration."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Roderic has a limited following whose households may seek separate protection. Cooperation needs safety, food and a service end point."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Roderic’s limited following may seek separate protectors. Followers retain family ties; decisions about guards and distant service affect common participation. Cooperation needs defined safety, supply and service duration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Cooperation needs defined safety, supply and service duration. Coordination allocates actual supply and protection duties, not merely titles. Roderic’s limited following may seek separate protectors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Roderic’s limited following may seek separate protectors. Households compare burdens with neighbors; unmatched protection weakens cooperation. Cooperation needs defined safety, supply and service duration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Cooperation needs defined safety, supply and service duration. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Roderic’s limited following may seek separate protectors."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

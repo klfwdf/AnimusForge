@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v1",
+  "Keywords": [
+    "兵工作坊督官同名误捕"
+  ],
+  "RagShortTexts": [
+    "蒙提乌斯只报人名而未说职务，搜捕者因此误捕同名者。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "加卢斯宫廷暴力事件后，垂死的蒙提乌斯报出埃皮戈尼乌斯与尤西比乌斯两个人名，没有说明职务。搜捕者带来同名哲人与演说家，而被指者原是军械监督官。零碎消息引起误捕，姓名之外还须核对职务、地点和活动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "受命传报的人若只记名字，可能把无关者带入刑案。辨认还要核对职务、地点与本人活动；同名不是参与军械监督或密谋的证据。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "负责调查的官员须把兵工监督这一职务与被带到面前的人相核。蒙提乌斯的零碎话语经暴力和传递变成搜捕名单，正说明情报不完整时扩大追责的危险。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

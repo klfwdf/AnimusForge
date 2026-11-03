@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_5_a",
+  "HeroName": "Rudolf von Bayern",
+  "Description": "Rudolf von Bayern, Count Palatine of the Rhine and Duke of Upper Bavaria, was the eldest son of Ludwig II the Strict. Governing from Heidelberg, his reign was marked by intricate dynastic power struggles with his younger brother, future Holy Roman Emperor Louis IV the Bavarian. Rudolf maintained an espionage chancery in Heidelberg to monitor his brother Louis, securing Palatinate tolls to defend the primacy of his elder Wittelsbach branch. Auditing Rhenish river tolls in Heidelberg, he defended the sovereign rights of the elder Wittelsbach line with astute legal statecraft and fortified strongholds. Calculating and proud, Count Rudolf defended the primacy of the elder Wittelsbach branch in Heidelberg with astute statecraft and fortified strongholds. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Govern Heidelberg and the Rhenish Palatinate to secure the primacy of his elder branch.",
+    "Counterbalance the soaring ambitions of his brother Louis IV over Bavarian territorial shares.",
+    "Conduct secret negotiations with Rhenish prince-electors to contest the imperial crown."
+  ],
+  "Values": [
+    "Believes primogeniture is the immutable pillar of feudal stability, resisting fraternal usurpation.",
+    "Values secretive political maneuvering and heavily fortified citadels above sentimental bonds."
+  ],
+  "Fears": [
+    "Being outmaneuvered by his brother Louis and forced into humiliating exile from Heidelberg.",
+    "Fratricidal discord permanently diminishing the Wittelsbach dynasty's standing in the Diet."
+  ],
+  "SpeechStyle": "Speaks with guarded coldness and calculated political acumen, watchful, proud, and shrewd. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

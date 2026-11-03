@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_7_5",
+  "HeroName": "Orlando Grifeo",
+  "Description": "Young Orlando Grifeo is the seven-year-old heir of Baron Goffredo I and Baroness Antonia, uniting the legendary bloodlines of Grifeo and Ventimiglia. Reared amidst the golden wheat basins and ancient stone battlements of Partanna, Orlando displays spirited energy, quick intelligence, and an eager passion for galloping ponies and miniature blades. Schooled in Latin prayers and the chivalric traditions of Great Count Roger, he is cherished across western Sicily as the shining hope for the future of his dynasty. Seven-year-old Orlando Grifeo plays joyfully within the safe perimeter of Partanna's courtyards, watching armored knights practice mounted melee and displaying spirited natural courage, cherished by his illustrious parents as the shining future of their ancient house. Surrounded by veteran men-at-arms and loving kin, little Orlando's tender mind absorbs the sacred chivalric virtues of Great Count Roger, eager to grow into a valiant champion worthy of his ancestors. Shielded by ancient battlements and loving kin, little Orlando flourishes in innocence and pious grace, representing the tender hope and glorious future of his dynasty. Cherished by his noble parents and attendants alike, little Orlando represents the pure, innocent future and peaceful promise of western Sicily. His battlefield valor, strategic vigilance, and unswerving feudal honor inspire all who serve his house.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master riding and fencing, eager to grow as strong and brave as his father in full iron harness.",
+    "Listen to heroic tales of the Norman conquest and prepare to defend Partanna from invaders."
+  ],
+  "Values": [
+    "Martial bravery, chivalric truthfulness, and boundless admiration for his parents' authority.",
+    "Deep pride in Partanna's lands, nurturing an instinctive sense of protective feudal lordship."
+  ],
+  "Fears": [
+    "Tedious Latin grammar drills keeping him confined indoors away from the stables and courtyards.",
+    "Sudden night alarms or prolonged absences of his parents during frontier skirmishes."
+  ],
+  "SpeechStyle": "Speaks with bright childlike bravado, eager curiosity, and enthusiastic questions about battles. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -59,17 +59,17 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 	private static string LocalizeDuelEligibilityReason(string reason)
 	{
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityTargetMissing"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityTargetMissing"))
 			return DuelString("AF_UI_Duel_TargetMissing", "Duel failed: the target NPC does not exist.");
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityTargetUnavailable"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityTargetUnavailable"))
 			return DuelString("AF_UI_Duel_TargetUnavailable", "Duel failed: the target NPC has no usable entity right now.");
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityTargetIsPlayer"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityTargetIsPlayer"))
 			return DuelString("AF_UI_Duel_TargetIsPlayer", "Duel failed: the player cannot be selected as the duel target.");
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityTargetInvalid"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityTargetInvalid"))
 			return DuelString("AF_UI_Duel_TargetInvalid", "Duel failed: the target NPC is invalid.");
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityFourberieSceneBlocked"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityFourberieSceneBlocked"))
 			return DuelString("AF_UI_Duel_FourberieSceneBlocked", "Fourberie is currently controlling this special combat or stealth scene. Leave this scene normally before starting an AnimusForge duel.");
-		if (string.Equals(reason, DuelFactTexts.Get("EligibilityFourberieHandToHandBlocked"), StringComparison.Ordinal) || string.Equals(reason, DuelFactTexts.Get("EligibilityFourberieHandToHandLegacy"), StringComparison.Ordinal))
+		if (DuelFactTexts.Is(reason, "EligibilityFourberieHandToHandBlocked") || DuelFactTexts.Is(reason, "EligibilityFourberieHandToHandLegacy"))
 			return DuelString("AF_UI_Duel_FourberieHandToHandBlocked", "Fourberie hand-to-hand combat state has not reset. To avoid crashes during duels, finish or leave Fourberie's arena/underground ring; if this persists, reload your save.");
 		return reason;
 	}
@@ -368,9 +368,9 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					return;
 				}
 			}
-			if (!_deploymentCompleted
+			if (!_runtime.SettlementDone && (!_deploymentCompleted
 				|| (base.Mission.MainAgent ?? Agent.Main) == null
-				|| FindTargetAgent() == null)
+				|| FindTargetAgent() == null))
 			{
 				if (base.Mission.CurrentTime >= _participantDeadline)
 				{
@@ -540,7 +540,9 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				{
 					CacheBattleEndLogic();
 				}
-				_battleEndLogic?.ChangeCanCheckForEndCondition(true);
+				// This dedicated mission is owned until EndMission by the AF duel runtime.
+				// Do not let native side depletion settle it while participants are still spawning.
+				_battleEndLogic?.ChangeCanCheckForEndCondition(false);
 			}
 			catch (Exception ex)
 			{
@@ -655,6 +657,26 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			}
 		}
 
+		internal Hero CombatTargetHero => _runtime?.TargetHero;
+
+		private bool IsCombatSessionActive()
+		{
+			return base.Mission != null
+				&& ReferenceEquals(base.Mission, Mission.Current)
+				&& !base.Mission.IsMissionEnding
+				&& _deploymentCompleted
+				&& !_abortRequested
+				&& _runtime != null
+				&& !_runtime.AbortRequested
+				&& _runtime.DuelOutcomeStart != null
+				&& !_runtime.SettlementDone;
+		}
+
+		internal bool IsCombatParticipant(Agent agent)
+		{
+			return IsCombatSessionActive() && IsDuelParticipant(agent);
+		}
+
 		private bool IsPlayerParticipant(Agent agent)
 		{
 			try
@@ -697,7 +719,11 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				{
 					return true;
 				}
-				if (!agent.IsActive() || agent.Health <= 0f)
+				if (!agent.IsActive())
+				{
+					return false;
+				}
+				if (agent.Health <= 0f)
 				{
 					return true;
 				}
@@ -714,13 +740,17 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 		private bool TrySettleRemovedParticipant(Agent affectedAgent, AgentState agentState, string source)
 		{
-			if (!IsDuelDefeatRemovalState(agentState))
+			if (!IsCombatSessionActive() || !IsDuelDefeatRemovalState(agentState))
 			{
 				return false;
 			}
 			if (IsPlayerParticipant(affectedAgent))
 			{
 				SettleWildernessDuelRuntime(_runtime, playerDefeated: true, source + ":" + agentState);
+				if (agentState == AgentState.Unconscious || agentState == AgentState.Killed)
+				{
+					ForceKillMainHero(_runtime.TargetHero);
+				}
 				_leaveTime = (base.Mission?.CurrentTime ?? 0f) + 2f;
 				return true;
 			}
@@ -735,6 +765,10 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 		private bool TrySettleFleeingParticipant(Agent affectedAgent, string source)
 		{
+			if (!IsCombatSessionActive())
+			{
+				return false;
+			}
 			if (IsPlayerParticipant(affectedAgent))
 			{
 				SettleWildernessDuelRuntime(_runtime, playerDefeated: true, source + ":player_flee");
@@ -775,6 +809,10 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 		private void TryResolveResultFromAgents(string source)
 		{
+			if (!IsCombatSessionActive())
+			{
+				return;
+			}
 			try
 			{
 				Agent player = base.Mission?.MainAgent ?? Agent.Main;
@@ -785,7 +823,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				}
 				bool playerDown = IsAgentDefeatedOrFleeing(player);
 				bool targetDown = target != null && IsAgentDefeatedOrFleeing(target);
-				if (!playerDown && !targetDown && target != null && player.HealthLimit > 0f && target.HealthLimit > 0f)
+				if (!playerDown && !targetDown && target != null && player.IsActive() && target.IsActive() && player.HealthLimit > 0f && target.HealthLimit > 0f)
 				{
 					float threshold = DuelSettings.GetHealthThreshold();
 					playerDown = (player.Health / player.HealthLimit) <= threshold;
@@ -794,6 +832,10 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				if (playerDown)
 				{
 					SettleWildernessDuelRuntime(_runtime, playerDefeated: true, source);
+					if (player.State == AgentState.Unconscious || player.State == AgentState.Killed)
+					{
+						ForceKillMainHero(_runtime.TargetHero);
+					}
 					_leaveTime = base.Mission.CurrentTime + 2f;
 				}
 				else if (targetDown)
@@ -811,6 +853,8 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 	private class ArenaDuelMissionBehavior : MissionBehavior
 	{
+		private static readonly PropertyInfo AgentControllerProperty = typeof(Agent).GetProperty("Controller") ?? typeof(Agent).GetProperty("ControllerType");
+
 		private readonly DetachedDuelDispatchContext _duelDispatchContext;
 
 		private readonly string _nonHeroMemoryId;
@@ -835,6 +879,16 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 		private int _setupAttempts;
 
+		private float _nextSetupAttemptTime;
+
+		private Agent _playerAgent;
+
+		private Agent _opponentAgent;
+
+		private Team _playerTeam;
+
+		private Team _opponentTeam;
+
 		private bool _abortRequested;
 
 		private bool _localAgentsSpawned = false;
@@ -849,9 +903,20 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 		private bool _localDuelResultRecorded = false;
 
-		private bool _hadEnemyAgentEver = false;
-
 		public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
+
+		internal Hero CombatTargetHero => _targetHero;
+
+		internal bool IsWildernessDuel => _isWildernessDuel;
+
+		internal bool IsCombatParticipant(Agent agent)
+		{
+			return agent != null && (ReferenceEquals(agent, _playerAgent) || ReferenceEquals(agent, _opponentAgent))
+				&& base.Mission != null && ReferenceEquals(base.Mission, Mission.Current)
+				&& !base.Mission.IsMissionEnding && !_arenaMissionLeaveRequested
+				&& _setupDone && _duelOutcomeStart != null && !_abortRequested
+				&& !_localPreFightActive && !_localDuelResultRecorded;
+		}
 
 		public ArenaDuelMissionBehavior(
 			Hero target,
@@ -931,20 +996,13 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					LogWildernessDuelDiagnostic("behavior.AfterStart.enter", _diagnosticId, _targetHero);
 					LogDuelLoadingCheckpoint("wilderness.behavior.AfterStart.enter", _diagnosticId, _targetHero, null, immediate: true);
 				}
-				if (base.Mission != null && !_setupDone)
+				if (base.Mission != null && !_setupDone && !_abortRequested)
 				{
 					if (!EnsureDuelOutcomeStarted("arena_after_start"))
 					{
-						_arenaMissionLeaveRequested = true;
-						_arenaMissionLeaveReadyTime = 0f;
-						_abortRequested = true;
-						if (Instance != null)
-						{
-							Instance._isDuelActive = false;
-						}
+						AbortArenaDuel("arena_actual_start_failed", "arena_after_start");
 						return;
 					}
-					_setupDeadline = base.Mission.CurrentTime + 30f;
 					base.Mission.SetMissionMode(MissionMode.Battle, atStart: true);
 					_arenaMissionStartedOnce = true;
 					if (ReferenceEquals(_openingDuelDispatchContext, _duelDispatchContext))
@@ -953,9 +1011,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					}
 					_arenaMissionOpeningGraceUntilUtcTicks = 0L;
 					_arenaMissionActive = true;
-					_setupAttempts++;
-					SetupArenaDuel();
-					_setupDone = _localAgentsSpawned;
+					TrySetupArenaDuel();
 					if (_isWildernessDuel)
 					{
 						LogWildernessDuelDiagnostic("behavior.AfterStart.after_setup spawned=" + _localAgentsSpawned, _diagnosticId, _targetHero);
@@ -965,27 +1021,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			}
 			catch (Exception ex)
 			{
-				if (_duelDispatchContext != null)
-				{
-					MarkDetachedDuelDispatchUnknownAfterStart(
-						_duelDispatchContext,
-						"arena_after_start_exception");
-				}
-				else
-				{
-					MarkDuelOutcomeUnknown(
-						_duelOutcomeStart,
-						"arena_after_start_exception",
-						"arena_after_start");
-				}
-				_duelOutcomeStart = null;
-				_arenaMissionLeaveRequested = true;
-				_arenaMissionLeaveReadyTime = 0f;
-				_abortRequested = true;
-				if (Instance != null)
-				{
-					Instance._isDuelActive = false;
-				}
+				AbortArenaDuel("arena_after_start_exception", "arena_after_start");
 				Logger.Log("ArenaDuel", "[ERROR] AfterStart: " + ex.ToString());
 				if (_isWildernessDuel)
 				{
@@ -997,31 +1033,46 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 		public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow blow)
 		{
-			if (_abortRequested || _duelOutcomeStart == null)
+			if (_abortRequested || _localDuelResultRecorded || _duelOutcomeStart == null || affectedAgent == null
+				|| (!ReferenceEquals(affectedAgent, _playerAgent) && !ReferenceEquals(affectedAgent, _opponentAgent)))
 			{
 				return;
 			}
 			try
 			{
-				if (!_localDuelResultRecorded && agentState != AgentState.Active)
+				if (!IsCombatParticipant(affectedAgent) || !IsDefeatedState(agentState))
 				{
-					if (affectedAgent?.Character is CharacterObject characterObject && characterObject == _targetCharacter)
-					{
-						EndDuelLocal(playerDefeated: false);
-					}
-					else if (affectedAgent != null && affectedAgent.IsMainAgent)
-					{
-						EndDuelLocal(playerDefeated: true);
-					}
+					AbortArenaDuel("arena_participant_removed_without_result", "arena_agent_removed");
+					return;
+				}
+				bool playerDefeated = ReferenceEquals(affectedAgent, _playerAgent);
+				EndDuelLocal(playerDefeated);
+				if (_isWildernessDuel && playerDefeated && !_abortRequested
+					&& (agentState == AgentState.Killed || agentState == AgentState.Unconscious))
+				{
+					ForceKillMainHero(_targetHero);
 				}
 			}
-			catch
+			catch (Exception ex)
 			{
+				Logger.Log("ArenaDuel", "[ERROR] OnAgentRemoved: " + ex);
 			}
+		}
+
+		public override void OnAgentDeleted(Agent affectedAgent)
+		{
+			if (!_localDuelResultRecorded && affectedAgent != null
+				&& (ReferenceEquals(affectedAgent, _playerAgent) || ReferenceEquals(affectedAgent, _opponentAgent)))
+			{
+				AbortArenaDuel("arena_participant_deleted", "arena_agent_deleted");
+			}
+			base.OnAgentDeleted(affectedAgent);
 		}
 
 		protected override void OnEndMission()
 		{
+			_abortRequested = true;
+			_localPreFightActive = false;
 			if (_duelOutcomeStart == null && _duelDispatchContext != null)
 			{
 				MarkDetachedDuelDispatchUnknownAfterStart(
@@ -1046,15 +1097,86 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			base.OnEndMission();
 		}
 
-		private void SetupArenaDuel()
+		private void AbortArenaDuel(string reason, string source)
 		{
-			if (base.Mission == null)
+			if (_abortRequested)
 			{
 				return;
 			}
-			if (base.Mission.Agents != null && base.Mission.Agents.Count > 0 && FindTargetAgent() != null)
+			_abortRequested = true;
+			_setupDone = false;
+			_localAgentsSpawned = false;
+			_localPreFightActive = false;
+			_localPostDuelFreezeActive = false;
+			if (!_localDuelResultRecorded)
 			{
-				_localAgentsSpawned = true;
+				if (_duelDispatchContext != null)
+				{
+					MarkDetachedDuelDispatchUnknownAfterStart(_duelDispatchContext, reason);
+				}
+				else
+				{
+					MarkDuelOutcomeUnknown(_duelOutcomeStart, reason, source);
+				}
+				_duelOutcomeStart = null;
+			}
+			_arenaMissionLeaveRequested = true;
+			_arenaMissionLeaveReadyTime = 0f;
+			if (Instance != null)
+			{
+				Instance._isDuelActive = false;
+			}
+			Logger.Log("ArenaDuel", $"[Abort] source={source}, reason={reason}, setupAttempts={_setupAttempts}");
+		}
+
+		private void TrySetupArenaDuel()
+		{
+			if (_setupDone || _abortRequested || base.Mission == null)
+			{
+				return;
+			}
+			float now = base.Mission.CurrentTime;
+			if (_setupDeadline < 0f)
+			{
+				_setupDeadline = now + 30f;
+			}
+			if (now >= _setupDeadline)
+			{
+				AbortArenaDuel("arena_setup_timeout", "arena_setup");
+				return;
+			}
+			if (now < _nextSetupAttemptTime)
+			{
+				return;
+			}
+			_nextSetupAttemptTime = now + 0.25f;
+			_setupAttempts++;
+			SetupArenaDuel();
+			_setupDone = _localAgentsSpawned && !_abortRequested;
+		}
+
+		private bool IsBoundAgentPresent(Agent agent)
+		{
+			return agent != null && base.Mission != null && ReferenceEquals(agent.Mission, base.Mission)
+				&& ReferenceEquals(base.Mission.FindAgentWithIndex(agent.Index), agent);
+		}
+
+		private static bool IsDefeatedState(AgentState state)
+		{
+			return state == AgentState.Killed || state == AgentState.Unconscious || state == AgentState.Routed;
+		}
+
+		private void SetupArenaDuel()
+		{
+			if (base.Mission == null || _abortRequested || _localAgentsSpawned)
+			{
+				return;
+			}
+			if ((_playerAgent != null && (!IsBoundAgentPresent(_playerAgent) || !_playerAgent.IsActive()
+					|| !ReferenceEquals(base.Mission.MainAgent, _playerAgent)))
+				|| (_opponentAgent != null && (!IsBoundAgentPresent(_opponentAgent) || !_opponentAgent.IsActive())))
+			{
+				AbortArenaDuel("arena_setup_participant_lost", "arena_setup");
 				return;
 			}
 			try
@@ -1071,8 +1193,8 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				uint color3 = ((_targetHero?.MapFaction != null) ? _targetHero.MapFaction.Color : 4294901760u);
 				uint color4 = ((_targetHero?.MapFaction != null) ? _targetHero.MapFaction.Color2 : 4286578688u);
 				Banner banner2 = ((_targetHero?.Clan != null) ? _targetHero.Clan.Banner : null);
-				Team team = base.Mission.Teams.Add(BattleSideEnum.Attacker, color, color2, banner);
-				Team team2 = base.Mission.Teams.Add(BattleSideEnum.Defender, color3, color4, banner2, isPlayerGeneral: false, isPlayerSergeant: true);
+				Team team = _playerTeam ?? (_playerTeam = base.Mission.Teams.Add(BattleSideEnum.Attacker, color, color2, banner));
+				Team team2 = _opponentTeam ?? (_opponentTeam = base.Mission.Teams.Add(BattleSideEnum.Defender, color3, color4, banner2, isPlayerGeneral: false, isPlayerSergeant: true));
 				base.Mission.PlayerTeam = team;
 				Vec3 position;
 				Vec3 position2;
@@ -1106,7 +1228,12 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					.InitialDirection(in direction);
 				AgentBuildData agentBuildData2 = new AgentBuildData(characterObject2).Team(team2).Equipment(equipment2).InitialPosition(in position2)
 					.InitialDirection(in direction2);
-				Agent agent = base.Mission.SpawnAgent(agentBuildData);
+				Agent agent = _playerAgent;
+				if (agent == null)
+				{
+					agent = base.Mission.SpawnAgent(agentBuildData);
+					_playerAgent = agent;
+				}
 				if (agent == null)
 				{
 					_localAgentsSpawned = false;
@@ -1114,94 +1241,91 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					return;
 				}
 				base.Mission.MainAgent = agent;
-				try
+				if (!SetAgentController(agent, "Player"))
 				{
-					Type typeFromHandle = typeof(Agent);
-					PropertyInfo propertyInfo = typeFromHandle.GetProperty("Controller") ?? typeFromHandle.GetProperty("ControllerType");
-					if (propertyInfo != null && propertyInfo.CanWrite)
-					{
-						Type propertyType = propertyInfo.PropertyType;
-						object obj = null;
-						if (propertyType.IsEnum)
-						{
-							obj = Enum.Parse(propertyType, "Player");
-						}
-						if (obj != null)
-						{
-							propertyInfo.SetValue(agent, obj);
-						}
-					}
+					AbortArenaDuel("arena_player_controller_failed", "arena_setup");
+					return;
 				}
-				catch
+				agent.SetMortalityState(Agent.MortalityState.Invulnerable);
+				Agent agent2 = _opponentAgent;
+				if (agent2 == null)
 				{
+					agent2 = base.Mission.SpawnAgent(agentBuildData2);
+					_opponentAgent = agent2;
 				}
-				Agent agent2 = base.Mission.SpawnAgent(agentBuildData2);
 				if (agent2 == null)
 				{
 					_localAgentsSpawned = false;
 					Logger.Log("ArenaDuel", "[Spawn][ERROR] Enemy Agent spawn failed; will retry in subsequent tick.");
 					return;
 				}
-				_localAgentsSpawned = true;
-				_hadEnemyAgentEver = true;
+				if (!IsBoundAgentPresent(agent) || !agent.IsActive() || !IsBoundAgentPresent(agent2) || !agent2.IsActive()
+					|| !ReferenceEquals(base.Mission.MainAgent, agent) || _abortRequested)
+				{
+					AbortArenaDuel("arena_setup_participant_invalid", "arena_setup");
+					return;
+				}
+				agent2.SetMortalityState(Agent.MortalityState.Invulnerable);
+				if (!SetAgentController(agent2, "None"))
+				{
+					AbortArenaDuel("arena_target_controller_failed", "arena_setup");
+					return;
+				}
 				agent2.SetTeam(team2, sync: true);
 				team2.SetIsEnemyOf(team, isEnemyOf: true);
 				team.SetIsEnemyOf(team2, isEnemyOf: true);
-				SetAgentController(agent2, "None");
-				agent.SetMortalityState(Agent.MortalityState.Invulnerable);
-				agent2.SetMortalityState(Agent.MortalityState.Invulnerable);
+				agent2.SetWatchState(Agent.WatchState.Alarmed);
+				if (_abortRequested)
+				{
+					return;
+				}
 				_localPreFightActive = true;
 				float num = base.Mission?.CurrentTime ?? 0f;
 				_localPreFightTimer = num + 5f;
 				_localPostDuelFreezeActive = false;
 				_localDuelResultRecorded = false;
-				agent2.SetWatchState(Agent.WatchState.Alarmed);
+				_localAgentsSpawned = true;
 				AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_LocalReady", "Both sides are ready! The duel starts in 5 seconds (invulnerable during preparation)."), _targetCharacter);
 				Logger.Log("ArenaDuel", $"[Spawn] Spawned both agents in arena. Player={mainHero.Name}, Enemy={_targetDisplayName}");
 			}
 			catch (Exception ex)
 			{
+				AbortArenaDuel("arena_setup_exception", "arena_setup");
 				Logger.Log("ArenaDuel", "[ERROR] SetupArenaDuel: " + ex.ToString());
 			}
 		}
 
-		private void SetAgentController(Agent agent, string controllerType)
+		private bool SetAgentController(Agent agent, string controllerType)
 		{
 			try
 			{
-				PropertyInfo propertyInfo = agent.GetType().GetProperty("Controller") ?? agent.GetType().GetProperty("ControllerType");
+				PropertyInfo propertyInfo = AgentControllerProperty;
 				if (propertyInfo != null && propertyInfo.CanWrite)
 				{
 					Type propertyType = propertyInfo.PropertyType;
 					object value = Enum.Parse(propertyType, controllerType);
 					propertyInfo.SetValue(agent, value);
+					return true;
 				}
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("ArenaDuel", "[Warning] Set Controller to " + controllerType + " failed: " + ex.Message);
 			}
+			return false;
 		}
 
 		private Agent FindTargetAgent()
 		{
-			if (_targetCharacter == null || base.Mission == null || base.Mission.Agents == null)
-			{
-				return null;
-			}
-			foreach (Agent agent in base.Mission.Agents)
-			{
-				if (agent.Character is CharacterObject characterObject && characterObject == _targetCharacter)
-				{
-					_hadEnemyAgentEver = true;
-					return agent;
-				}
-			}
-			return null;
+			return IsBoundAgentPresent(_opponentAgent) ? _opponentAgent : null;
 		}
 
 		private bool EnsureDuelOutcomeStarted(string source)
 		{
+			if (_abortRequested)
+			{
+				return false;
+			}
 			if (_duelOutcomeStart != null)
 			{
 				return true;
@@ -1629,8 +1753,17 @@ public partial class DuelBehavior : CampaignBehaviorBase
 		public override void OnMissionTick(float dt)
 		{
 			base.OnMissionTick(dt);
+			if (base.Mission == null || !ReferenceEquals(base.Mission, Mission.Current) || base.Mission.IsMissionEnding)
+			{
+				AbortArenaDuel("arena_mission_unavailable", "arena_mission_tick");
+				return;
+			}
 			if (_arenaMissionLeaveRequested)
 			{
+				if (!_localDuelResultRecorded)
+				{
+					AbortArenaDuel("arena_exit_before_result", "arena_mission_tick");
+				}
 				float now = base.Mission?.CurrentTime ?? 0f;
 				if (_arenaMissionLeaveReadyTime <= 0f || now >= _arenaMissionLeaveReadyTime)
 				{
@@ -1640,69 +1773,52 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			}
 			if (!EnsureDuelOutcomeStarted("arena_mission_tick"))
 			{
-				_arenaMissionLeaveRequested = true;
-				_arenaMissionLeaveReadyTime = 0f;
-				_abortRequested = true;
-				if (Instance != null)
-				{
-					Instance._isDuelActive = false;
-				}
+				AbortArenaDuel("arena_actual_start_failed", "arena_mission_tick");
 				return;
 			}
 			if (!_setupDone)
 			{
-				if (_setupDeadline < 0f)
-				{
-					_setupDeadline = (base.Mission?.CurrentTime ?? 0f) + 30f;
-				}
-				_setupAttempts++;
-				SetupArenaDuel();
-				_setupDone = _localAgentsSpawned;
+				TrySetupArenaDuel();
 				if (!_setupDone)
 				{
-					if (_setupAttempts >= 3
-						|| (base.Mission?.CurrentTime ?? 0f) >= _setupDeadline)
-					{
-						if (_duelDispatchContext != null)
-						{
-							MarkDetachedDuelDispatchUnknownAfterStart(
-								_duelDispatchContext,
-								"arena_setup_timeout");
-						}
-						else
-						{
-							MarkDuelOutcomeUnknown(
-								_duelOutcomeStart,
-								"arena_setup_timeout",
-								"arena_mission_tick");
-						}
-						_duelOutcomeStart = null;
-						_arenaMissionLeaveRequested = true;
-						_arenaMissionLeaveReadyTime = 0f;
-						_abortRequested = true;
-						if (Instance != null)
-						{
-							Instance._isDuelActive = false;
-						}
-					}
 					return;
 				}
 			}
 			if (_localPreFightActive)
 			{
+				if (!IsBoundAgentPresent(_playerAgent) || !_playerAgent.IsActive()
+					|| !ReferenceEquals(base.Mission.MainAgent, _playerAgent)
+					|| !IsBoundAgentPresent(_opponentAgent) || !_opponentAgent.IsActive())
+				{
+					AbortArenaDuel("arena_preparation_participant_lost", "arena_mission_tick");
+					return;
+				}
 				float currentTime = base.Mission.CurrentTime;
 				if (currentTime >= _localPreFightTimer)
 				{
-					_localPreFightActive = false;
-					Agent agent = FindTargetAgent();
-					if (agent != null)
+					try
 					{
-						SetAgentController(agent, "AI");
-						agent.SetWatchState(Agent.WatchState.Alarmed);
+						if (!SetAgentController(_opponentAgent, "AI"))
+						{
+							AbortArenaDuel("arena_combat_controller_failed", "arena_mission_tick");
+							return;
+						}
+						_opponentAgent.SetWatchState(Agent.WatchState.Alarmed);
+						_playerAgent.SetMortalityState(Agent.MortalityState.Mortal);
+						_opponentAgent.SetMortalityState(Agent.MortalityState.Mortal);
+						if (_abortRequested)
+						{
+							return;
+						}
+						_localPreFightActive = false;
+						AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_Started", "The duel has begun!"), _targetCharacter);
 					}
-					(base.Mission?.MainAgent ?? Agent.Main)?.SetMortalityState(Agent.MortalityState.Mortal);
-					agent?.SetMortalityState(Agent.MortalityState.Mortal);
-					AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_Started", "The duel has begun!"), _targetCharacter);
+					catch (Exception ex)
+					{
+						AbortArenaDuel("arena_combat_start_exception", "arena_mission_tick");
+						Logger.Log("ArenaDuel", "[ERROR] Combat start: " + ex);
+						return;
+					}
 				}
 			}
 			if (_localPostDuelFreezeActive)
@@ -1738,10 +1854,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					Logger.Log("ArenaDuel", "[Input] User pressed TAB to request exit.");
 					if (!_localDuelResultRecorded)
 					{
-						MarkDuelOutcomeUnknown(
-							_duelOutcomeStart,
-							"player_exit_before_result",
-							"arena_tab_exit");
+						AbortArenaDuel("player_exit_before_result", "arena_tab_exit");
 					}
 					AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_LeavingArena", "Leaving the arena..."));
 					_arenaMissionLeaveRequested = true;
@@ -1804,80 +1917,60 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 		private void CheckDuelResult()
 		{
-			if (_abortRequested || _duelOutcomeStart == null || !_setupDone)
+			if (!IsCombatParticipant(_playerAgent))
 			{
 				return;
 			}
-			Agent agent = base.Mission?.MainAgent ?? Agent.Main;
+			Agent agent = _playerAgent;
 			Agent agent2 = FindTargetAgent();
-			if (agent == null)
+			if (!IsBoundAgentPresent(agent) || !ReferenceEquals(base.Mission.MainAgent, agent) || agent2 == null)
 			{
+				AbortArenaDuel("arena_combat_participant_lost", "arena_check_result");
 				return;
 			}
 			AgentState state = agent.State;
-			switch (state)
+			if ((state != AgentState.Active && !IsDefeatedState(state))
+				|| (agent2.State != AgentState.Active && !IsDefeatedState(agent2.State)))
 			{
-			case AgentState.Unconscious:
-				try
-				{
-					agent.SetMortalityState(Agent.MortalityState.Mortal);
-				}
-				catch
-				{
-				}
-				ForceKillAgentVisual(agent, agent2);
-				ForceKillMainHero(_targetHero);
-				Logger.Log("ArenaDuel", "Resolution: Player defeated (Unconscious->Death)");
-				EndDuelLocal(playerDefeated: true);
-				break;
-			default:
-				if (agent.IsActive() && !(agent.Health <= 0f))
-				{
-					if (agent2 == null)
-					{
-						if (_hadEnemyAgentEver)
-						{
-							Logger.Log("ArenaDuel", "Resolution: Player won (enemy agent eliminated/removed)");
-							EndDuelLocal(playerDefeated: false);
-						}
-						else
-						{
-							Logger.Log("ArenaDuel", "[Spawn] Enemy agent is null; skipping resolution, waiting for subsequent tick.");
-						}
-						break;
-					}
-					if (!agent2.IsActive() || agent2.State == AgentState.Killed || agent2.State == AgentState.Unconscious || agent2.Health <= 0f)
-					{
-						Logger.Log("ArenaDuel", $"Resolution: Player won (State={agent2.State}, Active={agent2.IsActive()}, HP={agent2.Health:0.0})");
-						EndDuelLocal(playerDefeated: false);
-						break;
-					}
-					float healthThreshold = DuelSettings.GetHealthThreshold();
-					float num = agent.Health / agent.HealthLimit;
-					float num2 = agent2.Health / agent2.HealthLimit;
-					if (num <= healthThreshold)
-					{
-						Logger.Log("ArenaDuel", $"Resolution: Player defeated (HP {num:P0} <= {healthThreshold:P0})");
-						EndDuelLocal(playerDefeated: true);
-					}
-					else if (num2 <= healthThreshold)
-					{
-						Logger.Log("ArenaDuel", $"Resolution: Player won (HP {num2:P0} <= {healthThreshold:P0})");
-						EndDuelLocal(playerDefeated: false);
-					}
-					break;
-				}
-				goto case AgentState.Killed;
-			case AgentState.Killed:
+				AbortArenaDuel("arena_participant_state_unobserved", "arena_check_result");
+				return;
+			}
+			if (IsDefeatedState(state) || agent.Health <= 0f)
+			{
 				Logger.Log("ArenaDuel", $"Resolution: Player defeated (State={state})");
 				EndDuelLocal(playerDefeated: true);
-				break;
+				if (!_abortRequested && state == AgentState.Unconscious)
+				{
+					agent.SetMortalityState(Agent.MortalityState.Mortal);
+					ForceKillAgentVisual(agent, agent2);
+					ForceKillMainHero(_targetHero);
+				}
+				return;
+			}
+			if (IsDefeatedState(agent2.State) || agent2.Health <= 0f)
+			{
+				Logger.Log("ArenaDuel", $"Resolution: Player won (State={agent2.State}, HP={agent2.Health:0.0})");
+				EndDuelLocal(playerDefeated: false);
+				return;
+			}
+			float healthThreshold = DuelSettings.GetHealthThreshold();
+			float num = agent.Health / agent.HealthLimit;
+			float num2 = agent2.Health / agent2.HealthLimit;
+			if (num <= healthThreshold)
+			{
+				Logger.Log("ArenaDuel", $"Resolution: Player defeated (HP {num:P0} <= {healthThreshold:P0})");
+				EndDuelLocal(playerDefeated: true);
+			}
+			else if (num2 <= healthThreshold)
+			{
+				Logger.Log("ArenaDuel", $"Resolution: Player won (HP {num2:P0} <= {healthThreshold:P0})");
+				EndDuelLocal(playerDefeated: false);
 			}
 		}
 
 		private void EndDuelLocal(bool playerDefeated)
 		{
-			if (_abortRequested || _duelOutcomeStart == null)
+			if (!IsCombatParticipant(_playerAgent))
 			{
 				Logger.Log("ArenaDuel", "[WARN] settlement skipped without an active typed Duel start.");
 				return;
@@ -1940,11 +2033,11 @@ public partial class DuelBehavior : CampaignBehaviorBase
 						Logger.Log("DuelOutcome", "[WARN] arena target freeze failed before typed finalize: " + ex.Message);
 					}
 				}
-				if (Agent.Main != null && Agent.Main.IsActive())
+				if (IsBoundAgentPresent(_playerAgent) && _playerAgent.IsActive())
 				{
 					try
 					{
-						Agent.Main.SetMortalityState(Agent.MortalityState.Invulnerable);
+						_playerAgent.SetMortalityState(Agent.MortalityState.Invulnerable);
 					}
 					catch (Exception ex)
 					{
@@ -2007,6 +2100,49 @@ public partial class DuelBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private bool IsInPlaceDuelCombatParticipant(Mission mission, Agent participant)
+	{
+		return participant != null && mission != null
+			&& ReferenceEquals(mission, Mission.Current)
+			&& ReferenceEquals(mission, _activeInPlaceDuelMission)
+			&& !mission.IsMissionEnding
+			&& _isDuelActive && _activeDuelOutcomeStart != null
+			&& !_meetingPreFightActive && !_duelResultRecorded
+			&& (ReferenceEquals(participant, _inPlaceRestorePlayer)
+				|| ReferenceEquals(participant, _inPlaceRestoreTarget));
+	}
+
+	private static bool TryGetCombatDuelTargetHero(Mission mission, Agent participant, out Hero targetHero)
+	{
+		targetHero = null;
+		if (mission == null || participant == null || !ReferenceEquals(mission, Mission.Current) || mission.IsMissionEnding)
+		{
+			return false;
+		}
+		ArenaDuelMissionBehavior arena = mission.GetMissionBehavior<ArenaDuelMissionBehavior>();
+		if (arena != null)
+		{
+			// Ordinary arena callbacks did not opt into the legacy campaign-death policy.
+			if (!arena.IsWildernessDuel || !arena.IsCombatParticipant(participant)) return false;
+			targetHero = arena.CombatTargetHero;
+			return true;
+		}
+		WildernessDuelBattleMissionLogic wilderness = mission.GetMissionBehavior<WildernessDuelBattleMissionLogic>();
+		if (wilderness != null)
+		{
+			if (!wilderness.IsCombatParticipant(participant)) return false;
+			targetHero = wilderness.CombatTargetHero;
+			return true;
+		}
+		DuelBehavior instance = Instance;
+		if (instance != null && instance.IsInPlaceDuelCombatParticipant(mission, participant))
+		{
+			targetHero = (instance._inPlaceRestoreTarget?.Character as CharacterObject)?.HeroObject;
+			return true;
+		}
+		return false;
+	}
+
 	private sealed class DuelPlayerDeathAgentStateDeciderLogic : MissionLogic, IAgentStateDecider, IMissionBehavior
 	{
 		public AgentState GetAgentState(Agent effectedAgent, float deathProbability, out bool usedSurgery)
@@ -2014,31 +2150,9 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			usedSurgery = false;
 			try
 			{
-				DuelBehavior instance = Instance;
-				if (instance != null && instance._isDuelActive && effectedAgent != null)
+				if (TryGetCombatDuelTargetHero(base.Mission, effectedAgent, out _))
 				{
-					bool flag = false;
-					try
-					{
-						flag = effectedAgent.IsMainAgent;
-					}
-					catch
-					{
-						flag = false;
-					}
-					bool flag2 = false;
-					try
-					{
-						flag2 = instance.IsCurrentDuelTargetAgent(effectedAgent);
-					}
-					catch
-					{
-						flag2 = false;
-					}
-					if (flag || flag2)
-					{
-						return AgentState.Unconscious;
-					}
+					return AgentState.Unconscious;
 				}
 			}
 			catch
@@ -2065,8 +2179,9 @@ public partial class DuelBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				DuelBehavior instance = Instance;
-				if (instance != null && instance._isDuelActive && affectedAgent != null && affectedAgent.IsMainAgent && (agentState == AgentState.Unconscious || agentState == AgentState.Killed))
+				if (affectedAgent != null && affectedAgent.IsMainAgent
+					&& (agentState == AgentState.Unconscious || agentState == AgentState.Killed)
+					&& TryGetCombatDuelTargetHero(base.Mission, affectedAgent, out Hero duelTargetHero))
 				{
 					Hero hero = null;
 					try
@@ -2076,7 +2191,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					catch
 					{
 					}
-					ForceKillMainHero(instance._targetHero ?? hero);
+					ForceKillMainHero(duelTargetHero ?? hero);
 				}
 			}
 			catch
@@ -2094,9 +2209,10 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			try
 			{
 				DuelBehavior instance = Instance;
-				if (instance != null && instance._isDuelActive && !_duelResultRecorded && affectedAgent != null && (agentState == AgentState.Unconscious || agentState == AgentState.Killed))
+				if (instance != null && instance.IsInPlaceDuelCombatParticipant(base.Mission, affectedAgent)
+					&& (agentState == AgentState.Unconscious || agentState == AgentState.Killed))
 				{
-					if (instance.IsCurrentDuelTargetAgent(affectedAgent))
+					if (ReferenceEquals(instance._inPlaceRestoreTarget, affectedAgent))
 					{
 						instance.EndDuel(playerDefeated: false);
 					}
@@ -2111,6 +2227,8 @@ public partial class DuelBehavior : CampaignBehaviorBase
 	private const string VlandiaArenaSceneName = "arena_vlandia_a";
 
 	private bool _isDuelActive = false;
+
+	private Mission _activeInPlaceDuelMission;
 
 	private Hero _targetHero = null;
 
@@ -2136,6 +2254,11 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 	private Team _preDuelTargetMountTeam;
 
+	private bool _inPlaceDuelStateCaptured;
+	private Agent _inPlaceRestoreTarget;
+	private Agent _inPlaceRestorePlayer;
+	private readonly Dictionary<Team, Dictionary<Team, bool>> _preDuelTeamRelations = new Dictionary<Team, Dictionary<Team, bool>>();
+
 	private bool _currentDuelIsArena;
 
 	private bool _meetingPreFightActive;
@@ -2143,6 +2266,8 @@ public partial class DuelBehavior : CampaignBehaviorBase
 	private float _meetingPreFightEndTime;
 
 	private bool _meetingPendingStart;
+
+	private Mission _meetingPendingMission;
 
 	private string _meetingPendingNonHeroMemoryId = "";
 
@@ -2716,6 +2841,11 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
+			// Field camp: duels stay in the camp and are fought inside its duel ring.
+			if (FieldCampMissionLogic.Current != null)
+			{
+				return true;
+			}
 			return mission.GetMissionBehavior<MeetingBattleLockMissionBehavior>() != null;
 		}
 		catch
@@ -2931,6 +3061,14 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				{
 					InformationManager.DisplayMessage(new InformationMessage(LocalizeDuelEligibilityReason(blockedReason), Color.FromUint(4294901760u)));
 				}
+				return;
+			}
+			if (FieldCampMissionLogic.Current != null && Instance != null)
+			{
+				// A soldier challenged in camp fights here, in the ring, not in a separate wilderness scene.
+				Logger.Log("DuelBehavior", "[AgentDuel] Field camp duel kept in place.");
+				ShowDuelRiskWarning();
+				Instance.StartDuelViaAI(targetAgent, duelDispatchContext);
 				return;
 			}
 			PrepareDuel(nonHeroCharacter, delaySeconds, duelDispatchContext);
@@ -5731,7 +5869,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 				list.Add(DuelFactTexts.Format("AF_DUEL_StakeItems", ("COUNT", item.Value), ("ITEM", item.Key.Trim())));
 			}
 		}
-		return (list.Count > 0) ? string.Join("，", list) : DuelFactTexts.Get("AF_DUEL_StakeNone");
+		return (list.Count > 0) ? string.Join(DuelFactTexts.Comma, list) : DuelFactTexts.Get("AF_DUEL_StakeNone");
 	}
 
 	// Display-only formatting at duel settlement; raw summaries remain authoritative history.
@@ -5847,9 +5985,9 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			string winnerName = (winnerHero?.Name?.ToString() ?? DuelFactTexts.Get("AF_DUEL_DefaultOpponent")).Trim();
 			string clanName = (loserClan.Name?.ToString() ?? DuelFactTexts.Get("AF_DUEL_DefaultLoserClan")).Trim();
 			string clanSuffix = DuelFactTexts.Get("AF_DUEL_ClanSuffix");
-			string clanLabel = clanName.EndsWith(clanSuffix.TrimStart(), StringComparison.Ordinal) ? clanName : (clanName + clanSuffix);
+			string clanLabel = clanName.EndsWith(clanSuffix.TrimStart(), StringComparison.OrdinalIgnoreCase) ? clanName : (clanName + DuelFactTexts.Gap + clanSuffix);
 			string winnerClanName = (winnerClan.Name?.ToString() ?? DuelFactTexts.Get("AF_DUEL_DefaultWinnerClan")).Trim();
-			string winnerClanLabel = winnerClanName.EndsWith(clanSuffix.TrimStart(), StringComparison.Ordinal) ? winnerClanName : (winnerClanName + clanSuffix);
+			string winnerClanLabel = winnerClanName.EndsWith(clanSuffix.TrimStart(), StringComparison.OrdinalIgnoreCase) ? winnerClanName : (winnerClanName + DuelFactTexts.Gap + clanSuffix);
 			string penaltyText = appliedPenalty.ToString("0.##");
 			string afterText = after.ToString("0.##");
 			string winnerAfterText = winnerAfter.ToString("0.##");
@@ -5922,7 +6060,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 					if (RewardSystemBehavior.Instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText, out var dueStatusDisplayText))
 					{
 						outcomeState = DuelOutcomeEffectState.Confirmed;
-						string text3 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : ("，" + dueStatusText);
+						string text3 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : (DuelFactTexts.Comma + dueStatusText);
 						string debtIdLabel = string.IsNullOrWhiteSpace(debtId) ? "" : DuelFactTexts.Format("AF_DUEL_StakeDebtIdLabel", ("ID", debtId));
 						string text4 = string.IsNullOrWhiteSpace(note) ? "" : DuelFactTexts.Format("AF_DUEL_StakeNoteLabel", ("NOTE", note));
 						MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, DuelFactTexts.Format("AF_DUEL_StakeDebtNpc", ("PLAYER", playerName2), ("AMOUNT", amount), ("DEBT_ID", debtIdLabel), ("TERM", text3), ("NOTE", text4)));
@@ -6027,7 +6165,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 						: DuelOutcomeEffectState.Partial;
 				if (list.Count > 0)
 				{
-					string text4 = string.Join("，", list);
+					string text4 = string.Join(DuelFactTexts.Comma, list);
 					MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, DuelFactTexts.Format("AF_DUEL_StakeTransferNpcLoss", ("PLAYER", text2), ("ITEMS", text4)));
 					MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, DuelFactTexts.Format("AF_DUEL_StakeTransferPlayerWin", ("NPC", text), ("ITEMS", text4)));
 					if (list2.Count > 0)
@@ -6044,7 +6182,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 				if (instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText, out var dueStatusDisplayText))
 				{
 					outcomeState = DuelOutcomeEffectState.Confirmed;
-					string text7 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : ("，" + dueStatusText);
+					string text7 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : (DuelFactTexts.Comma + dueStatusText);
 					string debtIdLabel2 = string.IsNullOrWhiteSpace(debtId) ? "" : DuelFactTexts.Format("AF_DUEL_StakeDebtIdLabel", ("ID", debtId));
 					string text10 = string.IsNullOrWhiteSpace(note) ? "" : DuelFactTexts.Format("AF_DUEL_StakeNoteLabel", ("NOTE", note));
 					MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, DuelFactTexts.Format("AF_DUEL_StakeDebtNpc", ("PLAYER", text2), ("AMOUNT", amount), ("DEBT_ID", debtIdLabel2), ("TERM", text7), ("NOTE", text10)));
@@ -6249,6 +6387,15 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 				duelDispatchContext,
 				"superseded_meeting_pending");
 			_targetHero = target;
+			_targetCharacter = target.CharacterObject;
+			_targetAgentIndex = -1;
+			Agent pendingTarget = GetAgent(target);
+			if (pendingTarget != null)
+			{
+				_targetAgentIndex = pendingTarget.Index;
+			}
+			_targetDisplayName = ResolveDuelTargetDisplayName(pendingTarget, target, _targetCharacter);
+			_meetingPendingMission = Mission.Current;
 			_meetingPendingStart = true;
 			_meetingPendingNonHeroMemoryId = "";
 			AcceptDetachedDuelDispatch(duelDispatchContext);
@@ -6317,6 +6464,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 				ref _meetingPendingDuelDispatchContext,
 				duelDispatchContext,
 				"superseded_meeting_pending");
+			_meetingPendingMission = Mission.Current;
 			_meetingPendingStart = true;
 			_meetingPendingNonHeroMemoryId = nonHeroMemoryId;
 			AcceptDetachedDuelDispatch(duelDispatchContext);
@@ -6393,23 +6541,29 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			GlobalWildernessDuelEncounterMenuGuardTick();
 		}
 		Mission mission = Mission.Current;
+		if (_meetingPendingStart && !ReferenceEquals(mission, _meetingPendingMission))
+		{
+			RejectDetachedDuelDispatch(_meetingPendingDuelDispatchContext, "meeting_mission_changed");
+			_meetingPendingDuelDispatchContext = null;
+			_meetingPendingStart = false;
+			_meetingPendingMission = null;
+			_meetingPendingNonHeroMemoryId = "";
+		}
 		if (mission == null)
 		{
-			if (_meetingPendingDuelDispatchContext != null)
+			if (_meetingPendingStart || _meetingPendingDuelDispatchContext != null)
 			{
 				RejectDetachedDuelDispatch(
 					_meetingPendingDuelDispatchContext,
 					"meeting_mission_missing");
 				_meetingPendingDuelDispatchContext = null;
 				_meetingPendingStart = false;
+				_meetingPendingMission = null;
+				_meetingPendingNonHeroMemoryId = "";
 			}
-			if (_isDuelActive && _activeDuelOutcomeStart != null)
+			if (_activeInPlaceDuelMission != null || _activeDuelOutcomeStart != null)
 			{
-				MarkDuelOutcomeUnknown(
-					_activeDuelOutcomeStart,
-					"mission_missing_after_start",
-					"engine_tick_no_mission");
-				_activeDuelOutcomeStart = null;
+				AbortInPlaceDuel("mission_missing_after_start");
 			}
 			return;
 		}
@@ -6431,6 +6585,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 					_meetingPendingDuelDispatchContext;
 				string meetingNonHeroMemoryId = _meetingPendingNonHeroMemoryId;
 				_meetingPendingDuelDispatchContext = null;
+				_meetingPendingMission = null;
 				_meetingPendingNonHeroMemoryId = "";
 				if (!IsDetachedDuelDispatchReadyForDelayedHost(meetingDispatchContext))
 				{
@@ -6467,14 +6622,26 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 		}
 		else
 		{
-			if (!_isDuelActive)
+			// Independent arena/native battle owners settle their own typed sessions.
+			if (!_isDuelActive || _activeDuelOutcomeStart == null)
 			{
 				return;
 			}
-			Agent agent = GetTargetAgent();
-			Agent main = Agent.Main;
+			if (!ReferenceEquals(mission, _activeInPlaceDuelMission))
+			{
+				AbortInPlaceDuel("in_place_mission_changed");
+				return;
+			}
+			Agent agent = _inPlaceRestoreTarget;
+			Agent main = _inPlaceRestorePlayer;
 			if (main == null || agent == null)
 			{
+				AbortInPlaceDuel("in_place_participant_missing");
+				return;
+			}
+			if (mission.IsMissionEnding || (_meetingPreFightActive && (!main.IsActive() || !agent.IsActive())))
+			{
+				AbortInPlaceDuel("in_place_ending_or_preparation_participant_lost");
 				return;
 			}
 			if (!_currentDuelIsArena && _meetingPreFightActive)
@@ -6524,16 +6691,21 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 				EndDuel(playerDefeated: true);
 				return;
 			}
-			if (!main.IsActive() || main.State == AgentState.Killed)
+			if (main.State == AgentState.Killed || main.State == AgentState.Routed)
 			{
 				Logger.Log("DuelBehavior", $"Resolution: Player defeated (State={main.State})");
 				EndDuel(playerDefeated: true);
 				return;
 			}
-			if (!agent.IsActive() || agent.State == AgentState.Killed || agent.State == AgentState.Unconscious || agent.Health <= 0f)
+			if (agent.State == AgentState.Killed || agent.State == AgentState.Unconscious || agent.State == AgentState.Routed)
 			{
 				Logger.Log("DuelBehavior", $"Resolution: Player won (State={agent.State}, Active={agent.IsActive()}, HP={agent.Health:0.0})");
 				EndDuel(playerDefeated: false);
+				return;
+			}
+			if (!main.IsActive() || !agent.IsActive())
+			{
+				AbortInPlaceDuel("in_place_participant_inactive_without_defeat");
 				return;
 			}
 			{
@@ -7192,6 +7364,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			DiscardUnboundDuelArtifacts(_targetHero);
 			return;
 		}
+		FieldCampMissionLogic.Current?.PlaceDuelists(Agent.Main, agent);
 		if (_activeDuelOutcomeStart != null)
 		{
 			MarkDuelOutcomeUnknown(
@@ -7215,6 +7388,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			RejectDetachedDuelDispatch(duelDispatchContext, "actual_start_failed");
 			return;
 		}
+		_activeInPlaceDuelMission = current;
 		try
 		{
 			if (flag)
@@ -7239,6 +7413,9 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			_preDuelPlayerTeam = Agent.Main?.Team ?? current.PlayerTeam;
 			_preDuelPlayerMountTeam = Agent.Main?.MountAgent?.Team;
 			_preDuelTargetMountTeam = agent.MountAgent?.Team;
+			_inPlaceRestoreTarget = agent;
+			_inPlaceRestorePlayer = Agent.Main;
+			_inPlaceDuelStateCaptured = true;
 			_currentDuelIsArena = flag;
 			_meetingPreFightActive = false;
 			var conversationManager = Campaign.Current?.ConversationManager;
@@ -7300,7 +7477,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 							"team_setup_failed",
 							"in_place_start");
 						Logger.Log("DuelBehavior", "[MeetingDuel][ERROR] Unable to establish stable duel team relation; cancelled duel to avoid issues.");
-						_isDuelActive = false;
+						AbortInPlaceDuel("team_setup_failed");
 						DiscardUnboundDuelArtifacts(_targetHero);
 						return;
 					}
@@ -7312,36 +7489,36 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 							{
 								try
 								{
-									item.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: false);
+									SetDuelTeamRelation(item, _duelPlayerTeam, false);
 								}
 								catch
 								{
 								}
 								try
 								{
-									_duelPlayerTeam.SetIsEnemyOf(item, isEnemyOf: false);
+									SetDuelTeamRelation(_duelPlayerTeam, item, false);
 								}
 								catch
 								{
 								}
 								try
 								{
-									item.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: false);
+									SetDuelTeamRelation(item, _duelEnemyTeam, false);
 								}
 								catch
 								{
 								}
 								try
 								{
-									_duelEnemyTeam.SetIsEnemyOf(item, isEnemyOf: false);
+									SetDuelTeamRelation(_duelEnemyTeam, item, false);
 								}
 								catch
 								{
 								}
 							}
 						}
-						_duelEnemyTeam.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: true);
-						_duelPlayerTeam.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: true);
+						SetDuelTeamRelation(_duelEnemyTeam, _duelPlayerTeam, true);
+						SetDuelTeamRelation(_duelPlayerTeam, _duelEnemyTeam, true);
 					}
 					catch
 					{
@@ -7417,7 +7594,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 				duelDispatchContext,
 				"in_place_start_exception",
 				"in_place_start");
-			_isDuelActive = false;
+			AbortInPlaceDuel("in_place_start_exception");
 			Logger.Log("DuelBehavior", "[ERROR] Duel start failed after owner Start: " + ex);
 		}
 	}
@@ -7741,6 +7918,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			_activeDuelOutcomeStart = null;
 			try
 			{
+				RestoreState(restoreHealth: false);
 				FinishDuel();
 			}
 			catch
@@ -7858,6 +8036,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			{
 				if (_isDuelActive)
 				{
+					RestoreState(restoreHealth: false);
 					FinishDuel();
 				}
 			}
@@ -7868,8 +8047,81 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 		}
 	}
 
-	private void RestoreState()
+	private void SetDuelTeamRelation(Team from, Team to, bool isEnemyOf)
 	{
+		// Capture both directions before the first mutation: native setters may be symmetric.
+		CaptureDuelTeamRelation(from, to);
+		CaptureDuelTeamRelation(to, from);
+		from.SetIsEnemyOf(to, isEnemyOf);
+	}
+
+	private void CaptureDuelTeamRelation(Team from, Team to)
+	{
+		if (!_preDuelTeamRelations.TryGetValue(from, out var relations))
+		{
+			relations = new Dictionary<Team, bool>();
+			_preDuelTeamRelations.Add(from, relations);
+		}
+		if (!relations.ContainsKey(to))
+		{
+			relations.Add(to, from.IsEnemyOf(to));
+		}
+	}
+
+	private void RestoreDuelTeamRelations()
+	{
+		foreach (var from in _preDuelTeamRelations)
+		{
+			foreach (var to in from.Value)
+			{
+				try { from.Key.SetIsEnemyOf(to.Key, to.Value); }
+				catch (Exception ex) { Logger.Log("DuelBehavior", "[WARN] Duel team relation restore failed: " + ex.Message); }
+			}
+		}
+		_preDuelTeamRelations.Clear();
+	}
+
+	private void ClearInPlaceDuelRestoreState()
+	{
+		_inPlaceDuelStateCaptured = false;
+		_inPlaceRestoreTarget = null;
+		_inPlaceRestorePlayer = null;
+		_preDuelTeamRelations.Clear();
+		_preDuelPlayerTeam = null;
+		_preDuelTargetTeam = null;
+		_preDuelPlayerMountTeam = null;
+		_preDuelTargetMountTeam = null;
+		_duelPlayerTeam = null;
+		_duelEnemyTeam = null;
+		_meetingPreFightActive = false;
+		_meetingPreFightEndTime = 0f;
+		_formalDuelSpectatorAgentIndices.Clear();
+		_formalDuelSpectatorRefreshTimer = 0f;
+	}
+
+	private void AbortInPlaceDuel(string reason)
+	{
+		// Missing/deleted participants and failed setup are not wins or losses.
+		_isDuelActive = false;
+		MarkDuelOutcomeUnknown(_activeDuelOutcomeStart, reason, "in_place_abort");
+		_activeDuelOutcomeStart = null;
+		try { RestoreState(restoreHealth: false); }
+		catch (Exception ex) { Logger.Log("DuelBehavior", "[WARN] Duel abort restore failed: " + ex.Message); }
+		finally
+		{
+			ClearInPlaceDuelRestoreState();
+			_activeInPlaceDuelMission = null;
+		}
+	}
+
+	private void RestoreState(bool restoreHealth = true)
+	{
+		if (!_inPlaceDuelStateCaptured || !ReferenceEquals(Mission.Current, _activeInPlaceDuelMission))
+		{
+			ClearInPlaceDuelRestoreState();
+			return;
+		}
+		RestoreDuelTeamRelations();
 		bool flag = false;
 		try
 		{
@@ -7879,7 +8131,8 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 		{
 			flag = false;
 		}
-		Agent agent = GetTargetAgent();
+		Agent agent = _inPlaceRestoreTarget;
+		Agent player = _inPlaceRestorePlayer;
 		try
 		{
 			_meetingPreFightActive = false;
@@ -7889,7 +8142,7 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 		catch
 		{
 		}
-		if (agent != null)
+		if (agent != null && agent.IsActive())
 		{
 			try
 			{
@@ -7901,7 +8154,10 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			catch
 			{
 			}
-			agent.Health = agent.HealthLimit;
+			if (restoreHealth)
+			{
+				try { agent.Health = agent.HealthLimit; } catch { }
+			}
 			TrySetAgentController(agent, "AI");
 			try
 			{
@@ -7941,13 +8197,13 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			{
 			}
 		}
-		if (Agent.Main != null)
+		if (player != null && player.IsActive())
 		{
-			TrySetAgentController(Agent.Main, "Player");
-			UnlockAgentMovement(Agent.Main, unpauseAi: true, clearTargetFrame: true);
+			TrySetAgentController(player, "Player");
+			UnlockAgentMovement(player, unpauseAi: true, clearTargetFrame: true);
 			try
 			{
-				Agent mountAgent3 = Agent.Main.MountAgent;
+				Agent mountAgent3 = player.MountAgent;
 				if (mountAgent3 != null && mountAgent3.IsActive())
 				{
 					UnlockAgentMovement(mountAgent3, unpauseAi: true, clearTargetFrame: true);
@@ -7958,34 +8214,42 @@ Regex regex8En = new Regex(DuelFactTexts.Get("Regex_StakePattern2"), RegexOption
 			}
 			try
 			{
-				Agent.Main.SetMortalityState(Agent.MortalityState.Mortal);
+				player.SetMortalityState(Agent.MortalityState.Mortal);
 			}
 			catch
 			{
 			}
-			Agent.Main.Health = Agent.Main.HealthLimit;
+			if (restoreHealth)
+			{
+				try { player.Health = player.HealthLimit; } catch { }
+			}
 		}
 		Mission currentMission = Mission.Current;
 		if (currentMission != null)
 		{
 			try
 			{
-				currentMission.SetMissionMode(flag ? MissionMode.Battle : _preDuelMode, atStart: true);
+				currentMission.SetMissionMode(restoreHealth && flag ? MissionMode.Battle : _preDuelMode, atStart: true);
 			}
 			catch
 			{
 			}
 		}
-		MeetingBattleLockMissionBehavior.RestoreFormalDuelIsolationForCurrentMeeting("duel_behavior_restore_state");
-		_preDuelPlayerTeam = null;
-		_preDuelTargetTeam = null;
-		_preDuelPlayerMountTeam = null;
-		_preDuelTargetMountTeam = null;
+		try
+		{
+			MeetingBattleLockMissionBehavior.RestoreFormalDuelIsolationForCurrentMeeting("duel_behavior_restore_state");
+		}
+		finally
+		{
+			ClearInPlaceDuelRestoreState();
+		}
 	}
 
 	private void FinishDuel()
 	{
 		_isDuelActive = false;
+		_activeInPlaceDuelMission = null;
+		ClearInPlaceDuelRestoreState();
 		Logger.Log("DuelBehavior", "Duel flow finished (FinishDuel).");
 		AnimusForgeQuickInfo.Show(DuelString("AF_UI_Duel_Finished", "The duel has ended."));
 	}

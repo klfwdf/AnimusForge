@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v6",
+  "Keywords": [
+    "米德豪泉水蓄池"
+  ],
+  "RagShortTexts": [
+    "米德豪塔内有泉水补给的蓄池，取水能在墙内进行。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "米德豪塔内有泉水补给的蓄池，取水能在墙内进行。蓄水设施改变居民往返水源的劳动，也提高封闭时的可用性；它仍需要保持通道与容器可用。附近别的石塔不能仅因外形相似就被认为同样有泉池。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

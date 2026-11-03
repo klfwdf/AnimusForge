@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_alexander_reputation_without_invented_night_raid_c89f40d7",
+  "Keywords": [
+    "Neva routes and the fighting of 1240",
+    "Neva fishing households in 1240"
+  ],
+  "RagShortTexts": [
+    "Alexander defeated an expedition near the Neva in 1240.",
+    "The river linked gulf and inland routes while armies affected boats and fishing."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alexander defeated an expedition near the Neva in 1240. The river linked the Gulf of Finland and inland routes, giving it transport and military value. Troop movements affected boats, fishing and homes, while armies relied on local reports and supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Alexander defeated an expedition near the Neva in 1240. The river linked the Gulf of Finland and inland routes, giving it transport and military value. Troop movements affected boats, fishing and homes, while armies relied on local reports and supplies. Veterans remembered ground, orders and comrades, unlike distant letters. Afterward they cared for wounds, gathered people and mounts and sought food; victory also left fatigue and losses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Alexander defeated an expedition near the Neva in 1240. The river linked the Gulf of Finland and inland routes, giving it transport and military value. Troop movements affected boats, fishing and homes, while armies relied on local reports and supplies. Princes assessed effective forces, captive kin and changed alliances before arranging defense. Prestige helped win support, but provisions, replacement mounts and promises needed resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Alexander defeated an expedition near the Neva in 1240. The river linked the Gulf of Finland and inland routes, giving it transport and military value. Troop movements affected boats, fishing and homes, while armies relied on local reports and supplies. Campaigns left households waiting, short of workers and receiving wounded or refugees. Returnees could not always work at once, so kin shared sowing, repairs and care."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

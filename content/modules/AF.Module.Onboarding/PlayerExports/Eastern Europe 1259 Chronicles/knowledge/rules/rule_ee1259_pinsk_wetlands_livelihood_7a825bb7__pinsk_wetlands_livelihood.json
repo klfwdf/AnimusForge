@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_pinsk_wetlands_livelihood_7a825bb7",
+  "Keywords": [
+    "Fishing hay and shelter in the Pinsk wetlands",
+    "Households facing Pripiat floods"
+  ],
+  "RagShortTexts": [
+    "Pinsk wetlands provide fish, hay and routes while floods alter land and access to homes.",
+    "Local water knowledge supports livelihoods under limits on refuge, carriage and animal care."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pinsk wetland livelihoods use fish, hay and boats, while floods submerge tracks and shift landings. Residents know drier ground and mowing seasons but must prepare for sudden moves. Outsiders seeking passage or refuge still need hosts, food and routes; concealment does not provide a lasting home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Pinsk families schedule hay and animal care by water levels and move food and dependents first in a rapid rise. Limited boats force priorities among people, grain and stock, often requiring neighbors' loans. Receding water leaves repairs and cleaning before production can recover."
+    }
+  ],
+  "TextMappings": []
+}

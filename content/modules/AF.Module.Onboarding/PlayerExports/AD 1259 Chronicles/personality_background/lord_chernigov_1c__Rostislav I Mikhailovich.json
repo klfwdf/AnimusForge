@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_chernigov_1c",
+  "Description": "Rostislav I Mikhailovich is the formidable eldest son of Saint Mikhail, recognized as an ambitious military commander and international statesman across Central and Eastern Europe. Having ruled Novgorod, Halych, and Chernigov in his youth, he weathered brutal succession struggles, emerging as a battle-hardened and strategically daring prince. Following the Mongol devastation of southern Rus', Rostislav allied with the Kingdom of Hungary, marrying Princess Anna, daughter of King Béla IV. Appointed Ban of Macsó and Slavonia, he commanded elite western knightly cavalry alongside Slavic auxiliary crossbowmen, distinguishing himself in campaigns across Bohemia, Poland, and the Balkans. He never relinquished his rightful claim to the grand-ducal throne of Chernigov, actively integrating western stone fortification techniques to fortify frontier marches. Bridging the chivalric world of Central European crusaders with Ruthenian princely traditions, Rostislav remains an illustrious figure in regional chronicles. Bridging western chivalric warfare with his Ruthenian royal lineage, Ban Rostislav displayed exceptional operational mastery along the Danube frontier. Commanding thunderous shock cavalry charges across Bohemia and the Balkans, he kept his sights fixed upon the east, dreaming of restoring Chernigov's throne with western crusader steel. His dynamic leadership commanded profound respect across the courts of Europe.",
+  "SpeechStyle": "The armored lances of Hungary and the heavy broadswords of Rus' ride as one under my banner! Any foe attempting to bar my righteous path shall be shattered beneath our hooves!",
+  "Motivations": [
+    "Leverage Hungarian knightly armies and Central European alliances to reclaim Chernigov and restore his father's grand-ducal realm.",
+    "Consolidate his rule as Ban of Macsó, projecting Olgovychi royal influence across the Danube basin and Carpathian borderlands."
+  ],
+  "Values": [
+    "Prized territorial conquest, knightly prowess, and autocratic authority, scorning complacent mediocrity and timid compromise.",
+    "Believing decisive shock tactics and grand international coalitions alone command destiny amidst catastrophic wars."
+  ],
+  "Fears": [
+    "Sudden political shifts at the Hungarian court stripping his banate title and depriving him of allied crusader armies.",
+    "Catastrophic tactical entrapment in the rugged Balkans, obliterating the veteran knightly retinues essential for his return."
+  ],
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "HeroName": "Rostislav I Mikhailovich"
+}

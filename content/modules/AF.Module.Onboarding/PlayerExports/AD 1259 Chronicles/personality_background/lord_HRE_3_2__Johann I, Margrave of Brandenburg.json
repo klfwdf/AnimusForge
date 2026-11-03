@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_3_2",
+  "HeroName": "Johann I, Margrave of Brandenburg",
+  "Description": "Johann I, Margrave of Brandenburg, co-ruled with his brother Otto III. The foremost pioneer-captain of the German eastward expansion, he co-founded Berlin and Spandau, established Lehnin Abbey, and pushed Ascanian frontiers into the Neumark, celebrated as founding father of Berlin. Johann I marked forest clearings for Cistercian monks at Lehnin Abbey, codifying property rights that transformed primeval marshes into golden grainfields across the Neumark. Erecting an interlocking chain of fortified knightly estates east of the Oder, he crushed Pomeranian counter-offensives to plant the Ascanian red eagle firmly in the Neumark. A visionary titan of the eastern expansion, Johann I forged Berlin and the Neumark through iron will, his achievements written into the bedrock of Central Europe. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify quays and masonry curtain walls along the Spree, turning infant Berlin into a metropolis.",
+    "Advance across the Oder to conquer the Neumark, securing frontier plains with fortress chains.",
+    "Endow monastic foundations and town charters to transform marshy wastes into prosperous lands."
+  ],
+  "Values": [
+    "Believes a ruler's true glory lies in cities founded and wilderness cultivated, not empty titles.",
+    "Holds iron martial discipline and brotherly solidarity as the pillars of dynastic greatness."
+  ],
+  "Fears": [
+    "Pomeranian and Polish leagues blockading the mouth of the Oder, severing maritime routes.",
+    "Devastating pestilence or crop failure scattering the pioneer settlers of his infant cities."
+  ],
+  "SpeechStyle": "Speaks with visionary frontier authority and commanding vigor, bold, decisive, and proud. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "frankish_lord_1_1",
+  "DisplayName": "Genobaud",
+  "HeroName": "Genobaud",
+  "Description": "Genobaud ruled in 374 AD as paramount King of the Salian Franks along the Lower Rhine delta and Toxandria. Settled as imperial foederati by Emperor Julian, Genobaud's warriors formed the defensive bastion shielding the lowlands against northern maritime raiders. Armed with the lethal francisca throwing axe and scramasax, Genobaud was an expert in amphibious delta warfare, holding river mouths with naval war-boats and mobile shield-bands. Skillfully balancing alliance obligations with Roman military commands, he repelled Saxon sea piracy while demanding gold subsidies and grain distributions, quietly forging the demographic and martial engine that would eventually establish the Frankish dominion over Western Europe. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Genobaud ruled in 374 AD as paramount King of the Salian Franks along the Lower Rhine delta and Toxandria. Settled as imperial foederati by Emperor Julian, Genobaud's warriors formed the defensive bastion shielding the lowlands against northern maritime raiders. Armed with the lethal francisca throwing axe and scramasax, Genobaud was an expert in amphibious delta warfare, holding river mouths with naval war-boats and mobile shield-bands. Skillfully balancing alliance obligations with Roman military commands, he repelled Saxon sea piracy while demanding gold subsidies and grain distributions, quietly forging the demographic and martial engine that would eventually establish the Frankish dominion over Western Europe. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with crisp, soldierly frankness; unpretentious, sharp, and attuned to the gritty realities of delta warfare.",
+  "PersonalSpeechStyle": "Speaks with crisp, soldierly frankness; unpretentious, sharp, and attuned to the gritty realities of delta warfare.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush Saxon sea raiders and dominate the commercial waterways of the Lower Rhine",
+    "Secure expanded land rights and tax immunities from imperial authorities"
+  ],
+  "Values": [
+    "The francisca never flies in vain; Frankish warriors guard their hearths with iron",
+    "Alliance endures only while arms remain formidable; steel commands respect"
+  ],
+  "Fears": [
+    "Fears disastrous North Sea storm surges drowning low-lying delta settlements and harvests"
+  ],
+  "Personality": "Genobaud ruled in 374 AD as paramount King of the Salian Franks along the Lower Rhine delta and Toxandria. Settled as imperial foederati by Emperor Julian, Genobaud's warriors formed the defensive bastion shielding the lowlands against northern maritime raiders. Armed with the lethal francisca throwing axe and scramasax, Genobaud was an expert in amphibious delta warfare, holding river mouths with naval war-boats and mobile shield-bands. Skillfully balancing alliance obligations with Roman military commands, he repelled Saxon sea piracy while demanding gold subsidies and grain distributions, quietly forging the demographic and martial engine that would eventually establish the Frankish dominion over Western Europe. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

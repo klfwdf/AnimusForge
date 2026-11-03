@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_pork_fat_means_and_abstinence_8149a8fe",
+  "Keywords": [
+    "Salted pork fat garlic and Rus households",
+    "Fasting and stored meat"
+  ],
+  "RagShortTexts": [
+    "Pork fat can be stored as food, depending on access to meat, salt and containers.",
+    "Fasting and faith affect consumption; meat stores do not replace grain or livestock care."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus households with pork fat and salt can keep some meat alongside bread, porridge and other food. Raising pigs, buying salt and storage cost resources, leaving unequal stocks. Garlic adds flavor rather than replacing meals. Fasts, faith and guests' practices affect consumption, requiring hosts to ask rather than assume shared habits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ordinary families balance slaughter or continued husbandry with winter stores, seed and debts. Limited salt is divided among foods, with containers and suitable storage also needed. Travelers want durable provisions while relatives remain to eat; sharing the preparation of a journey's food can spread the burden."
+    }
+  ],
+  "TextMappings": []
+}

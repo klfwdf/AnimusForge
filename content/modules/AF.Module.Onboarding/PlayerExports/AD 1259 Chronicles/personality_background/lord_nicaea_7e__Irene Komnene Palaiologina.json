@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_7e",
+  "HeroName": "Eirī́nī Komnīnī́ Palaiológina, nun Eulogía",
+  "Description": "Eirī́nī Komnīnī́ Palaiológina, aged forty-five, is the formidable elder sister and chief political confidante of Emperor Michael VIII, tonsured as nun Eulogía. As mother to Tsarina Maria of Bulgaria and the scholar Theodora Raoulaina, she stands as one of the most indomitable matriarchs in Byzantine history. Though clad in the austere black robes of an Orthodox nun, her secluded monastic apartments function as an inner sanctum of high imperial power in Nicaea. It was her ruthless strategic clarity following the Sosandra crisis that actively propelled her brother Michael into the regency and imperial co-rule. Ferociously dogmatic in matters of faith, she harbors visceral contempt for papal theology, determined to strangle any inclination toward ecclesiastical union with Rome. Within the court, her iron will and sharp intellect inspire genuine awe and caution even from Emperor Michael himself, who regularly seeks her counsel. Nun Eulogía is a steel-willed titan of Palaiologan statecraft, channeling her boundless energies into protecting Eastern Orthodoxy and her dynasty's triumph across Europe and Asia. From her monastic sanctuary, she constantly deciphers diplomatic missives from across the Balkans and Asia Minor, maintaining an eagle-eyed vigil over court factions to steer her imperial family toward total dominion.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 7e lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with chilling deliberation, low resonant authority, and razor-sharp intellect, commanding immediate obedience with cold, unshakeable finality.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

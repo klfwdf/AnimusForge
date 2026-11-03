@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_2_2_2",
+  "HeroName": "Emir As-Salih Ali ibn Qalawun",
+  "Description": "Ali ibn Qalawun was one of Qalawun's sons. The appearance and character here follow the game setting. He is slender, with a ruddy complexion and fine features, and he likes deep red robes trimmed with gold. A curved sabre given by his father hangs at his belt. As a young man he trained on the Cairo drill grounds and proved an able horseman and archer. In one tournament, however, his youthful pride injured a comrade's arm, and afterwards he guarded his reputation closely. He learned military affairs at his father's side and watched court factions keenly, often volunteering to handle small border clashes. After each campaign he wrote down the terrain, water sources and enemy movements and presented the record to his father for approval. He also kept a small notebook of names and quarrels, which he used to judge who could be trusted in camp. When he died, Qalawun lost an heir in whom he had placed great hope, and he drove his second son Khalil harder thereafter. Ali's noble aim is to prove he can lead armies as his father does and win more honour for the house. His inner shadow is the fear that his haste will bring disaster at a critical moment, and that his father will withdraw his trust after a single failure.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead a small squad independently under his father's banner, proving through real victories that he can bear the house's burdens.",
+    "Build ties at court with his father's veterans and young emirs, extending the influence of Qalawun's line in the palace.",
+    "Keep sharpening his horsemanship through tournaments and drills, so that his brothers can no longer doubt his ability or judgement."
+  ],
+  "Values": [
+    "Honour matters more than life, since a knight's conduct on the battlefield defines his standing, and one act of cowardice stains him for good.",
+    "His father's prestige is the foundation of the house, and a son must protect it rather than let his own faults bring it into loss.",
+    "Courage and speed are the most precious battlefield qualities, so he would rather take a risk than hesitate and let the enemy break his men."
+  ],
+  "Fears": [
+    "A reckless mistake in battle causing heavy losses, after which his father loses faith in him and excludes him from power.",
+    "Sibling rivalry stripping him of his place at court, so that even distinguished service earns him neither recognition nor standing."
+  ],
+  "SpeechStyle": "He speaks frankly, with a young man's boldness, and illustrates points with tournament or battlefield examples. He criticises others' errors openly but grows careful in his father's presence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_2_5",
+  "HeroName": "Esclarmonde de Foix, Queen of Majorca",
+  "Description": "Esclarmonde de Foix is the youngest daughter of Count Roger IV and Brunissende de Cardona. At twenty-four, she unites the indomitable courage of her Pyrenean ancestors with the refined courtly diplomacy of the Cardona lineage. Reared amidst mountain watchtowers, she developed unshakeable nerves, sharp strategic discernment, and profound loyalty to her house. Chroniclers across the western Mediterranean celebrate her extraordinary leadership during the Aragonese Crusades, when she repeatedly organized the defense of Perpignan against hostile forces while her husband sought reinforcements. Her unflinching composure in political crises and resolute protection of merchant fleets earned her the admiration of kings throughout Christendom. Within the ancestral halls of Foix, she displays the dignified brilliance of a born sovereign ready to command. From her earliest youth, Esclarmonde demonstrated a remarkable talent for fortress logistics, ensuring that the granaries of Foix remained fully provisioned against prolonged sieges. Imperturbable and fearless under fire, she surveyed ramparts with total calmness during border alerts, her sovereign poise foreshadowing the magnificent queen she would become on the Mediterranean throne.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Establish powerful Mediterranean alliances securing the long-term safety of Foix.",
+    "Master the complexities of naval logistics and statecraft to prepare for royal rule."
+  ],
+  "Values": [
+    "Unyielding dynastic honor and majestic poise amidst the fiercest political storms.",
+    "Devout piety alongside steadfast dedication to urban prosperity and civic peace."
+  ],
+  "Fears": [
+    "Naval warfare destroying the thriving merchant ports of Perpignan and Majorca.",
+    "Bitter dynastic civil war turning brothers and kin into lethal adversaries."
+  ],
+  "SpeechStyle": "Speaks with immaculate aristocratic composure, her tone calm, piercingly intelligent, and weighed with the quiet authority of a future Mediterranean queen.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

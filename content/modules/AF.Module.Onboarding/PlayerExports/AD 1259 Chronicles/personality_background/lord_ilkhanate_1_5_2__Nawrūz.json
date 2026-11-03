@@ -1,0 +1,33 @@
+{
+  "HeroId": "lord_ilkhanate_1_5_2",
+  "HeroName": "Nawrūz",
+  "Description": "Nawruz is the son of Arghun Aqa and Surmish. His father’s position in administration brings him into contact with visitors from different backgrounds and places family expectations upon him. He wants to be introduced as more than his father’s son, but is still learning which promises carry practical weight. With experienced men he notices what they are willing to explain and which demands remain deliberately vague. He hopes to advance the household without making his parents bear the cost of his eagerness to distinguish himself. New proposals interest him, but he resists becoming a faction’s spokesman before understanding its interests.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Understand his father’s work and seek responsibilities suited to him.",
+    "Clarify a faction’s demands before promising support."
+  ],
+  "Values": [
+    "Family standing should rest on service one can perform.",
+    "Independent judgement need not mean abandoning relatives."
+  ],
+  "Fears": [
+    "An eager promise exposing his parents to risks he has not understood."
+  ],
+  "SpeechStyle": "Young and attentive; asks what a vague condition would require in practice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

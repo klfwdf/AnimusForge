@@ -1,0 +1,59 @@
+{
+  "Id": "be_salihid_kingdom_geopolitics",
+  "Keywords": [
+    "Salihids Frontiers",
+    "Salihid oasis well routes"
+  ],
+  "RagShortTexts": [
+    "Wells connect Salihid oases and desert routes.",
+    "One blocked well can force an entire group to detour."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wells link oases across desert. One blocked source can force a detour, and available water may not support every animal together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wells connect Salihid oases and desert routes. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. One blocked well can force an entire group to detour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "One blocked well can force an entire group to detour. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Wells connect Salihid oases and desert routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Wells connect Salihid oases and desert routes. Closed routes may separate families from goods, imposing costs on those remaining at home. One blocked well can force an entire group to detour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "One blocked well can force an entire group to detour. Cargo passes different carriers, making distant route changes become local shortages through delay. Wells connect Salihid oases and desert routes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

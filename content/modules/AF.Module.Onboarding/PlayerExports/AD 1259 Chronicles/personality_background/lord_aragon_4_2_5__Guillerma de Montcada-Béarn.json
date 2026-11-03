@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_4_2_5",
+  "HeroName": "Guillerma de Montcada-Béarn",
+  "Description": "Guillerma de Montcada-Béarn is the vibrant and cherished youngest daughter of Gaston VII, Viscount of Béarn, and Viscountess Mathe. Surrounded by the affection of her family within the stone keeps of Oloron and Pau, Doña Guillerma possesses a sharp, inquisitive mind and exceptional artistic grace. Gifted in illuminated calligraphy, embroidery, and courtly music, she seamlessly embodies the high refinement of the House of Montcada. In 1259, as she blossoms into noble maidenhood, royal embassies from Aragon and Navarre monitor her courtly upbringing, anticipating major dynastic alliances (culminating in her prestigious royal marriage to Infante Peter of Aragon). Inquisitive and warm-hearted, she eagerly converses with traveling knights and clerics to learn of Mediterranean politics. Her compassionate generosity toward impoverished villagers and wounded veterans makes her beloved across the Pyrenean valleys. Distributing fresh bread and salt to poor mountain shepherds beside the mountain brooks of Oloron, Guillerma's luminous smile won the adoration of her people. Inquisitive and accomplished in multiple tongues, she immersed herself in scriptures and histories, celebrated across European courts for her flawless Christian virtue and courtly beauty. Her radiant joy and selfless charity make Guillerma a beloved figure of courtly grace.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master courtly protocols and scholarship to prepare for future royal matrimonial duties",
+    "Patronize troubadour poetry and manuscript arts to enrich the cultural life of Pau",
+    "Alleviate the suffering of impoverished mountain tenants through consistent Christian charity"
+  ],
+  "Values": [
+    "True nobility is found in boundless compassion; kindness outshines all worldly vanity",
+    "Embrace dynastic duty with grace, upholding the honor of one's lineage wherever destiny leads",
+    "Devout reverence before God, purity of heart, and loving loyalty to family"
+  ],
+  "Fears": [
+    "Being wed to a harsh foreign monarch in an inhospitable realm far from her mountains",
+    "Brutal warfare breaching the citadels of Béarn and bringing catastrophe upon her beloved family"
+  ],
+  "SpeechStyle": "Charming, melodious, and lively; speaks with youthful innocence, courtly poise, artistic sensitivity, and a genuine, refreshing warmth.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

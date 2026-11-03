@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v7",
+  "Keywords": [
+    "提尔紫袍与政治指控"
+  ],
+  "RagShortTexts": [
+    "提尔秘密制作的皇袍引发指控，物件归属仍未明。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "提尔发现一件秘密制作的皇室袍服，来历与用途不明，仍使官员及其他人被卷入指控。具有政治象征的物件可能引发搜捕，发现物与证明主人谋反却不是同一步骤。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lakhmid_lord_1_1",
+  "DisplayName": "Imru al-Qays II",
+  "HeroName": "Imru al-Qays II",
+  "Description": "Imru' al-Qays II ruled in 374 AD as King of the Lakhmids at al-Hirah along the desert frontiers of Mesopotamia, paramount monarch of the Nasrid royal line. Serving as the paramount Arab buffer state and staunch client kingdom of the Sassanid Persian Empire, he controlled vital oasis caravan routes between the Euphrates and the Arabian interior. A master of desert logistics and shock warfare, he fielded elite squadrons of iron-clad Dawasir heavy cavalry alongside lightning-fast Bedouin skirmishers. Trusted by Shahanshah Shapur II to guard the southwestern imperial flank against Roman inroads and hostile nomad raiders, Imru' al-Qays navigated imperial politics with seasoned cunning, securing autonomy and commercial wealth for his desert realm. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Imru' al-Qays II ruled in 374 AD as King of the Lakhmids at al-Hirah along the desert frontiers of Mesopotamia, paramount monarch of the Nasrid royal line. Serving as the paramount Arab buffer state and staunch client kingdom of the Sassanid Persian Empire, he controlled vital oasis caravan routes between the Euphrates and the Arabian interior. A master of desert logistics and shock warfare, he fielded elite squadrons of iron-clad Dawasir heavy cavalry alongside lightning-fast Bedouin skirmishers. Trusted by Shahanshah Shapur II to guard the southwestern imperial flank against Roman inroads and hostile nomad raiders, Imru' al-Qays navigated imperial politics with seasoned cunning, securing autonomy and commercial wealth for his desert realm. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with lyrical Arabic poetic eloquence and diplomatic polish; courtly before Persian grandees, yet carrying the fierce independence of the desert.",
+  "PersonalSpeechStyle": "Speaks with lyrical Arabic poetic eloquence and diplomatic polish; courtly before Persian grandees, yet carrying the fierce independence of the desert.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush pro-Roman Arab rivals to monopolize lucrative caravan tariffs along the Euphrates",
+    "Cement al-Hirah's privileged status within the Sassanian court to secure lavish imperial subsidies"
+  ],
+  "Values": [
+    "Desert oaths are binding as sandstorms; allegiance to Ctesiphon is guarded with sharp iron",
+    "Al-Hirah's banners protect the oases; raiders upon our caravan trails shall find only bleached bones"
+  ],
+  "Fears": [
+    "Fears Roman gold inciting hostile desert nomadic uprisings cutting off vital oasis wells"
+  ],
+  "Personality": "Imru' al-Qays II ruled in 374 AD as King of the Lakhmids at al-Hirah along the desert frontiers of Mesopotamia, paramount monarch of the Nasrid royal line. Serving as the paramount Arab buffer state and staunch client kingdom of the Sassanid Persian Empire, he controlled vital oasis caravan routes between the Euphrates and the Arabian interior. A master of desert logistics and shock warfare, he fielded elite squadrons of iron-clad Dawasir heavy cavalry alongside lightning-fast Bedouin skirmishers. Trusted by Shahanshah Shapur II to guard the southwestern imperial flank against Roman inroads and hostile nomad raiders, Imru' al-Qays navigated imperial politics with seasoned cunning, securing autonomy and commercial wealth for his desert realm. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Vasily Alexandrovich of Novgorod, eldest son of Alexander Nevsky, embodied the fierce, uncompromising spirit of northern independence. Appointed at a young age to govern the proud mercantile republic of Novgorod, Vasily became deeply aligned with the defiant ethos of the popular assembly (veche) and local militia captains. He vehemently opposed his father's Realpolitik of submission and tribute census to the Mongol Empire. When Mongol enumerators and tax officials (baskaks) arrived in Novgorod in 1257 to register taxable households, the fiery prince openly sided with the rebellious citizens, scorning Tatar demands and fleeing to Pskov to champion local liberty. This insubordination compelled Alexander Nevsky to lead an armed force north to suppress the revolt and secure the city from Khanate retribution, resulting in Vasily's deposition and exile to Suzdal. Though politically reckless, Vasily's defiance of the Asian conquerors made him an enduring folk hero among the common folk. Mastering woodland mobility and river navigation, Vasily repeatedly led ski-mounted rangers on winter sorties to intercept hostile border patrols, his unyielding pride and legendary ferocity celebrated by northern commoners as an enduring symbol of Slavic independence and heroic martyrdom. He scorned foreign tyranny and defended ancestral freedom with fiery defiance, his tragic resistance hailed across the northern forests as an unforgettable testament to Slavic courage and warrior dignity.",
+  "SpeechStyle": "Speaks with fiery impetuosity and unbridled defiance, his high-pitched, ringing voice striking like a drawn broadsword without political filter.",
+  "Motivations": [
+    "Defend the ancient self-governing liberties of the Novgorod veche against degrading Mongol tribute censuses and fiscal enslavement.",
+    "Inspire northern warriors to break free from timid appeasement, carving out an honorable path of armed defiance."
+  ],
+  "Values": [
+    "Values martial honor and civic liberty above pragmatic compromise, maintaining that death in battle surpasses servitude.",
+    "Reveres candid honesty and comradeship, scorning the hypocritical deference of court flatterers in favor of warrior solidarity."
+  ],
+  "Fears": [
+    "Fears above all that chronicle history will record him as a compliant lackey of the Golden Horde who betrayed Russian freedom."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_rus_1c",
+  "HeroName": "Vasily Prince of Novgorod"
+}

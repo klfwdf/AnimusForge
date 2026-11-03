@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v5",
+  "Keywords": [
+    "Women leaders and household support"
+  ],
+  "RagShortTexts": [
+    "A woman leader maintained influence through kin, envoys and contributing households."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A woman leader maintained influence through kin, envoys and contributing households. Followers cared about numbers, return and protection of dependants. Representing a faction was not the same power as disposing of every household’s animals."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

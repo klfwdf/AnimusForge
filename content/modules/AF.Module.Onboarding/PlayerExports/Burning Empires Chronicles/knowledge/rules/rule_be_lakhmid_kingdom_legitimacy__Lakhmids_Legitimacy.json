@@ -1,0 +1,59 @@
+{
+  "Id": "be_lakhmid_kingdom_legitimacy",
+  "Keywords": [
+    "Lakhmids Legitimacy",
+    "Imru al-Qays’ kin and Persian backing"
+  ],
+  "RagShortTexts": [
+    "Protection, kin and powerful support sustain recognition at Hira.",
+    "Merchant arbitration and paid rewards affect continued service."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Recognition comes from protection, kin and powerful support. Resolving merchant disputes and paying rewards affect continued service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Protection, kin and powerful support sustain recognition at Hira. Military recognition also rests on rewards and relief; a title needs willing action. Merchant arbitration and paid rewards affect continued service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Merchant arbitration and paid rewards affect continued service. Nominal rights require local execution, with consent and supply both shaping authority. Protection, kin and powerful support sustain recognition at Hira."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protection, kin and powerful support sustain recognition at Hira. Households judge rule through protected families, land and responses to appeals. Merchant arbitration and paid rewards affect continued service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Merchant arbitration and paid rewards affect continued service. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protection, kin and powerful support sustain recognition at Hira."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

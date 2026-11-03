@@ -30,7 +30,7 @@ internal static class CultureTroopSelector
             throw new ArgumentNullException(nameof(request));
         }
 
-        return SelectGuard(request.SessionId, request.Venue, slot);
+        return SelectGuard(request.SessionId, request.VenueCulture, request.VenueId, slot);
     }
 
     internal static CharacterObject? SelectExecutioner(ExecutionRequest request, int slot = 0)
@@ -40,13 +40,13 @@ internal static class CultureTroopSelector
             throw new ArgumentNullException(nameof(request));
         }
 
-        return SelectExecutioner(request.SessionId, request.Venue, slot);
+        return SelectExecutioner(request.SessionId, request.VenueCulture, request.VenueId, slot);
     }
     internal static CharacterObject? SelectCeremonyGuard(ExecutionRequest request, int slot)
     {
         var playerTroops = GetPlayerPartyRegularSoldiers();
         return playerTroops.Count > 0
-            ? SelectStable(playerTroops, request.SessionId, request.Venue.StringId, "player-guard", slot)
+            ? SelectStable(playerTroops, request.SessionId, request.VenueId, "player-guard", slot)
             : SelectGuard(request, slot);
     }
 
@@ -57,7 +57,7 @@ internal static class CultureTroopSelector
             .ThenBy(character => character.StringId, StringComparer.Ordinal)
             .ToList();
         return playerTroops.Count > 0
-            ? SelectStable(playerTroops, request.SessionId, request.Venue.StringId, "player-executioner", slot)
+            ? SelectStable(playerTroops, request.SessionId, request.VenueId, "player-executioner", slot)
             : SelectExecutioner(request, slot);
     }
 
@@ -68,7 +68,7 @@ internal static class CultureTroopSelector
         {
             var crossbowmen = playerTroops.Where(HasCrossbowWeapon).ToList();
             var candidates = crossbowmen.Count > 0 ? crossbowmen : playerTroops;
-            return SelectStable(candidates, request.SessionId, request.Venue.StringId, "player-crossbowman", slot);
+            return SelectStable(candidates, request.SessionId, request.VenueId, "player-crossbowman", slot);
         }
 
         return SelectCrossbowman(request, slot);
@@ -128,7 +128,7 @@ internal static class CultureTroopSelector
             throw new ArgumentNullException(nameof(request));
         }
 
-        var culture = request.Venue.Culture;
+        var culture = request.VenueCulture;
         var regulars = GetRegularSoldiers(culture, GuardMinimumTier, requireMeleeWeapon: false);
         var nativeCrossbowmen = regulars
             .Where(HasCrossbowWeapon)
@@ -138,7 +138,7 @@ internal static class CultureTroopSelector
             ? SelectStable(
                 candidates,
                 request.SessionId,
-                request.Venue.StringId,
+                request.VenueId,
                 "crossbowman",
                 slot)
             : null;
@@ -164,7 +164,7 @@ internal static class CultureTroopSelector
         polearmId = string.Empty;
         var baseEquipment = guard.FirstBattleEquipment;
         if (baseEquipment is null || baseEquipment.IsEmpty() ||
-            !TryFindCulturePolearm(request.Venue.Culture, guard, out var polearm))
+            !TryFindCulturePolearm(request.VenueCulture, guard, out var polearm))
         {
             return false;
         }
@@ -184,12 +184,16 @@ internal static class CultureTroopSelector
             throw new ArgumentNullException(nameof(venue));
         }
 
-        var culture = venue.Culture;
+        return SelectGuard(sessionId, venue.Culture, venue.StringId, slot);
+    }
+
+    private static CharacterObject? SelectGuard(Guid sessionId, CultureObject? culture, string venueId, int slot)
+    {
         var role = "guard";
         var qualified = GetRegularSoldiers(culture, GuardMinimumTier, requireMeleeWeapon: true);
         if (qualified.Count > 0)
         {
-            return SelectStable(qualified, sessionId, venue.StringId, role, slot);
+            return SelectStable(qualified, sessionId, venueId, role, slot);
         }
 
         return null;
@@ -202,12 +206,16 @@ internal static class CultureTroopSelector
             throw new ArgumentNullException(nameof(venue));
         }
 
-        var culture = venue.Culture;
+        return SelectExecutioner(sessionId, venue.Culture, venue.StringId, slot);
+    }
+
+    private static CharacterObject? SelectExecutioner(Guid sessionId, CultureObject? culture, string venueId, int slot)
+    {
         var role = "executioner";
         var qualified = GetRegularSoldiers(culture, ExecutionerMinimumTier, requireMeleeWeapon: false);
         if (qualified.Count > 0)
         {
-            return SelectStable(qualified, sessionId, venue.StringId, role, slot);
+            return SelectStable(qualified, sessionId, venueId, role, slot);
         }
 
         return null;

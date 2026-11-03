@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v2",
+  "Keywords": [
+    "Roman artillery torsion cords"
+  ],
+  "RagShortTexts": [
+    "Bolt engines needed sound bundles and drawing gear; ammunition could not replace maintenance."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A bolt engine stored energy in twisted bundles and had to be drawn back before discharge. Operation required a sound frame, bundles and coordinated men. Damaged bundles or a jammed drawing mechanism left nearby bolts unusable."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

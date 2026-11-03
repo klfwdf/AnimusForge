@@ -1,0 +1,52 @@
+{
+  "Id": "rule_battle_of_the_neva_1240",
+  "Keywords": [
+    "Alexander’s victory on the Neva",
+    "Neva and Ladoga water route"
+  ],
+  "RagShortTexts": [
+    "Alexander defeated an invading Swedish force near the Neva in 1240.",
+    "The Neva links Ladoga with the Gulf of Finland, making warning and passage important."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1240 forces led by Alexander defeated an invading Swedish force near the Neva, protecting water connections toward Novgorod. The river links Ladoga with the Gulf of Finland, affecting vessels and shoreline households alike. Followers celebrate military service, while merchants ask about anchorage and their next passage. Those absent from the fighting hear through returnees, church remembrance and passing crews, without necessarily knowing the identity of every opponent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The victory supports a prince’s claim to protect urban routes, while the city still negotiates the cost of retainers and existing rights. Shared remembrance does not settle every subsequent service or division of income."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men watching the water know warnings must reach the force in time and crossings require support. A veteran may recall a close fight alongside those who found boats or brought the wounded back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Shore households and boatmen ask whether troops will remain and goods can move. Boats need repair, casualties need care and markets need reopening; fame and a household’s provisions meet different needs."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

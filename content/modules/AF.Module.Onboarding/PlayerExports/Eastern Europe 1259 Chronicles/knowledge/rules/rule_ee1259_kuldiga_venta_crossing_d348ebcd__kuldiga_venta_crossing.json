@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_kuldiga_venta_crossing_d348ebcd",
+  "Keywords": [
+    "Kuldiga's Venta crossing",
+    "Cargo transfers near the Venta rapids"
+  ],
+  "RagShortTexts": [
+    "Kuldiga's position on the Venta gives it value where rapids and crossings shape journeys.",
+    "Impassable river stretches require land transfers with unloading, guarding and reloading."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Venta near Kuldiga requires travelers to consider rapids, landings and transfers. The Order's post needs local provisions, while merchants need onward movement. A crossing brings bargaining power alongside road work, guards and disputes over losses. Charges that overwhelm carriage can undermine future traffic. The Order raised its fort in 1242 amid existing Curonian exchange. Travelers benefit from contacts across those communities as well as recognition by a distant leader."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Kuldiga carriers seek dry ground because stored food and equipment suffer beside water. Boatmen, drivers and recipients may arrive on different days, requiring guards meanwhile. Families earning from carriage must account for waiting and meals as well as distance."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

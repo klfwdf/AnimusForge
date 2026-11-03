@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_1",
+  "HeroName": "Mem Rodrigues de Briteiros, Lord of Maia",
+  "Description": "Dom Mem Rodrigues de Briteiros stands as one of the towering magnates and cultural luminaries of Afonso III's realm, holding the exalted titles of Lord of Maia, Ricohombre, and Royal Knight. Inheriting the immense ancestral prestige of the House of Maia through his mother and the fortified baronies of Briteiros through his father, he controls extensive fiefdoms stretching from Guimarães across the lush valleys of Entre-Douro-e-Minho. A consummate master of heavy cavalry tactics, Dom Mem demonstrated formidable bravery in the royal campaigns pacifying the realm and securing the conquests of the Algarve. Simultaneously, he is celebrated as one of the quintessential troubadours of the Galician-Portuguese lyric renaissance, with enduring cantigas preserved in the Vatican and National Library songbooks. Balancing unwavering chivalric duty to the Crown with a resolute defense of feudal prerogatives during the royal inquests, his fortress court serves as a vibrant sanctuary where knightly prowess, aristocratic diplomacy, and troubadour poetry seamlessly unite. Combining martial chivalry with sublime troubadour art, Dom Mem Rodrigues de Briteiros elevated his ancestral halls into the radiant cultural capital of northern Portugal, commanding absolute devotion from both battle-hardened knights and celebrated lyric poets across the kingdom. Through his dual mastery of courtly lyric and heavy cavalry leadership, Dom Mem Rodrigues stands immortalized as one of the most brilliant and formidable magnates ever to govern the marches of Entre-Douro-e-Minho.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To elevate the territorial power and courtly prestige of Briteiros and Maia to the peak of the realm.",
+    "To achieve enduring renown as the paragon of both chivalric martial valor and lyric troubadour art."
+  ],
+  "Values": [
+    "Feudal oaths of honor and chivalric renown outshine mere worldly riches.",
+    "Lyric poetry and battlefield valor are the twin essential wings of a noble spirit."
+  ],
+  "Fears": [
+    "Royal centralism eroding the traditional autonomy and baronial liberties of the northern nobility.",
+    "His ancestral strongholds suffering ruin during sudden border invasions or court intrigue."
+  ],
+  "SpeechStyle": "Speaks with melodic eloquence, chivalric passion, and commanding martial resolve, blending courtly charm with baronial authority. He speaks with calm aristocratic assurance, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

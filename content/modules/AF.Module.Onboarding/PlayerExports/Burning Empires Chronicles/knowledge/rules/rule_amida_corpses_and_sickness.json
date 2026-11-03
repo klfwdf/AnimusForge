@@ -1,0 +1,38 @@
+{
+  "Id": "be_battle_amida_siege_record_v3",
+  "Keywords": [
+    "Amida corpses and sickness"
+  ],
+  "RagShortTexts": [
+    "Bodies, crowding and illness increased care needs during Amida’s siege in 359."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "During the siege of Amida in 359, bodies could not be promptly removed, while crowding and heat accompanied mounting illness. People feared foul air from corpses and spoiled water. Care and removal of bodies demanded labor alongside defense, and sickness depleted the city beyond battlefield casualties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Defenders and residents shared the burden of bodies, heat and illness during a siege. Carers tended wounds and sickness, moved bodies and sought usable water. Cooler weather or rain changed conditions, but sick people still needed food and continuing care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Siege losses included wounds and disease, with care and removal of bodies requiring manpower. Allocating food and labor only by the count of men fit to fight overlooked the sick and their carers. Explanations of illness varied, but water, food and cleaning still had to be provided."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

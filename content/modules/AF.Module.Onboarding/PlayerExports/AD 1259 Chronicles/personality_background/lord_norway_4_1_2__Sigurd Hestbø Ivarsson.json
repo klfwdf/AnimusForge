@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_4_1_2",
+  "HeroName": "Sigurd Hestbø Ivarsson",
+  "Description": "Sir Sigurd Hestbø Ivarsson was a distinguished royal knight, councilor of the realm, and lord of the strategic island fortress of Hestbø on Finnøy. In 1259, Sigurd commanded powerful naval and equestrian retainers controlling the vital maritime approaches to Stavanger and the western fjords. The son of Baron Ivar of Skedjuhof, he earned high baronial status under Kings Hákon IV and Magnus the Lawmender through unyielding courage at sea and strict garrison discipline. He was a vigilant protector of coastal fisheries and shipping routes, mercilessly eradicating pirate havens across Rogaland. Within the royal riksråd, Sigurd champion the sovereign rights and maritime trade immunities of the western littoral barons, balancing local privileges with crown loyalty. His fortified stronghold at Hestbø became a cornerstone of coastal defense, cementing his reputation as an indomitable knight-commander of medieval Norway. From the insular strongholds of Finnøy and Hestbø, Sigurd commissioned reinforced patrol longships equipped with deck mantlets and heavy torsion ballistas to monitor Scottish naval incursions. In multiple counter-piracy campaigns across the southwestern archipelagos, he personally spearheaded amphibious boarding assaults that shattered insurgent flotillas and secured vital shipping lanes. His unyielding coastal defense transformed Hestbø into an impregnable naval bastion safeguarding Norway's maritime lifeline.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Make Finnoy and Hestbo strong coastal defences in Rogaland against Scottish forces and western raiders.",
+    "Lead longship patrols along the southwest coast, keeping routes to Atlantic islands open for travel and trade.",
+    "Seek royal estates and maritime tax privileges, establishing the family among the southwest coast's leading hereditary nobles."
+  ],
+  "Values": [
+    "A warrior earns dignity at sea and in battle; command of Norwegian warships requires proven military achievement.",
+    "Remain loyal to King Haakon and use disciplined tactics to defeat incursions into Norwegian waters and islands.",
+    "Fair rewards and strict punishment create effective crews; loyal sailors deserve care, while cowardice and rebellion require firm penalties."
+  ],
+  "Fears": [
+    "A combined Scottish fleet striking coastal fortresses, breaking the southwest defences and surrounding Hestbo.",
+    "A North Sea storm killing trusted sailors and destroying the private fleet he has built over many years."
+  ],
+  "SpeechStyle": "Speaks with resonant martial pride, sea-borne authority, and chivalric boldness, commanding retainers and councilors with natural knightly presence.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Sigurd Hestbø Ivarsson"
+}

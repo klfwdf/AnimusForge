@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_3",
+  "HeroName": "Gonçalo Garcia de Sousa, Lord of Barroso and Neiva",
+  "Description": "Dom Gonçalo Garcia de Sousa, Lord of Barroso and Neiva, is universally recognized as one of the wealthiest, most influential, and politically formidable magnates in thirteenth-century Portugal. Ruler of sprawling hereditary honras across the Minho and Douro basins, he commands hundreds of manorial tenures, coastal salt-pans, riparian mills, and trading quays, yielding revenues that rival the royal treasury. Shrewd, ambitious, and politically acute, Don Gonçalo served as the supreme financial backer and military patron of King Afonso III during the civil war and the conquest of the Algarve. In 1259, standing at the zenith of his feudal grandeur, he leads the powerful Barroso cadet branch of the House of Sousa, wielding immense arbitral influence in crown councils. Commanding a private army of heavily equipped knightly retainers, he fiercely rebuffs royal crown inquiries into his sweeping fiscal immunities. Proud, authoritative, and visionary, Gonçalo Garcia stands as the uncrowned feudal prince of northern Portugal. Channelling vast salt-mining and mercantile profits from Barroso into the armories of his private knightly retinue, Dom Gonçalo wielded unmatched feudal power. Haughty and calculating, the uncrowned prince of the north repeatedly stared down royal chancellors, defending his sweeping tax immunities with relentless aristocratic pride. His immense mercantile wealth, private host of armored knights, and unyielding baronial pride make Dom Gonçalo Garcia an uncrowned sovereign of the north.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the sweeping fiscal immunities and independent jurisdiction of Barroso and Neiva from royal overreach",
+    "Master his vast agrarian, salt-mining, and mercantile networks to maintain unparalleled financial supremacy",
+    "Leverage immense wealth and private cavalry retainers to dictate terms in royal crown councils"
+  ],
+  "Values": [
+    "Vast wealth and stone keeps are the only true guarantors of liberty; power dictates all worldly laws",
+    "Ancestral charters are sacred covenants; no royal decree may rightfully dissolve seigneurial rights",
+    "Honor sworn covenants with peers, rule vassals with equitable firmness, and maintain unbending pride"
+  ],
+  "Fears": [
+    "The crown issuing confiscation decrees targeting his lucrative salt-pans and manorial estates",
+    "Decadence and complacency among younger heirs eroding the vigilance required to preserve the dynasty"
+  ],
+  "SpeechStyle": "Resonant, haughty, and commanding; speaks with the effortless swagger, financial mastery, and towering presence of a supreme feudal prince.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

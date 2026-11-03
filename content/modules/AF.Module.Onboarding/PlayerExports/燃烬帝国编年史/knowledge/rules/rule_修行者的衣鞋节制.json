@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v7",
+  "Keywords": [
+    "修行者的衣鞋节制"
+  ],
+  "RagShortTexts": [
+    "节俭修行牵涉衣鞋修补、共用库存与物资分配。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "修行者以节俭约束衣鞋和个人物品，修补与重新分配使有限物资继续使用。共用库存须有人保管，成员取走东西也要让同伴知道；物资短缺时尤其难以兼顾保暖、劳作和体面。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

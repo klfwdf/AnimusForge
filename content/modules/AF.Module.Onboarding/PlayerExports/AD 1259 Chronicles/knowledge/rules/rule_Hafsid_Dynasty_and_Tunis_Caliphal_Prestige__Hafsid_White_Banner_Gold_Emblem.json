@@ -1,0 +1,42 @@
+{
+  "Id": "rule_Hafsid_Dynasty_and_Tunis_Caliphal_Prestige",
+  "Keywords": [
+    "Hafsid White Banner Gold Emblem",
+    "Muhammad al Mustansir Caliph",
+    "Tunis Maritime Custom and Genoa Pacts",
+    "Post 1258 Western Islamic Caliph Claim"
+  ],
+  "RagShortTexts": [
+    "Hafsid authority at Tunis draws on religious standing and regional commerce.",
+    "Port duties and caravan connections bring revenue alongside competing local interests."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The dynasty grew out of Almohad governorship in Ifriqiya into a semi-independent sultanate ruling Tunisia and the Maghreb coast. Its treasury lived on customs, and treaties with Pisa, Genoa, and Venice set duty rates on cloth, timber, and grain. Every Christian ship that unloaded at Tunis, Mahdia, or Bizerte paid dock dues to a Hafsid bailiff. Gold dust arrived by caravan from the south and was weighed out in the bazaars under official seals. After the Abbasid capital fell in 1258, Sultan Muhammad I al-Mustansir took the caliphal title, giving Tunis a claim to Islamic leadership that its court used in dealings with Mediterranean rivals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Each Hafsid amir weighed Genoese and Venetian contracts against the risk that a Christian king might send a crusading fleet against Tunis. Envoys carried sealed letters between the palace and the chancery, and the sultan's advisers kept those letters secret until a deal closed. Customs revenue paid the garrisons on the walls, so a delayed contract meant a delayed wage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "wanderer"
+        ]
+      },
+      "Content": "Christian cogs and corsair galleys moor peacefully in the Goletta lagoon. Merchants from Pisa, Genoa, and Venice have traded at Tunis since the twelfth century, and Provençal and Catalan merchants joined them from the mid-thirteenth century. Paying dock dues to Hafsid bailiffs guarantees entry to bustling ivory, olive oil, and gold-dust bazaars."
+    }
+  ],
+  "TextMappings": []
+}

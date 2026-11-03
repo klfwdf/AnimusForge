@@ -11,6 +11,47 @@ namespace AnimusForge;
 internal static class DiplomacyRequestProjection
 {
     internal const string WorldFormat = "af_world_defaults_v1";
+    // Request-bound work only. Keep source arrays and nested evidence byte content intact;
+    // only move root properties so changing summaries/values cannot precede the fixed case.
+    private static readonly string[] DynamicTailFields =
+    {
+        "sources", "world", "narrative_actors", "sovereign_speakers",
+        "hero_source_keys", "entity_source_keys", "admission_relations",
+        "live_effects", "applied_effect_receipts", "history_selection", "prior_events",
+        "previous_search_result", "search_pass", "grounded_creation",
+        "candidate_pool", "selected_candidate", "admission_seed", "seed",
+        "response_contract", "seed_digest", "proposed_event", "proposed_boundary",
+        "proposed_progress", "rejected_response", "rejected_draft",
+        "rejected_boundary", "rejected_progress", "validation_error", "repair_feedback"
+    };
+
+    internal static string OrderForStablePrefix(string kind, string text)
+    {
+        if (kind is not ("event_concept" or "event_concept_audit" or "event_boundary"
+            or "event_boundary_audit" or "event_progress" or "event_progress_audit")
+            || string.IsNullOrWhiteSpace(text) || text.Length > 512 * 1024) return text;
+        try
+        {
+            if (Parse(text) is not JObject request) return text;
+            string[] originalOrder = request.Properties().Select(x => x.Name).ToArray();
+            JProperty originalCase = request.Property("trigger_material");
+            if (originalCase != null)
+            {
+                originalCase.Remove();
+                request.AddFirst(originalCase);
+            }
+            foreach (string field in DynamicTailFields)
+            {
+                JProperty property = request.Property(field);
+                if (property == null) continue;
+                property.Remove();
+                request.Add(property);
+            }
+            return originalOrder.SequenceEqual(request.Properties().Select(x => x.Name))
+                ? text : request.ToString(Formatting.None);
+        }
+        catch (JsonException) { return text; }
+    }
 
     internal static string Project(string kind, string text, out bool worldProjected)
     {

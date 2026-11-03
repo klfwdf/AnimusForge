@@ -1,0 +1,59 @@
+{
+  "Id": "be_thervingian_kingdom_internal",
+  "Keywords": [
+    "Thervingians Nobility",
+    "Thervingian belief kin and service"
+  ],
+  "RagShortTexts": [
+    "Athanaric joins followers through judgment and chiefly cooperation.",
+    "Religion, kin and service demands need not align."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Athanaric joins followers through judgment and cooperation. Religion, kin and service do not always align, while chiefs assess their own safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Athanaric joins followers through judgment and chiefly cooperation. Followers retain family ties; decisions about guards and distant service affect common participation. Religion, kin and service demands need not align."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Religion, kin and service demands need not align. Coordination allocates actual supply and protection duties, not merely titles. Athanaric joins followers through judgment and chiefly cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Athanaric joins followers through judgment and chiefly cooperation. Households compare burdens with neighbors; unmatched protection weakens cooperation. Religion, kin and service demands need not align."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Religion, kin and service demands need not align. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Athanaric joins followers through judgment and chiefly cooperation."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

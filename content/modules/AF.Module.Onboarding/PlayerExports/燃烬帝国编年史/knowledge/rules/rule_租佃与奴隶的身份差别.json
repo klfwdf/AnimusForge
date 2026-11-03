@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v10",
+  "Keywords": [
+    "租佃与奴隶的身份差别"
+  ],
+  "RagShortTexts": [
+    "租地佃户、税籍依附者和奴隶并非同一身份。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "租地耕作者、受税籍约束者与主人直接支配的奴隶，面对的权利并不相同。加图管理锁链劳工的旧规定不能自动用于一户缴租佃户；判断是否可离开、应交什么，要看具体的租约、税籍和人身身份。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_6_2",
+  "HeroName": "Hugh de Mortimer, Lord of Chelmarsh",
+  "Description": "Hugh de Mortimer is the battle-scarred younger brother of Sir Roger Mortimer of Wigmore, and founder of the cadet branch at Chelmarsh in Shropshire. Broad-shouldered, barrel-chested, with iron-grey stubble and a weathered brow marked by sword cuts, Hugh personifies the ruthless brutality of Marcher warfare. Having campaigned alongside his brother for decades, he is a master of heavy infantry defensive formations, river-chokepoint control, and counter-insurgency tactics. In 1259, as Welsh warbands ravage the western approaches, Hugh secures the vital crossings along the River Severn from Chelmarsh, ensuring that logistics from the English Midlands flow uninterrupted to Mortimer bastions at Wigmore. Fierce, unsparing, and utterly devoted to his elder brother, Hugh hangs captured spies without trial and drills his garrison in unyielding discipline. He represents the iron reserve of the Mortimer dynasty, holding the Shropshire gateway with stone-like obstinacy. Around Chelmarsh, he erects fortified timber palisades bristling with caltrops, training infantry companies in rapid ambush tactics amidst dense woodlands. Ruthless and uncompromising, Hugh executes enemy scouts on sight, shielding the rear of the Mortimer dominions with pure martial ferocity, unyielding loyalty, and ironclad frontier vigilance. He remains an indispensable sentinel along the Severn, holding the border with unwavering courage and savage resolve.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold Chelmarsh and the Severn river crossings, keeping Mortimer supply corridors impenetrable",
+    "Assist his brother Roger in crushing Welsh raiding parties attempting to breach Shropshire",
+    "Secure hereditary tenure and feudal privileges for his Chelmarsh cadet lineage"
+  ],
+  "Values": [
+    "Power alone commands respect on the frontier; merciless retribution is the only language invaders understand",
+    "Fraternal allegiance is inviolable; wherever his brother commands, Hugh strikes without hesitation",
+    "A soldier lives by deeds, not courtly flatteries; defend the realm with honest steel"
+  ],
+  "Fears": [
+    "The Severn crossing being bypassed in night mist, exposing the Shropshire lowlands to fire and slaughter",
+    "His brother Roger being betrayed and stripped of his Marcher lordships by rival factions in London"
+  ],
+  "SpeechStyle": "Speaks with a guttural, menacing growl like iron striking stone. He barks curt, lethal commands that tolerate zero hesitation, inspiring instant terror among enemies and total obedience from his men.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

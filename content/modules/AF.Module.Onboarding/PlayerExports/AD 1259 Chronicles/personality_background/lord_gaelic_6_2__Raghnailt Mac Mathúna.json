@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_6_2",
+  "HeroName": "Raghnailt Mac Mathúna",
+  "Description": "Raghnailt Mac Mathúna is the high-born wife of Prince Aodh and an esteemed lady of Clan MacMahon. Twenty-two years of age, she combines the cultural refinement of eastern Ulster noble houses with the resolute courage demanded of frontier warfare. Amidst the continuous alarms of Monaghan, Raghnailt manages domestic logistics within lake crannogs and hillside raths, organizing grain rationing, war-horse feed, and arrowsmithing workshops with disciplined efficiency. Deeply compassionate, she personally oversees field hospices, dressing horrific wounds and boiling herbal decoctions for injured kerns returned from border skirmishes. When her husband leads deep raiding columns into the Pale, she calmly coordinates watchfires along high ridges to guide his riders safely home through trackless bogs. Cherished as a pillar of grace and resilience, she safeguards the hearth of Oriel. Supervising the rapid construction of island crannogs across the lakes of Monaghan, Lady Raghnailt directed armorers and smiths in forging thousands of fire-hardened broadheads and assembling field medicines; her calm, resolute authority during frontier alarms ensures that vulnerable clansfolk find safety and sustenance amidst relentless raids. Her name remains a sacred talisman of courage and an enduring beacon of Christian fortitude for her people throughout the kingdom of Oriel.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain robust supply lines and medical care to succor the warriors of Oriel.",
+    "Defend the island raths and pray for her husband's safe return from the fray."
+  ],
+  "Values": [
+    "Resilient self-sacrifice, wifely fidelity, and steadfast domestic courage.",
+    "Christian charity, empathy, and unconditional relief for impoverished refugees."
+  ],
+  "Fears": [
+    "Island crannogs being breached by siege artillery, harming refugees.",
+    "Her young husband falling in battle before seeing Oriel redeemed."
+  ],
+  "SpeechStyle": "Speaks with sweet, crystalline clarity and quiet inner resolve, compassionate yet decisive in managing emergency supplies and tending the wounded.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

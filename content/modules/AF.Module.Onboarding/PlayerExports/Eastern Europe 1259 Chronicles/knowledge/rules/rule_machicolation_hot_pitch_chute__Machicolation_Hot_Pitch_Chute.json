@@ -1,0 +1,53 @@
+{
+  "Id": "rule_machicolation_hot_pitch_chute",
+  "Keywords": [
+    "Wall platforms and downward defense",
+    "Defense below wall platforms",
+    "Stores for downward wall defense"
+  ],
+  "RagShortTexts": [
+    "Downward wall defense depends on masonry, platforms and sight lines, with crews and stores.",
+    "Timber platforms need sound supports; water, stones and fire need safe handling."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wall walks, towers and openings differ between Rus timber defenses and Baltic masonry. Defenders able to see the foot can obstruct attackers, but close approaches create blind spots. Projecting timber needs sound supports. Heavy stores impede movement, while water, stones, fire and timber all require carriers and supervision."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A wall guard needs to know visible ground and where another platform must cover him. Stones and water must not block companions. Slippery boards or damaged rails and supports threaten falls. Continued missiles and relief determine endurance more than height alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A castellan must fit guards and stores to existing walls, repairing supports, access and water provision first. Crowding workers and archers together obstructs action. Fuel and fire need supervision and routes for casualties, relief and supplies to keep the position useful."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Wall defense needs community timber, stones, water and food, removing workers from ordinary tasks. More defenders increase demands on wells, fuel and lodging. Households need shelter from exposed approaches and space for casualties and displaced neighbors. These labors help sustain the fortification."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

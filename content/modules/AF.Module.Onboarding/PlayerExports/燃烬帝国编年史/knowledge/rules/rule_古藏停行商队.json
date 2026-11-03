@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v6",
+  "Keywords": [
+    "古藏停行商队"
+  ],
+  "RagShortTexts": [
+    "弗里赫瓦塔夫在古藏写信抱怨自己被孤立，没有商队可走。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "弗里赫瓦塔夫在古藏写信抱怨自己被孤立，没有商队可走。他曾追随同伴到敦煌，又因道路与行动受阻返回，无法自行把货物带出。旅程依赖结伴、可通行道路和接应，库存与人身都可能被困在中途。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

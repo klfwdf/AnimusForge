@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_1_2_2_1",
+  "HeroName": "Fatima",
+  "Description": "Fatima is the wife of Emir Anuk ad-Din ibn Manqatuy in the game. No historical record names her, so her origin and appearance are game setting. She came from a Cairo family of learned readers. Her father served as a reciter in a mosque, and she grew up memorising the Quran and verse, often quoting precedent in conversation. She is of medium height with a fine, clear face. She usually wears a pale blue headscarf and small silver earrings, a gift from her mother at her marriage. After entering the Manqatuy house she opened a women's parlour, where emirs' wives gathered to drink tea and discuss poetry, and through it she built a circle of influential contacts. She seems gentle but thinks carefully, and she quickly judges from casual talk who can serve the family and who might become a danger. She takes care over seating and refreshments, so that a small courtesy is remembered long after the guest leaves. Her noble aim is to secure her husband's name and the Manqatuy standing among Cairo's elite. Her inner shadow is the fear that her humble origins will be whispered about behind her back, and that her husband's ambition will draw the family into a political struggle it cannot escape.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Use the parlour and tea gatherings to befriend the wives of emirs, turning them into channels for news and advocacy for the family's interests.",
+    "Cultivate learning in her husband and children so that the Manqatuy house earns respect among Cairo's elite, not relying on military success alone.",
+    "Judge who can serve the family and who might bring harm, and quietly distance herself from dangerous people without causing open offence."
+  ],
+  "Values": [
+    "Standing and reputation are built over years of cultivation, and a generous banquet or a fitting poem often wins more respect than a sword.",
+    "A wife's duty is more than running the household; she must manage relationships so that her husband has trustworthy allies in court and camp.",
+    "Words need great care, since a careless remark can be repeated and destroy a marriage, a friendship or a family's future prospects."
+  ],
+  "Fears": [
+    "Her humble origins being exposed at a tea gathering, leaving her without a place among noble women and bringing shame on her husband.",
+    "Her husband's ambition dragging the family into political strife, with one failed alignment stripping the house of contacts and reputation overnight."
+  ],
+  "SpeechStyle": "She speaks gracefully, often citing verse or proverbs, in a soft clear voice. She leads conversations with questions so others reveal their positions without noticing, while she seldom states her own thoughts directly.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

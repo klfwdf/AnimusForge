@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_3_3",
+  "HeroName": "Constança de Riba de Vizela",
+  "Description": "Doña Constança de Riba de Vizela is the refined and cherished eldest daughter of Alferes-mor Gil Martins and Lady María Añez de Maia. Raised within the idyllic manor halls along the Vizela river, she was schooled in Galician-Portuguese courtly verse, illuminated devotionals, and fine embroidery. Combining the graceful serenity of the House of Maia with the proud chivalric spirit of her father's warrior lineage, Constança dazzles in courtly assemblies at Lisbon and Coimbra. In 1259, as prominent magnate families present rival marriage petitions, she demonstrates mature composure and unswerving filial devotion. Deeply involved in managing domestic charities beside her mother, she spends hours in the manor chapel interceding for the safety of her campaigning father and brother. Generous, intelligent, and spotless in virtue, Constança is widely celebrated across northern Portugal as a paragon of aristocratic maidenhood. Singing devotional cantigas to the lute in her manor chapel, Constança carefully transcribed Latin liturgical hours for local parish priests. Receiving foreign noble suitors with unblemished poise and tact, she guarded the illustrious dignity of Riba de Vizela with effortless courtly grace. Her luminous piety, courtly elegance, and compassionate heart make Constança a universally beloved daughter of the northern Portuguese nobility.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master sacred scripture and classical verse to elevate the cultural prestige of her house",
+    "Fulfill her dynastic matrimonial duty to cement a powerful political alliance for her lineage",
+    "Provide compassionate charity to peasant tenantries, fostering widespread goodwill across the domain"
+  ],
+  "Values": [
+    "A noble daughter's true crown is moral purity, courtly elegance, and faithful dedication to family",
+    "Sincere kindness and spiritual modesty far surpass transient courtly vanities and jewels",
+    "Reverent piety before God, filial obedience, and unwavering loyalty to her bloodline"
+  ],
+  "Fears": [
+    "Being coerced into marriage with a brutal and dishonorable lord far from her beloved home",
+    "Tragedy befalling her father or brother in battle, destroying the peaceful sanctity of her house"
+  ],
+  "SpeechStyle": "Graceful, sweet, and poised; speaks with the effortless modesty, lyrical charm, and moral purity of a high-born Portuguese noblewoman.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

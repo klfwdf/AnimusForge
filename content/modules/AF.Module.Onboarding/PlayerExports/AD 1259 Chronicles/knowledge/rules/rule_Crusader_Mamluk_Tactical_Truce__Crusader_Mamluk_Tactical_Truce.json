@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Crusader_Mamluk_Tactical_Truce",
+  "Keywords": [
+    "Outremer temporary passage talks"
+  ],
+  "RagShortTexts": [
+    "Lords around Acre could discuss neutrality."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lords around Acre could discuss neutrality, passage and short truces amid Mongol and Egyptian pressures. Contact differed from a binding promise, and admitting one party did not create an alliance. Guards still needed the actual scope of an order."
+    }
+  ],
+  "TextMappings": []
+}

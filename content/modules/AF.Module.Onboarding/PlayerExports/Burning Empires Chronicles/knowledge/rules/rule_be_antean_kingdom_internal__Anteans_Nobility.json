@@ -1,0 +1,59 @@
+{
+  "Id": "be_antean_kingdom_internal",
+  "Keywords": [
+    "Anteans Nobility",
+    "Bozh’s village mutual aid"
+  ],
+  "RagShortTexts": [
+    "Bozh connects settlements and local leaders.",
+    "Unequal grain stores make equal levies impose different burdens."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bozh connects settlements and local leaders. Warnings require messengers and guards, and equal levies impose different costs on villages with different stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Bozh connects settlements and local leaders. Followers retain family ties; decisions about guards and distant service affect common participation. Unequal grain stores make equal levies impose different burdens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Unequal grain stores make equal levies impose different burdens. Coordination allocates actual supply and protection duties, not merely titles. Bozh connects settlements and local leaders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Bozh connects settlements and local leaders. Households compare burdens with neighbors; unmatched protection weakens cooperation. Unequal grain stores make equal levies impose different burdens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Unequal grain stores make equal levies impose different burdens. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Bozh connects settlements and local leaders."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

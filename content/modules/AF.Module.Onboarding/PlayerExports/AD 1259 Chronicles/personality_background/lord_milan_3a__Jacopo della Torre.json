@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3a",
+  "HeroName": "Jacopo della Torre",
+  "Description": "Jacopo della Torre, senior patrician of the Torriani clan and veteran Milanese magistrate, commanded immense prestige among the Popolo. Representing the Credenza di Sant'Ambrogio in civic militia defense, he fiercely defended municipal liberties against aristocratic factions. Jacopo reviewed popular pike militias in the cathedral square of Milan, instituting strict civic night-watches and leading artisans to reinforce outer battlements with unyielding dedication. Commanding absolute trust in popular councils, he directed tax revenues toward craft guilds and militia stipends, anchoring Torriani supremacy within grassroots Milanese society. Believing the soul of Milan resided in its sovereign burghers, veteran Jacopo defended guild charters with his life, standing as an immutable rock of popular liberty. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate popular council governance in Milan to prevent aristocratic tyranny.",
+    "Supervise fortifications along the twelve civic gates to secure municipal defenses.",
+    "Supply provisions for the campaigns of Martino and Filippo della Torre unceasingly."
+  ],
+  "Values": [
+    "Holds communal liberty and guild charters sacred against tyrannical oligarchs.",
+    "Believes enduring Torriani power rests upon popular civic support and unity."
+  ],
+  "Fears": [
+    "Aristocratic cabals importing foreign mercenaries to sack Milanese craft guilds.",
+    "Younger Torriani scions alienating the Popolo by turning into arrogant despots."
+  ],
+  "SpeechStyle": "Speaks with robust municipal gravitas and democratic sincerity, commanding civic respect. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

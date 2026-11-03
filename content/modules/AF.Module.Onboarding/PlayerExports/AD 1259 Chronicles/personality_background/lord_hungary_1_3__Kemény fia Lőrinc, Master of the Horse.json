@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_3",
+  "HeroName": "Kemény fia Lőrinc, Master of the Horse",
+  "Description": "Kemény fia Lőrinc (Lawrence, son of Kemény) is a veteran commander and trusted confidant of King Béla IV, serving as Master of the Horse (Lovászmester) and later Voivode of Transylvania. Distinguished by superb horsemanship and unflinching battlefield loyalty, Lawrence rose through the ranks of the royal bodyguard through personal valor. In the post-war military reforms, he was entrusted with the revitalization of the royal horse studs, breeding powerful war-mounts capable of carrying heavily armored chivalric lancers. Lawrence led numerous successful punitive expeditions against brigand bands and defiant robber-knights infesting the highlands. By 1259, as tensions mount along the Bohemian border over Styria, Master Lawrence directly oversees the readiness of the royal cavalry regiments at the Danube encampments, prepared to lead thunderous charges wherever his sovereign commands. Lawrence combed the Puszta plains and mountain pastures to select superior warhorses, implementing rigorous tactical shock drill regulations. His cavalry reforms transformed the royal chivalric regiments into an unstoppable force capable of shattering any enemy line in battle. He drilled armored bannerets in close-order charges, ensuring that Hungary's knightly core matched the finest heavy cavalry of Western Christendom. His strict drill inspections and battlefield expertise ensured that royal cavalry formations remained ready to crush any enemy rebellion.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master royal equestrian logistics and cavalry training, ensuring battlefield superiority over external rivals.",
+    "Serve King Béla IV with unquestioning loyalty, executing every military order to crush rebellion."
+  ],
+  "Values": [
+    "Hold warrior allegiance and iron cavalry discipline as supreme virtues, scorning insubordination.",
+    "Value battlefield competence and pragmatic tactics over polished court affectations."
+  ],
+  "Fears": [
+    "Fears equine murrain or enemy raids devastating crown studs and crippling cavalry readiness.",
+    "Dreads timid courtiers surrendering hard-won frontier ramparts through dishonorable diplomacy."
+  ],
+  "SpeechStyle": "Our chargers are barded and our lances sharp! Wherever the royal banner leads, there I strike. No traitor shall survive the fury of our charge! Royal lances will shatter all opposing enemy lines!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_annona_militaris_v3",
+  "Keywords": [
+    "Hymetius grain sale"
+  ],
+  "RagShortTexts": [
+    "Hymetius used and replenished public grain; surplus funds and authority led to proceedings."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "As proconsul of Africa, Hymetius used public grain to ease a shortage and replenished the store after prices fell, leaving a surplus. He paid part of the difference to the treasury but faced proceedings, later enlarged by private writings and religious accusations. Grain, proceeds and authority were all disputed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "For hungry people, releasing stores could bring immediate relief. Authorization and the recording of proceeds affected whether the official could continue. Receiving food and hearing a verdict were different kinds of news."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "An official had to account for stock, sale proceeds, replacement purchases and the balance. The case also entangled accounts with letters, informers and appeal: scrutiny was not dispensable, but accusation was not conviction."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

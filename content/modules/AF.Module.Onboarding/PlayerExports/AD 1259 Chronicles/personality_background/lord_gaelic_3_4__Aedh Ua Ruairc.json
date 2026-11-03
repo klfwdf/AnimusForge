@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_3_4",
+  "HeroName": "Aedh Ua Ruairc",
+  "Description": "Aedh Ua Ruairc is the fearless second son of West Bréifne, renowned across the drumlin hills for his blinding overland speed and deadly precision with the throwing spear. Only sixteen years old, he serves as an elite advance scout for the Leitrim kern companies, able to navigate trackless midnight woodlands purely by the scent of pine bark and damp moss. Aedh relishes independent reconnaissance, wearing simple saffron tunics and raw deerskin moccasins as he slips undetected through Anglo-Norman border settlements to snatch prisoners and map enemy patrols. Fiercely independent and disdainful of rigid court etiquette, he is deeply knowledgeable in woodland falconry, beast-tracking, and ancient folk ballads. In skirmishes against English mounted detachments, Aedh's lethal darts and ambush arrows routinely unhorse armored captains, making him a phantom threat amidst the dense canopy of Bréifne. Ranging through trackless pine forests armed only with a short hunting bow and three javelins, young Aedh routinely penetrates twenty leagues behind hostile lines to map enemy deployments; fleet as a wild stag and deadly accurate from the shadows, he is celebrated among the Leitrim kerns as an incomparable forest scout and fearless frontiersman. His arrow never misses its mark when defending his clan.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Become the swiftest and most lethal woodland scout in all of Ireland.",
+    "Fight alongside his brother to write his own name into ancient kern legends."
+  ],
+  "Values": [
+    "Feral freedom of the forest and keen kinship with the wilderness.",
+    "Fierce sibling loyalty and unyielding dedication to family honor."
+  ],
+  "Fears": [
+    "Being captured and chained within a claustrophobic Norman stone dungeon.",
+    "A careless scouting blunder leading his young comrades into a fatal ambush."
+  ],
+  "SpeechStyle": "Speaks with brisk, irreverent boyish enthusiasm, blunt, candid, and bursting with feral forest cunning and lively curiosity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

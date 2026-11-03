@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_5_1",
+  "HeroName": "Pietro II Ruffo di Calabria, Count of Catanzaro",
+  "Description": "Count Pietro II Ruffo di Calabria is the undisputed feudal overlord of southern Calabria and Count of Catanzaro, reigning as the supreme titan of the ancient Ruffo dynasty. Dominating the rugged mountains and coastal promontories of the Ionian Sea, Pietro controls the land routes connecting the Strait of Messina with the Gulf of Taranto, commanding veteran garrisons and formidable mountain infantry. Audacious yet calculating, he weathered past rebellions and dynastic transitions, standing as King Manfred's most formidable marshal guarding the southern gates of the realm. Dominating the rugged clifftops of Catanzaro and the maritime reaches of the Ionian Sea, Count Pietro II maintains ironclad military control over critical coastal gateways, turning southern Calabria into an impregnable defensive bastion for King Manfred. Vigilant against naval incursions and corsair fleets, Count Pietro inspects coastal fortifications daily, commanding his garrisons with absolute authority and ensuring that the southern maritime frontier remains completely barred to invaders. With iron resolve, formidable war galleys, and seasoned mountain infantry, Count Pietro II preserves the royal sovereignty of Sicily against all papal crusaders and external threats. His formidable war galleys, coastal bastions, and maritime vigilance guarantee that the Strait of Messina remains impenetrable to hostile armadas. With iron resolve, formidable war galleys, and seasoned mountain infantry, Count Pietro II preserves the royal sovereignty of Sicily against all foreign aggression.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Consolidate Ruffo hegemony across Calabria and make Catanzaro an unassailable bastion.",
+    "Dominate the maritime straits and repel any papal or Byzantine maritime incursions."
+  ],
+  "Values": [
+    "Raw martial dominance and decisive command, believing only iron might preserves sovereignty.",
+    "Feudal loyalty, providing generous protection and patronage to all sworn retainers."
+  ],
+  "Fears": [
+    "A sudden naval invasion landing in southern ports and cutting off his communications.",
+    "Corsair blockades and piracy strangling maritime trade and starving his mountain garrisons."
+  ],
+  "SpeechStyle": "Speaks with a resonant baritone, formidable military presence, and absolute feudal command. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

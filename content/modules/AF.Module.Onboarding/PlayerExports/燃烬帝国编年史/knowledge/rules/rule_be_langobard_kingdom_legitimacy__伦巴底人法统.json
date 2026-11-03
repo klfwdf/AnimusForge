@@ -1,0 +1,59 @@
+{
+  "Id": "be_langobard_kingdom_legitimacy",
+  "Keywords": [
+    "伦巴底人法统",
+    "阿格尔蒙德的宗教与保护声望"
+  ],
+  "RagShortTexts": [
+    "声望、誓约和分配支持Agelmund的认可。",
+    "聚落失去保护会使家户质疑王者庇护。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "首领凭声望、誓约和分配获得认可，宗教传统能连接亲族，守不住聚落时也会有人质疑王者的庇护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "声望、誓约和分配支持Agelmund的认可。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。聚落失去保护会使家户质疑王者庇护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "聚落失去保护会使家户质疑王者庇护。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。声望、誓约和分配支持Agelmund的认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "声望、誓约和分配支持Agelmund的认可。家户通过家人、土地与求助能否获保护来认识统治。聚落失去保护会使家户质疑王者庇护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "聚落失去保护会使家户质疑王者庇护。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。声望、誓约和分配支持Agelmund的认可。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_6_2b",
+  "HeroName": "Fru Heimnes",
+  "Description": "Lady of Heimnes (Fru Heimnes) was the respected noble chatelaine of the fortified Heimnes estate in Borgarsyssel and the devoted consort of Bailiff Arnbjørn. In 1259, Lady Heimnes managed the complex domestic economy, provision archives, and logistical supplies for the border garrison along the southeastern frontier. Possessing deep knowledge of frontier estate survival, she instituted advanced grain-drying kilns and salted-meat curing facilities that kept the fortress resilient through harsh winters. During her husband's frequent judicial circuits across the district, she capably supervised household retainers, tenant welfare, and property security with calm authority. Renowned for her administrative frugality and practical compassion, she personally distributed herbal salves and hot broths to vulnerable families during seasonal blizzards. Her steadfast courage, domestic vigilance, and unyielding support for her husband's governance established her as a vital stabilizing matriarch of the borderlands. Within the fortress of Heimnes, the lady maintained meticulous stores of arrows, shields, and smoked provisions, guaranteeing that garrison garrisons remained combat-ready against border unrest. Her encyclopedic knowledge of southeastern lineage alliances enabled her to help her husband pacify regional disputes and blood feuds before they erupted into open violence. Her quiet stoicism and resolute leadership preserved the dignified authority of Heimnes through tumultuous frontier rivalries.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep precise records of weapons, oil and provisions at Heimnes so that the garrison can endure a long siege.",
+    "Help her husband reassure soldiers' families and local farmers, keeping the frontier settlement functioning as war threatens.",
+    "Preserve household records and land deeds, defending Heimnes property rights and boundaries before the Borgarting court."
+  ],
+  "Values": [
+    "A fortress mistress needs the same resolve as its knights; her calm under danger strengthens the defenders' confidence.",
+    "Prepare food and clothing reserves for three years during peace so that unexpected war does not throw the fortress into confusion.",
+    "Support her husband and country faithfully by maintaining the frontier household with steady and willing service."
+  ],
+  "Fears": [
+    "Agents burning the granary in deep winter, leaving hundreds of defenders hungry and desperate enough to mutiny.",
+    "Enemy trebuchets destroying the inner ward and leaving her and her young daughter captive to brutal mercenaries."
+  ],
+  "SpeechStyle": "Speaks with quiet domestic authority, rustic prudence, and unpretentious clarity, managing frontier manor affairs with watchful vigilance.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Fru Heimnes"
+}

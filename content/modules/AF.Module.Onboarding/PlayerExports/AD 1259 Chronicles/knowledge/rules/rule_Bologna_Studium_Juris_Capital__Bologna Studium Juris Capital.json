@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Bologna_Studium_Juris_Capital",
+  "Keywords": [
+    "Bologna Studium Juris Capital",
+    "Asinelli Garisenda Twin Towers",
+    "Corpus Juris Civilis Glossators",
+    "Guelph Stronghold Bologna"
+  ],
+  "RagShortTexts": [
+    "Legal study at Bologna depended on teachers, manuscripts, lodging and household means."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bologna’s legal teachers studied Justinianic law and glosses, attracting students and copyists from many regions. Books, fees and lodging made study dependent on household resources and dealings with the city and landlords. Enzo, captured at Fossalta in 1249, remained imprisoned there. Returning students faced the relationship between learned law, local custom and church rights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "notable",
+          "townsfolk"
+        ]
+      },
+      "Content": "A student arriving in Bologna seeks protection against arrest for another person's debts and against abuses suffered while travelling to study. Masters and student associations bargain over teaching and fees. Legal privileges matter because copying a law book and renting a room already cost dearly; they do not make every scholar immune from all courts or charges."
+    }
+  ],
+  "TextMappings": []
+}

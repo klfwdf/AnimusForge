@@ -1,0 +1,107 @@
+{
+  "Id": "rule_punic_50",
+  "Name": "法比乌斯巧计收复塔兰托与巨额战利品",
+  "Description": "公元前209年，老执政官法比乌斯利用塔兰托守军布鲁蒂佣兵将领与同胞私情策反内应，夜袭收复塔兰托，缴获八万三千磅白银与无尽财宝，拍卖三万市民为奴。",
+  "Tags": [
+    "收复塔兰托",
+    "法比乌斯",
+    "布鲁蒂内应",
+    "大希腊平叛",
+    "战利品",
+    "三万奴隶"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前209年近八十高龄的法比乌斯利用守城布鲁蒂将领的私情策反内应破城。",
+    "城破之日罗马军团血洗反叛者并洗劫了八万三千磅白银与无数希腊艺术珍宝。",
+    "将三万名塔兰托市民变卖为奴彻底粉碎了汉尼拔在大希腊最重要的海港支点。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 92,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "法比乌斯老执政官为共和国赢得了最耀眼的晚年凯旋！老将军没有耗费士兵的生命去强攻城墙，而是精准利用驻守城防的布鲁蒂雇佣兵队长的私情将其策反。夜半内应开门，军团如猛虎下山扑入城中！背叛罗马的德谟克拉底战死，三万叛乱市民被戴上沉重的锁链送上奴隶拍卖台！国库迎来了八万三千磅精纯白银和成箱的希腊金雕！当闻讯赶来的汉尼拔在数里外望见城头的罗马鹰旗时，只能痛惜叹息：‘罗马也有他们的汉尼拔！’"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "tarentum"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大希腊的明珠在野蛮罗马人的铁蹄下碎裂成了齑粉！一个贪婪的布鲁蒂异乡佣兵为了金币和情妇出卖了城墙！罗马人在街头不分青红皂白地屠杀手无寸铁的市民，甚至连那位引狼入室的佣兵队长也被杀人灭口！神庙里的黄金被刮得精光，三万同胞被像牛马一样驱赶贩卖！大希腊城邦数百年的自由梦想，在法比乌斯阴狠的微笑中彻底绝灭！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是汉尼拔在南意大利遭受的最沉重一击！统帅原本已率军回援至距离塔兰托仅五里之处，眼看着只要再有一天就能内外夹击聚歼法比乌斯。谁料叛徒竟在一夜之间献城！塔兰托的沦陷彻底斩断了我们在亚得里亚海接纳巴尔干援军的唯一良港，汉尼拔从此被彻底困死在布鲁蒂昂贫瘠多石的群山之中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前209年，罗马执政官昆图斯·法比乌斯·马克西姆斯通过策反城防布鲁蒂雇佣兵军官为内应，成功奇袭并收复塔兰托。罗马军团洗劫全城，斩杀亲迦太基领袖，掠获八万三千磅白银，将三万名城民变卖为奴。此战沉重打击了汉尼拔在意大利南部最重要的战略海港基地。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "法比乌斯巧计收复塔兰托与巨额战利品",
+    "rule_punic_50"
+  ]
+}

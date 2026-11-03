@@ -1,0 +1,53 @@
+{
+  "Id": "rule_morningstar_flail_concussion",
+  "Keywords": [
+    "Short striking weapons",
+    "Clearance for striking weapons",
+    "Striking weapon haft upkeep"
+  ],
+  "RagShortTexts": [
+    "Short striking weapons need grip and clearance; linked implements are harder to recover.",
+    "Heads and hafts need inspection; fatigue, loads and nearby companions affect use."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Close weapons in Rus and neighboring forces can pair a solid head with a wooden haft. Grip, fittings and clearance shape control. Linked implements have less predictable recovery and are awkward beside shields or horses. Armor changes results, while balance, stamina and friendly spacing remain essential."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A fighter checks cracked hafts, loose heads and slippery grips and must recover after a blow. Doors, close ranks and mounted contact require attention to companions. Fatigue slows control, and weight cannot provide balance. Repairs at rest help prevent failure in the next encounter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord should assess training, mounted or foot use and repairs rather than weight or spikes alone. Hafts, fittings and secondary weapons need supply. Close forces need operating room. Improvised tools and familiar fighting weapons demand different habits, affecting assignment of duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Smiths and woodworkers need material and fuel for heads and hafts. Requisitioned household tools reduce ordinary work. Lost or damaged equipment requires new resources after return. Military and civilian demands share craftsmen, making payment and return arrangements important to continued supply."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

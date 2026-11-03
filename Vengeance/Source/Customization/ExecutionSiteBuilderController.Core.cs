@@ -96,12 +96,16 @@ internal sealed partial class ExecutionSiteBuilderController
     // choice. Start from whichever option matches the provisional victim.
     private void LoadPrisonerOptions()
     {
+        var selectedHero = _selectedPrisoner?.Hero ?? _host.Request.Victim;
         try
         {
             var behavior = BannerlordCampaign.Current?
                 .GetCampaignBehavior<RichExecutionCampaignBehavior>();
             _prisonerOptions = behavior?.GetDeploymentPrisonerOptions(_host.Request.Venue)
                 ?? Array.Empty<ExecutionStudioPrisonerOption>();
+            if (_host.Request.IsFieldCamp)
+                _prisonerOptions = _prisonerOptions.Where(option =>
+                    VengeanceIntegration.FieldCampPrisonerPresent?.Invoke(option.Hero) ?? true).ToArray();
         }
         catch (Exception exception)
         {
@@ -110,7 +114,7 @@ internal sealed partial class ExecutionSiteBuilderController
         }
 
         _selectedPrisoner = _prisonerOptions.FirstOrDefault(option =>
-            ReferenceEquals(option.Hero, _host.Request.Victim));
+            ReferenceEquals(option.Hero, selectedHero)) ?? _prisonerOptions.FirstOrDefault();
     }
 
     private Hero? CurrentVictim => _selectedPrisoner?.Hero ?? _host.Request.Victim;
@@ -267,6 +271,9 @@ internal sealed partial class ExecutionSiteBuilderController
 
     private void ShowMainPanel()
     {
+        // The builder may be constructed before camp population finishes.
+        // Refresh on user interaction, never on every mission tick.
+        LoadPrisonerOptions();
         var layoutReady = _preset is not null && _rootPlaced;
         var canFinish = TryValidateCurrentDraft(out var validationError);
         PushPrisonerToView();
@@ -365,10 +372,10 @@ internal sealed partial class ExecutionSiteBuilderController
     private string FormatPrisonerOrigin()
     {
         var source = _selectedPrisoner?.Source ?? _host.Request.PrisonerSource;
-        var custody = source == PrisonerSource.PlayerParty
+        var custody = source == PrisonerSource.PlayerParty || _host.Request.IsFieldCamp
             ? T("{=REX_Source_Party}Player party")
             : T("{=REX_Source_Dungeon}Town dungeon");
-        var venue = _host.Request.Venue?.Name?.ToString();
+        var venue = _host.Request.VenueName?.ToString();
         if (string.IsNullOrWhiteSpace(venue))
         {
             return custody;

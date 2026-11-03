@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_peterhof_lodging_worship_and_rules_241a0f94",
+  "Keywords": [
+    "peterhof lodging worship and rules",
+    "Peterhof storage and shared merchant quarters"
+  ],
+  "RagShortTexts": [
+    "Peterhof provides foreign merchants with quarters and storage.",
+    "Internal discipline and local relations both affect security."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Peterhof provides common lodging, stores and affairs for foreign merchants in Novgorod. Fire, debt or misconduct can affect neighboring goods. Daily custody and handovers enforce order, alongside relations with local traders and authorities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Warehouse guards identify claimants and goods even when faces are familiar. During quarrels they protect shared quarters and keep fire away rather than champion one party."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Court representatives need members to honor discipline and compensation. Blanket closure harms uninvolved traders and local income; identifiable parties and goods enable settlement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Shared storage needs dryness, fire care and controlled handover. Another’s mistake risks one’s capital; local trade still depends on inspection and reliable payment."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Siege_of_Diaoyu_Fortress_and_Death_of_Mongke_Khan",
+  "Keywords": [
+    "Diaoyu defenses and distant reports"
+  ],
+  "RagShortTexts": [
+    "Sichuan hill forts and rivers constrained Mongol advance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sichuan hill forts and rivers constrained Mongol advance, with Diaoyu involving boats, supplies and siege work. News took time to reach the west. Leaders could not infer the khan’s condition or a distant succession from unreceived reports."
+    }
+  ],
+  "TextMappings": []
+}

@@ -9,6 +9,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
+    <Compile Include="../../../../tests/_shared/ModulePathsStub.cs" Link="ModulePathsStub.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Host/KnowledgeSourceTexts.cs" Link="KnowledgeSourceTexts.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Knowledge/ModuleData/KnowledgeSourceTexts.json" LogicalName="AnimusForge.Knowledge.SourceTexts.json" />

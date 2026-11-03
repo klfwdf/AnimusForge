@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v9",
+  "Keywords": [
+    "Disputes over Spartacus’s route"
+  ],
+  "RagShortTexts": [
+    "Spartacus sought an exit home while some followers preferred further plunder."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Plutarch describes Spartacus seeking an Alpine exit and dispersal home, while followers encouraged by success preferred further plunder. People escaping coercion could have different aims rather than forming a force of permanently unanimous purpose."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

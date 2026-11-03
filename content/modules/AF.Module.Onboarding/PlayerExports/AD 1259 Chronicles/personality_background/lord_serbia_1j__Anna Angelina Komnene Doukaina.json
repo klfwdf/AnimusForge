@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1j",
+  "HeroName": "Anna Angelina Komnene Doukaina",
+  "Description": "Anna Angelina Komnene Doukaina, aged sixty in 1259, is the imperial-born daughter of Emperor Theodore Komnenos Doukas of Thessalonica and former Queen consort of Serbia as wife of King Stefan Radoslav. Bearing the exalted bloodline of Byzantine emperors, her marriage introduced the sophisticated ceremonial, court dress, and legal texts of Thessalonica to the Serbian royal court. Though her husband was deposed in 1234, Anna retained profound aristocratic stature at Raška through her imperial dignity and scholarly patronage. In her mature years, she patronized Greek manuscript transcriptions and church hymnody, enriching Serbian ecclesiastical culture. In 1259, as her Doukas kin clash with Nicaean forces across the Balkans, Anna observes the geopolitical shifts with regal stoicism. Queen Anna lives out her serene twilight years surrounded by precious Byzantine manuscripts brought from Thessalonica. She instructed Serbian court ladies in exquisite needlework and sacred hymnody, enriching royal culture with imperial refinement. Though her earthly crown has faded, Anna commands profound universal veneration through her unblemished imperial bearing. Carrying the imperial majesty of the Byzantine Doukai within her heart, Queen Anna enriches Serbian court life with refined Greek culture. Her noble stoicism in the face of dynastic reversals commands universal respect from every noble household in the kingdom.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with aristocratic Byzantine poise, refined and deliberate, imbued with the melancholic majesty of an imperial princess.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

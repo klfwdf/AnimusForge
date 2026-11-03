@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v2",
+  "Keywords": [
+    "Governor Elias and a church petition"
+  ],
+  "RagShortTexts": [
+    "Public-interest accusations before a governor led a bishop to explain building and reception."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "During Basil’s work on church buildings and reception facilities, accusations of harm to public interests reached Governor Elias. The bishop explained the facilities and workers, and correspondence sustained their dealings. Administration and church activity intersected while retaining distinct responsibilities."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

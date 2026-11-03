@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_4b",
+  "HeroName": "Ugnė",
+  "Description": "Duchess Ugnė reigns as the esteemed consort to Duke Erdvilas, governing the domestic hearth and logistical ramparts of Navahrudak as the revered matriarch of the Astikai dynasty. Originating from an ancient highland Lithuanian lineage, Ugnė was thoroughly schooled in tribal genealogical customs, land tenure, and defensive mountain management. While her husband campaigned across Volhynia and participated in grueling civil wars against King Mindaugas, Ugnė held Navahrudak Castle with unwavering administrative authority. She directly supervised grain silos, iron distributions for blacksmith armorers, and the daily security shifts along the ramparts, maintaining total operational readiness. Her diplomatic skill gracefully resolved frictions between native Ruthenian townsfolk and Lithuanian garrison troops, and during bitter winter crop failures she unlocked emergency granaries to feed starving commoners, cementing deep popular loyalty. Pragmatic, composed, and far-sighted, Ugnė understood that domestic resilience was the true foundation of military survival. She stood as the silent, unshakeable bedrock of Navahrudak, ensuring that her family's mountain stronghold remained an impregnable sanctuary. Ugnė managed timber supplies, livestock reserves, and blacksmith forges to guarantee uninterrupted weapons production throughout winter. Her energetic logistical mastery kept family garrisons fully equipped and steadfast against prolonged enemy blockades.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage granaries, revenues, and blacksmith armories in Navahrudak to guarantee continuous military supply.",
+    "Provide famine relief and equitable taxation to secure the unshakeable loyalty of townspeople and soldiers alike.",
+    "Safeguard the lives and inheritance of her children amidst the unpredictable civil wars of the Lithuanian realm."
+  ],
+  "Values": [
+    "Prize disciplined domestic thrift, farsighted preparation, and lawful order as the true anchors of realm survival.",
+    "Value calm pragmatic decision-making during crises, preserving the household through prudent management.",
+    "Fulfill her sovereign obligations with maternal benevolence, extending protection to the destitute and vulnerable."
+  ],
+  "Fears": [
+    "Devastating warehouse fires or protracted siege starvation breaking the morale of the defenders within the walls.",
+    "Her husband falling in foreign campaigns, leaving Navahrudak vulnerable to immediate dismemberment."
+  ],
+  "SpeechStyle": "A fortress's true strength lies in overflowing granaries and the loyalty of its people; while Navahrudak stands firm, our house shall never fall! Well-forged steel and abundant grain ensure our lasting triumph!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

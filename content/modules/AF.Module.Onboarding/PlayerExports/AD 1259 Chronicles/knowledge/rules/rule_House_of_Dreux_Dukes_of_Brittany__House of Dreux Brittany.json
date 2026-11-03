@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Dreux_Dukes_of_Brittany",
+  "Keywords": [
+    "House of Dreux Brittany",
+    "Ermine Banner of Brittany",
+    "Nantes Rennes Ducal Suzerainty",
+    "Dreux Capetian Cadet Branch"
+  ],
+  "RagShortTexts": [
+    "The House of Dreux reigned as Dukes of Brittany, balancing Anglo-French rivalry to guard."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Descended from Louis VI of France through his son Robert of Dreux, the House of Dreux ruled Brittany from Nantes and Rennes under Duke John I. The Breton duchy was a frontier principality, and its dukes had to balance the French crown in Paris against the English Plantagenets across the Channel. Breton ports handled wine, salt, and fish, and Breton mariners were known for seamanship on the Atlantic approaches. The dukes kept a heavy cavalry force drawn from their knights and their levies. Their ermine crest signaled a family that could be courted by either king, and the dukes used that position to protect their own rights. Brittany kept many of its own customs and courts, even when the duke swore homage to a French or English lord."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The ducal court of Brittany bowed rarely to outside edicts, and the duke's revenue came from port customs, rents, and feudal levies. Barons who owed service had to muster their men on the duke's summons, and a lord who ignored the call could expect his fiefs to be held in trust until he paid. Ducal clerks kept the rolls, and their seals were recognized as far as the French court."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_marinid_1_3",
+  "HeroName": "Yusuf an-Nasir ibn Abu Yusuf Ya'qub II",
+  "Description": "Yusuf an-Nasir ibn Abu Yusuf Ya'qub II was a son of Abu Yusuf Ya'qub and of Lalla Umm al-'Izz. His appearance is a game-setting invention: broad shoulders, heavy arms, and an old arrow scar across the back of his left hand. He wears a Marinid leather hauberk on campaign, a dark blue cloak over it, and a long sword with a silver scabbard at his belt. Toward rivals he was cold and unforgiving. Kinsmen who could threaten his succession were removed before they could seek outside help. His highest aim was to finish his father's unification project. His darkest fear was that power resting on army and eunuch loyalty could fall apart.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He aimed to finish his father's unification project, bringing Tlemcen and central Maghreb under Marinid rule so that he could claim the title of true western sultan.",
+    "He kept the army fighting through campaigns against Tlemcen and the capture of Taroudannt, using these victories to hold the loyalty of tribes and officers.",
+    "He wanted to suppress the uncles and brothers who might seize power, so that his own line of succession would not be broken by dynastic feuds after his death."
+  ],
+  "Values": [
+    "Martial skill and discipline, since he believed the dynasty depended on army efficiency and obedience from commanders, and he showed little tolerance for lax generals.",
+    "Marinid honor and legitimacy, which he regarded as the family's private inheritance from his ancestors, so any challenge looked like an insult to the founders.",
+    "Strict observance of religious duty, marked by prayer before campaigns and scholars invoking blessings over the troops to reinforce their sense of holy war."
+  ],
+  "Fears": [
+    "A split between eunuchs and senior officers holding palace gates and military command, because their factional quarrels could collapse his authority in a single night.",
+    "A joint move by the Zayyanid rulers of Tlemcen and Granada, since a two-front war would drain Marinid forces beyond what the treasury could support."
+  ],
+  "SpeechStyle": "He speaks in short, forceful sentences and usually begins with a direct order. He corrects generals bluntly and warns kinsmen coldly. When he mentions his father he pauses, then closes with a Quranic line.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v3",
+  "Keywords": [
+    "Manichaean seals of mouth hands and breast"
+  ],
+  "RagShortTexts": [
+    "The seals of mouth, hands and breast summarized restrictions on speech and food, action and desire."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The seals of mouth, hands and breast summarized restrictions on speech and food, action and desire. These were religious disciplines rather than operative spells marked on a body. Strict ascetics and ordinary supporters lived under different demands."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

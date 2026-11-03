@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_sandomierz_hill_and_siege_phases_33a6e41e",
+  "Keywords": [
+    "Warnings at Sandomierz's heights",
+    "Rural refuge plans near Sandomierz"
+  ],
+  "RagShortTexts": [
+    "Sandomierz's heights and Vistula routes need warnings translated into usable arrangements.",
+    "Refugees need shelter, food, water and animal care without stripping transport labor."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sandomierz's watchers follow river and road news, checking direction, distance and available routes after an alarm. Rural arrivals need room for families, animals and provisions. Watches depend on water carriers and care for casualties as well as guards. Clear entry and meeting arrangements make warnings useful."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families outside Sandomierz decide what food to carry, who tends dependents and where animals will stay. Late news crowds more people onto roads. Reception and lodging help prevent separation, while established residents need to know which streets must remain open for supplies."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

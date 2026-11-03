@@ -1,0 +1,52 @@
+{
+  "Id": "rule_solikamsk_brine_boiling_process",
+  "Keywords": [
+    "boiling brine for salt",
+    "fuel and vessels at a salt working"
+  ],
+  "RagShortTexts": [
+    "Evaporating brine yields salt, with concentration, pans and fuel shaping cost.",
+    "Salt supplies preservation and exchange, with damp, dues and freight affecting price."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Where brine is available it can be carried or led to a boiling place, water evaporated and salt collected. Weak brine requires more evaporation; leaking pans, damp fuel and interrupted fires waste effort. Workers need brine, wood, cleaning and packing as well as tending the heat, and supplies of timber and vessels limit continuous work.\n\nSalt then travels by cart or boat to markets in packages protected from damp. Buyers season or preserve food and use salt in exchange; without it they cannot simply keep every fish or cut of meat until winter. Dues, handling and damaged sacks separate prices at the source from those in town, reflecting fuel and distance behind a small pile."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Rulers need pans, timber and transport behind salt dues. Removing repair and hauling labour can halt supply; garrisons need salt delivered with food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts protect salt from rain and wet cargo; spilled salt is hard to recover. Supplies must arrive before food spoils, not afterwards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households divide resources among salt, grain and tools and can share transport. Rising salt prices alter how much fish or meat they can keep."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

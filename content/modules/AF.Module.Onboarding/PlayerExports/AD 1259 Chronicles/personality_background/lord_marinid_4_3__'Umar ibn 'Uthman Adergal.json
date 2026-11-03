@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_marinid_4_3",
+  "HeroName": "'Umar ibn 'Uthman Adergal",
+  "Description": "'Umar ibn 'Uthman Adergal was a son of 'Uthman Adergal and a full brother of 'Ali, Abu Rabi' Sulayman and Ibrahim. His wife is Banafsaj. No chronicle records his life, so this portrait is a game-setting construction based on the faction's history. His appearance is a game-setting invention: a man of middling height and a bright smile, with a lock of dark hair blown across his forehead and a small copper earring in his left ear, a memento of a wager won at a market. He wears a short coat with red trim and carries a bamboo flute, playing a few tunes at feasts to lift the mood. In youth he ran errands between the Fez and Taza markets, buying livestock and cloth for the family. He made many friends among merchants and craftsmen, and learned to bargain and to host feasts. He lacks patience for careful plans but is skilled at winning people over, and he often solves problems through friendship and warmth. He is not quick to hold grudges against rivals and likes to invite them to his feasts to ease old rifts with food and wine. His highest aim is to build a wide network of friends for the family, so that the branches of the Marinid kin can help one another in hard times. His darkest side is rashness. He values face and favor, so he sometimes promises more than he can deliver and ends up embarrassed. His greatest fear is that his friends will turn against each other because of his careless promises, and the network he built will collapse overnight.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wanted to build a wide network of friends for the family, so that the branches of the Marinid kin could help one another in hard times rather than stand alone.",
+    "He gathered news and needs from many people through feasts and market dealings, and found partners with whom the family could trade to mutual benefit.",
+    "He wished his brothers and kinsmen to see him as a generous man, so that he would gain a voice in the family's decisions."
+  ],
+  "Values": [
+    "Friendship and face, since he believed trust rests on goodwill and dignity, and that a breach of courtesy harms relationships more than a loss in trade.",
+    "Generosity and sharing, as he gladly shared good food and wine with friends and believed that giving freely wins lasting loyalty.",
+    "Flexibility and opportunity, because he disliked rigid rules and held that a flexible response to trouble often works better than a head-on clash."
+  ],
+  "Fears": [
+    "His friends turning against each other because of his careless promises, which would dissolve the network he spent his life building and push kinsmen away.",
+    "Failing to deliver on a promise in front of others, losing face and turning his generosity into an empty show of bravado."
+  ],
+  "SpeechStyle": "He speaks warmly and likes jokes, often opening with a greeting or compliment. In bargaining he sounds relaxed, then gives up a small favor at the last moment. He stops early when talk turns to private matters.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

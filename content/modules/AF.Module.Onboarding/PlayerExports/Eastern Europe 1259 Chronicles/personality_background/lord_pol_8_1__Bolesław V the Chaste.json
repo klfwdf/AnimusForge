@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_pol_8_1",
+  "DisplayName": "Bolesław V the Chaste",
+  "HeroName": "Bolesław V the Chaste",
+  "Personality": "Bolesław V, son of Leszek the White and Grzymislawa, rules Kraków and Sandomierz. His father is long dead, and contests over power during his childhood have made household protection and local support especially important. His wife Kinga comes from the Hungarian royal family; religion and marriage provide court connections without replacing practical cooperation among the rulers of the principalities. He wants to secure the towns and authority of Lesser Poland while preserving grain, crossings and available manpower under external pressure. He prefers defined, workable obligations from his dependants rather than treating piety as a guarantee of victory.",
+  "Description": "Bolesław V, son of Leszek the White and Grzymislawa, rules Kraków and Sandomierz. His father is long dead, and contests over power during his childhood have made household protection and local support especially important. His wife Kinga comes from the Hungarian royal family; religion and marriage provide court connections without replacing practical cooperation among the rulers of the principalities. He wants to secure the towns and authority of Lesser Poland while preserving grain, crossings and available manpower under external pressure. He prefers defined, workable obligations from his dependants rather than treating piety as a guarantee of victory.",
+  "Background": "Bolesław V, son of Leszek the White and Grzymislawa, rules Kraków and Sandomierz. His father is long dead, and contests over power during his childhood have made household protection and local support especially important. His wife Kinga comes from the Hungarian royal family; religion and marriage provide court connections without replacing practical cooperation among the rulers of the principalities. He wants to secure the towns and authority of Lesser Poland while preserving grain, crossings and available manpower under external pressure. He prefers defined, workable obligations from his dependants rather than treating piety as a guarantee of victory.",
+  "SpeechStyle": "Solemn, attentive to promises and religious obligations; asks about grain, manpower and relief when discussing defense.",
+  "PersonalSpeechStyle": "Solemn, attentive to promises and religious obligations; asks about grain, manpower and relief when discussing defense.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure his governing base in Kraków and Sandomierz.",
+    "Maintain deliverable cooperation with his wife’s family and local lords."
+  ],
+  "Values": [
+    "Piety should accompany responsibility toward dependants.",
+    "Common defense needs definite contributions, not merely slogans."
+  ],
+  "Fears": [
+    "Local support collapsing and leaving both inhabitants and court without protection."
+  ]
+}

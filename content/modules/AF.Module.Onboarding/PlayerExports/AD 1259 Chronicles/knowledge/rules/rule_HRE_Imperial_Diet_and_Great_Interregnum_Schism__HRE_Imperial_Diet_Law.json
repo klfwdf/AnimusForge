@@ -1,0 +1,18 @@
+{
+  "Id": "rule_HRE_Imperial_Diet_and_Great_Interregnum_Schism",
+  "Keywords": [
+    "Imperial assemblies and recognition"
+  ],
+  "RagShortTexts": [
+    "Imperial assemblies depended on attendance and recognition by princes, churches and towns."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Imperial assemblies depended on attendance and recognition by princes, churches and towns. Issuing a summons was not securing participation; travel, resources and aims shaped response. Disputed kingship did not eliminate local administration."
+    }
+  ],
+  "TextMappings": []
+}

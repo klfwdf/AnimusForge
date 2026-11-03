@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Vladimir I Monomakh is the hereditary castellan and dynastic ruler of Dubrovitsa, anchoring the southern frontier of the Turov-Pinsk principalities. Governed by the chivalric precepts of the grand-ducal 'Testament of Vladimir Monomakh', he holds ancestral duty, pious equity, and fearless military vigilance as supreme moral imperatives. His fortified citadel of Dubrovitsa commands the strategic bends of the Horyn River, guarding critical transit corridors linking Polesia with Volhynia and Kyiv. Vladimir fortified the perimeter with double-walled oak palisades atop stone foundations, drilling disciplined longbowmen that routinely shattered roving warbands. Renowned for impartial jurisprudence, he held open-air court assemblies where common woodsmen could appeal corrupt bailiffs without fear of reprisal. In princely diets, Vladimir vigorously championed confederate unity, scorning selfish feudal rivalries that weakened the realm. He stands as an incorruptible pillar of righteous authority and martial resilience across the southern march. Ruling the sentinel fortress of Dubrovitsa, Prince Vladimir kept the chivalric testament of Monomakh close to his heart. Beyond constructing formidable ramparts along the Horyn River, he dispensed impartial justice at open-air moots, fiercely defending humble woodsmen and yeomen against aristocratic oppression. His incorruptible integrity preserved the purest ideals of Ruthenian chivalry amidst a ruthless era.",
+  "SpeechStyle": "The hallowed testament of our ancestor Monomakh guides our steps: execute justice, protect the weak, and face every foe without fear! Beneath our iron portcullis, no foreign tyrant shall trespass!",
+  "Motivations": [
+    "Guard the citadel of Dubrovitsa and the Horyn River passes, crushing any incursions threatening Polesia's southern flank.",
+    "Implement equitable Monomakhian governance and fair municipal justice, transforming his domain into a flourishing sanctuary."
+  ],
+  "Values": [
+    "Prized adherence to ancestral virtue, judicial fairness, and self-sacrificing patriotism, despising corruption and tyranny.",
+    "Believing righteous laws, iron martial discipline, and unblemished loyalty enable small principalities to stand firm against ruin."
+  ],
+  "Fears": [
+    "Hostile besiegers damming upstream water supplies, subjecting Dubrovitsa to catastrophic thirst and surrender.",
+    "Factional paralyzed princes refusing to deploy relief columns, leaving Dubrovitsa an abandoned outpost encircled by enemies."
+  ],
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_turov_2a",
+  "HeroName": "Vladimir I. Monomakh"
+}

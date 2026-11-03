@@ -540,7 +540,7 @@ internal static ShoutPromptContext BuildShoutPromptContextForExternalInternal(Ex
 
 		}
 
-		if (text.IndexOf(marker, StringComparison.OrdinalIgnoreCase) >= 0)
+		if (AdapterPromptCaptureTexts.PcapCompatVariants("PromptCompat_a81fb059db81").Any(existing => text.IndexOf(existing, StringComparison.OrdinalIgnoreCase) >= 0))
 
 		{
 

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_city_02",
+  "Name": "Metropolis of Carthage Cothon Harbor",
+  "Keywords": [
+    "rule_punic_city_02",
+    "Urban Center Carthage Cothon Harbor",
+    "Citadel of Carthage Cothon Harbor",
+    "Harbor of Carthage Cothon Harbor"
+  ],
+  "RagShortTexts": [
+    "The fortified urban center of Carthage Cothon Harbor served as a vital strategic, naval,..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The ancient metropolis of Carthage Cothon Harbor represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Behind the stone towers of Carthage Cothon Harbor, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Possession of Carthage Cothon Harbor anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+    }
+  ],
+  "TextMappings": []
+}

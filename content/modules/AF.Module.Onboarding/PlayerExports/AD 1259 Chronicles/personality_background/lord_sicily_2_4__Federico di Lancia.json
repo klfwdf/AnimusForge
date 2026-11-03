@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_2_4",
+  "HeroName": "Federico di Lancia",
+  "Description": "Federico di Lancia serves as senior lieutenant to his father Galvano and premier field commander of the Sicilian royal army at twenty-five years of age. At the peak of his physical and tactical maturity, Federico embodies his father's ruthless military pragmatism and rigid command discipline. Campaigning alongside his cousin King Manfred across southern Italy, he earned high distinction during the reduction of rebellious Apulian strongholds. Expert in combined arms, cavalry shock charges, and siege engine deployment, he commands vanguard squadrons safeguarding the inland frontiers. Methodical, calm under pressure, and ferocious in close combat, Federico stands as King Manfred's most trusted martial cousin and an unshakeable pillar of the royal host. Federico's tactical brilliance, ruthless discipline, and combined-arms leadership make him King Manfred's most dependable martial lieutenant defending the frontiers of the realm. His cold calculations under fire and fatherly care for his soldiers ensure that his cavalry remains invincible in combat, dreaded by every enemy captain. His tactical competence, rigid discipline, and fatherly care for his soldiers make Federico an invincible captain shielding the kingdom from foreign invasion and internal rebellion. His tactical competence, rigid battlefield discipline, and vigilant leadership keep the royal frontiers safe from any hostile surprise or sudden ambush.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To drill the royal cavalry into an invincible strike force, fortifying defensive bastions against Rome.",
+    "To shatter enemy leadership in the coming war of crowns, cementing the renown of the House of Lancia."
+  ],
+  "Values": [
+    "Iron discipline and tactical order conquer all; undisciplined bravado invites slaughter.",
+    "Fidelity to the Staufen crown transcends life; martial victory alone dictates truth."
+  ],
+  "Fears": [
+    "Lax garrison discipline inviting a sudden enemy penetration that breaks the strategic front.",
+    "Fickle Italian vassals betraying the crown during the climactic clash of armies."
+  ],
+  "SpeechStyle": "Speaks with curt, metallic authority, low-toned severity, and razor-sharp military precision. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

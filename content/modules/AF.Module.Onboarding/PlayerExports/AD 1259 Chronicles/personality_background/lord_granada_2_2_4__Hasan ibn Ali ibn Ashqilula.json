@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_2_4",
+  "HeroName": "Hasan ibn Ali ibn Ashqilula",
+  "Description": "Hasan ibn Ali ibn Ashqilula is the fiery twenty-five-year-old youngest son of patriarch Abu al-Hasan Ali, commanding the elite light cavalry shock squadrons of Guadix. Powerful of frame and uncompromisingly bold, Hasan is recognized across the eastern frontier as a peerless equestrian skirmisher and mounted duel master. Leading a mobile force of seasoned border riders, he patrols the arid highlands separating Granada from Murcia, specialized in rapid reconnaissance, counter-raids, and defile ambushes. Daring and aggressive in combat, he has repeatedly shattered superior hostile raiding parties through sheer shock momentum, commanding fanatical loyalty from his men. Fiercely devoted to his father and elder brother Abdallah, Hasan serves as the dynamic iron vanguard of the eastern domain. Captain Hasan's relentless cavalry sorties, tactical daring, and iron discipline make him the unstoppable shock vanguard defending the eastern highlands of Andalusia. His thunderous charges and ferocious swordplay shatter enemy raiding lines, earning Hasan enduring fame as the iron shield of the eastern border. His thunderous charges and ferocious swordplay shatter enemy raiding lines, earning Hasan enduring fame as the iron shield of the eastern border. Feared by cross-border raiders and adored by his horsemen, Captain Hasan stands as an invincible champion of the frontier.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To achieve stunning cavalry triumphs, scouring the eastern passes of all hostile intruders.",
+    "To safeguard his father, brothers, and ancestral keeps, earning renown as an invincible champion."
+  ],
+  "Values": [
+    "A true warrior lives for glory on the field; cowardice is a shame worse than death.",
+    "Blood brotherhood is absolute; treachery against the clan must be purged with cold iron."
+  ],
+  "Fears": [
+    "Leading his loyal comrades into a catastrophic mountain ambush through overconfidence.",
+    "Languishing in tedious peacetime garrison watches while glory passes him by."
+  ],
+  "SpeechStyle": "Speaks with booming martial vigor, blunt soldierly candor, and fierce kinetic intensity. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

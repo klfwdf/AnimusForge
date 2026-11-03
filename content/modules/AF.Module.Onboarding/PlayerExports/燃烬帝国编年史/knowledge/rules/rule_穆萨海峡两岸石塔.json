@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v4",
+  "Keywords": [
+    "穆萨海峡两岸石塔"
+  ],
+  "RagShortTexts": [
+    "穆萨塔与对岸布拉兰的石塔隔海相望，面向同一条海峡。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "穆萨塔与对岸布拉兰的石塔隔海相望，面向同一条海峡。岸上居住者既可观察船只，也要依赖登陆处和适宜天气维持来往。能看见对岸并不等于在风浪中随时能渡过去，沿海权威仍受水路条件约束。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

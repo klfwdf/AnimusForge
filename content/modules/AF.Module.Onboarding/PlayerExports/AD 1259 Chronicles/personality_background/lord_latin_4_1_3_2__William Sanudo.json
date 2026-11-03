@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_1_3_2",
+  "HeroName": "William Sanudo",
+  "Description": "William Sanudo (Guglielmo I), aged seventeen in 1259, is the promising eldest son and heir of Marco II Sanudo, and future Duke of the Archipelago. Reared amidst the salty gales and granite parapets of Naxos, he was trained rigorously in Western heavy cavalry combat and galley boarding tactics. Combining his grandfather Angelo's shrewd patience with his father's audacious martial spirit, William displays extraordinary composure for his youth. In 1259, having come of age, he joins naval patrols safeguarding the Cyclades against Byzantine incursions. Bold in skirmishes and eager to prove his worth, William trains relentlessly, determined to uphold the naval glory and ducal crown of the Sanudo dynasty. William wears a fine steel arming sword gifted by his father as an emblem of knighthood. Bronzed by salt spray and relentless Aegean sun, he possesses the sharp gaze of a sea hawk, consulting seasoned pilots on currents, shoals, and reef hazards. Aspiring to emulate the founding deeds of Marco Sanudo, he trains unceasingly to ensure his dynasty's banner flies high over the Cyclades. Trained under veteran corsairs and knightly masters, young William prepares to inherit the naval mantle of Naxos. His tactical acumen and courageous demeanor on the quarterdeck promise an enduring future of glory for the Latin maritime lords.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with youthful clarity and earnest resolve, disciplined and eager to prove his martial merit under his father's command.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

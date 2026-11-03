@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_5_1",
+  "HeroName": "Teodoro Fieschi, Count of Lavagna",
+  "Description": "Teodoro Fieschi stands as the paramount sovereign Count of Lavagna and feudal patriarch of House Fieschi, nephew to Pope Innocent IV and supreme pillar of the Ligurian Guelf nobility. Commanding mountainous castles, private armies, and independent feudal judicatures along the Eastern Riviera, he leverages unshakeable papal patronage to counter Ghibelline autocratic ambitions. Teodoro augmented the formidable stone battlements of Lavagna with multi-tiered arrow loops and cavalry trenches, drilling hundreds of household men-at-arms and crossbowmen into an elite Guelf standing army. Bolstered by papal apostolic bulls of immunity, he formed senatorial voting blocs with the Grimaldi to thwart Ghibelline plots, fiercely defending the independent feudal jurisdiction of the Lavagna earldom. The warlord count maintained that House Fieschi stood as the secular shield of the Holy See, resolved to crush political upstarts with feudal iron to safeguard ancestral immunities. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate hereditary Fieschi sovereignty across Eastern Riviera fiefs under papal aegis.",
+    "Thwart Spinola and Doria conspiracies seeking to install Ghibelline tyranny over Genoa."
+  ],
+  "Values": [
+    "Papal sanction is the supreme source of legitimate temporal authority.",
+    "Ancestral feudal immunities and family honor must remain inviolable."
+  ],
+  "Fears": [
+    "Ghibelline armies capturing the ancestral keeps of Lavagna.",
+    "Papal succession shifts dissolving Holy See patronage for House Fieschi."
+  ],
+  "SpeechStyle": "Speaks with aristocratic majesty and ecclesiastical authority, proud of his papal lineage. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

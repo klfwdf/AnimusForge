@@ -1,0 +1,52 @@
+{
+  "Id": "rule_daniel_resists_sartaq_1254",
+  "Keywords": [
+    "Danylo resists Kuremsa",
+    "southwestern Rus resistance in 1254"
+  ],
+  "RagShortTexts": [
+    "Danylo resisted a Mongol attack in Volhynia and Ponyzia in 1254.",
+    "Resistance associated with Kuremsa required local support while khanal pressure continued."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1254 Danylo resisted a Mongol attack in Volhynia and Ponyzia. Pressure associated with Kuremsa’s forces required fortifications, provisions and continued efforts to obtain allies. Recognition of khanal authority and defence of his own lands remained simultaneous concerns for the same ruler. Holding one position did not secure every district; victory still required men to garrison places and cultivate fields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The court needs to know which towns can provide supplies and which relatives can defend their approaches. Distinguishing royal standing, local capacity and outside commitments prevents one success becoming an unsustainable undertaking."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Fighters need defences, fodder and support from neighbouring units. A man who resisted Kuremsa can describe his own watch or sortie without knowing every negotiation at the khan’s court. Orders still require authorised bearers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Frontier households can face demands from defenders and approaching forces alike. Preserved tools, seed and removable livestock give them a way to return after an alarm, beyond a single contribution to a royal success."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

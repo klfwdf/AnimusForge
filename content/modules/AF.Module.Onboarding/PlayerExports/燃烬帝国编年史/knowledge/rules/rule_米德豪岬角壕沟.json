@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v5",
+  "Keywords": [
+    "米德豪岬角壕沟"
+  ],
+  "RagShortTexts": [
+    "米德豪石塔利用岬角，沿岸凿沟，陆侧另设壕沟与土垒。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "米德豪石塔利用岬角，沿岸凿沟，陆侧另设壕沟与土垒。防护因岩石、海岸和人工障碍共同形成，而不是一座孤塔单独阻挡所有方向。出入路受控制，日常运水运物也必须经过留下的通道。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

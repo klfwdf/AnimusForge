@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Palaiologos_and_Imperial_Restoration",
+  "Keywords": [
+    "House of Palaiologos Double Eagle",
+    "Michael VIII Regency and Coup",
+    "Constantinople Reconquest Ambition",
+    "Pelagonia Victory Foundation"
+  ],
+  "RagShortTexts": [
+    "The victory at Pelagonia in 1259 gave Nicaea the army and prestige to press the restoration.",
+    "Michael weighed every alliance like a strategist over a chessboard."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Palaiologoi began as Anatolian military magnates before the Nicaean court raised them to prominence. Their household adopted the double-headed eagle as a symbol of Roman continuity, a claim the Latin conquest of 1204 had tried to erase. Michael VIII first took the regency for the child John IV Laskaris and then the imperial throne, a sequence of palace manoeuvres that taught the family to rely on paid foreign troops and ready cash. The victory at Pelagonia in 1259 gave Nicaea the army and prestige to press the restoration. Imperial treasuries were redirected toward siege engineering, fleets for the Aegean and bribes for rival princes, because recovering Constantinople required money as much as men."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Michael weighed every alliance like a strategist over a chessboard. Sealed letters went to Genoese captains, offering trade privileges for hulls and crews, while envoys courted Seljuk frontier lords to keep Anatolia quiet. Pronoia grants bound provincial lords to the imperial cause, and each marriage contract was a move against the Latin emperor's last friends in Constantinople."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Monks on Mount Athos pray fervently for the Palaiologoi. Only the reclamation of Hagia Sophia can wash away the trauma of 1204 and restore the legitimate Orthodox empire. The Fourth Crusade sacked Constantinople in 1204, and the Latin conquest left Greek clergy praying for the return of an exiled court. Each prayer for the emperor showed the loyalty of the monastic communities."
+    }
+  ],
+  "TextMappings": []
+}

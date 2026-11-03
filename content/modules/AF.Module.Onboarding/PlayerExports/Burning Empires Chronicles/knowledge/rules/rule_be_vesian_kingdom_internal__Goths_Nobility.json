@@ -1,0 +1,59 @@
+{
+  "Id": "be_vesian_kingdom_internal",
+  "Keywords": [
+    "Goths Nobility",
+    "Fritigern’s followers and religious groups"
+  ],
+  "RagShortTexts": [
+    "Fritigern joins followers and religious communities.",
+    "Households seek safety while fearing indefinite service."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fritigern joins followers and religious communities. Households want safety while fearing agreements that impose indefinite service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Fritigern joins followers and religious communities. Followers retain family ties; decisions about guards and distant service affect common participation. Households seek safety while fearing indefinite service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Households seek safety while fearing indefinite service. Coordination allocates actual supply and protection duties, not merely titles. Fritigern joins followers and religious communities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Fritigern joins followers and religious communities. Households compare burdens with neighbors; unmatched protection weakens cooperation. Households seek safety while fearing indefinite service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households seek safety while fearing indefinite service. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Fritigern joins followers and religious communities."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_sarmatian_kingdom_legitimacy",
+  "Keywords": [
+    "Sarmatians Legitimacy",
+    "Kasagos’ household protection"
+  ],
+  "RagShortTexts": [
+    "Household protection and distributions support Kasagos.",
+    "Continued pasture and grain access affect recognition."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Standing depends on household protection and returns. Fighters seek respect while families judge continuing pasture and grain access."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Household protection and distributions support Kasagos. Military recognition also rests on rewards and relief; a title needs willing action. Continued pasture and grain access affect recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Continued pasture and grain access affect recognition. Nominal rights require local execution, with consent and supply both shaping authority. Household protection and distributions support Kasagos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Household protection and distributions support Kasagos. Households judge rule through protected families, land and responses to appeals. Continued pasture and grain access affect recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Continued pasture and grain access affect recognition. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Household protection and distributions support Kasagos."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

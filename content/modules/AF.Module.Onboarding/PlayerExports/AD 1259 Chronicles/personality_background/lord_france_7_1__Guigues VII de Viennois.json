@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_7_1",
+  "HeroName": "Guigues VII de Viennois, Dauphin of Viennois",
+  "Description": "Guigues VII de Viennois is the reigning Dauphin of Viennois, Count of Albon, Grenoble, and Briançon, master of the alpine marches between France and the Holy Roman Empire. At forty-four, he is a seasoned highland warlord whose rugged martial prowess is matched by sharp diplomatic foresight. Guarding the snowbound passes into northern Italy, Guigues fortified the strategic crags of the Dauphiné against the persistent expansionism of the House of Savoy. An expert in mountain warfare, he instituted mounted patrols along alpine valleys and modernized stone bastions across Grenoble and Briançon. Firmly allied with the Capetian Crown, he personally led his elite mountain men-at-arms alongside Charles of Anjou during the Italian campaigns. His marriage to Beatrice of Savoy established a delicate peace among neighboring warlords, cementing his standing as an indomitable sovereign of the Alps. Guigues VII constructed cantilevered stone watchtowers across Grenoble's passes, placing every hostile approach from Savoy under direct artillery crossfire. Fierce as an alpine blizzard yet deeply loyal to his men-at-arms, he led every counter-assault in person, his hawk banner standing as an impregnable symbol of alpine liberty. His formidable mastery of alpine logistics and unyielding battlefield valor guarantee that the independent sovereignty of the Dauphiné remains unchallenged across the mountains.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Repel hostile encroachments from the House of Savoy to preserve Dauphiné sovereignty.",
+    "Control alpine transit passes to finance a powerful standing mountain army through tolls."
+  ],
+  "Values": [
+    "Inviolable defense of the sovereign independence of the Dauphiné and its highland passes.",
+    "Rigid military discipline and fearless personal leadership in the face of invasion."
+  ],
+  "Fears": [
+    "Savoyard armies mounting surprise winter assaults to isolate his mountain keeps.",
+    "Internal treachery among alpine vassals compromising critical defensible defiles."
+  ],
+  "SpeechStyle": "Speaks with gravelly highland authority, his voice deep, austere, and unyielding, carrying the blunt military decisiveness of a warlord commanding alpine passes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

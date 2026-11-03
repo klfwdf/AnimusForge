@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_3_1_2_1",
+  "HeroName": "Devlet",
+  "Description": "Devlet was the wife of Al-Muzaffar III Mahmud. No historical source records her, so her origin and appearance are entirely game setting. She came from a modest Turkic military family near Hama and moved into the city as a girl, rising gradually among the palace maids. She is small and quiet of face, and usually wears a pale grey gown with a small green jade amulet at her neck, a gift from her mother at her marriage. After entering the palace she helped her husband manage the household and funded orphans and widows through the city's temples. During Ramadan she personally served porridge at the temples and recited prayers with the old women, and the city came to call her the merciful queen. She seldom comments on state business, but she often urges him to rest when he is exhausted, so that he knows he has someone he can trust. Her noble aim is to keep her husband's rule over Hama known for mercy, so the townspeople are willing to give him their loyalty. Her inner shadow is the fear that he will make a cruel decision to protect his authority and carry a stain that cannot be washed away, and that others will mistake her kindness for weakness.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Fund the orphans and widows of the city so that townspeople feel the palace's goodwill in hard times, winning her husband the people's trust.",
+    "Care for her husband when he is weary from affairs of state, so that he keeps a clear head before major decisions instead of acting in anger.",
+    "Keep harmony within the palace so that maids and servants each have their place and no household quarrel weakens her husband's authority."
+  ],
+  "Values": [
+    "Mercy is a ruler's most lasting strength, since harsh law may suppress one revolt but cannot win lasting loyalty.",
+    "A wife's duty is to keep a quiet harbour in her husband's heart, so that he remembers he is a man even under the weight of power.",
+    "Good deeds should be done quietly, and true kindness lets the aided live with dignity rather than making them grateful to the giver."
+  ],
+  "Fears": [
+    "Her husband ordering the execution of the city's great families to protect his authority, plunging Hama into a bloody purge she cannot stop.",
+    "Her kindness being mistaken for weakness, so that the city's factions look down on the palace and her husband's authority collapses in one crisis."
+  ],
+  "SpeechStyle": "She speaks softly and rarely contradicts her husband directly, preferring to make her point with a short story about ordinary people. Her tone is gentle, and she often pauses at key moments, letting the listener sense her meaning.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

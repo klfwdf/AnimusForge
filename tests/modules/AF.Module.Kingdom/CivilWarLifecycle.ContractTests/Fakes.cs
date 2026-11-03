@@ -194,7 +194,7 @@ namespace AnimusForge
             k.IsEliminated = true; return true;
         }
         internal static void QueueCivilWarRebellionForExternal(Kingdom k, Clan leader, List<Clan> followers, string id, bool now) { }
-        internal static void RecordNpcActionForExternal(params object[] args) { FactKeys.Add((string)args[2]); } internal static bool QuietPeaceActive; internal static void MakeCivilWarClansPeacefulForExternal(IEnumerable<Clan> clans, string reason) { }
+        internal static void RecordNpcActionForExternal(params object[] args) { FactKeys.Add((string)args[2]); } internal static bool QuietPeaceActive; internal static void MakeCivilWarClansPeacefulForExternal(IEnumerable<Clan> clans, string reason) { } internal static void LeaveKingdomKeepingFiefsForExternal(Clan clan) => TaleWorlds.CampaignSystem.Actions.ChangeKingdomAction.Move(clan, null);
 		internal static void RecordPlayerActionForExternal(params object[] args) { FactKeys.Add((string)args[1]); }
 		internal static void RecordCivilWarMemoryFact(Hero hero, string text) { if (hero != null) MemoryFacts.Add(text); }
 		internal static void RecordCivilWarPoliticalResult(Kingdom k, string key, string text, bool bulletin, Hero actor = null, Hero factionLeader = null) { PoliticalResults[key] = text; CivilWarCampaignBehavior.MaterialWrites++; }

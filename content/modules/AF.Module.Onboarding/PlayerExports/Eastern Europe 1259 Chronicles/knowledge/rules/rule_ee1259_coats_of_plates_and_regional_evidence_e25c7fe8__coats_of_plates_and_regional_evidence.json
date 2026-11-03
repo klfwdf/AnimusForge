@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_coats_of_plates_and_regional_evidence_e25c7fe8",
+  "Keywords": [
+    "Attached plate armor and fitting",
+    "Armor plate fastenings and worn linings"
+  ],
+  "RagShortTexts": [
+    "Attached plates relied on textile or leather supports and sound fastenings.",
+    "Fit, movement and repair costs mattered alongside armor coverage."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Armor combining attached metal plates with textile or leather needed checks of fastenings, wear and movement. Fit depended on the wearer and other equipment; metal, straps and skilled repairs added to its cost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Armor combining attached metal plates with textile or leather needed checks of fastenings, wear and movement. Fit depended on the wearer and other equipment; metal, straps and skilled repairs added to its cost. Wearers adapted to vision, movement and load during travel, boats and carrying wounded people. Checking fittings and damp lining at rest prevented failures next day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Armor combining attached metal plates with textile or leather needed checks of fastenings, wear and movement. Fit depended on the wearer and other equipment; metal, straps and skilled repairs added to its cost. Equipping armored troops required horses, armor and craftsmen; losses affected later musters. Purchase depended on fit and maintenance, not ceremonial appearance alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Armor combining attached metal plates with textile or leather needed checks of fastenings, wear and movement. Fit depended on the wearer and other equipment; metal, straps and skilled repairs added to its cost. Families supplied clothes, sewing and funds, competing with farm repairs. Borrowed or pledged equipment required clear responsibility for damage and return."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Chivalric_Ransom_Customs_and_Noble_Captives",
+  "Keywords": [
+    "Chivalric Ransom Protocols",
+    "Armorial Noble Captives",
+    "Feudal Parole on Oath",
+    "War Spoils Redemption Custom"
+  ],
+  "RagShortTexts": [
+    "Chivalric ransom laws guaranteed gentle treatment and parole for captured armigerous nobles."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In wars between Christian rulers, a captured knight of arms was worth more alive than dead. Captives were lodged with courtesy, often in the captor's own hall, and many were released on parole, which bound them by their word of honour to return with their ransom. The sum was set by rank and heraldic status, and it could ruin a family for years. Ransom letters travelled to kinsmen and creditors, and households sold lands or pledged rents to free a prisoner. Against pagan enemies that courtesy was not extended, and captives faced death or the slave market. The custom rested on the shared belief that a noble's life was a claim to be honoured, and that fighting between equals had rules to keep."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Surrender after a brave defence brought no shame to a noble. A baron who paid three thousand livres while dining with his captor kept his place among the knights and spared his lineage from ruin. The ransom was a debt of honour as much as a sum of money, and a captor who had been generous could expect the same courtesy if fortune turned."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The gentlemen toasted one another over roast capon while their ransom letters travelled home. Common foot soldiers had no such luck, since a captured man faced a slit throat or forced labour digging ditches. If a sergeant bagged a gilded lordling, the ransom could secure his retirement."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_quadian_kingdom_legitimacy",
+  "Keywords": [
+    "夸迪人法统",
+    "加比尼乌斯遇害后的会面担保"
+  ],
+  "RagShortTexts": [
+    "Marcellianus宴后杀害Gabinius破坏宾客保护。",
+    "夸迪会面格外重视可履行的担保。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gabinius在宴后遭Marcellianus杀害，破坏宾客保护的消息使首领对会面担保格外警惕。盟誓要有能让参与者信任的履行方式。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Marcellianus宴后杀害Gabinius破坏宾客保护。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。夸迪会面格外重视可履行的担保。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "夸迪会面格外重视可履行的担保。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。Marcellianus宴后杀害Gabinius破坏宾客保护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Marcellianus宴后杀害Gabinius破坏宾客保护。家户通过家人、土地与求助能否获保护来认识统治。夸迪会面格外重视可履行的担保。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "夸迪会面格外重视可履行的担保。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。Marcellianus宴后杀害Gabinius破坏宾客保护。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

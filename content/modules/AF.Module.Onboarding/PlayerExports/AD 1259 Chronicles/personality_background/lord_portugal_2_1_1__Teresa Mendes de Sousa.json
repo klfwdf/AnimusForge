@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_1_1",
+  "HeroName": "Teresa Mendes de Sousa",
+  "Description": "Doña Teresa Mendes de Sousa is the cultivated and graceful daughter of Mem Garcia de Sousa and Lady Teresa Yáñez de Limia. Reared amidst the splendid manor halls of the Douro valley, she was nurtured in Galician-Portuguese lyric poetry, courtly protocols, and sacred scriptures. Intelligent, poised, and devoutly benevolent, Doña Teresa combines aristocratic refinement with deep compassionate care for manorial tenantries. In 1259, amidst simmering political friction between the crown and the high nobility, she frequently accompanies her mother to ecclesiastical gatherings in Coimbra and Lisbon. Her impeccable courtly etiquette, quick wit, and modest grace elevate the illustrious cultural prestige of the House of Sousa before foreign envoys. A generous patroness of Franciscan friaries and rural hospices, Teresa is celebrated across northern Portugal as a shining beacon of noble virtue. Transcribing Galician song collections in her Porto residence, Teresa gifted magnificent embroidered silk vestments to monastic altars across the Minho. Her serene wisdom peacefully settled complex irrigation disputes among tenantries, earning the deep veneration and prayers of people throughout northern Portugal. Her serene piety, literary grace, and charitable spirit cement Teresa's reputation as one of the most beloved noblewomen of the northern valleys.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master courtly literature and sacred arts to uphold the cultural renown of the House of Sousa",
+    "Fulfill her dynastic matrimonial duty to cement powerful feudal alliances for her lineage",
+    "Support religious hospices and convents to shower divine grace upon her family's future"
+  ],
+  "Values": [
+    "A noble daughter's true crown is moral purity, patient virtue, and selfless dedication to family",
+    "Authentic Christian charity and intellectual grace outshine all transient courtly jewels",
+    "Reverent faith in divine providence, filial obedience, and unbending loyalty to her bloodline"
+  ],
+  "Fears": [
+    "Being bartered into an unhappy foreign marriage with a cruel lord far from her homeland",
+    "Warfare ravaging the idyllic manors of the Douro, shattering the peace of her ancestral house"
+  ],
+  "SpeechStyle": "Lyrical, poised, and modest; speaks with the effortless courtly charm, intellectual clarity, and gentle warmth of an accomplished noblewoman.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

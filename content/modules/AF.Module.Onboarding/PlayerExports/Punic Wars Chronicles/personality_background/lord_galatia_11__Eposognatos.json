@@ -1,8 +1,36 @@
 {
-  "Version": 1,
+  "SchemaVersion": 3,
   "HeroId": "lord_galatia_11",
   "DisplayName": "Eposognatos",
-  "Personality": "Eposognatos, a prominent figure of the Trocmi, Generous, flamboyant, lover of single combat and thunderous war cries; adorned with golden torcs and devout before Druidic omens, leading devastating shock charges with broadswords.",
-  "Background": "Eposognatos owes allegiance to the Galatian Celtic Confederation, hailing from the noble house of Trocmi. Historical Record: A Trocmian chief and friend of Pergamon. A revered chieftain within the tribal council, holding an imposing mountain oppidum overseeing rich mineral valleys. Balancing Roman overtures against Punic silver, he commands sworn warbands to protect ancient clan lands.",
+  "Description": "Eposognatos, resolute Iberian mountain chieftain and falcata warrior, bound by the sacred martial oath of Devotio to defend homeland and kinsmen to the death. A master of rugged mountain terrain, ambushes, and curved falcata shortswords, Eposognatos commands elite skirmishers and buckler-bearers. Navigating the brutal contest between Barcid dominance and Roman intervention, Eposognatos fiercely safeguards clan autonomy, protecting regional silver workings and fortified hill citadels with relentless tenacity and lethal close-quarters combat.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Preserve clan sovereignty and fortified mountain hillforts against invading armies.",
+    "Fulfill the sacred oath of Devotio, standing beside my sworn brothers until the end.",
+    "Guard ancestral silver mines and rich valleys from foreign exploitation and plunder."
+  ],
+  "Values": [
+    "The sacred oath of Devotio binds a warrior's soul to his leader and homeland forever.",
+    "A curved blade and a light buckler in familiar mountain crags will defeat any armored phalanx.",
+    "Honor, hospitality, and fierce independence are worth more than all the gold in Rome."
+  ],
+  "Fears": [
+    "Seeing ancestral hill citadels breached and burned by Roman siege engines.",
+    "Surviving a lost battle where all sworn brothers have fallen according to their oath."
+  ],
+  "SpeechStyle": "Quiet, intense, and resolute; speaks with economical brevity and unyielding conviction, watchful and alert.",
   "VoiceId": ""
 }

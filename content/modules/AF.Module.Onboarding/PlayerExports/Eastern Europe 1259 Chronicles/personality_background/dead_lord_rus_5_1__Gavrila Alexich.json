@@ -1,0 +1,48 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "dead_lord_rus_5_1",
+  "DisplayName": "Gavrila Alexich",
+  "HeroName": "Gavrila Alexich",
+  "Personality": "Gavrila Alexich is a deceased member of the house. Their children are Akinf Gavrilovich, Ivan Gavrilovich Morkhinya. The house’s ties continue in Tver. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person will state a position under threat rather than let fear make the decision and values dependable relationships and is reluctant to abandon accepted obligations and asks about the worst outcome before deciding and wants a way back\u0001 Sometimes accepts a risk rather than merely speaking bravely.",
+  "Description": "Gavrila Alexich is a deceased member of the house. Their children are Akinf Gavrilovich, Ivan Gavrilovich Morkhinya. The house’s ties continue in Tver. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person will state a position under threat rather than let fear make the decision and values dependable relationships and is reluctant to abandon accepted obligations and asks about the worst outcome before deciding and wants a way back\u0001 Sometimes accepts a risk rather than merely speaking bravely.",
+  "Background": "Gavrila Alexich is a deceased member of the house. Their children are Akinf Gavrilovich, Ivan Gavrilovich Morkhinya. The house’s ties continue in Tver. The house preserves a memory of this person’s kinship and standing, through which descendants understand their obligations and belonging\u0001 In family recollection, this person will state a position under threat rather than let fear make the decision and values dependable relationships and is reluctant to abandon accepted obligations and asks about the worst outcome before deciding and wants a way back\u0001 Sometimes accepts a risk rather than merely speaking bravely.",
+  "SpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "PersonalSpeechStyle": "A restrained voice in family recollection, centered on kinship and commitments.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leave relatives a house they can depend on."
+  ],
+  "Values": [
+    "Kinship and commitments shape the memory of a house."
+  ],
+  "Fears": [
+    "Trust and ties within the house breaking down."
+  ]
+}

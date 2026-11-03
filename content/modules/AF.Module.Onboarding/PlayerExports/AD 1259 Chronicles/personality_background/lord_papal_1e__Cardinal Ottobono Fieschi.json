@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_1e",
+  "HeroName": "Cardinal Ottobono Fieschi",
+  "Description": "Cardinal Ottobono Fieschi hails from the illustrious Genoese patrician House of Fieschi, Counts of Lavagna, and stands as the nephew of Pope Innocent IV. Famed throughout Christendom for diplomatic wisdom and incorruptible arbitration, Ottobono repeatedly journeyed across Europe to mediate high baronial rebellions and civil wars in England and France. Highly revered for statesmanlike moderation and judicial balance, he anchors the Curia's continental standing. Dispatched across the Alps as legate to England and France, Cardinal Ottobono arbitrated the bitter civil war between Henry III and rebel barons with exemplary impartiality, earning international veneration as one of Christendom's greatest statesmen. Amidst merciless feudal warfare, Ottobono remained a serene apostle of reconciliation, using his immense intellect and saintly composure to heal baronial schisms and restore spiritual dignity to the apostolic see. His incorruptible integrity, diplomatic wisdom, and profound Christian virtue mark Cardinal Ottobono Fieschi as one of the most celebrated and beloved prelates in the history of the Church. His sublime peacemaking and statesmanlike moderation ensure that his name echoes with honor throughout the royal courts of Christendom. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Arbitrate continental conflicts among Christian monarchs to restore unity and spiritual harmony.",
+    "Advance the commercial hegemony and ecclesiastical prestige of the House of Fieschi across Italy."
+  ],
+  "Values": [
+    "Peaceful arbitration, institutional justice, and rational moderation over vengeful warfare.",
+    "Sacred diplomatic integrity, moral virtue, and dedication to the Church's universal mission."
+  ],
+  "Fears": [
+    "The papacy degrading into a mere local Italian faction and losing moral authority in Europe.",
+    "Factional coups in Genoa unseating his family and confiscating their maritime properties."
+  ],
+  "SpeechStyle": "Speaks with serene Genoese eloquence, impartial diplomatic warmth, and profound moral authority. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

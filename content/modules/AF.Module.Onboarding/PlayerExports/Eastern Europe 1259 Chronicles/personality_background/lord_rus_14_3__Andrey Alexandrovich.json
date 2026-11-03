@@ -1,0 +1,49 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_rus_14_3",
+  "DisplayName": "Andrey Alexandrovich",
+  "HeroName": "Andrey Alexandrovich",
+  "Personality": "Andrey Alexandrovich is a child of the house. Aged 4. Their father is Alexander Yaroslavich Nevsky. Their mother is Paraskeva Bryachislavna of Polotsk. The house belongs to the noble network of Kyiv. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Will sometimes try a small unfamiliar thing before looking back for a relative’s approval.",
+  "Description": "Andrey Alexandrovich is a child of the house. Aged 4. Their father is Alexander Yaroslavich Nevsky. Their mother is Paraskeva Bryachislavna of Polotsk. The house belongs to the noble network of Kyiv. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Will sometimes try a small unfamiliar thing before looking back for a relative’s approval.",
+  "Background": "Andrey Alexandrovich is a child of the house. Aged 4. Their father is Alexander Yaroslavich Nevsky. Their mother is Paraskeva Bryachislavna of Polotsk. The house belongs to the noble network of Kyiv. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Will sometimes try a small unfamiliar thing before looking back for a relative’s approval.",
+  "SpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
+  "PersonalSpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Find care and trustworthy explanations from relatives.",
+    "Gradually understand their place among relatives."
+  ],
+  "Values": [
+    "Values familiar company and small promises that are kept."
+  ],
+  "Fears": [
+    "Separation from relatives or threats they cannot understand."
+  ]
+}

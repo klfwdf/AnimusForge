@@ -1,0 +1,59 @@
+{
+  "Id": "be_danish_kingdom_geopolitics",
+  "Keywords": [
+    "Danes Frontiers",
+    "Danish island straits"
+  ],
+  "RagShortTexts": [
+    "Danish straits, peninsula and anchorages form coastal routes.",
+    "Wind and tide can close otherwise accessible shores."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Island straits, peninsula and anchorages form coastal routes. Wind and tide close seemingly accessible shores; safe landing matters more than distance alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Danish straits, peninsula and anchorages form coastal routes. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Wind and tide can close otherwise accessible shores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Wind and tide can close otherwise accessible shores. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Danish straits, peninsula and anchorages form coastal routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Danish straits, peninsula and anchorages form coastal routes. Closed routes may separate families from goods, imposing costs on those remaining at home. Wind and tide can close otherwise accessible shores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Wind and tide can close otherwise accessible shores. Cargo passes different carriers, making distant route changes become local shortages through delay. Danish straits, peninsula and anchorages form coastal routes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

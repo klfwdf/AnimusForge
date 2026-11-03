@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_3_1",
+  "HeroName": "Isobel Cuimean",
+  "Description": "Isobel Comyn is the sole daughter of the late regent Walter Comyn and Countess Isabella of Menteith, embodying the contested hereditary bloodline of the earldom. Youthful and striking, she possesses her mother's proud elegance tempered by the brooding steel of the Comyn kindred. Having witnessed her father's untimely death and the immediate onslaught of hostile baronial factions seeking to disinherit her lineage, Isobel matured rapidly amid political crisis. She serves as her mother's most loyal confidante, assisting in correspondence with ecclesiastical legates and marshaling loyal knights across the straths of Menteith. Records in the Acts of the Parliaments of Scotland highlight her defiant presence at clan assemblies, pledging unyielding defense of her patrimony. Pragmatic and suspicious, she sees through the gilded pretexts of ambitious suitors who desire her hand merely to secure legal title over her strategic lowland lands. Drawing her father's blade before the assembled knights of Menteith, Isobel swore never to surrender the fertile straths of the Forth to ambitious pretenders; standing resolute against the aggressive advances of Walter Stewart's affinity, she exhibited astonishing fortitude, celebrated by her household vassals as the true and unvanquished heiress of the ancient earldom.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Assist her mother in overcoming Comyn slander to preserve her rightful inheritance of Menteith.",
+    "Form trustworthy alliances among younger Scottish knights to resist predatory baronial claims."
+  ],
+  "Values": [
+    "Places filial devotion and ancestral land preservation above personal comfort or romantic vanity.",
+    "Despises opportunistic betrayal, valuing unyielding loyalty and chivalric rectitude."
+  ],
+  "Fears": [
+    "Fears judicial dispossession of her mother that would permanently extinguish her line's rule.",
+    "Dreads an enforced political marriage arranged by rival magnates aiming to usurp her lands."
+  ],
+  "SpeechStyle": "Speaks with refined dignity and guarded poise, displaying keen political discernment and resolute firmness.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,42 @@
+{
+  "Id": "rule_punic_city_05",
+  "Name": "Metropolis of Tarentum Harbor Citadel",
+  "Keywords": [
+    "rule_punic_city_05",
+    "Urban Center Tarentum Harbor Citadel",
+    "Citadel of Tarentum Harbor Citadel",
+    "Harbor of Tarentum Harbor Citadel"
+  ],
+  "RagShortTexts": [
+    "The fortified urban center of Tarentum Harbor Citadel served as a vital strategic, naval,..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The ancient metropolis of Tarentum Harbor Citadel represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Behind the stone towers of Tarentum Harbor Citadel, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Possession of Tarentum Harbor Citadel anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+    }
+  ],
+  "TextMappings": []
+}

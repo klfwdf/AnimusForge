@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v10",
+  "Keywords": [
+    "海岸警报的见闻差别"
+  ],
+  "RagShortTexts": [
+    "海岸看到舟只，不等于知道乘员身份与意图。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "不列颠防御依靠远行人员带回邻近族群动向，阿里亚尼的泄密又显示报告者可能受利益影响。岸边人看见舟只，与知道船中人物及意图是两回事；军令需要进一步核实，而非由船形判断全体来客。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

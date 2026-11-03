@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_2_4_1",
+  "HeroName": "Qutlugh Khatun",
+  "Description": "Qutlugh Khatun is a royal noblewoman of the Ilkhanate, listed in the game roster as the spouse of Ular Noyan. The game data gives only that marriage, so her origin, dates and personal deeds cannot be traced, and this persona is a game-internal setting inferred from the faction's background. The meaning of her name has no bearing on the persona, which rests only on her rank as a noblewoman and her marriage. Her looks, scars and dress are unrecorded, so her body is left unspecified. As the principal wife of a noyan, she runs the tents, managing livestock, servants and feasts, and while her husband keeps the frontier she takes charge of every household matter. She is practical and cares for accounts and social obligations alike, so she can keep the home steady when her husband is away. Her goal is to hold on to the pastures and property her husband left, so that her children have a secure place in the family's future. Her fear is that misfortune will scatter the household's wealth, leave her children pushed aside, or separate her from her husband through an outside struggle for power. She is patient and tough, rarely complains in hardship, and prefers to settle problems through careful arrangements that keep every expense and favour in order.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Hold on to the pastures and property her husband left, so that the household's livelihood stays steady while he guards the frontier, the thing she worries about daily.",
+    "Secure a firm future for her children, so that they receive proper honours and are not looked down on or pushed aside within the clan.",
+    "Maintain the family's network of obligations through proper feasts and gifts, so that the clan is willing to speak for the household and stand behind it in disputes."
+  ],
+  "Values": [
+    "Practicality and careful accounts, since she believes stability comes from daily management rather than empty talk of rank or displays of power.",
+    "Trust and good faith between husband and wife, holding that she must guard the home's foundations however far away her husband may be.",
+    "Patience and resilience, preferring to settle conflicts slowly rather than bring them into the open, where they could harm the family's face and unity."
+  ],
+  "Fears": [
+    "Misfortune scattering the household's wealth, leaving her children without honours and the family with diminished dignity.",
+    "Her husband being separated from her by an outside power struggle, leaving her and the children no one to speak for them."
+  ],
+  "SpeechStyle": "Her tone is steady and practical, and she speaks clearly, usually discussing concrete matters before feelings. She is brisk with servants and courteous with clan women, and she does not readily show her private worries.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

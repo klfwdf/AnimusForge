@@ -121,6 +121,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
+		CampaignEvents.MakePeace.AddNonSerializedListener(this, OnMakePeace);
 		CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTaken);
 		CampaignEvents.HeroPrisonerReleased.AddNonSerializedListener(this, OnHeroPrisonerReleased);
 		CampaignEvents.CanHeroDieEvent.AddNonSerializedListener(this, OnCanHeroDie);
@@ -273,6 +274,11 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 				Logger.Log("SceneTaunt", "Skipped scene-taunt behaviors for an AnimusForge independent duel mission.");
 				return;
 			}
+			if (mission2.GetMissionBehavior<FieldCampMissionLogic>() != null)
+			{
+				Logger.Log("SceneTaunt", "Skipped scene-taunt behaviors for the AnimusForge field camp mission.");
+				return;
+			}
 			if (mission2.GetMissionBehavior<SceneTauntMissionBehavior>() == null)
 			{
 				mission2.AddMissionBehavior(new SceneTauntMissionBehavior());
@@ -346,6 +352,17 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		TryCommitPendingMainHeroBattleDeath();
 		TryCommitDeferredCrimeWhenBackOnWorldMap();
 		TryCommitDeferredLordSceneDiplomacyWhenBackOnWorldMap();
+	}
+
+	private void OnMakePeace(IFaction side1Faction, IFaction side2Faction, MakePeaceAction.MakePeaceDetail detail)
+	{
+		// Match native CrimeCampaignBehavior: only this player's treaty settles its counterpart.
+		IFaction playerFaction = Hero.MainHero?.MapFaction;
+		if (playerFaction == null) return;
+		IFaction counterpart = side1Faction == playerFaction ? side2Faction
+			: side2Faction == playerFaction ? side1Faction : null;
+		if (counterpart != null && counterpart != playerFaction)
+			ClearDeferredCrimeForExternal(counterpart, "native_make_peace");
 	}
 
 	private void OnHeroPrisonerTaken(PartyBase capturer, Hero prisoner)
@@ -832,6 +849,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 					_penaltyLedger.ClearDeferredCrime(item.Key);
 					continue;
 				}
+				bool settlementCommitted = false;
 				try
 				{
 					float num2 = MathF.Max(0f, factionById.MainHeroCrimeRating);
@@ -839,17 +857,19 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 				float num5 = _penaltyLedger.ReserveNativeCommit(text, num2, num3);
 				if (num5 <= 0f)
 				{
-					Logger.Log("SceneTaunt", $"Deferred scene-taunt crime pool not injected because native crime is already at max. Faction={factionById.Name}, NativeCrime={num2:0.##}, Pool={num:0.##}, Max={num3:0.##}");
+					settlementCommitted = true;
+					Logger.Log("SceneTaunt", $"Settled deferred scene-taunt crime at native cap without a refill balance. Faction={factionById.Name}, NativeCrime={num2:0.##}, Deferred={num:0.##}, Max={num3:0.##}");
 					continue;
 				}
 				float num6 = _penaltyLedger.GetDeferredCrime(text);
 					ChangeCrimeRatingAction.Apply(factionById, num5, true);
+					settlementCommitted = true;
 					AnimusForgeQuickInfo.Show(SceneTauntUiLocalization.Format("AF_TAUNT_UI_CrimeCommittedAfterScene", "After leaving the scene, {FACTION} crime increases by {AMOUNT}.", ("FACTION", factionById.Name), ("AMOUNT", num5.ToString("0.#"))));
 					Logger.Log("SceneTaunt", $"Injected scene-taunt crime pool into native crime. Faction={factionById.Name}, NativeBefore={num2:0.##}, Added={num5:0.##}, RemainingPool={num6:0.##}, NativeAfter={MathF.Max(0f, factionById.MainHeroCrimeRating):0.##}");
 				}
 				catch (Exception ex)
 				{
-					_penaltyLedger.RestoreFailedNativeCommit(text, num);
+					if (!settlementCommitted) _penaltyLedger.RestoreFailedNativeCommit(text, num);
 					Logger.Log("SceneTaunt", "Committing deferred scene crime on world map failed: " + ex.Message);
 				}
 			}
@@ -1627,14 +1647,15 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	internal static bool IsSceneLordTauntTarget(Hero targetHero)
 	{
-		return targetHero != null && targetHero.IsLord && !IsPlayerProtectedSceneAttackTarget(targetHero) && !IsMeetingTauntContext(targetHero);
+		// 被关押的俘虏（含地牢里的领主）不是定居点在场势力，不能发起或成为场景冲突目标。
+		return targetHero != null && targetHero.IsLord && !targetHero.IsPrisoner && !IsPlayerProtectedSceneAttackTarget(targetHero) && !IsMeetingTauntContext(targetHero);
 	}
 
 	internal static bool IsSceneNotableTauntTarget(Hero targetHero)
 	{
 		try
 		{
-			if (targetHero == null || IsMeetingTauntContext(targetHero) || IsSceneLordTauntTarget(targetHero))
+			if (targetHero == null || targetHero.IsPrisoner || IsMeetingTauntContext(targetHero) || IsSceneLordTauntTarget(targetHero))
 			{
 				return false;
 			}
@@ -3121,6 +3142,41 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return CanInitializePeaceSceneConflict(settlement);
 	}
 
+	// Shared read-only snapshot of the peace-scene facts. Ambient scene interaction
+	// reuses it with the same ScenePeaceConflictContextOwner allowlist.
+	internal static bool TryCaptureScenePeaceConflictFacts(Settlement settlement, out ScenePeaceConflictContext facts)
+	{
+		facts = default;
+		Mission mission = Mission.Current;
+		if (mission == null || settlement == null)
+		{
+			return false;
+		}
+		var encounter = PlayerEncounter.LocationEncounter;
+		var location = CampaignMission.Current?.Location;
+		if (encounter == null || location == null)
+		{
+			return false;
+		}
+		facts = new ScenePeaceConflictContext(
+			hasMission: true,
+			hasSettlement: true,
+			hasLocationEncounter: true,
+			hasCampaignLocation: true,
+			sameSettlement: encounter.Settlement == settlement,
+			hasBattle: PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null,
+			hasSiegeHandler: mission.GetMissionBehavior<CampaignSiegeStateHandler>() != null,
+			hasBattleTeamType: mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege
+				|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.SallyOut
+				|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle,
+			hasBattleMode: mission.Mode == MissionMode.Deployment
+				|| mission.Mode == MissionMode.Stealth
+				|| mission.Mode == MissionMode.Duel,
+			settlementUnderSiege: settlement.IsUnderSiege,
+			locationId: location.StringId);
+		return true;
+	}
+
 	private static bool CanInitializePeaceSceneConflict(Settlement settlement, bool physicalAttack = false)
 	{
 		if (ExecutionSceneConflictBridge.IsSceneControlled(Mission.Current)) return false;
@@ -3131,33 +3187,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			Mission mission = Mission.Current;
-			if (mission == null || settlement == null)
+			if (!TryCaptureScenePeaceConflictFacts(settlement, out ScenePeaceConflictContext facts))
 			{
 				return false;
 			}
-			var encounter = PlayerEncounter.LocationEncounter;
-			var location = CampaignMission.Current?.Location;
-			if (encounter == null || location == null)
-			{
-				return false;
-			}
-			ScenePeaceConflictContext facts = new ScenePeaceConflictContext(
-				hasMission: true,
-				hasSettlement: true,
-				hasLocationEncounter: true,
-				hasCampaignLocation: true,
-				sameSettlement: encounter.Settlement == settlement,
-				hasBattle: PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null,
-				hasSiegeHandler: mission.GetMissionBehavior<CampaignSiegeStateHandler>() != null,
-				hasBattleTeamType: mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege
-					|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.SallyOut
-					|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle,
-				hasBattleMode: mission.Mode == MissionMode.Deployment
-					|| mission.Mode == MissionMode.Stealth
-					|| mission.Mode == MissionMode.Duel,
-				settlementUnderSiege: settlement.IsUnderSiege,
-				locationId: location.StringId);
 			return physicalAttack
 				? ScenePeaceConflictContextOwner.CanInitializePhysical(physicalEnabled, in facts)
 				: ScenePeaceConflictContextOwner.CanInitialize(in facts);
@@ -3469,7 +3502,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				locationName = CampaignMission.Current?.Location?.StringId;
 			}
-			string locationSuffix = string.IsNullOrWhiteSpace(locationName) ? "" : TauntSourceTexts.Get("LocationPossessivePrefix") + locationName.Trim();
+			string locationSuffix = string.IsNullOrWhiteSpace(locationName) ? "" : TauntSourceTexts.Get("LocationPossessivePrefix") + TauntSourceTexts.Gap + locationName.Trim();
 			string victimName = victimAgent.Name?.ToString();
 			if (string.IsNullOrWhiteSpace(victimName))
 			{
@@ -3479,12 +3512,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			string text = TauntSourceTexts.Format("PlayerSceneRecentAction", ("SETTLEMENT", settlementName), ("LOCATION", locationSuffix), ("VERB", verb), ("VICTIM", victimName));
 			if (crimeAmount > 0f)
 			{
-				text += TauntSourceTexts.Format("PlayerSceneCrimeIncrease", ("AMOUNT", crimeAmount.ToString("0.#")));
+				text += TauntSourceTexts.Gap + TauntSourceTexts.Format("PlayerSceneCrimeIncrease", ("AMOUNT", crimeAmount.ToString("0.#")));
 			}
 			bool criminalTarget = IsSettlementCriminalConflictTarget(victimHero, victimCharacter);
 			if (criminalTarget)
 			{
-				text += TauntSourceTexts.Get("CriminalTargetNote");
+				text += TauntSourceTexts.Gap + TauntSourceTexts.Get("CriminalTargetNote");
 			}
 			bool authorityTarget = IsAuthorityPhysicalAttackTarget(victimHero, victimCharacter);
 			bool ownedSettlementPassiveAttack = (reason ?? "").IndexOf("owned_settlement", StringComparison.OrdinalIgnoreCase) >= 0;
@@ -3571,7 +3604,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				return;
 			}
 			string settlementName = string.IsNullOrWhiteSpace(draft.SettlementName) ? TauntSourceTexts.Get("CurrentSettlementFallback") : draft.SettlementName.Trim();
-			string locationSuffix = string.IsNullOrWhiteSpace(draft.LocationText) ? "" : TauntSourceTexts.Get("LocationPossessivePrefix") + draft.LocationText.Trim();
+			string locationSuffix = string.IsNullOrWhiteSpace(draft.LocationText) ? "" : TauntSourceTexts.Get("LocationPossessivePrefix") + TauntSourceTexts.Gap + draft.LocationText.Trim();
 			int victimCount = draft.VictimKeys.Count;
 			string victimSummary = BuildPlayerSceneConflictVictimSummary(draft);
 			string text = TauntSourceTexts.Format("PlayerSceneMajorIntro", ("SETTLEMENT", settlementName), ("LOCATION", locationSuffix));
@@ -3581,7 +3614,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			if (!string.IsNullOrWhiteSpace(victimSummary))
 			{
-				text += TauntSourceTexts.Format("PlayerSceneMajorVictimSummary", ("SUMMARY", victimSummary));
+				text += TauntSourceTexts.Gap + TauntSourceTexts.Format("PlayerSceneMajorVictimSummary", ("SUMMARY", victimSummary));
 			}
 			List<string> consequences = new List<string>();
 			if (draft.KilledCount > 0)

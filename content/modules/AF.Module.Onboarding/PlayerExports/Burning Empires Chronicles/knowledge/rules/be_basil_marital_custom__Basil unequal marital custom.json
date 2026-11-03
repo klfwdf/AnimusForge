@@ -1,0 +1,38 @@
+{
+  "Id": "be_basil_marital_custom",
+  "Keywords": [
+    "Basil unequal marital custom"
+  ],
+  "RagShortTexts": [
+    "Christian marital counsel stressed fidelity; separation involved kin, housing and church ties."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Christians regarded fidelity as an obligation of both spouses, while household conflict also depended on family and local custom. Separated spouses needed lodging, care for children and an explanation to kin or clergy. Reconciliation, penance and property disputes intertwined; leaving home did not settle every relationship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "After either spouse left, food, housing and childcare became immediate concerns. Relatives might urge a return or provide temporary shelter. Participation in worship and relations with neighbors required dealings with local clergy and family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Elders and clergy might mediate, urge observance of marriage vows or require penance. Property, children and residence still concerned particular households and local authorities. Pastoral counsel alone did not determine dowry or inheritance."
+    }
+  ],
+  "TextMappings": []
+}

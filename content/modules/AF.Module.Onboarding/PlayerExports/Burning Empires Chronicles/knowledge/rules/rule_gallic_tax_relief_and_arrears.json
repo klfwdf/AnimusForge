@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v5",
+  "Keywords": [
+    "Gallic tax relief and arrears"
+  ],
+  "RagShortTexts": [
+    "Julian sought relief in Gaul and resisted pressure through accumulated arrears."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Julian sought relief in Gaul and resisted pressure through accumulated arrears. A sum due in an account was not necessarily food or money a household could surrender. Relief reduced immediate demands while potentially preserving productive households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

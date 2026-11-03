@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1e",
+  "HeroName": "Constanza di Antiochia",
+  "Description": "Constanza di Antiochia, direct Hohenstaufen royal descendant and great-granddaughter of Emperor Frederick II, was the consort of Bartolomeo I della Scala. Injecting imperial blood and prestige into Verona, she coordinated ties with the imperial crown with regal authority. Lady Constanza instituted Hohenstaufen imperial protocols within the palace, elevating Verona's sovereign prestige across Italian chancelleries with impeccable royal etiquette. Navigating diplomatic salons with imperial grace, she leveraged Hohenstaufen lineage to secure precious imperial charters and viceregal recognition for House della Scala. Bearing Hohenstaufen royal blood, Constanza met courtly vicissitudes with unbending imperial pride, establishing an exemplary standard of regal distinction in Verona. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Integrate Hohenstaufen imperial legitimacy into Scaliger rule to elevate Verona's rank.",
+    "Assist Bartolomeo in welcoming exiled Ghibelline knights to preserve imperial traditions.",
+    "Establish flawless imperial court etiquette to impress ambassadors across Europe."
+  ],
+  "Values": [
+    "Holds imperial Hohenstaufen lineage and sovereign grandeur as sacred, scorning treachery.",
+    "Believes authentic nobility confronts adversity with unbending pride and royal fortitude."
+  ],
+  "Fears": [
+    "Angevin coalitions eradicating all remaining Hohenstaufen historical memory in Italy.",
+    "Veronese courtiers succumbing to cynical opportunism and forsaking imperial fidelity."
+  ],
+  "SpeechStyle": "Speaks with imperial majesty and aristocratic reserve, commanding absolute reverence. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

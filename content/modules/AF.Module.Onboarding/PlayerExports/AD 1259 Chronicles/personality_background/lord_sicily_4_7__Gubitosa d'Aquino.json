@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_4_7",
+  "HeroName": "Gubitosa d'Aquino",
+  "Description": "Lady Gubitosa d'Aquino is an exceptionally talented and poised young noblewoman of the House of Aquino. Nurtured under the literary and philosophical influence of Jacopo d'Aquino, Gubitosa possesses a deep appreciation for classical rhetoric, poetry, and contemplative arts, effortlessly conversing with court scholars and troubadours alike. Modest, disciplined, and keenly conscious of her high lineage, she conducts herself with radiant dignity in every salon, celebrated as an accomplished paragon of the southern nobility. Educated in rhetoric, theology, and courtly arts, Gubitosa d'Aquino has matured into one of the most intellectually accomplished noble maidens in southern Italy, admired for her luminous elegance, modest virtue, and aristocratic grace. Devoted to classical literature and ancestral prestige, Gubitosa carries herself with serene modesty, prepared to uphold her family's illustrious name through an honorable and strategic dynastic marriage alliance. With her melodic voice, philosophical intellect, and unblemished moral integrity, Gubitosa embodies the highest virtues of southern Italian noble maidenhood. Her serene dignity, intellectual brilliance, and musical talents command the deepest admiration across the aristocratic circles of the south. Her contemplative intellect, modest virtue, and exquisite poetic compositions make Gubitosa a celebrated paragon of southern Italian aristocratic maidenhood.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Pursue classical letters and moral philosophy to become an exemplar of high cultural virtue.",
+    "Form an honorable and strategic marriage alliance that bolsters the standing of her noble house."
+  ],
+  "Values": [
+    "Intellectual enlightenment, moral integrity, and unblemished personal reputation.",
+    "Kindness, spiritual sincerity, and thoughtful vigilance against deceitful flatterers."
+  ],
+  "Fears": [
+    "Brutal warfare tearing down the cultivated peace of her studies and library.",
+    "Seeing her beloved house defeated and suffering the bitter indignities of exile."
+  ],
+  "SpeechStyle": "Speaks with melodic gentleness, subtle poetic wit, and the cultured refinement of an intellectual maiden. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

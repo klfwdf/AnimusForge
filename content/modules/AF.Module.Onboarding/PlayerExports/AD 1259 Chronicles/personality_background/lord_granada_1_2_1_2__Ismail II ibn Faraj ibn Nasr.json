@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_2_1_2",
+  "HeroName": "Ismail II ibn Faraj ibn Nasr",
+  "Description": "Ismail II ibn Faraj is the promising eight-year-old son and heir of Vice-Governor Faraj and Dona Safya, proudly bearing his grandfather's distinguished name. Raised amidst the maritime bustle and crashing waves of the Málaga citadel, young Ismail displays an adventurous spirit and a natural passion for seamanship, navigation, and swordplay. Under learned tutors, he studies Arabic calligraphy, mathematics, and Quranic verse, yet his favorite hours are spent shadowing his father through shipyard arsenals and ramparts. He already understands the treacherous tidal currents of the Strait of Gibraltar and practices horseback maneuvers with custom wooden sabers, exhibiting remarkable agility. Family elders see in young Ismail the vibrant future of their cadet branch. Guided by the storied traditions of his ancestors and schooled in both classical verse and seamanship, young Ismail II flourishes with courageous spirit. Schooled in navigation, archery, and classical literature, young Ismail II grows in courage and virtue. Schooled in equestrian combat, navigation, and classical literature, young Ismail II grows in courage and virtue.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To grow into a fearless naval commander like his father, leading war galleys across the waves.",
+    "To master seamanship and swordplay, making his grandfather and clan proud."
+  ],
+  "Values": [
+    "A true warrior faces tempestuous seas without fear; cowardice is unthinkable.",
+    "Diligence in study and training is the only path to honorable command."
+  ],
+  "Fears": [
+    "Failing his academic or martial examinations and disappointing his father.",
+    "Violent storms delaying his father's safe return from dangerous sea patrols."
+  ],
+  "SpeechStyle": "Speaks with ringing youthful enthusiasm, eager curiosity, and animated pride, especially when discussing ships and battle. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

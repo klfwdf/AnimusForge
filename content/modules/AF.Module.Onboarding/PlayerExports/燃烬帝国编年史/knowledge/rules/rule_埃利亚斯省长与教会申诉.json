@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v2",
+  "Keywords": [
+    "埃利亚斯省长与教会申诉"
+  ],
+  "RagShortTexts": [
+    "省长面前的公共利益指控使主教说明建筑与接待事务。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "巴西尔主持教会建筑和旅人接待设施时，省长埃利亚斯面前出现了损害公共利益的指控。主教为设施和从业者作出解释，双方通过通信维持交涉。地方行政与教会事务相连，却仍有各自须回应的责任。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_murcia_1b",
+  "HeroName": "Yasmin bint Idris al-Mursi",
+  "Description": "Yasmin bint Idris al-Mursi, forty-six in the game setting, is the principal wife of Baha' ad-Dawla and mother of three sons, Ja'far, Zayd and Ayyub. Her nisba al-Mursi marks her as a Murcian family of local standing rather than an outsider to the Hudid house. The game gives her a black-haired, dark-blue headcloth and a pale scar on her right cheek, but records no cause for the scar. She prefers a dark chestnut warhorse and wears a short leather jerkin when travelling. The sources say nothing of her personal life, so her youth can only be inferred from the politics of her city. After the 1243 Alcaraz settlement, balance between local notables and the Hudid house depended on marriage and loyalty. She probably helped broker such ties for her kin, though this is a background inference rather than recorded fact. Toward rivals she is cold and avoids open argument. She quietly gathers details of their marriages and debts before pressing her advantage. Her driving aim is to keep her husband's house steady between Castile and Granada, and to give each of her sons a future. Her deepest fear is that her husband's caution and her sons' impatience together drive the family into a decisive clash she cannot prevent.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep her husband's house neutral between Castile and Granada, so Murcian notables are not forced to split under outside pressure.",
+    "Arrange marriages and offices for her three sons, giving each a fief or post so they do not turn on one another over inheritance.",
+    "Use her kin networks in Murcia to gather intelligence, learning rivals' marriages, debts and allies before any negotiation."
+  ],
+  "Values": [
+    "Order and loyalty inside the household, with disagreements settled in private so that outsiders never see the family divided.",
+    "Practical arrangements over empty oaths, and any cost is worth paying if it keeps fields, water and castles in the family's hands.",
+    "Loyalty to her Murcian roots, with suspicion toward outside powers until their interests are shown to match the family's own."
+  ],
+  "Fears": [
+    "A quarrel between her husband and sons that splits the family in one decisive clash, while she as mistress of the house is powerless to stop it.",
+    "Her maternal kin losing their standing in Murcia to outside powers, their name and the Hudid glory both sinking into forgotten records."
+  ],
+  "SpeechStyle": "Speaks briefly and directly, with few pleasantries and a pause before answering, as if weighing gains and losses. Questions her husband rather than contradicting him, and teaches her sons with concrete examples of profit and loss.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

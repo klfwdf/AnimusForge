@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v8",
+  "Keywords": [
+    "石塔外的铁工作坊"
+  ],
+  "RagShortTexts": [
+    "米德豪塔外的附属建筑中有铁工作业遗迹，部分建筑压在较早壕沟之上。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "米德豪塔外的附属建筑中有铁工作业遗迹，部分建筑压在较早壕沟之上。居住和生产空间扩展时，旧防线也可能被改变。修理工具需要燃料、铁料与操作空间，塔主人拥有高墙不等于自己生产一切用品。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

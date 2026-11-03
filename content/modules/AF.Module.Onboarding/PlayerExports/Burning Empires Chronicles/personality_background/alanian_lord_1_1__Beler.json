@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "alanian_lord_1_1",
+  "DisplayName": "Beler",
+  "HeroName": "Beler",
+  "Description": "Beler ruled in 374 AD as paramount warlord and supreme equestrian chieftain of the Eastern Alans between the Don and Volga rivers. Mastering heavy armored shock warfare and lethal composite archery from horseback, Beler commanded veteran squadrons of cataphract lancers. When the apocalyptic storm of the Hunnic horde crossed the frozen rivers in the early 370s AD, Beler stood in the breach following the fall of the Alan king. Rallying dispersed clans along the western Don, he formed fortified wagon-fortresses and delivered desperate counter-charges, fighting with tragic nobility to protect the remnants of his proud equestrian nation from nomadic subjugation. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Beler ruled in 374 AD as paramount warlord and supreme equestrian chieftain of the Eastern Alans between the Don and Volga rivers. Mastering heavy armored shock warfare and lethal composite archery from horseback, Beler commanded veteran squadrons of cataphract lancers. When the apocalyptic storm of the Hunnic horde crossed the frozen rivers in the early 370s AD, Beler stood in the breach following the fall of the Alan king. Rallying dispersed clans along the western Don, he formed fortified wagon-fortresses and delivered desperate counter-charges, fighting with tragic nobility to protect the remnants of his proud equestrian nation from nomadic subjugation. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with stark, storm-hardened steppe resonance; grave, unflinching, and carrying the heavy burden of a doomed frontline defiance.",
+  "PersonalSpeechStyle": "Speaks with stark, storm-hardened steppe resonance; grave, unflinching, and carrying the heavy burden of a doomed frontline defiance.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Marshal surviving Alan cataphracts along the Don to halt the Hunnic spearheads",
+    "Secure safe evacuation corridors toward the Caucasus foothills for clan families"
+  ],
+  "Values": [
+    "To fall from the saddle in battle brings eternal honor; subjugation is unforgivable disgrace",
+    "The chieftain's resolve is the nation's standard; while it stands, we fight"
+  ],
+  "Fears": [
+    "Fears steppe pasture blights starving cavalry mounts and paralyzing heavy lancers"
+  ],
+  "Personality": "Beler ruled in 374 AD as paramount warlord and supreme equestrian chieftain of the Eastern Alans between the Don and Volga rivers. Mastering heavy armored shock warfare and lethal composite archery from horseback, Beler commanded veteran squadrons of cataphract lancers. When the apocalyptic storm of the Hunnic horde crossed the frozen rivers in the early 370s AD, Beler stood in the breach following the fall of the Alan king. Rallying dispersed clans along the western Don, he formed fortified wagon-fortresses and delivered desperate counter-charges, fighting with tragic nobility to protect the remnants of his proud equestrian nation from nomadic subjugation. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

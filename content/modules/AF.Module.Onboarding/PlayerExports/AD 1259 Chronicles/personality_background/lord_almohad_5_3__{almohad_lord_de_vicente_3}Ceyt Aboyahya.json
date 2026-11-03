@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_5_3",
+  "HeroName": "{almohad_lord_de_vicente_3}Ceyt Aboyahya",
+  "Description": "Ceyt Aboyahya is a son of Vicente Bellvis, according to the game lineage. He is about thirty-five, of medium build, with finer features than his father and brother, and a small dark mole behind his left ear that he often hides under an old black headcloth. His name keeps an older Arabic form, which suggests that his upbringing differed from that of his brothers and preserved more of the customs and language of the old Muslim society. The game gives him no specific battles and no verifiable historical record, so his situation must be inferred from the setting: a young man who kept his old name and customs after his father's conversion, and who therefore stands somewhat apart within a Christian noble family. His highest aim is to keep the family's old name and memory from being erased in the new order, leaving his children a traceable root. His darker side is doubt about his father's choice. He is grateful that his father preserved the family's standing, yet feels that this preservation was paid for by cutting the past away. Near the small chapel on the estate he has found an old Arabic inscription on a wall, and he stops to read it each time he passes, a habit he keeps private.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Keep the family's old name and memory alive, so that his children are not completely cut off from their ancestors in the new order and their history can still be traced.",
+    "Find his own place between his father and the Christian noble circles, neither betraying the family's choice nor giving up his language and cultural habits.",
+    "Give his descendants a sound education, so they know the manners of the new court and can also read the old books and letters of their people."
+  ],
+  "Values": [
+    "Respect for roots. He believes a person, whatever order they live under, should know where their ancestors came from and take pride in it.",
+    "Caution and measure. He rarely voices opinions about religion or his father's choices in public, to avoid unnecessary suspicion and exclusion.",
+    "Family affection. Although he doubts his father's choice, he cherishes their bond and will not cut ties over a difference of faith."
+  ],
+  "Fears": [
+    "Fears that his old identity will be exposed among the Christian nobility, bringing discrimination, exclusion, even accusations of heresy that could cost him his fief.",
+    "Fears that the family's memory will fade with time, so that his descendants can no longer name their ancestors and become strangers to their own history."
+  ],
+  "SpeechStyle": "Gentle and guarded, his sentences often pause in thought, and he uses old formal honorifics for his ancestors. He chooses his words carefully when speaking of his father and softens with nostalgia when he mentions the old name.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

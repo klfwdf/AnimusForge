@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_golden_gate_and_urban_recovery_a4d78a10",
+  "Keywords": [
+    "Repairing Vladimir's Golden Gate",
+    "Labor around Vladimir's gate"
+  ],
+  "RagShortTexts": [
+    "The Golden Gate expresses defense and authority; repairs after 1238 need craftsmen and materials.",
+    "Gate passages serve guards and daily carriage; congestion disrupts food, fire response and access."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vladimir's Golden Gate displays princely prestige and recalls the losses of 1238. Stonework, surrounding earth and timber defenses and the passage each need care. Materials, transport and skills come from town and countryside. Guards must accommodate food carts and residents or a strong entrance becomes an urban bottleneck."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families near the Golden Gate find work in repairs but share roads and animals with building traffic. Some carry materials or feed guards while still maintaining houses and fields. Fresh goods cannot wait indefinitely at the entrance; residents need guards to distinguish food carriage, family visits and assigned labor."
+    }
+  ],
+  "TextMappings": []
+}

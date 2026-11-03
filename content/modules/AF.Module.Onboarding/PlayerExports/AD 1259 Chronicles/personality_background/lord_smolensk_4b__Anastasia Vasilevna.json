@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Anastasia Vasilevna, daughter of Prince Vasily of Yaroslavl and first consort to Saint Fedor the Black, is a noble matriarch of royal Vladimir blood. Renowned along the upper Volga for her dignified bearing, political astuteness, and calm resolve, she was instrumental in securing the Yaroslavl boyars' allegiance to her husband. Anastasia generously endowed the Transfiguration Monastery in Yaroslavl, patronizing sacred iconography, scriptoria, and civic endowments. During Fedor's military campaigns, she held administrative sway over the grand-ducal capital, maintaining fortress readiness, fair food distribution, and municipal order. Her incorruptible character and regal devotion cemented the legitimacy of her lineage, leaving an immortal legacy of Christian nobility and civic peace. Her steadfast leadership during times of military peril preserved the economic prosperity and spiritual integrity of Yaroslavl through decades of trial. Grand Duchess Anastasia governed the court of Yaroslavl with resolute authority, honoring loyal boyar counselors and establishing unshakeable administrative foundations for the realm. Her dignified council and steadfast patronage of Orthodox shrines established an enduring standard of noble virtue and civic harmony in Yaroslavl. Her royal memory is venerated alongside her husband as a true mother of the Russian land.",
+  "SpeechStyle": "The Volga flows eternally, but righteous governance and true faith alone preserve a sovereign dynasty. Protecting our people is our holy covenant before God, and I shall never waver in my sacred duty.",
+  "Motivations": [
+    "Secure the sovereign prestige of Yaroslavl and foster harmonious cooperation between the princely crown and boyars.",
+    "Sponsor monastic scriptoria and iconographic art, turning Yaroslavl into an illuminated center of spiritual culture."
+  ],
+  "Values": [
+    "Hold dynastic honor, ancestral tradition, and Christian piety as non-negotiable guiding stars of noble conduct.",
+    "Prize regal dignity, steadfast integrity, and unswerving loyalty over opportunistic subservience."
+  ],
+  "Fears": [
+    "Fear bitter dynastic disputes among heirs fracturing the hard-won territorial integrity of Yaroslavl.",
+    "Dread catastrophic warfare destroying the historic churches and monastic treasures along the Volga."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_smolensk_4b",
+  "HeroName": "Anastasia Vasilevna"
+}

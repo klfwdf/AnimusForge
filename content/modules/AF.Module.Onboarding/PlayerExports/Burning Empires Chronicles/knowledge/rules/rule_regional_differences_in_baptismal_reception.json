@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v7",
+  "Keywords": [
+    "Regional differences in baptismal reception"
+  ],
+  "RagShortTexts": [
+    "Changing church affiliation required explaining beliefs and earlier worship to local clergy."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A person moving from one church group to another had to explain earlier beliefs and worship to local clergy. Reception required discussion and judgment, while kin and former acquaintances could continue to influence choices. Changing a name alone did not establish mutual recognition."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

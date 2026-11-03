@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_3_1",
+  "HeroName": "Guy I de la Roche, Lord of Athena",
+  "Description": "Guy I de la Roche, aged fifty-four in 1259, rules over the fertile realms of Attica and Boeotia as Lord of Athens and Thebes. Hailing from a noble Burgundian lineage, he oversaw decades of unprecedented economic flourishing powered by the silk mills of Thebes and maritime commerce through Piraeus. In 1258, asserting his independence in the War of Euboeote Succession, Guy resisted Prince Guillaume of Achaea, suffering defeat at the Battle of Mount Karydi. Refusing to yield sovereign rights, in 1259 Guy made the epic journey to Paris to stand trial before King Louis IX at the Parlement. His eloquent legal defense and noble stature so impressed Saint Louis that he was fully acquitted and slated for elevation as the first official Duke of Athens. Guy's enlightened rule spared Athens and Thebes from the devastating feudal feuds that consumed the southern Morea. His protective commercial edicts fostered world-renowned silk manufactories, filling ducal vaults with hard coin from across the Mediterranean. A master of jurisprudence and diplomatic finance, he outmaneuvers rivals in royal courts with steadfast composure and consummate statecraft. Elevated by Saint Louis in Paris, Guy demonstrated that wise statecraft and financial prosperity outshine brutal conquest. Under his prudent guidance, Athens and Thebes enjoy a golden age of commerce and tranquility amidst the stormy conflicts of thirteenth-century Greece.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with seasoned Burgundian moderation and legal acumen, persuasive and measured, commanding innate authority without raising his voice.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

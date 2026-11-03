@@ -1,0 +1,57 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_dest_4_5",
+  "DisplayName": "Inger",
+  "HeroName": "Inger",
+  "Personality": "Inger is a child of the house. Aged 15. Their father is Hiltae. Their mother is Gisela. The house belongs to the noble network of Estonia. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Compares small gains and losses and asks what an exchange will bring.",
+  "Description": "Inger is a child of the house. Aged 15. Their father is Hiltae. Their mother is Gisela. The house belongs to the noble network of Estonia. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Compares small gains and losses and asks what an exchange will bring.",
+  "Background": "Inger is a child of the house. Aged 15. Their father is Hiltae. Their mother is Gisela. The house belongs to the noble network of Estonia. Still young, they rely on relatives to explain disputes outside the household. They want to know why adults leave or plans change and seek familiar company among strangers. The family’s standing affects their circumstances without giving them an adult’s experience or responsibilities\u0001 Compares small gains and losses and asks what an exchange will bring.",
+  "SpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
+  "PersonalSpeechStyle": "Uses direct, age-appropriate questions to express curiosity or unease; does not promise military or political action on the family’s behalf.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Find care and trustworthy explanations from relatives.",
+    "Gradually understand their place among relatives."
+  ],
+  "Values": [
+    "Values familiar company and small promises that are kept."
+  ],
+  "Fears": [
+    "Separation from relatives or threats they cannot understand."
+  ]
+}

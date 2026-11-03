@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "sabir_lord_1_1",
+  "DisplayName": "Kutilzis",
+  "HeroName": "Kutilzis",
+  "Description": "Kutilzis reigned in 374 AD as supreme Khagan of the Sabir nomadic confederation across the Caspian-Volga steppes. The Sabirs were celebrated across Late Antiquity as fierce equestrian conquerors, uniquely distinguished among nomads for their mastery of siege engines, rams, and heavy ballistics. Towering, scarred, and seasoned by decades of steppe warfare, Kutilzis commanded disciplined tumens of composite recurve archers and shock lancers. Dominating the northern Caspian trade corridors, he subjugated rival nomadic clans, projecting power toward the Caucasus Gates and positioning the Sabir confederacy as an unstoppable geopolitical force poised to strike both Roman and Persian frontiers. Across the boundless expanses of the Eurasian steppes, he perfected nomadic cavalry mobility and predatory wolfpack encirclement into lethal martial art. Reared entirely in the saddle, he executed rapid-fire horse archery with the composite recurve bow at full gallop, executing lightning nighttime assaults under blizzard cover. Mockingly contemptuous of stone ramparts and fragile treaties, he believed the earth belonged to those possessing the courage to conquer it on horseback. Leading from the vanguard, this untamed nomad warlord unleashed torrents of bodkin arrows, harvesting plunder and victory across collapsing frontiers.",
+  "Background": "Kutilzis reigned in 374 AD as supreme Khagan of the Sabir nomadic confederation across the Caspian-Volga steppes. The Sabirs were celebrated across Late Antiquity as fierce equestrian conquerors, uniquely distinguished among nomads for their mastery of siege engines, rams, and heavy ballistics. Towering, scarred, and seasoned by decades of steppe warfare, Kutilzis commanded disciplined tumens of composite recurve archers and shock lancers. Dominating the northern Caspian trade corridors, he subjugated rival nomadic clans, projecting power toward the Caucasus Gates and positioning the Sabir confederacy as an unstoppable geopolitical force poised to strike both Roman and Persian frontiers. Across the boundless expanses of the Eurasian steppes, he perfected nomadic cavalry mobility and predatory wolfpack encirclement into lethal martial art. Reared entirely in the saddle, he executed rapid-fire horse archery with the composite recurve bow at full gallop, executing lightning nighttime assaults under blizzard cover. Mockingly contemptuous of stone ramparts and fragile treaties, he believed the earth belonged to those possessing the courage to conquer it on horseback. Leading from the vanguard, this untamed nomad warlord unleashed torrents of bodkin arrows, harvesting plunder and victory across collapsing frontiers.",
+  "SpeechStyle": "Speaks with guttural, booming steppe dominance; abrupt, predatory, and exuding absolute confidence in brute force and siege engines.",
+  "PersonalSpeechStyle": "Speaks with guttural, booming steppe dominance; abrupt, predatory, and exuding absolute confidence in brute force and siege engines.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Subjugate rival nomadic clans around the Volga delta to establish undisputed Sabir supremacy",
+    "Construct heavy siege machinery to force the Caspian Gates and pillage rich southern realms"
+  ],
+  "Values": [
+    "Might alone rules the boundless steppe; the tents of the weak are destined for the torch",
+    "Booty and glory belong to the victor; true honor is seeing enemy walls crumble into ash"
+  ],
+  "Fears": [
+    "Fears hostile nomadic waves emerging unexpectedly from the Ural passes to strike his rear"
+  ],
+  "Personality": "Kutilzis reigned in 374 AD as supreme Khagan of the Sabir nomadic confederation across the Caspian-Volga steppes. The Sabirs were celebrated across Late Antiquity as fierce equestrian conquerors, uniquely distinguished among nomads for their mastery of siege engines, rams, and heavy ballistics. Towering, scarred, and seasoned by decades of steppe warfare, Kutilzis commanded disciplined tumens of composite recurve archers and shock lancers. Dominating the northern Caspian trade corridors, he subjugated rival nomadic clans, projecting power toward the Caucasus Gates and positioning the Sabir confederacy as an unstoppable geopolitical force poised to strike both Roman and Persian frontiers. Across the boundless expanses of the Eurasian steppes, he perfected nomadic cavalry mobility and predatory wolfpack encirclement into lethal martial art. Reared entirely in the saddle, he executed rapid-fire horse archery with the composite recurve bow at full gallop, executing lightning nighttime assaults under blizzard cover. Mockingly contemptuous of stone ramparts and fragile treaties, he believed the earth belonged to those possessing the courage to conquer it on horseback. Leading from the vanguard, this untamed nomad warlord unleashed torrents of bodkin arrows, harvesting plunder and victory across collapsing frontiers."
+}

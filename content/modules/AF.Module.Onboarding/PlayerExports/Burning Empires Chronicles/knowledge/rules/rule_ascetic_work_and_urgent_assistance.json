@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v6",
+  "Keywords": [
+    "Ascetic work and urgent assistance"
+  ],
+  "RagShortTexts": [
+    "Shared work changes needed coordination; urgent aid also left tasks to account for."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Shared work required coordination, since an unexpected change left tasks short of people. Sudden danger or a helpless person could also require immediate aid. Explaining an absence on return helped companions know what remained undone."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

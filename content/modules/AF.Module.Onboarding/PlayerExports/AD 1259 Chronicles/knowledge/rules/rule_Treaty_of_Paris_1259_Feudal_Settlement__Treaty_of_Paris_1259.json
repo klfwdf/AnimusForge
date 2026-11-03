@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Treaty_of_Paris_1259_Feudal_Settlement",
+  "Keywords": [
+    "Anglo-French Paris peace negotiations"
+  ],
+  "RagShortTexts": [
+    "Anglo-French Paris peace negotiations concerns current rights and obligations."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Paris negotiations in 1259 concerned Henry III’s continental rights: renunciations in return for recognition of retained lands and homage to Louis IX. Negotiated terms, formal assent and performed homage were distinct. England itself was not the proposed French fief; Gascon revenue, jurisdiction and loyalties still required decisions."
+    }
+  ],
+  "TextMappings": []
+}

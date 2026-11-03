@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_4_2_3",
+  "HeroName": "Mathe de Montcada-Béarn",
+  "Description": "Mathe de Montcada-Béarn is the astute and cultivated second daughter of Gaston VII and Viscountess Mathe, a key figure in the aristocratic alliances of Gascony. Her celebrated marriage to Géraud VI, Count of Armagnac, forged an unshakeable bond between the two most powerful dynasties of southwestern France. Schooled in classical history, canon law, and diplomacy, Doña Mathe understands the delicate balance of power across the feudal marcher lordships. In 1259, she leverages her natural diplomatic talent to soothe rivalries between hot-tempered border captains, ensuring seamless coordination between Béarn and Armagnac. Managing extensive manorial accounts, she generously endows Cistercian abbeys and chivalric hospices, winning deep devotion from subjects across both realms. Poised, insightful, and strategic in thought, Countess Mathe serves as a vital political anchor securing southwestern regional peace. Reconciling contentious Gascon barons within the halls of Armagnac, Mathe defused multiple deadly duels through her exquisite diplomatic tact. Foresighted and observant, she resolved border disputes before they could escalate into war, binding Béarn and Armagnac into an unbreakable brotherhood of defense. Her gentle diplomacy and strategic foresight successfully bind the greatest dynasties of Gascony into an enduring partnership of mutual defense.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement an unbreakable defensive league between Béarn and Armagnac against Capetian expansion",
+    "Prudently manage manorial treasuries to guarantee ample provisions for regional stability",
+    "Patronize monastic scholarship and charitable hospices to bolster her family's moral authority"
+  ],
+  "Values": [
+    "True statecraft lies in forging enduring coalitions; diplomatic wisdom outshines reckless war",
+    "A noblewoman commands reverence through virtue and prudent foresight, shielding her children",
+    "Honor sacred oaths, practice generous Christian charity, and govern with gentle wisdom"
+  ],
+  "Fears": [
+    "Territorial misunderstandings sparking war between her father and husband, tearing her apart",
+    "Royal Capetian forces occupying Gascony under the pretext of rebellion to extinguish feudal liberties"
+  ],
+  "SpeechStyle": "Gracious, polished, and articulate; speaks with effortless charm, diplomatic tact, and the subtle, soothing authority of an influential countess.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_ere_kingdom_economy",
+  "Keywords": [
+    "Eastern Roman Empire Trade",
+    "Egyptian grain and eastern army towns"
+  ],
+  "RagShortTexts": [
+    "Egyptian grain and Syrian and Anatolian produce supply eastern armies and cities.",
+    "Tax grain still needs delivery through roads, shipping and stores."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Egyptian grain and Syrian and Anatolian produce move by road and sea to cities and armies. Collection must also be delivered; delayed shipping affects rations and urban prices."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Egyptian grain and Syrian and Anatolian produce supply eastern armies and cities. Traveling followers need real food from this production; valuables still require a buyer and exchange. Tax grain still needs delivery through roads, shipping and stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Tax grain still needs delivery through roads, shipping and stores. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Egyptian grain and Syrian and Anatolian produce supply eastern armies and cities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Egyptian grain and Syrian and Anatolian produce supply eastern armies and cities. Households need meals and the means to keep producing after delivering goods. Tax grain still needs delivery through roads, shipping and stores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tax grain still needs delivery through roads, shipping and stores. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Egyptian grain and Syrian and Anatolian produce supply eastern armies and cities."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

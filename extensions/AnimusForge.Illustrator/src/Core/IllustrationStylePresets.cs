@@ -28,7 +28,7 @@ namespace AnimusForge.Illustrator.Core
     /// </summary>
     internal static class IllustrationStylePresets
     {
-        private static readonly IllustrationStylePreset ClassicOil = new IllustrationStylePreset(
+        private static readonly PromptLanguageValue<IllustrationStylePreset> ClassicOilByLanguage = new PromptLanguageValue<IllustrationStylePreset>(() => new IllustrationStylePreset(
             IllustratorText.Get("Style_754") +
             IllustratorText.Get("Style_755") +
             IllustratorText.Get("Style_756") +
@@ -39,24 +39,28 @@ namespace AnimusForge.Illustrator.Core
             IllustratorText.Get("Style_761") +
             IllustratorText.Get("Style_762"),
             null,
-            IllustratorText.Get("Style_763"));
+            IllustratorText.Get("Style_763")));
+        private static IllustrationStylePreset ClassicOil => ClassicOilByLanguage.Value;
 
-        private static readonly IllustrationStylePreset DarkEpic = new IllustrationStylePreset(
+        private static readonly PromptLanguageValue<IllustrationStylePreset> DarkEpicByLanguage = new PromptLanguageValue<IllustrationStylePreset>(() => new IllustrationStylePreset(
             IllustratorText.Get("Style_764"),
             IllustratorText.Get("Style_765"),
-            "bright cheerful colors, cartoon, anime, cel shading, clean untarnished surfaces");
+            "bright cheerful colors, cartoon, anime, cel shading, clean untarnished surfaces"));
+        private static IllustrationStylePreset DarkEpic => DarkEpicByLanguage.Value;
 
-        private static readonly IllustrationStylePreset Cinematic = new IllustrationStylePreset(
+        private static readonly PromptLanguageValue<IllustrationStylePreset> CinematicByLanguage = new PromptLanguageValue<IllustrationStylePreset>(() => new IllustrationStylePreset(
             IllustratorText.Get("Style_766"),
             IllustratorText.Get("Style_767"),
-            "flat lighting, washed-out colors, cartoon, anime, cluttered composition");
+            "flat lighting, washed-out colors, cartoon, anime, cluttered composition"));
+        private static IllustrationStylePreset Cinematic => CinematicByLanguage.Value;
 
-        private static readonly IllustrationStylePreset MosanArt = new IllustrationStylePreset(
+        private static readonly PromptLanguageValue<IllustrationStylePreset> MosanArtByLanguage = new PromptLanguageValue<IllustrationStylePreset>(() => new IllustrationStylePreset(
             IllustratorText.Get("Style_768"),
             IllustratorText.Get("Style_769"),
-            IllustratorText.Get("Style_770"));
+            IllustratorText.Get("Style_770")));
+        private static IllustrationStylePreset MosanArt => MosanArtByLanguage.Value;
 
-        private static readonly IllustrationStylePreset NarrativeAnime = new IllustrationStylePreset(
+        private static readonly PromptLanguageValue<IllustrationStylePreset> NarrativeAnimeByLanguage = new PromptLanguageValue<IllustrationStylePreset>(() => new IllustrationStylePreset(
             IllustratorText.Get("Style_771") +
             IllustratorText.Get("Style_772") +
             IllustratorText.Get("Style_773") +
@@ -67,13 +71,16 @@ namespace AnimusForge.Illustrator.Core
             IllustratorText.Get("Style_778") +
             IllustratorText.Get("Style_779"),
             null,
-            "chibi, oversized anime eyes, thick comic outlines, flat vector art, rough sketch, plastic skin, 3d game render, photographic rendering, heavy impasto, muddy colors, excessive bloom");
+            "chibi, oversized anime eyes, thick comic outlines, flat vector art, rough sketch, plastic skin, 3d game render, photographic rendering, heavy impasto, muddy colors, excessive bloom"));
+        private static IllustrationStylePreset NarrativeAnime => NarrativeAnimeByLanguage.Value;
 
-        private static readonly IllustrationStylePreset Vivid = new IllustrationStylePreset(
-            IllustratorText.Get("Style_780"), null, "dull colors, washed out, cartoon, anime", "vivid");
+        private static readonly PromptLanguageValue<IllustrationStylePreset> VividByLanguage = new PromptLanguageValue<IllustrationStylePreset>(() => new IllustrationStylePreset(
+            IllustratorText.Get("Style_780"), null, "dull colors, washed out, cartoon, anime", "vivid"));
+        private static IllustrationStylePreset Vivid => VividByLanguage.Value;
 
-        private static readonly IllustrationStylePreset Natural = new IllustrationStylePreset(
-            IllustratorText.Get("Style_781"), null, "oversaturated, cartoon, anime", "natural");
+        private static readonly PromptLanguageValue<IllustrationStylePreset> NaturalByLanguage = new PromptLanguageValue<IllustrationStylePreset>(() => new IllustrationStylePreset(
+            IllustratorText.Get("Style_781"), null, "oversaturated, cartoon, anime", "natural"));
+        private static IllustrationStylePreset Natural => NaturalByLanguage.Value;
 
         internal static IllustrationStylePreset Resolve(string selectedStyle, string customStylePrompt)
         {

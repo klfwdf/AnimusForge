@@ -317,7 +317,7 @@ private bool TryReplayPartyAction(
             return false;
         }
         factText = EconomySourceTexts.Get("S065") + (itemName ?? lookup)
-            + " ×" + actual.ToString(CultureInfo.InvariantCulture) + "。";
+            + " \u00D7" + actual.ToString(CultureInfo.InvariantCulture) + EconomySourceTexts.Period;
         return true;
     }
 

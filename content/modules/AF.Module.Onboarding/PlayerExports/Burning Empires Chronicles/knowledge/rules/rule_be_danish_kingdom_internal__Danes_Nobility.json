@@ -1,0 +1,59 @@
+{
+  "Id": "be_danish_kingdom_internal",
+  "Keywords": [
+    "Danes Nobility",
+    "Danish vessel contributions and shares"
+  ],
+  "RagShortTexts": [
+    "Dan relies on local chiefs, vessel owners and followers.",
+    "Voyage share disputes spread through kin connections."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dan needs chiefs, owners and followers. Joint voyages pool different households’ ships, food and people, while distribution disputes spread through kin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Dan relies on local chiefs, vessel owners and followers. Followers retain family ties; decisions about guards and distant service affect common participation. Voyage share disputes spread through kin connections."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Voyage share disputes spread through kin connections. Coordination allocates actual supply and protection duties, not merely titles. Dan relies on local chiefs, vessel owners and followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Dan relies on local chiefs, vessel owners and followers. Households compare burdens with neighbors; unmatched protection weakens cooperation. Voyage share disputes spread through kin connections."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Voyage share disputes spread through kin connections. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Dan relies on local chiefs, vessel owners and followers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

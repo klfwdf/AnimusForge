@@ -647,11 +647,11 @@ internal static class PolicyEffectSaveCodec
 			: module.Descriptor.PlayerDisplayName.Trim();
 		if (normalized.RuntimeInstance.Payload is NumericPolicyEffectPayload numericPayload)
 		{
-			return displayName + "：" + DescribeRawPlayerVisibleNumericValue(module.Descriptor, numericPayload.Value);
+			return displayName + PolicyCompatibilityTexts.Colon + DescribeRawPlayerVisibleNumericValue(module.Descriptor, numericPayload.Value);
 		}
 		return string.IsNullOrWhiteSpace(payloadText)
 			? displayName
-			: displayName + "：" + payloadText.Trim();
+			: displayName + PolicyCompatibilityTexts.Colon + payloadText.Trim();
 	}
 
 	private static string DescribeRawDisplayGroup(
@@ -674,7 +674,7 @@ internal static class PolicyEffectSaveCodec
 			{
 				parts.Add(PolicyCompatibilityTexts.Get("SaveCodec_EliteDailyPrefix") + FormatSignedPlayerVisibleNumber(daily));
 			}
-			return PolicyCompatibilityTexts.Get("SaveCodec_InfluenceLabel") + (parts.Count > 0 ? string.Join("；", parts) : PolicyCompatibilityTexts.Get("SaveCodec_EliteNoChange"));
+			return PolicyCompatibilityTexts.Get("SaveCodec_InfluenceLabel") + (parts.Count > 0 ? string.Join(PolicyCompatibilityTexts.Semicolon, parts) : PolicyCompatibilityTexts.Get("SaveCodec_EliteNoChange"));
 		}
 		if (string.Equals(displayGroup, "heroGold", StringComparison.Ordinal))
 		{
@@ -689,7 +689,7 @@ internal static class PolicyEffectSaveCodec
 			{
 				parts.Add(PolicyCompatibilityTexts.Get("SaveCodec_EliteDailyPrefix") + FormatSignedPlayerVisibleNumber(daily));
 			}
-			return PolicyCompatibilityTexts.Get("SaveCodec_DenarsLabel") + (parts.Count > 0 ? string.Join("；", parts) : PolicyCompatibilityTexts.Get("SaveCodec_EliteNoChange"));
+			return PolicyCompatibilityTexts.Get("SaveCodec_DenarsLabel") + (parts.Count > 0 ? string.Join(PolicyCompatibilityTexts.Semicolon, parts) : PolicyCompatibilityTexts.Get("SaveCodec_EliteNoChange"));
 		}
 		if (string.Equals(displayGroup, "soldierTroopXp", StringComparison.Ordinal))
 		{
@@ -704,7 +704,7 @@ internal static class PolicyEffectSaveCodec
 			{
 				parts.Add(PolicyCompatibilityTexts.Get("SaveCodec_EliteDailyPrefix") + FormatSignedPlayerVisibleNumber(daily) + PolicyCompatibilityTexts.Get("SaveCodec_EliteDailySuffix"));
 			}
-			return PolicyCompatibilityTexts.Get("SaveCodec_EliteLabel") + (parts.Count > 0 ? string.Join("；", parts) : PolicyCompatibilityTexts.Get("SaveCodec_EliteNoChange"));
+			return PolicyCompatibilityTexts.Get("SaveCodec_EliteLabel") + (parts.Count > 0 ? string.Join(PolicyCompatibilityTexts.Semicolon, parts) : PolicyCompatibilityTexts.Get("SaveCodec_EliteNoChange"));
 		}
 		if (string.Equals(displayGroup, "partySizeLimit", StringComparison.Ordinal))
 		{
@@ -746,7 +746,7 @@ internal static class PolicyEffectSaveCodec
 					: normalized.Module.Descriptor.PlayerDisplayName.Trim();
 				return string.IsNullOrWhiteSpace(payloadText)
 					? displayName
-					: displayName + "：" + payloadText.Trim();
+					: displayName + PolicyCompatibilityTexts.Colon + payloadText.Trim();
 			}
 			return displayGroup + "=" + payloadText;
 		}

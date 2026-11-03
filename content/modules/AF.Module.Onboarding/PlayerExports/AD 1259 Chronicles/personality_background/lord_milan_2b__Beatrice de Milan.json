@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_2b",
+  "HeroName": "Beatrice de Milan",
+  "Description": "Beatrice de Milan, hailing from high Milanese patrician blood, was the noble consort of Marquis Manfred II de Lancia. Amidst brutal factional wars between Ghibellines and Guelfs, she leveraged diplomatic lineage and steadfast devotion to coordinate vital supplies and alliances. Lady Beatrice coordinated clandestine grain depots across Milan, utilizing patrician family ties to smuggle vital flour and metallurgical arms past blockades to relieve the imperial garrison of Busca. Navigating tense Milanese salons with immaculate patrician tact, she leveraged inside knowledge of Torriani-Visconti feuds to neutralize secret denunciations aimed at Lancia garrisons. Serene amidst political tempests, Lady Beatrice preserved the noble bloodline and ancestral manors of House Lancia through unyielding perseverance and masterly diplomatic mediation. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Coordinate municipal logistics in Milan to keep Manfred's imperial troops supplied with grain.",
+    "Protect family manors across Milan and Busca from marauding mercenaries and peasant mobs.",
+    "Shelter war widows of fallen Hohenstaufen loyalists, earning deep moral reverence in Milan."
+  ],
+  "Values": [
+    "Believes true noblewomanhood shines through unwavering courage as an anchor for her husband.",
+    "Holds covenantal honor sacred, viewing broken treaties as an unforgivable stain upon the soul."
+  ],
+  "Fears": [
+    "Her husband Manfred perishing in the muddy slaughters along the Po valley.",
+    "Guelf mobs breaching Milanese gates to sack and burn her ancestral residence."
+  ],
+  "SpeechStyle": "Speaks with serene composure and moral dignity, projecting patrician Milanese nobility. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

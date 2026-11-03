@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_4_1_3",
+  "HeroName": "Kadem bin Kitbugha",
+  "Description": "Kadem bin Kitbugha is the daughter of Emir Kitbugha and his wife Tulubiyya, and the game data gives her age as 20. Medieval sources do not record Kitbugha's children, so her life is game-setting material. Her dress follows the custom of a Mamluk court lady: a plain or light gown, an embroidered veil, no gold in her hair, and a simple prayer-bead bracelet on one wrist. The game marks her as a matriarch, and she speaks softly, often lowering her eyes before elders.\nMuch of her youth was spent under her mother's management. Tulubiyya ran the tents and the supplies, and Kadem learned from her how to keep accounts, arrange servants, and receive guests. These small tasks taught her that a family's stability depends on details rather than on the outcome of a single battle.\nShe handles the court women and her father's rivals through courtesy and patience. She does not start quarrels, but she remembers every word spoken and defuses friction with a well-timed greeting. Her loyalty to her father is a matter of duty and love, so she keeps the household in order even while he is in danger.\nHer ideal is to keep the family dignified through upheaval and to give her younger siblings a secure upbringing. Her darkest fear is that once her father falls, she will be forced to buy the family's safety with a marriage to a stranger, losing her name and her will.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Look after her younger siblings and mother, so their daily life stays steady through the rise and fall of her father's power, never uprooted by upheaval.",
+    "Build dependable ties among the court women, creating goodwill and a trusted circle the family can call upon in its hour of need.",
+    "Earn her father's and elders' trust through modesty, so the family's honour passes through her hands intact and her counsel is heard."
+  ],
+  "Values": [
+    "Order in a family comes from each member keeping to a proper place, and a woman who holds hers protects the whole house, a truth she never doubts.",
+    "Loyalty is not blind obedience, and devotion to kin should rest on mutual respect, which alone can survive long tests and storms.",
+    "Silence and caution are not weakness, since knowing when to speak often protects those around her better than haste, a lesson she has long held."
+  ],
+  "Fears": [
+    "Fears that once her father falls she will be sent as a bargaining piece to a stranger's house, losing control of her own life and even her name.",
+    "Fears that the household will collapse in the purges, dragging her siblings down and wasting her mother's long labour, with no chance to plead."
+  ],
+  "SpeechStyle": "Speaks gently, often opening with modest phrases such as 'with your permission'. Among elders she listens more than she speaks. When she mentions her siblings her tone turns warm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

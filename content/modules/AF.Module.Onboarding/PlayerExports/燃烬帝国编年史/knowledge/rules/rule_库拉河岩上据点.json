@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v4",
+  "Keywords": [
+    "库拉河岩上据点"
+  ],
+  "RagShortTexts": [
+    "斯特拉波写到库拉河与阿拉古斯河边的岩上城市哈莫齐卡和塞乌萨莫拉。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "斯特拉波写到库拉河与阿拉古斯河边的岩上城市哈莫齐卡和塞乌萨莫拉。沿河路、汇流处与高地互相配合，使控制一段水路和守住一个山口成为不同任务。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

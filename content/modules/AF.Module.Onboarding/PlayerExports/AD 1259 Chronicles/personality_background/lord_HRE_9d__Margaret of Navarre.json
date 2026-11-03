@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_9d",
+  "HeroName": "Margaret of Navarre",
+  "Description": "Margaret of Navarre is the royal daughter of King Theobald I of Navarre (Count Theobald IV of Champagne, the celebrated Trouvère King), married to Duke Friedrich III of Lorraine. Her illustrious arrival infused the stern, battle-hardened halls of Nancy with the courtly brilliance and lyric refinement of Champagne. Bringing a magnificent royal dowry and invaluable diplomatic channels to the Capetian court, she served as Friedrich's most trusted confidante in navigating intricate Franco-Imperial relations. A passionate patron of troubadours, chroniclers, and monastic scriptoriums, Margaret patronized Gothic architectural endeavors and chivalric arts, turning Nancy into a vibrant cultural crossroads where French and German traditions harmoniously met. During Duke Friedrich's grueling campaigns around Metz and Flanders, Margaret calmly governed palace affairs and inspected defensive supplies, revered by townsfolk and vassals as the radiant heart of the ducal realm. Duchess Margaret cultivated lyric poetry and Parisian jurisprudence across the chanceries of Nancy, endowing Romanesque and Gothic hospital wings within local abbeys. Conversing with envoys from Paris and Strasbourg with effortless erudition, her diplomatic charm smoothed over bitter feuds provoked by her husband's fiery temper, radiating as a cherished flower of chivalry across the Lorrainese frontier. Her cultural patronage and noble grace crowned Nancy with enduring courtly brilliance and diplomatic stature.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Deepen the diplomatic partnership between Champagne and Lorraine, preventing direct Capetian annexation.",
+    "Dispense patronage across Nancy to support cathedrals and hospices, elevating the ducal house's renown."
+  ],
+  "Values": [
+    "Regards chivalric breeding, literary culture, and pious charity as indispensable marks of true royal blood.",
+    "Believes courtly mediation can bridge ancient animosities that endless bloodshed cannot extinguish."
+  ],
+  "Fears": [
+    "Fears succession crises in Navarre and Champagne depriving her of maternal backing in Nancy.",
+    "Worries her husband's fondness for aggressive warfare will leave young orphans amidst hungry wolves."
+  ],
+  "SpeechStyle": "Lutes may soothe the bruises beneath iron armor, and wisdom heals bitter princely divisions; Nancy requires both valiant steel and courtly grace. In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Margaret of Navarre"
+}

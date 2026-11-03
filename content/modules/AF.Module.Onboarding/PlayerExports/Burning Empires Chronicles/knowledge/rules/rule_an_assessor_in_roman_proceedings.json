@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v5",
+  "Keywords": [
+    "An assessor in Roman proceedings"
+  ],
+  "RagShortTexts": [
+    "Hymetius’s proceedings involved his assessor Frontinus over the drafting of a letter."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hymetius’s proceedings involved his assessor Frontinus over the drafting of a letter. Administrative writing could draw an assistant into a superior’s case. Writing, agreeing and performing an alleged act remained different facts; office proved neither immunity nor guilt."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

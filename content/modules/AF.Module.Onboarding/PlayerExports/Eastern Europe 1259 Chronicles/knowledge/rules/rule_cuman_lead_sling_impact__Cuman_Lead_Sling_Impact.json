@@ -1,0 +1,53 @@
+{
+  "Id": "rule_cuman_lead_sling_impact",
+  "Keywords": [
+    "Slings and their ammunition",
+    "Sling ammunition and practice",
+    "Sling clearance among friendly troops"
+  ],
+  "RagShortTexts": [
+    "Slings need practice, suitable missiles and clearance from friendly troops.",
+    "Stone and lead missiles differ in cost; river stones need selection and transport."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A sling user on the steppe margin or beside a Rus town needs swinging room and familiar missiles. River stones are accessible but require selection; lead consumes metal and work. Shooting over shields does not guarantee a hit. Wind, sight lines and friendly spacing affect usable positions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A slinger needs a position clear of companions, and not every river stone suits his practiced throw. Missiles add marching weight, while gathering them at contact can cost a position. Shots are difficult to recover; judgment and practice matter more than an extra bag issued at the last moment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A leader needs practiced users, deployment space and ammunition arrangements. Stone, lead and transport impose different costs. Assigning men does not replace training. Positions at walls, banks or open ground must account for friendly troops and movement behind them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ammunition suppliers select and carry material or work metal. Every bag displaces food or equipment on a cart. Communities supplying missiles and men still need productive labor, and debris left in fields can create clearance work after fighting."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

@@ -1,0 +1,108 @@
+{
+  "Id": "rule_punic_21",
+  "Name": "埃布罗河口海战与西地中海制海权争夺",
+  "Description": "公元前217年春，罗马舰队在马西利亚向导协助下于埃布罗河口奇袭哈斯德鲁拔的迦太基舰队，击沉俘获大批五列桨战船，彻底确立罗马在伊比利亚沿岸的绝对制海权。",
+  "Tags": [
+    "埃布罗河海战",
+    "格奈乌斯·西庇阿",
+    "哈斯德鲁拔·巴卡",
+    "五列桨战船",
+    "马西利亚同盟",
+    "制海权"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前217年春罗马战船在埃布罗河口伏击迦太基四十艘五列桨战船。",
+    "马西利亚同盟舰队精湛的航海技术帮助罗马舰队达成海上奇袭。",
+    "此役击溃迦太基海上舰队并彻底确立了罗马在伊比利亚沿岸的制海权。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃布罗河口的辉煌大捷彻底粉碎了迦太基的海上妄想！哈斯德鲁拔狂妄地带着四十艘战舰沿海岸北进，自以为能海陆并进。但在马西利亚盟友快船的侦察与引导下，西庇阿的三十五艘战舰顺风突袭，撞碎了迦太基旗舰，俘虏了二十九艘完好无损的战船！从此，伊比利亚的每一处海湾都处于罗马海军的铁锁之下！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是极度惨痛的海战溃败。我们的水手在河口松懈无备，当罗马舰队从海雾中杀出时，舰队甚至来不及列成战线，许多水兵惊慌失措地将战船冲滩弃舰。制海权的丧失直接切断了我们从水路援助意大利汉尼拔的可能，也让新迦太基的海港时刻暴露在罗马突袭的阴影下。"
+    },
+    {
+      "Priority": 82,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "massalia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马西利亚人对海洋的了解远非罗马人所能比拟！正是我们城邦的引航员和侦察船精准锁定了迦太基停泊的港汊，才有了埃布罗河口的完胜。只要马西利亚与罗马的海上同盟坚不可摧，腓尼基海盗与战舰就休想跨过利古里亚海半步！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前217年春，格奈乌斯·西庇阿率罗马与马西利亚联合舰队在埃布罗河口突袭哈斯德鲁拔·巴卡统率的迦太基海军。罗马大获全胜，缴获并摧毁近三十艘战舰，完全掌握了伊比利亚东海岸的制海权，迫使迦太基放弃了经海路支援汉尼拔的战略构想。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "埃布罗河口海战与西地中海制海权争夺",
+    "rule_punic_21"
+  ]
+}

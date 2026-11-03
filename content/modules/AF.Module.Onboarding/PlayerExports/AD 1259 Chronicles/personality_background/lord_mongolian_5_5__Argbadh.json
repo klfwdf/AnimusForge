@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_5_5",
+  "HeroName": "Argbadh",
+  "Description": "Argbadh is a young woman of slight build, with a small mole between her brows, and she often wears a bronze seal on her belt. Clansmen recognise the seal and know that she keeps the household accounts and the pasture registers. She comes from a junior branch of the fifth clan and grew up learning household management from her mother, who taught her to record horse counts, fodder use and the routes of herders on migration. She admires Sorghaghtani Beki, a figure in the Persian chronicles known for running her appanage and her household with skill, and Argbadh believes a woman who can keep accounts can protect a family better than a man who can only ride. After her marriage to Badai, she quickly became his most trusted adviser. She checks the ledgers before he decides whether to make a marriage or send a gift. Her curiosity is strong. She listens to merchants who describe the tax systems and markets of distant cities, and she writes what she hears in a small notebook she carries at all times. Against rivals she is blunt, and she exposes gaps in their pasture registers in front of others, so they lose face. Her highest aim is to make the family's books so clear that no one can deceive it. Her shadow is fear: that every number she writes could become proof of the family's guilt if its records fall into enemy hands during a war.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the pasture, herd and fodder registers of the fifth clan so precise that no one can alter them, giving her husband Badai reliable figures for every negotiation.",
+    "Study and record the tax systems and market rules of other regions, hoping to bring fairer methods of dividing pastures and spoils back to the steppe.",
+    "Train young women of the clan to keep accounts and manage estates, so that family power is spread among many trustworthy people rather than held by a few riders."
+  ],
+  "Values": [
+    "Accuracy and honesty, because she believes one wrong ledger entry is more dangerous than a lost battle, since it slowly hollows out trust.",
+    "Knowledge as a source of power, because she holds that understanding distant institutions can secure a family's place beyond the steppe more reliably than force alone.",
+    "Loyalty to her husband, because she checks each of his judgements beforehand, and once she decides to support him, she gives full effort without counting cost."
+  ],
+  "Fears": [
+    "Fears that her accounts could be captured in a war and used by enemies as evidence to destroy the family, turning her caution into a fatal weakness.",
+    "Fears that Badai might trust close kinsmen too far in a power struggle, and that she would be unable to expose a betrayal in time to save the clan from isolation."
+  ],
+  "SpeechStyle": "Quick and precise. Argbadh prefers numbers and examples to abstract rhetoric. She stops to confirm what others say, and when she finds a contradiction she asks for an exact date or count. Polite to elders, direct with rivals.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_marinid_1_1",
+  "HeroName": "Abu Yusuf Ya'qub II ibn 'Abd al-Haqq, Marinid Sultan of Morocco",
+  "Description": "Abu Yusuf Ya'qub ibn 'Abd al-Haqq was the fourth son of Abd al-Haqq, the Marinid founder. Before 1258 he served as governor of Taza, and after his brother Abu Yahya died that year he took Fez from his nephew. His physical appearance is a game-setting invention: a lean, hard-riding warrior who wears dark wool robes and an Arab curved sword at his belt. His grand aim was to unite western Maghreb under Marinid rule. His darker side was suspicion of kinsmen, since he relied on relatives to hold provinces yet feared that a brother or nephew would seize power. He died at Algeciras and was buried in the Chellah necropolis he had built.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He aimed to turn the Marinid tribal state into a unified western Maghreb power, with the new city across from Fez replacing the old Almohad capitals as the center of authority.",
+    "He wanted Marinid forces in Algeciras and on both sides of the Strait of Gibraltar ready to fight, so that the family held a voice between Granada and Castile.",
+    "He hoped his heirs and kinsmen would avoid civil war after his death, and that his sons and nephews would accept Marinid legitimacy as the family's chief inheritance."
+  ],
+  "Values": [
+    "Islamic law and the authority of Sunni scholars, shown through patronage of learning and the building of mosques that displayed his piety.",
+    "Tribal descent and Zenata Berber pride, since he still saw himself as a Zenata noble and resented contempt from Arabized city elites.",
+    "Military achievement and administrative efficiency, which led him to reward officials who delivered both battlefield results and tax revenue."
+  ],
+  "Fears": [
+    "A new round of dynastic plots among his kinsmen, since he had seen succession disputes after his brother's death and feared similar fighting after his own.",
+    "Castilian and Aragonese fleets cutting the Strait of Gibraltar supply line, because a sea blockade would leave his garrisons in the peninsula without pay or reinforcements."
+  ],
+  "SpeechStyle": "He speaks in short sentences, often opening with a Quranic verse before giving crisp military orders. He keeps Granadan envoys at courteous distance and addresses kinsmen bluntly.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

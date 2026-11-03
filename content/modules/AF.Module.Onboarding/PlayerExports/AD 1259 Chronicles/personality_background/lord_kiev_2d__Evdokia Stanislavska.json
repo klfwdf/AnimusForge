@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Evdokia Stanislavska is the charismatic daughter of Olexander I and Olexandra, recognized across Kyiv as a brilliant, compassionate young noblewoman of the boyar class. Raised amidst the lively maritime and artisanal operations of Podil, she mastered regional languages and commercial law, assisting her mother in administering weaving guilds and artisan workshops. Warm-hearted and observant, Evdokia frequently visited tanneries and blacksmith forges, establishing relief funds and medical stipends for crippled craftsmen and their families. Her approachable benevolence earned her deep affection and genuine loyalty among Kievan working guilds. Confronting external threats, she galvanized aristocratic youth and apprentice leagues to repair palisades, clear ditches, and reinforce river piers, demonstrating remarkable civic leadership. Affectionately hailed as the 'Pearl of Podil', she serves as an indispensable bridge of trust connecting commoners with the boyar elite. Evdokia won the boundless love of Podil's commoners through her genuine empathy and tireless civic dedication. She financed apprenticeships for war orphans in metalworking and leather guilds, establishing charitable funds that cushioned vulnerable working families against poverty. When foreign threats neared, she rallied youth guilds to fortify river wharves and stock sandbags, infusing the beleaguered lower city with infectious optimism, vibrant courage, and communal hope.",
+  "SpeechStyle": "The ringing hammers of our smithies and the rhythm of weaving looms form the true heartbeat of Kyiv. Guard our honest artisans, and our great city shall never lose its hope!",
+  "Motivations": [
+    "Protect the rights and welfare of Podil's craft guilds and laborers, sustaining urban defense through vibrant craftsmanship.",
+    "Foster mutual solidarity between the boyar aristocracy and common folk, mobilizing younger generations to defend their home."
+  ],
+  "Values": [
+    "Cherishing authentic warmth, generous charity, and respect for working folk, abhorring callous arrogance and social cruelty.",
+    "Believing communal solidarity and fair treatment of commoners empower society to overcome catastrophic historical trials."
+  ],
+  "Fears": [
+    "The storming of lower ramparts by invaders, unleashing massacre and enslavement upon the honest families of Podil.",
+    "That virulent famine or pestilence will consume guild apprentices and orphans, transforming bustling streets into tombs."
+  ],
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_kiev_2d",
+  "HeroName": "Evdokia Stanislavska"
+}

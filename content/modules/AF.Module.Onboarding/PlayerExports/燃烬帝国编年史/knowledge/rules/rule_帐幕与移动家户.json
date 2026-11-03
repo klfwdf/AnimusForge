@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v3",
+  "Keywords": [
+    "帐幕与移动家户"
+  ],
+  "RagShortTexts": [
+    "帐幕家户迁移还须带走食物和孩子，居处与照料反复安排。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "以帐幕为居所的家庭，迁移时还须带走食物、容器和孩子。有人在一处成婚，又在别处生育和养育，居处与照料便要反复安排。家户负担限制持续速度，旧营地空了也不表示全体已经抵达新营。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

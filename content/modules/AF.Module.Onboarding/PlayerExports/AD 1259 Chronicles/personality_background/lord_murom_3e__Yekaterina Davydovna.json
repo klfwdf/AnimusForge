@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Yekaterina Davydovna of Murom, youngest daughter of the saintly princely line, is a noblewoman of sublime purity and active charity. Raised under the holy influence of Saint Euphrosyne, she possesses natural intelligence, gentle humility, and a deep affinity for botanical medicine. Yekaterina established municipal weaving guilds and herbal dispensaries in the lower posad, leading local maidens in sewing winter garments and preparing healing salves. During harsh winter freezes and seasons of refugee distress, she personally directed food distributions to the elderly and war orphans, comforting the afflicted with radiant tenderness. Devoid of courtly vanity, she commanded universal affection among townspeople as the 'White Waterlily of the Oka River.' Her selfless compassion, patient listening, and generous spirit provided an enduring haven of peace and moral elevation amidst the turbulent currents of medieval Rus'.  Her gentle humility, active philanthropy, and dedication to sacred craft workshops along the Oka created an enduring haven of peace and moral elevation amidst the turbulent historical currents of medieval Rus'.  Her gentle humility, active philanthropy, and dedication to sacred craft workshops along the Oka created an enduring haven of peace and moral elevation amidst the turbulent historical currents of medieval Rus'.",
+  "SpeechStyle": "Swords bring only wounds and weeping, but love and mercy heal the deepest afflictions. So long as we support one another in faith, Murom shall remain a blessed haven of warmth and hope. God bless every pure soul!",
+  "Motivations": [
+    "Establish municipal weaving workshops and botanical clinics to provide food, shelter, and medicines for the poor.",
+    "Fund parish churches and monastic iconography to foster spiritual solace and Christian benevolence across Murom."
+  ],
+  "Values": [
+    "Treasure selfless Christian charity, humble generosity, and active mercy as the supreme callings of mortal life.",
+    "Prize quiet humility, peaceable speech, and moral purity over worldly prestige and factional intrigue."
+  ],
+  "Fears": [
+    "Fear infectious outbreaks ravaging crowded refugee hospices, claiming the lives of the most vulnerable citizens.",
+    "Dread marauding soldiers sacking monastic sanctuaries and slaughtering innocent orphans under her care."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_murom_3e",
+  "HeroName": "Yekaterina Davydovna"
+}

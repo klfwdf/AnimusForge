@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Alpine_Passes_St_Gotthard_and_Brenner",
+  "Keywords": [
+    "St Gotthard Alpine Defile",
+    "Brenner Imperial Pass",
+    "Teufelsbrucke Chasm Bridge",
+    "HRE Emperor Transalpine Route"
+  ],
+  "RagShortTexts": [
+    "Alpine passes connect northern markets with routes into Italy.",
+    "Bridges, guides, weather and toll rights determine the practical cost of a crossing."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alpine crossings link the markets and political centres north of the mountains with Italy. The Brenner and the Saint Gotthard routes differ in their approaches, height, bridges and local conditions; neither is simply an empty gap through rock. Pack animals, guides, maintenance and safe stopping places determine what can pass and at what cost. Rulers, churches and communities may hold particular rights to tolls or assistance, making control of a bridge a political as well as practical concern. Snow, damaged paths and shortages of fodder can delay a merchant or an army alike. Local privileges must be read individually rather than turned into one charter shared by every valley."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Foresters of Uri and Schwyz leveraged guardianship over these defiles to extract imperial charters. Guiding pack trains loaded with Flemish woolens and Venetian silks, they collect transit tolls at every bridgehead. Notaries record each toll agreement, and artisans in the market towns below shoe the mules."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Crossing the high passes in late winter is a gamble with snow and rock. Avalanches can come down a gully without warning, and a strung-out column cannot easily turn back. Pack mules pick over frosted planks above the gorge, and one misstep sends animal, load, and rider into the torrent below. Keep to the rope line and never shout across a loaded slope."
+    }
+  ],
+  "TextMappings": []
+}

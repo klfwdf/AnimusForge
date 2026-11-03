@@ -1,0 +1,53 @@
+{
+  "Id": "rule_night_double_mount_reconnaissance",
+  "Keywords": [
+    "Night reconnaissance and remounts",
+    "Night scout mounts and return routes",
+    "Scout reports and relief"
+  ],
+  "RagShortTexts": [
+    "Night scouting needs route knowledge, watch and reporting, with care for remounts.",
+    "Darkness, weather and fatigue limit recognition; a fast return does not ensure a clear report."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Night scouts in Rus woods and on the steppe margin distinguish paths, fires, water and tracks. Remounts share riding work but need fodder, carers and a handover point. Changes in darkness take time. Reports must separate sight, hearsay and inference and reach someone able to act."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A night rider needs a return and assistance point rather than one more distant fire. Fatigue, cold and unfamiliar mounts affect judgment. Sound does not reveal numbers. A report needs place, time and uncertainty so the next scout can check rather than follow an ambiguous alarm."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander needs relief riders and mounts, food, receiving officers and rally instructions. Sending every fast horse far away leaves no messenger reserve. Returning scouts need rest. Reports from different routes help comparison, while decisions must account for time spent bringing the information."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Night scouting uses guides, fodder and lodging. Local guides leave household work and watch duties. Remounts consume village supplies, while false alarms can cause flight. Defined payment, return and warning arrangements reduce losses beyond the military party itself."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_7_4",
+  "HeroName": "Jean I de Viennois, Heir of the Dauphiné",
+  "Description": "Jean I de Viennois is the only son and heir apparent of Dauphin Guigues VII, carrying the martial destiny of the high alpine realm. At nineteen, he is a strapping, vigorous youth possessing natural tactical daring and immense physical stamina, reared in mountain camps and hunting reserves. A ferocious swordsman and fearless rider, Jean chafes under political compromises and hungers to punish border incursions from neighboring Savoy. Beloved by the mountain spearmen of Grenoble and Briançon, he eagerly studies siege doctrines and mountain ambushes alongside veteran castellans. Historical chronicles record that his promising rule as Dauphin would be cut tragically short by a fatal hunting accident, transferring the succession to his sister Anne. But in the vigor of his youth, Jean trains relentlessly, resolved to lead his alpine hawk banners to glorious victory. Every morning, Prince Jean trains relentlessly in full harness upon the frost-chilled tiltyards of Grenoble, earning the vocal admiration of the fiercest drill sergeants. Bold, passionate, and untamed, he yearns to lead his mountain cavalry into decisive battle, his fiery vitality promising an era of glorious triumph for the Dauphiné. His fearless temperament and tactical mastery on the campaign trail command universal dread among adversaries and fierce pride throughout his father's vast alpine domains.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master shock cavalry tactics to crush any incursions launched by the House of Savoy.",
+    "Expand the martial fame of the Dauphiné to establish undisputed regional dominance."
+  ],
+  "Values": [
+    "Chivalric courage and battlefield supremacy as the ultimate measures of nobility.",
+    "Unshakable camaraderie with his men-at-arms and ferocious defense of alpine soil."
+  ],
+  "Fears": [
+    "Suffering unhorsing and capture in battle, bringing dishonor to his lineage.",
+    "Being kept from the front lines by cautious regents while glory is won elsewhere."
+  ],
+  "SpeechStyle": "Speaks with ringing, passionate force, his speech rapid, blunt, and infused with the raw martial fire of a young highland prince hungry for chivalric glory.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

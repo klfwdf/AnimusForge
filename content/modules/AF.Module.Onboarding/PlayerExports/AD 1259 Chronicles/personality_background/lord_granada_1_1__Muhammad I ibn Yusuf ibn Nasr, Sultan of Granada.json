@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_1",
+  "HeroName": "Muhammad I ibn Yusuf ibn Nasr, Sultan of Granada",
+  "Description": "Muhammad I ibn Yusuf ibn Nasr, known as al-Ahmar ('The Red'), is the founder and sovereign architect of the Nasrid Emirate of Granada, the final bastion of Islamic rule in medieval Iberia. Rising from modest origins in Arjona in 1232 amid the collapse of the Almohad Caliphate, he expertly navigated the crushing tide of the Christian Reconquista to enter Granada peacefully in 1238. Facing overwhelming military encirclement by Ferdinand III and Alfonso X of Castile, al-Ahmar exhibited profound geopolitical pragmatism, submitting to tributary vassalage and even lending troops to the siege of Seville to preserve the survival of his fledgling realm. On the red hills of the Sabika, he broke ground on the immortal Alhambra fortress-palace, commissioning the celebrated royal motto 'Wa lā ghāliba illā-Llāh' ('There is no conqueror but God'). Developing extensive irrigation networks along the Darro and Genil rivers, he transformed the Vega of Granada into a thriving agricultural and silk haven, revered by his subjects as an unshakeable shield defending Andalusian civilization. His monumental diplomatic tact, unyielding spiritual fortitude, and visionary urban engineering established an enduring refuge for Andalusian culture, forever cementing Sultan Muhammad I al-Ahmar's immortal legacy across the annals of Islamic civilization.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To preserve the Emirate of Granada as the eternal sanctuary of Islam in Iberia against Christian conquest.",
+    "To fortify the Alhambra complex and secure hydraulic self-sufficiency against catastrophic sieges."
+  ],
+  "Values": [
+    "Dynastic survival transcends transient pride; patient endurance alone secures salvation.",
+    "'There is no conqueror but God'; a ruler must remain humble before the divine while shielding his flock."
+  ],
+  "Fears": [
+    "Castilian crusaders tearing up treaties to launch a war of total extermination.",
+    "Internal tribal factions and baronial allies splintering through treason and petty ambition."
+  ],
+  "SpeechStyle": "Speaks with deep, philosophical solemnity and measured calm, carrying the quiet yet crushing authority of an enduring founder. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_5_1",
+  "HeroName": "Sancha Pais de Agares, Lady of Freitas",
+  "Description": "Doña Sancha Pais de Agares is an esteemed noblewoman from the northern House of Agares, devoted wife and partner to Dom Martim de Freitas. During the harrowing years when her husband held Coimbra Castle against overwhelming siege forces, Sancha demonstrated legendary courage, tending wounded sentries on the parapets and refusing all terms of surrender. Her unbreakable fortitude provided the moral anchor that sustained the garrison throughout their epic trial. In 1259, residing in honored peace within their domains along the Mondego river, Lady Sancha manages the extensive manorial rolls, mills, and agricultural rents of Freitas. A generous patroness of the historic Royal Monastery of Santa Cruz, she maintains charitable hospices for veterans crippled during the civil wars. Combining serene gentleness with an indomitable soul, Sancha stands as a revered exemplar of Portuguese noble womanhood. Maintaining perpetual vigil before the high altar of Santa Cruz de Coimbra, Sancha offered devout prayers for the souls of fallen defenders. Her quiet wisdom and enduring fortitude guided the governance of Freitas, earning the heartfelt affection and veneration of people along the Mondego. Her unbreakable fortitude during prolonged siege and generous monastic patronage make Lady Sancha a revered matriarch in Portuguese history.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prudently govern the domestic estates of Freitas, securing ample grain reserves for the future",
+    "Endow the Monastery of Santa Cruz to support wounded veterans and impoverished tenantries",
+    "Nurture a pure and honorable family culture, ensuring future generations mirror ancestral fidelity"
+  ],
+  "Values": [
+    "A noblewoman's true beauty shines in crisis; standing unflinchingly beside her husband is sacred duty",
+    "Merciful charity and domestic rectitude heal the wounds of war and fulfill divine commandments",
+    "Unwavering fidelity, patient endurance in suffering, and humble reliance upon divine providence"
+  ],
+  "Fears": [
+    "Renewed political warfare plunging her husband into deadly peril and shattering their peace",
+    "Severe flooding along the Mondego destroying tenant villages and drowning valley storehouses"
+  ],
+  "SpeechStyle": "Serene, gentle, and firm; speaks with the quiet gravitas, profound moral clarity, and enduring strength of a matriarch forged in the crucible of war.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

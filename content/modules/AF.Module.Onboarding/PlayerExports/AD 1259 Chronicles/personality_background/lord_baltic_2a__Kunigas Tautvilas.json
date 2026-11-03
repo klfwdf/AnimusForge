@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_baltic_2a",
+  "HeroName": "Kunigas Tautvilas",
+  "Description": "Kunigas Tautvilas reigns as Duke of Polotsk, nephew and primary dynastic rival to King Mindaugas, originating from the ancient and powerful Gardenis princely lineage of Lithuania. A warlord of formidable daring and unyielding baronial ambition, Tautvilas led early military campaigns into Ruthenia before being targeted for dispossession by Mindaugas, sparking an epic civil war across the Baltic. In an audacious diplomatic maneuver to counter his uncle, Tautvilas journeyed to Riga, accepted Catholic baptism from the Archbishop, and assembled an unprecedented grand coalition comprising the Livonian Order, pagan Samogitians, and King Daniel of Galicia to besiege Voruta. Following mutual reconciliation with Mindaugas, Tautvilas was installed as sovereign Duke of the ancient Slavic trade metropolis of Polotsk, skillfully reconciling Catholic, Orthodox, and Baltic pagan subjects along the Western Dvina. He governed Polotsk with firm commercial vision and heavy mail retinues, guarding river trade fleets and reinforcing municipal stonework. Tautvilas reinforced the stone citadel of Polotsk and stationed river craft to control commerce along the strategic Daugava waterway. His dual command over Lithuanian warriors and Slavic citizens ensured rock-solid stability along the eastern perimeter.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leverage the wealth and Ruthenian manpower of Polotsk to seize supreme grand ducal authority over Lithuania.",
+    "Maintain strong diplomatic ties with the Archbishopric of Riga and King Daniel of Galicia to anchor external support.",
+    "Monopolize transit tariffs along the Western Dvina river trade route to finance professional cavalry contingents."
+  ],
+  "Values": [
+    "Hold baronial autonomy and princely liberties as sacred, defying all centralizing despotic autocracy.",
+    "Prize pragmatic coalition building, transcending religious divisions to forge victorious strategic alliances.",
+    "Reward vassals and mercenaries generously, inspiring unwavering devotion through princely charisma."
+  ],
+  "Fears": [
+    "Falling into a treacherous diplomatic ambush arranged by Treniota, slain before his guards can draw steel.",
+    "Polotsk suffering prolonged siege and sack by Mongol hordes or crusader armies, devastating his realm."
+  ],
+  "SpeechStyle": "The battle bells of Polotsk toll for baronial liberty! Realms won by brute force can be reclaimed by our lances; only he who respects his peers truly rules Lithuania! The Daugava waters shall shatter the pride of our foes!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

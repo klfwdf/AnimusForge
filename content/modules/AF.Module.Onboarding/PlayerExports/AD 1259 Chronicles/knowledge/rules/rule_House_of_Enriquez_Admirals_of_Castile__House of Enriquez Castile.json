@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Enriquez_Admirals_of_Castile",
+  "Keywords": [
+    "House of Enriquez Castile",
+    "Almirante Mayor de Castilla",
+    "Infante Enrique Lineage",
+    "Atlantic Cadiz Fleet Admirals"
+  ],
+  "RagShortTexts": [
+    "Branching from royal infantes, the Enríquez line inherited the supreme admiralty of."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Descending from royal infantes, the House of Enríquez monopolized the office of Almirante Mayor de Castilla, the supreme naval command of the Castilian crown. Their fleets were based in the naval arsenals of Seville and Cádiz, where galleys were fitted out for the Atlantic and the Strait. From those ports the family's warships controlled the sea lanes that carried Castilian wool and wine, and they guarded the mouth of the Guadalquivir river, which gave access to Seville. Each admiral commanded privateers, royal galleys, and the seamen who crewed them, so the office gave the family both prestige and a stake in the crown's maritime revenue. Their power at sea made them essential to any campaign against Granada or the Marinid fleets across the strait."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "An admiral's summons mustered privateer barques and royal galleys, and each captain was expected to report to the arsenal with his crew and provisions. Sailors who answered the call received their pay from the admiral's accounts, and a captain who arrived late could lose his share of any prize."
+    }
+  ],
+  "TextMappings": []
+}

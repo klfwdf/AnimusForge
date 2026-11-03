@@ -330,6 +330,9 @@ public sealed class OnnxEmbeddingEngine
 
 	private BertTokenizerLite _tokenizer;
 
+	// Set instead of _tokenizer for BPE (bekko) models.
+	private BpeTokenizerLite _bpeTokenizer;
+
 	private string _inputIdsName = "input_ids";
 
 	private string _inputMaskName = "attention_mask";
@@ -343,6 +346,9 @@ public sealed class OnnxEmbeddingEngine
 	// True for bge-small-en: the sentence vector is the first ([CLS]) token, not the inner-token mean.
 	private bool _poolCls;
 
+	// True for bekko: mean over every attended token, including <bos>/<eos>.
+	private bool _poolMeanAll;
+
 	private int _maxLength = 512;
 
 	private readonly object _cacheLock = new object();
@@ -352,6 +358,19 @@ public sealed class OnnxEmbeddingEngine
 	private const int QueryCacheMax = 256;
 
 	private long _obsCounter = 0L;
+
+	internal const int IntraOpThreadCap = 4;
+
+	internal const int IndexBatchSize = 16;
+
+	// Identity of the loaded model files; the persistent vector cache is keyed by it so a model swap never reuses vectors.
+	private string _modelFingerprint = "";
+
+	private EmbeddingVectorDiskCache _diskCache;
+
+	private readonly object _diskCacheLock = new object();
+
+	private string _vectorCacheDirectory = "";
 
 	public static OnnxEmbeddingEngine Instance => _lazy.Value;
 
@@ -494,12 +513,20 @@ public sealed class OnnxEmbeddingEngine
 				string text6 = files.TokenizerPath;
 					string text7 = files.ConfigPath;
 					_poolCls = string.Equals(files.Pooling, "cls", StringComparison.Ordinal);
+					_poolMeanAll = string.Equals(files.Pooling, "mean_all", StringComparison.Ordinal);
 					if (!string.IsNullOrEmpty(text7))
 				{
 					TryReadMaxPosition(text7, out _maxLength);
 				}
-				_tokenizer = BertTokenizerLite.Load(text6);
-				if (_tokenizer == null)
+				if (_poolMeanAll)
+				{
+					_bpeTokenizer = BpeTokenizerLite.TryLoad(text6);
+				}
+				else
+				{
+					_tokenizer = BertTokenizerLite.Load(text6);
+				}
+				if (_tokenizer == null && _bpeTokenizer == null)
 				{
 					_available = false;
 					_lastError = "Failed to parse the tokenizer.";
@@ -507,10 +534,18 @@ public sealed class OnnxEmbeddingEngine
 				}
 				SessionOptions sessionOptions = new SessionOptions();
 				sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_EXTENDED;
+				// ORT's default spreads one tiny inference over every core and competes with the game thread;
+				// four threads keep single-query latency (~8.8 vs 8.4 ms) while freeing the rest of the CPU.
+				sessionOptions.IntraOpNumThreads = Math.Max(1, Math.Min(IntraOpThreadCap, Environment.ProcessorCount));
 				_session = new InferenceSession(text5, sessionOptions);
+				_modelFingerprint = BuildModelFingerprint(text5, text6, files.Pooling);
+				// Next to the model it belongs to: removing the model folder removes its vectors too.
+				_vectorCacheDirectory = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(text5) ?? "", "vectors");
 				_inputIdsName = GuessInputName(_session.InputMetadata, "input_ids", "input_ids");
 				_inputMaskName = GuessInputName(_session.InputMetadata, "attention_mask", "attention_mask");
-				_inputTypeName = GuessInputName(_session.InputMetadata, "token_type_ids", "token_type");
+				// GuessInputName falls back to the first input; only feed token types when the graph really has them.
+				_inputTypeName = _session.InputMetadata.Keys.Any((string k) => k != null && k.IndexOf("token_type", StringComparison.OrdinalIgnoreCase) >= 0)
+					? GuessInputName(_session.InputMetadata, "token_type_ids", "token_type") : "";
 				_outputName = GuessOutputName(_session.OutputMetadata);
 				_useInt64Input = true;
 				try
@@ -528,7 +563,7 @@ public sealed class OnnxEmbeddingEngine
 				_lastError = "";
 				try
 				{
-					Logger.Log("OnnxEmbedding", string.Format("Initialized model={0} tokenizer={1} inputType={2} maxLen={3} pooling={4} dir={5}", System.IO.Path.GetFileName(text5), System.IO.Path.GetFileName(text6), _useInt64Input ? "int64" : "int32", _maxLength, _poolCls ? "cls" : "mean", System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(text5) ?? "")));
+					Logger.Log("OnnxEmbedding", string.Format("Initialized model={0} tokenizer={1} inputType={2} maxLen={3} pooling={4} dir={5}", System.IO.Path.GetFileName(text5), System.IO.Path.GetFileName(text6), _useInt64Input ? "int64" : "int32", _maxLength, _poolCls ? "cls" : (_poolMeanAll ? "mean_all" : "mean"), System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(text5) ?? "")));
 				}
 				catch
 				{
@@ -563,7 +598,7 @@ public sealed class OnnxEmbeddingEngine
 			return false;
 		}
 		EnsureInitialized();
-		if (!_available || _session == null || _tokenizer == null)
+		if (!_available || _session == null || (_tokenizer == null && _bpeTokenizer == null))
 		{
 			return false;
 		}
@@ -591,7 +626,7 @@ public sealed class OnnxEmbeddingEngine
 				num = 512;
 			}
 			int[] attentionMask;
-			List<long> list = _tokenizer.Encode(text2, num, out attentionMask);
+			List<long> list = _bpeTokenizer != null ? _bpeTokenizer.Encode(text2, num, out attentionMask) : _tokenizer.Encode(text2, num, out attentionMask);
 			if (list == null || list.Count <= 0 || attentionMask == null || attentionMask.Length != list.Count)
 			{
 				return false;
@@ -701,7 +736,7 @@ public sealed class OnnxEmbeddingEngine
 					{
 						num7 = count;
 					}
-					bool flag = num7 >= 3;
+					bool flag = num7 >= 3 && !_poolMeanAll;
 					for (int num8 = 0; num8 < num7; num8++)
 					{
 						if (attentionMask[num8] > 0 && (!flag || (num8 != 0 && num8 != num7 - 1)))
@@ -821,5 +856,327 @@ public sealed class OnnxEmbeddingEngine
 				v[j] *= num2;
 			}
 		}
+	}
+
+	private static string BuildModelFingerprint(string modelPath, string tokenizerPath, string pooling)
+	{
+		string Part(string path)
+		{
+			try
+			{
+				FileInfo info = new FileInfo(path ?? "");
+				return info.Exists ? info.Name + ":" + info.Length.ToString(System.Globalization.CultureInfo.InvariantCulture)
+					+ ":" + info.LastWriteTimeUtc.Ticks.ToString(System.Globalization.CultureInfo.InvariantCulture) : "";
+			}
+			catch
+			{
+				return "";
+			}
+		}
+		return "v1|" + Part(modelPath) + "|" + Part(tokenizerPath) + "|" + (pooling ?? "");
+	}
+
+	/// <summary>
+	/// Index-build embedding: persistent vectors first, then length-sorted batches of <see cref="IndexBatchSize"/>
+	/// through the same pooling as <see cref="TryGetEmbedding"/>. New vectors are appended to the model's vector store.
+	/// results[i] is null when text i is blank or failed. Background-thread only.
+	/// </summary>
+	public float[][] EmbedDocuments(IReadOnlyList<string> texts)
+	{
+		float[][] results = new float[texts?.Count ?? 0][];
+		if (results.Length == 0)
+		{
+			return results;
+		}
+		EnsureInitialized();
+		if (!_available || _session == null || (_tokenizer == null && _bpeTokenizer == null))
+		{
+			return results;
+		}
+		Stopwatch stopwatch = Stopwatch.StartNew();
+		string[] keys = new string[results.Length];
+		EmbeddingVectorDiskCache store = GetVectorStore();
+		List<int> pending = new List<int>();
+		Dictionary<string, int> firstIndex = new Dictionary<string, int>(StringComparer.Ordinal);
+		int fromStore = 0;
+		for (int i = 0; i < results.Length; i++)
+		{
+			string key = (texts[i] ?? "").Trim();
+			keys[i] = key;
+			if (key.Length == 0)
+			{
+				continue;
+			}
+			if (store != null)
+			{
+				lock (_diskCacheLock)
+				{
+					if (store.TryGet(key, out float[] cached))
+					{
+						results[i] = cached;
+						fromStore++;
+						continue;
+					}
+				}
+			}
+			if (!firstIndex.ContainsKey(key))
+			{
+				firstIndex[key] = i;
+				pending.Add(i);
+			}
+		}
+		int maxLen = Math.Min(512, _maxLength > 8 ? _maxLength : 512);
+		List<(int Index, List<long> Ids, int[] Mask)> encoded = new List<(int, List<long>, int[])>(pending.Count);
+		foreach (int i in pending)
+		{
+			try
+			{
+				List<long> ids = _bpeTokenizer != null ? _bpeTokenizer.Encode(keys[i], maxLen, out int[] mask) : _tokenizer.Encode(keys[i], maxLen, out mask);
+				if (ids != null && ids.Count > 0 && mask != null && mask.Length == ids.Count)
+				{
+					encoded.Add((i, ids, mask));
+				}
+			}
+			catch
+			{
+			}
+		}
+		encoded.Sort((a, b) => a.Ids.Count.CompareTo(b.Ids.Count));
+		List<KeyValuePair<string, float[]>> fresh = new List<KeyValuePair<string, float[]>>(encoded.Count);
+		int failedBatches = 0;
+		for (int start = 0; start < encoded.Count; start += IndexBatchSize)
+		{
+			int count = Math.Min(IndexBatchSize, encoded.Count - start);
+			float[][] batch = RunBatch(encoded, start, count);
+			if (batch == null)
+			{
+				failedBatches++;
+				continue;
+			}
+			for (int r = 0; r < count; r++)
+			{
+				if (batch[r] == null)
+				{
+					continue;
+				}
+				int index = encoded[start + r].Index;
+				results[index] = batch[r];
+				fresh.Add(new KeyValuePair<string, float[]>(keys[index], batch[r]));
+			}
+		}
+		for (int i = 0; i < results.Length; i++)
+		{
+			if (results[i] == null && keys[i].Length > 0 && firstIndex.TryGetValue(keys[i], out int first))
+			{
+				results[i] = results[first];
+			}
+		}
+		int persisted = 0;
+		if (store != null && fresh.Count > 0)
+		{
+			lock (_diskCacheLock)
+			{
+				persisted = store.Append(fresh);
+			}
+		}
+		stopwatch.Stop();
+		Logger.Metric("onnx.embedding.batch", failedBatches == 0, stopwatch.Elapsed.TotalMilliseconds);
+		try
+		{
+			Logger.Log("OnnxEmbedding", "index_embed texts=" + results.Length + " fromStore=" + fromStore + " computed=" + fresh.Count
+				+ " persisted=" + persisted + " failedBatches=" + failedBatches + " ms=" + Math.Round(stopwatch.Elapsed.TotalMilliseconds, 1)
+				+ " store=" + (store == null ? "(none)" : System.IO.Path.GetFileName(store.FilePath) + ":" + store.Count));
+		}
+		catch
+		{
+		}
+		return results;
+	}
+
+	private EmbeddingVectorDiskCache GetVectorStore()
+	{
+		if (string.IsNullOrEmpty(_vectorCacheDirectory) || string.IsNullOrEmpty(_modelFingerprint))
+		{
+			return null;
+		}
+		lock (_diskCacheLock)
+		{
+			if (_diskCache != null)
+			{
+				return _diskCache;
+			}
+			try
+			{
+				int dimension = ProbeDimension();
+				if (dimension <= 0)
+				{
+					return null;
+				}
+				_diskCache = EmbeddingVectorDiskCache.Open(_vectorCacheDirectory, _modelFingerprint, dimension);
+				Logger.Log("OnnxEmbedding", "vector_store opened file=" + System.IO.Path.GetFileName(_diskCache.FilePath) + " entries=" + _diskCache.Count);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("OnnxEmbedding", "vector_store unavailable: " + ex.Message);
+				_vectorCacheDirectory = "";
+			}
+			return _diskCache;
+		}
+	}
+
+	private int ProbeDimension()
+	{
+		return TryGetEmbedding("dimension probe", out float[] v) && v != null ? v.Length : 0;
+	}
+
+	/// <summary>One padded inference over encoded[start..start+count); same pooling/normalization as the single path.</summary>
+	private float[][] RunBatch(List<(int Index, List<long> Ids, int[] Mask)> encoded, int start, int count)
+	{
+		try
+		{
+			int width = 0;
+			for (int r = 0; r < count; r++)
+			{
+				width = Math.Max(width, encoded[start + r].Ids.Count);
+			}
+			List<NamedOnnxValue> inputs = new List<NamedOnnxValue>(3);
+			int[] shape = new int[2] { count, width };
+			if (_useInt64Input)
+			{
+				long[] ids = new long[count * width];
+				long[] mask = new long[count * width];
+				for (int r = 0; r < count; r++)
+				{
+					var row = encoded[start + r];
+					for (int t = 0; t < row.Ids.Count; t++)
+					{
+						ids[r * width + t] = row.Ids[t];
+						mask[r * width + t] = row.Mask[t];
+					}
+				}
+				AddInputs(inputs, new DenseTensor<long>(ids, shape), new DenseTensor<long>(mask, shape), new DenseTensor<long>(new long[count * width], shape));
+			}
+			else
+			{
+				int[] ids = new int[count * width];
+				int[] mask = new int[count * width];
+				for (int r = 0; r < count; r++)
+				{
+					var row = encoded[start + r];
+					for (int t = 0; t < row.Ids.Count; t++)
+					{
+						ids[r * width + t] = (int)row.Ids[t];
+						mask[r * width + t] = row.Mask[t];
+					}
+				}
+				AddInputs(inputs, new DenseTensor<int>(ids, shape), new DenseTensor<int>(mask, shape), new DenseTensor<int>(new int[count * width], shape));
+			}
+			float[][] output = new float[count][];
+			using (IDisposableReadOnlyCollection<DisposableNamedOnnxValue> source = _session.Run(inputs))
+			{
+				DisposableNamedOnnxValue value = source.FirstOrDefault((DisposableNamedOnnxValue x) => string.Equals(x.Name ?? "", _outputName ?? "", StringComparison.OrdinalIgnoreCase)) ?? source.FirstOrDefault();
+				if (value == null)
+				{
+					return null;
+				}
+				Tensor<float> tensor = value.AsTensor<float>();
+				ReadOnlySpan<int> dims = tensor.Dimensions;
+				if (dims.Length < 2 || dims[0] != count)
+				{
+					return null;
+				}
+				// Row-major contiguous output; read it flat instead of through the (slow) multi-index indexer.
+				float[] flat = tensor.ToArray();
+				for (int r = 0; r < count; r++)
+				{
+					output[r] = PoolRow(flat, dims, r, encoded[start + r].Mask, encoded[start + r].Ids.Count);
+				}
+			}
+			return output;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("OnnxEmbedding", "Batch inference failed: " + ex.Message);
+			}
+			catch
+			{
+			}
+			return null;
+		}
+	}
+
+	private void AddInputs<T>(List<NamedOnnxValue> inputs, DenseTensor<T> ids, DenseTensor<T> mask, DenseTensor<T> types)
+	{
+		if (!string.IsNullOrEmpty(_inputIdsName))
+		{
+			inputs.Add(NamedOnnxValue.CreateFromTensor(_inputIdsName, ids));
+		}
+		if (!string.IsNullOrEmpty(_inputMaskName) && !string.Equals(_inputMaskName, _inputIdsName, StringComparison.OrdinalIgnoreCase))
+		{
+			inputs.Add(NamedOnnxValue.CreateFromTensor(_inputMaskName, mask));
+		}
+		if (!string.IsNullOrEmpty(_inputTypeName) && !string.Equals(_inputTypeName, _inputIdsName, StringComparison.OrdinalIgnoreCase) && !string.Equals(_inputTypeName, _inputMaskName, StringComparison.OrdinalIgnoreCase))
+		{
+			inputs.Add(NamedOnnxValue.CreateFromTensor(_inputTypeName, types));
+		}
+	}
+
+	/// <summary>Row r of a batched output, pooled over that row's real tokens exactly like the single-text path.</summary>
+	private float[] PoolRow(float[] flat, ReadOnlySpan<int> dims, int r, int[] mask, int length)
+	{
+		float[] array;
+		if (dims.Length == 2)
+		{
+			array = new float[dims[1]];
+			Array.Copy(flat, r * dims[1], array, 0, dims[1]);
+		}
+		else
+		{
+			int width = dims[2];
+			int rowBase = r * dims[1] * width;
+			if (width <= 0)
+			{
+				return null;
+			}
+			array = new float[width];
+			if (_poolCls)
+			{
+				Array.Copy(flat, rowBase, array, 0, width);
+			}
+			else
+			{
+				int tokens = Math.Min(Math.Min(dims[1], mask.Length), length);
+				bool skipEnds = tokens >= 3 && !_poolMeanAll;
+				int used = 0;
+				for (int pass = 0; pass < 2 && used == 0; pass++)
+				{
+					for (int t = 0; t < tokens; t++)
+					{
+						if (mask[t] > 0 && (pass == 1 || !skipEnds || (t != 0 && t != tokens - 1)))
+						{
+							used++;
+							int offset = rowBase + t * width;
+							for (int c = 0; c < width; c++)
+							{
+								array[c] += flat[offset + c];
+							}
+						}
+					}
+				}
+				if (used == 0)
+				{
+					return null;
+				}
+				float scale = 1f / used;
+				for (int c = 0; c < width; c++)
+				{
+					array[c] *= scale;
+				}
+			}
+		}
+		NormalizeInPlace(array);
+		return array;
 	}
 }

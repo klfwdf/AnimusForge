@@ -1,0 +1,59 @@
+{
+  "Id": "be_lakhmid_kingdom_economy",
+  "Keywords": [
+    "Lakhmids Trade",
+    "Hira irrigation markets and escorts"
+  ],
+  "RagShortTexts": [
+    "Hira links Euphrates irrigation, river markets and desert herds.",
+    "Grain, animals, escorts and Persian support provide Lakhmid revenue."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hira joins Euphrates irrigation, river markets and desert kin. Grain, herds, escort and Persian support provide income; closed markets also deny herders grain and iron."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Hira links Euphrates irrigation, river markets and desert herds. Traveling followers need real food from this production; valuables still require a buyer and exchange. Grain, animals, escorts and Persian support provide Lakhmid revenue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Grain, animals, escorts and Persian support provide Lakhmid revenue. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Hira links Euphrates irrigation, river markets and desert herds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hira links Euphrates irrigation, river markets and desert herds. Households need meals and the means to keep producing after delivering goods. Grain, animals, escorts and Persian support provide Lakhmid revenue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Grain, animals, escorts and Persian support provide Lakhmid revenue. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Hira links Euphrates irrigation, river markets and desert herds."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

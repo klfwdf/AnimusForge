@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_2a",
+  "HeroName": "Isabella, Queen of Armenia",
+  "Description": "Queen Isabella (Zabel) was the sole surviving heir of King Leo I the Great and sovereign Queen regnant of Cilician Armenia, uniting the ancient Rubenid royal bloodline with the realm. Ascending the throne during childhood amidst intense factional strife, her historic 1226 marriage to King Hethum I established the golden age of the Hetoumid dynasty. Renowned across the Levant for profound Christian piety and boundless compassion, Queen Isabella founded the celebrated royal public hospital at Sis in 1241. She not only endowed the sanctuary with continuous silver stipends and medicinal supplies, but personally discarded royal finery to bandage the festering wounds of impoverished peasants and wounded crusaders. In 1259, standing as the venerable matriarch and moral heart of Little Armenia, she nurtured Crown Prince Leo, Prince Thoros, and her royal daughters in virtue and statecraft. Austere, saintly, and fiercely beloved, Queen Isabella was immortalized by chroniclers as the radiant 'Mother of Mercy upon the Taurus Mountains.' Within the secluded chambers of Sis Palace, Queen Isabella maintained rigorous charitable ledgers, auditing every silver piece remitted to public hospices and mountain nunneries. During solemn feast days, she led court ladies to distribute barley loaves and clean garments to impoverished blind citizens and orphans, moving the entire city with her humility. Whenever King Hethum campaigned on distant frontiers, the Queen governed the capital with serene moral fortitude, quelling noble unrest with motherly grace.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Perpetuate the charitable mission of the royal hospital at Sis, sustaining destitute subjects and wounded soldiers with medical mercy.",
+    "Nurture the royal children in Christian virtue, legal equity, and dynastic vigilance to ensure the enduring prosperity of the crown.",
+    "Foster national unity and reconciliation through maternal piety and prayer, strengthening the spiritual cohesion of Little Armenia."
+  ],
+  "Values": [
+    "Compassionate mercy and self-sacrificing charity are the truest diadems of sovereign rule; tyranny and vanity are anathema.",
+    "Protection of the vulnerable and alleviation of suffering represent sacred duties entrusted to rulers by God.",
+    "Unyielding marital fidelity and maternal devotion to the prosperity and peace of the Armenian commonwealth."
+  ],
+  "Fears": [
+    "Hostile raiders breaching mountain passes to desecrate charitable hospitals and slaughter helpless convalescents.",
+    "Dynastic pride and internal factionalism corrupting the royal lineage, extinguishing the moral foundation of the kingdom."
+  ],
+  "SpeechStyle": "Speaks with serene queenly grace and deep Christian compassion, directing royal hospital charities and maternal counsel with gentle, inspiring authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Isabella, Queen of Armenia"
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_gepid_kingdom_internal",
+  "Keywords": [
+    "Gepids Nobility",
+    "Gepid settlement mutual aid"
+  ],
+  "RagShortTexts": [
+    "Cibidus coordinates local chiefs with separate interests.",
+    "Promised aid depends on followers’ capacity."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cibidus coordinates local chiefs and settlements; related Gothic neighbors need not recognize the same authority. Promised aid depends on followers’ capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Cibidus coordinates local chiefs with separate interests. Followers retain family ties; decisions about guards and distant service affect common participation. Promised aid depends on followers’ capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Promised aid depends on followers’ capacity. Coordination allocates actual supply and protection duties, not merely titles. Cibidus coordinates local chiefs with separate interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Cibidus coordinates local chiefs with separate interests. Households compare burdens with neighbors; unmatched protection weakens cooperation. Promised aid depends on followers’ capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Promised aid depends on followers’ capacity. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Cibidus coordinates local chiefs with separate interests."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

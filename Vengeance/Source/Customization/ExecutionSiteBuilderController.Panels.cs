@@ -17,6 +17,7 @@ internal sealed partial class ExecutionSiteBuilderController
 {
     private void ShowPrisonerPanel()
     {
+        LoadPrisonerOptions();
         if (_prisonerOptions.Count == 0)
         {
             Status("{=REX_Builder_No_Prisoners}No eligible prisoner is available for this site.");
@@ -426,7 +427,8 @@ internal sealed partial class ExecutionSiteBuilderController
     {
         error = null;
         var prisoner = _selectedPrisoner;
-        if (prisoner is null)
+        if (prisoner is null || (_host.Request.IsFieldCamp &&
+            !(VengeanceIntegration.FieldCampPrisonerPresent?.Invoke(prisoner.Hero) ?? true)))
         {
             error = new TextObject(
                 "{=REX_Builder_No_Prisoners}No eligible prisoner is available for this site.");

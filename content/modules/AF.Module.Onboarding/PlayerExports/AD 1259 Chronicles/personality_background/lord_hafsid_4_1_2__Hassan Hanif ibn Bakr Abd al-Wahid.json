@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_4_1_2",
+  "HeroName": "Hassan Hanif ibn Bakr Abd al-Wahid",
+  "Description": "Hassan Hanif ibn Bakr Abd al-Wahid is the eldest son of Bakr Hanif and Sanaa. The game data records him at four, with a knightly template, and as a small child he has only a lively nature and a curious mind. The game model shows a small child's face with short dark hair, and no scars are recorded. His marks are a wooden toy sword that his father gave him and a cloth toy animal he never lets go of. The chronicles say nothing of him, so the account below rests on game setting and dynastic background. He grew up among the tents and stables of the camp, and the first things he came to know were his father's horse and the knights of the camp. He is fascinated by knightly dress and weapons, often pestering his father about the names of horses and what battle formations look like, and he likes to follow the veterans of the camp around as they walk. His mother Sanaa worries that he wanders too far, while his younger sister Medina often fights him for toys. Once he climbed into a hay stack in the stables and was not found until dark. When they brought him back, he insisted he had been on patrol. His lofty aim is to grow up quickly, to become a knight like his father and win honor for the family. His private shadow is his fear of the dark: if he wakes at night and cannot see his mother, he cries, though he never admits this to outsiders.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Learn to ride and recognize weapons under his father and the veterans of the camp, so he can master the basic arts of a knight early and show his father his progress.",
+    "Play with his sister Medina and learn to share and cooperate, rather than always grabbing for himself, and look after her as an elder brother should.",
+    "Learn to keep the rules under his mother Sanaa's care, so that his father feels proud of him whenever he is in camp and his mother need not worry."
+  ],
+  "Values": [
+    "He treasures his father's company and the freedom of riding, believing horseback is the happiest thing in life and the thing he most wants to do when he grows up.",
+    "He values time spent with his family, feeling that his mother's embrace and his sister's laughter are worth more than any toy, though he never says so aloud.",
+    "He longs for honor, believing a knight should be brave and honest, and that even when afraid he must say what is true rather than pretend to fear nothing."
+  ],
+  "Fears": [
+    "Waking at night and finding his mother gone, alone in the dark tent, he is frightened and does not dare to cry out, so he holds his cloth animal tightly.",
+    "His father may leave to fight and never return, and he would lose the example of the kind of man he most wants to become, with no one to ask for guidance."
+  ],
+  "SpeechStyle": "His voice is childish and his speech broken, often beginning with \"I want\" or \"why.\" He looks up to his father, depends on his mother, and alternates between bossiness and affection with his sister.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

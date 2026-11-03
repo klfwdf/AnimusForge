@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_vyshhorod_sacred_and_princely_memory_a1b777b3",
+  "Keywords": [
+    "Vyshhorod's memory of Borys and Hlib",
+    "Old Dnipro routes at Vyshhorod"
+  ],
+  "RagShortTexts": [
+    "Vyshhorod recalls princely residence and Borys and Hlib north of Kyiv beside the Dnipro.",
+    "After destruction in 1240, sacred memory and residents' livelihoods need continuing care."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vyshhorod guards Kyiv's northern approaches beside the Dnipro and recalls princely residence and Borys and Hlib. Destruction in 1240 damaged habitation and connections. Visitors may seek prayer, relatives or former land. Local knowledge, food, reliable hosts and repaired shelter make renewed contact possible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Vyshhorod families commemorate the dead while reclaiming shelter and fields. Saints' stories gather kin, but meals and lodging remain limited. Questions about old houses and boundaries need people who knew the inhabitants, avoiding rival ancestral claims after rebuilding has begun."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

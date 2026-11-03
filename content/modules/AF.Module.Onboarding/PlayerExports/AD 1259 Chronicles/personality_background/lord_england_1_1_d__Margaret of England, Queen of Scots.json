@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_1_1_d",
+  "HeroName": "Margaret of England, Queen of Scots",
+  "Description": "Margaret of England is the spirited eldest daughter of King Henry III and Eleanor of Provence, and crowned Queen consort of Scots as the wife of Alexander III. Possessing radiant golden hair, sapphire eyes, and the fiery pride of the Plantagenets, Margaret was married at the tender age of eleven in York Minster in 1251. Her early years in Scotland were marred by intense isolation and political intimidation by suspicious Scottish regents (led by Walter Comyn), who confined her within the damp, wind-swept chambers of Edinburgh Castle until King Henry's armed intervention secured her liberation in 1255. In 1259, as King Alexander approaches his majority, Margaret thrives at the royal courts of Stirling and Perth, establishing a formidable household. Deeply devoted to her husband yet fiercely loyal to her embattled parents in Westminster, she treads a perilous diplomatic tightrope between Scottish independence and English interests. Her courage, wit, and majestic resilience have earned her the grudging respect of northern earls, anchoring peace across the Tweed with regal grace. She regularly dispatches ciphered intelligence from Stirling Castle to London, reporting on factional maneuvers among the northern clans. Endowing priories along the Tweed to transcribe treaty rolls, Margaret uses her commanding intellect to compel turbulent Scottish earls to acknowledge royal jurisdiction.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Support King Alexander III in consolidating royal power free from the clutches of factional Scottish regents",
+    "Preserve cross-border peace between England and Scotland, preventing northern lords from exploiting English crises",
+    "Maintain an independent and dignified royal household at Stirling, safeguarding her loyal retainers"
+  ],
+  "Values": [
+    "The majesty of a queen consort must never bow to overmighty regents; royal honor demands fearless defiance",
+    "Shielding border commoners from bloodshed is the highest duty of monarchs across the Tweed",
+    "The indomitable pride of Plantagenet blood never wavers, shining brightest in northern cold"
+  ],
+  "Fears": [
+    "Scottish factions launching another coup and imprisoning her within cold fortress walls",
+    "King Henry III falling to English rebels, stripping away her crucial diplomatic leverage"
+  ],
+  "SpeechStyle": "Speaks with clear, ringing authority, sharp wit, and unyielding royal dignity. She yields not an inch to overbearing Scottish barons, yet speaks with warm intimacy and playful charm to her husband.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

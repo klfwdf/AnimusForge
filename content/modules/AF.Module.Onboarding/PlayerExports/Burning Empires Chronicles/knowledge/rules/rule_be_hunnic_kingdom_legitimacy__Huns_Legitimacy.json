@@ -1,0 +1,59 @@
+{
+  "Id": "be_hunnic_kingdom_legitimacy",
+  "Keywords": [
+    "Huns Legitimacy",
+    "Balamber’s victories and gifts"
+  ],
+  "RagShortTexts": [
+    "Victory, gifts and protection support Balamber’s recognition.",
+    "New followers care whether households and livelihoods survive."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Victory, gifts and protection win recognition. Intimidation brings submission, but followers need to retain households and livelihoods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Victory, gifts and protection support Balamber’s recognition. Military recognition also rests on rewards and relief; a title needs willing action. New followers care whether households and livelihoods survive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "New followers care whether households and livelihoods survive. Nominal rights require local execution, with consent and supply both shaping authority. Victory, gifts and protection support Balamber’s recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Victory, gifts and protection support Balamber’s recognition. Households judge rule through protected families, land and responses to appeals. New followers care whether households and livelihoods survive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "New followers care whether households and livelihoods survive. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Victory, gifts and protection support Balamber’s recognition."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

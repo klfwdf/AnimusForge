@@ -1,0 +1,59 @@
+{
+  "Id": "be_sassanid_kingdom_geopolitics",
+  "Keywords": [
+    "Sassanid Empire Frontiers",
+    "Ctesiphon Nisibis and eastern passes"
+  ],
+  "RagShortTexts": [
+    "Mesopotamian rivers, Nisibis roads and plateau passes link Persian theaters.",
+    "Long transport needs supply handovers along the way."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rivers, western Nisibis roads and eastern passes connect theaters. Long transport needs repeated handovers rather than one grain convoy serving every direction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mesopotamian rivers, Nisibis roads and plateau passes link Persian theaters. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Long transport needs supply handovers along the way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Long transport needs supply handovers along the way. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Mesopotamian rivers, Nisibis roads and plateau passes link Persian theaters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Mesopotamian rivers, Nisibis roads and plateau passes link Persian theaters. Closed routes may separate families from goods, imposing costs on those remaining at home. Long transport needs supply handovers along the way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Long transport needs supply handovers along the way. Cargo passes different carriers, making distant route changes become local shortages through delay. Mesopotamian rivers, Nisibis roads and plateau passes link Persian theaters."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

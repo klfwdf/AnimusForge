@@ -492,7 +492,7 @@ internal sealed class ScenePassiveInteractionController
 		{
 			playerName = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0654");
 		}
-		return playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0655");
+		return ConversationRuntimeTexts.Tidy(playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0655"));
 	}
 
 	internal static bool ShouldUseCombatPassiveReactionText(Agent targetAgent, out bool armed)
@@ -611,9 +611,10 @@ internal sealed class ScenePassiveInteractionController
 		try
 		{
 			string text3 = (ShoutUtils.GetCurrentSceneDescription() ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text3) && text3.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0656"), StringComparison.OrdinalIgnoreCase) >= 0)
+			if (!string.IsNullOrWhiteSpace(text3))
 			{
-				return true;
+				foreach (string arena in ConversationRuntimeTexts.RawVariants("AF_CONV_Runtime_0656"))
+					if (text3.IndexOf(arena, StringComparison.OrdinalIgnoreCase) >= 0) return true;
 			}
 		}
 		catch
@@ -660,7 +661,7 @@ internal sealed class ScenePassiveInteractionController
 		{
 			playerName = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0657");
 		}
-		return opponentContext ? (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0658") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0659")) : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0660") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0661"));
+		return ConversationRuntimeTexts.Tidy(opponentContext ? (ConversationRuntimeTexts.W("AF_CONV_Runtime_0658") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0659")) : (ConversationRuntimeTexts.W("AF_CONV_Runtime_0660") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0661")));
 	}
 
 	internal static string BuildCombatPassiveArmedFactText(Agent targetAgent, bool opponentContext)
@@ -675,7 +676,7 @@ internal sealed class ScenePassiveInteractionController
 		{
 			text = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0663");
 		}
-		return opponentContext ? (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0664") + text + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0665") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0666")) : (ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0667") + text + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0668") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0669"));
+		return ConversationRuntimeTexts.Tidy(opponentContext ? (ConversationRuntimeTexts.W("AF_CONV_Runtime_0664") + text + ConversationRuntimeTexts.W("AF_CONV_Runtime_0665") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0666")) : (ConversationRuntimeTexts.W("AF_CONV_Runtime_0667") + text + ConversationRuntimeTexts.W("AF_CONV_Runtime_0668") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0669")));
 	}
 
 	internal static string BuildFallbackSceneTauntSpeech(bool escalatedToFight)

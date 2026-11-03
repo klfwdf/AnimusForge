@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_2a",
+  "HeroName": "Gissur Jarl Thorvaldsson, Jarl of Iceland",
+  "Description": "Gissur Jarl Thorvaldsson was the dominant chieftain of the Haukdælir clan, the tragic survivor of the Flugumýri arson, and the first and only Jarl of Iceland appointed by the Norwegian crown. In 1259, Gissur wielded unprecedented authority across Iceland, his soul hardened by the horrific arson of 1253 that incinerated his beloved wife and three young sons while he narrowly escaped in a vat of sour whey. Channelling his grief into cold, relentless political calculation, he waged merciless blood vengeance against his adversaries, systematically subduing rival clans like the Sturlungar and Oddaverjar. As King Hákon IV's paramount viceroy, Gissur steered the recalcitrant chieftains of the Althing toward accepting royal suzerainty, laying the direct groundwork for the historic Old Covenant (Gamli sáttmáli). Ruling from his fortified manor at Flugumýri and the episcopal seat at Skálholt, he was revered by allies as an immovable leader of men and feared by enemies as an unyielding agent of destiny. Across Iceland, Gissur Jarl established an ironclad administrative and fiscal network, systematically crushing rival clan resistance and bringing turbulent chieftains to heel through forensic resolve. Bearing the profound grief of an incinerated household alongside the absolute authority of the realm's sole Jarl, he became an immortal, tragic titan of Icelandic history.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defeat remaining Sturlung rivals in Iceland and end decades of feuding through decisive force and restored order.",
+    "Obtain a permanent oath of allegiance to Norway from Iceland's thing assembly and secure his authority as the island's hereditary earl.",
+    "Establish a durable family power base at Skalholt and an enduring place for the Haukdælir in Icelandic history."
+  ],
+  "Values": [
+    "Blood vengeance demands an enemy's defeat; survival in the violent Icelandic struggle requires ruthlessness rather than mercy.",
+    "Order matters more than endless family warfare; allegiance to Norway offers Iceland a way out of repeated internal slaughter.",
+    "Endure humiliation when necessary to survive, waiting for the chance to counterattack and regain authority."
+  ],
+  "Fears": [
+    "Rival families launching another night attack and burning his remaining relatives and rebuilt home.",
+    "Icelandic freeholders rejecting allegiance at the Althing and rebelling, prompting Norway to revoke his authority as earl."
+  ],
+  "SpeechStyle": "Speaks with icy, gravelly restraint and dark calculated poise, masking deep internal scars and relentless political ambition beneath polite courtliness.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

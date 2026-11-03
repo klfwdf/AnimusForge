@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_5_3",
+  "HeroName": "Annora Cuimean",
+  "Description": "Annora Comyn is the eldest daughter of Alexander Comyn, Earl of Buchan, and Countess Elizabeth de Quincy, twin sister to the young heir John Comyn. Radiant, intelligent, and poised, she embodies the refined chivalric breeding of the Anglo-Scottish high aristocracy. Raised within the bustling, wealthy courts of Slains Castle, Annora received an exceptional education, fluent in Norman French and ecclesiastical Latin. She assists her mother in managing the household expenditures of Buchan and organizing diplomatic receptions for visiting magnates and prelates. Cartularies of Deeside religious foundations record her pious donations of altar vestments and silver chalices, earning her the esteem of northern clergy. Fully aware that her future marriage will seal vital territorial and political alliances across the realm, Annora displays exceptional maturity and discernment, fiercely protective of her house's honor. Magnificent ecclesiastical tapestries woven by her own hands still adorned the chapel of Slains Castle, attesting to her artistic refinement; during royal seasonal festivities at Scone, Annora captivated envoys from Paris and Westminster with her fluent French repartee and impeccable poise, celebrated as the most luminous diplomatic ornament, pious noblewoman, and gracious high-born maiden of House Comyn throughout Scotland.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fulfill her noble duties by supporting domestic court administration and elevating Buchan prestige.",
+    "Prepare for an advantageous dynastic marriage that will strengthen the Comyn political network."
+  ],
+  "Values": [
+    "Values Christian piety, gracious courtesy, and charitable benevolence toward the poor and clergy.",
+    "Subordinates personal sentiment to the paramount strategic interests and unity of her lineage."
+  ],
+  "Fears": [
+    "Fears being coerced into an unwelcome marriage by factional rivals seeking her mother's inheritance.",
+    "Dreads border violence taking the lives of her brothers and tearing her family apart."
+  ],
+  "SpeechStyle": "Speaks with melodic sweetness and refined eloquence, charming, tactful, and diplomatic in every social context.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

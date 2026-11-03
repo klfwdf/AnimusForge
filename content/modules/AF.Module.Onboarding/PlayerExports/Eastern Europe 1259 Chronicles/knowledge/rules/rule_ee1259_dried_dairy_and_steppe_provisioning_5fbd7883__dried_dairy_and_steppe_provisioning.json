@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_dried_dairy_and_steppe_provisioning_5fbd7883",
+  "Keywords": [
+    "dried dairy and steppe provisioning",
+    "Steppe dried dairy and seasonal herds"
+  ],
+  "RagShortTexts": [
+    "Dried dairy is portable and kept for seasons of scarce milk.",
+    "Processing, drying and storing still require labor and vessels."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Steppe households process and dry dairy for travel and seasons of scarce milk. Keeping it requires producing herds, vessels and labor first. Portability does not remove needs for water, other food and animal care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Dried dairy helps riders carry food, but water and shares still matter. More food for riders cannot restore horses lacking rest or grass."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Dairy procurement considers season and household needs. Excess extraction starves the supporting camp; plans based on deliverable stores outperform rider counts alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Drying requires tending and shelter from bad weather. Households balance winter storage against exchange, needing buyers who supply useful food in return."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

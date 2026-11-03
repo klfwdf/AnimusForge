@@ -256,7 +256,8 @@ internal static string BuildMajorActionSummarySourceLine(Hero hero, NpcActionEnt
 		string date = !string.IsNullOrWhiteSpace(entry.GameDate) ? entry.GameDate.Trim() : AdapterPromptCaptureTexts.PcapFormat("memory_capture_spaced_day", "Day {DAY}", ("DAY", entry.Day));
 		string actorName = hero?.Name?.ToString()?.Trim();
 		if (string.IsNullOrWhiteSpace(actorName)) actorName = MemoryTextResources.Prompt("AF_MEM_Prompt_DefaultActor");
-		string text = NpcActionRecordOwner.RenderText(actorName, entry.Text, CampaignBattleRecordCaptureAdapter.StripBattlePlayerMarker) + CampaignCharacterRecordCaptureAdapter.BuildNpcActionMetadataNarrativeSuffix(entry);
+		// Same request-boundary projection as the resident action summary; unknown records keep their text.
+		string text = (MemoryActionFactProjection.Project(entry.ActionKind, entry.Text, actorName) ?? NpcActionRecordOwner.RenderText(actorName, entry.Text, CampaignBattleRecordCaptureAdapter.StripBattlePlayerMarker)) + CampaignCharacterRecordCaptureAdapter.BuildNpcActionMetadataNarrativeSuffix(entry);
 		return (date + "｜" + text).Trim();
 	}
 

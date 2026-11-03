@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_5b",
+  "HeroName": "Ingeborg Esbernsdatter Hvide",
+  "Description": "Lady Ingeborg Esbernsdatter Hvide, prominent territorial matriarch of Zealand, was the cherished daughter of the celebrated crusader Esbern Snare and niece to Archbishop Absalon. Inheriting Kalundborg Castle alongside vast ancestral fiefdoms throughout western Zealand, Ingeborg held unprecedented social and political authority among Scandinavian high nobility. Beyond her peerless dynastic prestige, she proved an exceptionally capable patroness and diplomat. She poured immense personal wealth into Sorø Abbey, transforming it into the spiritual pantheon and archival treasury of the Hvide clan. During decades of bitter conflict between crown and mitre, Ingeborg utilized her kinship with both royal loyalists and rebel prelates to mediate peace, venerated throughout Denmark as the saintly matriarch of Zealand. Ingeborg served as the living embodiment of the Hvide clan's historical prestige and a protective haven for monastic communities across western Zealand. She endowed thousands of acres to establish hospices for lepers and orphaned children, commissioning scholars at Sorø Abbey to record Scandinavian chronicles. During the bitterest clashes between King Christoffer and the episcopate, Ingeborg shielded hunted scholars and dissident churchmen within her sanctuaries, her moral dignity averting several regional uprisings and securing everlasting renown for her family as peacemakers of the realm.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Endow and protect Sorø Abbey and monastic institutions, preserving the ancestral legacy of Esbern Snare and Absalon.",
+    "Govern the vast estates around Kalundborg and mediate factional tensions between the royal house and church prelates."
+  ],
+  "Values": [
+    "Reveres deep Christian faith and ancestral piety, believing that true noble grandeur derives from active benevolence and moral grace.",
+    "Champions restorative peace and familial reconciliation, actively seeking to prevent fratricidal bloodshed within the realm."
+  ],
+  "Fears": [
+    "Dreads destructive civil conflict desecrating the family tombs and sacred libraries of Sorø Abbey."
+  ],
+  "SpeechStyle": "Speaks with quiet aristocratic majesty and gentle spiritual authority, her measured words commanding immediate reverence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

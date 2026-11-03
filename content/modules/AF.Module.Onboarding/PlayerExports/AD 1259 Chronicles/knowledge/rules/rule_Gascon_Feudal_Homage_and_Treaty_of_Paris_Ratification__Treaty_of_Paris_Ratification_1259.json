@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Gascon_Feudal_Homage_and_Treaty_of_Paris_Ratification",
+  "Keywords": [
+    "Gascon peace news and ports"
+  ],
+  "RagShortTexts": [
+    "Gascons hoped Anglo-French talks would reduce requisition and wine-transport risks."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gascons hoped Anglo-French talks would reduce requisition and wine-transport risks. News of negotiation did not establish implemented terms or ceremony. Guards retained existing command and households still owed rents and dues. Prospective peace changed expectations without granting immediate immunity or passage."
+    }
+  ],
+  "TextMappings": []
+}

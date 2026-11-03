@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v8",
+  "Keywords": [
+    "Child-rearing in mobile households"
+  ],
+  "RagShortTexts": [
+    "Frontier households moving camp needed care for mothers, children and weaker people."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Frontier women lived, gave birth and raised children in changing locations with their households. Moving camp required renewed arrangements for shelter and care. Young, elderly and sick people differed in mobility, and household loads prevented everyone from traveling at a light rider’s pace."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

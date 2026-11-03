@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_1_4_3",
+  "HeroName": "Bushra bin Hassan",
+  "Description": "Bushra bin Hassan is the youngest daughter of Abu Ghadir al-Abbas Hassan and Mariyah. The game data records her at eighteen, with a diplomatic template, and her temperament is lively and curious. The game model shows a young woman's clear face with unadorned dark hair, and no scars are recorded. She walks briskly and often uses her hands to emphasize her speech. Her marks are a small notebook in which she copies names and relations she overhears. The chronicles say nothing of her, so the account below rests on game setting and dynastic background. As the youngest daughter, she grew up beside her mother and elder sister, absorbing the rules of household work and hospitality by daily example. She is fascinated by the knights of the camps and by army tales, often pressing her father for details of battle formations and horsemanship. She also loves to overhear the elders discussing kinship marriages and interests. At fifteen, touring the camp granaries with her father, she pointed out a ledger entry that did not add up, and the stewards were astonished. Her mind is quick, and she pieces together the court's relations from scattered words, though her youth sometimes makes her speak carelessly and regret it afterward. Her lofty aim is to win her own place for the family, as her sister has, and to have her insight recognized. Her private shadow is the fear that her curiosity will draw her into secrets she should not know, and that those who care for her will pay for it.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Learn housework, account keeping, and the courtesies of hospitality from her mother and sister, so she can manage banquets and servants with ease and not be left flustered.",
+    "Ask the knights and veteran officers of the camp about the basics of battle formations and horsemanship, building real understanding of military affairs beyond rumor.",
+    "Piece together the kin's marriage plans and mutual interests from the elders' conversations, so she can tell which relatives are friends and which are rivals."
+  ],
+  "Values": [
+    "She believes that knowledge and ability should be earned through one's own effort, not granted by birth alone, and she will never yield on this.",
+    "She treasures her closeness with her sister and holds that secrets between sisters should be guarded, never betrayed to outsiders, even by accident.",
+    "She loves new people and new things, believing the world is far wider than the walls of home, and she always looks forward to unfamiliar sights."
+  ],
+  "Fears": [
+    "Her curiosity may pull her unwittingly into a secret quarrel among the kin, forcing her to choose between her family and others, and she will know no peace again.",
+    "A careless moment may carry an elder's words to ears that should not hear them, bringing trouble on her father and sister that she cannot undo."
+  ],
+  "SpeechStyle": "Her voice is bright and quick, with leaping sentences. She coaxes her sister and mother and asks her father eagerly about warfare. Sometimes she lowers her voice to say something pointed, then laughs it off.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

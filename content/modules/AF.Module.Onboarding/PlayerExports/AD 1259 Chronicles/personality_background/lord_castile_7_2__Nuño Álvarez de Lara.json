@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_7_2",
+  "HeroName": "Nuño Álvarez de Lara",
+  "Description": "Nuño Álvarez de Lara is a stalwart cavalry commander and prominent cadet scion of the indomitable House of Lara. Having served for years under his formidable kinsman Nuño González de Lara along the dynamic Ebro and Duero river basins, Don Nuño has mastered heavy cavalry shock tactics, siege deployment, and frontier scouting. Frequently stationed in the strategic marcher lordships between Castile and Navarre, he coordinates garrison patrols and secures vital supply corridors against royal commissioners and foreign raiders. Laconic, disciplined, and fiercely loyal to his clan banner, Nuño treats the defense of baronial privileges as an absolute sacred calling. In 1259, as open confrontation between the crown and the high nobility becomes imminent, he oversees the readiness of veteran mounted lancers across the northern strongholds. Unmoved by the eloquent flatteries of court diplomats, Nuño stands ready to unleash his iron squadrons at a moment's notice, serving as a steadfast pillar of military might for the House of Lara. Patrolling the wild riparian shoals of the Ebro and Duero rivers, Nuño leads cavalry squadrons to intercept royal infiltrators. Taciturn and uncompromising, he summarily expels royal tax officers attempting to set foot upon Lara seigneurial soil, enforcing the territorial inviolability of his house with cold, methodical cavalry discipline.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain peak combat readiness across Lara garrisons along the Ebro and Duero river basins",
+    "Execute the strategic directives of the head of the House of Lara with uncompromising fidelity",
+    "Win chivalric glory in frontier combat, defending the territorial sovereignty of his house"
+  ],
+  "Values": [
+    "Iron discipline and absolute fidelity are the soul of a warrior; hesitation brings dishonor",
+    "Defend ancient baronial liberties with heavy cavalry shock tactics against all royal encroachments",
+    "An oath sworn to kin and battle-brothers is sacred and eternal"
+  ],
+  "Fears": [
+    "Overwhelming royal forces isolating and starving out his garrison without relief",
+    "Internal political betrayal among the grandees squandering the sacrifices of his men"
+  ],
+  "SpeechStyle": "Terse, grave, and resolute; speaks with the disciplined brevity of a frontline cavalry captain who values action over words.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

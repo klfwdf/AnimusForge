@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_1_5",
+  "HeroName": "Gubitosa Zeno",
+  "Description": "Lady Gubitosa Zeno is a clever nineteen-year-old noblewoman of the House of Zeno, reared amidst the cosmopolitan wealth of Venice's Grand Canal. Fluent in both Venetian and Greek, Gubitosa possesses a keen aptitude for commercial arithmetic, bullion assays at the Zecca mint, and double-entry bookkeeping, frequently reviewing merchant registers for overseas trading voyages. Spirited, observant, and prudent, she commands deep respect among senior merchants for her sharp financial intellect. Possessing a brilliant head for mathematics, young Gubitosa audited spice and bullion ledgers at the Rialto exchange, resolving complex maritime insurance disputes and earning widespread admiration among seasoned merchant patricians for her precocious commercial intellect. Perceiving the intricate geopolitical undercurrents behind Mediterranean trade treaties, Gubitosa applies her formidable mathematical mind to advance family banking enterprises, recognized as an extraordinary intellect among the young patriciate. With her precocious financial intellect, commercial acumen, and modest virtue, Gubitosa Zeno embodies the highest virtues of Venetian patrician maidenhood. Her sharp wit, commercial brilliance, and sparkling courtly charm establish Gubitosa as an admired treasure across the merchant palaces of the lagoon. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master maritime insurance and banking credit systems to enhance her family's commercial fortunes.",
+    "Help open lucrative trade channels to Constantinople and Alexandria to multiply family wealth."
+  ],
+  "Values": [
+    "Commercial integrity, mathematical precision, and bold enterprise as the pillars of success.",
+    "Applying intellect to repay family nurturing, celebrating the prosperity of the Republic."
+  ],
+  "Fears": [
+    "Catastrophic shipwrecks or privateer attacks liquidating high-stakes mercantile voyages.",
+    "Protracted wars strangling trade and reducing the vibrant commercial culture to ruin."
+  ],
+  "SpeechStyle": "Speaks with bright, vivacious clarity, articulate commercial intelligence, and charming wit. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

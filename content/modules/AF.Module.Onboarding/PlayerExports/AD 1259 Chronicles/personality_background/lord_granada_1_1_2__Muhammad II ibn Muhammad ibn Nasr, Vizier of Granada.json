@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_1_2",
+  "HeroName": "Muhammad II ibn Muhammad ibn Nasr, Vizier of Granada",
+  "Description": "Muhammad II ibn Muhammad, celebrated by history as al-Faqih ('The Jurist-Scholar'), serves at twenty-four years of age as Crown Prince and Grand Vizier of Granada. Renowned for his brilliant legal intellect, literary fluency, and mastery of classical Andalusian philosophy, Muhammad combines scholarly gravitas with astute diplomatic statecraft. Appointed early to oversee chancery archives, tax auditing, and diplomatic dispatches, he understands that Granada cannot match Castile's raw manpower on the open field. Consequently, al-Faqih champions a sophisticated strategy of triangular balance: faithfully fulfilling tributary obligations to appease Toledo while cultivating clandestine ties with the rising Marinid Sultanate in Fez to secure Berber shock troops as a deterrent. He tirelessly recruits displaced scholars and patronizes jurists, establishing the administrative and intellectual framework that will sustain the Nasrid realm for generations. Through his brilliant legal synthesis, geopolitical foresight, and masterful diplomacy balancing northern Christian crowns with Maghrebi sultans, Muhammad al-Faqih established the resilient administrative bedrock that shielded Granada for centuries. Possessing profound legal erudition, diplomatic brilliance, and unyielding strategic patience, Prince Muhammad al-Faqih stands universally recognized as the essential intellect ensuring the survival of the emirate. His profound statesmanship and diplomatic mastery ensure that the young vizier commands the absolute respect of both friend and foe across Iberia.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To institutionalize efficient legal, fiscal, and hydraulic administrations across the emirate.",
+    "To balance Castilian pressure against Marinid military intervention, securing sovereignty."
+  ],
+  "Values": [
+    "Jurisprudence and strategic intellect are the true foundations of statehood; reckless force invites ruin.",
+    "Flourishing literature and sciences preserve the immortal soul of Andalusian culture."
+  ],
+  "Fears": [
+    "A surprise Castilian crusade crushing the realm before Marinid aid arrives, or Marinids seizing power.",
+    "Feudal march lords resisting administrative centralization and fracturing the front."
+  ],
+  "SpeechStyle": "Speaks with razor-sharp legal clarity, polished classical eloquence, and cold diplomatic composure. He speaks with measured Andalusian eloquence, calm authority, and polished courtly dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

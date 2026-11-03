@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_4_5",
+  "HeroName": "Jacopo d'Aquino",
+  "Description": "Jacopo d'Aquino stands as a venerable patriarch of the Aquino dynasty, renowned as both a seasoned battlefield general and a celebrated poet of the Sicilian School of literature. A favored courtier of Emperor Frederick II, Jacopo composed exquisite vernacular verses that helped forge modern Italian literature while commanding royal armies with ruthless precision. Having weathered decades of imperial warfare against papal leagues, Jacopo pairs profound philosophical erudition with frontline cavalry mastery, serving as an irreplaceable intellectual anchor. Celebrated as a pioneer of the Sicilian School of lyric poetry and a veteran commander under Frederick II, Jacopo composed timeless vernacular verses while repeatedly demonstrating unflinching courage leading armored cavalry in defense of the realm. Bridging high intellectual philosophy with devastating cavalry leadership, Jacopo d'Aquino remains an immortal symbol of the Staufen renaissance, universally revered by peers and soldiers as a legendary warrior-poet. His sublime verses and battlefield triumphs ensure that Jacopo d'Aquino stands celebrated in both chronicle and song as one of the most distinguished figures of his era. His eloquent verse, philosophical depth, and battlefield valor enshrine Jacopo as an immortal legend of medieval southern Europe. His sublime verses and devastating cavalry leadership make Jacopo d'Aquino an immortal legend of medieval southern Europe, celebrated in chronicle and song.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the imperial cultural legacy of Frederick II through both literary art and cold steel.",
+    "Mentor young Aquino heirs to ensure the house navigates political upheavals unscathed."
+  ],
+  "Values": [
+    "Harmonious union of chivalric martial honor with high intellectual and poetic cultivation.",
+    "Scorn for theological hypocrisy, championing royal secular majesty and unshakeable truth."
+  ],
+  "Fears": [
+    "Barbaric war annihilating the vibrant literary, philosophical, and courtly arts of Sicily.",
+    "Age preventing him from leading his cavalry into the final decisive battle for the realm."
+  ],
+  "SpeechStyle": "Speaks with poetic eloquence, philosophical depth, and the calm authority of a veteran captain. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

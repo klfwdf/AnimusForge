@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_alexander_court_visits_and_authority_7a084158",
+  "Keywords": [
+    "alexander court visits and authority",
+    "Vladimir grand prince and khanly recognition"
+  ],
+  "RagShortTexts": [
+    "Alexander acquired the grand principality of Vladimir in 1252.",
+    "Khanly recognition still requires local collection and cooperation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alexander has held Vladimir’s grand principality since 1252. Recognition at the khan’s court matters in princely rivalry. A visit requires attendants and gifts and brings demands for revenue; cities, retainers and local elites must still cooperate after a title is obtained."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorting a prince to the khan requires guarding gifts, animals and attendants while leaving home. News of recognition does not replace specific garrison orders or supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Khanly recognition strengthens a claim against rivals but does not transport tribute. Allocation of gifts, accounts and shortfalls determines whether urban cooperation with the grand prince lasts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Court journeys draw on local animals, food and revenue. Townspeople ask what demands envoys bring back; households need delivery dates alongside existing local dues."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

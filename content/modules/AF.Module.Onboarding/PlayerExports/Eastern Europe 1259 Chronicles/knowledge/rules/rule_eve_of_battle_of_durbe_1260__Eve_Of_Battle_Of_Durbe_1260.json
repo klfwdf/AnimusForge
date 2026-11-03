@@ -1,0 +1,52 @@
+{
+  "Id": "rule_eve_of_battle_of_durbe_1260",
+  "Keywords": [
+    "Samogitian frontier resistance",
+    "Skuodas and the Order’s pursuit"
+  ],
+  "RagShortTexts": [
+    "Samogitian leaders continued resistance after Mindaugas made peace with the Order.",
+    "Courland routes and castles toward Memel shaped raids, pursuit and local alliances."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mindaugas’s peace with the Livonian Order did not disarm every Samogitian leader. Raiding continued toward Courland, while positions such as Memel affected routes and neighbouring groups. Reports of fighting around Skuodas make families ask who took part, which return routes remain usable and whether local partners still offer help. The royal court, local chiefs and brethren in castles have distinct purposes. Their immediate decisions concern people, provisions and passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A chief seeking joint action must define rewards, losses and return dates. Royal promises abroad can affect local land, making genuine agreement more useful than assuming a document commands every community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men returning from Courland with spoils depend on speed, guides and a rear guard. Brethren pursuing from castles must leave defenders and confirm local partners’ intentions rather than judge every encounter by a banner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Border villages may supply successive armed groups. Some favour campaigning relatives; others want animals left safe. Warning, refuge and prisoner news matter sooner than a distant promise of a great victory."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

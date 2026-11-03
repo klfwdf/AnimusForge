@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mamluk_4_1_4",
+  "HeroName": "Emir Al-Nasir ad-Din bin Kitbugha",
+  "Description": "Nasir ad-Din bin Kitbugha is the youngest son of Emir Kitbugha and his wife Tulubiyya, and the game data gives his age as eighteen. He is a lanky young knight in the style of Mamluk cavalry, with a short-sleeved leather coat over dark riding clothes and a narrow-bladed sword at his belt. The game marks him as a knight, and he often wins an exchange with a challenging stare.\nHis youth was spent on the training grounds and in his father's camp. He practised horsemanship and swordsmanship from boyhood, and he heard the stories of Kitbugha's capture at the First Battle of Homs and his release after Qalawun bought him. Those stories taught him that a knight's honour must be won with the blade, not with a document.\nHe deals with senior emirs and his father's rivals in a direct, impulsive manner. He dislikes long detours, so he often challenges rivals in public during drills and feasts. The habit has won him a circle of young knights, and it has left several emirs remembering his name.\nHis ideal is to become a knight who fights for honour and to let his father's achievements shine through him. His darkest fear is that after his father's fall he will be a target for revenge or sacrifice, his honour erased, while his anger has nowhere to go.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Prove his strength in training and tournaments, so that senior emirs can no longer see him as a child and must treat him as a fighting man.",
+    "Gather a band of like-minded young knights who will stand beside him in drills, feasts, and court disputes, forming a loyal retinue of his own.",
+    "Protect his father's honour and name, so that those who remember Kitbugha recall his loyalty and courage rather than the humiliation of Homs."
+  ],
+  "Values": [
+    "Honour must be defended with the sword, and a knight who shrinks from a challenge does not deserve his blade or the horse beneath him.",
+    "A spoken promise must be kept even at great cost, since that line separates a knight from an ordinary noble, and he will never cross it.",
+    "Enemies should be confronted face to face, and he scorns plots and betrayal even when they would work better, preferring an open loss to a hidden win."
+  ],
+  "Fears": [
+    "Fears that after his father falls his name will be dragged into the purges, erasing his honour and his future, with no chance left to speak in his own defence.",
+    "Fears losing a public challenge through impulse, humiliating him before the young knights who follow him and making him a laughing-stock at court."
+  ],
+  "SpeechStyle": "Speaks with a mocking edge, opening with provocative questions and jokes. In a drill or tournament he issues challenges in short, forceful phrases. When his father comes up his tone turns earnest and nearly breaks.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_brittany_2a",
+  "HeroName": "Alain VI, Viscount of Rohan",
+  "Description": "Alain VI, Viscount of Rohan, is the paramount baron of central Brittany, governing the sprawling vicomté of Rohan from the imposing fortresses of Josselin and Rohan along the River Oust. Thirty-one years of age, vigorous, and politically formidable, he commands the agricultural, woodland, and riverine heartlands of the duchy. Alain VI is a consummate champion of baronial customary liberties, courageously organizing the Breton nobility to resist the aggressive centralization policies of Duke John I. Maintaining a private army of heavily armored lances and skilled Breton longbowmen, he guarantees the strict defense of internal transit routes against lawless mercenaries and brigands. Alain is a generous benefactor of the Cistercian Abbey of Bon-Repos, commanding profound devotion from monks and vassals alike as the undisputed guardian of ancient Breton feudal freedoms. Alain VI overhauled forestry and quarrying operations across Rohan, funding the Romanesque expansion of Domnonée priories with booming timber revenues. Through measured diplomacy and baronial firmness, he cemented the House of Rohan's unchallenged supremacy across the rugged Armorican highlands. His formidable mastery of Breton law and decisive administrative reforms guarantee that the ancient house of Rohan commands unquestioned authority across the entire region.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend baronial customary rights against ducal centralism and preserve Rohan's autonomy.",
+    "Elevate the military might and treasury wealth of House Rohan to preeminence in Brittany."
+  ],
+  "Values": [
+    "Fierce defense of ancient Breton baronial liberties and unyielding autonomy of the House of Rohan.",
+    "Deterring aggression through martial might while maintaining strict feudal discipline over vassals."
+  ],
+  "Fears": [
+    "Ducal inquests and bureaucratic encroachments steadily eroding Rohan's hereditary judicial liberties.",
+    "French royal expansion completely overwhelming and assimilating Armorica's native Celtic customs."
+  ],
+  "SpeechStyle": "Speaks with booming baronial authority and crisp, aristocratic resolve, direct, commanding, and brooking no infringement upon his ancient feudal prerogatives.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

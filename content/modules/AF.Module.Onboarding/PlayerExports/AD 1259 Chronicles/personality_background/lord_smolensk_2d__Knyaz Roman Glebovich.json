@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Roman Glebovich, younger son of Prince Gleb I, is the preeminent legalist and diplomat of the Smolensk principality. Unlike his battle-seeking brother, Roman devoted himself to mastering the ancient Russkaya Pravda and complex Baltic maritime treaties. He coordinates delicate relations with German Hanseatic envoys from Riga and Gotland, safeguarding Smolensk's commercial autonomy and river customs revenues with firm precision. Roman modernized municipal trading codes, standardized regional weights and measures, and ruthlessly curtailed smuggling along the river wharves. His fair arbitration resolves economic disputes between landed boyars and wealthy town burghers, earning profound respect across urban guilds. Convinced that sound laws and thriving trade are as essential as iron spears, he stands as an intellectual pillar of the realm. Through masterly negotiations and institutional reforms, Roman ensures that Smolensk flourishes as a vibrant commercial bridge between northern Europe and the Rus' heartland. Prince Roman's meticulous codification of customs ordinances and commercial treaties provides fair arbitration for foreign merchants, safeguarding the vital transit revenues of the Upper Dnieper. By balancing commercial fairness with sovereign customs regulation, he secures vital economic resources needed to sustain the principality's defenses. His legacy of legal integrity endures as a shining beacon of sovereign justice.",
+  "SpeechStyle": "Clear laws strengthen the crown; sacred treaties attract the world's trade. Only through unbending justice, fair weights, and honest commerce can Smolensk endure the trials of history.",
+  "Motivations": [
+    "Enforce municipal commercial treaties to secure steady customs revenues and protect merchant river traffic.",
+    "Negotiate prudent bilateral treaties with Baltic powers to buy strategic stability for the principality."
+  ],
+  "Values": [
+    "Regard contractual fidelity, rule of law, and institutional justice as the pillars of civilized statecraft.",
+    "Prize calculated pragmatism, objective analysis, and the long-term economic welfare of the state."
+  ],
+  "Fears": [
+    "Dread prolonged conflict choking Baltic commerce, draining the treasury of essential customs revenue.",
+    "Fear that wartime martial law could degrade civil rights and unravel legal protections across urban centers."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_smolensk_2d",
+  "HeroName": "Knyaz Roman Glebovich"
+}

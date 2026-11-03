@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v9",
+  "Keywords": [
+    "罗马逃生者的同行限制"
+  ],
+  "RagShortTexts": [
+    "359年逃离阿米达的小队要兼顾路线、缺水与落后者。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "359年阿米达陷落后，逃生小队必须寻找避开敌军的路线，缺水与疲惫限制他们的选择。同行者不能只按最快者能走多远决定路程；受伤、落后与照顾同伴，都可能迫使队伍停下。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

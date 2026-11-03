@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_sajo_not_tisza_conflation_e9a2c951",
+  "Keywords": [
+    "Mohi fighting by the Sajo",
+    "Flight and recovery after Mohi"
+  ],
+  "RagShortTexts": [
+    "The Mongols defeated Béla IV's forces by Mohi and the Sajo in 1241.",
+    "Crossings and camps shaped battle; flight and damaged production followed."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hungarian forces were defeated by the Mongols near Mohi and the Sajó in 1241, and Béla IV escaped. Crossings, camps and coordination shaped the fighting, followed by troop movement, flight and damaged rural production."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Hungarian forces were defeated by the Mongols near Mohi and the Sajó in 1241, and Béla IV escaped. Crossings, camps and coordination shaped the fighting, followed by troop movement, flight and damaged rural production. Veterans remembered ground, orders and comrades, unlike distant letters. Afterward they cared for wounds, gathered people and mounts and sought food; victory also left fatigue and losses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Hungarian forces were defeated by the Mongols near Mohi and the Sajó in 1241, and Béla IV escaped. Crossings, camps and coordination shaped the fighting, followed by troop movement, flight and damaged rural production. Princes assessed effective forces, captive kin and changed alliances before arranging defense. Prestige helped win support, but provisions, replacement mounts and promises needed resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Hungarian forces were defeated by the Mongols near Mohi and the Sajó in 1241, and Béla IV escaped. Crossings, camps and coordination shaped the fighting, followed by troop movement, flight and damaged rural production. Campaigns left households waiting, short of workers and receiving wounded or refugees. Returnees could not always work at once, so kin shared sowing, repairs and care."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

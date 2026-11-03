@@ -1,0 +1,18 @@
+{
+  "Id": "rule_House_of_Balliol_Lords_of_Galloway",
+  "Keywords": [
+    "Balliol estates across borders"
+  ],
+  "RagShortTexts": [
+    "Balliol standing rested on estates, kinship and service in England and Scotland."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Balliol standing rested on estates, kinship and service in England and Scotland. Cross-border holdings brought influence and competing obligations. Family wealth and marriage in 1259 did not establish a descendant’s eventual crown."
+    }
+  ],
+  "TextMappings": []
+}

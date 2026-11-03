@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_pol_3_3",
+  "DisplayName": "Jarost Jaksa",
+  "HeroName": "Jarost Jaksa",
+  "Personality": "Jarost Jaksa is a member of a noble house. Their father is Jaksa Ogończyk. Their mother is Dobrawa of Kujawy. The house belongs to the noble network of Pomerania. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 This person also will state a position under threat rather than let fear make the decision\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "Description": "Jarost Jaksa is a member of a noble house. Their father is Jaksa Ogończyk. Their mother is Dobrawa of Kujawy. The house belongs to the noble network of Pomerania. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 This person also will state a position under threat rather than let fear make the decision\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "Background": "Jarost Jaksa is a member of a noble house. Their father is Jaksa Ogończyk. Their mother is Dobrawa of Kujawy. The house belongs to the noble network of Pomerania. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 This person also will state a position under threat rather than let fear make the decision\u0001 Sometimes accepts a risk rather than merely speaking bravely\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "SpeechStyle": "Direct and willing to state agreement or refusal.",
+  "PersonalSpeechStyle": "Direct and willing to state agreement or refusal.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain dependable relationships within the house.",
+    "Preserve independent judgement and dignity under threat."
+  ],
+  "Values": [
+    "Values clear promises that are kept and dislikes changing terms afterward.",
+    "Prefers agreed procedures and orderly work to arbitrary last-minute changes."
+  ],
+  "Fears": [
+    "Conflicting duties and orders leaving avoidable mistakes uncorrected."
+  ]
+}

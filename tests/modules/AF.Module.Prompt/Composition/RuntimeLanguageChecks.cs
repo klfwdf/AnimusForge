@@ -16,8 +16,20 @@ internal static class RuntimeLanguageChecks
     const BindingFlags AllStatic = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
     const BindingFlags AllInstance = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
     static void Check(bool condition, string name) { checks++; if (!condition) throw new Exception("FAIL " + name); }
+    // Exact arity first; otherwise the single overload whose extra trailing parameters are optional.
     static object Call(Type type, string name, params object[] args)
-        => type.GetMethods(AllStatic).Single(method => method.Name == name && method.GetParameters().Length == args.Length).Invoke(null, args);
+    {
+        MethodInfo[] named = type.GetMethods(AllStatic).Where(method => method.Name == name).ToArray();
+        MethodInfo selected = named.SingleOrDefault(method => method.GetParameters().Length == args.Length)
+            ?? named.Single(method => method.GetParameters().Length > args.Length && method.GetParameters().Skip(args.Length).All(p => p.IsOptional));
+        ParameterInfo[] parameters = selected.GetParameters();
+        // Same arity: pass the caller array so out/ref results stay visible to the caller.
+        if (parameters.Length == args.Length) return selected.Invoke(null, args);
+        object[] values = new object[parameters.Length];
+        Array.Copy(args, values, args.Length);
+        for (int i = args.Length; i < values.Length; i++) values[i] = parameters[i].DefaultValue;
+        return selected.Invoke(null, values);
+    }
     static string Prompt(Assembly product, string name, params object[] args)
         => (string)Call(product.GetType("AnimusForge.PromptComposerTexts", true), name, args);
     static Dictionary<string, string> UiRows(string root, string language)
@@ -88,7 +100,7 @@ internal static class RuntimeLanguageChecks
         Type personaRules = product.GetType("AnimusForge.NpcPersonaTextRules", true);
         string displayed = (string)Call(personaRules, "BuildPersonaContext", profile, true);
         string prompted = (string)Call(personaRules, "BuildPersonaContext", profile, false);
-        JObject personaPackage = JObject.Parse(File.ReadAllText(Path.Combine(root, "ModuleData", "PersonaPromptTexts.json")));
+        JObject personaPackage = JObject.Parse(File.ReadAllText(GameLanguageRequestChecks.FixedFile(product, root, "PersonaPromptTexts.json")));
         Check(displayed.Contains(rows["AF_PERSONA_UI_TRAIT_cautious"] + "(2)"), "persona trait follows native UI " + language);
         Check(prompted.Contains((string)personaPackage["AF_PERSONA_TRAIT_cautious"] + "(2)"), "persona trait prompt retains package " + language);
         foreach (string field in new[] { "Traits", "Motivations", "Values", "Fears", "SpeechStyle" })
@@ -168,7 +180,7 @@ internal static class RuntimeLanguageChecks
         Func<string, string, string> englishContract = (_, fallback) => fallback;
         string canonical = (string)Call(diplomacy, "BuildCanonicalHistorySystemPrompt", literal, 100, 400, englishContract);
         Guard(canonical, "diplomacy declaration/history");
-        string marker = (string)diplomacy.GetField("DiplomaticDeclarationWritingContractMarker", AllStatic).GetValue(null);
+        string marker = (string)((MemberInfo)diplomacy.GetField("DiplomaticDeclarationWritingContractMarker", AllStatic) is FieldInfo markerField ? markerField.GetValue(null) : diplomacy.GetProperty("DiplomaticDeclarationWritingContractMarker", AllStatic).GetValue(null));
         object[] extract = { canonical, marker, null };
         Check((bool)Call(diplomacy, "TryExtractCommonContractBeforeMarker", extract) && (string)extract[2] == literal, "common diplomacy contract remains byte-identical outside guard");
         Guard((string)Call(diplomacy, "BuildAnalysisSystemPrompt", literal, englishContract), "diplomacy analysis");

@@ -1,0 +1,59 @@
+{
+  "Id": "be_hibernian_kingdom_geopolitics",
+  "Keywords": [
+    "Hibernians Frontiers",
+    "Irish Sea estuary anchorages"
+  ],
+  "RagShortTexts": [
+    "Irish Sea estuaries, landings and crossings depend on wind and tide.",
+    "Inland herds need roads connecting to coastal vessels."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Anchorages, estuaries and crossings depend on wind and tide. Familiar coasts reduce navigation and water risks; roads connect inland herds to vessels."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Irish Sea estuaries, landings and crossings depend on wind and tide. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Inland herds need roads connecting to coastal vessels."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Inland herds need roads connecting to coastal vessels. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Irish Sea estuaries, landings and crossings depend on wind and tide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Irish Sea estuaries, landings and crossings depend on wind and tide. Closed routes may separate families from goods, imposing costs on those remaining at home. Inland herds need roads connecting to coastal vessels."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Inland herds need roads connecting to coastal vessels. Cargo passes different carriers, making distant route changes become local shortages through delay. Irish Sea estuaries, landings and crossings depend on wind and tide."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

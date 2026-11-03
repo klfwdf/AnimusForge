@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_1g",
+  "HeroName": "Vakhtang II",
+  "Description": "Vakhtang II was the eldest son of King David VI Narin, heir to the Kingdom of Imereti, and future unifier of the Georgian crown. Reared amidst the defensive struggle for western independence, he recognized early that national survival demanded profound patience and vigilance. Educated in Orthodox patristic texts, Latin diplomacy, and alpine cavalry combat, Vakhtang cultivated a forensic, disciplined intellect. He routinely inspected fortress arteries linking Black Sea ports with Kutaisi, personally supervising weapon smithies and grain reserves. In 1259, young Prince Vakhtang assisted his father in fortifying the Likhi mountain defiles with elite light infantry to interdict enemy infiltration. At Kutaisi, Crown Prince Vakhtang II instituted regular royal guard musters, supervising cavalry squadrons and mountain bowmen in defensive alpine combat. He maintained close correspondence with Orthodox abbots, dedicating royal funds to preserve ancient frescoes and stone iconostases with scholarly reverence. Facing hostile espionage from eastern Mongol garrisons, Vakhtang deployed perimeter cordons that neutralized infiltrators, earning universal praise for mature leadership and unwavering dedication to preserving Orthodox Christian independence throughout Transcaucasia.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Assist King David VI in anchoring the independence of western Georgia, securing Kutaisi and the Likhi defiles against hostile assault.",
+    "Supervise armories and granaries across Imereti, creating durable stockpiles to sustain protracted defensive warfare.",
+    "Monitor Ilkhanate political crosscurrents to identify strategic opportunities for the eventual reunification of Georgia."
+  ],
+  "Values": [
+    "Strategic patience, forensic caution, and quiet preparation triumph over reckless adventurism in statecraft.",
+    "Rigorous administrative justice, anti-corruption vigilance, and disciplined stewardship of royal resources.",
+    "Filial devotion to King David and unbending dedication to the eventual reunification of the Georgian realm."
+  ],
+  "Fears": [
+    "Frontier negligence or treachery allowing enemy vanguards to force mountain checkpoints and threaten Kutaisi.",
+    "Permanent regional partition alienating the Georgian populace, extinguishing the historic vision of a united kingdom."
+  ],
+  "SpeechStyle": "Speaks with measured deliberation and courtly caution, scrutinizing defense ledgers and mountain border security with forensic precision.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Vakhtang II"
+}

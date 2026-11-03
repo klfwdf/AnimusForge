@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_12_3_1",
+  "HeroName": "Laure de Haute Lorraine, Lady of Dampierre",
+  "Description": "Laure de Haute Lorraine is the Lady of Dampierre, daughter of Duke Matthew II of Upper Lorraine. At twenty-nine, she brings the illustrious bloodlines of the Holy Roman Empire into the French marches, wielding substantial diplomatic influence across the Champagne-Lorraine frontier. A gifted administrator, Laure manages castle accounts, timber leases, and garrison provisioning with meticulous efficiency, maintaining the financial resilience of Dampierre during turbulent military seasons. When her husband campaigns alongside his brothers in Flanders, Laure governs their estates with serene composure, resolving tenant disputes with celebrated equity. Devout, gracious, and charitable, she patronizes local monastic priories and leper hospitals, commanding profound reverence from both serfs and armored knights as a noble guardian of regional peace. Her dignified statecraft preserved domestic tranquility and prosperity across all the flourishing seigneuries of Hainaut. Bearing the bloodline of the Dukes of Lorraine, she managed the revenues and fiefs of Hainaut with exemplary prudence. She patronized local monastic foundations and maintained administrative cohesion across the Walloon countryside during volatile periods of regional succession. Her steadfast stewardship preserved domestic order and agrarian prosperity throughout the rolling pastures of Hainaut and Flanders. Her gracious leadership guided the feudal community through turbulent disputes over succession and territorial rights.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prudently manage comital revenues to guarantee financial stability and siege readiness.",
+    "Strengthen the diplomatic bridge uniting Lorraine with the House of Dampierre."
+  ],
+  "Values": [
+    "Rigorous honesty in estate accounting combined with active Christian compassion.",
+    "Unfaltering fidelity to marital indentures and fierce protection of family stability."
+  ],
+  "Fears": [
+    "Outbreak of war between France and the Empire forcing her kin onto opposing sides.",
+    "Severe harvest failure triggering widespread agrarian destitution across the estates."
+  ],
+  "SpeechStyle": "Speaks with serene, aristocratic warmth and structured precision, her speech courteous, intelligent, and carrying the calm authority of an accomplished noble governor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

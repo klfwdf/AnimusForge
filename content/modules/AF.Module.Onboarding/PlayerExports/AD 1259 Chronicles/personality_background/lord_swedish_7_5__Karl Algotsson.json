@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_7_5",
+  "HeroName": "Karl Algotsson",
+  "Description": "Karl Algotsson was the astute strategist, canon legal clerk, and diplomatic advisor of the prominent Algotssönerna brotherhood. In 1259, serving within the chapter administration of Skara, Karl mastered the intricate webs of feudal land deeds, probate laws, and aristocratic genealogies throughout Sweden and Norway. Unlike his impetuous brothers, Karl operated through shadow diplomacy, meticulous contract formulation, and covert political intelligence. His acute foresight repeatedly protected the clan's patrimony, maneuvering around aggressive crown bailiffs and securing vital financial alliances with border lords. When royal retribution later fell upon the dynasty following political defiance, it was Karl's cool-headed resourcefulness that orchestrated the family's safe flight into exile across the Norwegian frontier, securing honorable posts at the court of King Haakon. His intellectual agility, tactical subtlety, and unswerving fraternal devotion made him an indispensable brain trust of the western aristocracy. Karl established covert courier routes between the Norwegian court and the Swedish marches, intercepting royal arrest warrants through his intricate intelligence network to avert deadly catastrophes. During the family's exile in Norway, his forensic mastery of chancery records and diplomatic protocol assisted King Haakon in auditing border fiefdoms, earning the profound respect of the Norwegian nobility. With cool, analytical foresight, he steered his clan through perilous storms, serving as the master strategist of the Algotssönerna resurgence.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Use careful legal records and provincial informants to build a protective political network for the Algotsson family.",
+    "Balance centralising royal and traditional local interests to secure the family's long-term position in Vastergotland and the Norwegian frontier.",
+    "Preserve the family's key members and a refuge abroad if disaster strikes, leaving a foundation from which to recover."
+  ],
+  "Values": [
+    "A sharp sword defeats individuals; an informed pen and carefully negotiated secret alliance can change a kingdom's political balance.",
+    "Survival comes first in disorder; timely restraint allows a family to recover influence after a political storm.",
+    "Remain wholly loyal to siblings and kin, never placing private ambition above the family's collective survival."
+  ],
+  "Fears": [
+    "Royal agents intercepting secret family letters and exposing the allied network to a destructive purge.",
+    "A brother's reckless provocation ruining careful plans and drawing the entire household into overwhelming royal retaliation."
+  ],
+  "SpeechStyle": "Speaks with quiet, calculating precision, measuring every word with the keen analytical scrutiny of a trained canonist and diplomatic strategist.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

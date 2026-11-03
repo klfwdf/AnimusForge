@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_1a",
+  "HeroName": "Konstantin I Tikh, Tsar of Bulgaria",
+  "Description": "Konstantin I Tikh, aged forty, reigns as Tsar and Autocrat of all Bulgarians and Greeks from the imperial citadel of Veliko Tarnovo. Originally a powerful boyar from Skopje, he emerged victorious over rival claimant Mitso Asen in 1257 and was proclaimed sovereign by the noble council. To legitimize his dynastic authority, he married Irene Laskarina, daughter of Emperor Theodore II, adopting the revered name of Asen to bind his rule with the founding dynasty. A formidable warlord skilled in directing mountain ambuscades and Cuman horse-archers, he tirelessly repulsed Hungarian cross-border incursions and Byzantine expansionism. Following the violent usurpation of Michael VIII and the blinding of John IV Laskaris, Konstantin declared implacable war against the Palaiologoi. Domestically, he fortified the royal fortress of Tsarevets, generously endowing Orthodox monastic scriptoria to foster national unity against Golden Horde Mongol extortion. During daily inspections of frontier barracks, he rigorously tests the discipline of his boyar cavalry, ensuring the realm remains battle-ready for the coming conflict. During daily inspections of the Tsarevets barracks, he personally tests the discipline of his boyar cavalry, ensuring the imperial army remains battle-ready for the impending confrontation with Byzantine legions and northern nomadic raiders.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with thunderous Slavic majesty and unyielding royal authority, employing solemn liturgical phrases and ancient Asen imperial decrees.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -249,6 +249,11 @@
     <string id="REX_Builder_Create_First" text="请先部署内置或已保存预设，再使用此选项。" />
     <string id="REX_Builder_Deleted" text="已删除选中的部件。" />
     <string id="REX_Builder_Enter" text="请在城内选择位置，然后按 B 键打开自定义刑场部署工作室。" />
+    <string id="REX_Builder_Enter_FieldCamp" text="请在营地里选择位置，然后按 B 键打开自定义刑场部署工作室。" />
+    <string id="REX_FieldCamp_Name" text="野外营地" />
+    <string id="REX_Error_FieldCamp_Unavailable" text="营地现在无法举行处决。" />
+    <string id="REX_FieldCamp_No_Prisoners" text="你的队伍里没有可以处决的成年英雄俘虏。" />
+    <string id="REX_Action_Order_Executioner" text="命令刽子手行刑" />
     <string id="REX_Builder_Executioner" text="刽子手" />
     <string id="REX_Builder_Functional_Apparatus" text="功能刑具" />
     <string id="REX_Builder_Hold_B" text="按 B 键打开部署工作室。" />
@@ -498,5 +503,7 @@
     <string id="REX_Continue_Description" text="判决已经确定。选择另一名押送中的犯人，或离开。" />
     <string id="REX_Continue_Leave" text="离开刑场。" />
     <string id="REX_Continue_Title" text="选择下一名犯人" />
+    <string id="REX_FieldCamp_Continue_Cancel" text="取消" />
+    <string id="REX_FieldCamp_Continue_Description" text="选择下一名俘虏，继续使用当前刑场；或结束仪式，返回营地。" />
   </strings>
 </base>

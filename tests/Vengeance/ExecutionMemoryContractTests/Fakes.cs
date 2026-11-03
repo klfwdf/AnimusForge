@@ -67,6 +67,17 @@ namespace RichExecutions.Scene
 }
 namespace AnimusForge
 {
+    // Test boundary for the production observer's current bulletin participant contract.
+    internal sealed class WorldBulletinParticipant
+    {
+        public string HeroId = "", Name = "", Role = "";
+    }
+    internal static class WorldBulletinEventCaptureAdapter
+    {
+        internal static WorldBulletinParticipant[] BulletinParticipants(params (TaleWorlds.CampaignSystem.Hero Hero, string Role)[] people)
+            => people.Where(x => x.Hero != null).GroupBy(x => x.Hero.StringId).Take(4)
+                .Select(x => new WorldBulletinParticipant { HeroId = x.Key, Name = x.First().Hero.Name?.ToString() ?? "", Role = x.First().Role }).ToArray();
+    }
     internal static class SaveRuntimeGuard
     {
         internal static long CurrentGeneration = 1;
@@ -113,7 +124,7 @@ namespace AnimusForge
         }
         internal static string GetKingdomId(TaleWorlds.CampaignSystem.Kingdom k) => k?.StringId ?? "";
         private void RecordEventSourceMaterial(string kind, string label, string text, string key, string kingdom, string place, bool world, bool realm, string actor, string actorRealm) { Materials++; }
-        private bool CaptureWorldBulletinEvent(string kind, string key, int score, string sentence, bool player, string group, string detail, params string[] kingdoms) { News.Add(detail); return true; }
+        private bool CaptureWorldBulletinEvent(string kind, string key, int score, string sentence, bool player, string group, string detail, WorldBulletinParticipant[] participants, params string[] kingdoms) { News.Add(detail); return true; }
         internal ExecutionTranscript Transcript(string id) => _executionTranscripts.Find(id);
         internal void TestSync(TaleWorlds.CampaignSystem.IDataStore store) => SyncExecutionTranscripts(store);
     }
@@ -154,5 +165,26 @@ namespace AnimusForge
     {
         internal static string GetModuleDataFilePath(string fileName)
             => System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ModuleData", fileName);
+    }
+}
+
+// Unrelated gathering/policy/UI branches must not be used by execution-memory tests.
+namespace AnimusForge
+{
+    internal static class NobleGatheringTextProjection
+    {
+        internal static string ProjectWeeklyMaterialForPrompt(string kind, string key, string raw) => throw new NotSupportedException("Gathering projection outside execution fixture");
+    }
+    internal static class PolicyWeeklyFactPromptProjection
+    {
+        internal static bool IsPolicyKind(string kind) => false;
+        internal static string Snapshot(string kind, string raw) => throw new NotSupportedException("Policy projection outside execution fixture");
+    }
+}
+namespace TaleWorlds.Localization
+{
+    public sealed class TextObject
+    {
+        public TextObject(string value) => throw new NotSupportedException("UI localization outside execution fixture");
     }
 }

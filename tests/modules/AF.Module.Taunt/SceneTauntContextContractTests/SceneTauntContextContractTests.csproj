@@ -11,6 +11,7 @@
     <Compile Include="..\..\..\..\Vengeance\Source\Core\ExecutionEnums.cs" Link="ExecutionEnums.cs" />
     <Compile Include="..\..\..\..\src\modules\AF.Module.Taunt\ScenePeaceConflictContextOwner.cs" Link="ScenePeaceConflictContextOwner.cs" />
     <Compile Include="..\..\..\..\src\modules\AF.Module.Taunt\SceneTauntPenaltyLedgerOwner.cs" Link="SceneTauntPenaltyLedgerOwner.cs" />
+    <Compile Include="..\..\..\..\src\AF.GameAdapter.Bannerlord\Patches\Taunt\Patch_SceneTaunt_CrimeSettlement.cs" Link="Patch_SceneTaunt_CrimeSettlement.cs" />
     <Compile Include="..\..\..\..\src\modules\AF.Module.Taunt\SceneTauntConflictLifecycleOwner.cs" Link="SceneTauntConflictLifecycleOwner.cs" />
   </ItemGroup>
 </Project>

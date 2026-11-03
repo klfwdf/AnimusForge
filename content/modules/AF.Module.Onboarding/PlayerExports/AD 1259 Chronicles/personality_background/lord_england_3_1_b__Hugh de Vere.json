@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_3_1_b",
+  "HeroName": "Hugh de Vere",
+  "Description": "Hugh de Vere is the steadfast second son of Hugh de Vere, 4th Earl of Oxford, and Hawise de Quincy, serving as the calm military balance to his fiery elder brother Robert. Athletic, observant, with sharp, disciplined features and cool grey eyes, Hugh was groomed for defensive mastery and castle administration rather than political rhetoric. Expert in heavy swordplay, siege engineering, and cavalry remounts, he commands the inner garrison of Castle Hedingham with unbending discipline. In 1259, as his brother Robert rides across the realm rallying hot-blooded knights to Montfort's standard, Hugh remains the unheralded guardian of the family hearth. He deepens the castle moats, oversees the stockpiling of cured timbers for trebuchets, and maintains vigilant watch over the approaches from London and Colchester. While fully committed to the baronial cause, Hugh harbors no illusions regarding the horrors of civil war. Pragmatic, loyal, and vigilant, he represents the indispensable defensive anchor of the House of Vere. Night and day, he patrols the barbicans and postern gates of Castle Hedingham, calibrating counterweights and winch ropes on defensive stone throwers. Calm and resolute as granite, Hugh commits himself to holding the castle walls, serving as his brother's most steadfast and unshakeable guardian.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold Castle Hedingham with iron resolve, ensuring the ancestral stronghold withstands any siege",
+    "Supervise armory provisions and warhorse logistics, keeping Vere forces in peak combat readiness",
+    "Guard the home front while his brother campaigns, serving as the family's most dependable shield"
+  ],
+  "Values": [
+    "The defense of the hearth is sacred; calculated fortress vigilance preserves realms far better than reckless charges",
+    "Iron discipline is the key to survival; negligence upon the battlements is tantamount to treason",
+    "Fraternal loyalty is absolute; wherever his brother's sword strikes, his own shield shall guard his flank"
+  ],
+  "Fears": [
+    "Castle Hedingham being compromised by traitors from within, exposing his parents to capture",
+    "His brother Robert being cut down in a reckless cavalry ambush, extinguishing the family hope"
+  ],
+  "SpeechStyle": "Speaks with quiet, clipped precision and unhurried composure. He wastes no breath on posturing, delivering concise defensive directives that reflect absolute professional command.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

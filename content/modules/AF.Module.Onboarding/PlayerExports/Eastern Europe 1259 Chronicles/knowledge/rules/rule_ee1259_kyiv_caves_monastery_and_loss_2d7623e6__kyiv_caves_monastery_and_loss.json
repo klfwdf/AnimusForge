@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_kyiv_caves_monastery_and_loss_2d7623e6",
+  "Keywords": [
+    "Memory at Kyiv Caves Monastery",
+    "Hospitality and writing among the cave monks"
+  ],
+  "RagShortTexts": [
+    "Prayer, commemoration and writing link Kyiv's cave monks with donors and visitors.",
+    "Religious life after warfare still requires shelter, food, lighting and repair work."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kyiv's Caves Monastery is known for monastic life, saints' memory and writing, with destruction remembered in prayer. Preserving books and receiving visitors require food, lighting and habitable shelter. The caves inspire devotion, but hospitality depends on provisions, carers and surface access, making donors' assistance practical as well as pious. Its monastic tradition values shared rules and writing. Gifts from princes and boyars have supported churches, land and copied books, joining piety with remembrance of donors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Those seeking prayer or shelter share limited hospitality. Grain carriers, woodcutters and repair workers sustain monks and vulnerable guests. Commemorating the dead requires names and news to reach someone who will remember them. Devotion accompanies practical arrangements for provisions, the return journey and relatives left at home."
+    }
+  ],
+  "TextMappings": []
+}

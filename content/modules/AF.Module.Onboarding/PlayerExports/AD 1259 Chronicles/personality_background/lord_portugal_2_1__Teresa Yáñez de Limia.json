@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_1",
+  "HeroName": "Teresa Yáñez de Limia",
+  "Description": "Doña Teresa Yáñez de Limia (Teresa Anes de Lima) is a venerable matriarch from the illustrious Galician-Portuguese House of Limia, widow of the magnate Mem Garcia de Sousa. As the respected senior figure of the House of Sousa—the most powerful and wealthy noble dynasty in thirteenth-century Portugal—she commands vast hereditary honras spanning the Minho and Douro basins. Endowed with legal erudition and administrative mastery, Doña Teresa oversees dozens of manorial estates, hydraulic mills, and agricultural tenures with exceptional precision. In 1259, as royal crown inquests initiated at the Cortes of Leiria challenge baronial tax immunities, Teresa vigorously defends her family's ancient seigneurial exemptions before royal chanceries. She strategically orchestrates high-status marriages for her descendants while lavishly endowing Cistercian convents and rural hospices for the aged. Imposing, shrewd, and deeply pious, Teresa stands as an unshakeable pillar anchoring the grandeur of the House of Sousa. Presiding from the great stone hearth of the ancestral Sousa hall, Lady Teresa personally verified annual rent rolls from mills and olive orchards along the Douro. Confronting aggressive royal tax collectors with razor-sharp legal mastery, she steadfastly guarded ancestral exemptions won by her forebears, embodying the unconquered dignity of her lineage across Christendom. Her formidable administrative intellect, legal clarity, and moral authority ensure that the House of Sousa remains the preeminent noble dynasty of Portugal.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the ancient seigneurial franchises of the House of Sousa against royal crown inquiries",
+    "Prudently manage vast agrarian tenures to ensure unbroken familial wealth across generations",
+    "Orchestrate elite dynastic alliances across Iberia to preserve her family's preeminent standing"
+  ],
+  "Values": [
+    "Ancestral charters sealed by blood must never be surrendered to royal overreach; honor is paramount",
+    "Legal rigor, domestic discipline, and Christian charity guarantee the longevity of great dynasties",
+    "Steadfast moral rectitude, devout piety before God, and loving dedication to lineage glory"
+  ],
+  "Fears": [
+    "Royal crown inquests stripping the House of Sousa of their judicial and fiscal immunities",
+    "Internal inheritance squabbles fracturing the unity of her descendants before royal pressure"
+  ],
+  "SpeechStyle": "Regal, solemn, and articulate; speaks with the effortless majesty, legal precision, and imposing moral authority of a supreme feudal matriarch.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

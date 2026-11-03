@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_2_5",
+  "HeroName": "Ali ibn Amir",
+  "Description": "Ali ibn Amir was a son of Amir ibn Idris and belongs to the Idris branch. No chronicle records him, so this portrait is a game-setting construction based on the faction's history. His appearance is a game-setting invention: a lean frame, skin weathered to deep brown by wind and sand, and a small broken notch through his left eyebrow from a fall on a mountain path in youth. He wears a short dusty jacket and a leather pouch at his belt holding torn fragments of a map, and he watches the terrain whenever he walks. From childhood he travelled the trade roads with his father, learning less from ledgers than from routes, water sources and people. He knows the relay stations and tribal headmen of the region well. In his young years he spent most of his time away from home. He scouted a path toward Taza for the family, and on one night march he rescued a stranded caravan, which earned him real respect among the kin. He is curious and outgoing, fond of rumors from different regions, and comfortable talking with strangers. His highest aim is to find new trade routes and allies so that the branch no longer depends on its old roads. His darkest side is restlessness. He feels that others' successes come too easily while he remains bound by arrangements made for him. He fears that a single misjudgment will send a caravan to ruin in the desert and that the kin will hold him wholly responsible.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wanted to open new trade routes and win allies, so that the Idris branch would no longer rely only on the old roads his father had run.",
+    "He gathered first-hand scouting reports and rumors about water sources, relay stations and headmen, turning them into resources the family could use.",
+    "He wished to prove within the kin that he was more than his father's son, and to earn a post where he could decide for himself instead of following orders."
+  ],
+  "Values": [
+    "Exploration and first-hand knowledge, since he trusted a road he had walked over any figure in a ledger and understood a place only by entering it.",
+    "Personal trust and reputation, because he believed trade roads depend on promises and friendships, and one broken word can close an entire route.",
+    "Courage and speed, since he disliked slow councils and idle talk and favored swift action at critical moments, even at some risk."
+  ],
+  "Fears": [
+    "A misjudgment that sends a caravan to its death in the desert, leaving him blamed by the kin and stripped of the reputation he built by hand.",
+    "Being bound forever to the old routes set by his father and uncles, repeating paths others had walked and never leaving a name of his own."
+  ],
+  "SpeechStyle": "He speaks quickly and starts with place names, such as a water source or a relay station. He is respectful but informal with elders and enjoys sharing rumors with peers. When danger comes up, his tone turns light.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

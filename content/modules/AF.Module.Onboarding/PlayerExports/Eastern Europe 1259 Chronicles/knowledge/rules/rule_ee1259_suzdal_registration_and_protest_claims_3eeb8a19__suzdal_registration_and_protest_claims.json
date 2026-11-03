@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_suzdal_registration_and_protest_claims_3eeb8a19",
+  "Keywords": [
+    "Suzdal registration and levies",
+    "Suzdal households and assessment burdens"
+  ],
+  "RagShortTexts": [
+    "Suzdal households faced Mongol registration alongside local dues.",
+    "Recorded obligations could exceed deliverable goods and household labor."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Households in Suzdal and northeastern Rus faced Mongol registration alongside local dues and labor and cared who and what would be counted. Princes and local elites negotiated with assessors, while the distribution of burdens could provoke resistance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Households in Suzdal and northeastern Rus faced Mongol registration alongside local dues and labor and cared who and what would be counted. Princes and local elites negotiated with assessors, while the distribution of burdens could provoke resistance. Collectors needed orders, shares and transport while consuming supplies themselves. Force could secure payment but provoke concealment, flight or reduced production."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Households in Suzdal and northeastern Rus faced Mongol registration alongside local dues and labor and cared who and what would be counted. Princes and local elites negotiated with assessors, while the distribution of burdens could provoke resistance. Leaders balanced outside demands, retainers and stores. Carriers and those advancing payment needed recognized accounts, while delays damaged trust with both superiors and residents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households in Suzdal and northeastern Rus faced Mongol registration alongside local dues and labor and cared who and what would be counted. Princes and local elites negotiated with assessors, while the distribution of burdens could provoke resistance. Grain, animals and labor payments affected food, farming and care. Unequal means made distribution a source of dispute with neighbors and local elites."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

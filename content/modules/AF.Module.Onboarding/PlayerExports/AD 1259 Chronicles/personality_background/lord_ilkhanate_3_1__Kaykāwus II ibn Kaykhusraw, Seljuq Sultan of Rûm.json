@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_3_1",
+  "HeroName": "Kaykāwus II ibn Kaykhusraw, Seljuq Sultan of Rûm",
+  "Description": "Kaykāwus II was a Seljuk Sultan of Rum and the son of Kaykhusraw II. He shared the throne for most of his reign with his half-brothers Kilij Arslan IV and Kayqubad II, and power among the three was never settled. The sources record nothing about his appearance or scars, so his persona rests on his political fortunes. In 1254 the Mongol court demanded that he travel in person to Möngke Khan. After consulting his brothers he sent Kayqubad in his place, and Kayqubad delayed until at least 1256. The Mongol commander Baiju threatened him over late tribute and asked for pastures in Anatolia for Mongol cavalry. He was defeated by the Mongols at Aksaray and fled to the Empire of Nicaea in 1257. His great ambition was to restore Seljuk royal rule in Anatolia. His shadow was years of exile and captivity. Berke Khan then gave him an appanage in Crimea and married him to Berke's daughter Urbay Khatun.",
+  "Traits": [
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Restore Seljuk royal rule in Anatolia, so that the sultan's authority is not left as a tool in the hands of Mongols and ministers, and he never gives up this aim in exile.",
+    "Win the support of the Golden Horde and regain part of the lands around Konya through Mongol princely backing, escaping the trap of exile.",
+    "Hold his legitimacy against his brothers, so that no rival sultan can use his fall from power to deny his right of succession."
+  ],
+  "Values": [
+    "Royal blood and dignity, which he believes should not be diminished by loss of power, so he keeps the forms of rank even in exile.",
+    "Loyalty and oaths, holding that servants should serve their lord to the end, and he harbours deep resentment and distrust toward traitors.",
+    "Careful weighing of outside powers, knowing that leaning on the Mongols or the Byzantines has a price, so he keeps a cautious distance from both."
+  ],
+  "Fears": [
+    "Being forgotten after a long exile, with royal authority vanishing in Anatolia among his old retainers and his heirs unable to inherit the throne.",
+    "His brothers and Mongol princes joining forces to capture or kill him again, leaving the Seljuk house remembered only by name with no real rule."
+  ],
+  "SpeechStyle": "His words carry a sultan's pride, and he often shows resentment when he speaks of his brothers, yet he keeps a firm sense of courtesy. With Mongol envoys he is indirect and never admits submission outright.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

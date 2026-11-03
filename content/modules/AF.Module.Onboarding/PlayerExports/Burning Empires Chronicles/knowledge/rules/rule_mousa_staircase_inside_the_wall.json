@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v3",
+  "Keywords": [
+    "Mousa staircase inside the wall"
+  ],
+  "RagShortTexts": [
+    "A narrow stair inside Mousa’s wall rises through a landing toward the upper level."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A narrow stair inside Mousa’s wall rises through a landing toward the upper level. People and loads have to move in sequence, and carrying heavy objects complicates the climb. Use of upper space depends on this access rather than height alone providing unlimited room for residents or watchers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

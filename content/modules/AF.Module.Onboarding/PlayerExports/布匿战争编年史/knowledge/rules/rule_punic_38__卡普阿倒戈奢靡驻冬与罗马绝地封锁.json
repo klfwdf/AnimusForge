@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_38",
+  "Name": "卡普阿倒戈奢靡驻冬与罗马双重壕沟残酷封锁",
+  "Description": "公元前216年坎帕尼亚首府、意大利第二大都会卡普阿开城倒戈投靠汉尼拔；随后罗马以数个军团挖掘双重环形壕沟将其彻底铁桶封锁，公元前211年城破诛灭全体贵族。",
+  "Tags": [
+    "卡普阿叛变",
+    "汉尼拔驻冬",
+    "双重壕沟围城",
+    "卡普阿陷落",
+    "血洗元老",
+    "行省化惩戒"
+  ],
+  "Category": "History",
+  "DefaultPriority": 85,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前216年意大利第二富庶大都市卡普阿背叛罗马同盟投向汉尼拔。",
+    "迦太基大军在卡普阿奢靡温泉美酒中驻冬被指丧失了进军罗马的锋芒。",
+    "公元前211年罗马以内外双重壕沟困死卡普阿并严惩处决其全多元老。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡普阿背叛了给予它公民权与无尽繁荣的罗马！他们以为靠着汉尼拔就能瓜分意大利霸权，那是无耻至极的痴人说梦！富尔维乌斯与阿庇乌斯率军团挖下六十里的内外双重壕沟，内挡突围、外阻汉尼拔援军！围城两年饥馑相食，城破之日，执政官拒绝元老院赦免信，当众将卡普阿五十三名首恶元老斩首，数万居民贬为奴隶，取消其自治城邦资格！背叛罗马者的下场，这就是万世警戒！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "世人愚蠢地讥讽卡普阿的温泉和蜜酒消磨了汉尼拔士兵的斗志，却不知汉尼拔必须给连续征战三载的疲惫老兵一处安息重整的基地！悲哀的是我们缺乏大型攻城重武器，面对罗马人筑起的那座不可逾越的六十里封锁墙，即使汉尼拔引军猛攻、甚至兵临罗马城下企图围魏救赵，那些铁石心肠的罗马军团依然死咬住卡普阿不放，最终眼睁睁看着最忠诚的同盟城邦被罗马暴徒肢解屠戮！"
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡普阿的富贵成了它自己的毒药！当年汉尼拔骑着战象入城时，满街都是香水、美酒和鲜花；可到了后来，城里连老鼠和马皮都被吃光了。城门打开那天，罗马执政官坐在广场中央，看着皮鞭把城里的老爷们打得皮开肉绽然后砍下脑袋，哭嚎声连十里外的葡萄园都听得清清楚楚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前216年坎尼会战后，卡普阿脱离罗马倒向迦太基，汉尼拔率军驻冬。公元前212年罗马集中六个军团修筑严密的内外双重壕沟围攻卡普阿。尽管汉尼拔围魏救赵直逼罗马城，罗马围城军坚不撤退，最终于公元前211年攻陷卡普阿，处决全部叛变元老并彻底剥夺该城自治特权。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "卡普阿倒戈奢靡驻冬与罗马双重壕沟残酷封锁",
+    "rule_punic_38"
+  ]
+}

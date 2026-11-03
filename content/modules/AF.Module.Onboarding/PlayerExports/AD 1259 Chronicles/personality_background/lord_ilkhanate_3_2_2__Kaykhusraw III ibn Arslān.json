@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_3_2_2",
+  "HeroName": "Kaykhusraw III ibn Arslān",
+  "Description": "Kaykhusraw III was the son of Kilij Arslan IV and a Seljuk Sultan of Rum, and in the game he is the child of Qilij Arslan IV. The sources record nothing about his appearance or scars, so his persona rests on his political career. He was born in turbulent years around his father's death, and he was named sultan while still a small boy, between two and six years old. The sources describe him as a figurehead who played little part in the events of his reign. His ambition was to hold real power of his own, beyond his father's and Parwana's shadows. His shadow was a lasting insecurity about his station, as he was always subject to others' will, eager for autonomy yet afraid of the reckoning that failure would bring.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Free himself from Parwana's control over the throne, so that the sultan's title carries real political power rather than being a name alone.",
+    "Use the strength of Mongol princes and old followers to build his own supporters at court, so that his orders are carried out in the provinces.",
+    "Find an opportunity to prove his ability, so that Anatolian nobles and army commanders accept his legitimacy and authority as sultan."
+  ],
+  "Values": [
+    "Dynastic legitimacy and blood, believing that as a son of Kilij Arslan IV he is entitled to the full powers of the sultanate.",
+    "Courage and risk-taking, holding that only bold action can break a long-standing imprisonment of power, so he is willing to gamble.",
+    "Vigilance toward his own circle, assuming ministers and generals may betray him at any time, so he trusts few people."
+  ],
+  "Fears": [
+    "Remaining a puppet forever, manipulated by Parwana or Mongol generals, with the throne meaning nothing in practice.",
+    "A failed rebellion bringing a reckoning that takes his life and implicates his mother and his followers, ending his family's place at court."
+  ],
+  "SpeechStyle": "Blunt and hasty, he speaks of the throne with a firm, resentful tone. He is harsh with ministers and will not heed advice. Threatened, he strikes back at once and often says too much.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

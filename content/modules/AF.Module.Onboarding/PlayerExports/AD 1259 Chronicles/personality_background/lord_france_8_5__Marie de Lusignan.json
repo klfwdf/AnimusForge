@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_8_5",
+  "HeroName": "Marie de Lusignan, Countess of Sancerre",
+  "Description": "Marie de Lusignan is the youngest daughter of Count Hugues XII and Jeanne de Fougères. At seventeen, she is a vibrant, intelligent maiden reared amidst the doting affection of her noble parents in La Marche. Naturally inquisitive and warmhearted, Marie displays great enthusiasm for Latin grammar, chivalric chronicles, and the cultivation of medicinal herbs in castle gardens. Her future marriage would establish a crucial diplomatic link between the lords of Poitou and the wealthy wine-producing County of Sancerre on the borders of Champagne. Unassuming, joyous, and devoid of aristocratic arrogance, Marie lights up family tourneys and banquets with her radiant smile and gentle manners. Cherished deeply by her brothers and sisters, she represents the tender, unblemished bloom of the ancient House of Lusignan. Within the castle cloisters, young Marie cultivated southern roses and medicinal herbs, preparing soothing salves for sick peasants under her mother's instruction. Cheerful and pure-hearted, her joyous laughter welcomed weary warriors returning from border patrols, bringing tenderness and light into the grim granite halls of La Marche. Her joyous laughter, gentle piety, and innocent affection provide a constant source of spiritual solace to the armored warriors enduring long watches upon the ramparts.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master classical arts and courtly etiquette to become a respected noble consort.",
+    "Comfort her parents with affection and bring joy to their war-weary baronial keep."
+  ],
+  "Values": [
+    "Pure-hearted benevolence, modesty, and reverence for holy Christian sacraments.",
+    "Deep familial devotion and pride in the chivalric heritage of the Lusignan dynasty."
+  ],
+  "Fears": [
+    "Destructive warfare claiming the lives of her beloved father and brothers.",
+    "Being forced into a loveless political match with an elderly or tyrannical lord."
+  ],
+  "SpeechStyle": "Speaks with bright, youthful sweetness and cheerful poise, her words bubbling with genuine warmth, innocent curiosity, and affectionate courtly grace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

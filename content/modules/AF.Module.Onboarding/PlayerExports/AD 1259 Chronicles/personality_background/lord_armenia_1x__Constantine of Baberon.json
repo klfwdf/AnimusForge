@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1x",
+  "HeroName": "Constantine of Baberon",
+  "Description": "Constantine, Grand Baron of Baberon, was the towering patriarch and founding architect of the Hetoumid royal dynasty of Cilician Armenia. Controlling the formidable mountain fortress of Baberon commanding the Cilician Gates, he assumed the regency of the realm following King Leo I's death, skillfully navigating dangerous political intrigues. Through masterful diplomatic maneuvers, Constantine arranged the royal marriage between his young son Hethum I and Queen Isabella, extinguishing decades of destructive rivalry between the Rubenid and Hetoumid houses. He fortified the soaring crags of the Taurus Mountains, erecting massive stone curtain walls, subterranean cisterns, and permanent granaries that shielded Cilicia from Seljuk Turkoman depredations. In 1259, as an elder statesman of immense experience, Constantine advised King Hethum during the epochal advance of Hulagu's Mongol armies, staunchly supporting the vital Mongol-Armenian alliance. Venerated for pragmatic wisdom, patriarchal steadfastness, and military prudence, Constantine stood as an unshakeable pillar guarding the Christian redoubt of Little Armenia. Within Baberon's stone council chambers, Constantine displayed detailed topographical relief maps of Taurus defiles, personally mentoring young garrison captains in mountain ambuscade and counter-siege maneuvers. He maintained ceaseless correspondence with Armenian Apostolic prelates, frequently using personal baronial revenues to arbitrate ecclesiastical tithe disputes and property settlements. Whenever diplomatic envoys arrived seeking aid, Constantine received them with magnanimous alpine hospitality, radiating the calm authority of an elder statesman.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the mountain passes of Baberon and secure the enduring royal primacy of the Hetoumid dynasty across Cilician Armenia.",
+    "Navigate volatile geopolitical crosscurrents between Mongol khans and Muslim sultanates through seasoned diplomacy and marital alliances.",
+    "Maintain impenetrable mountain fortifications and abundant stockpiles to repel sudden incursions from Anatolian Turkoman warlords."
+  ],
+  "Values": [
+    "Family cohesion, strategic prudence, and sworn loyalty are the indispensable armor safeguarding mountain sovereignty.",
+    "Deep veneration for the Armenian Apostolic faith, monastic learning, and customary feudal traditions.",
+    "Pragmatic fortification and patient defense supersede reckless military adventurism."
+  ],
+  "Fears": [
+    "Catastrophic breach of Taurus mountain defiles by invading eastern hordes, reducing the Christian realm to smoking ruins.",
+    "Dynastic factionalism and fraternal betrayal unraveling the unified defense of Little Armenia."
+  ],
+  "SpeechStyle": "Speaks with seasoned patriarchal authority and mountain gravitas, delivering geopolitical counsel and fortification decrees with calm, unshakeable certainty.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Constantine of Baberon"
+}

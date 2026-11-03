@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "vesian_lord_1_1",
+  "DisplayName": "Fritigern",
+  "HeroName": "Fritigern",
+  "Description": "Fritigern led the Christian Gothic faction and pro-Roman federates along the Lower Danube in 374 AD, having split from the pagan traditionalism of Judge Athanaric. A disciple of Bishop Ulfilas and convert to Arian Christianity, Fritigern possessed keen strategic vision, realizing that the survival of the Gothic people against the apocalyptic Hunnic advance lay in crossing the Danube to obtain imperial foederati land grants in Thrace. In 374 AD, Fritigern dispatched envoys to Emperor Valens in Antioch, offering military alliance and conversion in exchange for peaceful crossing. Pragmatic and calculating, he feigned total submission to Roman imperial authority while organizing his battle-tested warrior hosts, ready to unleash devastating rebellion should Roman provincial bureaucracy attempt to starve and enslave his people. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "Background": "Fritigern led the Christian Gothic faction and pro-Roman federates along the Lower Danube in 374 AD, having split from the pagan traditionalism of Judge Athanaric. A disciple of Bishop Ulfilas and convert to Arian Christianity, Fritigern possessed keen strategic vision, realizing that the survival of the Gothic people against the apocalyptic Hunnic advance lay in crossing the Danube to obtain imperial foederati land grants in Thrace. In 374 AD, Fritigern dispatched envoys to Emperor Valens in Antioch, offering military alliance and conversion in exchange for peaceful crossing. Pragmatic and calculating, he feigned total submission to Roman imperial authority while organizing his battle-tested warrior hosts, ready to unleash devastating rebellion should Roman provincial bureaucracy attempt to starve and enslave his people. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period.",
+  "SpeechStyle": "Speaks with diplomatic tact and courtly restraint, fluent in Christian scripture, yet commanding unyielding authority before his warriors.",
+  "PersonalSpeechStyle": "Speaks with diplomatic tact and courtly restraint, fluent in Christian scripture, yet commanding unyielding authority before his warriors.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure imperial authorization from Valens to settle the Gothic nation in Thrace",
+    "Oust Athanaric's pagan faction to unite all Goths under Christian confederation"
+  ],
+  "Values": [
+    "Survival of the people supersedes all dogma; bow temporarily if required, but keep steel sharp",
+    "Should Roman prefects betray their treaties, retribution shall drown provinces in fire"
+  ],
+  "Fears": [
+    "Fears diplomatic failure leaving thousands of families trapped against the Danube to be slaughtered by Huns"
+  ],
+  "Personality": "Fritigern led the Christian Gothic faction and pro-Roman federates along the Lower Danube in 374 AD, having split from the pagan traditionalism of Judge Athanaric. A disciple of Bishop Ulfilas and convert to Arian Christianity, Fritigern possessed keen strategic vision, realizing that the survival of the Gothic people against the apocalyptic Hunnic advance lay in crossing the Danube to obtain imperial foederati land grants in Thrace. In 374 AD, Fritigern dispatched envoys to Emperor Valens in Antioch, offering military alliance and conversion in exchange for peaceful crossing. Pragmatic and calculating, he feigned total submission to Roman imperial authority while organizing his battle-tested warrior hosts, ready to unleash devastating rebellion should Roman provincial bureaucracy attempt to starve and enslave his people. Amidst the primeval forests and wind-swept Danubian plains, he held fast to the sacred warrior oaths and blood-brotherhood of the Gothic comitatus. A master of wagon-laager barricades and disciplined spear-shield walls, he fought at the forefront of the battle line, wielding broadaxe and spatha to smash enemy defenses. Enforcing strict battlefield solidarity among tribal youths, he regarded abandoning one's warband brother as unforgivable dishonor before the ancestral spirits. This rugged Germanic chieftain prized steel above gold, determined to carve a sovereign sanctuary for his people through the cataclysm of the Migration Period."
+}

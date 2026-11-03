@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_2",
+  "HeroName": "Dom Fernao Garcia de Sousa, Lord of Gouveia",
+  "Description": "Dom Fernão Garcia de Sousa, Lord of Gouveia and Aguiar da Beira, is a formidable military magnate and branch leader of the illustrious House of Sousa. A battle-hardened knight who distinguished himself at the head of heavy cavalry charges during the conquest of the Algarve, Don Fernão commands immense respect among the Portuguese chivalry. His marriage to Lady Urraca Fernandes of the House of Lumiares fused the strategic alpine redoubts of Gouveia with fertile agricultural tenures along the Douro. In 1259, actively deliberating in crown councils following the Cortes of Leiria, Fernão fiercely defends traditional seigneurial fueros against creeping bureaucratic centralization. Holding the critical mountain passes linking Coimbra to the Serra da Estrela, his armored knights police the trade routes and collect lucrative toll revenues. Brave, outspoken, and disciplined, Fernão Garcia stands as an unshakeable champion of baronial power and martial honor. Leading mounted cavalry patrols through the rugged defiles of the Serra da Estrela, Dom Fernão rigorously policed the alpine passes against cross-border outlaws. Commanding his marcher knights with iron discipline and fighting in the vanguard of every engagement, the veteran warlord established legendary martial terror across the Beira highlands. His martial ferocity, tactical leadership, and resolute defense of baronial rights make Dom Fernão Garcia an unshakeable lord of the Beira highlands.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold Gouveia and the Beira mountain passes against royal administrative encroachments",
+    "Drill an elite troop of armored cavalry to maintain devastating combat readiness on the march",
+    "Solidify his alliance with the senior Sousa branch to command decisive influence in parliament"
+  ],
+  "Values": [
+    "Seigneurial franchises carved with the lance are sacred trusts; surrendering an inch is treason",
+    "Iron discipline and battlefield valor alone validate a nobleman's right to rule his vassals",
+    "Uncompromising clan solidarity, sworn fidelity to knightly oaths, and fearless martial resolve"
+  ],
+  "Fears": [
+    "Royal forces besieging Gouveia Castle under the pretext of revolt to strip his judicial immunities",
+    "A sudden frontier ambush decimating his veteran cavalry retainers and eroding his power"
+  ],
+  "SpeechStyle": "Resonant, blunt, and commanding; speaks with the unvarnished authority, tactical clarity, and fierce swagger of a seasoned cavalry commander.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

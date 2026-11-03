@@ -8,7 +8,7 @@ internal sealed class TaxIncomePctPayload : NumericPolicyEffectPayload
 
 internal sealed class TaxIncomePctEffectModule : NumericPolicyEffectModuleBase<TaxIncomePctPayload>, IModelModifierPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "taxIncomePct",
 		order: 70,
 		legacyIds: new[] { "townTaxPercent" },
@@ -32,7 +32,8 @@ internal sealed class TaxIncomePctEffectModule : NumericPolicyEffectModuleBase<T
 		playerDisplayName: PolicyCompatibilityTexts.Get("Module_taxIncomePct_playerDisplayName"),
 		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_taxIncomePct_editableUnderstandingPrompt", "Main town and castle tax income means changes in native main tax revenue finally received by clans owning the target fiefs, not amounts extracted from the local population. Use only when the body explicitly involves fiefs, towns, castles or taxation. Raising owner-retained tax rates, collection efficiency or receipts remitted from other regions increases income; tax reductions, exemptions or withholding, transferring or remitting taxes to another party reduces income. General increases in lords', rulers' or other professions' incomes without fiefs or taxation do not qualify. When taxes transfer between parties, represent both the payer and beneficiary separately. Independent village income, tariffs and mere prosperity changes are excluded."),
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_taxIncomePct_editableEvaluationPrompt", "Judge percentage-point changes relative to final native main tax income: positive increases revenue and negative reduces it. Regular tax adjustments: ±5% to ±15%; clear adjustments: ±15% to ±35%; major nationwide taxation: ±20% to ±60%. Changes only to specific groups, industries, regions, periods, tax types or portions of revenue require a proportionate value based on actual coverage. Approach -100% only when all main town and castle taxation in the affected scope is explicitly abolished."),
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

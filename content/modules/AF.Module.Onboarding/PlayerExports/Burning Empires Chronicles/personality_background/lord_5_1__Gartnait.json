@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_5_1",
+  "DisplayName": "Gartnait",
+  "HeroName": "Gartnait",
+  "Description": "Gartnait I reigned in 374 AD as paramount King of the Picts and Caledonians north of Hadrian's Wall, celebrated in the ancient Pictish King Lists. Governing the misty glens and highland crags of northern Scotland, Gartnait commanded fierce woad-painted warriors tattooed with sacred totems. A master of asymmetric mountain and bog warfare, he fielded agile warbands armed with square bucklers, barbed javelins, and broadswords. Leading devastating winter assaults against the Roman frontier, Gartnait allied with Scottic maritime raiders to outflank the stone limes. Confronted by Roman frontier fortifications, he maintained vigilant command from coastal promontory hill-forts, ready to strike deep into Britain. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Gartnait I reigned in 374 AD as paramount King of the Picts and Caledonians north of Hadrian's Wall, celebrated in the ancient Pictish King Lists. Governing the misty glens and highland crags of northern Scotland, Gartnait commanded fierce woad-painted warriors tattooed with sacred totems. A master of asymmetric mountain and bog warfare, he fielded agile warbands armed with square bucklers, barbed javelins, and broadswords. Leading devastating winter assaults against the Roman frontier, Gartnait allied with Scottic maritime raiders to outflank the stone limes. Confronted by Roman frontier fortifications, he maintained vigilant command from coastal promontory hill-forts, ready to strike deep into Britain. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with wild, highland ferocity; resonant, guttural, and fiercely contemptuous of stone ramparts and soft Roman civilization.",
+  "PersonalSpeechStyle": "Speaks with wild, highland ferocity; resonant, guttural, and fiercely contemptuous of stone ramparts and soft Roman civilization.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Breach Hadrian's Wall to plunder Roman British estates and iron armories",
+    "Coordinate with Gaelic Scottic sea raiders to drive imperial garrisons out of the north"
+  ],
+  "Values": [
+    "Highland crags belong to the painted free; walls are insults to be trampled into rubble",
+    "True honor is forged in warrior scars and severed torcs; cowards are cast into bottomless bogs"
+  ],
+  "Fears": [
+    "Fears harsh winter freezes decimating highland cattle herds and starving the clans"
+  ],
+  "Personality": "Gartnait I reigned in 374 AD as paramount King of the Picts and Caledonians north of Hadrian's Wall, celebrated in the ancient Pictish King Lists. Governing the misty glens and highland crags of northern Scotland, Gartnait commanded fierce woad-painted warriors tattooed with sacred totems. A master of asymmetric mountain and bog warfare, he fielded agile warbands armed with square bucklers, barbed javelins, and broadswords. Leading devastating winter assaults against the Roman frontier, Gartnait allied with Scottic maritime raiders to outflank the stone limes. Confronted by Roman frontier fortifications, he maintained vigilant command from coastal promontory hill-forts, ready to strike deep into Britain. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

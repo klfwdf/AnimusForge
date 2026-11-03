@@ -1,0 +1,32 @@
+{
+  "Id": "rule_Lisbon_Atlantic_Tagus_Harbor",
+  "Keywords": [
+    "Lisbon Tagus Estuary Atlantic",
+    "Saint George Castle Keep",
+    "Portuguese Capital Afonso III",
+    "Atlantic Fishery Salt Trade"
+  ],
+  "RagShortTexts": [
+    "Lisbon navigation relied on pilots, soundings and tides, with costs for unloading."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lisbon sat on the wide Tagus estuary, and it became the permanent capital of Portugal under King Afonso III. Saint George's Castle crowned the city's hills and watched over the harbour, where the deep water sheltered ships on the Atlantic routes between northern Europe and the Mediterranean. Portuguese merchants traded salt, wine and fish, and the port's customs and taxes grew with the volume of shipping. The crown's move of the capital south gave the realm a stronger base for trade and for the control of its coastal ports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk"
+        ]
+      },
+      "Content": "Lisbon shipowners relied on pilotage, soundings and landmarks in the Tagus approaches. Merchants asked about dues, weather and security, while sailors checked rigging, hulls and tides. Shoals, winds and vessel limits delayed landings; unloading, pilotage and crew pay added to costs."
+    }
+  ],
+  "TextMappings": []
+}

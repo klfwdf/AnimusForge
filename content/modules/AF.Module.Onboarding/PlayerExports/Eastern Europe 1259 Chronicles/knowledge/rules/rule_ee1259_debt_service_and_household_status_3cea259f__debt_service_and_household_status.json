@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_debt_service_and_household_status_3cea259f",
+  "Keywords": [
+    "Zakup debt service",
+    "Repayment and release from zakup service"
+  ],
+  "RagShortTexts": [
+    "A zakup owed service after an advance; release depended on repayment and authority.",
+    "Debt service restricted work and movement; disputed accounts needed witnesses."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A zakup owed service after receiving an advance, with release depending on repayment, agreement and authority. Debt restricted household work and movement while creditors sought service and repayment. Disputed accounts called for witnesses and recourse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A zakup owed service after receiving an advance, with release depending on repayment, agreement and authority. Debt restricted household work and movement while creditors sought service and repayment. Disputed accounts called for witnesses and recourse. Travelers borrowed for equipment or mounts, while service made repayment uncertain. Collectors checked terms and payments, and transporting pledged goods cost resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A zakup owed service after receiving an advance, with release depending on repayment, agreement and authority. Debt restricted household work and movement while creditors sought service and repayment. Disputed accounts called for witnesses and recourse. Creditors assessed repayment, guarantors and recoverable assets. Extended service changed relationships; excessive demands could prompt flight or destroy the means of repayment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A zakup owed service after receiving an advance, with release depending on repayment, agreement and authority. Debt restricted household work and movement while creditors sought service and repayment. Disputed accounts called for witnesses and recourse. Indebted families divided food, seed and repayments and explained existing obligations when seeking help. Kin loans brought relief and responsibilities; lost labor made settlement harder."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_1_cd2",
+  "HeroName": "Gumaḉ Fatim'li Khatun",
+  "Description": "Gumac Fatimli Khatun is nineteen, the second daughter of Ala ad-Din Kayqubad II and Mahfiraz Khatun. She is one year younger than her brother Mesud ad-Din, and a single black mole on her left earlobe is her most visible mark. Since childhood she has trained in horsemanship under the palace riding master, and at full gallop she can draw a bow with her right hand and strike a wooden target thirty paces away. Her old retainers call her the White Doe. A scar on her right shoulder marks a stray arrow that grazed her on a hunting ground outside the city when she was fourteen, and it still aches in damp weather. She wears close-fitting leather armour under a pale grey cloak, with a short-hafted axe at her belt, the only weapon the court allows her to carry. Her relationship with her father is cool. He values the eastern cavalry while she prefers the horses and the armouries. She rarely speaks before the palace rivals, but one sentence from her can silence them. One winter she led a small party to clear a wolf den beside the hunting ground, and when her father publicly rebuked her on return she said only that the wolves were still there, so the riders could not stop. Her ambition is to lead a cavalry charge in person and prove that a woman can earn a battle record. Deep down she fears her pride will be dismissed as useless, and that she will be married off as her brother was, losing command of her own life.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Lead a cavalry charge in person and win a battle record on the eastern frontier, so that her retainers and the old councillors stop treating her as a woman who needs protection.",
+    "Reorganize the eastern cavalry's horses and bows, selecting riders who can cover long distances so that her unit does not fall behind at the decisive moment.",
+    "Win a voice in her own future before her father arranges a marriage, even if that means securing a small command the family must acknowledge."
+  ],
+  "Values": [
+    "Courage and honour, believing that a warrior's worth is shown in a charge on horseback and an accurate arrow, not in palace negotiations and etiquette.",
+    "Blunt speech, disliking evasive phrasing, and telling even her father or the chamberlain to their faces when they are wrong, and demanding correction.",
+    "Loyalty to comrades, willing to take a punishment on behalf of the riders around her and remembering the name of every person who fought beside her in the hunting ground."
+  ],
+  "Fears": [
+    "Her pride being dismissed as useless caprice, ending in a forced marriage like her brother's and the loss of every campaign she has fought hard to win.",
+    "Her old shoulder wound flaring up at a critical moment, cutting her drawing strength mid-charge and endangering the riders who depend on her command."
+  ],
+  "SpeechStyle": "Speaks crisply, in short sentences that state her position at once. Teasing with cavalry riders, mostly silent around older courtiers. When challenged she answers at once with a sharp question, cutting but rarely cruel.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

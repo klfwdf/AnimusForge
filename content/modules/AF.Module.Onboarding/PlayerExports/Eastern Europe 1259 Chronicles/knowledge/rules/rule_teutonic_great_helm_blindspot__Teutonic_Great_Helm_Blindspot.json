@@ -1,0 +1,53 @@
+{
+  "Id": "rule_teutonic_great_helm_blindspot",
+  "Keywords": [
+    "Great helm sight and breathing",
+    "Hearing and support in a closed helm",
+    "Fitting a knight's helmet"
+  ],
+  "RagShortTexts": [
+    "A great helm covers head and face but restricts sight, hearing and airflow; fit matters.",
+    "Narrow roads, mud and close fighting demand awareness and support alongside helmet protection."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The enclosed great helm used by western knights covers the head and face while openings limit observation and airflow. Poor fit allows movement or obscures sight during riding and lance use, and prolonged wear grows hot. Baltic forest tracks and fortress entrances change footing and lateral threats quickly, leaving the wearer dependent on companions, messages and space to withdraw."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A wearer tests head turns, shield raising and nearby calls before combat rather than discovering a misaligned opening during contact. Companions may turn outside his view at a forest entrance or crowded gate. Breathing difficulty, loose fit and blows require checks under cover; an unbroken shell does not ensure continued fitness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A leader buying helmets tests size, lining and mounted movement together. Observation and protection impose different demands during scouting, travel and contact, and attendants still carry messages. A costly shell continues to need fastening repairs, new lining and care for injured men. Equipment does not remove the need for support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Helmet repair joins metalwork with lining work; dents, loose ties and worn cloth need different attention. Families storing a helmet keep it dry and inspect fastenings before a hurried muster. An injured wearer's apparently intact helmet may still need adjustment, while the household must also reserve time for his care."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

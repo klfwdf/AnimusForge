@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_3g",
+  "HeroName": "Schinella II.",
+  "Description": "Schinella II Frankopan, aged two in 1259, is the cherished infant son of Schinella I and Lady Didodraga, bearing his father's proud name in the southern comital appanage of Krk. Cradled in the cliffside castle of Baška, the healthy toddler brings boundless joy and warmth to the martial stronghold. Cherished by doting nurses and guarded by hardened mariners, the babe slumbers peacefully to the sound of crashing surf and soothing Slavic lullabies. In 1259, as coastal lookouts scan the azure horizon for hostile Venetian sails, little Schinella thrives in sheltered innocence, a tender bud of maritime nobility blessed by the prayers of his devout family. Infant Schinella II slumbers peacefully in his carved wooden cradle, his bright eyes watching hearth fires flicker against the backdrop of ocean waves. Faithful nurses watch over him night and day, filling the seaside citadel with rejoicing over the birth of another noble Frankopan heir. Shielded by ancient ramparts and devoted mariners, the child thrives in tranquil grace, carrying the boundless maritime hopes of his illustrious clan. Sheltered from all worldly conflict by stone towers and loyal seamen, infant Schinella slumbers in peace, blessing the noble house with dynastic continuity and hope.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Babbles with charming infant sweetness, giggling happily at bright sea breezes and colorful embroidered linens.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_5",
+  "HeroName": "Dom Martim de Freitas, Lord of Freitas and Honra",
+  "Description": "Dom Martim de Freitas, Lord of Freitas and Honra, is universally revered in Portuguese history as the immortal paragon of chivalric fidelity and feudal honor. As the heroic Alcaide of Coimbra Castle during the civil war of 1245–1248, he steadfastly refused to surrender to the besieging armies of the future King Afonso III, declaring he had sworn fealty to King Sancho II and would yield the keys only to his lawful lord. Upon learning that Sancho II had died in exile in Toledo, Martim undertook a perilous journey across hostile Castile to unseal the royal tomb. Placing the castle keys into the deceased monarch's cold hands, he requested formal release from his feudal oath before returning to Lisbon to surrender the citadel. Profoundly moved by this superhuman demonstration of loyalty, Afonso III immediately reappointed him governor of Coimbra, showering him with estates and honors. In 1259, living in venerable dignity along the Mondego river, Dom Martim embodies the incorruptible soul of Portuguese knighthood. Displaying the battle-worn broadsword bestowed by the late King Sancho II in Coimbra Castle, Dom Martim exhorted young knights to inviolable fidelity. His towering moral authority commanded the reverent awe of King Afonso III, celebrated throughout Christendom as an immortal champion of knightly loyalty. His legendary refusal to surrender Coimbra Castle without his lawful sovereign's release establishes Dom Martim as the supreme paragon of chivalric loyalty.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold knightly oaths sworn before God and crown, setting an eternal standard of feudal fidelity",
+    "Maintain peak security across Coimbra and the Mondego basin to shield the historic realm from unrest",
+    "Instill chivalric integrity and honor in the young knights of Portugal, preserving ancestral virtues"
+  ],
+  "Values": [
+    "A knight's word is heavier than mountains; treason for worldly gain is damnation to the soul",
+    "Neither royal favor nor deadly siege can break an honorable oath; duty commands absolute obedience",
+    "Truthful unto death, fearless before power, and wholly devoted to God and rightful lords"
+  ],
+  "Fears": [
+    "Future heirs abandoning the ancestral path of honor to pursue corrupt temporal power",
+    "Fratricidal civil war tearing the kingdom apart, repeating the tragedies of the past"
+  ],
+  "SpeechStyle": "Resonant, solemn, and unbending; speaks with the monumental gravitas, moral purity, and legendary dignity of a knight whose word is sacred unto death.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

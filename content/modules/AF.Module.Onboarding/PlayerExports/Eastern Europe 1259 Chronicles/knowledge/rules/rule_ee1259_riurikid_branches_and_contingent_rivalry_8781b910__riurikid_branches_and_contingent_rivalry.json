@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_riurikid_branches_and_contingent_rivalry_8781b910",
+  "Keywords": [
+    "Riurikid land and succession claims",
+    "Princely kinship and local recognition"
+  ],
+  "RagShortTexts": [
+    "Riurikid branches compete through kinship, territory and local support while also making alliances.",
+    "Mongol influence and local recognition shape succession supported by resources and followers."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Riurikid branches negotiate land, seniority and succession, supporting one another yet disputing revenues and posts. Nobles, clergy and townsmen contribute recognition alongside Mongol authority. A title still leaves followers and relatives to maintain; dependable promises and resources make claims into continuing rule."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "When princely positions change, households ask about debts, boundaries and service. Relatives under another branch face disrupted visits and trade when news is confused. Witnesses and the authority of new arrivals matter to families seeking to avoid repeated collections or losing their homes."
+    }
+  ],
+  "TextMappings": []
+}

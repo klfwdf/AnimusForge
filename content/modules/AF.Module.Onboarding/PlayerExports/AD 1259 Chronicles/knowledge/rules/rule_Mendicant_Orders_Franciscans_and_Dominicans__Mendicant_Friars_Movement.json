@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Mendicant_Orders_Franciscans_and_Dominicans",
+  "Keywords": [
+    "Mendicant Friars Movement",
+    "Franciscan Apostolic Poverty",
+    "Dominican Intellectual Order",
+    "Saint Francis Assisi Rule"
+  ],
+  "RagShortTexts": [
+    "Together they form the intellectual and pastoral pillars of Rome.",
+    "Abbots who held rich fiefs drew cynical remarks from knights and townsmen alike."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The mendicant orders, led by the Franciscans and the Dominicans, changed how medieval Christians lived their faith. Instead of settling in cloisters on endowed estates, friars begged for their food and walked among towns and villages. The Franciscans, following Francis of Assisi's vow of apostolic poverty, lived among the urban poor and preached in the vernacular. The Dominicans, founded by Dominic de Guzman to answer heresy with reasoned preaching, trained their men in scholastic disputation and sent them into the new university towns. Both orders relied on alms and on papal privileges that let them preach and hear confessions in parishes not their own. Those privileges often sparked bitter quarrels with secular priests who saw their income and authority slipping away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Thomas Aquinas and Albertus Magnus lecture in Paris, harmonizing Aristotelian logic with Christian theology, while Franciscan brothers preach humility in crowded squares. Together they form the intellectual and pastoral pillars of Rome. Their sermons draw crowds from the market squares to the convent churches, and town councils watch the friars closely."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Abbots who held rich fiefs drew cynical remarks from knights and townsmen alike. The friars owned nothing in common and lived on what the faithful gave them. Even so, great lords now ask for a Franciscan cord or grey tunic at the end of their lives, hoping the habit will ease their passage through purgatory."
+    }
+  ],
+  "TextMappings": []
+}

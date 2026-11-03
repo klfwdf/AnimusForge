@@ -1,0 +1,104 @@
+{
+  "Id": "rule_punic_60",
+  "Name": "斯巴达僭主马哈尼达斯崛起与伯罗奔尼撒战火",
+  "Description": "公元前211至207年，斯巴达雇佣军僭主马哈尼达斯打破传统体制崛起，全面倒向罗马与埃托利亚同盟，在伯罗奔尼撒半岛疯狂扩张残杀亚该亚盟军。",
+  "Tags": [
+    "斯巴达僭主",
+    "马哈尼达斯",
+    "亚该亚同盟",
+    "伯罗奔尼撒战争",
+    "雇佣军军阀",
+    "希腊内乱"
+  ],
+  "Category": "History",
+  "DefaultPriority": 78,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前211至207年斯巴达军事强人马哈尼达斯废弃祖制自立为战时残酷僭主。",
+    "依靠重金招募的蛮族雇佣军在伯罗奔尼撒半岛疯狂屠戮扩张威胁亚该亚。",
+    "全面与罗马和埃托利亚结盟充当牵制亲马其顿阵营在南希腊的最凶恶恶犬。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "achaean_league"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马哈尼达斯是一个彻头彻尾由罗马金币喂饱的嗜血军阀！他早已把斯巴达先祖莱库古的神圣法典践踏在泥坑里，靠着收编四方逃犯与异教雇佣兵在拉哥尼亚建立恐怖统治！他带着弩炮和骑兵在伯罗奔尼撒半岛烧杀劫掠，逼近曼提尼亚！亚该亚同盟绝不向这个狂妄的暴君低头，菲洛皮门统帅已经磨亮了长矛，必将亲手取下这个恶魔的头颅！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯巴达人虽然野蛮偏执，但马哈尼达斯是一头足够凶猛善战的斗犬！他牢牢咬住了亲马其顿的亚该亚同盟后腿，让他们疲于奔命无法向腓力五世输送一兵一卒！只要能让巴尔干半岛的希腊城邦永远在自相残杀的血泊中互相消耗，罗马乐见斯巴达的战斧继续砍向任何胆敢亲近马其顿的城门！"
+    },
+    {
+      "Priority": 72,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马哈尼达斯的军营里全是刀口舔血的亡命徒，克里特岛的弓箭手、他林敦的逃兵、高卢的狂战士。这个暴君按天发现银，谁攻下城寨就准许谁放火抢掠三天。希腊南部的村子几乎被他的马队犁了一遍又一遍，到处是挂在橄榄树上的死人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前211至207年，斯巴达摄政兼僭主马哈尼达斯在伯罗奔尼撒半岛崛起。他打破传统体制扩充庞大雇佣军，加入罗马及埃托利亚同盟阵营猛烈攻伐亲马其顿的亚该亚同盟，将第一次马其顿战争战火深度扩散至希腊腹地，直至公元前207年在曼提尼亚战役中被斩杀。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "斯巴达僭主马哈尼达斯崛起与伯罗奔尼撒战火",
+    "rule_punic_60"
+  ]
+}

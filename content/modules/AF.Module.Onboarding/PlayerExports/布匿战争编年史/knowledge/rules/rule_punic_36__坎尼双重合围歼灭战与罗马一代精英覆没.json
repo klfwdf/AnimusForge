@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_36",
+  "Name": "坎尼双重合围歼灭战与罗马军团精英覆没",
+  "Description": "公元前216年8月2日，汉尼拔在奥菲杜斯河畔坎尼以五万劣势兵力面对八万六千罗马大军，以凸面向后凹陷的中军吸纳冲击、两翼精锐内切包抄，聚歼近七万罗马军团，造就军事史上包围歼灭战的永恒绝唱。",
+  "Tags": [
+    "坎尼会战",
+    "双重包围",
+    "汉尼拔",
+    "鲍鲁斯阵亡",
+    "瓦罗",
+    "罗马空前浩劫"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 95,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前216年8月2日坎尼会战汉尼拔达成军事史上最完美的双重合围。",
+    "凸出的西班牙高卢中军承受冲击缓慢凹陷诱使八万罗马军团陷入包围口袋。",
+    "两翼骑兵击溃罗马侧翼后合拢背刺造成近七万罗马人惨遭聚歼的世纪惨案。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 98,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼是凡人向战神登顶的封圣之日！面对八万六千名钢铁武装的罗马军团，汉尼拔统帅排出了精妙绝伦的新月凸面阵。战斗打响，中路的西班牙与高卢勇士在汉尼拔亲自督战下边打边退，凸面阵型顺理成章地向内弯曲成巨大的凹陷口袋；自以为胜券在握的罗马人疯狂涌入中央，两侧隐藏的非洲重装精锐步兵如同重闸般关门合围！马哈巴尔的铁骑在肃清罗马侧翼后席卷敌后！八个时辰的挥砍，七万敌军像牲口一样在方圆数里的死地里被重重叠叠剁碎！麦尔卡特庇佑，罗马的脊梁在那一天彻底被折断了！"
+    },
+    {
+      "Priority": 95,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥菲杜斯河岸的风沙在今天依然散发着鲜血的腥味！罗马元老院里五分之一的元老、八十名执政官与裁判官级的栋梁、两名财政官、二十九名军团特使，以及近七万名优秀的年轻公民兵，在那个该死的夏日全部倒在了尘埃里！整整一代罗马男儿被屠戮殆尽，死者手指上的黄金骑士指环被迦太基人装了整整三斗！执政官鲍鲁斯战死不退，全罗马城没有一家不在戴孝！这是自高卢焚城以来共和国从未有过的灭顶之灾！"
+    },
+    {
+      "Priority": 78,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "到最后那已经不是打仗，而是流水线般的屠杀！罗马人被挤得太紧，连短剑都抽不出来，站在中间的人只能眼睁睁看着外圈的同袍被长矛一圈圈扎倒。地上踩的全是滑腻的内脏和碎肉，有的罗马兵把头埋在泥坑里活活憋死只求死得痛快点。杀到日落时，砍人的西班牙骑兵连手臂都肿得抬不起来，整整七万人啊，铺满了整座平原。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前216年8月2日，坎尼会战爆发。汉尼拔以五万兵力对阵八万六千罗马大军，运用凸面阵吸收冲击并逐步凹陷的战术，成功诱使罗马全军拥入中央包围圈。迦太基两翼非洲步兵内切封锁、骑兵自后方合围，歼灭罗马军近七万人，执政官鲍鲁斯阵亡。此战成为世界战术史上双重包围歼灭战的最高典范。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "坎尼双重合围歼灭战与罗马军团精英覆没",
+    "rule_punic_36"
+  ]
+}

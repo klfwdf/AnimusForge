@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1d",
+  "HeroName": "Bartolomeo I della Scala",
+  "Description": "Bartolomeo I della Scala, eldest son of Alberto I, ruled Verona with scholarly benevolence. Immortalized by Dante Alighieri in Paradiso XVII as 'the great Lombard who bears the holy bird upon the ladder', he was the first sovereign prince to grant generous refuge to the exiled poet. Bartolomeo established scholarly scriptoriums in Verona, commissioning legal reforms and granting honorable asylum to the exiled poet Dante Alighieri during his darkest hours. Banning private vendettas and pardoning exiled citizens, he codified the historic statutes of Verona, illuminating his reign with exceptional medieval humanist compassion. Enlightened in spirit, Bartolomeo knew literature outlasted stone castles, opening his palace to Dante Alighieri and earning eternal renown in the immortal verse of Paradiso. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Provide princely refuge for persecuted poets and philosophers, making Verona a haven of letters.",
+    "Heal territorial grievances with Vicenza through enlightened, reconciliatory statecraft.",
+    "Foster the military genius of his younger brother Cangrande to prepare him for leadership."
+  ],
+  "Values": [
+    "Believes a ruler's glory shines in sheltering luminous minds rather than plundering towns.",
+    "Holds knightly integrity and princely generosity as the purest expressions of sovereign power."
+  ],
+  "Fears": [
+    "Premature illness cutting short his reign before Scaliger dominance is fully consolidated.",
+    "Papal legates slandering his generous patronage of exiles as complicity in heresy."
+  ],
+  "SpeechStyle": "Speaks with luminous courtesy and philosophical warmth, inspiring admiration in scholars. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

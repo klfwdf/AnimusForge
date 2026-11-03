@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_3_1_b",
+  "HeroName": "Mieszko I Opolski",
+  "Description": "Mieszko I of Opole reigns as Duke of Cieszyn and Oświęcim, the eldest son of Duke Władysław I Opolski and legendary progenitor of the Cieszyn branch of the Piast dynasty. Schooled from youth in mountain defense and cavalry maneuvers, Mieszko governed the critical border citadel of Cieszyn along the rushing Olza River, guarding the perilous Jablunkov Pass into the Kingdom of Hungary. Bold, charismatic, and intensely honorable, Mieszko commanded seasoned squadrons of mountain horsemen, repeatedly pursuing and eliminating elusive brigand bands and foreign raiders through dense Carpathian defiles. He fortified the summit of Castle Hill in Cieszyn with an iconic stone Romanesque cylindrical keep and curtain walls, while generously patronizing the Dominican Order to bring education and spiritual solace to his highland subjects. Navigating between the competing claims of the Bohemian crown and Polish grand dukes, Mieszko maintained watchful readiness across his rugged borderlands. He stands as an unyielding sentinel of the southern passes, defending the dignity of the Silesian Piasts amidst the alpine mists. Mieszko maintained relentless watches atop Castle Hill in Cieszyn, personally leading cavalry patrols to crush raiders attempting to breach the Jablunkov Pass. His upright justice reconciled highland clans, establishing him as an indispensable defender of the southern mountain frontiers.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold the fortress of Cieszyn and the Jablunkov Pass to dominate all commercial transit into Hungary.",
+    "Construct a continuous beacon network across the Carpathian foothills to eliminate raiding and illicit smuggling.",
+    "Nurture municipal trades and Dominican cloisters to transform Cieszyn into a thriving border capital."
+  ],
+  "Values": [
+    "Hold chivalric valor, sworn fidelity, and personal bravery as paramount duties, scorning treachery.",
+    "Prize direct and honorable martial combat, leading from the front to shield his mountain home.",
+    "Revere Christian piety and equitable justice, governing his highland tenants with fair generosity."
+  ],
+  "Fears": [
+    "Hostile Hungarian or Cuman raiding forces bursting through the alpine passes to pillage undefended villages.",
+    "Fraternal inheritance rivalries undermining the united front of the Upper Silesian Piast duchies."
+  ],
+  "SpeechStyle": "The stone tower of Cieszyn stands tall amidst Carpathian blizzards! The Jablunkov Pass is barred by my lances; trespassers shall find only death! Cieszyn's keep stands defiant; the Jablunkov Pass belongs to our lances!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -186,7 +186,8 @@ internal static class PolicyEffectModuleCatalog
 		internal IReadOnlyDictionary<string, string> CapabilityCatalogByScope { get; }
 	}
 
-	private static readonly Lazy<CatalogSnapshot> Snapshot = new Lazy<CatalogSnapshot>(BuildSnapshot, true);
+	// Module descriptors carry prompt text, so each prompt language builds its own snapshot once.
+	private static readonly PromptLanguageValue<CatalogSnapshot> Snapshot = new PromptLanguageValue<CatalogSnapshot>(BuildSnapshot);
 
 	// Candidate enumeration is prompt-facing. Hidden runtime and compatibility
 	// modules remain available through ID and hook lookup.

@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Konstantin Mikhailovich of Tver, third son of Saint Mikhail, was a stoic and pragmatic sovereign who preserved his realm from extinction. Recognizing that heroic defiance would result in total annihilation, he adopted a policy of patient endurance, careful diplomacy, and domestic reconstruction. He punctually delivered required tribute to the Golden Horde to prevent further raids while maintaining a cautious truce with aggressive Moscow neighbors. Konstantin concentrated his energies on municipal restoration: he granted multi-year tax exemptions to returning refugees, revitalized abandoned farmlands, and repaired damaged ramparts. Through unyielding perseverance and quiet competence, Prince Konstantin ensured the survival of the House of Tver through its darkest historical midnight. Grand Prince Konstantin's patient statecraft and dedicated reconstruction of burned settlements allowed Tver to rebuild its population and economic strength, securing the long-term survival of the dynasty amidst ashes. His unflagging dedication to civic restoration and practical statecraft ensured that the grand-ducal realm would survive the darkest trials of foreign devastation to flourish again in future generations.",
+  "SpeechStyle": "Ashes can be swept away and fields replanted. So long as our people survive, Tver shall never die. We must endure the freezing winter so that we may witness the bloom of spring together.",
+  "Motivations": [
+    "Repatriate displaced artisans and farming families to reconstruct burned towns and restore agricultural prosperity.",
+    "Maintain prudent diplomacy with the Golden Horde and Moscow to shield the realm from further catastrophic devastations."
+  ],
+  "Values": [
+    "Value demographic preservation, economic restoration, and pragmatic resilience above glorious but suicidal grandstanding.",
+    "Prize quiet diligence and civic responsibility, rejecting reckless provocations that endanger the lives of the innocent."
+  ],
+  "Fears": [
+    "Dread renewed punitive expeditions from Sarai or Moscow extinguishing the fragile economic revival of the principality.",
+    "Fear hot-headed cadet princes recklessly provoking hostile neighbors and dragging the realm back into ruin."
+  ],
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_tver_1h",
+  "HeroName": "Konstantin of Tver"
+}

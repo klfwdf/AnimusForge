@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_3_4",
+  "HeroName": "Guiomar de Riba de Vizela",
+  "Description": "Doña Guiomar de Riba de Vizela is the spirited and charming youngest daughter of Alferes-mor Gil Martins and Lady María Añez de Maia. Adored by her noble kin, Guiomar possesses a quick, inquisitive mind, an infectious sense of humor, and an innate love for the rolling hills of the Minho. Gifted in equestrian arts, falconry, and singing Galician-Portuguese cantigas de amigo to the psaltery, she embodies the fresh romantic vibrancy of thirteenth-century Portugal. In 1259, as she blossoms into youthful grace, she assists her elder sister in organizing manor textile workrooms and illuminating delicate heraldic needlework. Unpretentious, cheerful, and fiercely devoted to her kin, her warm laughter brightens the austere martial atmosphere of her father's castle. Possessing a brave heart and an inquisitive mind, young Guiomar shines as an enchanting jewel of the House of Riba de Vizela. Galloping across the verdant meadows of the Minho to fly hunting falcons, Guiomar displayed fearless vitality and equestrian brilliance. Her radiant warmth and spontaneous laughter dispelled the grim martial atmosphere of the castle, bringing immense joy to her battle-weary kin. Her infectious joy, equestrian skill, and spontaneous warmth bring light and vitality to the proud halls of Riba de Vizela.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master troubadour lyrics and musical arts to celebrate the romantic culture of her native realm",
+    "Hone equestrian and hunting skills, demonstrating the fearless vitality of northern noblewomen",
+    "Spread joy and generous charity across her father's domains, lifting the spirits of her people"
+  ],
+  "Values": [
+    "Authentic warmth and an open heart outshine all rigid courtly affectation and cold pride",
+    "Unflinching loyalty to family and fearless optimism empower the soul to weather any tempest",
+    "Cherish spiritual innocence, practice active kindness, and live in joyful gratitude to God"
+  ],
+  "Fears": [
+    "Being trapped in a stifling, joyless marriage far from the sunlit hills of northern Portugal",
+    "Warfare ravaging the idyllic manors of the Minho and bringing sorrow upon her beloved family"
+  ],
+  "SpeechStyle": "Lively, melodious, and candid; speaks with infectious warmth, youthful exuberance, and natural courtly charm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

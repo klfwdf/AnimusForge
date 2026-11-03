@@ -1,0 +1,52 @@
+{
+  "Id": "rule_treaty_of_christburg_1249",
+  "Keywords": [
+    "Christburg settlement of 1249",
+    "property rights of baptised Prussians"
+  ],
+  "RagShortTexts": [
+    "A papal envoy mediated the Christburg agreement in 1249 with particular Prussian groups.",
+    "Promises of property and court access accompanied religious and military duties."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1249 a papal representative mediated the Christburg agreement between the Order and Pomesanians and some people of Warmia and Natangia. Baptised people received promises concerning property, inheritance and courts, alongside church marriage, religious observance and military duties. Consent, witnesses and transfer of property affected whether terms worked locally. Family land and marriage involved daily life beyond the ceremony of peace."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Order and local leaders must convey the agreement’s scope to officers and guards. Rights without effective appeal undermine confidence; duties need guarantees against repeated demands by different collectors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men owing service ask who summons them, with whom they march and how captives seek help. Guards need to recognise protected visitors rather than seize people and goods because their speech is unfamiliar."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families ask who inherits land, witnesses marriage and hears disputes. Baptism does not replace food or labour. Conflicting claims require someone willing to hear both accounts if livelihoods are to be preserved."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_3j",
+  "HeroName": "Anna Dragota",
+  "Description": "Lady Anna Dragota, aged twenty in 1259, is the graceful wife of Guido I Frankopan, hailing from a distinguished Croatian patrician family of the northern littoral. Poised, devout, and domestically resourceful, she oversees the domestic household of the Modruš mountain citadel while her husband conducts frontier patrols. Managing grain dispensaries, woolen weaving ateliers, and herbal stores, Anna is widely beloved among the families of garrison knights for her charitable care and gentle counsel. A faithful patroness of local Marian altars, she offers regular prayers for the safety of mountain border guards. In 1259, amidst persistent frontier alarms, Anna provides an enduring haven of domestic tranquility supporting the comital army. Lady Anna Dragota presides over Castle Krk's domestic halls with comital dignity, renowned for her sharp intellect, resilience, and gracious courtly manners. Educated in Glagolitic chronicles and Latin canon law, she manages island estate distributions and monastic charities with effortless precision. Amidst the maritime storms of the northern Adriatic, Anna stands as an unshakeable domestic anchor, safeguarding the internal peace of House Frankopan. With exceptional domestic foresight and noble poise, Anna manages castle granaries and charitable tithes, sustaining internal harmony amidst coastal storms.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with melodic coastal sweetness and gentle dignity, soft-spoken yet resolute, radiating maternal tenderness and domestic calm.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

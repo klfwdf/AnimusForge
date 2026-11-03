@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_8_7",
+  "HeroName": "Alice de Lusignan, Countess of Gloucester",
+  "Description": "Alice de Lusignan is the sister of Count Hugues XII and daughter of Hugh XI, reigning as Countess of Gloucester through her marriage to Gilbert de Clare, 7th Earl of Gloucester (known as the 'Red Earl'). At twenty-one, she possesses illustrious Anglo-Poitevin royal bloodlines, celebrated across both English and French courts for her radiant beauty, aristocratic poise, and formidable political intelligence. Her marriage tied the House of Lusignan directly to the most powerful magnate in England and the Welsh Marches during the turbulent Second Barons' War. Proud, sharp-witted, and politically astute, Alice combines the courtly refinement of Paris with the rugged administrative resolve required to govern vast marcher lordships. Master of diplomatic Latin and Anglo-Norman French, she commands immense baronial respect as a towering figure in thirteenth-century high politics. In England, Countess Alice expanded cloth-weaving markets and fortified Gloucester estates with seasoned retinues that played a decisive role in the Barons' War. Proud, brilliant, and completely fearless, she never yielded an inch to royal threats, reigning as one of the most formidable noble matriarchs in Anglo-French history. Her fearless command of baronial affairs and unshakeable dignity during times of international tension have made her an iconic and revered figure across Anglo-French high politics.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement the cross-channel alliance uniting the Houses of Clare and Lusignan.",
+    "Navigate the perilous civil wars of England to safeguard her family's vast estates."
+  ],
+  "Values": [
+    "Sovereign aristocratic pride and strategic independence in the highest political circles.",
+    "Astute statecraft to maintain decisive leverage amidst civil and international strife."
+  ],
+  "Fears": [
+    "Baronial civil war in England leading to the forfeiture of the Gloucester estates.",
+    "Treason accusations destroying the trans-channel standing of the Lusignan line."
+  ],
+  "SpeechStyle": "Speaks with aristocratic grandeur and piercing clarity, her French and Anglo-Norman phrasing elegant, decisive, and carrying the commanding aura of a great march countess.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

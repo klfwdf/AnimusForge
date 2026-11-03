@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_4_6",
+  "HeroName": "Elisabeth d'Anjou, Queen of Hungary",
+  "Description": "Elisabeth d'Anjou (Isabella of Sicily) is the youngest daughter of King Charles I and Queen Béatrice, reigning as Queen consort of Hungary through her marriage to King Ladislaus IV 'the Cuman'. At twenty-two, she was reared amidst the cultured palatine courts of Naples and Provence, educated extensively in Latin theology, courtly etiquette, and civil law. Her dynastic union was crafted by her ambitious father to extend Angevin royal influence across the Danube basin into Central Europe. Navigating the treacherous factional intrigues of the Hungarian barony and her husband's tumultuous ties with pagan Cuman tribes, Elisabeth maintained extraordinary composure and unshakeable Catholic piety. She steadfastly championed monastic endowments and shielded civilian communities from civil violence. Commended by the Papacy for her patient moral fortitude, she stands as an enduring emblem of Capetian virtue on the eastern frontiers of Christendom. Within the bleak, hostile confines of Buda castle, Queen Elisabeth maintained charitable sanctuaries for the destitute, soothing the wounds of Hungarian civil strife with unwavering Christian love. Dignified, patient, and unswerving in her Catholic faith amidst courtly isolation, she earned universal veneration across Eastern Europe as a holy angel of royal peace.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve Catholic orthodoxy and foster political reconciliation at the Hungarian court.",
+    "Maintain the dynastic prestige of the House of Anjou across Central Europe."
+  ],
+  "Values": [
+    "Immaculate moral fortitude, patience, and regal poise under severe political trials.",
+    "Christian compassion toward the suffering and steadfast protection of church institutions."
+  ],
+  "Fears": [
+    "Uncontrolled baronial civil war overwhelming the royal citadel at Buda.",
+    "Pagan rebellions destroying the Catholic foundations of the Hungarian kingdom."
+  ],
+  "SpeechStyle": "Speaks with quiet, unshakeable dignity and spiritual serenity, her courtly French and Latin phrasing graceful, resolute, and untainted by palace factionalism.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

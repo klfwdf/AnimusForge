@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Battle_of_Pelagonia_Triumph",
+  "Keywords": [
+    "Battle of Pelagonia 1259",
+    "Frankish Coalition Annihilation",
+    "Michael VIII Decisive Victory",
+    "Byzantine Restoration Turning Point"
+  ],
+  "RagShortTexts": [
+    "The victory dealt a fatal blow to Western Latin power in Greece.",
+    "William's capture ended any real coordination among the Frankish lords."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In late 1259, in the valley of Pelagonia, John Palaiologos led the Nicaean army against a coalition of Prince William II of Achaea, Michael II of Epirus, and German heavy horse in the service of Manfred of Sicily. The victory dealt a fatal blow to Western Latin power in Greece. William's capture ended any real coordination among the Frankish lords.The result set the Byzantine recovery in motion, and the loss of Morean fortresses gave Michael VIII a base for his advance on the old imperial capital."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "William of Villehardouin and his premier Frankish chivalry were paraded in fetters before Emperor Michael VIII. With Achaea broken and Epirus fleeing, the usurping Latin regime behind the walls of Constantinople was utterly isolated from Western Christendom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Cuman horse archers feigned a retreat and drew the armoured Frankish destriers into the marsh. Once the heavy horses were bogged down, the archers circled them and loosed whistling shafts from all sides. By dusk the best knights of the Morea lay dead or dismounted in the mud, and the survivors fled toward the hills."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Greek villagers blessed icons of the Theotokos in the olive groves. For half a century Latin crusaders seized our tithes and ruled our districts. At Pelagonia in 1259 the Nicaean army broke the Frankish lines, and the True Roman Emperor has now loosened their iron grip on the mountains."
+    }
+  ],
+  "TextMappings": []
+}

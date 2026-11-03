@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Knyaz Mikhail Konstantinovich is the valiant eldest son of Prince Konstantin Bezrukiy, rising as the frontline commander of Vitebsk and master of heavy cavalry. Trained from youth in the brutal warfare of the Baltic marches, Mikhail inherited his father's fierce combat spirit and decisive tactical leadership. He commanded Vitebsk's elite armored shock retinue, patrolling riparian forests and river crossings along the middle Western Dvina, eliminating enemy reconnaissance. Mastering ambush tactics along narrow woodland defiles, he repeatedly led daring counter-charges that shattered invading Lithuanian raiding warbands. Domestically, he enforced rigorous security for river merchant convoys, providing armed escorts that revitalized Vitebsk's bustling wharves. Fighting in the bloody front rank and sharing every camp hardship, Mikhail is affectionately hailed as the 'Fury of Vitebsk'. Leading armored cavalry through narrow forest defiles, Prince Mikhail struck invading warbands with whirlwind fury. Master of the mounted counter-charge, he repeatedly broke enemy formations along the Dvina crossings, fighting in the bloody vanguard. His unyielding martial ferocity made him the beloved champion and iron fist of Vitebsk's frontline defenses. His tactical brilliance in wooded battlegrounds and relentless pursuit of raiding forces established him as the stalwart protector of the lower river passes.",
+  "SpeechStyle": "Lower your lances and charge! This is the sacred soil of our ancestors, and no pagan raiders shall desecrate it! Forward with me, shatter their shield walls and sweep them away!",
+  "Motivations": [
+    "Lead Vitebsk's heavy cavalry to dominate the Dvina corridors, executing crushing frontal charges to annihilate hostile raiders.",
+    "Uphold his house's martial glory in battle, forging his name as an indomitable frontier marshal defending Ruthenian soil."
+  ],
+  "Values": [
+    "Prized warrior ferocity, strict tactical discipline, and unyielding brotherhood, scorning cowardice and dishonorable retreat.",
+    "Believing decisive shock assaults and personal bravery on the open battlefield forge true dynastic immortality."
+  ],
+  "Fears": [
+    "His cavalry vanguard falling into concealed bog traps and dense archer ambushes during pursuit, losing his finest riders.",
+    "Being lured into an enemy encirclement through tactical rashness, leaving Vitebsk's fortifications critically exposed."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_polotsk_2c",
+  "HeroName": "Knyaz Mikhail Konstantinovich"
+}

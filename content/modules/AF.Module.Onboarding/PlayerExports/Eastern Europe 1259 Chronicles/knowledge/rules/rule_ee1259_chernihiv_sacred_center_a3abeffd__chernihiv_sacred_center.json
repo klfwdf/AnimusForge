@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_chernihiv_sacred_center_a3abeffd",
+  "Keywords": [
+    "Chernihiv's churches and princely kin",
+    "Returning to the Desna after destruction"
+  ],
+  "RagShortTexts": [
+    "Chernihiv's churches and dynastic memory sustain standing after the destruction of 1239.",
+    "Desna traffic supports movement, while recovery needs households and craftsmen."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Chernihiv's churches and princely lineage make the Desna city a place of remembrance, petitions and negotiation. Destruction in 1239 cost lives and homes; recovery needs more than prestige. River traffic brings goods and family news, while worship, shelter and markets compete for limited food and skills."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Chernihiv households rebuild shelter and seek scattered relatives. Worship gathers neighbors but requires actual deliveries of fuel, flour and materials. Reopening trade needs premises and trusted contacts, while old house sites and neglected land can create competing family claims."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

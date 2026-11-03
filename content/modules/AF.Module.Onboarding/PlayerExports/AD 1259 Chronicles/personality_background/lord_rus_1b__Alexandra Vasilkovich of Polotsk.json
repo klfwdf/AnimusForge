@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Princess Alexandra Vasilkovich of Polotsk, daughter of Prince Bryachislav of Polotsk, stood as the devoted consort and steadfast political anchor of Alexander Nevsky throughout his tumultuous reign. Solidifying the crucial dynastic alliance between Polotsk and Novgorod, Alexandra managed domestic statecraft and princely domains during Nevsky's perilous and agonizing diplomatic voyages to the distant Mongol capitals of Sarai and Karakorum. In the grand ducal hall of Vladimir, she governed with serene competence, inspecting granaries, maintaining court accounts, and coordinating monastic charities that sheltered countless displaced refugees during brutal winter famines. She oversaw the education of her sons—Vasily, Dmitry, Andrey, and the young Daniil—instilling deep piety and chronicle learning. Her historic wedding celebration at Toropets was immortalized in northern song as a symbol of unity. Through prayer and administrative grace, she anchored the moral foundation of medieval Russian statehood. Beside the grand cathedral she founded workshops and hospices, sheltering the orphans of fallen warriors and sustaining thousands of displaced peasants through brutal winter sieges with unyielding compassion. Her selfless statesmanship and maternal benevolence made her a beloved national patroness across the Russian north. Mobilizing the full resources of the princely court, she comforted the brokenhearted and preserved domestic harmony, remembered by posterity as an exemplar of selfless virtue and regal grace.",
+  "SpeechStyle": "Speaks with gentle, melodious composure that conceals iron resolve, her words marked by courtly elegance, pious humility, and quiet authority.",
+  "Motivations": [
+    "Maintain princely stability while educating her four sons to become disciplined Rurikid rulers capable of bearing sovereign burdens.",
+    "Endow monastic hospitals and charity hospices across Vladimir and Novgorod to heal the trauma of war and famine among commoners."
+  ],
+  "Values": [
+    "Reveres Christian piety and domestic fidelity as divine bedrock, dedicating her life to quiet fortitude and selfless compassion.",
+    "Cherishes dynastic loyalty and sworn pacts, maintaining harmonious ties between Polotsk, Novgorod, and Vladimir."
+  ],
+  "Fears": [
+    "Terrified that treacherous Mongol khans will poison her husband or sons during their perilous diplomatic journeys to the Horde."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_rus_1b",
+  "HeroName": "Alexandra Vasilkovich of Polotsk"
+}

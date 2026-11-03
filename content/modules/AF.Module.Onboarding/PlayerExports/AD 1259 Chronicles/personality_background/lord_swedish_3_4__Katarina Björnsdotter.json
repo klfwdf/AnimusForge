@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_swedish_3_4",
+  "HeroName": "Katarina Björnsdotter",
+  "Description": "Lady Katarina Björnsdotter, noble daughter of High Councillor Sir Björn Näf, was celebrated throughout West Götaland for her erudite mind and modest grace. Educated in Latin charters, theological texts, and Nordic histories, Katarina actively assisted her father and brothers in drafting estate covenants and diplomatic correspondence with monastic chapters. Within aristocratic circles, she commanded profound admiration for her refined intellect and moral clarity. She managed the artistic embroidery and weaving workshops of Ulvåsa, channeling proceeds into orphanage charities and parish endowments. Combining courtly poise with strategic discernment, Katarina represented a vital diplomatic bridge cementing honorable matrimonial ties across the Swedish realm. Katarina established a scriptorium within Ulvåsa Castle, collating and illuminating dozens of Latin theological treatises and ancient Scandinavian law codices, which she gifted to Linköping and Skara Cathedral libraries. Versed in pharmaceutical botany, she prepared herbal remedies during seasonal pestilences, distributing medicine directly to rural cottages and saving countless lives. Her intellectual brilliance and boundless charity commanded profound reverence across Scandinavia, celebrated as an immaculate exemplar of noble womanhood. Through her dedicated patronage of Cistercian monasteries and regular distribution of grain during lean years, she secured the everlasting devotion of the rural peasantry.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Assist in drafting estate charters and managing family accounts to ensure legal security across their properties.",
+    "Formulate honorable marriage alliances with upright noble houses to strengthen her lineage's courtly influence."
+  ],
+  "Values": [
+    "Believes unblemished family honor, scholarly literacy, and devout faith are the true shields against adversity.",
+    "Champions graceful modesty and filial devotion, dedicating her talents to the moral elevation of her household."
+  ],
+  "Fears": [
+    "Dreads factional civil wars destroying ancestral archives and scattering her family's hard-won legal titles."
+  ],
+  "SpeechStyle": "Speaks with crystal clarity and refined intellectual poise, her articulated thoughts reflecting deep classical learning.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

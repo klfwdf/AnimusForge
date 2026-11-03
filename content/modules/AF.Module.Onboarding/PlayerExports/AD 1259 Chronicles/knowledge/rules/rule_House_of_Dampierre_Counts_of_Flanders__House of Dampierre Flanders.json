@@ -1,0 +1,42 @@
+{
+  "Id": "rule_House_of_Dampierre_Counts_of_Flanders",
+  "Keywords": [
+    "House of Dampierre Flanders",
+    "Ghent Bruges Cloth Guilds",
+    "Avesnes Dampierre Succession",
+    "Black Lion Banner Flanders"
+  ],
+  "RagShortTexts": [
+    "Urban pike militias guarded the town gates and could turn on a count's officers in an afternoon.",
+    "The weavers of Ghent pay countal duties solely to preserve ancient charters."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Guy of Dampierre commanded the textile heartland of Flanders, where his counts held the cloth towns that fed the Low Countries' wealth. Weavers in Ghent, Bruges, and Ypres depended on English wool shipped through Flemish ports, so every disruption of the wool trade hit the looms hard. The dynasty was caught between independent cloth-guild communes and long succession wars against the Avesnes family, which contested the county's inheritance for decades. Guy tried to keep Flanders autonomous while resisting Capetian suzerainty from Paris, and each treaty he signed bound the county to a different alliance. Tolls, guild charters, and commercial privileges made the count's revenue rise and fall with the cloth market."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Flemish count drew vast customs and mercantile wealth from the cloth towns, yet every tax rise risked a burgher revolt. Urban pike militias guarded the town gates and could turn on a count's officers in an afternoon. Sealed letters between the count and the guild aldermen were drafted with care, since one unpaid levy could summon a crowd to the market square."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "notable",
+          "townsfolk"
+        ]
+      },
+      "Content": "The weavers of Ghent pay countal duties solely to preserve ancient charters. Disrupt the English fleece convoys, and dockworkers will shut the rivergates. Wool was washed, carded and woven in town workshops, and each finished bolt was stamped with the town seal before sale. Cloth merchants who sold outside the town's rules lost their right to trade in the market."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_alemannic_kingdom_economy",
+  "Keywords": [
+    "Alemans Trade",
+    "Upper Rhine border markets"
+  ],
+  "RagShortTexts": [
+    "Upper Rhine farming and herding connect through crossings with Roman markets.",
+    "Closed borders harm Alamannic exchange and chiefly gifts."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Farming and livestock east of the upper Rhine connect through crossings with Roman coins, objects and markets. Closed borders hurt both elite gifts and household exchange; harvest and herds outlast one haul of prizes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Upper Rhine farming and herding connect through crossings with Roman markets. Traveling followers need real food from this production; valuables still require a buyer and exchange. Closed borders harm Alamannic exchange and chiefly gifts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Closed borders harm Alamannic exchange and chiefly gifts. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Upper Rhine farming and herding connect through crossings with Roman markets."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Upper Rhine farming and herding connect through crossings with Roman markets. Households need meals and the means to keep producing after delivering goods. Closed borders harm Alamannic exchange and chiefly gifts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Closed borders harm Alamannic exchange and chiefly gifts. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Upper Rhine farming and herding connect through crossings with Roman markets."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

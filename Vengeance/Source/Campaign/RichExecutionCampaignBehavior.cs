@@ -126,13 +126,9 @@ public sealed class RichExecutionCampaignBehavior : CampaignBehaviorBase
     // order the judgement panel uses.
     internal IReadOnlyList<ExecutionStudioPrisonerOption> GetDeploymentPrisonerOptions(Settlement? settlement)
     {
-        if (settlement is null)
-        {
-            return Array.Empty<ExecutionStudioPrisonerOption>();
-        }
-
         try
         {
+            // A field camp (no settlement) only holds the player's own party prisoners.
             return GetEligiblePrisoners(settlement)
                 .Select(choice => new ExecutionStudioPrisonerOption(choice.Hero, choice.Source))
                 .ToList();
@@ -158,6 +154,14 @@ public sealed class RichExecutionCampaignBehavior : CampaignBehaviorBase
         ExecutionTone tone,
         Settlement? settlement)
     {
+        if (settlement is null)
+        {
+            return victim is not null && method is not null && charge is not null &&
+                   VengeanceIntegration.IsFieldCampAvailable()
+                ? BuildFieldCampRequest(victim, method, charge, tone, ExecutionSceneMode.CustomPreset)
+                : null;
+        }
+
         if (victim is null || method is null || charge is null || settlement is null ||
             !GetVenueEligibility(settlement, out var cost, out _))
         {
@@ -555,6 +559,79 @@ public sealed class RichExecutionCampaignBehavior : CampaignBehaviorBase
         OpenExecutionMission(request);
     }
 
+    // Field camp: the player's own camp is the venue. Called from the camp menu
+    // just before the camp mission opens; the studio then works on this
+    // provisional request exactly like the town custom site. Nothing here or
+    // later touches influence, town order, the local lord or notables. The
+    // mission itself is checked when the session is claimed and validated.
+    internal bool TryBeginFieldCampDeployment(out TextObject reason)
+    {
+        reason = TextObject.GetEmpty();
+        ResetSelection();
+        if (Hero.MainHero.IsPrisoner)
+        {
+            reason = new TextObject("{=REX_Tooltip_Player_Prisoner}You cannot organize a sentence while you are a prisoner.");
+            return false;
+        }
+
+        var prisoners = GetEligiblePrisoners(null);
+        var method = _methods.All.FirstOrDefault(definition => ExecutionMethodRules.IsVisibleInSelection(definition.StringId));
+        var charge = _charges.All.FirstOrDefault();
+        if (prisoners.Count == 0)
+        {
+            reason = new TextObject("{=REX_FieldCamp_No_Prisoners}No eligible adult hero prisoner is held by your party.");
+            return false;
+        }
+
+        if (method is null || charge is null)
+        {
+            reason = new TextObject("{=REX_Error_Invalid_Request}The execution request is incomplete.");
+            return false;
+        }
+
+        var request = BuildFieldCampRequest(prisoners[0].Hero, method, charge, ExecutionTone.Judicial, ExecutionSceneMode.CustomPreset);
+        if (!ExecutionSessionCoordinator.Prepare(request, _service))
+        {
+            reason = new TextObject("{=REX_Error_Another_Session}Another public execution session is already active.");
+            return false;
+        }
+
+        RexLog.Info($"Prepared provisional field-camp builder session {request.SessionId} for '{request.Victim.StringId}'.");
+        return true;
+    }
+
+    private ExecutionRequest BuildFieldCampRequest(
+        Hero victim,
+        ExecutionMethodDefinition method,
+        ExecutionChargeDefinition charge,
+        ExecutionTone tone,
+        ExecutionSceneMode sceneMode)
+    {
+        var status = ExecutionService.GetVictimPoliticalStatus(victim);
+        var evidence = GetEvidenceStrength(victim, charge);
+        var isNoble = victim.IsLord;
+        // The camp counts as the player's own ground for legitimacy.
+        var score = ExecutionRuleMath.CalculateLegitimacyScore(new LegitimacyInput(
+            VenueAuthority.OwnTown,
+            status,
+            evidence,
+            tone,
+            method.StringId,
+            isNoble));
+        return ExecutionRequest.CreateFieldCamp(
+            victim,
+            Hero.MainHero,
+            method,
+            charge,
+            tone,
+            evidence,
+            ExecutionRuleMath.GetLegitimacyTier(score),
+            score,
+            status,
+            isNoble,
+            sceneMode);
+    }
+
     private void BeginPublicExecutionSelection(ExecutionSceneMode sceneMode)
     {
         ResetSelection();
@@ -702,7 +779,7 @@ public sealed class RichExecutionCampaignBehavior : CampaignBehaviorBase
     {
         RexLog.Info(
             $"Opening the town-center mission for session {request.SessionId} " +
-            $"at venue '{request.Venue.StringId}' in {request.SceneMode} mode.");
+            $"at venue '{request.VenueId}' in {request.SceneMode} mode.");
         // CustomPreset opens a mission only as an uncommitted builder host.
         // Do not add the provisional request to ExecutionService._active:
         // the real request is created and begun only after the player finishes
@@ -806,7 +883,9 @@ public sealed class RichExecutionCampaignBehavior : CampaignBehaviorBase
         return true;
     }
 
-    private static List<PrisonerChoice> GetEligiblePrisoners(Settlement settlement)
+    internal static bool HasFieldCampPrisoner() => GetEligiblePrisoners(null).Count > 0;
+
+    private static List<PrisonerChoice> GetEligiblePrisoners(Settlement? settlement)
     {
         var result = new Dictionary<string, PrisonerChoice>(StringComparer.Ordinal);
         AddPrisonersFromRoster(
@@ -815,7 +894,7 @@ public sealed class RichExecutionCampaignBehavior : CampaignBehaviorBase
             MobileParty.MainParty?.Party,
             PrisonerSource.PlayerParty);
 
-        if (settlement.OwnerClan == Clan.PlayerClan)
+        if (settlement is not null && settlement.OwnerClan == Clan.PlayerClan)
         {
             AddPrisonersFromRoster(
                 result,
@@ -1232,7 +1311,7 @@ public sealed class RichExecutionCampaignBehavior : CampaignBehaviorBase
         _historySessionIds.Add(request.SessionId.ToString("D"));
         _historyVictimIds.Add(request.Victim.StringId);
         _historyVictimNames.Add(request.Victim.Name.ToString());
-        _historySettlementIds.Add(request.Venue.StringId);
+        _historySettlementIds.Add(request.VenueId);
         _historyMethodIds.Add(request.Method.StringId);
         _historyChargeIds.Add(request.Charge.StringId);
         _historyTones.Add((int)request.Tone);

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_5c",
+  "HeroName": "Nikólaos Ángelos Bryénnios Maliasīnós, monk Iōásaph",
+  "Description": "Nikólaos Ángelos Bryénnios Maliasīnós, aged twenty-three, is a powerful magnate of Volos and Demetrias, ruling extensive hereditary domains across Thessaly. Boasting direct descent from the Angelos, Bryennios, and Komnenos dynasties, his family commands castles, fortified ports, and fertile plains beneath Mount Pelion. A gifted administrator and resolute frontier commander against Latin incursions, he possessed an early spiritual calling and received monastic vows as monk Iōásaph. Endowing the great Monastery of the Theotokos Makrinitissa with vast landed estates, he transformed it into a premier spiritual and scholarly sanctuary in Central Greece. Strategically astute amidst the tri-cornered rivalry between Nicaea, Epirus, and the Frankish Duchy of Athens, he threw his vital support behind Michael Palaiologos. By supplying Thessalian warhorses, provisions, and mountain pass guides to the imperial army, he secured the western flank during the decisive Pelagonia campaign. Embodying both regional feudal authority and ascetic devotion, monk Iōásaph serves as an unshakeable guardian of Orthodox Greek heritage and local stability. Regularly surveying fortified mountain redoubts across Thessaly, he inspects granaries and weapons stores personally, utilizing his high birth and impartial justice to maintain flawless communal harmony throughout turbulent decades of war. His steadfast leadership inspires confidence among both provincial soldiers and monastic communities.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 5c lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with meditative serenity, aristocratic refinement, and monastic gravity, delivering prudent counsel steeped in patristic theology and territorial pragmatism.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

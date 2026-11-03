@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v7",
+  "Keywords": [
+    "敦煌求援者的等待"
+  ],
+  "RagShortTexts": [
+    "米夫奈多次给丈夫写信却等不到答复，只能继续向母家与首领求援。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "米夫奈多次给丈夫写信却等不到答复，只能继续向母家与首领求援。等待者仍要维持食宿，未回信既可能是拒绝，也可能是阻断，不能直接写作对方已收到并拒绝。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

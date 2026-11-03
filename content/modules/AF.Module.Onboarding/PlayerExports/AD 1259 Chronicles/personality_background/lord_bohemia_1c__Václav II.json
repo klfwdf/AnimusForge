@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1c",
+  "HeroName": "Václav II",
+  "Description": "Václav II is the precious legitimate heir of King Přemysl Otakar II and Queen Kunigunda of Halych. Born in the gilded splendor of Bohemia's zenith, he represents the sole hope for the legitimate continuation of the royal house. Unlike his father's booming, warlike nature, young Václav is pensive, delicate, and intellectually acute, displaying an early fascination with legal codices and minting arts. Educated by cathedral scholars in Prague, he observed the subtle maneuvers of imperial envoys and Czech oligarchs from his cushioned dais. Showing quiet composure and watchful reserve far beyond his years during royal audiences, he idolizes his father's colossal stature while intuitively discerning the lethal perils shadowing their overextended empire. Within the sheltered scriptoriums of Prague, young Václav mastered Latin, German, and Czech jurisprudence, examining the intricacies of mining charters and crown revenue ledgers. Silently discerning the flattering courtiers and scheming magnates who bowed before his father, he developed an instinctive grasp of statecraft and patience, preparing to preserve the Bohemian Crown when turbulent storms inevitably broke. His acute intellect and cautious temperament presaged the emergence of one of Bohemia's most brilliant monarchs.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master multilingual jurisprudence and statecraft to govern the vast realms of Bohemia and Poland as heir.",
+    "Safeguard his position amid factional court intrigue, securing the support of prelates and royal town burghers."
+  ],
+  "Values": [
+    "Believes refined legal institutions and sound coinages preserve realms far more enduringly than raw bloodshed.",
+    "Values calculated patience and self-restraint as the crowning virtues of sovereign kingship."
+  ],
+  "Fears": [
+    "Dreads sudden war or palace coups reducing him to a helpless royal hostage manipulated by ruthless barons.",
+    "Fears his delicate constitution failing to satisfy his father's demanding standards for a warrior king."
+  ],
+  "SpeechStyle": "Chants echo through stone halls; my royal sire conquers with the sword, but wisdom and righteous law must preserve our crown. In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Václav II"
+}

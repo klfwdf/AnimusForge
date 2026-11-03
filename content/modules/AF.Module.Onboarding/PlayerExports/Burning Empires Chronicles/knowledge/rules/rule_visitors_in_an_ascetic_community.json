@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v5",
+  "Keywords": [
+    "Visitors in an ascetic community"
+  ],
+  "RagShortTexts": [
+    "Visitors explained their purpose and waited; messages differed from meeting in person."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "When a religious community received visitors, a responsible member first asked their purpose and arranged contact. Work or prayer could require waiting. A message received at the entrance conveyed less than a meeting in person."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

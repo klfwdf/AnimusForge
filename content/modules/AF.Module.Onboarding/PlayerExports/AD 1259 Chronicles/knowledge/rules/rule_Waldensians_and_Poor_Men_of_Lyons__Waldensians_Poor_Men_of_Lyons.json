@@ -1,0 +1,39 @@
+{
+  "Id": "rule_Waldensians_and_Poor_Men_of_Lyons",
+  "Keywords": [
+    "Waldensians Poor Men of Lyons",
+    "Peter Waldo Voluntary Poverty",
+    "Vernacular Scripture Anti Purgatory",
+    "Alpine High Valley Secret Synods"
+  ],
+  "RagShortTexts": [
+    "Receiving unauthorized preachers involved faith, kin and the risk of denunciation."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Peter Waldo, a wealthy merchant of Lyon, gave his fortune to the poor around 1175 and began preaching the Gospel in the vernacular. His followers, known as the Poor Men of Lyon, rejected the monopoly of the clergy over Scripture and insisted that laymen had the right to preach. They demanded Bible translations in the common tongue and denied the doctrines of purgatory and the papal indulgences that funded church building. The Church condemned them at the Council of Verona in 1184 and pursued them with bans and inquisitorial measures. The movement survived by withdrawing into the Alpine valleys of Piedmont and the Dauphiné, where small communities kept their assemblies and their texts hidden from the authorities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "A learned observer distinguishes Waldensian criticism of wealth and claims to preach from the teachings attributed to Cathars. Vernacular religious instruction attracts followers and opposition over authority. Later names and clandestine practices should not be applied uniformly to 1259; church records describe conflicts from one side and require careful reading."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Families receiving unauthorized preachers might welcome familiar-language teaching and ideals of poverty while fearing denunciation. Listeners differed over sacraments and local clergy, and hosts considered kin and household safety. Some found comfort in preaching; others feared interrogation. Hospitality involved choices among faith, friendship and risk."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,38 @@
+{
+  "Id": "be_ere_solidus_gold_standard",
+  "Keywords": [
+    "Solidus coins and supplies in kind"
+  ],
+  "RagShortTexts": [
+    "The solidus weighed about 4.5 g; armies also relied on grain and transport supplied in kind."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The solidus was an imperial gold coin of high fineness, with a standard weight of about 4.5 grams, used for substantial payments, gifts and accounting. Money and actual army provisions were distinct: provinces also supplied grain, fodder and transport, with some obligations commuted into money under prescribed arrangements. Assessments, collection methods and delivery points shaped the burden."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A soldier receiving gold still needed someone selling food; on campaign, rations and transport remained essential. Merchants receiving substantial gold payments checked weight and appearance, while small transactions also used silver, copper or barter. A full purse did not ensure fodder along the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Military finance required accounts of both money and provisions. Stored grain needed carriers, and coins had to reach their recipients. Arrears, commutation and changed delivery points could burden a locality; authorizing expenditure did not mean the army had received its supplies."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

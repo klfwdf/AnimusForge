@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_3_5",
+  "HeroName": "Vazīr Muhadhdhab al-Din Ali al-Daylam",
+  "Description": "Muhadhdhab al-Din Ali al-Daylami (in the game, Vazīr Muhadhdhab al-Din Ali al-Daylam) was a Persian from Kashan who served the Sultanate of Rum as vizier under Kaykhusraw II. The sources place him in this office around the Mongol victory at Köse Dağ in 1243, and they name him as the father of Mu'in al-Din Parwana. The sources record nothing about his appearance, scars or weapons, so this persona rests on his career and family. Details beyond the office and his son are game-internal settings inferred from the faction's background. As a Persian civil official who moved into Anatolia, he relied on learning, documents and knowledge of administration rather than military exploits. He understood the court's factions and knew how to carry messages between the sultan and his generals, which let him keep his place through turbulent years. In dealings with Mongol envoys he used documents and formal courtesy to keep quarrels from spilling out of the court. His ambition was to carry his family's career forward so that his son could build on his connections at court. His shadow was the knowledge that the Seljuk dynasty was weakening under Mongol pressure and that real power was passing into the hands of new men. He worried about this and also grew uneasy about his son's ambitions. He spoke carefully and rarely in public, but in private he planned his family's future with care, and that manner shaped how his son acted.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Carry his family's career forward through the vizierate, so that his son can build on his connections and reputation and keep a foothold at court.",
+    "Hold his own position as the Seljuk state weakens, avoiding replacement by new men raised up by the Mongols or by army commanders.",
+    "Smooth relations between Mongol envoys and the court with documents and courtesy, so that factional quarrels do not become open bloodshed during his service."
+  ],
+  "Values": [
+    "Learning and administrative skill above military deeds, since he believes the state is run by precise records and sound institutions, not by bravado.",
+    "Courtesy and measure, holding that deference before power protects a family far better than open confrontation.",
+    "Continuity of the family line, believing a personal career must be carried on by descendants, so he invests heavily in his son's upbringing."
+  ],
+  "Fears": [
+    "The Seljuk dynasty collapsing under Mongol pressure, wiping out the offices and connections he built and leaving his family with no place to stand.",
+    "His son's ambitions making too many enemies in factional strife, bringing a court purge that would drag the whole family down with him."
+  ],
+  "SpeechStyle": "His speech is plain and measured, and he seldom comments on politics in public, often weighing his words before answering. With his son he is gentle yet serious, relying on admonition rather than command.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -8,28 +8,28 @@ namespace AnimusForge.Illustrator.Core
     {
         internal static readonly string ShoutMode = IllustratorText.Raw("ScreenshotRules_836");
         internal static readonly string BattleMode = IllustratorText.Raw("ScreenshotRules_837");
-        internal static readonly string SpatialContract =
-            IllustratorText.Get("ScreenshotRules_838") +
+        private static readonly PromptLanguageValue<string> SpatialContractByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("ScreenshotRules_838") +
             IllustratorText.Get("ScreenshotRules_839") +
             IllustratorText.Get("ScreenshotRules_840") +
             IllustratorText.Get("ScreenshotRules_841") +
             IllustratorText.Get("ScreenshotRules_842") +
             IllustratorText.Get("ScreenshotRules_843") +
-            IllustratorText.Get("ScreenshotRules_844");
-        internal static readonly string ShoutAction =
-            IllustratorText.Get("ScreenshotRules_845") +
+            IllustratorText.Get("ScreenshotRules_844"));
+        internal static string SpatialContract => SpatialContractByLanguage.Value;
+        private static readonly PromptLanguageValue<string> ShoutActionByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("ScreenshotRules_845") +
             IllustratorText.Get("ScreenshotRules_846") +
-            IllustratorText.Get("ScreenshotRules_847");
-        internal static readonly string BattleAction =
-            IllustratorText.Get("ScreenshotRules_848") +
-            IllustratorText.Get("ScreenshotRules_849");
-        internal static readonly string DirectorSystem =
-            IllustratorText.Get("ScreenshotRules_850") +
+            IllustratorText.Get("ScreenshotRules_847"));
+        internal static string ShoutAction => ShoutActionByLanguage.Value;
+        private static readonly PromptLanguageValue<string> BattleActionByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("ScreenshotRules_848") +
+            IllustratorText.Get("ScreenshotRules_849"));
+        internal static string BattleAction => BattleActionByLanguage.Value;
+        private static readonly PromptLanguageValue<string> DirectorSystemByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("ScreenshotRules_850") +
             SpatialContract + "\n" +
             IllustratorText.Get("ScreenshotRules_851") +
             IllustratorText.Get("ScreenshotRules_852") +
             IllustratorText.Get("ScreenshotRules_853") +
-            IllustratorText.Get("ScreenshotRules_854");
+            IllustratorText.Get("ScreenshotRules_854"));
+        internal static string DirectorSystem => DirectorSystemByLanguage.Value;
 
         internal static bool IsMode(string mode) => mode == ShoutMode || mode == BattleMode;
         internal static string Contract(bool battle) => SpatialContract + "\n" + (battle ? BattleAction : ShoutAction);

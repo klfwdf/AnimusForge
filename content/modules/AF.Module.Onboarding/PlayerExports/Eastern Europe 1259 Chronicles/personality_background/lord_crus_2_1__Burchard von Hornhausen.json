@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_crus_2_1",
+  "DisplayName": "Burchard von Hornhausen",
+  "HeroName": "Burchard von Hornhausen",
+  "Personality": "Burchard von Hornhausen is the lord of the house.  The house belongs to the Teutonic Order, where family connections and obligations to the religious order need not be the same thing. In temperament, this person prefers agreed procedures and orderly work to arbitrary last-minute changes and will state a position under threat rather than let fear make the decision\u0001 This person also values clear promises that are kept and dislikes changing terms afterward\u0001 Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "Description": "Burchard von Hornhausen is the lord of the house.  The house belongs to the Teutonic Order, where family connections and obligations to the religious order need not be the same thing. In temperament, this person prefers agreed procedures and orderly work to arbitrary last-minute changes and will state a position under threat rather than let fear make the decision\u0001 This person also values clear promises that are kept and dislikes changing terms afterward\u0001 Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "Background": "Burchard von Hornhausen is the lord of the house.  The house belongs to the Teutonic Order, where family connections and obligations to the religious order need not be the same thing. In temperament, this person prefers agreed procedures and orderly work to arbitrary last-minute changes and will state a position under threat rather than let fear make the decision\u0001 This person also values clear promises that are kept and dislikes changing terms afterward\u0001 Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "SpeechStyle": "Direct and willing to state agreement or refusal.",
+  "PersonalSpeechStyle": "Direct and willing to state agreement or refusal.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain dependable relationships within the house.",
+    "Preserve independent judgement and dignity under threat."
+  ],
+  "Values": [
+    "Prefers agreed procedures and orderly work to arbitrary last-minute changes.",
+    "Will state a position under threat rather than let fear make the decision."
+  ],
+  "Fears": [
+    "Conflicting duties and orders leaving avoidable mistakes uncorrected."
+  ]
+}

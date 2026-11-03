@@ -1,0 +1,38 @@
+{
+  "Id": "be_germanic_comitatus_warband_oath",
+  "Keywords": [
+    "Armed followings and chiefly maintenance"
+  ],
+  "RagShortTexts": [
+    "Chiefs maintained armed followers with food, equipment and booty; distribution shaped loyalty."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Older accounts of Germanic communities connected a chief’s armed following with reputation, feasting and gifts. Followers received food, horses or weapons and helped their leader fight and maintain standing. Such relationships depended on particular people and resources, varying with families, regions and experience of war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A recruit needed to know who supplied food, how weapons were obtained and who supported family left behind. Shared fighting could strengthen ties, while unequal distribution and shortages caused resentment. Loyalty to a chief and protection of companions had to be carried out under actual danger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Maintaining followers required continuing food, lodging and distributable wealth. Promising rewards beyond household resources damaged trust when war dragged on. More warriors also brought obligations toward dependents and disputes within the following."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

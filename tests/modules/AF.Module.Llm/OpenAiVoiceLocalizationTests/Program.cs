@@ -52,7 +52,7 @@ internal static class Program
                 .ToDictionary(e => (string)e.Attribute("id"), e => (string)e.Attribute("text"));
             foreach (var voice in builtin.Voices)
             {
-                Check(voice.Label == labels["AF_LLM_UI_OpenAiVoice_" + voice.Id] + " (" + voice.Id + ")", "all builtin labels switch without catalog rebuild");
+                Check(voice.Label == labels["AF_GPT_UI_OpenAiBuiltInVoice_" + voice.Id.Replace('-', '_')] + " (" + voice.Id + ")", "all builtin labels switch without catalog rebuild");
                 Check(voice.Gender == (voice.Id.StartsWith("male-") ? 1 : voice.Id.StartsWith("female-") ? 2 : 0), "stable ids and gender");
             }
             Check(models.Get("male-clear").Label == builtin.Get("male-clear").Label, "model fallback label uses UI language");
@@ -90,6 +90,10 @@ namespace AnimusForge
     // Enum-only leaf from LocalTtsToneTag; tone parsing is outside this catalog test.
     internal enum LocalTtsTone { Neutral = 0, Happy = 1, Angry = 2, Sad = 3 }
     internal static class Logger { internal static void Log(string area, string message) { } }
+    internal static class AnimusForgeModulePaths
+    {
+        internal static string GetModuleDataFilePath(string name) => throw new InvalidOperationException("Embedded voice tables must not read module files");
+    }
     internal static class AnimusForgeDataPaths
     {
         internal static string Root;

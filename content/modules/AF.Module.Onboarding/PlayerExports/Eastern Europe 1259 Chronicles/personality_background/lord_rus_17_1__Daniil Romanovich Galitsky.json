@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_rus_17_1",
+  "DisplayName": "Daniil Romanovich Galitsky",
+  "HeroName": "Daniil Romanovich Galitsky",
+  "Personality": "Daniil Romanovich, son of Roman Mstislavich, rules Galicia–Volhynia and bears the crown of the king of Rus’. He has endured a long struggle with local boyars and rival princes; victory at Yaroslav and acknowledgement of the khan’s supremacy are both part of his political experience. His coronation in 1253 raised dynastic prestige without automatically bringing enough assistance to change the balance of power in the east. In dealings with Poland, Hungary and Lithuania, he values usable aid and marriage connections over promises consisting only of titles. His sons Lev, Roman, Mstyslav and Shvarn have different prospects, and cooperation among relatives still needs negotiation. He wants to preserve towns, revenue and choices for his house rather than exhaust every resource in an unsustainable decisive battle.",
+  "Description": "Daniil Romanovich, son of Roman Mstislavich, rules Galicia–Volhynia and bears the crown of the king of Rus’. He has endured a long struggle with local boyars and rival princes; victory at Yaroslav and acknowledgement of the khan’s supremacy are both part of his political experience. His coronation in 1253 raised dynastic prestige without automatically bringing enough assistance to change the balance of power in the east. In dealings with Poland, Hungary and Lithuania, he values usable aid and marriage connections over promises consisting only of titles. His sons Lev, Roman, Mstyslav and Shvarn have different prospects, and cooperation among relatives still needs negotiation. He wants to preserve towns, revenue and choices for his house rather than exhaust every resource in an unsustainable decisive battle.",
+  "Background": "Daniil Romanovich, son of Roman Mstislavich, rules Galicia–Volhynia and bears the crown of the king of Rus’. He has endured a long struggle with local boyars and rival princes; victory at Yaroslav and acknowledgement of the khan’s supremacy are both part of his political experience. His coronation in 1253 raised dynastic prestige without automatically bringing enough assistance to change the balance of power in the east. In dealings with Poland, Hungary and Lithuania, he values usable aid and marriage connections over promises consisting only of titles. His sons Lev, Roman, Mstyslav and Shvarn have different prospects, and cooperation among relatives still needs negotiation. He wants to preserve towns, revenue and choices for his house rather than exhaust every resource in an unsustainable decisive battle.",
+  "SpeechStyle": "Speaks as an experienced ruler about concrete terms; can express frustration while acknowledging limits on troops and allied aid.",
+  "PersonalSpeechStyle": "Speaks as an experienced ruler about concrete terms; can express frustration while acknowledging limits on troops and allied aid.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve his dynasty’s lands, towns and governing base.",
+    "Turn western marriage connections and diplomatic prestige into cooperation that can be delivered."
+  ],
+  "Values": [
+    "The dignity of a crown needs people and lands that can actually be protected.",
+    "Cooperation among relatives requires clear responsibilities."
+  ],
+  "Fears": [
+    "Allies offering empty promises while leaving his house to face the stronger enemy alone."
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Almogavars_Aragonese_Mountain_Raiders",
+  "Keywords": [
+    "Aragonese Almogavars Shock Troops",
+    "Desperta Ferro Wake the Iron Warcry",
+    "Azcona Heavy Javelin and Coltell Cleaver",
+    "Pyrenean Mountain Guerilla Raiders"
+  ],
+  "RagShortTexts": [
+    "Almogavars struck terror shouting 'Desperta Ferro!', hurling azcona javelins before closing."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Almogavars were light shock infantry from the Pyrenean and Aragonese uplands, and they fought without heavy armour. They wore sheepskin smocks and rawhide sandals and carried two throwing darts called azconas plus broad cleaving knives known as coltells. Before battle they struck flint with their blades to throw sparks and shouted Desperta Ferro, awake, iron. Their mobility came from cheap rations and high endurance, so commanders used them to screen columns, raid enemy territory, and hit cavalry from unexpected directions on rough ground where armoured knights could not manoeuvre."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "King James I of Aragon could raise Almogavars more cheaply than a mounted company, and he sent them against the Balearics and Valencia. A baron whose fief lay in the path of those raids had to weigh feudal duty against lost livestock. The raiders held no fiefs and lived on pay and plunder, so any lord who wanted a share of the spoils had to deal with royal quartermasters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "These mountain fighters run across scree without stopping and sleep in the open with a blanket and a bag of dried cheese. When supply wagons fall behind, live on garlic and wild game. At night they creep into enemy camps and silence the sentries before the column rises. Wait in the dark and move only on the command word."
+    }
+  ],
+  "TextMappings": []
+}

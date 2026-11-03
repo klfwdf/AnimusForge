@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_2a",
+  "HeroName": "Georgi I Terter, Tsar of Bulgaria",
+  "Description": "Georgi I Terter, aged thirty-three, is a paramount Cuman-Bulgarian boyar magnate from the fortified bastion of Cherven, founder of the Terter dynasty. Descending from the illustrious Terteroba clan of the Cuman steppes, he commands an elite household cavalry regiment renowned for peerless ferocity in battle. Physically imposing and battle-tested across the Danubian plains, he has repeatedly outfought Tatar raiding parties from the Golden Horde and unruly Wallachian raiders. As Tarnovo descended into anarchy amidst the peasant revolt of Ivaylo and Byzantine interventions, Georgi's undisputed martial power made him the savior of the boyar class. Faced with the crushing military hegemony of Nogai Khan, he pragmatically endured tributary humiliation and hostage exchanges to safeguard Bulgarian urban centers from devastation. Wrestling bare-chested with warriors in the courtyard of Cherven, he instills iron discipline, keeping the flame of Bulgarian independence alive. Wrestling bare-chested with elite warriors in the garrison courtyard of Cherven, he instills iron discipline through personal example, commanding unquestioning obedience from every horseman under his banner across the Danubian plains.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with gravelly resonance and blunt warrior pragmatism, cutting through courtly pretensions with the unvarnished candor of a battle-tested commander.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

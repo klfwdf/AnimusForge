@@ -352,6 +352,17 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				}
 				try
 				{
+					using (FreezeWatchdog.Scope("ShoutMissionBehavior.TickAmbientSceneInteraction"))
+					{
+						_parent.TickAmbientSceneInteraction();
+					}
+				}
+				catch (Exception ambientEx)
+				{
+					BannerlordExceptionSentinel.ReportObservedException("Ambient.TickAmbientSceneInteraction", ambientEx, "behavior=ShoutMissionBehavior");
+				}
+				try
+				{
 					using (FreezeWatchdog.Scope("ShoutMissionBehavior.ProcessDeferredCleanup"))
 					{
 						_parent.ProcessDeferredCleanup();
@@ -2656,14 +2667,17 @@ private static void CaptureNativeIllustrationHistoryBoundary()
 
 	private void CancelNativeConversationTtsForConversationEnd() => _j17NativeConversationSpeechAdapter.CancelPlaybackForConversationEnd();
 
-	private void OnMissionStarted(IMission mission)
-	{
-		Mission currentMission = Mission.Current;
-		if (mission == null || currentMission == null)
+		private IMission _sceneLifecycleMission;
+
+		private void OnMissionStarted(IMission mission)
 		{
-			return;
-		}
-		Logger.LogImmediate("ShoutBehavior", "shout_mission_started scene=" + (currentMission.SceneName ?? "") + " agents=" + (currentMission.Agents?.Count ?? 0));
+			Mission currentMission = Mission.Current;
+			if (mission == null || currentMission == null || ReferenceEquals(_sceneLifecycleMission, mission))
+			{
+				return;
+			}
+			_sceneLifecycleMission = mission;
+			Logger.LogImmediate("ShoutBehavior", "shout_mission_started scene=" + (currentMission.SceneName ?? "") + " agents=" + (currentMission.Agents?.Count ?? 0));
 		lock (_historyLock)
 		{
 			SceneHistoryOwner.Reset();
@@ -2735,9 +2749,12 @@ private static void CaptureNativeIllustrationHistoryBoundary()
 		}
 	}
 
-	private void OnMissionEnded(IMission mission)
-	{
-		try
+		private void OnMissionEnded(IMission mission)
+		{
+			if (!ReferenceEquals(_sceneLifecycleMission, mission)) return;
+			_sceneLifecycleMission = null;
+			ResetExecutionSpeechAudioForExternal();
+			try
 		{
 			lock (_historyLock)
 			{
@@ -4805,6 +4822,9 @@ private long _sceneShoutProcessingSequence { get => _j17SceneShoutInputControlle
 			DeactivateMultiSceneMovementSuppression();
 			ClearPendingSceneConversationAttentionRelease();
 			ResetStaringBehavior();
+			ClearRelaySpeechPresentation();
+			EndAmbientSession("mission_end", applyCooldown: false, releaseAgents: false);
+			_ambientMission = null;
 			_activeInteractionSessions.Clear();
 			_pendingInteractionTimeoutArms.Clear();
 			ClearPendingNativeSceneMechanismActions("reset_runtime:" + (reason ?? ""));

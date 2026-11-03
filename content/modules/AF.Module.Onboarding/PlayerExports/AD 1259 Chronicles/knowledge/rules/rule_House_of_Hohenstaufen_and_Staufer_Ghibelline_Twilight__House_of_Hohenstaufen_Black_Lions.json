@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Hohenstaufen_and_Staufer_Ghibelline_Twilight",
+  "Keywords": [
+    "House of Hohenstaufen Black Lions",
+    "Frederick II Stupor Mundi Legacy",
+    "Manfred Ghibelline Champion",
+    "Staufer Papal Deadly Rivalry"
+  ],
+  "RagShortTexts": [
+    "The House of Hohenstaufen defended imperial Ghibelline supremacy in southern Italy against."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bearing three black lions on gold, the House of Hohenstaufen embodied imperial Ghibelline majesty. Frederick II, called Stupor Mundi, died in 1250, and the popes waged an unrelenting crusade against the dynasty's heirs. Conrad IV's death in 1254 left the Sicilian crown to his younger half-brother Manfred, a son of Frederick II, who seized the throne and ruled the kingdom from Palermo and Naples. Manfred mobilized Swabian knights and Lucera's Saracen archers against the papal and Angevin coalitions. The war made southern Italy a battlefield, and each campaign cost the crown heavy expenses in silver and levies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Manfred's court welcomed scholars, astrologers, and falconers, and it kept the courtly traditions of Frederick II alive. His victories in Tuscany checked the Guelph leagues for a time and protected the imperial claim across northern Italy. Papal excommunications repeated every few years, and each one stopped some trade and drew some allies away from his side."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Serving under the Hohenstaufen lion banner brought pay in gold augustales, the coins that Frederick II had minted. Soldiers quartered in Lucera and Foggia drew their wages each quarter from the royal treasury. So long as Manfred held Naples and Palermo, the Staufer cause kept its garrisons paid."
+    }
+  ],
+  "TextMappings": []
+}

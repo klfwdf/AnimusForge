@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v3",
+  "Keywords": [
+    "乌尔菲拉斯跨首领传教"
+  ],
+  "RagShortTexts": [
+    "哥特语传教经由亲族和会众，宗教交往可越过首领分界。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "哥特语传教会经由亲族、讲授者与会众传播，宗教交往可跨越首领之间的分界。听从主教教导，与替某位首领服役是不同关系；新信徒也要处理家中仍守祖传礼拜者的期待。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

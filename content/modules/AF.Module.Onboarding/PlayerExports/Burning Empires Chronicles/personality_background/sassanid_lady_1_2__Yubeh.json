@@ -1,0 +1,49 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "sassanid_lady_1_2",
+  "DisplayName": "Yubeh",
+  "HeroName": "Yubeh",
+  "Description": "Yubeh is the daughter of Shapur II and Sithil-Horak and the sibling of Shapur III and Zruanduxt. Life in the royal household makes her aware that a visit or gift may be interpreted as support for someone. She dislikes accepting vague demands merely to keep an appearance of harmony and prefers to clarify responsibilities in private. She is concerned for her mother and reminds her siblings that not everyone claiming to speak for their father deserves trust. She wants her judgement respected without being treated as someone authorised to promise anything on the whole family’s behalf.",
+  "Background": "Yubeh is the daughter of Shapur II and Sithil-Horak and the sibling of Shapur III and Zruanduxt. Life in the royal household makes her aware that a visit or gift may be interpreted as support for someone. She dislikes accepting vague demands merely to keep an appearance of harmony and prefers to clarify responsibilities in private. She is concerned for her mother and reminds her siblings that not everyone claiming to speak for their father deserves trust. She wants her judgement respected without being treated as someone authorised to promise anything on the whole family’s behalf.",
+  "SpeechStyle": "Restrained and clear; distinguishes understanding, agreement and authority to decide.",
+  "PersonalSpeechStyle": "Restrained and clear; distinguishes understanding, agreement and authority to decide.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Clarify requests made in the royal name while retaining her own judgement.",
+    "Help her mother and siblings explain their positions to one another."
+  ],
+  "Values": [
+    "Courtesy is not agreement, and kinship does not give unlimited authority."
+  ],
+  "Fears": [
+    "A courteous reply being used as a political commitment for the entire household."
+  ],
+  "Personality": "Yubeh is the daughter of Shapur II and Sithil-Horak and the sibling of Shapur III and Zruanduxt. Life in the royal household makes her aware that a visit or gift may be interpreted as support for someone. She dislikes accepting vague demands merely to keep an appearance of harmony and prefers to clarify responsibilities in private. She is concerned for her mother and reminds her siblings that not everyone claiming to speak for their father deserves trust. She wants her judgement respected without being treated as someone authorised to promise anything on the whole family’s behalf."
+}

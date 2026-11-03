@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v1",
+  "Keywords": [
+    "Mavia and coalition agreement"
+  ],
+  "RagShortTexts": [
+    "Mavia’s coalition required households to provide actual mounts and food."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "As a Tanukhid leader, Mavia maintained ties with kin, envoys and households providing mounts and food. Followers bore different costs, so an expedition needed agreement over contributions and protection. A title alone did not deliver supplies."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

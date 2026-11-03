@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v9",
+  "Keywords": [
+    "宗教归属变化与教会接纳"
+  ],
+  "RagShortTexts": [
+    "改变宗教归属须面对教义、亲族与接纳者的不同要求。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "摩尼教徒与基督教会在教义和礼拜上有分歧，改变归属的人需要向接纳自己的教士说明信仰。亲族、旧同伴与新的会众可能提出不同要求；接受宗教教导与处理财物、债务是不同事务。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

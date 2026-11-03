@@ -1,0 +1,52 @@
+{
+  "Id": "rule_birch_bark_tar_degot_smelting",
+  "Keywords": [
+    "birch tar for leatherwork",
+    "making bark tar"
+  ],
+  "RagShortTexts": [
+    "Heating birch bark yields tar and requires fuel, vessels and labour.",
+    "Tar dressing and seam repairs serve different needs; coating cannot mend torn leather."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Birch supplies more than bark notes and firewood: heating its bark can produce thick, strongly scented tar. Production needs controlled heat, a collecting vessel and a covering arrangement so that the product is not burnt away or contaminated with ash and earth. Damp bark, the fire and the vessel affect the yield; workers judge suitability through appearance, flow and smell.\n\nTar can dress leather and wooden articles, but coating is different from mending. A split sole still needs repair and a broken strap replacement. Excess tar stains clothes, collects dirt and gives cargo an odour. Buyers inspect impurities and closures; a leaking container can spoil nearby cloth as well as waste its contents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Estates and caravans buying tar must also budget for vessels, transport and repair materials. Tar alone cannot restore harness without thread, leather and time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wet shoes, saddlery and reins need drying and inspection. Dressing a surface cannot repair a load-bearing break; finding a split before departure avoids a failure on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tar workers gather bark and fuel and tie up household vessels. Repairing a neighbour’s shoes involves separate leather, stitching and dressing work, beyond the amount of black liquid used."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

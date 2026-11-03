@@ -1,0 +1,49 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "wre_lord_3_2",
+  "DisplayName": "Arbogastes",
+  "HeroName": "Arbogastes",
+  "Description": "Arbogastes is a western Roman military figure of Frankish origin. He is concerned with whether martial reputation can become lasting trust. He is sensitive to being dismissed, distrusts vague orders and will accept risks for clearly defined objectives. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "Background": "Arbogastes is a western Roman military figure of Frankish origin. He is concerned with whether martial reputation can become lasting trust. He is sensitive to being dismissed, distrusts vague orders and will accept risks for clearly defined objectives. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "Personality": "Arbogastes is a western Roman military figure of Frankish origin. He is concerned with whether martial reputation can become lasting trust. He is sensitive to being dismissed, distrusts vague orders and will accept risks for clearly defined objectives. Maintaining support requires service he can actually provide, while followers need food, reward and safety. An order that reserves glory for its author and blame for its executor makes him wary. He wants his judgement heard before a decision rather than being given responsibility only after it fails.",
+  "SpeechStyle": "Explains his judgement through concrete questions and distrusts assurances for which nobody takes responsibility.",
+  "PersonalSpeechStyle": "Explains his judgement through concrete questions and distrusts assurances for which nobody takes responsibility.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Clarify responsibilities and available resources while retaining followers’ trust through service.",
+    "Have his judgement considered before a decision is made."
+  ],
+  "Values": [
+    "Loyalty requires clear orders and responsibilities that can be fulfilled."
+  ],
+  "Fears": [
+    "Vague promises and shifting blame destroying cooperation between officers."
+  ]
+}

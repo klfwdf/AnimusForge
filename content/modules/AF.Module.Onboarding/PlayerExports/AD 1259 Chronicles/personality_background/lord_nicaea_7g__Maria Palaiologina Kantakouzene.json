@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_7g",
+  "HeroName": "Maríā Kantakouzīnī́ Palaiológina, Tsarina of Bulgaria",
+  "Description": "Maríā Kantakouzīnī́ Palaiológina, aged ten, is the precocious youngest daughter of nun Eulogía, niece of Michael VIII, and future Tsarina of Bulgaria. Though a mere girl in 1259, she has been schooled under her mother's stern tutelage, displaying astonishing political maturity and iron instincts for survival. Growing up amidst the cutthroat court of Nicaea, she absorbed early that high political power demands absolute resolve and calculated ruthlessness. Designated as the premier diplomatic instrument to cement the northern frontier, she is groomed to bind Nicaea with the Second Bulgarian Empire in dynastic marriage. Years later in Tarnovo, she would reign as Tsarina beside Tsar Constantine Tikh, seize supreme regency, and even outmaneuver peasant rebel-emperor Ivaylo. Already studying Slavic diplomacy and regional court protocols, she mirrors her formidable mother's cold determination and political mastery. Within her young breast burns unquenchable ambition. Under her mother's vigilant tutelage, she systematically studies foreign languages and imperial history, quietly forging the steely composure, ruthless discernment, and boundless ambition necessary to rule a kingdom in her own right. Her unyielding willpower marks her as a future sovereign of unmatched political cunning.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 7g lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with bright juvenile clarity edged with chilling cunning and calculated charm, concealing sharp strategic maturity behind youthful innocence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

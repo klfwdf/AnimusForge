@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v2",
+  "Keywords": [
+    "琥珀树脂的争论"
+  ],
+  "RagShortTexts": [
+    "普林尼以气味和燃烧讨论琥珀的树脂来源。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "普林尼认为琥珀源于树木渗出物，并把它与松类气味和燃烧现象联系起来。他同时列出诗人、旅行者的不同说法。工匠与买家可以凭外观、气味认识材料，却未必同意它的来历。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

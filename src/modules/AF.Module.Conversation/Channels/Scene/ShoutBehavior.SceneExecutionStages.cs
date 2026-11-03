@@ -135,7 +135,8 @@ internal sealed partial class SceneConversationSessionRuntime
 	internal Task<bool> RecordSceneReplyHistoryOnMainThreadAsync(
 		NpcDataPacket speaker, List<NpcDataPacket> audience,
 		Hero expectedHero, CharacterObject expectedCharacter, string historyText,
-		long generation, int sceneSessionId, int conversationEpoch, bool requireMemoryReceipt = false)
+		long generation, int sceneSessionId, int conversationEpoch, bool requireMemoryReceipt = false,
+		int addresseeAgentIndex = -1, string addresseeName = null)
 	{
 		if (speaker == null || string.IsNullOrWhiteSpace(historyText))
 		{
@@ -152,8 +153,8 @@ internal sealed partial class SceneConversationSessionRuntime
 			}
 			using (ConversationRewriteTurn.CaptureScope(CaptureSceneRewriteTurn(conversationEpoch)))
 			{
-				bool factAccepted = _ports.RecordResponseForAllNearbySafe(audience, speaker.AgentIndex, speaker.Name, historyText, requireMemoryReceipt);
-				bool replyAccepted = _ports.PersistNpcSpeechToNamedHeroes(speaker.AgentIndex, speaker.Name, historyText, audience, requireMemoryReceipt);
+				bool factAccepted = _ports.RecordResponseForAllNearbySafe(audience, speaker.AgentIndex, speaker.Name, historyText, requireMemoryReceipt, addresseeAgentIndex, addresseeName);
+				bool replyAccepted = _ports.PersistNpcSpeechToNamedHeroes(speaker.AgentIndex, speaker.Name, historyText, audience, requireMemoryReceipt, addresseeAgentIndex, addresseeName);
 				if (!factAccepted || !replyAccepted)
 					CaptureSceneRewriteTurn(conversationEpoch)?.Invalidate("scene_reply_history_unconfirmed");
 				return factAccepted && replyAccepted;
@@ -213,6 +214,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		_ports.DeactivateMultiSceneMovementSuppression();
 		_ports.ClearPendingSceneConversationAttentionRelease();
 		_ports.ResetStaringBehavior();
+		_ports.ClearRelaySpeechPresentation?.Invoke();
 		_ports.ClearQueuedSceneSpeech();
 		try
 		{

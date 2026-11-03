@@ -1,0 +1,18 @@
+{
+  "Id": "rule_House_of_Visconti_Signoria_of_Milan",
+  "Keywords": [
+    "Visconti kin and Milan politics"
+  ],
+  "RagShortTexts": [
+    "Visconti kin and church ties gave standing in Lombard politics."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Visconti kin and church ties gave standing in Lombard politics, while Milan in 1259 retained communal institutions and rival families. Prestige did not establish a permanent signoria; offices, alliances and local support remained to be won."
+    }
+  ],
+  "TextMappings": []
+}

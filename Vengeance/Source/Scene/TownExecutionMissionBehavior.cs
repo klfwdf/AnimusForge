@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -24,7 +24,7 @@ namespace RichExecutions.Scene;
 /// uses a BasicBattleAgentOrigin so a real battlefield death can drive the
 /// native corpse pipeline without killing the campaign hero through
 /// SimpleAgentOrigin.SetKilled. Campaign execution, costs and consequences stay
-/// deferred until the player leaves the mission. No substitute character is
+/// deferred until mission exit (or an explicit field-camp continuation). No substitute character is
 /// permitted.
 /// </summary>
 public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecutionSceneHost
@@ -345,6 +345,9 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
     private readonly ExecutionSceneLocationCharacters _sceneLocationCharacters = new();
     private readonly List<Agent> _frontGuardAgents = new();
     private readonly List<Agent> _crowdAgents = new();
+    // Camp actors are borrowed, never added to spawned/crowd cleanup ownership.
+    private readonly List<Agent> _borrowedCrowd = new();
+    private Agent[]? _preparedSpeechCrowd;
     private int _crowdOverheadSurfaceRejections;
     private readonly List<Agent> _crossbowVolleyAgents = new();
     private readonly List<Vec3> _crossbowVolleyPositions = new();
@@ -529,6 +532,16 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
     private bool _victimConversationBlockApplied;
     private bool _aftermathSessionReleased;
     private bool _aftermathSpeechPlayed;
+    private bool _fieldCampCeremonyStaged;
+    private bool _fieldCampCeremonyReleased;
+    private bool _fieldCampPreparationStarted;
+    private bool _fieldCampPreparationReady;
+    private bool _fieldCampPreparationUsesHook;
+    private int _fieldCampPreparationCleanupAttempts;
+    private float _fieldCampPreparationStartElapsed;
+    private float _nextFieldCampPreparationPollElapsed;
+    private float _fieldCampPreparationRadius;
+    private const float FieldCampPreparationTimeoutSeconds = 60f;
     private EquipmentIndex _playerPrimaryWieldedBeforeCeremony = EquipmentIndex.None;
     private EquipmentIndex _playerOffhandWieldedBeforeCeremony = EquipmentIndex.None;
     private readonly MissionWeapon[] _playerWeaponsBeforeCeremony =
@@ -568,6 +581,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
     public ExecutionSessionState State => _stateMachine.State;
     internal bool IsCustomSiteBuilderActive =>
         Request.SceneMode == ExecutionSceneMode.CustomPreset &&
+        !_fieldCampPreparationStarted &&
         !_customSiteLayoutConfirmed &&
         !_initialized &&
         !_initializationFailed;
@@ -611,6 +625,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
         error = null;
         if (Request.SceneMode != ExecutionSceneMode.CustomPreset ||
             _customSiteLayoutConfirmed ||
+            _fieldCampPreparationStarted ||
             _initialized ||
             _initializationFailed ||
             method is null ||
@@ -772,6 +787,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
         if (request is null ||
             Request.SceneMode != ExecutionSceneMode.CustomPreset ||
             !_customSiteLayoutConfirmed ||
+            _fieldCampPreparationStarted ||
             _initialized ||
             _initializationFailed)
         {
@@ -813,7 +829,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
 
     internal void RollbackCustomSiteLayout()
     {
-        if (Request.SceneMode != ExecutionSceneMode.CustomPreset || _initialized)
+        if (Request.SceneMode != ExecutionSceneMode.CustomPreset || _initialized || _fieldCampPreparationStarted)
         {
             return;
         }
@@ -834,7 +850,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
 
     internal ExecutionService DeploymentService => _service;
     public bool CanPlayerUseExecutionPoint =>
-        _initialized &&
+        _initialized && !_fieldCampActorsEntering &&
         ((State == ExecutionSessionState.WaitingForPlayer && !_lethalAttempted) ||
          (State is ExecutionSessionState.Execution or ExecutionSessionState.CrowdReaction &&
           _strategy is IMultiStageExecutionStrategy multiStage &&
@@ -899,7 +915,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
         agent is not null && _guardStandbyBindings.Any(binding => ReferenceEquals(binding.Guard, agent));
 
     internal bool IsCeremonyCrowd(Agent agent) =>
-        agent is not null && _crowdAgents.Contains(agent);
+        agent is not null && (_crowdAgents.Contains(agent) || _borrowedCrowd.Contains(agent));
 
     internal bool TryGetEscortHoldPosition(int index, int count, out Vec3 position, out Vec2 facing)
     {
@@ -1005,12 +1021,21 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
         ExecutionSessionCoordinator.RegisterController(this);
         if (Request.SceneMode == ExecutionSceneMode.CustomPreset)
         {
+            if (_chainedLayout is not null)
+            {
+                var layout = _chainedLayout.Value;
+                _chainedLayout = null;
+                if (!TryAcceptCustomSiteLayout(Request.Method, layout.Preset, layout.Origin, layout.Forward, out var error))
+                {
+                    CancelSceneAndReturn(ExecutionFailureReason.ScenePlacementFailed, error!);
+                    return;
+                }
+                TryInitializeScene();
+                return;
+            }
             if (TryBindPlayerForCustomBuilder())
             {
                 EnsureCustomSiteBuilderCreated();
-                InformationManager.DisplayMessage(new InformationMessage(
-                    new TextObject(
-                        "{=REX_Builder_Enter}Choose a place in town, then press B to open the custom execution-site deployment studio.").ToString()));
             }
 
             return;
@@ -1037,6 +1062,8 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
         return EnsureBoundPlayerRemainsMainAgent();
     }
 
+    // Called only after the player Agent is bound. A field camp spawns its
+    // player a moment after AfterStart, so the hint is shown on first binding.
     private void EnsureCustomSiteBuilderCreated()
     {
         if (_customSiteBuilder is null && IsCustomSiteBuilderActive)
@@ -1044,6 +1071,12 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
             _customSiteBuilder = new ExecutionSiteBuilderController(this, Mission);
             RexLog.Info(
                 $"Session {Request.SessionId} entered custom-site state WaitingForBuilder; no prisoner, apparatus or ceremony personnel were spawned.");
+            InformationManager.DisplayMessage(new InformationMessage(
+                (Request.IsFieldCamp
+                    ? new TextObject(
+                        "{=REX_Builder_Enter_FieldCamp}Choose a place in the camp, then press B to open the custom execution-site deployment studio.")
+                    : new TextObject(
+                        "{=REX_Builder_Enter}Choose a place in town, then press B to open the custom execution-site deployment studio.")).ToString()));
         }
     }
 
@@ -1054,7 +1087,13 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
         // before observing that removal or running another scene update.
         if (_endMissionNextTick)
         {
+            NotifyFieldCampCeremonyReleased();
             _endMissionNextTick = false;
+            if (Request.IsFieldCamp)
+            {
+                RetireCancelledCampExecution();
+                return;
+            }
             Mission.EndMission();
             return;
         }
@@ -1104,17 +1143,24 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
             }
 
             _initializationElapsed += MathF.Max(0f, dt);
-            if (!TryInitializeScene() && _initializationElapsed >= InitializationTimeoutSeconds)
+            if (!TryInitializeScene() && !_initializationFailed &&
+                _initializationElapsed >= (_fieldCampPreparationStarted
+                    ? _fieldCampPreparationStartElapsed + FieldCampPreparationTimeoutSeconds
+                    : InitializationTimeoutSeconds))
             {
+                NotifyFieldCampCeremonyReleased();
                 CancelSceneAndReturn(
                     ExecutionFailureReason.ScenePlacementFailed,
-                    new TextObject(
-                        "{=REX_Error_No_Safe_Position}No safe navigable execution site could be found in this town center. Nothing was spent and the prisoner lives."));
+                    Request.IsFieldCamp
+                        ? new TextObject("{=REX_Error_FieldCamp_Unavailable}The field camp cannot host an execution right now.")
+                        : new TextObject(
+                            "{=REX_Error_No_Safe_Position}No safe navigable execution site could be found in this town center. Nothing was spent and the prisoner lives."));
             }
 
             return;
         }
 
+        if (Request.IsFieldCamp && !TickFieldCampActorEntry(dt)) return;
         RetryPendingEntityRemovals();
         TickImpaledCorpseDisplays(dt);
         MaintainGuardStandbyStates(dt);
@@ -1308,10 +1354,21 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
     // and never gates the player, so every failure path degrades to silence
     // instead of cancelling a valid execution.
     // ------------------------------------------------------------------
-    /// <summary>
-    /// Resolves the address plan once the ceremony is ready. Called from the
-    /// single scene-ready point so the bubble can never start twice.
-    /// </summary>
+    // Frozen once after scene construction; Director.BindActors and the host
+    // incremental address receive the exact same camp/owned spectator inputs.
+    private IReadOnlyList<Agent> GetPreparedSpeechCrowd()
+    {
+        if (_preparedSpeechCrowd is not null) return _preparedSpeechCrowd;
+        var actors = new List<Agent>(_crowdAgents.Count + _borrowedCrowd.Count);
+        foreach (var actor in _crowdAgents)
+            if (actor is not null && actor.IsActive() && !actors.Contains(actor)) actors.Add(actor);
+        foreach (var actor in _borrowedCrowd)
+            if (actor is not null && actor.IsActive() && !actors.Contains(actor)) actors.Add(actor);
+        _preparedSpeechCrowd = actors.ToArray();
+        return _preparedSpeechCrowd;
+    }
+
+    /// <summary>Resolve one address plan after scene-ready; neither polling nor retries replay it.</summary>
     private void TryPrepareCeremonySpeech()
     {
         if (_speechPlanned)
@@ -1322,9 +1379,10 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
         _speechPlanned = true;
         try
         {
+            var crowd = GetPreparedSpeechCrowd();
             if (_executionerAgent is not null &&
                 ExecutionSpeechDirector.AddressOverride?.Invoke(
-                    Request, _executionerAgent, _victimAgent, _crowdAgents, _speechDirector) == true)
+                    Request, _executionerAgent, _victimAgent, crowd, _speechDirector) == true)
             {
                 RexLog.Info($"Session {Request.SessionId} handed the pre-execution address to its host override.");
                 return;
@@ -1334,7 +1392,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
                     Request,
                     _executionerAgent,
                     _victimAgent,
-                    _crowdAgents,
+                    crowd,
                     out var failureDetail))
             {
                 RexLog.Warning(

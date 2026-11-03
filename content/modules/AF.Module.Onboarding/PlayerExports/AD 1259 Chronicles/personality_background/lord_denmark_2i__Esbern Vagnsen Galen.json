@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2i",
+  "HeroName": "Esbern Vagnsen Galen",
+  "Description": "Sir Esbern Vagnsen Galen of Scania, descendant of the legendary crusader Bishop Absalon and Esbern Snare, inherited the indomitable martial ethos of the founding Hvide fathers. A towering knight proficient with the heavy couched lance and war hammer, Esbern commanded the frontline heavy cavalry garrisons guarding the eastern approaches to the Sound. In campaigns resisting royalist punitive expeditions, Esbern famously spearheaded counter-charges with a mere hundred armored lancers, shattering numerically superior royal vanguard regiments and slaying royal retainers in open combat. Ferocious, honorable, and intensely loyal to his kinship council, Esbern demanded absolute battlefield aggression from his men while sharing their trench hardships, celebrated as an invincible iron vanguard of the Scanian aristocracy. A veteran of savage border skirmishes in southern Jutland and Zealand, Esbern earned widespread renown for his mastery of armored lance charges, commanding elite retainers disciplined in mobile counter-siege maneuvers. He vehemently resisted King Christoffer's crown decrees converting traditional tithes into arbitrary royal bullion payments, denouncing the policy as unlawful theft of feudal and baronial prerogatives. When allied forces from Holstein and Schleswig threatened Zealand, Esbern spearheaded ambushes against royal baggage columns, securing his stature as an indispensable tactical commander in the defense of Scanian liberties.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Shatter royal Danish vanguard formations through devastating head-on cavalry charges, winning supreme martial honor for his house.",
+    "Hold coastal bastions along the Sound to the death, ensuring no royalist fleets establish beachheads on Scanian soil."
+  ],
+  "Values": [
+    "Reveres the crusading chivalric legacy of his ancestors Absalon and Esbern Snare, holding that audacity and courage govern war.",
+    "Champions frontline brotherhood and selfless valor, scorning cowardly hesitation in favor of heroic sacrifice for his kin."
+  ],
+  "Fears": [
+    "Dreads his warhorse foundering in coastal mud during a charge, allowing royalist horsemen to outflank his infantry lines."
+  ],
+  "SpeechStyle": "Speaks with a booming, brass-toned roar weathered by campaigns, his direct commands carrying fierce, infectious battle fury.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

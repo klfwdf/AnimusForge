@@ -1,0 +1,52 @@
+{
+  "Id": "rule_founding_of_memel_castle_1252",
+  "Keywords": [
+    "Memel founded in 1252",
+    "Courland bishop and Livonian brethren"
+  ],
+  "RagShortTexts": [
+    "Livonian brethren and the bishop of Courland established a position at Memel in 1252.",
+    "The Danė mouth and sea access mattered, alongside local provisions and shipping."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1252 Livonian brethren and the bishop of Courland established a position at Memel. The mouth of the Danė and access to sea waters offered transport and passage. The partners held distinct rights over land and receipts, while settlers, merchants and neighbouring chiefs had demands of their own. Defenders needed a garrison, shipowners a landing and local families access to fishing and cultivation. A shared foundation did not automatically reconcile these interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Cooperation between Order and bishop needs defined costs, jurisdiction and land duties. Disputes interrupting transport leave defenders and residents short of food, making clear collection and redress useful before pressure increases."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A coastal fortress remains dependent on wind and sailing times. Orders cannot create fodder before ships arrive. Stores, guides and known return routes are essential for men pursuing outside the position."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Handling cargo, repairs and food sales offer business while using local labour. Residents cooperate more readily when terms hold, animals are not arbitrarily seized and complaints receive a hearing."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

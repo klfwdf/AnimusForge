@@ -1,0 +1,59 @@
+{
+  "Id": "be_alemannic_kingdom_geopolitics",
+  "Keywords": [
+    "Alemans Frontiers",
+    "Segodunum woodland routes"
+  ],
+  "RagShortTexts": [
+    "Segodunum connects the upper Rhine and woods toward the Danube.",
+    "Few crossings make neighboring war a cause of detours."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Upper Rhine routes, former Roman borderland and woods toward the Danube give Segodunum connections and obstacles. Few crossings matter disproportionately, and neighboring war forces merchants into detours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Segodunum connects the upper Rhine and woods toward the Danube. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Few crossings make neighboring war a cause of detours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Few crossings make neighboring war a cause of detours. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Segodunum connects the upper Rhine and woods toward the Danube."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Segodunum connects the upper Rhine and woods toward the Danube. Closed routes may separate families from goods, imposing costs on those remaining at home. Few crossings make neighboring war a cause of detours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Few crossings make neighboring war a cause of detours. Cargo passes different carriers, making distant route changes become local shortages through delay. Segodunum connects the upper Rhine and woods toward the Danube."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

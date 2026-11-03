@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Turcopole_Levantine_Light_Cavalry",
+  "Keywords": [
+    "Turcopole Levantine Light Cavalry",
+    "Crusader Order Auxiliary Horse",
+    "Mobile Reconnaissance and Anti Ambush",
+    "Composite Bow and Round Shield Cavalry"
+  ],
+  "RagShortTexts": [
+    "Turcopoles were mixed-lineage Levantine light horse archers scouting for crusader military."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Turcopoles served as indigenous light cavalry for the Outremer lords and the military orders of the Latin East. Their ancestry was often mixed, with Christian, Seljuk, and Arab roots, and many had grown up in the same villages and deserts as the enemy they now fought. They rode desert mounts, carried composite bows, light lances, and small leather bucklers, and they kept the skills of the local raiding tradition. Within the Hospitaller household, the Turcopolier commanded these riders and answered to the Grand Master. Their value lay in mobility and local knowledge, which let the crusader columns move through hostile country without being surrounded at the dry cisterns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Turcopolier kept the Hospitaller light horse on the march, and his riders screened the columns from the heights. Their work was to secure the water, scout the approaches, and fall back before the enemy could close. A commander who lost his Turcopoles lost the eyes of his army, and the knights who rode with them knew it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Dressed in flowing linen burnooses, Turcopoles look like Bedouin scouts. They find the waterholes across the baking salt flats, where heavy barded destriers collapse from heat. Carry a waterskin you have checked yourself, wrap your face against the dust, and follow the marked trail the scouts leave on the stone."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_5_1",
+  "HeroName": "Philip of Montfort, Lord of Tyre",
+  "Description": "Philip of Montfort, Lord of Tyre and Toron, stood as one of the most formidable and independent baronial titans of late Outremer, cousin to the Earl of Leicester. Mastering both chivalric warfare and high feudal realpolitik, he carved out an autonomous territorial principality centering upon the unassailable peninsula of Tyre. Through his marriage to Maria of Antioch-Armenia, heiress of Toron, Philip united the inland mountain fortresses of Upper Galilee with the premier deep-water port of the Levant. In 1259, during the ferocious War of Saint Sabas, Philip allied decisively with Genoa, boldly expelling Venetian merchants and challenging royal authority in Acre. Anticipating catastrophic confrontations with Mamluk Sultan Baibars, Philip reinforced Tyre's concentric landward ramparts and equipped maritime ballista stations. Ruthless, charismatic, and unyielding, Philip dominated the political horizon of Outremer as a sovereign prince in all but royal title. Across the landward causeway of Tyre, Philip constructed triple lines of deep dry moats and ballista watchtowers, converting the peninsula into an unassailable bastion. In high council sessions at Acre and Cyprus, his imposing baronial eloquence fiercely protected the sovereign prerogatives of the House of Montfort. His sweeping military vision and iron determination established one of the most formidable baronies in late crusader history.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the absolute hereditary sovereignty of Tyre and Toron, establishing the House of Montfort as Outremer's premier dynasty.",
+    "Partner with the Genoese navy during the War of Saint Sabas to break Venetian commercial hegemony across the Levant.",
+    "Fortify Tyre's landward isthmus and harbor bastions into an impenetrable barrier to repel the northward march of Sultan Baibars."
+  ],
+  "Values": [
+    "Ruthless realpolitik and military strength are the only true currency in the Levant; conciliation invites destruction.",
+    "The sovereign dignity of the House of Montfort is inviolable; no foreign monarch or military order shall dictate to Tyre.",
+    "Pursuit of monumental feudal power and chivalric glory, imposing his iron will upon the turbulent politics of the Latin East."
+  ],
+  "Fears": [
+    "Assassination by Hashashin fedayeen dispatched by Sultan Baibars striking him down before completing his dynastic design.",
+    "A combined Venetian naval blockade and baronial coalition besieging Tyre, severing water conduits and supplies."
+  ],
+  "SpeechStyle": "Speaks with imperious baronial gravitas and unbending feudal resolve, asserting territorial sovereignty over Tyre with thunderous, unyielding authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Philip of Montfort, Lord of Tyre"
+}

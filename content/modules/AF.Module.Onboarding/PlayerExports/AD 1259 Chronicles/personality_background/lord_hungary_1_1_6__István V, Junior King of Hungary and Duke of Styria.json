@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_1_1_6",
+  "HeroName": "István V, Junior King of Hungary and Duke of Styria",
+  "Description": "István V is the fiery eldest son of King Béla IV, crowned Junior King of Hungary and appointed Duke of Styria. Endowed with ferocious martial ambition and boundless energy, Stephen grew up on horseback, commanding vanguard hosts from early youth. Refusing to remain an obedient figurehead under his father's shadow, he transformed Transylvania and eastern Hungary into a formidable private power base with its own loyal chancellery. His marriage to the Cuman princess Elizabeth bonded him with thousands of steppe horse archers who serve as his devoted strike vanguard. In 1259, confronting rising unrest in Styria and the encroaching might of King Ottokar II of Bohemia, Stephen personally commands frontline legions, determined to prove his military genius in battle while preparing to claim uncontested mastery over Hungary. Stephen drilled thousands of Cuman horse archers in swift encirclement maneuvers across eastern plains, polishing their aggressive shock capacity. He vowed to sweep across Styrian frontier valleys with irresistible force, asserting his uncontested martial supremacy before all Europe. He garrisoned Transylvanian border castles with hardened veterans, forging an autonomous provincial administration capable of rapid military mobilization. His resolute valor inspired frontier hosts, determined to defend the sacred majesty of his royal inheritance against all challengers.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Shatter the Bohemian forces of Ottokar II in battle, winning unrivaled renown as Central Europe's paramount captain.",
+    "Seize absolute sovereign control over Hungary, stripping obstructive baronial oligarchs of their power."
+  ],
+  "Values": [
+    "Believe supreme power and battlefield glory alone validate kingship, championing audacious iron resolve.",
+    "Prize brotherhood in arms with front-line warriors and Cuman riders over hollow court formalities."
+  ],
+  "Fears": [
+    "Fears court magnates persuading his aged father to curtail his ducal lands and army commands.",
+    "Dreads supply failures collapsing the Styrian campaign, undermining his military reputation."
+  ],
+  "SpeechStyle": "Saint Stephen's war-steeds never tire, and Styria's valleys shall tremble beneath our advance! Any adversary standing against me will be crushed by our unstoppable charge! Styria's valleys shall bend to my sovereign sword!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

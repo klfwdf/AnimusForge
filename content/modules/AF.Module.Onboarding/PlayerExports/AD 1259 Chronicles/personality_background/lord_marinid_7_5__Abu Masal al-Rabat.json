@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_7_5",
+  "HeroName": "Abu Masal al-Rabat",
+  "Description": "Abu Masal al-Rabat is about twenty-four years old, commander of the cavalry of his branch and husband of Sukayna. He comes from the coastal town of Rabat, where in his early years he served as a guard among the harbour docks, and his accent still carries a salt-wind roughness. He is compact and upright, and he usually wears a leather jerkin with bronze studs under a dark grey cloak. A faint old scar crosses his left brow, said to have come from a quarrel with a smuggler on the wharf. His sword is plain, its scabbard banded only with a worn bronze ring, and he never adds ornaments to the hilt. As a young man he patrolled the coast with a small troop and came to know every track, spring, and supply post along the shore. Since then he has believed battles are often decided by who first understands the ground and the supply lines. In the harbour warehouses he learned to count sacks and check ledgers, skills he later applied to the cavalry's supplies. Before every expedition he walks the planned route himself, noting water, passes, and hollows where men can hide. He does not meet rivals head-on. He first estimates their numbers and their grain routes, and only then decides how to move. His deepest drive is to make his cavalry an irreplaceable force on the dynasty's coastal line, tying his name to harbours, walls, and supply routes. His greatest fear is a single misread of the terrain that sends his riders to their deaths in an unfamiliar valley, burying his ambition with them.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants his cavalry to become an irreplaceable force on the dynasty's coastal line, tying his name to harbours, walls, and supply routes.",
+    "He intends to survey terrain and estimate grain routes and troop strength himself before every expedition, so ambush and starvation are dealt with first.",
+    "He plans to use his wife Sukayna's diplomatic skill to build steady ties with coastal merchants and headmen, so political quarrels do not cut his supplies."
+  ],
+  "Values": [
+    "Battles are often settled before the first charge. Whoever understands the ground and supply lines first holds the initiative, a lesson he learned on the coastal patrols.",
+    "The lives of cavalrymen are his most precious capital, and one needless advance costs the future of the whole troop, not just a single battle.",
+    "Loyalty is kept alive by fair rewards and punishments. He is generous to those who follow him and never lightly forgives those who betray him."
+  ],
+  "Fears": [
+    "A single misread of the terrain may send his riders to their deaths in a valley they did not know, and his ambition would be buried with them.",
+    "Political rivals may ruin the diplomatic ties his wife has built, so the coastal merchants and headmen will stop trusting him and his supplies will falter."
+  ],
+  "SpeechStyle": "His tone is steady and he speaks few words, describing the situation through place names and distances. When explaining terrain he traces the route on the table with a finger. Faced with provocation he counts the enemy's strength first.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_novhorod_siverskyi_and_the_desna_3149bc00",
+  "Keywords": [
+    "Novhorod Siverskyi Desna region",
+    "Household supply on Siverskyi routes"
+  ],
+  "RagShortTexts": [
+    "Novhorod-Siverskyi linked Desna settlements and princely and church households.",
+    "Travelers needed the right town and route; households and kin carried local news."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Novhorod-Siverskyi connected Desna settlements and routes. Princes, church and inhabitants relied on surrounding production. Travelers needed the correct town and route, while acquaintances, envoys and kin carried news between places."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Novhorod-Siverskyi connected Desna settlements and routes. Princes, church and inhabitants relied on surrounding production. Travelers needed the correct town and route, while acquaintances, envoys and kin carried news between places. Guards arranged watches, messages and entry checks; pursuit reduced defenders. Escorts needed closing times, waiting places and arrangements for injured mounts and cargo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Novhorod-Siverskyi connected Desna settlements and routes. Princes, church and inhabitants relied on surrounding production. Travelers needed the correct town and route, while acquaintances, envoys and kin carried news between places. Lords balanced repair, stores and retainers against revenue. Requisitioned work advanced repairs at a cost to harvests, while relief required reliable reports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Novhorod-Siverskyi connected Desna settlements and routes. Princes, church and inhabitants relied on surrounding production. Travelers needed the correct town and route, while acquaintances, envoys and kin carried news between places. Outlying households chose what to move, with animals, seed and kin competing for carts. Refuge inside required shelter, food and water, while staying home brought other risks."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_4_2",
+  "HeroName": "Amina Cancellieri",
+  "Description": "Amina Cancellieri serves as chief archivist and estate administrator for House Cancellieri, supervising extensive urban trusts, harbor dock leases, and warehouse concessions. Meticulous and calculating, his exhaustive records ensure steady rental revenues from prime harbor wharves, anchoring the dynasty's financial power. Amina supervised deep-water wharves, mechanical winches, and vaulted dock warehouses in Genoa's inner harbor, enforcing rigorous inspections to verify that all cargoes of wool and oil were accounted for. Expert in double-entry bookkeeping and harbor lease covenants, he calibrated storage capacity against returning convoy cycles, generating steadily expanding rental revenues for House Cancellieri year after year. Unassuming and calculating, he avoided political fanfare, quietly maintaining the financial foundation of his house through methodical ledger vigilance amidst the tumultuous bustle of the waterfront. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maximize revenues from prime waterfront real estate and shipping warehouses.",
+    "Utilize notarized charters to shield family estates from illegal expropriation."
+  ],
+  "Values": [
+    "Flawless documentation is the strongest lock protecting ancestral wealth.",
+    "Methodical conservatism withstands sudden sociopolitical tempests."
+  ],
+  "Fears": [
+    "Naval bombardment destroying prime waterfront wharves and warehouses.",
+    "Urban fires consuming irreplaceable parchment archives and land charters."
+  ],
+  "SpeechStyle": "Speaks with reserved precision and mathematical clarity, focused on ledger accuracy. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

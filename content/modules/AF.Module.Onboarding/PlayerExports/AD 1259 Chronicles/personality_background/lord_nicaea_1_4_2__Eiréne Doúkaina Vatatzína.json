@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_4_2",
+  "HeroName": "Eiréne Doúkaina Vatatzína",
+  "Description": "Eiréne Doúkaina Vatatzína, scion of the revered imperial house of Vatatzes, represented the enduring legitimacy of Emperor John III Doukas Vatatzes during the transformative era of 1259. Wed into the martial Stratigópoulos clan, Irene possessed rare political poise and administrative talent, shouldering the governance of extensive ancestral latifundia across Bithynia while her husband and son fought on distant European battlegrounds. She managed grain storehouses, olive pressing mills, and warhorse paddocks with consummate efficiency, guaranteeing steady supplies for the imperial mobilization. Within the faction-ridden corridors of the Nicaean court, Irene wielded her formidable imperial ancestry to shield her family from courtly envy and treasonous whispers. Her serene wisdom, steadfast loyalty, and generous monastic donations provided an indispensable moral fortress that preserved her dynasty through the perilous transition to the restored empire. Within her sprawling manors around Nicaea, Irene established refugee shelters and weaving guilds, utilizing private grain reserves to feed thousands of displaced Greeks fleeing Frankish oppression. A master of rural economics, she planted high-yield olive orchards and vineyards, turning family estates into an unshakeable logistical foundation for imperial armaments. Whenever treacherous rumors targeted her campaigning family at court, Irene utilized her imperial Vatatzes pedigree to silence detractors, serving as the invincible moral anchor of her lineage.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect the Vatatzes bloodline and Strategopoulos estates, preserving the family's secure rear during disorder.",
+    "Protect her campaigning husband and son from court suspicion and slander while preserving the family's military reputation.",
+    "Support fallen soldiers' orphans, estate dependants and monasteries, praying for relatives campaigning in Europe."
+  ],
+  "Values": [
+    "Prudence and modesty preserve a military household at court; boasting of achievements and arrogant conduct invite disaster.",
+    "Manage the household frugally and practically, raising children to observe duty and serve the state loyally.",
+    "Keep Orthodox faith and family obligations, remaining calm under pressure while supporting household and state."
+  ],
+  "Fears": [
+    "Imperial jealousy of her husband's and son's role in recovering Constantinople leading to a purge that sacrifices the entire military household.",
+    "Turkish raiders burning ancestral estates and destroying the revenues and provisions needed to support relatives at the front."
+  ],
+  "SpeechStyle": "Her speech is measured, serene, and steeped in aristocratic tact, effortlessly disarming court intrigues with quiet moral authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

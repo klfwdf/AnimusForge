@@ -1263,7 +1263,7 @@ internal sealed class SceneTradeBannerlordAdapter
 
 						{
 
-							RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(hero, 0, text2, num4);
+							RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(hero, 0, text2, shoutPendingTradeItem.Amount);
 
 						}
 

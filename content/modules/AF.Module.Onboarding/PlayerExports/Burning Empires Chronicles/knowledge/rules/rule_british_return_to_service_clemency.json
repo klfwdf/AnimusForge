@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v6",
+  "Keywords": [
+    "British return-to-service clemency"
+  ],
+  "RagShortTexts": [
+    "Theodosius’s clemency gave scattered soldiers reason to return."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Theodosius’s clemency gave scattered soldiers reason to return. The message had to reach them and be credible before they could act. Return still required reassignment, while indiscriminate punishment would not necessarily restore needed manpower."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

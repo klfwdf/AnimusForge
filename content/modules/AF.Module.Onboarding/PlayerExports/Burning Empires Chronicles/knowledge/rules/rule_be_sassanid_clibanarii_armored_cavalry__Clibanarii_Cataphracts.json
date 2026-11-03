@@ -1,0 +1,38 @@
+{
+  "Id": "be_sassanid_clibanarii_armored_cavalry",
+  "Keywords": [
+    "Armored cavalry protection and movement"
+  ],
+  "RagShortTexts": [
+    "Roman and Persian armored cavalry depended on horse endurance, cohesion and ground."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Roman and Persian forces both included cavalry wearing substantial armor. Metal protection covered parts of the body while adding weight for rider and mount; vision, turning and cohesion still required training. Lances, bows and horse armor varied between units, so appearance alone did not reveal a rider’s full equipment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "An armored rider checked straps and joints so loose pieces did not hinder control. Narrow paths, ditches and soft ground impeded movement; frightened or exhausted horses disrupted ranks. Flanks still needed watching, and exposed parts of the body remained vulnerable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Concentrating armored cavalry required fodder, repair materials and usable routes. Commanders needed ground that allowed cohesion and other troops to protect the flanks. Expensive equipment did not make every frontal attack a certain success."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

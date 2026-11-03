@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Silk_Weaving_Guilds_of_Lucca_and_Palermo",
+  "Keywords": [
+    "Luccan Master Silk Weaving Guild",
+    "Palermo Royal Tiraz Textile Palace",
+    "Gold Threaded Damask Brocade",
+    "Medieval Sumptuary Law Restrictions"
+  ],
+  "RagShortTexts": [
+    "Luccan silk was famous across Tuscany for good reason.",
+    "Merchants arrange supplies while different hands prepare, weave and finish the cloth."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Luccan silk was famous across Tuscany for good reason. Lucca's weavers, many of them enrolled in silk guilds, produced figured damasks and samites on drawlooms that lifted warp threads to form patterns. Raw silk came through the Byzantine and Levantine trade, and the finest cloth was dyed in deep colors and sometimes finished with spun gold thread. In Palermo, the royal tiraz workshop, founded under the Normans and continued under the Hohenstaufen, produced ceremonial brocades with griffins and lions for courtly robes. Gold brocades became a visible sign of rank, and sumptuary statutes sought to keep the most expensive fabrics out of the hands of wealthy merchants who wanted to dress like their social betters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A bolt of gold brocade could cost as much as a warhorse, and a lord who wore one in public was making a statement about his rank. Sumptuary statutes limited who could wear costly cloth, so the fabric became a legal marker as well as a luxury. A count who could not afford silk for his household would find his neighbors quick to notice, and his prestige would suffer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "A Luccan silk worker valued sound thread, an even weave and a buyer able to pay for costly material. Merchants arranged supplies while different hands prepared, wove and finished cloth. Broken threads and uneven color damaged the result, with reworking adding labor and materials."
+    }
+  ],
+  "TextMappings": []
+}

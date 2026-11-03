@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_2b",
+  "HeroName": "Ludmila von Kamenz",
+  "Description": "Ludmila traces her lineage to the ancient noble lords of Kamenz in Upper Lusatia, married to the celebrated commander Zdeslav I of Šternberk as the founding chatelaine of Český Šternberk Castle above the Sázava. Bringing extensive dower estates from the Lusatian marches and strong ecclesiastical ties, she governed the high cragged fortress with remarkable administrative prudence and maternal fortitude. During the grueling years when Zdeslav campaigned far afield against foreign invaders and supervised military construction, Ludmila remained at the helm, nurturing their four martial sons and maintaining overflowing fortress stores. Generously patronizing regional Cistercian abbeys and sheltering wartime refugees, she earned the profound veneration of knights and clergy, standing as the serene moral cornerstone of the burgeoning House of Sternberg. Establishing detailed tax registries and storehouses in the cliff fortress above the Sázava, Ludmila supervised the production of wool and linen for knightly doublets and pavilion tents. Instructing her four sons in the chivalric code, she paved roads and rebuilt bridges around Moravia, rooting the golden star of Sternberg deeply in the hearts of serfs, burghers, and clergy. Her maternal devotion and prudent management sustained the heroic lineage of Sternberg through perilous decades.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage fortress stores and clan logistics at Šternberk, ensuring frontline garrisons receive abundant provisions.",
+    "Instill chivalric virtue and piety in her sons, ensuring the golden star of Sternberg shines across generations."
+  ],
+  "Values": [
+    "Regards diligent estate governance, maternal duty, and God-fearing piety as the supreme virtues of a chatelaine.",
+    "Believes gentle charity and patient vigilance overcome the fiercest trials of war."
+  ],
+  "Fears": [
+    "Fears cruel arrows or pestilence claiming her husband or sons in distant campaigns.",
+    "Worries escalating border clashes will engulf her ancestral lands in Lusatia, breaking regional amity."
+  ],
+  "SpeechStyle": "A fortress on the cliff may be formidable, but only faith, endurance, and charity preserve it through generations of storm. In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Ludmila von Kamenz"
+}

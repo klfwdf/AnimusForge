@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_3_2",
+  "HeroName": "Aurelia Grimaldi",
+  "Description": "Aurelia Grimaldi presides as the revered matriarch of House Grimaldi, managing fertile olive groves, vineyards, and urban properties spanning Nice, Ventimiglia, and Genoa. Skilled in bottomry bonds and maritime mortgages, she generously endows Franciscan monasteries, combining devout piety with administrative mastery. Lady Aurelia managed extensive coastal olive presses, vineyards, and mule trains into Provence, generating an uninterrupted stream of silver and provisions that sustained Grimaldi naval readiness. Deeply revered across the diocese, she endowed Franciscan chapels and transformed family properties into hospices for wounded mariners, her boundless Christian charity disarming popular resentment against noble magnates. Pious and dignified, she believed worldly wealth was fleeting without divine favor, dedicating her life to shielding her house through disciplined administration, prayer, and almsgiving. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect ancestral agrarian revenues and ecclesiastical trusts along the Riviera.",
+    "Secure divine favor and moral standing for her dynasty through boundless charity."
+  ],
+  "Values": [
+    "Unshakable faith and Christian charity are the true armor against worldly chaos.",
+    "Moral virtue and noble discipline outrank fleeting worldly triumphs."
+  ],
+  "Fears": [
+    "Ruinous civil war ravaging ancestral coastal estates and olive groves.",
+    "Desecration of holy sanctuaries and monasteries amidst partisan bloodshed."
+  ],
+  "SpeechStyle": "Articulates with quiet aristocratic elegance and profound Christian devotion. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

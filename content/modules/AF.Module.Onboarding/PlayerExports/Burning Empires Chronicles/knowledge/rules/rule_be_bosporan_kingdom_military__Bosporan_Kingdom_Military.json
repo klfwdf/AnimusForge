@@ -1,0 +1,59 @@
+{
+  "Id": "be_bosporan_kingdom_military",
+  "Keywords": [
+    "Bosporan Kingdom Military",
+    "Bosporan port and grain guards"
+  ],
+  "RagShortTexts": [
+    "Walls, docks, stores and local warnings depend on one another.",
+    "Ships, ports and grain carts need separate guards."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Walls, docks, stores and local warnings depend on one another. Sailing escorts still need guards at home; Alan and Greuthungian wars divide land and maritime resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Walls, docks, stores and local warnings depend on one another. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Ships, ports and grain carts need separate guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ships, ports and grain carts need separate guards. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Walls, docks, stores and local warnings depend on one another."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Walls, docks, stores and local warnings depend on one another. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Ships, ports and grain carts need separate guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ships, ports and grain carts need separate guards. Repair, carrying and care also use people, while daily supply continues after troops pass. Walls, docks, stores and local warnings depend on one another."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

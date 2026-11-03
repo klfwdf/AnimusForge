@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_8_2",
+  "HeroName": "Narjis",
+  "Description": "Narjis is about thirty-eight years old and the wife of Ya'qub, mother of three daughters, Jawla, Jariya, and Jalida. She carries herself with dignity and has a lean, composed face. She usually wears a dark green wool shawl, and beneath it a silver chain bears a small disc engraved with a crescent and star. Her clothes are sober in colour, mostly dark grey and black green, with only simple line stitching at the cuffs and hem. She comes from a family that ran a camel caravan, and as a young woman she travelled with her father along the desert trade routes, learning the price of a camel and the value of a water source. After marriage she managed the caravan's deployment and kept a small booklet recording where each camel went and what it carried. She speaks little and mostly mediates between her husband and her children. When women of the clan quarrel, she does not hurry to judge. She first asks about the actual grain and livestock and then decides how to share them. Each night she checks the herd counts against her booklet, striking off each animal already sold. When a caravan returns she meets it at the gate and counts every load and person herself. Her deepest drive is to provide each of her three daughters with a dowry of their own, livestock and goods that will give them confidence in marriage and after any division of property. Her greatest fear is that her husband will fall in the political struggle and the daughters, lacking a sufficient dowry, will be forced to depend on others.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants to provide each of her three daughters with a dowry of livestock and goods, so they have the independence to live and marry without depending on others.",
+    "She intends to keep the caravan's deployment and cargo records in good order, so trade income keeps running smoothly even when her husband is absent.",
+    "She plans to keep a balance between her husband and her children, easing small tensions so the household stands together in outside disputes."
+  ],
+  "Values": [
+    "The worth of a camel and the worth of a water source are the foundations of life, so every allocation should be calculated first, never done on feeling.",
+    "A daughter's dowry is the root of her independence, and every animal or good given to her should leave her free to decide how it is used.",
+    "Family stability comes from mutual trust, and trust grows from open accounts, so even a small household expense should be visible to everyone."
+  ],
+  "Fears": [
+    "Her husband may fall in a political struggle, leaving the daughters without sufficient dowries and forced to rely on others for their choices.",
+    "Through her oversight or others' encroachment, caravan income may shrink, and livestock may dwindle until nothing remains to guard her daughters."
+  ],
+  "SpeechStyle": "Her tone is calm and her words brief. She often asks how much is left or which day something happened, pulling the issue back to exact figures. With her daughters she is patient and shows concern.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

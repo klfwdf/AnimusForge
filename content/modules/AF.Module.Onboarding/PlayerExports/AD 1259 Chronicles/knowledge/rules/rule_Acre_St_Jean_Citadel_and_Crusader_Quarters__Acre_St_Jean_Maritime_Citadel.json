@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Acre_St_Jean_Citadel_and_Crusader_Quarters",
+  "Keywords": [
+    "Acre St Jean Maritime Citadel",
+    "Crusader Levant Merchant Quarters",
+    "Venice Genoa Pisa Enclaves",
+    "Acre Customs Water Gate"
+  ],
+  "RagShortTexts": [
+    "Acre served as the fortified sea capital of Outremer, divided into heavily fortified."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Acre, known to the Franks as Saint-Jean d'Acre, became the main Latin port of the Holy Land after Saladin took Jerusalem in 1187 and the crusader court settled on the coast. Its harbour was divided among merchant communities. Venetians, Genoese, and Pisans each held walled quarters with warehouses and berths, while the Templars and Hospitallers kept strongholds that policed the seafront. Every ship that landed paid duty to one of these powers, and those dues paid the garrisons. The same rivalry between Italian cities also produced street wars that sometimes reached the walls, so Acre's wealth depended on keeping that competition just short of open war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord who held a share of Acre's harbour dues had real political weight, since customs on each cargo paid for the garrisons. The Haute Cour was slow to enforce its rulings against the Italian communes, and rival consuls sent envoys with sealed instructions. A grant of a quarter could shift which republic backed which baron, while tithes from the countryside stayed with the church."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Twenty tongues echo along the docks, and Genoese seamen argue loudly with Venetian clerks. Keep out of the lanes where consular retainers clash, since a brawl over a berth can end with a knife in the ribs. Templar patrols walk the wharf in mail and will move a stranger along without argument. Learn the watch password at the Water Gate before dark, and keep your coin hidden from pickpockets."
+    }
+  ],
+  "TextMappings": []
+}

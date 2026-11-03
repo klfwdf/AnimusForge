@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v1",
+  "Keywords": [
+    "罗马军械监督职掌"
+  ],
+  "RagShortTexts": [
+    "蒙提乌斯提到的两名军官负责监督军械制造。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "蒙提乌斯提到的两名军官负责监督军械制造。职务把人员与具体工作联系，光有人名不足以确认是谁。官署查找对象要核对军衔、任地和职责，以免无关同名者被当作当事人。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_4_1_1_1",
+  "HeroName": "Cecilia de Clavering, Countess of Dunbar",
+  "Description": "Cecilia de Clavering is the noble Countess of Dunbar, daughter of the prominent Anglo-Norman baron John FitzRobert, Lord of Warkworth and Clavering in Northumberland. Her prestigious union with Patrick III stands as an indispensable diplomatic cornerstone linking the Northumbrian baronage with the Scottish March. Thirty-seven years of age, elegant, discerning, and possessed of formidable administrative intellect, she carries the courtly refinement of England into the rugged coastal keep of Dunbar. During Earl Patrick's extensive absences commanding border forces and attending royal councils, Cecilia exercises supreme domestic control over castle granaries, weapon stores, and tenant courts. Northumbrian cartularies highlight her sharp legal mind in arbitrating commercial cattle disputes and maritime salvage rights across the Tweed estuary. Devoted to her children's chivalric education and her house's territorial security, Countess Cecilia tempers martial vigor with prudent statecraft, universally admired as an exemplary chatelaine. Attending the royal assembly at Scone alongside senior realm justiciars, young Patrick earned high acclaim for his lucid interpretation of March law and feudal tenures; overseeing Dunbar manorial estates with disciplined efficiency, he promises to inherit his father's mantle as the eastern border's preeminent champion, diplomat, and statesman throughout all of Scotland.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage manorial revenues and military stores at Dunbar Castle to ensure complete defensive sustainability.",
+    "Maintain confidential diplomatic channels with her Northumbrian kin to safeguard cross-border peace and intelligence."
+  ],
+  "Values": [
+    "Values aristocratic honor, rigorous legal foresight, and prudent domestic order above reckless violence.",
+    "Upholds Christian charity and gracious justice, viewing the protection of castle tenants as a sacred obligation."
+  ],
+  "Fears": [
+    "Dreads an all-out Anglo-Scottish war forcing her into tragic conflict between her husband and Northumbrian brothers.",
+    "Fears enemy privateers or pirate fleets launching sudden raids upon the maritime havens of Dunbar."
+  ],
+  "SpeechStyle": "Speaks with melodious aristocratic composure, articulate, persuasive, and displaying profound legal intelligence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

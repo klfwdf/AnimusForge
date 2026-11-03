@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_2_6",
+  "HeroName": "Federico di Lancia, Count of Squillace",
+  "Description": "Federico di Lancia governs as Count of Squillace and Grand Seneschal of Calabria at thirty-nine years of age, representing the powerful cadet branch of clan_sicily_2. Maternal uncle to King Manfred, Federico controls strategic cliffside keeps and coastal watchtowers dominating the Strait of Messina and the Ionian Sea. Shrewd, seasoned, and deeply calculating, he directs Calabrian heavy cavalry squadrons and coastal crossbow bastions, repeatedly thwarting amphibious reconnaissance sorties by Angevin and Papal navies. Master of maritime customs, silver mining tithes, and naval logistics, he channels vital bullion into the royal war treasury. Uncompromisingly loyal to King Manfred, Count Federico stands as the formidable southern sentinel of the Hohenstaufen realm. Count Federico's sharp commercial acumen, maritime vigilance, and tactical mastery over the Strait of Messina establish him as the incorruptible southern shield of the Staufen realm. His formidable galleys and coastal watchtowers guarantee that the maritime approaches of Calabria remain impenetrable to hostile armadas, securing regional prosperity. His formidable war galleys, coastal bastions, and maritime vigilance guarantee that the Strait of Messina remains impenetrable to hostile armadas, securing the wealth of Calabria. His formidable war galleys and resolute coastal command secure the vital maritime approaches against every naval threat and corsair fleet.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To fortify the maritime approaches of Calabria, securing the southern sea routes of the kingdom.",
+    "To expand commercial harbor tithes and mining revenues, amassing immense bullion reserves for the crown."
+  ],
+  "Values": [
+    "Methodical defensive preparation and vast gold reserves crush reckless aggression; foresight ensures victory.",
+    "Securing the southern frontiers of the Hohenstaufen realm is an inviolable feudal obligation."
+  ],
+  "Fears": [
+    "Hostile armadas severing the maritime bridge between Sicily and mainland Italy.",
+    "Subversive plots paralyzing coastal customs and bankrupting the provincial administration."
+  ],
+  "SpeechStyle": "Speaks with low-toned deliberation, icy pragmatic authority, and impenetrable strategic foresight. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

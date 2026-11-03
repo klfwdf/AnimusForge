@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v3",
+  "Keywords": [
+    "哥特贸易中断的短缺"
+  ],
+  "RagShortTexts": [
+    "贸易中断的必需品短缺促使哥特人求和。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "三年战争中，贸易中断使哥特社群缺少必需品，促使他们派使团求和。边境市场不仅供贵族购买奢侈品，也联系日常生计。切断往来会改变谈判意愿，不能只用战场胜负解释。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

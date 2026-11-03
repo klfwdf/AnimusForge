@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_peipus_victory_and_its_limits_ca1de23d",
+  "Keywords": [
+    "Remembering the Peipus victory of 1242",
+    "Alexander and Novgorod's military prestige"
+  ],
+  "RagShortTexts": [
+    "Alexander's Rus force defeated western troops at Peipus in 1242, strengthening his prestige.",
+    "Frontier defense and Mongol pressure remain separate concerns requiring supplies and support."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The victory of 1242 recalls Alexander's force defeating western troops and the frontier interests of Pskov and Novgorod. Success helps a commander gain trust, but continued defense requires food, watches and local cooperation. Western security does not settle relations with Mongol power, leaving princes to negotiate on several fronts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Peipus survivors may return with prestige, injuries, debts and missing companions. Households await relatives and repair equipment even amid celebration. Another frontier call recalls both victory and whether previous losses received help, with work at home again needing substitutes."
+    }
+  ],
+  "TextMappings": []
+}

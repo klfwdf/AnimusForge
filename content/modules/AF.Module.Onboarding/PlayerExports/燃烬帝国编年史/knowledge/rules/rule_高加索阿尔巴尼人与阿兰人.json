@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v8",
+  "Keywords": [
+    "高加索阿尔巴尼人与阿兰人"
+  ],
+  "RagShortTexts": [
+    "阿尔巴尼亚与阿兰人的名称相近，却并非同一政治社群。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿尔巴尼亚与阿兰人的名称相近，却并非同一政治社群。东高加索河谷、里海沿岸通路和北面牧养群体有不同的统治与生计；使者必须认清交涉对象，不能让一个条约自动约束所有相近名称的人。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

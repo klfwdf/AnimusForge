@@ -1,0 +1,59 @@
+{
+  "Id": "be_marcomannic_kingdom_economy",
+  "Keywords": [
+    "Marcomans Trade",
+    "Bohemian farming and border markets"
+  ],
+  "RagShortTexts": [
+    "Casurgis grain, herds, woodland and southern exchange sustain households.",
+    "Peace allows stores and repairs; long service removes farm and herd labor."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Casurgis grain, herds, woodland and southern exchange sustain households. Peace allows stores and tool repair, while prolonged service removes harvest and animal care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Casurgis grain, herds, woodland and southern exchange sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Peace allows stores and repairs; long service removes farm and herd labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Peace allows stores and repairs; long service removes farm and herd labor. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Casurgis grain, herds, woodland and southern exchange sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Casurgis grain, herds, woodland and southern exchange sustain households. Households need meals and the means to keep producing after delivering goods. Peace allows stores and repairs; long service removes farm and herd labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Peace allows stores and repairs; long service removes farm and herd labor. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Casurgis grain, herds, woodland and southern exchange sustain households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

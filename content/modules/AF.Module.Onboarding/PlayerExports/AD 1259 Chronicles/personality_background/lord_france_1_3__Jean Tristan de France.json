@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_1_3",
+  "HeroName": "Jean Tristan de France, Count of Valois",
+  "Description": "Jean Tristan is the fourth son of King Louis IX and Queen Marguerite of Provence, bearing the titles of Count of Valois and Lord of Nevers. He was born at Damietta in 1250 during the grim climax of the Seventh Crusade, his tragic name bestowed by the distraught queen upon hearing of the king's capture. Despite this melancholic heritage, the young prince grew into a vigorous knight imbued with Capetian chivalry and pious martial devotion. His strategic marriage to Yolande of Burgundy, Countess of Nevers, anchored royal authority firmly across the rich heartlands of central France. Tristan was raised on classical chivalric treatises and strict crusader codes, viewing his birth in the Levant as a holy mandate to defend the realm. Monastic chronicles praise his unwavering fidelity and unyielding baronial discipline, noting his constant presence at weapon drills and royal councils. He tirelessly renovated the fortifications of Nevers while endowing Cistercian priories, eagerly awaiting the call to crusade alongside his holy father. Tristan actively dredged navigation channels along the Loire and Allier rivers, constructing fortified locks to safeguard royal grain convoys heading toward central France. Courteous, humble, and strictly principled, his measured arbitration during regional baronial councils won the unreserved admiration and military fealty of the central French nobility, marking him out as an exemplary prince of the Capetian blood.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Embark on crusade alongside King Louis IX to redeem the sorrow of Damietta.",
+    "Consolidate royal authority across the rich counties of Nevers and Valois."
+  ],
+  "Values": [
+    "Fidelity to knightly crusader vows and unyielding preservation of Capetian sovereignty.",
+    "Generous patronage of holy foundations and steadfast enforcement of royal justice."
+  ],
+  "Fears": [
+    "Repeating the disastrous encirclement of Damietta on future crusades.",
+    "Baronial rebellion fracturing the royal peace cultivated by his father."
+  ],
+  "SpeechStyle": "Speaks with solemn princely dignity and measured cadence, his refined French phrasing marked by deep religious conviction and unshakeable Capetian poise.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

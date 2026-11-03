@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_perkunas_beliefs_and_regional_variation_7619aad3",
+  "Keywords": [
+    "Perkunas and beliefs about thunder",
+    "Baltic household worship and visitors"
+  ],
+  "RagShortTexts": [
+    "Baltic believers associate Perkunas with thunder and seek protection in uncertain weather.",
+    "Rites and authority differ among settlements, requiring visitors to learn local expectations."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Among Lithuanian and neighboring Baltic believers, Perkunas is associated with thunder and prayers for protection. Faith connects kinship memory and local reverence. Visitors need their hosts' explanation of expected conduct. Practices differ among settlements, and leaders or missionaries disregard these ties at the risk of deepening hostility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Baltic households fearing storms worry for crops, animals and travelers, while still securing possessions, roofs and dependents. Familiar interpreters can explain local reverence to visitors. Shared worship requires food and people remaining at home; religious and ordinary work draw on the same households."
+    }
+  ],
+  "TextMappings": []
+}

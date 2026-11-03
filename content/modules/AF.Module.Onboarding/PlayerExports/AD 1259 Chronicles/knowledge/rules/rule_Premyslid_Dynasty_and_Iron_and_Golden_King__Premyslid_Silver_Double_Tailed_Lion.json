@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Premyslid_Dynasty_and_Iron_and_Golden_King",
+  "Keywords": [
+    "Premyslid Silver Double Tailed Lion",
+    "Iron and Golden King Ottokar II",
+    "Kutna Hora Silver Wealth",
+    "Bohemian Austrian Central European Empire"
+  ],
+  "RagShortTexts": [
+    "The Premyslid dynasty of Bohemia bore a crowned silver double-tailed lion on a red field.",
+    "Under Ottokar II, the Iron and Golden King, it reached its greatest height."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Premyslid dynasty of Bohemia bore a crowned silver double-tailed lion on a red field. Under Ottokar II, the Iron and Golden King, it reached its greatest height. His iron meant disciplined armoured cavalry, and his gold flowed from the silver mines of Kutna Hora. Ottokar annexed Austria, Styria and Carinthia, so Bohemian power ran from the Elbe to the Adriatic. The wealth of the mines paid for the knights, and the knights held the frontiers that made the wealth worth having. Every new province added revenue and obligations at once, and the crown had to keep both in balance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "During the Great Interregnum, Ottokar's silver bought the votes of imperial electors and the loyalty of princes who needed loans. German lords courted his credit even as they feared the growing reach of his Slavic dynastic power. A count who borrowed from Prague had to ask what the loan would cost him when the king called for his service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Bohemian patrons draw miners, merchants and builders into projects that need capital as well as skill. Town charters specify rights and obligations, while ore must be dug, drained, carried and smelted before it becomes coin. German-speaking newcomers are part of that exchange, but it is false to assume local workers possessed no relevant knowledge before they arrived."
+    }
+  ],
+  "TextMappings": []
+}

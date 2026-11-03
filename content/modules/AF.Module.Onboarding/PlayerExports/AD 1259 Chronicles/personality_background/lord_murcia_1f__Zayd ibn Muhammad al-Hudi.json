@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_murcia_1f",
+  "HeroName": "Zayd ibn Muhammad al-Hudi",
+  "Description": "Zayd ibn Muhammad al-Hudi, twenty-seven in the game setting, is a son of Baha' ad-Dawla and Yasmin. He is married to Razana, and they have a daughter, Aisha. His voice is soft, in contrast to a heavy, broad frame, and a wide, shallow scar marks his right shoulder, though the game gives no cause. He wears deep red riding robes and a small wooden house badge at his belt. The sources record nothing of his personal life, and the only relevant fact is that he belongs to the generation of Hudid sons raised under the Castilian protectorate. One suggestion is that he trained mainly as a cavalryman and mixed often with border riders, but this is a background inference, not a recorded fact. Against rivals he avoids long negotiation and prefers direct action, though he studies the enemy's numbers and retreats before striking. Before every ride he spends a quarter hour alone in the stable checking each horse's gait and breathing, a habit learned from his father's riders. His driving aim is to win the family real standing through courage in the field, so that his father and brothers depend on his judgment in border fighting. His deepest fear is that his impulsiveness during a raid costs his men their lives and leaves his wife and daughter without protection.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win the family real standing through cavalry courage, so that his father and brothers rely on his judgment and timing in border fights.",
+    "Protect his wife Razana and daughter Aisha, keeping escape routes in and around the castle so they are never left without shelter in war.",
+    "Train a loyal cavalry troop whose young riders work together in raids and pursuits, so that his own impulses do not scatter the unit."
+  ],
+  "Values": [
+    "Loyalty to the family and to his father, and though he may dislike his father's way of negotiating, he never opposes it in public, speaking only in private.",
+    "Honour and courage, because a rider who flinches in battle loses the respect of his men, which gold cannot easily restore.",
+    "Practical effect in the field over ceremony or slogans, caring above all whether the troop returns alive and completes its task."
+  ],
+  "Fears": [
+    "His impulsiveness in a raid killing his own men, whose families then blame the Hudid house, leaving him to carry that guilt for life.",
+    "His wife and daughter losing the shelter of the castle through his failure or defeat, becoming hostages that a rival could use against the family."
+  ],
+  "SpeechStyle": "Speaks softly, a contrast with his heavy build, in short and direct sentences. His pace quickens when he describes battles, and he reaches for terrain and troop numbers. With his wife and daughter he lowers his voice to spare them worry.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

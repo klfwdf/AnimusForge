@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v8",
+  "Keywords": [
+    "Amber burning and incense claims"
+  ],
+  "RagShortTexts": [
+    "Amber burns and gives off a smell, and ancient accounts mention incense or fuel uses."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Amber burns and gives off a smell, and ancient accounts mention incense or fuel uses. A luxury ornament and a combustible substance were different uses of one material. Once consumed by fire it could not become an intact bead, making use a choice shaped by need and price."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Troubadours_Trouveres_and_Minnesanger",
+  "Keywords": [
+    "Occitan Troubadours Courtly Lyrics",
+    "Fin Amor Sublime Courtly Love",
+    "German Minnesanger Chivalric Poetry",
+    "Lute Accompaniment and Knightly Courtesy"
+  ],
+  "RagShortTexts": [
+    "Vernacular song carries stories of love, loyalty and reputation between audiences.",
+    "Patronage and performance shape what a singer can say and who hears it."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Troubadours of Occitania, trouvères of northern France, and German Minnesänger such as Walther von der Vogelweide built a shared vocabulary of love and service that spread through European courts in the twelfth and thirteenth centuries. Their songs praised fin'amor, a refined and often unattainable love that a knight owed to a noble lady. The same vocabulary carried moral lessons: courtesy, restraint, loyalty, and devotion marked a good vassal as surely as a good lover. Performers sang to the lute or vielle in great halls, and their verses taught audiences how a knight should speak, serve, and bear himself. Courtly song gave the warrior class a code of conduct and a language for the bonds that held a lord's household together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Sovereigns such as Richard the Lionheart and Thibaut of Champagne were counted among the poets of their age, so a lyric could carry a prince's reputation as far as any treaty. Sirventes, the satirical verse of the troubadours, could shame a miserly baron before the whole court. A noble who ignored a poet's mockery risked finding his generosity questioned in every hall in the south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "When a traveling singer strikes his fiddle by the castle hearth, the noisy drinking falls silent. Hardened men-at-arms wipe away tears listening to tragic ballads of chivalry and lost love. Villagers who cannot read still learn the verses by ear, and carry the refrains home with them to the fields at dusk."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_4_1_1",
+  "HeroName": "Pàdraig III Dùn Bàrr, Earl of Dunbar",
+  "Description": "Patrick III Dunbar, 7th Earl of Dunbar and lord of the Scottish East March, commands the mighty cliffside bastion of Dunbar Castle guarding the principal coastal highway from England. Forty-six years of age, broad-shouldered, weathered by border campaigns, and radiating iron military discipline, he represents the quintessential martial magnate of the frontier. As a leading regent during the minority of King Alexander III, Patrick allied with Alan Durward in 1255 to seize royal custody, adroitly countering the political monopoly of the Comyns while resisting direct English vassalage. The Lanercost Chronicle and Exchequer Rolls commend his supreme military leadership, maintaining an elite retinue of armored horsemen and Selkirk archers along the marches of Berwick. He reconstructed the formidable seaward ramparts and twin gatehouses of Dunbar Castle, transforming it into an impenetrable fortress against seaborne and landward invasions. Fiercely patriotic yet pragmatically calculating in Anglo-Scottish diplomacy, Earl Patrick stands as Scotland's premier defensive bulwark. Coldingham charters record his meticulous boundary demarcations between monastic pastures and baronial forests; patrolling the River Tweed at the head of five hundred heavily armored lances, Earl Patrick remains an unassailable bastion of Scottish sovereignty against ambitious northern English warlords across the frontier.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure the strategic Tweed crossings and maintain Dunbar Castle as an unassailable bastion against invasion.",
+    "Counterbalance Comyn supremacy within royal councils to guarantee the sovereign independence of King Alexander III."
+  ],
+  "Values": [
+    "Holds territorial integrity, iron military discipline, and national sovereignty as non-negotiable principles.",
+    "Values chivalric rectitude and battlefield readiness as the sole authentic guarantors of kingdom independence."
+  ],
+  "Fears": [
+    "Fears a massive Plantagenet surprise offensive cutting off Dunbar Castle and breaching the coastal gateway.",
+    "Dreads treasonous baronial division paralyzing the national muster during a foreign invasion crisis."
+  ],
+  "SpeechStyle": "Speaks with resonant martial command and brisk strategic clarity, authoritative, incisive, and unyielding in court and field.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

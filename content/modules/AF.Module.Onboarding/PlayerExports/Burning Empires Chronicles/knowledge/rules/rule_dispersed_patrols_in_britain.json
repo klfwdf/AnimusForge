@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v7",
+  "Keywords": [
+    "Dispersed patrols in Britain"
+  ],
+  "RagShortTexts": [
+    "Theodosius used detachments and route intelligence against dispersed raiders."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Theodosius used route intelligence and detachments against scattered raiding groups rather than relying on one set battle. Recovering plunder required identification of people and places. Treating every unfamiliar coastal boat as hostile would also endanger ordinary contact."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

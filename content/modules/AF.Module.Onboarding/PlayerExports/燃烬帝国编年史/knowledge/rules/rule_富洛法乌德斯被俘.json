@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v3",
+  "Keywords": [
+    "富洛法乌德斯被俘"
+  ],
+  "RagShortTexts": [
+    "不列颠长官富洛法乌德斯遭伏击被俘。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "不列颠长官富洛法乌德斯遭伏击被俘。官职不使出行安全，下属还须辨认由谁接续命令。被俘、阵亡和暂时失联对组织接管不同，不能只从一人没有回营就断定其结局。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

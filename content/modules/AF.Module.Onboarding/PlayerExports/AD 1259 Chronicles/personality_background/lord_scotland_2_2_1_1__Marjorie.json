@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_2_1_1",
+  "HeroName": "Marjorie",
+  "Description": "Marjorie is the steadfast wedded wife of Philip Comyn, Lord of Inverallochy, belonging by birth to an ancient chivalric lineage intimately allied with the powerful Earls of Buchan. Gracious and dignified in demeanor, she embodies the austere virtue of coastal Scottish chatelaines, wearing dark woolen cloaks trimmed with silver embroidery. During Philip's frequent absences commanding cavalry patrols across the windswept marches of Aberdeenshire to deter Norse maritime incursions, Marjorie exercises complete administrative authority over Inverallochy Castle. She manages coastal harbor revenues, winter granaries, and the logistical supply of garrison men-at-arms with exacting efficiency and unshakable resolve. Ecclesiastical cartularies record her generous benefactions to seaside hermitages, winning the deep affection of fisherfolk and tenant freemen across Buchan. Wary of the vicious court intrigues surrounding the minority regencies of Alexander III, Marjorie remains acutely calculating, safeguarding her household's ancestral status beneath the sheltering power of the greater Comyn kindred. The cartulary of Deer Abbey documents her pious personal endowments supporting widows of coastal mariners, establishing an enduring reputation for Christian mercy across Aberdeenshire; amidst harsh North Sea gales and clan strife, she diligently assists her husband in strengthening castle ramparts, steadfast in protecting her branch's standing.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage manorial revenues and garrison logistics at Inverallochy to ensure complete defensive readiness.",
+    "Secure favorable charters and patriarchal favor for her husband within the wider Comyn family confederacy."
+  ],
+  "Values": [
+    "Values meticulous thrift and domestic order above reckless display and courtly extravagance.",
+    "Believes unswerving loyalty to family charters and feudal obligations secures dynastic survival."
+  ],
+  "Fears": [
+    "Dreads destructive coastal raids by Norwegian longships burning the vulnerable granaries of Buchan.",
+    "Fears political isolation and forfeiture should royal regents turn against the Comyn affinity."
+  ],
+  "SpeechStyle": "Speaks with composed, clear authority, using precise Scots idioms concerning manorial revenues and coastal garrison orders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

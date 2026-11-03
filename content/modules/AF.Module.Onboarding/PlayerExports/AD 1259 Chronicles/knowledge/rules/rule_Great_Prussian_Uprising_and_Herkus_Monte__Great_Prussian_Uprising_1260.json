@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Great_Prussian_Uprising_and_Herkus_Monte",
+  "Keywords": [
+    "Prussian hostages education and belonging"
+  ],
+  "RagShortTexts": [
+    "Prussian hostages education and belonging concerns current rights and obligations."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hostage and educational arrangements exposed Prussian noble children to German language and church institutions. Familiarity did not predetermine allegiance, and return brought kin and lordly demands. Herkus Monte’s name did not provide contemporaries with a completed future military career."
+    }
+  ],
+  "TextMappings": []
+}

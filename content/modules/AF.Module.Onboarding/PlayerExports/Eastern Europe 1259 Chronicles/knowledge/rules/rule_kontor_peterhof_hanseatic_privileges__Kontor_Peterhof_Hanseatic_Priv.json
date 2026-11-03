@@ -1,0 +1,52 @@
+{
+  "Id": "rule_kontor_peterhof_hanseatic_privileges",
+  "Keywords": [
+    "Saint Peter court in Novgorod",
+    "foreign merchants at Novgorod"
+  ],
+  "RagShortTexts": [
+    "Foreign merchants in Novgorod rely on trading courts, church ties and local agreements.",
+    "Storage, fire precautions, interpreters and dispute handling sustain trade and privileges."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "German merchants arriving in Novgorod need lodging, storage and worship; the Saint Peter court brings these needs into a foreign trading compound. Cargo coming by land and water must be identified and assigned space after unloading. Damp and fire threaten large losses. Shared rules reduce internal disputes, while visitors still negotiate with local traders, porters and authorities.\n\nCloth, metals and other imports exchange for furs, wax and northern products through interpreters, weighing and fulfilled bargains. Trading locations and jurisdiction depend on agreements recognised locally rather than a visitor merely asserting privilege. Seizures or assaults may bring fellow merchants, clergy and intermediaries into negotiation; interrupted trade harms livelihoods on both sides."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Local leaders want imports while preserving local rights. Distinguishing debt, crime and trade agreements in a seizure helps prevent one dispute driving many merchants away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts follow rules for cargo and fire inside the compound; lodging does not permit armed quarrels. Departure also needs shipping, roads and clearance of the goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Local carters, boatmen and workers earn from foreign cargo. Trusted interpreters bridge unfamiliar measures but risk their livelihood by favouring a party."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

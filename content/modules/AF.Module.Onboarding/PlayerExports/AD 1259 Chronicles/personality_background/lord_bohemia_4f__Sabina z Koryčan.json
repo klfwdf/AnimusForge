@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_4f",
+  "HeroName": "Sabina z Koryčan",
+  "Description": "Sabina traces her descent to the ancient Moravian lords of Koryčany, wedded to magistrate Ctibor II of Cimburk as the chatelaine of Koryčany manor. Gentle, prudent, and domestically gifted, she expertly oversees orchard cultivation, apiaries, and wool weaving workshops, keeping the estate thriving and solvent while her husband remains occupied with Land Court trials and garrison duties. Modest, upright, and devout, she regularly patronizes monastic scriptoriums and shelters impoverished travelers, earning an honored reputation for Christian piety. Her quiet devotion and steady stewardship furnish a serene domestic anchor for the Cimburk lineage. Meticulously overseeing wool looms, apiaries, and brewing vats at Koryčany, Sabina generated substantial revenues to finance her husband's judicial circuits and border administrative duties. Modest, thrifty, and pious, she donated fine linen and beeswax tapers to nearby abbeys, earning widespread veneration across Moravian noble circles as a virtuous and capable chatelaine. Her domestic diligence, practical virtue, patient Christian charity, and quiet devotion created a prosperous, well-ordered sanctuary of enduring peace, hospitality, and bountiful abundance for her ancestral house, family, and loyal tenants through times of trial and triumph across the southern valleys, faithfully shielding all who sought refuge beneath her roof.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage Koryčany's harvests and balances, securing domestic peace and ample funds for her family.",
+    "Maintain amicable ties with regional Moravian magnates, fostering a stable environment for her scions."
+  ],
+  "Values": [
+    "Regards modesty, thrift, and marital loyalty as the crowning virtues of noblewomen.",
+    "Cherishes tranquil domestic warmth, convinced patient resilience withstands all outer political storms."
+  ],
+  "Fears": [
+    "Fears ravaging wars will ruin tenant fields and orchards, destroying peaceful livelihoods.",
+    "Worries her husband will fall victim to legal slanders and court traps, praying for family safety."
+  ],
+  "SpeechStyle": "Orchards bear fruit through winter frosts and summer sun, and family fortune endures through thrift and patience; modesty brings divine grace. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Sabina z Koryčan"
+}

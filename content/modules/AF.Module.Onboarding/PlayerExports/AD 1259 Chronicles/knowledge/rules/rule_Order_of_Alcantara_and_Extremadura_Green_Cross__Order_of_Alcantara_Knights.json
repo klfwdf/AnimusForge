@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Order_of_Alcantara_and_Extremadura_Green_Cross",
+  "Keywords": [
+    "Order of Alcantara Knights",
+    "Green Cross Flory Surcoat",
+    "Tagus River Roman Bridge Fortress",
+    "Extremadura Marches Border Wardens"
+  ],
+  "RagShortTexts": [
+    "The Order of Alcántara defended the western frontier, garrisoning the monumental Roman."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Order of Alcantara wore green flory crosses and held the western marches of Extremadura. Its principal stronghold stood beside the great Roman bridge that spans the Tagus gorge, and from that height the knights watched the mountain defiles against Moorish raiders from the south and Portuguese encroachment from the west. The order drew its brothers from the frontier nobility and trained them for guerrilla warfare, because the land was too broken for massed armies. Its commanders also controlled broad sheep pastures on the plateau, so their power rested on land and military service in equal measure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Alcantara commanders ran their commanderies with a large measure of independence. Wool from the plateau flocks brought in steady revenue, and the rents and tithes from those pastures paid for castles and horses. A lord who sought a place among the Extremaduran frontier families had to win the order's favour first, since its masters decided who could graze and who could raise a company."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Standing on the Roman bridge arches and looking down into the churning river is enough to unsettle any man. The sentries search every pack train for contraband arms, and they do it slowly, because a smuggled blade can start a fight in a border village. Keep your hands where the sergeant can see them, and never bargain with a muleteer who offers to hide a bundle in his load."
+    }
+  ],
+  "TextMappings": []
+}

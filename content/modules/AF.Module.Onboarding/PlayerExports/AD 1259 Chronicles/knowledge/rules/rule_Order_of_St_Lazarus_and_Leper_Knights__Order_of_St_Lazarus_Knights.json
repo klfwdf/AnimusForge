@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Order_of_St_Lazarus_and_Leper_Knights",
+  "Keywords": [
+    "Order of St Lazarus Knights",
+    "Green Cross Leper Hospice",
+    "Diseased Noble Knights Sanctuary",
+    "Acre St Lazarus Gate Bastion"
+  ],
+  "RagShortTexts": [
+    "Saint Lazarus institutions care for people described as lepers in medieval terms.",
+    "Religious care and period remedies do not establish a modern diagnosis or reliable cure."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Order of Saint Lazarus wore plain green crosses on white habits and held a unique place among the military orders. Its brothers cared for lepers in hospices outside Jerusalem and Acre. A Templar or Hospitaller knight who contracted leprosy transferred to Saint Lazarus, and he kept bearing arms behind an iron visor until death. The order combined the rule of a hospital with the duties of a fighting brotherhood, and its hospices were funded by donations from across Christendom. That double role made the Lazarist knights both caregivers and fighters on the frontier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "A religious hospital caring for people called lepers joins spiritual duty to practical provision: food, bedding, washing and a place to live. Medieval diagnoses cover conditions that a modern physician would distinguish. A cleric may explain suffering through faith, but neither that explanation nor an herbal dressing proves a cure or a uniform system of medical quarantine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Nobody should mock the Lazarist warriors in their visored helms. They know their bodies are doomed by disease, and that knowledge makes them fearless in the charge. When they crash through enemy lines, they do it with a grim fatalism that frightens the men who face them. Keep your shield steady when they come, because their courage is a weapon in its own right."
+    }
+  ],
+  "TextMappings": []
+}

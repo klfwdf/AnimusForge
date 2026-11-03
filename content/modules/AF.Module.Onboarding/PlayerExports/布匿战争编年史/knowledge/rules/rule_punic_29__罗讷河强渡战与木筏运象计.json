@@ -1,0 +1,106 @@
+{
+  "Id": "rule_punic_29",
+  "Name": "罗讷河强渡战与覆土木筏运象计",
+  "Description": "公元前218年秋，汉尼拔率大军抵达汹涌的罗讷河，巧妙派遣别动队绕道上游渡河包抄高卢伏兵，并铺设覆土巨型木筏成功运载三十七头庞大非洲战象过河。",
+  "Tags": [
+    "罗讷河之战",
+    "汉尼拔",
+    "战象渡河",
+    "高卢伏击",
+    "大迂回战术",
+    "远征序幕"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前218年秋汉尼拔大军以水陆协同战术强渡激流汹涌的罗讷河。",
+    "利用覆土巨木筏伪装成陆地使三十七头惊恐的非洲战象安全渡过大河。",
+    "派遣汉诺别动队迂回上游放火背刺彻底粉碎守岸高卢部族联军的拦截。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗讷河的强渡充分展现了汉尼拔统帅对地形与工程技术的绝妙结合！当数万高卢野蛮人在对岸狂呼咆哮封锁渡口时，汉诺率领的轻装骑兵早已在上游以充气皮囊浮渡并迂回到敌后纵火！更神妙的是那三十七头巨象——工兵用粗木桩固定巨筏，上面铺满厚厚一层泥土杂草，巨兽误以为仍踏在坚实大地上，安然渡过了滔滔巨流！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "执政官普布利乌斯·西庇阿的舰队抵达罗讷河口时，本以为能将迦太基人锁在河西。但汉尼拔竟以令人难以置信的速度在短短四天内完成了大军强渡！当我们的斥候小队与敌军努米底亚骑兵发生遭遇战时，汉尼拔的庞大步骑早已绝尘而去，笔直插向了被冰雪覆盖的阿尔卑斯山口！"
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "高卢人的营地在黑烟中炸裂开来！我们本以为波涛汹涌的罗讷河足以阻挡异乡人的战靴，谁知后方的森林突然燃起冲天大火，无数非洲骑兵如狂风般卷入我们的后背！接着河面上升起了漂浮的陆地，长着巨鼻与长牙的怪兽踩着泥土踏上了河岸，部族的勇士们在惊恐中彻底崩溃四散！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前218年秋，汉尼拔率领远征军在罗讷河遭遇高卢沃勒卡埃部族的据河顽抗。汉尼拔派遣别动队绕道上游偷渡并突袭高卢营地后背，正面则使用伪装成陆地的覆土巨型木筏成功运送全军步骑与三十七头战象渡河，彻底打通了通往阿尔卑斯山的进军通道。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "罗讷河强渡战与覆土木筏运象计",
+    "rule_punic_29"
+  ]
+}

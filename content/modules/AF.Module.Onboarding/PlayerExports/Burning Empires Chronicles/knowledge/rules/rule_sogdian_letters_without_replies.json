@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v9",
+  "Keywords": [
+    "Sogdian letters without replies"
+  ],
+  "RagShortTexts": [
+    "Miwnay remained at Dunhuang, repeatedly writing without a reply from her husband."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Miwnay wrote repeatedly without receiving a reply from her husband and remained in Dunhuang for years. Silence left her dependent on relatives and community leaders for help, without establishing whether refusal, separation or disrupted carriage was responsible. Sending a letter was not delivery, and waiting consumed resources and trust."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

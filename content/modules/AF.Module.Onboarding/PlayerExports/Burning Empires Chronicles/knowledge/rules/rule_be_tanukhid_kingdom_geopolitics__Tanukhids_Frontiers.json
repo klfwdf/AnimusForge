@@ -1,0 +1,59 @@
+{
+  "Id": "be_tanukhid_kingdom_geopolitics",
+  "Keywords": [
+    "Tanukhids Frontiers",
+    "Tanukhid Syrian well routes"
+  ],
+  "RagShortTexts": [
+    "Tanukhid oases and Syrian well routes have limited stopping capacity.",
+    "Riders and dependants compete for the same water."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Oases and Syrian well routes have limited resting capacity. Concentrated riders and dependants can compete for the same supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Tanukhid oases and Syrian well routes have limited stopping capacity. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Riders and dependants compete for the same water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Riders and dependants compete for the same water. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Tanukhid oases and Syrian well routes have limited stopping capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Tanukhid oases and Syrian well routes have limited stopping capacity. Closed routes may separate families from goods, imposing costs on those remaining at home. Riders and dependants compete for the same water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Riders and dependants compete for the same water. Cargo passes different carriers, making distant route changes become local shortages through delay. Tanukhid oases and Syrian well routes have limited stopping capacity."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

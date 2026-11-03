@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v7",
+  "Keywords": [
+    "阿兰牧群与山地联系"
+  ],
+  "RagShortTexts": [
+    "阿兰车队随畜群移动，山路、水草和家属负重限制通行。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿兰家庭随畜群移动，以大车承载家人和生活用品。山地边缘的通路受宽度、水草与家庭负重限制；骑手先行通过，也不表示后面的车辆和家属已经安全抵达。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

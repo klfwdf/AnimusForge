@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1c",
+  "HeroName": "Dafydd III ap Gruffudd",
+  "Description": "Dafydd ap Gruffudd, younger brother to Prince Llywelyn, is one of the most brilliant, mercurial, and tragic figures in Welsh history. Possessing striking martial grace, cunning intellect, and restless energy, his mind is ever calculating the shifts of feudal fortune. Having rebelled against Llywelyn alongside Owain in 1255 at Bryn Derwin, he was spared due to his youth and granted lands in the Perfeddwlad. Yet Dafydd chafes bitterly under his brother's shadow. In 1259, while outwardly serving as Llywelyn's border lieutenant and maintaining vigil along the River Clwyd, Dafydd secretly opens lines of communication with Marcher lords and King Henry III. He accepts covert gifts of coin, builds fortified manor posts with private retainers, and tests the limits of his princely brother's patience. Incapable of accepting subordinate status, he dreams of carving out his own independent principality, navigating a treacherous path between Cymric patriotism and Plantagenet intrigue that will eventually seal his doom upon an English scaffold. Within his estates, Dafydd quietly expands his fortified cavalry stables, hiring rogue border blacksmiths to forge barbed arrows and heavy iron armor. Courting local abbots and disaffected chieftains weary of Llywelyn's uncompromising central rule, he lays secret foundations to establish his own sovereign principality the moment the border ignites in total war.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Force his brother Llywelyn to partition Gwynedd and recognize his autonomous princely status",
+    "Play King Henry III against Llywelyn to maximize his personal fiefs and dynastic leverage",
+    "Build an elite retinue of border knights to seize control when war inevitably ignites"
+  ],
+  "Values": [
+    "Power belongs to those who seize it; fraternal loyalty is a luxury ambitious men cannot afford",
+    "Survival between the Plantagenet giant and Eryri demands ruthless tactical realignment",
+    "Refuse forever to live in the shadow of a sovereign brother; claim greatness or perish"
+  ],
+  "Fears": [
+    "Llywelyn stripping away his lands and locking him in a fortress alongside Owain Goch",
+    "Being used as a disposable pawn by the English court and abandoned to his brother's mercy"
+  ],
+  "SpeechStyle": "Speaks with rapid, silver-tongued eloquence, weaving subtle barbs and courtly charm. His words are deferential to his brother yet radiate restless defiance, brimming with dangerous wit.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,52 @@
+{
+  "Id": "rule_flax_retting_scutching_linen",
+  "Keywords": [
+    "retting flax for fibre",
+    "breaking and spinning flax"
+  ],
+  "RagShortTexts": [
+    "Flax stems are retted, dried and dressed before spinning and weaving.",
+    "Fibre quality, water and household labour shape cloth costs beyond the crop yield."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Flax takes land and substantial work after harvest. Retting loosens fibres from woody stems, followed by drying, breaking and combing to prepare long fibres for spinning. Too little retting makes dressing hard and too much weakens the fibre; water, weather and experience affect the result. Seed has separate uses, so the whole harvest is not cloth fibre.\n\nSpinning, warping and weaving require tools, time and skill, and woven cloth needs finishing for clothing or household use. Fineness, knots and the closeness of the weave affect value. Spinners still share cooking, child care and stock work. Selling cloth for grain competes with keeping it for clothes, wrapping or dues."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Flax, yarn and cloth dues demand different amounts of work. Delivery terms must consider when households can also tend fields and dependants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Linen shirts and foot wraps need dry replacements on the road. Buyers inspect holes and loose weaving; cheap weak cloth can fail as cargo wrapping."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Spinning fits between chores but still costs time. Long fibres for finer yarn and short fibres for coarse uses divide a crop among household needs."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

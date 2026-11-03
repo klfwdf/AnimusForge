@@ -1,0 +1,32 @@
+{
+  "Id": "rule_Riga_Daugava_Baltic_Archbishopric",
+  "Keywords": [
+    "Riga Baltic Archbishopric",
+    "Daugava River Estuary Keep",
+    "Sword Brothers Livonian HQ",
+    "Hanseatic Kontor Riga"
+  ],
+  "RagShortTexts": [
+    "Riga links Daugava trade with town, archbishopric and military-order interests.",
+    "Its particular legal grants cannot be inferred from the law of another Baltic port."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Riga stood near the mouth of the Daugava and served as the crusading and commercial hub of Livonia. The city was shared between the Prince-Archbishop of Riga and the Livonian Order, a division of power that often produced friction between the two. Its fortified harbour funnelled furs and wax from Russian lands to the Hanseatic ports of the west, so a large part of the city's income came from long-distance trade. Merchants and clergy alike depended on the harbour and had reason to keep the river route safe. The crusading wars in the Baltic gave Riga its military role, while its commerce gave it wealth, and the balance between the two shaped nearly every decision its rulers made."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "notable",
+          "townsfolk"
+        ]
+      },
+      "Content": "A Riga merchant follows the Daugava trade while negotiating the claims of town, archbishop and military order. Furs and wax bring income, but a cargo still needs access to inland suppliers and a safe journey. The city's particular legal tradition should be read in its own grants, rather than inferred from a statement that every Baltic port follows Lubeck law."
+    }
+  ],
+  "TextMappings": []
+}

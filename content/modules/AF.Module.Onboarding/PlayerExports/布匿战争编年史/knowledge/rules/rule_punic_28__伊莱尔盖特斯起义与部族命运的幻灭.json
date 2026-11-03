@@ -1,0 +1,104 @@
+{
+  "Id": "rule_punic_28",
+  "Name": "伊莱尔盖特斯起义与伊比利亚部族命运的幻灭",
+  "Description": "公元前206至205年，伊莱尔盖特斯国王因迪比利斯与曼多尼乌斯因不堪罗马总督重税压榨起兵反抗，终因实力悬殊兵败身亡，开启西班牙长达两百年的血腥反抗史。",
+  "Tags": [
+    "因迪比利斯起义",
+    "曼多尼乌斯之死",
+    "伊莱尔盖特斯起义",
+    "罗马行省压榨",
+    "部族反抗",
+    "凯尔特伊比利亚抗争"
+  ],
+  "Category": "History",
+  "DefaultPriority": 80,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前206-205年因迪比利斯与曼多尼乌斯举兵发动抗击罗马总督的大起义。",
+    "曾经协助大西庇阿的伊比利亚诸部族惊觉罗马并未兑现给予部族自由的诺言。",
+    "因迪比利斯战死沙场且曼多尼乌斯受审就义拉开半岛抗罗两百年血泪史。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "因迪比利斯和曼多尼乌斯完全是忘恩负义的叛逆典型！当年大西庇阿将军礼遇他们的亲族、赐予他们无数赏赐与自治恩典，他们却趁西庇阿将军染病休养或调离半岛的虚弱时刻，煽动暴民袭击罗马哨所！对于这种三心二意的野蛮部落，罗马军团唯有用最严厉的刀剑令其臣服，任何反叛者都只能在军法审判下走向刑场！"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "因迪比利斯王至死都是伊比利亚的雄鹰！当年罗马人满嘴仁义道德，声称是来把我们从迦太基暴政中解救出来的解放者；可迦太基人一走，罗马人索要的银币、粮食和人质比过去多出十倍！因迪比利斯王血战沙场，曼多尼乌斯为了保全部族甘愿赴死。只要高山上的风还在吹，伊比利亚男儿绝不放下反抗的短剑！"
+    },
+    {
+      "Priority": 72,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西班牙这地方就是个吃人的大泥坑！迦太基人刚走，我们以为能解甲归田，结果又被拉进深山里去围剿因迪比利斯的起义军。高山上的游击战防不胜防，到处是冷箭和滚石。抓住了曼多尼乌斯又怎么样？这片土地上的每一个村庄、每一处山头都仇恨罗马，这里的血至少还得流两百年！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前206至205年，曾协助大西庇阿驱逐迦太基的伊莱尔盖特斯部族国王因迪比利斯及其弟曼多尼乌斯，因不满罗马军团的强征暴敛而发动全岛性武装起义。罗马裁判官调集重兵残酷镇压，因迪比利斯阵亡，曼多尼乌斯被俘处决。此事件拉开了伊比利亚半岛土著部族抗击罗马长达两百年战火的序幕。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "伊莱尔盖特斯起义与伊比利亚部族命运的幻灭",
+    "rule_punic_28"
+  ]
+}

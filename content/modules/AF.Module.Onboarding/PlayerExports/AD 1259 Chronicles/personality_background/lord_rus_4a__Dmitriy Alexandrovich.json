@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Dmitriy Alexandrovich of the northern marches (distinguished in local lore as Dmitry the Defender), commands the frontline veche levies and border horse regiments protecting the maritime approaches to Lake Ladoga and the Gulf of Finland. Operating as the northernmost sentinel of Rus', Dmitriy guards the republic against recurring Swedish amphibious incursions and Baltic coastal pirates. A ferocious battlefield tactician who weaponizes the treacherous wetlands and frozen lakes, he commands fleets of river longboats and horse-drawn sledge skirmishers. In multiple brutal engagements along the mouth of the Neva, he launched nocturnal counterattacks across howling blizzard ice, severing enemy supply chains and crushing landing forces. Direct and unyielding, Dmitriy holds deep respect for civic contracts, fiercely adored by northern mariners and militia levymen as an invincible frontline bulwark. Sweeping Swedish amphibious forces from the Gulf of Finland through daring winter longboat raids, Dmitriy shattered western crusader ambitions to subjugate the north, his martial audacity securing the maritime approaches to Novgorod for decades. Commanding longboats and ski-levies across icy gulfs, his bold offensive campaigns secured the northern Baltic trade routes and shielded Novgorod from foreign conquest, celebrated across chronicle annals as an invincible frontier warlord.",
+  "SpeechStyle": "Speaks with a booming, wind-battered roar reminiscent of Baltic storms, delivering razor-sharp commands devoid of hesitation.",
+  "Motivations": [
+    "Crush Swedish amphibious crusades along the Neva and Lake Ladoga, securing maritime trade routes to the Baltic Sea.",
+    "Construct an integrated network of coastal bastions and longboat flotillas to annihilate marauders encroaching upon northern soil."
+  ],
+  "Values": [
+    "Believes the defense of every foot of northern territory is a sacred duty, maintaining that aggression must be answered with steel.",
+    "Exalts iron discipline and leading charges in person, holding the unconditional trust of his soldiers as his highest honor."
+  ],
+  "Fears": [
+    "Dreads Swedish knights breaching the Ladoga bastions, leaving the direct riverine route to Novgorod wide open to destruction."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_rus_4a",
+  "HeroName": "Dmitriy Alexandrovich"
+}

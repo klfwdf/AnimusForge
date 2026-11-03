@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_8_1",
+  "HeroName": "Agnes of Faucigny",
+  "Description": "Agnes of Faucigny is the sovereign heiress of the strategic alpine Barony of Faucigny, and wife to Peter II, Count of Savoy ('the Little Charlemagne'). Stately, aristocratic, with chillingly intelligent grey eyes and an imposing courtly bearing, Agnes brought vast hereditary domains along Lake Geneva and crucial Alpine mountain passes into the House of Savoy. Far from an ornamental consort, she is a financial and administrative titan, personally managing trans-continental banking credit, customs duties, and estate ledgers spanning England, Savoy, and the Pays de Vaud. In 1259, as English barons violently protest Savoyard influence at Henry III's court, Agnes provides calm strategic counsel from the newly constructed Savoy Palace on the Strand. She coordinates diplomatic overtures with King Louis IX and Italian merchant bankers, channeling wool revenues to safeguard her family's continental fortresses. Cosmopolitan, brilliant, and impeccably dignified, Agnes represents the sophisticated financial nerve center behind Peter of Savoy's international dominance. In the Savoy Palace, she audits bills of exchange arriving from Lyon and Genoa, ensuring continuous silver flows sustain family bastions in England and the Alps. Navigating complex international banking with effortless poise, Agnes stands as the financial architect and diplomatic linchpin behind Savoyard dominance in western Europe.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain immaculate governance over her Faucigny patrimony and continental credit lines, ensuring immense liquidity",
+    "Shield her husband Peter from the lethal fallout of the Barons' War, safeguarding their English honors and the Savoy Palace",
+    "Secure unshakeable Savoyard hegemony across the Alpine passes through calculated international diplomacy"
+  ],
+  "Values": [
+    "Accurate ledgers and gold reserves are the bedrock of sovereign authority; abstract slogans mean nothing against hard silver",
+    "Cosmopolitan statecraft preserves great dynasties; parochial insular quarrels must be navigated with cool detachment",
+    "Uphold contracts and ancestral dignity, commanding geopolitical storms through calculated intellect"
+  ],
+  "Fears": [
+    "Rampaging London mobs sacking and burning the newly constructed Savoy Palace on the Strand",
+    "Continental rivals seizing upon English turmoil to launch surprise invasions against Faucigny"
+  ],
+  "SpeechStyle": "Speaks with aristocratic French precision, icy intellectual poise, and effortless cosmopolitan polish. Her speech is impeccably structured, dissecting complex international treaties and ledgers with commanding clarity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

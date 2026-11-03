@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v10",
+  "Keywords": [
+    "Transport and escort for sick travelers"
+  ],
+  "RagShortTexts": [
+    "Care for sick travelers needed transport and escorts as well as beds and food."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sick travelers needed to reach a physician and might be unable to leave alone. Reception facilities in Cappadocia included transport and escort. Provision therefore involved vehicles, animals and people making the journey as well as beds and food."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_5",
+  "HeroName": "Ludwig II, Duke of Upper Bavaria",
+  "Description": "Ludwig II, known as 'The Strict', Duke of Upper Bavaria and Count Palatine of the Rhine, was the foremost elector of the Great Interregnum. Renowned for unbending justice and tragic sternness, he championed his nephew Conradin and cast the decisive vote electing Rudolf I of Habsburg. Ludwig II enforced strict land peace across Munich and Heidelberg, executing robber-knights and casting the decisive electoral vote to end the chaotic Great Interregnum. Enforcing electoral peace edicts across Bavaria, he punished corrupt bailiffs with severe discipline, forging Upper Bavaria into an orderly model imperial principality. Uncompromising in law and decisive in imperial elections, Ludwig the Strict reshaped the Empire, founding Wittelsbach greatness with iron resolve. Throughout every bitter imperial diet, frontier colonization campaign, and shifting territorial conflict across Brandenburg, Carinthia, and Bavaria, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, foreign league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cast the decisive electoral vote to crown a lawful emperor and terminate the Great Interregnum.",
+    "Institutionalize codified law and chanceries in Munich and Heidelberg to secure Wittelsbach rule.",
+    "Fund his nephew Conradin's expedition to Italy to redeem the imperial Hohenstaufen heritage."
+  ],
+  "Values": [
+    "Holds sovereign law supreme above blood ties, enforcing absolute justice with severe discipline.",
+    "Regards the electoral office as a sacred trust from God to shield the Empire from disintegration."
+  ],
+  "Fears": [
+    "King Ottokar II of Bohemia using gold to buy the imperial crown and encircle Bavaria.",
+    "His unbending severity provoking another tragic, irreversible bereavement within his household."
+  ],
+  "SpeechStyle": "Speaks with judicial severity and unyielding princely gravitas, imposing, stern, and resolute. Always fiercely defending Holy Roman imperial dignity, princely territorial liberties, and German imperial sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

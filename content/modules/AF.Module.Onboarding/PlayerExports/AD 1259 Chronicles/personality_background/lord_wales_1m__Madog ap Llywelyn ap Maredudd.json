@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1m",
+  "HeroName": "Madog ap Llywelyn ap Maredudd",
+  "Description": "Madog ap Llywelyn is the fierce young heir of Llywelyn ap Maredudd. In 1259, Madog is a formidable young warrior in his physical prime, endowed with immense strength and unmatched skill with the heavy Cymric longbow. Raised in the jagged heights of Cadair Idris, he grew up tracking Norman raiders and nursing an unquenchable thirst for martial glory. Under Prince Llywelyn ap Gruffudd's colors, Madog commands an elite vanguard of mountain skirmishers, patrolling the contested banks of the Severn. Using mist and downpours to conceal his movements, he picks off Norman scout commanders with lethal precision from distant ridge lines. Bold, fiery, and fiercely loyal to the Cymric cause, he takes immense joy in outmaneuvering heavily armoured English cavalry amidst narrow defiles. A charismatic warrior-chieftain in the making, his soul burns with dreams of total national liberation. He stalks Norman cavalry patrols from dense gorse coverts along the Severn, sowing terror with unheralded longbow shots that strike down armored captains from incredible distances. Around roaring upland campfires, Madog drinks and sings fiery battle ballads with his comrades, his heart burning with an unshakeable oath to liberate every cantref of his homeland.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Unhorse Norman knights in single combat to prove himself the premier champion of the mountains",
+    "Drive all Plantagenet garrisons completely out of Welsh territory under the Prince's banner",
+    "Master guerrilla ambush and siege tactics in preparation for the greater wars yet to come"
+  ],
+  "Values": [
+    "True men speak through the iron point of the spear; retreat and hesitation are vile dishonor",
+    "The soil of Wales belongs to her ancient sons; foreign tyrants forfeit their lives upon our rocks",
+    "Fight for prince and people to the last breath; far better to fall in glory than grovel in chains"
+  ],
+  "Fears": [
+    "Diplomatic compromises handing back blood-bought border fortresses to the English",
+    "Leading his impetuous brothers into a cunning Norman cavalry trap through reckless zeal"
+  ],
+  "SpeechStyle": "Boisterous, fiery, and brimming with uncontainable martial passion. He speaks with youthful swagger and fierce pride, his laughter roaring across the campfire like rolling thunder.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

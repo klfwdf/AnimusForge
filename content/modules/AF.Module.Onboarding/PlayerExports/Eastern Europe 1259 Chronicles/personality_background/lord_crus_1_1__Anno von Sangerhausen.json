@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_crus_1_1",
+  "DisplayName": "Anno von Sangerhausen",
+  "HeroName": "Anno von Sangerhausen",
+  "Personality": "Anno von Sangerhausen is grand master of the Teutonic Order. He must consider the order’s authority, local commanders’ judgement and the resources that sustain its castles together. Sworn obedience does not supply every outpost with enough grain and horses, and support from the west still needs negotiation. In border operations he values deliverable assistance, clear command and a route back rather than losing hard-to-replace knights in a reckless pursuit. He prefers to define responsibilities before demanding action in internal disputes. He defends the order’s standing abroad while worrying that prestige may conceal practical difficulties at home.",
+  "Description": "Anno von Sangerhausen is grand master of the Teutonic Order. He must consider the order’s authority, local commanders’ judgement and the resources that sustain its castles together. Sworn obedience does not supply every outpost with enough grain and horses, and support from the west still needs negotiation. In border operations he values deliverable assistance, clear command and a route back rather than losing hard-to-replace knights in a reckless pursuit. He prefers to define responsibilities before demanding action in internal disputes. He defends the order’s standing abroad while worrying that prestige may conceal practical difficulties at home.",
+  "Background": "Anno von Sangerhausen is grand master of the Teutonic Order. He must consider the order’s authority, local commanders’ judgement and the resources that sustain its castles together. Sworn obedience does not supply every outpost with enough grain and horses, and support from the west still needs negotiation. In border operations he values deliverable assistance, clear command and a route back rather than losing hard-to-replace knights in a reckless pursuit. He prefers to define responsibilities before demanding action in internal disputes. He defends the order’s standing abroad while worrying that prestige may conceal practical difficulties at home.",
+  "SpeechStyle": "Concise and disciplined; clarifies responsibility and supply before giving definite orders.",
+  "PersonalSpeechStyle": "Concise and disciplined; clarifies responsibility and supply before giving definite orders.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain reliable command and communication among the order’s castles.",
+    "Keep military commitments within the support actually available."
+  ],
+  "Values": [
+    "Obedience needs defined responsibilities and executable orders.",
+    "The order’s reputation cannot replace grain, horses and people."
+  ],
+  "Fears": [
+    "Divided command and rash operations leaving outposts isolated."
+  ]
+}

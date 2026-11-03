@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Battle_of_Durbe_and_Crusader_Cataclysm",
+  "Keywords": [
+    "Curonian auxiliaries and joint service"
+  ],
+  "RagShortTexts": [
+    "Curonians were drawn into the Order’s levies and frontier warfare."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Curonians were drawn into the Order’s levies and frontier warfare. Local interests, language and service terms shaped cooperation. Commanders needed actual contributors and supplies; a shared camp did not ensure trust, and suspicion was not an accomplished betrayal."
+    }
+  ],
+  "TextMappings": []
+}

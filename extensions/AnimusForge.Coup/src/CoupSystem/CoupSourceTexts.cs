@@ -14,12 +14,19 @@ internal static class CoupSourceTexts
     private static readonly string[] LanguagePrefixes = { "", "LegacyEnglish_" };
     private static readonly string[] ProcessKeys = { "ReportStreet", "ReportGate", "ReportHall", "ReportSubdued" };
     private static readonly string[] ResultKeys = { "ReportSuccessCaptured", "ReportSuccessReleased", "ReportFailureWar", "ReportFailureNoWar" };
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(
-        () => JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(
-            AnimusForgeModulePaths.GetModuleDataFilePath("CoupSourceTexts.json"), Encoding.UTF8)));
+    private static readonly BilingualTextTable Table = BilingualTextTable.FromModuleData("CoupSourceTexts.json");
 
-    internal static string Get(string key) => Values.Value[key];
+    internal static string Get(string id) => Table.Get(id);
+    /// <summary>Chinese source value, for matching text written before the language switch.</summary>
+    internal static string Source(string id) => Table.Chinese(id);
+    internal static string[] Variants(string id) => Table.Variants(id);
+    internal static bool Is(string value, string id) => Table.Is(value, id);
     internal static string Format(string key, params object[] values) => string.Format(Get(key), values);
+
+    /// <summary>Report grammar for a receipt written now: the Chinese edition, or the English grammar kept
+    /// under the LegacyEnglish_ keys. <see cref="ReportForPrompt"/> parses both.</summary>
+    internal static string Report(string key) => Source((PromptLanguage.IsChinese ? "" : "LegacyEnglish_") + key);
+    internal static string ReportFormat(string key, params object[] values) => string.Format(CultureInfo.InvariantCulture, Report(key), values);
 
     private static readonly Lazy<Dictionary<string, ReportTemplate>> ReportTemplates = new Lazy<Dictionary<string, ReportTemplate>>(() =>
     {
@@ -27,7 +34,7 @@ internal static class CoupSourceTexts
         foreach (string prefix in LanguagePrefixes)
             foreach (string key in new[] { "ReportIntro", "ReportNoEntry", "ReportStreet", "ReportGate", "ReportHall", "ReportSubdued",
                 "ReportSuccessCaptured", "ReportSuccessReleased", "ReportFailureWar", "ReportFailureNoWar", "ReportCasualties", "BulletinTimeLabel" })
-                result[prefix + key] = new ReportTemplate(Get(prefix + key), key);
+                result[prefix + key] = new ReportTemplate(Source(prefix + key), key);
         return result;
     });
 
@@ -41,14 +48,14 @@ internal static class CoupSourceTexts
         {
             if (!TryProject(lines[0], prefix, "ReportIntro", out string intro)
                 || !TryProject(lines[3], prefix, "ReportCasualties", out string casualties)) continue;
-            string processLabel = Get(prefix + "ReportProcessLabel"), resultLabel = Get(prefix + "ReportResultLabel");
+            string processLabel = Source(prefix + "ReportProcessLabel"), resultLabel = Source(prefix + "ReportResultLabel");
             if (!lines[1].StartsWith(processLabel, StringComparison.Ordinal) || !lines[2].StartsWith(resultLabel, StringComparison.Ordinal)) continue;
             string process = lines[1].Substring(processLabel.Length), result = lines[2].Substring(resultLabel.Length);
             if (!TryProject(process, prefix, "ReportNoEntry", out string projectedProcess))
             {
-                string end = Get(prefix + "ReportSentenceEnd");
+                string end = Source(prefix + "ReportSentenceEnd");
                 if (!process.EndsWith(end, StringComparison.Ordinal)) continue;
-                var parts = process.Substring(0, process.Length - end.Length).Split(new[] { Get(prefix + "ReportListSeparator") }, StringSplitOptions.None);
+                var parts = process.Substring(0, process.Length - end.Length).Split(new[] { Source(prefix + "ReportListSeparator") }, StringSplitOptions.None);
                 var projected = new List<string>();
                 foreach (string part in parts)
                 {

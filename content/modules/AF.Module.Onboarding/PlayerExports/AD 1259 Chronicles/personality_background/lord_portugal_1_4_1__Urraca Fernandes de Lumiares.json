@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_4_1",
+  "HeroName": "Urraca Fernandes de Lumiares",
+  "Description": "Doña Urraca Fernandes de Lumiares is a noble matriarch from the distinguished northern House of Lumiares, wife to Dom Alfonso Pires Gato, Governor of Guarda. Endowed with ancient noble lineage and pragmatic resilience, Doña Urraca oversees the domestic administration, armories, and grain stores of the mountain citadel. While her husband patrols the wind-swept ramparts of the Serra da Estrela, she manages the logistics required to sustain a large border garrison in harsh climates. In 1259, amidst freezing alpine blizzards, she organizes the production of heavy wool tunics for garrison sentries and personally audits the cured meat cellars. Her equitable governance and generosity during border famines earn her the profound love and respect of local soldiers and displaced villagers alike. Combining courtly refinement with the Spartan fortitude of border life, Urraca provides the vital domestic backbone sustaining Guarda's defensive might. Inspecting salted beef and cheese stores within the chilly subterranean cellars of Guarda, Urraca ensured the garrison was prepared for harsh winter blizzards. Her maternal kindness in serving warm broth to freezing rampart guards won the profound gratitude of every soldier defending the mountain fortress. Her prudent domestic governance and maternal care for garrison sentries provide the essential lifeblood sustaining the defense of Guarda.",
+  "Traits": [
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Frugally manage castle storehouses to guarantee that Guarda can withstand prolonged blockades",
+    "Support the families and wounded soldiers of the garrison to foster unbreakable communal morale",
+    "Stand beside her husband to anchor the eastern frontier and uphold the honor of her lineage"
+  ],
+  "Values": [
+    "Frugal vigilance is the lifeblood of a frontier fortress; full granaries empower brave knights",
+    "Compassion and firm order reinforce each other; loving your people ensures their fierce devotion",
+    "Steadfast marital fidelity, patient endurance, and reverent trust in divine providence"
+  ],
+  "Fears": [
+    "Catastrophic blizzards severing mountain passes and destroying livestock, sparking famine",
+    "Guarda falling after an agonizing siege, exposing her family and people to slaughter"
+  ],
+  "SpeechStyle": "Calm, resolute, and clear; speaks with the unshakeable composure, practical intelligence, and quiet authority of a seasoned marcher chatelaine.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

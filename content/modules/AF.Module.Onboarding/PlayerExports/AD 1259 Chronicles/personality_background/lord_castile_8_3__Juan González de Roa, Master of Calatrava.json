@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_8_3",
+  "HeroName": "Juan González de Roa, Master of Calatrava",
+  "Description": "Juan González de Roa is the renowned Grand Master of the Order of Calatrava, hailing from the prestigious House of Aza. Draped in the white Cistercian mantle emblazoned with the iconic red floriated cross, he exercises supreme military, monastic, and territorial command over the most disciplined knight-monks of Christendom. From the colossal fortress of Calatrava la Nueva overlooking the passes of the Sierra Morena, Don Juan directs thousands of crusader lancers and sergeants defending the volatile frontiers of Andalusia. A brilliant battle commander seasoned in desert sweeps and brutal siegecraft, he has repeatedly shattered Granadan raiding forces outside Seville and Córdoba. By 1259, with political chaos brewing in Toledo, Grand Master Juan deploys his papal immunities to fiercely protect the order's extensive domains and castles from royal taxation. Unyielding in ascetic piety and military vigilance, he remains the supreme military shield of Iberia, preparing his holy brotherhood to confront the impending storm of Moroccan Marinid invasions. Within the immense granite bastions of Calatrava la Nueva, Grand Master Juan leads dawn prayers and drills armored crusader squadrons with relentless perfection. Forging thousands of monk-knights into an unyielding living wall against southern Moorish incursions, his austere crusading valor commands awe from European monarchs and Moorish sultans alike.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Erect an impregnable barrier of stone fortresses across La Mancha to crush Granadan and Marinid invasions",
+    "Vigorously uphold the papal immunities and territorial sovereignty of the Order of Calatrava",
+    "Enforce strict Cistercian monastic and martial discipline to keep the crusader brotherhood at peak lethality"
+  ],
+  "Values": [
+    "The crusading vows of Calatrava are sacred; martyrdom defending the Cross is eternal glory",
+    "Rigid discipline, prayer, and austere living are the true weapons that shatter infidel hosts",
+    "Unwavering obedience to God and the Holy See supersedes the arbitrary demands of secular monarchs"
+  ],
+  "Fears": [
+    "A massive Marinid-Granadan jihadi offensive overwhelming the frontier bastions of Sierra Morena",
+    "Domestic civil war cutting off supplies and reinforcements, leaving the crusader garrisons isolated"
+  ],
+  "SpeechStyle": "Commanding, austere, and steely; speaks with the absolute monastic authority and battle-tested gravitas of a supreme crusader general.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

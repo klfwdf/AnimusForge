@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Feudal_Liege_Homage_and_Osculum_Ceremony",
+  "Keywords": [
+    "Liege Homage Rituals",
+    "Feudal Kiss of Peace Osculum",
+    "Immixtio Manuum Submission",
+    "Fief Investiture Clod Rod"
+  ],
+  "RagShortTexts": [
+    "He swore to serve faithfully and to keep the lord's counsel.",
+    "The lord then raised him and gave the kiss of peace, the osculum."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Homage and fealty formed the central bond of feudal society, and the ceremony that created it was a public act with a fixed order. The vassal came before his lord bareheaded and unarmed, knelt, and placed his clasped hands within the lord's hands, a gesture called immixtio manuum. He swore to serve faithfully and to keep the lord's counsel. The lord then raised him and gave the kiss of peace, the osculum. Investiture followed, usually with a staff, a banner, or a clod of turf that stood for the fief. The rite bound both parties to rights and duties, and a vassal who broke the oath could lose his land, while a lord who failed his men could find them looking elsewhere for protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Homage is a reciprocal contract. While the vassal owes forty days of military service and feudal aids, the overlord owes protection and just counsel. A lord who assaults his vassal's honor forfeits allegiance, justifying armed renunciation (diffidatio)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "A clerk recording homage distinguishes the promised services, the land concerned and any obligations already owed to another lord. Witnesses and written instruments help heirs argue over what was actually granted. Breaking an oath may expose a vassal to legal or religious sanctions, but forfeiture and penance depend on circumstances, rather than a single automatic sentence."
+    }
+  ],
+  "TextMappings": []
+}

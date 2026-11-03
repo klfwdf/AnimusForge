@@ -1,0 +1,59 @@
+{
+  "Id": "be_vandal_kingdom_legitimacy",
+  "Keywords": [
+    "汪达尔人法统",
+    "戈迪吉塞尔的保地分配"
+  ],
+  "RagShortTexts": [
+    "保地、分配和保人支持Godigisel认可。",
+    "强迫家族长期离乡会损害首领信任。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "首领的认可系于保护土地、分配收益与保住人丁，强迫全部家族长期离乡会使追随者质疑谁在承担王者声望的成本。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "保地、分配和保人支持Godigisel认可。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。强迫家族长期离乡会损害首领信任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "强迫家族长期离乡会损害首领信任。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。保地、分配和保人支持Godigisel认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "保地、分配和保人支持Godigisel认可。家户通过家人、土地与求助能否获保护来认识统治。强迫家族长期离乡会损害首领信任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "强迫家族长期离乡会损害首领信任。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。保地、分配和保人支持Godigisel认可。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

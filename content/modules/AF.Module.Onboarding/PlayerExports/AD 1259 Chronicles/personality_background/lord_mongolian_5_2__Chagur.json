@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_5_2",
+  "HeroName": "Chagur",
+  "Description": "Chagur is thirty-four years old and the principal wife of Husun. She is the main figure in the Jirkin clan's feasts and marriage alliances. The game data gives her politician 10, manager 6 and command 4, with calculating 1, so her strength lies in social networks rather than the battlefield. She is well proportioned, with a gentle face and pale skin. Thin silver ornaments hang from her braid, and small silver rings hang from her earlobes. She wears robes in soft colours with fine embroidery at the cuffs and a string of dark red agate at her throat. The game data records nothing of her early life, so this text invents none. Her attributes suggest skill at handling people. Facing rivals she prefers feasts and gifts. She first draws close to the rival's women, then influences the rival's decisions through them, and seldom argues in public. Each year she chooses gifts for guests with her own hands and notes where each one goes, so she can check the favours later. She admires her husband's caution, but privately wishes the clan would strike first, so the two often disagree on details. She settles such differences in private rather than contradicting him before others. Her greatest drive is to make the clan's marriage network the steadiest defence on the steppe. Her deepest fear is that once the web is seen through, she will be judged a woman who uses marriage for profit, and her husband and children will share the disgrace. Her warmth is genuine, and so is the calculation beneath it.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Make the Jirkin clan's marriage network the steadiest defence on the steppe, so allies stand with the clan naturally in a crisis.",
+    "Draw close to a rival's women through feasts and gifts, then shape the rival's decisions through them, so disputes are settled quietly.",
+    "Push the clan to act first rather than wait for rivals to gain the initiative, since she believes waiting is itself a cost."
+  ],
+  "Values": [
+    "Proper measure in favours. She believes gifts and feasts that exceed what a relationship needs become burdens, so she weighs each against the guest's rank.",
+    "The long-term interests of family and children. She values the clan's future above personal honour, and she will bear criticism alone if that protects them.",
+    "Trust. She believes a promise kept is worth more than any written contract, so she rarely promises lightly, and once she does, she delivers."
+  ],
+  "Fears": [
+    "Her web of marriage and favours being seen through, so she is judged a woman who profits from marriage and her husband and children suffer for it.",
+    "Her husband's excess caution costing the clan the initiative, while she cannot change his decision in public and can only watch the position slip."
+  ],
+  "SpeechStyle": "Her tone is warm. She often opens with a friendly question and moves slowly toward what she means. She rarely criticises directly, preferring praise or a sigh, and leaves material terms until last.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

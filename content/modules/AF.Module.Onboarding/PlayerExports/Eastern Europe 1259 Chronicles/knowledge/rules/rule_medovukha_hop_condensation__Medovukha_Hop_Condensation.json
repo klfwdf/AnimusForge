@@ -1,0 +1,52 @@
+{
+  "Id": "rule_medovukha_hop_condensation",
+  "Keywords": [
+    "fermenting a honey drink",
+    "keeping vessels of mead"
+  ],
+  "RagShortTexts": [
+    "Honey supplies fermented drinks shaped by ingredients, vessels and keeping.",
+    "Drinking concerns hospitality, food shares and quarrels, rather than a reliable wound cure."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Honey can be eaten or made into fermented drink, requiring mixing, vessels and attention during keeping. Sweetness, sourness, strength and storage vary with ingredients and handling; a shared name does not assure the same contents. Brewing commits honey that could otherwise buy grain, and damaged jars, hoops or closures waste ingredients and work.\n\nServing drink expresses hospitality and rank. Quantities and a guest’s refusal may draw comment. Drink can relax people and also worsen quarrels, careless speech and lost work. Offering some to a sick person may express concern, while food, rest and continued care remain separate needs; a lively feast does not provide a night watcher for the wounded."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Feasts require honey, grain, fuel and vessels. Gifts of drink affect next day’s work, and someone must stay sober enough to handle property and agreements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers need money left for food and lodging. Drunk guards or drivers endanger companions, while wounded people need carers able to respond."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Limited honey competes among brewing, eating and salt purchases. More guests also mean cooking and cleaning after the drinking ends."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

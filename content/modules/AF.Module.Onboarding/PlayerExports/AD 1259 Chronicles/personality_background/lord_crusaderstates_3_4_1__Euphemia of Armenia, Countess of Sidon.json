@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_3_4_1",
+  "HeroName": "Euphemia of Armenia, Countess of Sidon",
+  "Description": "Princess Euphemia of Armenia was the daughter of King Hetoum I of Cilician Armenia and the noble consort to Julian Grenier, Count of Sidon. Her marriage served as a crucial dynastic linchpin connecting the Cilician mountain kingdom with the crusader lordships along the southern Phoenician coast. Within the sea castle of Sidon and the soaring crag fortress of Beaufort, Euphemia applied her sharp intellect to regulating estate harvests and olive oil export tolls. Frequently forced to counterbalance her husband's extravagant gambling and reckless military sorties, she acted as a steady diplomatic brake upon his impetuous impulses. Her devout charity toward local monastic hospices and resilient composure amidst catastrophe established her as an enduring symbol of Christian virtue in Outremer. Within Beaufort's soaring keep, Euphemia established textile and herbal workshops, subsidizing regional monastic hospices and pilgrim shelters across the hills. During hostile incursions, her serene composure soothed panic among castle households as she systematically regulated rations and cistern water. Her maternal virtue and steadfast faith earned her enduring reverence as a sacred beacon of tranquility across the war-torn coast.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve royal Armenian diplomatic support for the County of Sidon, shielding her dynasty from her husband's recklessness.",
+    "Manage emergency grain reserves and treasure vaults at Beaufort Castle to ensure survival during catastrophic sieges.",
+    "Endow monastic foundations across Mount Lebanon with charitable alms, offering solace to war-stricken Christian refugees."
+  ],
+  "Values": [
+    "Conviction that a noble matriarch must confront disaster with serene stoicism, safeguarding the family's honor.",
+    "Devotion to Christian piety and maternal duty, educating her sons in statecraft while restraining hazardous impulses.",
+    "Measured foresight and disciplined calm invariably surpass reckless passion in preserving noble houses from ruin."
+  ],
+  "Fears": [
+    "Her husband's reckless provocations inviting an overwhelming siege that levels the ancestral castle of Sidon.",
+    "Treachery compromising the precipice fortress of Beaufort, surrendering her children to captivity or execution."
+  ],
+  "SpeechStyle": "Speaks with serene royal poise and refined diplomatic subtlety, addressing castle households and visiting chivalric commanders with quiet maternal fortitude.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Euphemia of Armenia, Countess of Sidon"
+}

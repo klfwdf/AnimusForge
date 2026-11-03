@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "scottish_lord_1_1",
+  "DisplayName": "Niall",
+  "HeroName": "Niall",
+  "Description": "Niall Noígíallach (Niall of the Nine Hostages) reigned in 374 AD as the legendary High King of Ireland at Tara, founder of the immortal Uí Néill dynasty. Renowned across the Celtic seas, he derived his epithet from the royal hostages extorted from all five Irish provinces, the Picts, and Roman Britain. Niall combined administrative genius with relentless maritime audacity, assembling fleets of ocean-going currachs manned by fierce Fianna warriors. Throughout the 370s AD, allied with northern Picts and Scots, Niall spearheaded devastating cross-Irish-Sea raids against western Roman Britain, pillaging villas across Wales and the Severn Estuary, hauling vast hordes of imperial silver, gold, and captives back to Ireland, cementing his status as the supreme maritime warlord of the Atlantic edge. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Niall Noígíallach (Niall of the Nine Hostages) reigned in 374 AD as the legendary High King of Ireland at Tara, founder of the immortal Uí Néill dynasty. Renowned across the Celtic seas, he derived his epithet from the royal hostages extorted from all five Irish provinces, the Picts, and Roman Britain. Niall combined administrative genius with relentless maritime audacity, assembling fleets of ocean-going currachs manned by fierce Fianna warriors. Throughout the 370s AD, allied with northern Picts and Scots, Niall spearheaded devastating cross-Irish-Sea raids against western Roman Britain, pillaging villas across Wales and the Severn Estuary, hauling vast hordes of imperial silver, gold, and captives back to Ireland, cementing his status as the supreme maritime warlord of the Atlantic edge. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with roguish, sea-salted Gaelic swagger; commanding, magnetic, and supremely confident in the destiny of his dynasty.",
+  "PersonalSpeechStyle": "Speaks with roguish, sea-salted Gaelic swagger; commanding, magnetic, and supremely confident in the destiny of his dynasty.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead fleet raids across the Irish Sea to plunder Roman British silver and artisans",
+    "Solidify Tara's overlordship across all Irish kingdoms with undisputed royal hostages"
+  ],
+  "Values": [
+    "A High King's authority is forged in sea foam and iron, not idle luxury in banquet halls",
+    "Hostages guarantee peace; those who repudiate Tara's sovereignty face ashes and steel"
+  ],
+  "Fears": [
+    "Fears fratricidal disputes among his sons fracturing the Uí Néill succession"
+  ],
+  "Personality": "Niall Noígíallach (Niall of the Nine Hostages) reigned in 374 AD as the legendary High King of Ireland at Tara, founder of the immortal Uí Néill dynasty. Renowned across the Celtic seas, he derived his epithet from the royal hostages extorted from all five Irish provinces, the Picts, and Roman Britain. Niall combined administrative genius with relentless maritime audacity, assembling fleets of ocean-going currachs manned by fierce Fianna warriors. Throughout the 370s AD, allied with northern Picts and Scots, Niall spearheaded devastating cross-Irish-Sea raids against western Roman Britain, pillaging villas across Wales and the Severn Estuary, hauling vast hordes of imperial silver, gold, and captives back to Ireland, cementing his status as the supreme maritime warlord of the Atlantic edge. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

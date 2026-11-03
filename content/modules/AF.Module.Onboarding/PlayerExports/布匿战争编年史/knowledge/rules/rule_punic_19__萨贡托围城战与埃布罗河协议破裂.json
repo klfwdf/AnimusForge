@@ -1,0 +1,127 @@
+{
+  "Id": "rule_punic_19",
+  "Name": "萨贡托围城战与埃布罗河条约破裂",
+  "Description": "公元前219年，汉尼拔围攻罗马同盟城邦萨贡托长达八个月并将其夷为平地，直接引爆第二次布匿战争与罗马使团宣战。",
+  "Tags": [
+    "萨贡托",
+    "围城战",
+    "汉尼拔",
+    "埃布罗河条约",
+    "第二次布匿战争爆发",
+    "罗马宣战"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 85,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前219年汉尼拔历时八个月围攻并攻克萨贡托城。",
+    "萨贡托陷落标志着埃布罗河条约彻底废止并直接引爆第二次布匿战争。",
+    "罗马特使法比乌斯在迦太基百人议会上抖开托加袍宣布战争爆发。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨贡托是受罗马元老院与罗马人民庇护的神圣同盟城邦！汉尼拔不顾诸神见证的埃布罗河条约，悍然围困并屠戮萨贡托公民，这是对神圣法权的践踏。当法比乌斯特使在迦太基议会抖落托加袍宣布战争时，诸神就已经注定了迦太基必遭彻底毁灭的命运。"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人总是厚颜无耻地篡改条约！埃布罗河条约明确规定以河北为界，而萨贡托深处河南数百里，本就在迦太基的主权势力范围之内。萨贡托人屡次挑衅并屠杀我们的盟友图尔德塔尼人，汉尼拔统帅出兵平定乱局乃是伸张公义，罗马的狂妄宣战不过是贪婪扩张的借口。"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨贡托人信了罗马人的花言巧语，以为一纸盟约真能换来海外军团的救援！整整八个月的血腥围城，石弹砸碎了城墙，城民在绝望中投火自尽，可罗马人的战船连一艘都没来！记住萨贡托的灰烬吧，依靠外来帝国庇护的城邦，终究只会沦为大国争霸的殉葬品。"
+    },
+    {
+      "Priority": 70,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "mercenary",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是地狱般的八个月！掘地道、撞城槌、弩炮昼夜轰击，汉尼拔甚至亲自在前线被标枪刺伤了大腿。当城墙崩塌时，萨贡托的贵族把金银聚在广场点火自焚，男男女女拔剑自刎。抢下来的城池只剩焦黑的残垣断壁，但从那一刻起，所有人都知道一场席卷整个地中海的惊天大战开始了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前219年，汉尼拔攻打位于埃布罗河南岸的罗马同盟城邦萨贡托。在经历了长达八个月的残酷围攻后，萨贡托城破，守城者纵火自焚。此役直接导致罗马向迦太基正式宣战，拉开了第二次布匿战争长达十七年的血腥帷幕。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "萨贡托围城战与埃布罗河条约破裂",
+    "rule_punic_19"
+  ]
+}

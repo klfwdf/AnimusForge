@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_2_1_e",
+  "HeroName": "Jadwiga",
+  "Description": "Princess Jadwiga is the younger daughter of Duke Bolesław II Rogatka, named in honor of her holy great-grandmother, Saint Hedwig of Silesia, whose luminous saintly mantle she ardently strives to emulate. Endowed with an innate gentleness and radiant compassion, Jadwiga eschewed the rich silks and vanity of the court, preferring unadorned homespun garments as she ministered to the downtrodden. When merciless baronial taxation and continuous military skirmishes drove dispossessed peasants to despair outside the walls of Legnica, Jadwiga personally established soup kitchens and infirmaries at the barbican gates, tending to the festering wounds of the sick. A devout attendee of Franciscan dawn liturgies, she offered heartfelt prayers to Heaven, pleading for the spiritual redemption of her hot-tempered father and warrior brothers. Amidst a brutal world defined by iron lances and extortion, Jadwiga held an unshakeable conviction that Christian mercy and sacrificial love could conquer the bitterest baronial hatreds. She is revered across the province as a pure white lily thriving upon blood-soaked soil, bringing divine comfort to the broken-hearted. Jadwiga established rural dispensaries to treat destitute cottars and kept nightly vigils before the altar to intercede for her war-weary people. Selling her gold diadems to purchase freedom for enslaved serfs, she was venerated across Silesia as an angel of boundless mercy.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Emulate Saint Hedwig by establishing permanent charitable shelters to save starving and disease-stricken commoners.",
+    "Gently soften the violent impulses of her father and brothers, restraining them from acts of sacrilege and cruelty.",
+    "Endow Poor Clares convents and Franciscan friaries to accumulate spiritual grace for her lineage."
+  ],
+  "Values": [
+    "Hold Gospel love, self-giving mercy, and boundless compassion as the supreme callings of human existence.",
+    "Embrace holy poverty and humility, viewing aid to the destitute as the true nobility of the soul.",
+    "Believe unyielding forgiveness can disarm the most venomous hatred, meeting hostility with gentleness."
+  ],
+  "Fears": [
+    "Famine and pestilence sweeping the province, causing hundreds of vulnerable orphans in her care to perish.",
+    "Her kinsmen committing unpardonable blood crimes that bring spiritual damnation upon their souls."
+  ],
+  "SpeechStyle": "Stone walls turn aside arrows, but cannot block the cries of the suffering; only charity and mercy invite God's blessing upon Legnica. Mercy uplifts the soul; love alone conquers the cruelty of worldly wars.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_4_1_1",
+  "HeroName": "Tulubiyya bin Bakr an-Faris",
+  "Description": "Tulubiyya bin Bakr an-Faris is the wife of Emir Kitbugha, and the game data gives her age as 39. She is the mother of three of his children. Medieval sources do not name Kitbugha's wives, so her name and background are game-setting material rather than history. Her dress follows the convention of Mamluk noble households: a dark gown, a veil, and simple embroidery at the collar and cuffs. The game marks her as a quartermaster, and her voice is soft, which hides a sharp judgement.\nHer early life is not recorded, and the game setting only places her in the years between camp and household. Her marriage to Kitbugha put her where the army and the court met. She learned to manage grain, tents, and the assignment of men, and came to believe that an army's strength rests on its accounts more than its slogans.\nWith her husband's rivals and the emirs of the court she works quietly. She rarely confronts anyone directly. Instead she favours or distances people through the allocation of supplies and the placing of tents, so that others find themselves in her debt without noticing it. She values her husband's name, but knows that if he falls the whole family will be isolated, so she keeps a careful distance from every faction.\nHer ideal is a family that holds its place in the sultanate and children who stand on their own ability rather than their father's name. Her darkest fear is that once her husband loses favour, she and her children will be made political sacrifices, expelled together, and stripped of their last possessions.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the tents, supplies and contacts her husband left, so servants and followers still have food and shelter through the upheaval.",
+    "Clear a path for her children at court, building enough contacts among the emirs that they are not isolated if their father falls from favour.",
+    "Earn respect through careful household management, so her word still carries weight when grain and posts are allocated, not merely as her husband's wife."
+  ],
+  "Values": [
+    "Clear accounts matter more than loud slogans, because a household survives storms only when every expense can be explained to anyone who asks.",
+    "Servants and followers should be treated fairly, with rewards and punishments that have clear reasons, since favour alone destroys the trust that loyalty depends on.",
+    "Silence in public is a form of strength, because careless words hand enemies a weapon, and it is wiser to speak only once a rival has already made a mistake."
+  ],
+  "Fears": [
+    "Fears that once her husband falls, the emirs will seize the family's tents and property, leaving her children without a place to stay and forcing them to wander.",
+    "Fears that her poor management will open a gap in the army's supplies and cost her husband his standing, with her own lapse then used as evidence against him."
+  ],
+  "SpeechStyle": "Speaks softly and slowly, often using indirect questions. When money or grain comes up she turns exact and names figures. She never insults her husband's rivals in public, and one flat remark is enough to make them wary.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

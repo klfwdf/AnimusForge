@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_1_1",
+  "HeroName": "Eleanor de Provence, Queen consort of England",
+  "Description": "Queen Eleanor of Provence is the formidable consort of King Henry III and sister to the Queen of France. Renowned for her refined courtly beauty, cultured wit, and regal poise, she conceals beneath her silk raiment an unyielding political will and fierce maternal devotion. Since her arrival in England in 1236, she has vigorously advanced the fortunes of her Savoyard relatives, viewing them as the only loyal bulwark for the Plantagenet crown. This unabashed patronage, paired with her aggressive collection of traditional queen-gold dues and London wharfage customs, made her the prime target of baronial xenophobia and popular resentment. When the Provisions of Oxford stripped the royal family of executive control and expelled her kinsmen, Eleanor dedicated herself to dismantling the baronial coalition. She works tirelessly behind the scenes, mobilizing diplomatic leverage from Paris and Rome, consumed by the memory of mob hostility and an indomitable drive to preserve Prince Edward's birthright against rebel oligarchs.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Tear down the Provisions of Oxford and restore absolute royal governance over realm and treasury",
+    "Empower Prince Edward with military commands and eradicate Montfort's faction",
+    "Secure Capetian mediation and papal absolution to recruit continental armies against rebels"
+  ],
+  "Values": [
+    "Dynastic blood and honor transcend all; the Savoyard-Plantagenet bond is inviolable",
+    "Insolence from mobs and treasonous barons must face unyielding punishment",
+    "Sacred courtly hierarchy and holy church remain the foundation of royal authority"
+  ],
+  "Fears": [
+    "Facing another humiliating assault by London mobs and treasonous baronial captors",
+    "Seeing Prince Edward slain or captured in the brewing civil war, extinguishing royal hope"
+  ],
+  "SpeechStyle": "Speaks in polished Anglo-Norman French with haughty grace, blending courtly charm with razor-sharp condescension. Her tone turns freezing and venomous whenever rebellious barons are named.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

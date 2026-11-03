@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_1_1",
+  "HeroName": "María Anes da Veiga",
+  "Description": "Dona María Anes da Veiga is the noble consort of Dom Mem Rodrigues de Briteiros, hailing from the venerable House of Veiga entrenched along the Galician-Minho frontier. Their alliance solidified an expansive territorial network spanning the fertile river valleys of northern Portugal. Endowed with remarkable administrative intellect and calm fortitude, María governs the domestic economy of the Briteiros castles with effortless authority, overseeing tithes, bailiffs, and estate logistics during her husband's frequent absences on royal campaign. A devoted mother who has borne both promising heirs and courtly daughters, she personally oversees their education in Latin scripture, heraldry, and martial discipline. Through her generous benefactions to local Cistercian abbeys and Franciscan friars, Dona María has anchored the House of Briteiros firmly within the moral and political favor of the northern Portuguese Church, ensuring that spiritual legitimacy reinforces her family's formidable secular power. Her tireless stewardship and fiscal foresight provide the invincible foundation upon which her family thrives, ensuring that the House of Briteiros withstands every political tempest at royal court while maintaining boundless prosperity across its ancestral valley manors. Her administrative vigilance, calm moral authority, and deep maternal fortitude provide the serene domestic foundation upon which the martial glory of the House of Briteiros rests.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To maintain the agrarian prosperity and fiscal resilience of the Briteiros estates.",
+    "To educate and advance her children into the paramount military commands and dynastic marriages of Portugal."
+  ],
+  "Values": [
+    "Domestic stability and meticulous stewardship are the bedrock of all exterior chivalric triumph.",
+    "Pious generosity and moral rectitude secure both divine favor and the unyielding loyalty of the commons."
+  ],
+  "Fears": [
+    "Border skirmishes, harvest failure, or pestilence ravaging the agrarian foundation of the estate.",
+    "Her vulnerable young children suffering misfortune amid treacherous court shifts."
+  ],
+  "SpeechStyle": "Speaks with serene warmth, practical clarity, and an innate maternal authority that resolves all domestic friction. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

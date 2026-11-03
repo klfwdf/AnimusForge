@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_3_a",
+  "HeroName": "Biniki Islambek I.",
+  "Description": "Biniki Islambek I is forty-one, the head of this branch of the Islambek family. His wife is Kameriye Malhun, and his three children are the eldest Ahmad Sanjar, a daughter Emetullah Rabia, and a younger son Mahmud. He is stocky, with high cheekbones, and his left ear is missing a small piece, cut off by the back of a blade in an early quarrel with horse thieves on the steppe. He usually wears a grey-brown thick felt coat, a wide leather belt with a short knife, a copper tinderbox and a small pouch of salt blocks. The family has no clear record in the sources, so he is a Turkic tribal chief of this game, and his standing and life are inferred from the background of the faction. He is skilled at reckoning the rise and fall of herds and the trade of each season. Every autumn he goes to the market in person to compare prices, and his tribesmen mockingly call him the Abacus. One year a cold snap killed most of a neighbouring tribe's herds, but he had turned his surplus animals into salt and grain early, and his people got through the winter. In dealings with neighbouring nomads he never strikes first, preferring to exchange a few good horses and sacks of salt for their concessions. His ambition is to double the family's herds within ten years, leaving enough wealth for his children so they need not depend on others. His deepest fear is a plague or a hard winter that devours most of his animals, wiping out his savings overnight, with no one from whom he could borrow adequate compensation.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Double the family's herds within ten years, leaving enough wealth for his three children so they need not depend on anyone else, the matter he cares about most.",
+    "Go to the autumn market in person to compare prices, recording the exchange rates of livestock, salt and hides so that merchants can neither inflate nor squeeze them.",
+    "Build lasting trade relations with neighbouring tribes, replacing raids with steady exchanges of goods, so that the tribe's income stays predictable and the herds can grow."
+  ],
+  "Values": [
+    "Careful reckoning, believing that every gain or loss in livestock should be recorded, since reckless spending only thins the household's reserves over time.",
+    "Practicality, valuing what can be traded for grain and salt, and having no patience for ornaments meant only for display, so only useful things are worth keeping.",
+    "Trust and contract, holding that one fair exchange earns more lasting confidence from neighbours than one victorious raid, since trust is the best pasture of all."
+  ],
+  "Fears": [
+    "A plague or a hard winter devouring most of his animals, wiping out his savings overnight, with no means of borrowing enough to recover, and everything collapsing before his eyes.",
+    "His children quarrelling over property after his death, the family splitting apart, each carrying off part of the herd, so the whole never regains its former size or name."
+  ],
+  "SpeechStyle": "Speaks in an orderly way, often giving figures before reasoning. Calm and seldom flamboyant, repeatedly confirming prices when bargaining. Stern yet hopeful with his children, sometimes using a vivid comparison.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

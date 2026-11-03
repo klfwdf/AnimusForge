@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_latin_4_1_2",
+  "HeroName": "Marino I Sanudo, Lord of Paros and Antiparos",
+  "Description": "Marino I Sanudo, aged forty in 1259, rules as the Lord of Paros and Antiparos under the suzerainty of the Duchy of Naxos. Governing islands famous for prized white Parian marble and deep sheltered bays, he is one of the most powerful maritime barons in the Archipelago. Energetic, vigilant, and fiercely practical, Marino constructed formidable sea-walls at Parikia and maintains a swift flotilla of light galleys. He oversees lucrative marble exports to Italy and the Levant while relentlessly patrolling the Aegean trade arteries. In 1259, as Nicaean raiders venture south, Marino turns Paros into an impenetrable naval shield, intercepting hostile vessels and safeguarding the central Cyclades with ruthless naval efficiency. At the busy maritime customs office of Paros, Marino personally verifies clearance seals and manifests for incoming merchantmen. Intimately familiar with every ship's draft and crew, he leaves no opening for corsairs or smugglers. Whenever coastal beacons flare, he leaps into the flagship's vanguard, leading ferocious boarding actions that keep the Aegean sea lanes safe and profitable. From the fortified harbor of Parikia, Marino rules his marble-rich island with energetic precision and naval vigilance. His swift galleys and decisive leadership make Paros an insurmountable barrier against hostile incursions in the central Aegean.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with brisk maritime decisiveness and sharp practical clarity, forged by years of salt winds and naval skirmishes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v9",
+  "Keywords": [
+    "Religious affiliation and church reception"
+  ],
+  "RagShortTexts": [
+    "Changing religious affiliation involved differing demands of doctrine, kin and receivers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Manichaeans and Christian churches differed in doctrine and worship. People changing affiliation needed to explain their beliefs to the clergy receiving them. Kin, former companions and a new congregation could make differing demands. Religious reception and handling property or debts were distinct matters."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

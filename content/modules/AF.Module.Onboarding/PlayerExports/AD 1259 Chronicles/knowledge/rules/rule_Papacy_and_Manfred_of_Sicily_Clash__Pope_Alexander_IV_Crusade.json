@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Papacy_and_Manfred_of_Sicily_Clash",
+  "Keywords": [
+    "Pope Alexander IV Crusade",
+    "King Manfred of Sicily Resistance",
+    "Hohenstaufen Southern Legacy",
+    "Guelf and Ghibelline Civil War"
+  ],
+  "RagShortTexts": [
+    "Manfred's Saracen horse archers from Lucera do not fear excommunication bulls.",
+    "God reigns in heaven, but misery walks the soil of Italy."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pope Alexander IV made war on Manfred of Sicily, the natural son of Emperor Frederick II, throughout his pontificate. The papacy treated Manfred's kingdom as a rival power to be broken, and it called crusades against him that drew money and men from across Christendom. Manfred answered with the support of southern barons and the Saracen colony at Lucera, which gave him archers and horsemen the Church could not easily match. He held his ground in the south, while the Guelf and Ghibelline factions turned the streets of the northern communes into battlegrounds. Each side saw its enemy as heretical or tyrannical, so the wars left little room for compromise and every campaign bred fresh grievances."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Noble families of Florence, Siena and Milan fought under rival banners, and their feuds reached every council chamber. Guelfs pledged gold to the Apostolic Chamber in exchange for papal backing, while Ghibellines swore loyalty to Manfred. A lord who picked the losing side knew that exile and the confiscation of his lands would follow once his house lost the piazza."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Manfred's Saracen horse archers from Lucera do not fear excommunication bulls. Their counter-charges and recurve archery can break papal mercenary foot before the spear squares ever form. Stand in the second rank, keep your shield raised against the arrows, and watch for the moment the horsemen wheel back to reload."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Monks demand tithes to finance holy war against fellow Christians, while soldiers raid olive groves regardless of which cross or eagle their captain wears. Pope Alexander IV excommunicated Manfred on 25 March 1255 and invested Edmund, son of Henry III of England, with the Sicilian crown, so papal levies grew heavier. God reigns in heaven, but misery walks the soil of Italy."
+    }
+  ],
+  "TextMappings": []
+}

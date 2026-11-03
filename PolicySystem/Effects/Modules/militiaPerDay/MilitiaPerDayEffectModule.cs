@@ -8,7 +8,7 @@ internal sealed class MilitiaPerDayPayload : NumericPolicyEffectPayload
 
 internal sealed class MilitiaPerDayEffectModule : NumericPolicyEffectModuleBase<MilitiaPerDayPayload>, IModelModifierPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "militiaPerDay",
 		order: 60,
 		legacyIds: new[] { "militiaDailyDeltaPerTown" },
@@ -32,7 +32,8 @@ internal sealed class MilitiaPerDayEffectModule : NumericPolicyEffectModuleBase<
 		playerDisplayName: PolicyCompatibilityTexts.Get("Module_militiaPerDay_playerDisplayName"),
 		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_militiaPerDay_editableUnderstandingPrompt", "Militia is mainly affected by training, levies, disbanding, local defense, morale, food and pay, and population pressures. When policies continuously change actual settlement defense headcounts through these mechanisms, militia is a direct consequence. Increasing militia incurs corresponding costs only when the policy actually requisitions food or labor or forces military service."),
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_militiaPerDay_editableEvaluationPrompt", "Judge daily changes per affected settlement. Mild impact: ±0.5 to ±1.5; regular training, levies or morale changes: ±1.5 to ±4; strong militia mobilization or local-defense reforms: ±4 to ±8; nationwide war mobilization, large-scale militarization or militia collapse: ±8 to ±12. More than ±12 is reserved for brief extreme war mobilization or severe military collapse."),
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

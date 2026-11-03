@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_1_4",
+  "HeroName": "Enrique of Castile 'the Senator'",
+  "Description": "Infante Enrique of Castile, famed throughout Europe as 'el Senador' (the Senator), is perhaps the most turbulent, audacious, and formidable prince of the Capetian-Burgundian generation. The fourth son of Ferdinand III, his insatiable ambition and violent temper led to early exile following a failed rebellion against his brother Alfonso X. Seeking fortune abroad, Enrique traveled between England and France before sailing to Tunis, where he amassed fabulous wealth as a military adviser and mercenary general to the Hafsid Sultan. Landing in Italy, his immense riches and charismatic martial presence captivated the Roman populace, who elected him sole Senator of Rome, granting him supreme dictatorial command of the Eternal City. By 1259, Enrique operates as a titanic warlord on the grand Mediterranean stage, defying the Papacy, forging ties with Ghibelline factions, and preparing to champion young Conradin of Hohenstaufen against Charles of Anjou. Fierce, proud, and completely fearless, his name strikes awe and terror into his royal brother Alfonso, who dreads Enrique's inevitable day of reckoning. From his magnificent senatorial seat atop the Capitoline Hill, Enrique receives European envoys with imperial disdain, directing mercenary armies with dictatorial audacity. Subsidized by North African gold, his volcanic will reverberates across the Mediterranean, a terrifying reminder to his royal brother of the catastrophic vengeance awaiting the crown of Castile.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain ironclad dictatorial control over Rome as sole Senator against papal encroachment",
+    "Marshal Mediterranean mercenary legions and gold to stage a triumphant return to Castile",
+    "Crush Angevin forces in southern Italy and resurrect imperial Ghibelline hegemony"
+  ],
+  "Values": [
+    "Supreme power bends only to iron will and military might, not hereditary complacency",
+    "Papal bans and royal edicts are paper shields crushed by heavy cavalry lances",
+    "Glorious destruction in epic battle is a thousand times preferable to tame submission"
+  ],
+  "Fears": [
+    "Treacherous betrayal by Italian allies leading to indefinite captivity in an Angevin dungeon",
+    "His brother Alfonso permanently purging his remaining loyalist networks within Castile"
+  ],
+  "SpeechStyle": "Thunderous, imperious, and fiercely haughty; speaks like an unyielding Roman triumvir accustomed to bowing before neither kings nor popes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

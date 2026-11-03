@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Danylo Romanovych is the renowned King of Rus' (Rex Rusiae) and Grand Prince of Galicia-Volhynia, celebrated as an architect of resilience and Central European statecraft. Orphaned in childhood following the death of Roman the Great, Danylo endured decades of exile before reclaiming his patrimony through extraordinary perseverance and battlefield brilliance. At the Battle of Yaroslav in 1245, his shock cavalry shattered a combined army of Hungarians, Poles, and rebellious boyars, establishing uncontested mastery over southwestern Rus'. In the wake of the Mongol invasion, Danylo engaged in subtle diplomatic maneuvers with the Golden Horde while revolutionizing eastern fortifications, erecting stone citadels at Chełm, Danilov, and founding Lviv. In 1253, he was crowned King of Rus' at Drohiczyn by papal legate Opizo, seeking a pan-European crusade against the Mongols. By 1259, confronted by the menacing ultimatum of Mongol general Burundai forcing the dismantling of frontier ramparts, King Danylo prepares secret resistance to preserve his realm's sovereignty. Even during the harrowing winter crisis of 1259, when Mongol general Burundai coerced the dismantling of outer frontier fortifications, King Danylo preserved his nation's core strength. Secretly fortifying stone citadel keeps in Lviv and Kholm with hidden arms caches, Danylo coordinated with European allies, resolute in his historic mission to overthrow the Tatar yoke.",
+  "SpeechStyle": "The crown of Drohiczyn weighs heavy upon my brow, and our stone citadels shall never bow to nomadic whips! Rus' shall fight for its eternal freedom! Our sacred crown shall be redeemed in glorious thunder!",
+  "Motivations": [
+    "Shake off the Golden Horde's tributary yoke, forging a pan-European coalition to liberate Rus'.",
+    "Fortify Chełm and Lviv with stone bastions, developing commerce to establish an elite European kingdom."
+  ],
+  "Values": [
+    "Hold the sovereign freedom and royal dignity of Rus' as sacred life goals, scorning servile subjection.",
+    "Prize pragmatic statecraft and chivalric discipline, convinced indomitable fortitude overcomes barbarism."
+  ],
+  "Fears": [
+    "Fears Burundai's Mongol host exploiting demolished wooden palisades to launch sudden extermination raids.",
+    "Dreads western crusaders and the papacy failing to deliver armed aid, leaving Rus' isolated before the Horde."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_galicia_1e",
+  "HeroName": "Danylo Romanovych"
+}

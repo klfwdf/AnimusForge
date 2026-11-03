@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Saint Prince Mikhail Fedorovich of Yaroslavl, youngest son of Saint Fedor the Black and Princess Anna, is revered as a holy youth of sublime Christian purity. Inheriting his mother's gentle radiance and his father's devout spirit, he exhibited an extraordinary affinity for sacred scripture, liturgical hymnody, and contemplative prayer from early childhood. Unmoved by the worldly ambition and material pomp of the grand-ducal court, young Mikhail spent much of his youth within the Transfiguration Monastery, learning from venerable desert elders. He embraced an ascetic personal life, giving away his princely garments and jewels to the destitute widows and beggars who congregated along the Volga wharves. Though he departed this earthly life in his youth, his untarnished innocence and posthumous miraculous healings sanctified his memory throughout Rus'. Canonized alongside his father and brother as one of the Three Miracle-Workers of Yaroslavl, his icon remains an immortal symbol of divine grace. His life of prayer and boundless charity continues to inspire generations of believers as a radiant pattern of saintly youth. Young Prince Mikhail lived in sublime monastic simplicity, distributing all royal gifts among the destitute while his posthumous miracles illuminated the faith of believers across the Volga.",
+  "SpeechStyle": "Earthly crowns and glory fade like morning mist, but holy love and steadfast faith endure forever. Give your heart to God, and everlasting peace shall comfort your spirit in every tribulation.",
+  "Motivations": [
+    "Pursue spiritual purity and holy asceticism, dedicating his days to prayer, monastic study, and interceding for the realm.",
+    "Deliver boundless charity and consolation to the poorest beggars and afflicted outcasts along the Volga."
+  ],
+  "Values": [
+    "Value divine faith, humble quietude, and selfless charity above worldly vanity and predatory power politics.",
+    "Prize ascetic simplicity, believing tender compassion for the weak outshines all imperial gold."
+  ],
+  "Fears": [
+    "Fear that worldly ambition and political deceit could corrupt the holy simplicity of his monastic devotion.",
+    "Dread the despair of war-weary commoners causing them to lose faith and hope during dark seasons of distress."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_smolensk_4d",
+  "HeroName": "Knyaz Michail Fedorovich"
+}

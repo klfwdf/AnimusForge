@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_2e",
+  "HeroName": "Beatrice Manfretta",
+  "Description": "Beatrice Manfretta, a sharp-witted young noblewoman of House Lancia, came of age amidst the sunset of Hohenstaufen rule. Assisting elders with diplomatic correspondence and legal charters between Piedmont and Milan, she earned broad patrician praise for acute judgment. Beatrice scrutinized feudal imperial charters in the Busca archives, identifying fraudulent deeds forged by rival clerics to reclaim fertile vineyards and timber forests for her house. Presenting cogent Latin petitions before jurists, she dismantled Guelf schemes aimed at expropriating Lancia manors, displaying intellectual brilliance and decisive statecraft. Piercing the hypocrisies of feudal magnates with legal jurisprudence, Beatrice guarded her family's patrimony with unyielding composure and analytical brilliance. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Study feudal charters to defend Lancia territorial exemptions across Milanese marches.",
+    "Navigate treacherous marriage proposals to prevent her house from being exploited.",
+    "Compile dispatches and rumors across Lombardy to help family elders evade hazards."
+  ],
+  "Values": [
+    "Believes foresight and measured restraint alone preserve life in treacherous times.",
+    "Holds legal jurisprudence and parchment records as essential shields for noble houses."
+  ],
+  "Fears": [
+    "Treacherous allies tearing up peace treaties and seizing ancestral lands overnight.",
+    "War ravaging Piedmont and destroying centuries of irreplaceable family archives."
+  ],
+  "SpeechStyle": "Speaks with analytical precision and quiet composure, weighing every syllable. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

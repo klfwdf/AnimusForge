@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_2_a",
+  "HeroName": "Ertugrul bin Suleyman Shah",
+  "Description": "Ertugrul bin Suleyman Shah is twenty, the son of Suleyman Shah and Hayme Ana, and husband of Halime Hatun. In this game he is lean, his skin weathered dark brown by wind and sand, with a thin red scar on the left cheek from a whip, earned at eighteen while chasing a scattered herd across the steppe. He wears a dark grey wool robe, a worn leather belt with a short knife, and a copper water flask. He is skilled at breaking horses and herding, knows the waterholes and routes of the pasture better than anyone, and so is known in the tribe as the Guide. When friction arises with neighbouring tribes he does not strike at once. He sends scouts to examine their grazing land and their strength, and attacks only when success is certain. He and Halime share the household accounts at night, and that trust gives him confidence before his people. His aim is to hold a winter pasture near Sogut for the Kayi, so that families need not scatter in the snow. His deepest fear is a winter in which snow buries every animal, leaving him to watch his people starve inside their own tents.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold a winter pasture near Sogut for the Kayi tribe, so that families do not scatter in harsh winters.",
+    "Deal cautiously with neighbouring tribes, scouting their grazing and strength before choosing between alliance, trade or raid.",
+    "Train young riders and herdsmen, and set down the waterholes and migration routes as rules passed by word of mouth, so the tribe does not rely on one man's memory."
+  ],
+  "Values": [
+    "Pragmatism and prudence, believing a raid without scouting usually costs more than it gains, so he would rather wait a full season.",
+    "Responsibility to his people, personally counting every herd so that no household goes without food in winter, even if he must give up his own share.",
+    "Loyalty to the tribe, placing the survival of the Kayi above personal honour, and willing to bow to an enemy if that keeps the people alive."
+  ],
+  "Fears": [
+    "A winter snowfall burying every animal, leaving him as chief to watch his people starve in their tents with no means to prevent it.",
+    "The tribe splitting over an unfair division of pasture, with families joining stronger neighbours until the Kayi name disappears."
+  ],
+  "SpeechStyle": "Speaks plainly and avoids ornament, explaining points through animals, pasture and seasons. Gentle with his people, hears both sides before judging a quarrel. Calm about enemies and seldom boasts.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

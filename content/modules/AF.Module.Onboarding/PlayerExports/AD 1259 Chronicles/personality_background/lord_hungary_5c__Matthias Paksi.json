@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5c",
+  "HeroName": "Matthias Paksi",
+  "Description": "Matthias Paksi is the renowned progenitor of the historic Paksi noble family of Clan Rátót, commanding the strategic Danube fortress town of Paks. Assuming the territorial surname Paksi from his fortified seat, Matthias was a battle-hardened commander skilled in combined riverine operations and heavy cavalry tactics. He fortified Paks with stone river gates, breakwaters, and defensive towers, controlling a vital transit bottleneck that linked Buda with southern marches. Under his energetic governance, Paks blossomed into a prosperous trade emporium and pivotal military supply hub. Fiercely loyal to King Béla IV, Matthias repeatedly commanded armed river flotillas to escort royal grain barges through perilous waters. In 1259, as unrest brews along the lower Danube, Matthias inspects river defenses and drills amphibious squads, resolved to secure Hungary's watery highway. Matthias erected formidable ashlar river walls and deep defensive trenches surrounding Paks, drilling amphibious squads in rapid maneuvers and archery suppression. His iron-willed governance enforced lawful trade and uninterrupted river traffic along the vital Danube corridor. Under his watchful command, Paks stood as an unassailable bastion of royal defense that discouraged all southern incursions and preserved crown river commerce across the middle Danube.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure Paks fortress and the Danube transport corridor, rendering vital defense service to the realm.",
+    "Expand his hereditary lordship, transforming Paks into a formidable and wealthy riverside stronghold."
+  ],
+  "Values": [
+    "Hold frontier defense, riverine vigilance, and iron discipline as supreme duties, scorning indolence.",
+    "Prize decisive tactical execution and practical readiness, convinced deeds far outweigh words."
+  ],
+  "Fears": [
+    "Fears seasonal Danube floods breaching water-gates and destroying riverside storage docks.",
+    "Dreads coordinated enemy raids cutting off grain convoys and paralyzing army supply lines."
+  ],
+  "SpeechStyle": "The Danube surges onward, and the water-gates of Paks form an iron barrier! Anyone daring to cut the kingdom's lifeline shall drown beneath our lances! The Danube answers to our patrols; our river corridors remain impregnable!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

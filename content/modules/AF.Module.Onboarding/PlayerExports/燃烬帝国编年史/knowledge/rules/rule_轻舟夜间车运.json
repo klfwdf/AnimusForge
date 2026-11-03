@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v2",
+  "Keywords": [
+    "轻舟夜间车运"
+  ],
+  "RagShortTexts": [
+    "凯撒让士兵造好轻舟后，夜间装车运到营外较远处，再组织渡河。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "凯撒让士兵造好轻舟后，夜间装车运到营外较远处，再组织渡河。舟只的价值之一是能在陆上搬运；车、道路和到达水边的接续同样重要，不是造好船就已解决运输。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

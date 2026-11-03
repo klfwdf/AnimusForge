@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v3",
+  "Keywords": [
+    "Everyday loads during migration"
+  ],
+  "RagShortTexts": [
+    "Food, tools and people shared a wagon’s space during Alan movement."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Food, tools and people shared a wagon’s space during Alan movement. Weapons could not replace vessels and shelter. Loading affected travel and access in camp; household carts were not empty frames always available for battle."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

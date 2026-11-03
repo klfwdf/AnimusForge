@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v7",
+  "Keywords": [
+    "米夫奈向母亲求援"
+  ],
+  "RagShortTexts": [
+    "米夫奈被留在敦煌后向母亲求援，说明丈夫没有把她接走，自己正陷入困境。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "米夫奈被留在敦煌后向母亲求援，说明丈夫没有把她接走，自己正陷入困境。她寻求的不是抽象贸易保护，而是能承担路费和护送责任的人。跨地婚姻与商人迁移把家庭分开，亲属关系能提供帮助，也可能无法兑现。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

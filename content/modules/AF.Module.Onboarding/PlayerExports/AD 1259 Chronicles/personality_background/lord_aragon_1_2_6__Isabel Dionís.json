@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_2_6",
+  "HeroName": "Isabel Dionís",
+  "Description": "Isabel Dionís is the vivacious and sharp-spirited youngest daughter of Count Dénes of Hungary and Doña Margalida de Montcada-Cabrera. Reared amidst the sun-drenched orchards and stone towers of Torre de Canals, she possesses an untamed natural affinity for mountain horsemanship, falconry, and outdoor estate life. Disdaining idle courtly seclusion, young Isabel frequently accompanies her kinsmen on rides inspecting the fertile citrus groves and irrigation dams of the estate, beloved by the local tenantry for her frank good humor and generous heart. In 1259, as geopolitical tensions loom, she actively assists her sister Gracia in auditing castle larders and provisioning stores, showing remarkable presence of mind during frontier security drills. Blending the fierce equestrian pride of her Magyar forebears with the disciplined composure of Catalan nobility, Isabel represents the energetic, fearless future of the House of Dionís. Isabel occupied herself with Catalan troubadour verse and delicate needlecraft, diligently caring for the family's ancestral reliquaries and liturgical vestments. Naturally quiet and observant, she turned away from worldly vanity, preferring the solitude of the castle chapel to intercede for departing knights. Her tranquil serenity and spotless virtue made her a beloved figure of gentle dignity within the Hungarian-Aragonese manor.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master horsemanship and archery to be capable of defending her home and loved ones during crises",
+    "Assist her mother and sister in managing estate logistics and castle provisions with efficiency",
+    "Win the devotion of a valiant and honorable chivalric companion in a future marital alliance"
+  ],
+  "Values": [
+    "Direct honesty, moral courage, and loyalty far surpass affected courtly flatteries",
+    "Every member of the house must stand vigilant and brave to defend the ancestral heritage",
+    "Reverent faith before God and joyful generosity toward all neighbors and vassals"
+  ],
+  "Fears": [
+    "A sudden raid laying waste to her beloved gardens and subjecting her people to violence",
+    "Being trapped in a joyless, suffocating marriage in a distant, gloomy inland fortress"
+  ],
+  "SpeechStyle": "Soft-spoken, delicate, and pious; speaks with quiet modesty and reverent grace, reflecting deep spiritual innocence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

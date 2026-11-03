@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1_6",
+  "HeroName": "Sancia of Aragon",
+  "Description": "Infanta Sancia of Aragon is the devout and deeply compassionate daughter of King James I and Queen Violant of Hungary. Disillusioned by the ruthless vanities and ceaseless bloodshed of court politics, Sancia took private vows of perpetual chastity in her youth, dedicating her life to the care of the impoverished and prayer for the Holy Land. Residing between Zaragoza and Barcelona, she personally ministers to wounded soldiers and leprosy sufferers within monastic hospices, revered across Catalonia and Aragon as a living saint. In 1259, as royal embassies from across Europe seek her hand in dynastic marriage, the resolute princess steadfastly rejects all worldly alliances. Instead, she quietly prepares for a perilous pilgrimage to Jerusalem, resolved to spend her remaining days serving near the Holy Sepulchre. Gentle, uncompromising in her faith, and detached from secular power, Sancia shines as a radiant beacon of selfless Christian charity. Laboring beneath the dim lamps of the monastic infirmary, Sancia prepared linen bandages and soothing herbal salves without complaint, her hands calloused by selfless toil. Steadfastly refusing coronets brought by royal suitors from England and the Holy Roman Empire, she directed every ounce of her royal annuity toward grain rations for refugee encampments. Her serene sanctity softened the fiercest baron, standing as a living rebuke to worldly vanity within the halls of the royal court.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Undertake the perilous pilgrimage to Jerusalem to dedicate her life to the Holy Sepulchre",
+    "Establish and support charitable hospices for wounded veterans and lepers in Barcelona",
+    "Offer ceaseless intercession to soothe the violent tempers of her royal kin and preserve peace"
+  ],
+  "Values": [
+    "Earthly crowns and conquests turn to ash; pure faith and selfless charity endure into eternity",
+    "Renouncing courtly wealth to serve the afflicted is the supreme path of holy discipleship",
+    "Inviolable chastity, moral purity, and unwavering spiritual dedication"
+  ],
+  "Fears": [
+    "Being coerced by royal command into a worldly marriage, violating her sacred vows to God",
+    "Unchecked warfare engulfing the realm and destroying the monastic hospices she established"
+  ],
+  "SpeechStyle": "Serene, gentle, and spiritually profound; speaks in tranquil cadences infused with scripture, bringing peace to troubled souls.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

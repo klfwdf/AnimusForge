@@ -1,0 +1,39 @@
+{
+  "Id": "rule_Hesychasm_and_Mount_Athos_Mysticism",
+  "Keywords": [
+    "Mount Athos Holy Mountain Monasteries",
+    "Hesychasm Jesus Prayer Contemplation",
+    "Uncreated Light of Mount Tabor",
+    "Eastern Orthodox Ascetic Mysticism"
+  ],
+  "RagShortTexts": [
+    "Athonite monasteries defended land and privileges through charters, witnesses and patrons."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Projecting into the Aegean, Mount Athos was the spiritual heart of Eastern Orthodoxy, and its monasteries ran as a federation of houses under imperial protection. Its hermits practiced Hesychasm, a discipline of inner stillness that paired controlled breathing with the continuous repetition of the Jesus Prayer. Monks taught that the uncreated divine light, the light the apostles glimpsed on Mount Tabor, could be perceived by a purified heart. Critics in Constantinople argued whether such experience was theology or enthusiasm, and the debate over that light later shaped Orthodox doctrine. The monasteries kept their rule through imperial chrysobulls, which also barred women and female animals from the peninsula."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Athonite monks sustained prayer and daily life through rules, donations and property. In disputes over land or dues, a monastery produced charters, sought witnesses and appealed to influential supporters. Rights depended on particular grants, while monasteries also dealt with boundaries, water and division of produce."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hermits clad in coarse black wool subsist on dry bread and wild olives, and their cells cling to the cliffs above the sea. Tying knotted wool prayer ropes, they spend lifetimes in candlelit caves interceding for mankind's sins. Villagers on the mainland trust these hermits to pray for their sick and their dead."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,53 @@
+{
+  "Id": "rule_swamp_reed_monoxylon_raid",
+  "Keywords": [
+    "Dugouts in marsh waterways",
+    "Guides through reed channels",
+    "Loading and landing a shallow boat"
+  ],
+  "RagShortTexts": [
+    "Dugouts suit some shallow channels, but loads, wind, waves and landing places limit movement.",
+    "Reeds and branching channels conceal and confuse; local boatmen and shore support matter."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Small craft in Baltic waters and Rus river networks carry people and goods through narrow channels, including boats hollowed from logs. Shallows and reeds impede mounted pursuers but obscure direction and activity ashore. Armor, weapons and food compete for limited capacity. Deep mud or steep banks can prevent an arriving party from deploying quickly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Soldiers in a small boat distribute weight carefully; standing or reaching ashore can upset it. Strings and food need protection from water. A guide identifies channels and reception points. Sending everyone into the same muddy landing can block it, and withdrawal requires finding and retaining access to the boats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A leader using waterways needs trustworthy boatmen, seasonal knowledge, landings and a return route. Requisitioned fishing craft reduce local food and transport, while crews and porters need maintenance. A small party's route may not support an army's supplies. Waterborne and land parties need a meeting place if contact fails."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Fishing households know reed channels and usable landing places but need boats to feed their families. Hull repairs, paddles and portage take labor; a lost paddle or damaged hull can strand newcomers. Owners care whether crews and craft return and whether passing troops have ruined nets along the water."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_bosporan_kingdom_economy",
+  "Keywords": [
+    "Bosporan Kingdom Trade",
+    "Panticapaeum port credit"
+  ],
+  "RagShortTexts": [
+    "Panticapaeum depends on grain, fish and land-sea exchange.",
+    "Port stores connect hinterland cargo to shipping."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Panticapaeum and strait ports rely on grain, fish and land-sea exchange. Stores connect hinterland produce to vessels; either blocked shipping or roads hurts civilians and guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Panticapaeum depends on grain, fish and land-sea exchange. Traveling followers need real food from this production; valuables still require a buyer and exchange. Port stores connect hinterland cargo to shipping."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Port stores connect hinterland cargo to shipping. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Panticapaeum depends on grain, fish and land-sea exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Panticapaeum depends on grain, fish and land-sea exchange. Households need meals and the means to keep producing after delivering goods. Port stores connect hinterland cargo to shipping."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Port stores connect hinterland cargo to shipping. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Panticapaeum depends on grain, fish and land-sea exchange."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_marcomannic_kingdom_legitimacy",
+  "Keywords": [
+    "Marcomans Legitimacy",
+    "Vannius’ local recognition"
+  ],
+  "RagShortTexts": [
+    "Protection and local recognition sustain Vannius.",
+    "Roman gifts and bounded service can bring new duties."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Protection and local recognition support each other. Roman markets, gifts or bounded service add standing, but partners compare security against duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Protection and local recognition sustain Vannius. Military recognition also rests on rewards and relief; a title needs willing action. Roman gifts and bounded service can bring new duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Roman gifts and bounded service can bring new duties. Nominal rights require local execution, with consent and supply both shaping authority. Protection and local recognition sustain Vannius."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protection and local recognition sustain Vannius. Households judge rule through protected families, land and responses to appeals. Roman gifts and bounded service can bring new duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman gifts and bounded service can bring new duties. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protection and local recognition sustain Vannius."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_3_2",
+  "HeroName": "Qilij Arslān IV ibn Kaykhusraw, Seljuq Sultan of Rûm",
+  "Description": "Qilij Arslan IV was a son of Kaykhusraw II and a Seljuk Sultan of Rum. He succeeded to the throne around 1246 and shared rule with his brothers Kaykāwus II and Kayqubad II, and the balance of power among them stayed unstable. The sources say he was the son of his father's second Turkish wife. They record nothing about his appearance or scars, so his persona rests on his political fortunes. His great ambition was to restore Seljuk rule in Anatolia and keep the sultanate from becoming a tool in the hands of Mongols and ministers. Yet his authority was always limited by his ministers and regional officials, above all Parwana. His fear was twofold, of ministers seizing power and of his brothers returning with Mongol support. This suspicion left him on the defensive in politics again and again. His life reflects the slow decline of the Seljuk house into a figurehead under Mongol pressure.",
+  "Traits": [
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Restore Seljuk rule in Anatolia, so that the sultan's authority is not left as a tool in the hands of Mongols and ministers, the first goal of his reign.",
+    "Use the strength of Mongol generals to press down his elder brother Kaykāwus II, so that the struggle within the royal house turns in his favour quickly.",
+    "Weaken the vizier and regional ministers, above all men like Parwana who commanded their own forces, so the sultan regains real control of government."
+  ],
+  "Values": [
+    "Royal blood and lawful succession, holding that the throne belongs to the line of Kaykhusraw II and that no outsider may usurp it.",
+    "Craft and measure in power, believing that balancing ministers against the Mongols is the only way a sultan keeps his place.",
+    "Testing loyalty, keeping his guard up around his own followers and assuming betrayal may come at any time, so he prefers suspicion to trust."
+  ],
+  "Fears": [
+    "Ministers joining forces to strip the sultan of real power, leaving him a figurehead and the dynasty's authority dissolved in court.",
+    "His brothers using the force of Mongol princes to strike back and seize the throne again, costing him everything and perhaps his life."
+  ],
+  "SpeechStyle": "His words are direct and guarded, and his suspicion of brothers and ministers often shows in his tone. With Mongol generals he is cautious and chooses respectful language.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

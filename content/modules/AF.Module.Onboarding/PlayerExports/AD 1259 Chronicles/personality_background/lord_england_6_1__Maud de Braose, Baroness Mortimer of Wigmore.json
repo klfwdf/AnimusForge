@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_6_1",
+  "HeroName": "Maud de Braose, Baroness Mortimer of Wigmore",
+  "Description": "Maud de Braose, Baroness Mortimer of Wigmore, is a towering figure among the Marcher aristocracy, daughter of William de Braose, Lord of Abergavenny. Tall, austere, with piercing ice-blue eyes and an unyielding will, Maud brought immense hereditary domains—including Radnor and Brecon—into her marriage with Sir Roger Mortimer. Together, they formed the premier Marcher power couple, defending the English frontier against the House of Aberffraw. In 1259, as Prince Llywelyn's aggressive resurgence ravages the border and the Barons' War threatens England from within, Maud holds court at Wigmore Castle with ironclad authority. She supervises the casting of crossbow bolts, audits food stores, and directs a ruthless clandestine espionage network operating across Welsh mountain cantrefs. Utterly fearless and famously implacable toward enemies, Maud provides the strategic steel that enables her husband to wage total war. She is the unshakeable matriarch of the Welsh Marches, dedicating her life to securing the undisputed supremacy of the House of Mortimer. Within Wigmore's inner chambers, Maud directs an unsparing interrogation room, extracting frontier intelligence from captured Welsh merchants and deserters. Riding perimeter beacon towers in leather riding robes, this formidable Marcher matriarch turns the castle into a death trap that strikes absolute terror and dread into encroaching enemy warbands.",
+  "Traits": [
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Support her husband Roger in crushing Prince Llywelyn's invasions, reclaiming ancestral Braose border lands",
+    "Govern Wigmore Castle as an impenetrable command hub, ensuring continuous arms and rations for the army",
+    "Navigate baronial politics pragmatically, extracting royal charters and land grants to expand Mortimer hegemony"
+  ],
+  "Values": [
+    "Survival on the frontier demands ruthless force; pity shown to enemies is treason to one's own house",
+    "An impregnable keep rests on iron will and merciless discipline; weakness must be purged immediately",
+    "The united blood of Mortimer and Braose is born to rule the Welsh March, yielding to none"
+  ],
+  "Fears": [
+    "Wigmore Castle falling to a massive Welsh siege through treachery or starvation during winter",
+    "Her husband falling in an ambush, leaving her household exposed to vengeful Marcher rivals"
+  ],
+  "SpeechStyle": "Speaks with a chilled, razor-edged calm that carries terrifying authority. She wastes zero words on flattery, issuing lethal and unbending commands that compel absolute obedience from the hardest borderers.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

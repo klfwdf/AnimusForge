@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_7h",
+  "HeroName": "Erik Knudsen til Skarsholm",
+  "Description": "Sir Erik Knudsen of Skarsholm, commander of royal cavalry and high lord of the Estridsen cadet branch, was a prominent son of Duke Knut of Blekinge. Imbued with the martial vigor of his grandfather King Valdemar Sejr, Erik commanded armored cavalry brigades within the royal household with fearsome tactical prowess. Seated at the fortress of Skarsholm in western Zealand, he constructed stone ballista platforms and water-filled moats, creating an impenetrable regional defense hub. During the chaotic rebellions of 1259 and seaborne raids by Slavic pirates, Erik spearheaded royal counter-offensives across Zealand, breaking enemy landing forces in open combat and securing the coast. Honorable and blunt, he defended knightly prerogatives and royal integrity with unflinching courage, renowned as an indomitable commander. Sir Erik engineered concentric earthworks, timber palisades, and concealed moats surrounding Skarsholm, drilling his infantry into disciplined shield-walls capable of repelling heavy cavalry charges. When Slavic sea-raiders descended upon the shores of the Great Belt, Erik rode into the surf at the head of his armored retainers, slaying pirate chieftains and liberating captive villagers. Leading from the front with uncompromising martial vigor, he commanded the absolute devotion of his warriors, remembered as a quintessential paragon of chivalric knighthood.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend Skarsholm Fortress and western Zealand with armored shock cavalry against pirate raids and insurgencies.",
+    "Advocate for knightly liberties and military modernizations at the Danehof to preserve his dynasty's martial prestige."
+  ],
+  "Values": [
+    "Reveres knightly valor and unblemished battlefield honor, believing that vigilant readiness guarantees liberty.",
+    "Champions unbending military discipline and transparent integrity, scorning treacherous conspiracies in favor of brave defense."
+  ],
+  "Fears": [
+    "Dreads the betrayal of strategic straits permitting invading armies to ravage the lands and peasantry of Skarsholm."
+  ],
+  "SpeechStyle": "Speaks with ringing, trumpet-like martial force, his straightforward commands brooking no hesitation or doubt.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

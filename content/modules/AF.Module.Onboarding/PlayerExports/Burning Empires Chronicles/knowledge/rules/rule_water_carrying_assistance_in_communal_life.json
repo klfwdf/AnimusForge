@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v9",
+  "Keywords": [
+    "Water carrying assistance in communal life"
+  ],
+  "RagShortTexts": [
+    "Fetching water took time and strength; weaker people needed help carrying it."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fetching water meant carrying jars to the source and returning with the load. Sick, elderly or weak people might not manage alone, and help from companions gave them access. At night, routes still had to be found; distance, containers and carrying strength shaped the time required."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

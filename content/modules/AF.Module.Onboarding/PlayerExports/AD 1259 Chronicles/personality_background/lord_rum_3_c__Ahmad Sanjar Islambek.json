@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_3_c",
+  "HeroName": "Ahmad Sanjar Islambek",
+  "Description": "Ahmad Sanjar Islambek is nineteen, the eldest child of Biniki Islambek I and Kameriye Malhun, ahead of a sister and a younger brother. He is tall and broad-shouldered, his skin burned to copper by steppe sun, and a callus across his right palm was made by the rein. A thin scar above his left eyebrow came last year, when a wild stallion's hoof grazed him during a fight on horseback. He is rather proud of it and says it marks a man. He usually wears a light brown riding coat, a deep red short felt cloak and a curved sabre with a red leather grip wrapped for grip. He scorns his father's abacus and caution, holding that the household's herds should grow by riders taking pasture, not by saving bit by bit through market bargains. He is hot-tempered and his tongue often runs ahead of his thought. Once a careless remark in a trade insulted the other party and nearly started a brawl. He admires the chiefs of neighbouring tribes and holds them up as models, hoping to one day command a grassland as they do, with cavalry and prestige. His ambition is to lead a band of riders in seizing a wider pasture himself, proving that the Islambek are more than traders. His deepest fear is that his impulsiveness will destroy the credit his father built over a lifetime, bringing the tribe to lose its herds under his command, with no means of repairing the damage.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Lead a band of riders in seizing a wider pasture, proving that the Islambek are more than traders and can hold the steppe by force.",
+    "Learn the cavalry leadership of neighbouring chiefs, turning scattered young horsemen into a disciplined company so that the tribe's prestige rests on him.",
+    "Find a balance between his father's caution and his own ambition, and win a real voice in the tribe's decisions."
+  ],
+  "Values": [
+    "Courage and honour, believing that a man earns respect on horseback and that yielding too readily will make the tribe look down on him.",
+    "Strength as the basis of power, holding that the steppe's order belongs to whoever can lead riders in a charge, not to a shrewd merchant.",
+    "The family's reputation, caring whether the name Islambek is feared by other tribes, and preferring risk to being an unnoticed man."
+  ],
+  "Fears": [
+    "His impulsiveness destroying the credit his father built over a lifetime, so that the tribe loses its herds under his command with no way to repair it.",
+    "Being defeated in public by a neighbouring tribe, his name falling away, and never again being able to hold his head high among the riders."
+  ],
+  "SpeechStyle": "Speaks loudly and quickly, often jumping in first and sometimes overstating his case. Gives orders to riders directly, speaks to his father with defiance. His eyes brighten at tales of steppe heroes.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

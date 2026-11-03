@@ -1,0 +1,52 @@
+{
+  "Id": "rule_fall_of_kyiv_1240",
+  "Keywords": [
+    "Kyiv’s fall in 1240",
+    "Dmytro and Kyiv’s survivors"
+  ],
+  "RagShortTexts": [
+    "Batu’s forces captured Kyiv in 1240 after defence under Dmytro, appointed by Danylo.",
+    "The town suffered heavily, while survivors continued to live, travel and work there."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1240 Batu’s forces captured Kyiv, whose defence had been organised under Dmytro, appointed earlier by Danylo. Inhabitants and buildings suffered severely, families scattered, and political and commercial connections along the Dnieper were damaged. Travellers passing a few years later still encountered devastation and a small population, but passage had not vanished from everyone’s life. Those who stayed, fled or returned for trade carried different memories."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Dynastic houses still invoke Kyiv’s standing, while effective protection depends on people in the town and countryside. A ruler needs judgement, food and repairs rather than assuming the old title immediately restores every former receipt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A man defending a street and one carrying messages outward remember different events. Soldiers discuss breaches, arrows and routes for wounded people. Communications and agreed support offer more than reliance on the city’s name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Returning households seek homes, fields and relatives. Borrowing grain and repairing tools matter alongside old debts. Work, provisions and trustworthy dealings with renewed travellers help life continue amid the damage."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

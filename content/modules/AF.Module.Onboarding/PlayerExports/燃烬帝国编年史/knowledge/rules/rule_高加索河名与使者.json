@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v6",
+  "Keywords": [
+    "高加索河名与使者"
+  ],
+  "RagShortTexts": [
+    "高加索使者要分辨库拉、阿拉古斯与东面其他河道。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "高加索使者要分辨库拉、阿拉古斯与东面其他河道。把河名或入口混淆，会把命令送到不同路线；熟悉当地称呼的人因而关系到行军与交涉。知道某处叫“门”不足以确认它就在眼前河谷。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

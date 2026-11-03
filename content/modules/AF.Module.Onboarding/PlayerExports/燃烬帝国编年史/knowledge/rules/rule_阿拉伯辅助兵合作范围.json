@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v5",
+  "Keywords": [
+    "阿拉伯辅助兵合作范围"
+  ],
+  "RagShortTexts": [
+    "首领商定的辅助军役不等于罗马可以征发所有阿拉伯家户。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "献礼与出兵可以由特定首领交涉，并不使罗马统帅有权征发所有阿拉伯家户。领袖、任务和物资承诺共同限定合作。邻近一支部队服役，不代表别的群体也答应相同条件。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

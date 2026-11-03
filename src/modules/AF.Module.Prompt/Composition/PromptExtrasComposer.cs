@@ -161,9 +161,17 @@ internal static class PromptExtrasComposer
 		markers.WorldMap = HasRuleBlock(extras, "worldmap_party_command");
 		markers.NpcMajor = HasRuleBlock(extras, "npc_major_actions");
 		markers.VanillaIssue = HasRuleBlock(extras, "vanilla_issue");
-		markers.ResidentRecentActions = extras.IndexOf(ResidentRecentActionsHeader, StringComparison.Ordinal) >= 0;
-		markers.VanillaIssueRuntimeBlock = extras.IndexOf(VanillaIssueRuntimeBlockPrefix, StringComparison.OrdinalIgnoreCase) >= 0;
+		markers.ResidentRecentActions = ContainsAnyRaw(extras, "ResidentRecentActionsHeader", StringComparison.Ordinal);
+		markers.VanillaIssueRuntimeBlock = ContainsAnyRaw(extras, "VanillaIssueRuntimeBlockPrefix", StringComparison.OrdinalIgnoreCase);
 		return markers;
+	}
+
+	// Producers write the current language; a cached or stored block may be in the other one.
+	private static bool ContainsAnyRaw(string extras, string key, StringComparison comparison)
+	{
+		foreach (string marker in PromptComposerTexts.RawVariants(key))
+			if (extras.IndexOf(marker, comparison) >= 0) return true;
+		return false;
 	}
 
 	internal static bool HasRuleBlock(string extras, string ruleId)

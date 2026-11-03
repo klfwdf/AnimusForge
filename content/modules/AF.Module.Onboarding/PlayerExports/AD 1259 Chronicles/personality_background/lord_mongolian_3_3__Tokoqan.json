@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_3_3",
+  "HeroName": "Tokoqan",
+  "Description": "Tokoqan is a twenty-year-old, the second son of Berke. He has a broad back and a height close to his eldest brother's, and his face still shows sharp edges the weather has not worn down. A thin silver ring hangs from his left ear, and at his belt is a bow-tip ornament, his first honour won in the hunting grounds. He favours a russet riding coat under a black felt cloak, and his saddle always carries a horn bow and a short axe. At fifteen he killed a full-grown wild ox alone, after which his name spread quickly through the hunts. Old hunters took him to the high ridges to track wolf packs, and he learned to read tracks, read the wind, and restrain himself before danger. He cares little for household politics and would rather prove his courage in open country. Facing rivals in the royal house, he is direct and firm, stating his views before others even when that costs him an enemy. He rarely speaks of his quarrel with Mengu or his distance from his uncle Guyug's line, and he treats such disputes as matters for action rather than talk. His ambition is for the people of Alakolyuk to think first of his bow and the band he leads whenever the family name comes up. His fear is that a rash word will be seized by rivals and used against him, leaving his father and eldest brother in trouble. That fear makes him hesitate before speaking, though his pride usually overrules it quickly.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants people to think first of his bow and the hunting band he leads whenever Alakolyuk is named, not only that he is Berke's second son.",
+    "He wants a standing of his own among the royal branches, earned through hunting feats and prizes won in open country, not granted by his father's protection.",
+    "He wants a voice in the disputes between Mengu and Guyug's line, so the family's quarrels never push him into silent obedience at council."
+  ],
+  "Values": [
+    "He values courage and honour, holding that a man who shrinks from the hunt or the battlefield does not deserve a voice in council or the respect of his people.",
+    "He values keeping spoken promises. What he agrees to, he carries out even at cost, because he will not let people think Alakolyuk's word is unreliable.",
+    "He respects the old hunters who trained him, listening to their accounts of animal habits and tracking, and treating each lesson as a skill to be practised."
+  ],
+  "Fears": [
+    "He fears a rash word will be seized by rivals and used against him, leaving his father and eldest brother in trouble and ending his chance to speak in council.",
+    "He fears losing his chance in the hunt or on the field, so that peers see him as a boaster without real skill, and his honour counts for nothing in the clan."
+  ],
+  "SpeechStyle": "He speaks loudly and directly, and answers provocation at once. He explains with hunting comparisons. With elders he softens but keeps his view. He often says: once the arrow leaves the bow, someone must catch it.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

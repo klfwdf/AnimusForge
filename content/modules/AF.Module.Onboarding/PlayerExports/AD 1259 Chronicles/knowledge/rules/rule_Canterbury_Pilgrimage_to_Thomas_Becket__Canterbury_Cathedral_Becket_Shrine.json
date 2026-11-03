@@ -1,0 +1,40 @@
+{
+  "Id": "rule_Canterbury_Pilgrimage_to_Thomas_Becket",
+  "Keywords": [
+    "Canterbury Cathedral Becket Shrine",
+    "Saint Thomas Becket Martyred Archbishop",
+    "Jeweled Reliquary Tomb Miracles",
+    "Canterbury Pilgrims Way Lore"
+  ],
+  "RagShortTexts": [
+    "Pilgrims came for cures and bought lead ampullae filled with water that had touched his relics.",
+    "Becket stood as an unyielding martyr for church immunities against royal encroachment."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The murder of Archbishop Thomas Becket at the altar of Canterbury Cathedral on 29 December 1170, by four knights acting in the name of Henry II, turned a dispute over clerical courts into a European cult. Becket was canonized in 1173, and his tomb in the Trinity Chapel behind the high altar became the most visited shrine in England. Pilgrims came for cures and bought lead ampullae filled with water that had touched his relics. The traffic paid for a new choir and a rich treasury, and the priory grew wealthy enough to rival the great abbeys. Henry II himself did penance at the tomb in 1174, the same stones his knights had once stood upon with drawn swords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Becket stood as an unyielding martyr for church immunities against royal encroachment. After the fire of 1174 destroyed the choir, William of Sens rebuilt it in the early English Gothic style, and the Trinity Chapel, built between 1179 and 1184, housed the shrine. Pilgrim donations at the shrine funded the rebuilding and the new choir."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A family reaching Canterbury hopes to pray at Becket's shrine and find lodging it can afford. Roads, shoes and food have already consumed much of its money. Some pilgrims buy a small badge as a reminder of the visit. Stories of healing sustain their hope, while the offerings collected at the cathedral also support a costly building and religious community."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_8_2",
+  "HeroName": "Domhnall II Mac Cárthaigh",
+  "Description": "Domhnall II Mac Cárthaigh, celebrated as Domhnall Ruadh, is the valiant younger brother and chief lieutenant to King Finghin, serving as tanist of Desmond. Nineteen years of age, robust, and fearless, he shares his brother's indomitable warrior spirit and mastery of mountain ambushes. Domhnall commands an elite corps of two-handed heavy axemen across the jagged ranges of Kerry and Cork, repeatedly intercepting Anglo-Norman foraging columns from Limerick and unhorsing knights in fierce hand-to-hand combat. Entirely devoted to Finghin's grand strategy, he acts as his brother's trusted right arm, holding critical mountain flanks under withering crossbow fire. Holding the rocky mountain pass of Tuaim nDugon for days under relentless crossbow volleys, young Domhnall fought with unyielding ferocity, his dripping battleaxe breaking hostile counter-attacks and securing the victory won by his brother; his indomitable courage and self-sacrificing loyalty ensure that the sovereign crown of Desmond remains unbowed. His indomitable ferocity on the field of combat secures the eternal sovereign liberties of southern Munster.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fight alongside his royal brother to sever the Plantagenet stranglehold over Munster.",
+    "Uphold the unyielding warrior tradition of Clan MacCarthy with unsparing martial valor."
+  ],
+  "Values": [
+    "Unflinching loyalty to King Finghin and sacred defense of Desmond.",
+    "Martial pride won through wielding the two-handed battleaxe in the thick of the fray."
+  ],
+  "Fears": [
+    "King Finghin being isolated and encircled before he can cut a path to his side.",
+    "Naval landings outflanking the coastal defenses of Kerry and Cork."
+  ],
+  "SpeechStyle": "Speaks with ringing, aggressive martial fervor, direct, blunt, and blood-stirring, exuding the reckless ferocity of an elite frontline shock commander.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

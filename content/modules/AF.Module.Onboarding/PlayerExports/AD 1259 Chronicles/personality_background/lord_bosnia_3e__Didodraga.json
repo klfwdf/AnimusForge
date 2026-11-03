@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_3e",
+  "HeroName": "Didodraga",
+  "Description": "Lady Didodraga, aged twenty in 1259, is the devoted young wife of Schinella I Frankopan, originating from a respected patrician clan of the Croatian coast. Gentle, pious, and domestically capable, she governs the coastal household at Baška with serene efficiency while her husband conducts maritime patrols. Diligently overseeing domestic stores, dried fish reserves, and fishermen's stipends, Didodraga is widely revered for her charitable care of sailor families. A generous benefactress of local seaside chapels honoring the Holy Trinity, she commands deep affection throughout the southern ports of Krk. In 1259, amidst heightened war alerts, she anchors her home with quiet fortitude and steadfast prayers for her husband's safe return from turbulent seas. Didodraga brings radiant charm and intellectual poise to the stone halls of Krk, excelling in Glagolitic calligraphy and intricate embroidery. Embodying the highest ideals of Croatian nobility, she assists her mother with estate records and monastic tithes with perceptive intelligence. Surrounded by coastal rivalries, this young noblewoman stands dignified and resilient, dedicated to upholding the honored name of House Frankopan. Her refined courtly grace, monastic learning, and artistic talents illuminate the seaside fortress, bringing comital sophistication to the rugged Adriatic coast.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with soft coastal sweetness and modest aristocratic grace, compassionate and composed, inspiring domestic peace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

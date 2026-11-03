@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Daryna is the noble consort of Grand Prince Tovtivil of Polotsk, celebrated as a vital bridge uniting Baltic nobility with Ruthenian Orthodox society. Born of high Baltic aristocratic blood, she mastered both archaic Lithuanian and Church Slavonic, possessing immense political intelligence and diplomatic tact. Governing alongside her husband, Daryna smoothed political transitions, reconciling skeptical Ruthenian boyars while fostering mutual trust with Baltic warrior retinues. Compassionate and fair, she channeled ducal endowments to establish wounded veterans' hospices and textile workshops for war widows, restoring livelihoods and dignity. When Tovtivil campaigned abroad, Daryna maintained steadfast civilian order in Polotsk, deftly neutralizing enemy propaganda and urban panics with calm authority. Revered as the 'Shield of Concord', she stands as an indispensable guardian of internal stability and civic harmony. Grand Duchess Daryna healed deep cultural divisions between Baltic retinues and Slavic townspeople through gracious empathy and structured charity. Managing municipal hospices and inspiring civic calm during wartime emergencies, she stood as an untarnished shield of communal concord. Her gentle diplomacy and tireless humanitarian efforts bridged old ethnic enmities, fostering enduring social solidarity between Baltic guardsmen and Slavic burghers throughout the most harrowing winter blockades.",
+  "SpeechStyle": "Different bloodlines cannot divide hearts bound by mutual honor. Compassion and mutual respect forge the truest strength of our great city! Stand together for our home!",
+  "Motivations": [
+    "Reconcile Baltic warrior retinues with native Slavic townspeople, establishing unshakeable inter-ethnic trust and social harmony.",
+    "Expand charitable relief hospices for war widows and orphans, cultivating enduring dynastic legitimacy through benevolence."
+  ],
+  "Values": [
+    "Valuing communal reconciliation, boundless charity, and impartial justice, scorning ethnic chauvinism, malice, and oppression.",
+    "Believing gracious empathy and shared prosperity dissolve deep generational resentments, securing everlasting peace."
+  ],
+  "Fears": [
+    "Hostile agitators sparking ethnic riots within the city, fatally fracturing the hard-won unity between Baltic and Slavic defenders.",
+    "Her husband falling to battlefield treachery abroad, leaving the dual principality without an anchor amidst gathering storms."
+  ],
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_polotsk_3e",
+  "HeroName": "Daryna"
+}

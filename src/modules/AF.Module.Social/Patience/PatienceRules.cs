@@ -13,7 +13,7 @@ internal enum PatienceMood
 
 internal static class PatienceRules
 {
-	private static readonly string[] PatienceLevelTexts = new[]
+	private static readonly PromptLanguageValue<string[]> PatienceLevelTextsByLanguage = new PromptLanguageValue<string[]>(() => new[]
 	{
 		SocialPromptTexts.Get("P057"),
 		SocialPromptTexts.Get("P058"),
@@ -25,7 +25,8 @@ internal static class PatienceRules
 		SocialPromptTexts.Get("P064"),
 		SocialPromptTexts.Get("P065"),
 		SocialPromptTexts.Get("P066")
-	};
+	});
+	private static string[] PatienceLevelTexts => PatienceLevelTextsByLanguage.Value;
 	private static readonly Regex MoodTagRegex = new Regex(@"\[ACTION:MOOD:([^\]\r\n]+)\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static int ClampInt(int v, int min, int max) => Math.Max(min, Math.Min(max, v));
 	private static float ClampFloat(float v, float min, float max) => Math.Max(min, Math.Min(max, v));
@@ -35,7 +36,8 @@ internal static class PatienceRules
 		return ClampInt((int)Math.Round(a), 10, 80);
 	}
 
-	private static readonly string[] RelationLevelTexts = new string[10] { SocialPromptTexts.Get("P067"), SocialPromptTexts.Get("P068"), SocialPromptTexts.Get("P069"), SocialPromptTexts.Get("P070"), SocialPromptTexts.Get("P071"), SocialPromptTexts.Get("P072"), SocialPromptTexts.Get("P073"), SocialPromptTexts.Get("P074"), SocialPromptTexts.Get("P075"), SocialPromptTexts.Get("P076") };
+	private static readonly PromptLanguageValue<string[]> RelationLevelTextsByLanguage = new PromptLanguageValue<string[]>(() => new string[10] { SocialPromptTexts.Get("P067"), SocialPromptTexts.Get("P068"), SocialPromptTexts.Get("P069"), SocialPromptTexts.Get("P070"), SocialPromptTexts.Get("P071"), SocialPromptTexts.Get("P072"), SocialPromptTexts.Get("P073"), SocialPromptTexts.Get("P074"), SocialPromptTexts.Get("P075"), SocialPromptTexts.Get("P076") });
+	private static string[] RelationLevelTexts => RelationLevelTextsByLanguage.Value;
 
 	internal static int ToTenLevelIndexByRelation(int relation)
 	{

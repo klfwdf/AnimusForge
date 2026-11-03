@@ -74,6 +74,7 @@ internal static class ApplicationTickComposition
 		RewardSystemBehavior.Instance?.OnEngineTick();
 		LordEncounterBehavior.OnEngineTick();
 		AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
+		FieldCampBehavior.Instance?.OnEngineTick();
 		CustomPolicyBehavior.Instance?.OnEngineTick();
 		NpcRulerPolicyBehavior.Instance?.OnEngineTick();
 		DiplomacyModuleServices.World.OnEngineTick();
@@ -119,6 +120,7 @@ internal static class ApplicationTickComposition
 			RunWatchedTickPhase("SubModule.RewardSystemBehavior.OnEngineTick", () => RewardSystemBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.LordEncounterBehavior.OnEngineTick", () => LordEncounterBehavior.OnEngineTick());
 			RunWatchedTickPhase("SubModule.AnimusForgeTerminalBehavior.OnEngineTick", () => AnimusForgeTerminalBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.FieldCampBehavior.OnEngineTick", () => FieldCampBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.CustomPolicyBehavior.OnEngineTick", () => CustomPolicyBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.NpcRulerPolicyBehavior.OnEngineTick", () => NpcRulerPolicyBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.WorldDiplomacyBehavior.OnEngineTick", () => DiplomacyModuleServices.World.OnEngineTick());

@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v10",
+  "Keywords": [
+    "琥珀护符的信念"
+  ],
+  "RagShortTexts": [
+    "琥珀护符寄托关怀，病人仍需要食水、陪护与施治。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "有人佩戴琥珀，希望保护儿童或缓解疾病，亲属也可能把它作为关怀的礼物。患病者仍需要饮水、食物和陪护，家人还要寻找愿意施治的人；拥有护符并不能保证病情好转。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

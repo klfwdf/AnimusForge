@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Mongke_Khan_Death_and_Toluid_Succession_War",
+  "Keywords": [
+    "Möngke campaigning and court news"
+  ],
+  "RagShortTexts": [
+    "Möngke’s southern campaign generated long-distance movement of troops and envoys."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Möngke’s southern campaign generated long-distance movement of troops and envoys. Distant commanders depended on received reports, distinguishing orders, rumors of health and claims of succession. Knowledge differed by place in 1259; an unreceived result was not an established basis for action."
+    }
+  ],
+  "TextMappings": []
+}

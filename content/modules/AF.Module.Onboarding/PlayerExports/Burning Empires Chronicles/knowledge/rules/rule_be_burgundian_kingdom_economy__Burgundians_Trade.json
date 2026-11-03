@@ -1,0 +1,59 @@
+{
+  "Id": "be_burgundian_kingdom_economy",
+  "Keywords": [
+    "Burgundians Trade",
+    "Ascaucalis farming and woodland goods"
+  ],
+  "RagShortTexts": [
+    "Ascaucalis farming, herds, woodland and exchange sustain households.",
+    "Long service removes cultivators and herd carers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Farming, animals, woodland goods and exchange around Ascaucalis sustain households. Levies remove cultivators and herders; prizes cannot indefinitely replace grain losses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ascaucalis farming, herds, woodland and exchange sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Long service removes cultivators and herd carers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Long service removes cultivators and herd carers. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Ascaucalis farming, herds, woodland and exchange sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Ascaucalis farming, herds, woodland and exchange sustain households. Households need meals and the means to keep producing after delivering goods. Long service removes cultivators and herd carers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Long service removes cultivators and herd carers. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Ascaucalis farming, herds, woodland and exchange sustain households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

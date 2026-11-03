@@ -1,0 +1,40 @@
+{
+  "Id": "rule_Rome_Eternal_City_Lateran_and_Senatorial_Ruins",
+  "Keywords": [
+    "Rome Eternal City Lateran",
+    "Capitoline Hill Roman Senate",
+    "St Peter Basilica Pilgrimage",
+    "Colonna Orsini Baronial Feuds"
+  ],
+  "RagShortTexts": [
+    "Rome was a city where classical monuments rose out of pastureland.",
+    "The ruins became strongholds, and every tower was a base for feud and extortion."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rome was a city where classical monuments rose out of pastureland. Sheep grazed among the ruins of the Colosseum and the Forum, while the popes governed from the Lateran Palace and drew pilgrims to the old basilica of Saint Peter. Civic life belonged to the Capitoline Senate and to rival baronial clans, the Colonna and the Orsini, who fortified ancient monuments into private towers. The ruins became strongholds, and every tower was a base for feud and extortion. Pilgrim traffic and papal revenue kept the economy going, but the baronial wars made the streets unsafe for anyone without a tower of his own to retreat into."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Along the Tiber, tumbled Corinthian capitals evoke antiquity's majesty. While papal bulls shake kingdoms across the continent, within Rome's walls citizens still invoke classical republican liberties. Stonemasons reuse marble from the ruins for new churches and house-fronts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Pilgrims trekking from beyond the Alps bring diverse foreign coin. Selling lead pilgrim ampullae near Ponte Sant'Angelo pays the rent, provided you dodge arrows when the baronial towers trade crossbow fire. Tenants owe labour at the baron's estate outside the walls."
+    }
+  ],
+  "TextMappings": []
+}

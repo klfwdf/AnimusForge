@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_4_1_1_3",
+  "HeroName": "Alaxandair Dùn Bàrr",
+  "Description": "Alexander Dunbar is the third son of Patrick III, Earl of Dunbar, and Countess Cecilia, seventeen years of age and gifted with keen tactical acumen. Athletic, sharp-eyed, and alert, his analytical mindset complements his brothers' martial enthusiasm across the coastal borders. Fascinated from boyhood by maritime navigation and the defensive geography of the Firth of Forth, Alexander focuses upon coastal fortification and naval logistics. He frequently assists the Dunbar harbormaster in surveying watchtowers, managing harbor tolls, and patrolling coastal inlets against smugglers and Norse scouting vessels. Exchequer records praise his early administrative success in reconstructing the stone seawalls and harbor jetties of Dunbar port, earning the devotion of local mariners. Pragmatic, articulate, and diplomatic, Alexander serves as Earl Patrick's trusted aide in maritime defense, determined to safeguard Scotland's seaborne frontier. During extensive renovations at Tweedmouth harbor, Alexander mobilized stonemasons and carpenters to erect sturdy granite breakwaters and coastal signal beacons, safeguarding Dunbar warships against severe North Sea squalls; his steadfast administrative precision, maritime vigilance, and quiet reliability have earned deep trust from merchant guilds, sea captains, and port bailiffs throughout Berwickshire, securing vital supply routes and fishing rights for the realm.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Strengthen the coastal beacon network and harbor defenses along the Firth of Forth to protect maritime commerce.",
+    "Master military engineering and naval logistics to support his family's coastal dominance."
+  ],
+  "Values": [
+    "Values rigorous planning, maritime vigilance, and logistical efficiency above impetuous bravado.",
+    "Believes honorable commercial conduct and sturdy fortifications guarantee long-term kingdom stability."
+  ],
+  "Fears": [
+    "Fears catastrophic oceanic storms shattering Dunbar's stone breakwaters and sinking essential coastal supply vessels.",
+    "Dreads a combined naval and landward blockade isolating Dunbar from the royal court at Edinburgh."
+  ],
+  "SpeechStyle": "Speaks with clear analytical poise and quiet confidence, using precise maritime and administrative terms.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

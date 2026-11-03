@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Burgos_Gothic_Capital_of_Castile",
+  "Keywords": [
+    "Burgos Castilian Capital",
+    "Burgos Cathedral Begun 1221",
+    "El Cid Heritage Burgos",
+    "Burgos Pasture Routes and Fields"
+  ],
+  "RagShortTexts": [
+    "Burgos links royal activity, its cathedral begun in 1221, markets and farming routes."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Burgos is an important Castilian royal city linked to the memory of El Cid's homeland. Its new cathedral, begun in1221, draws craftsmen and stone while demanding prolonged expenditure. Worship, pilgrimage and royal activity bring visitors to its markets. Plateau farming and herding connect with roads toward the northern coast, carrying wool, hides and grain into urban exchange. The ground crossed by livestock is also where cultivators sow grain and defend boundaries, creating disputes over pasture, passage and local charges. Merchants calculate transport, responsibilities and safe access to ports as well as cargo prices. Lords, churches and the city possess distinct rights and revenues, requiring negotiation when the crown seeks support. Urban wealth depends on both passing goods and surrounding land continuing to feed residents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Burgos merchants and lords value wool and northern routes, but passage of livestock must be reconciled with cultivated land, local rights and charges. Paying at one point does not remove every obstacle ahead. Freight and responsibility for loss require agreement too. Alfonso X seeks domestic resources while competing for a distant crown, giving towns and nobles reason to ask what expenditure achieves. Markets and surrounding livelihoods must remain viable to sustain trade and royal support."
+    }
+  ],
+  "TextMappings": []
+}

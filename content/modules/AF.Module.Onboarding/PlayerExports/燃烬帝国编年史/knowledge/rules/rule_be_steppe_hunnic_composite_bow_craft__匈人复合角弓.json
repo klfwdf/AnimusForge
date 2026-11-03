@@ -1,0 +1,38 @@
+{
+  "Id": "be_steppe_hunnic_composite_bow_craft",
+  "Keywords": [
+    "马背弓射与弓箭维护"
+  ],
+  "RagShortTexts": [
+    "马背弓射需要控马、弓弦与箭支维护，射失的箭还须补充。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "草原骑手用弓箭远射时，要在控马与瞄准之间分配注意力。弓身、弓弦、箭杆和箭镞缺一都妨碍使用，受潮和损伤也会影响装备。骑射本领来自练习与保养，不是单靠出生于某个族群就能获得。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "骑手要检查弓弦磨损、箭杆是否弯裂，并把箭放在可顺手取用之处。马匹颠簸、风向和目标移动会影响命中，射出的箭未必能回收。远射后仍要顾及同行者与马的体力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "供养弓骑兵须有可用马匹、制箭材料与补给，长途出兵还会消耗弓弦和箭支。指挥者选择分散射击或集中队伍时，要兼顾地形、命令能否传达和敌方逼近的方向。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

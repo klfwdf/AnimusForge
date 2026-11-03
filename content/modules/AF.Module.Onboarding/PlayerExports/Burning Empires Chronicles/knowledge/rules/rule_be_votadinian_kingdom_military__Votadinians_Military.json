@@ -1,0 +1,59 @@
+{
+  "Id": "be_votadinian_kingdom_military",
+  "Keywords": [
+    "Votadinians Military",
+    "Votadinian hill defence and coastal warnings"
+  ],
+  "RagShortTexts": [
+    "Hill guards, roads and coastal warnings share manpower.",
+    "Distant pursuit of Hibernians exposes home grain fields."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hill sites, roads and coastal warnings share people. Hibernian war makes ship reports important; distant pursuit exposes home fields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Hill guards, roads and coastal warnings share manpower. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Distant pursuit of Hibernians exposes home grain fields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Distant pursuit of Hibernians exposes home grain fields. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Hill guards, roads and coastal warnings share manpower."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Hill guards, roads and coastal warnings share manpower. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Distant pursuit of Hibernians exposes home grain fields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Distant pursuit of Hibernians exposes home grain fields. Repair, carrying and care also use people, while daily supply continues after troops pass. Hill guards, roads and coastal warnings share manpower."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

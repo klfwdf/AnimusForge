@@ -1,0 +1,59 @@
+{
+  "Id": "be_maskut_kingdom_economy",
+  "Keywords": [
+    "Maskuts Trade",
+    "Gelda herds and farming exchange"
+  ],
+  "RagShortTexts": [
+    "Gelda herds, farming exchange and travelers sustain households.",
+    "Excessive roadside raiding harms the next food supply."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gelda and foothill households depend on herds, farming exchange and travelers. Horses need grain exchange, while excessive raiding damages the next supply visit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gelda herds, farming exchange and travelers sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Excessive roadside raiding harms the next food supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Excessive roadside raiding harms the next food supply. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Gelda herds, farming exchange and travelers sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gelda herds, farming exchange and travelers sustain households. Households need meals and the means to keep producing after delivering goods. Excessive roadside raiding harms the next food supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Excessive roadside raiding harms the next food supply. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Gelda herds, farming exchange and travelers sustain households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

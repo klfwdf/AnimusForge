@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_6_2",
+  "HeroName": "Maria Adimari",
+  "Description": "Maria Adimari presides as the stalwart domestic matriarch of House Adimari, managing silk looms, dye houses, and real estate charters relocated from Florence to Genoa. Well-versed in urban guild credits and notarial instruments, her steady fiscal stewardship furnishes dependable provisioning for family knights across protracted campaigns. Lady Maria expanded extensive silk looms and fine wool manufactories along the Ligurian coast, tailoring luxury textiles to French and Flemish demand to accumulate boundless specie reserves. Within her urban chancery, she personally audited ledgers for destrier fodder, iron smithing, and weapon imports, ensuring that her family's garrison forces never suffered supply shortages. Pragmatic and composed, she maintained that noble continuity rested upon unbending domestic thrift and ledger discipline, equipping her house to weather every political dislocation. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain unshakeable fiscal liquidity for House Adimari amidst political dislocations.",
+    "Safeguard familial dignity and ensure dependable sustenance for allied knights in exile."
+  ],
+  "Values": [
+    "Steadfast self-discipline and prudent calculation form the true bedrock of survival.",
+    "Domestic tranquility at home sustains the martial strength of warriors abroad."
+  ],
+  "Fears": [
+    "Urban fires and factional riots destroying expensive silk looms and raw materials.",
+    "Wholesale banishment decrees extinguishing painfully reconstructed family fortunes."
+  ],
+  "SpeechStyle": "Speaks with quiet aristocratic composure and pragmatic insight, steady and reassuring. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

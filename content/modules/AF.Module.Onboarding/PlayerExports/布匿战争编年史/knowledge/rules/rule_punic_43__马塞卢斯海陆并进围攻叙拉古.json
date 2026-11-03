@@ -1,0 +1,104 @@
+{
+  "Id": "rule_punic_43",
+  "Name": "马塞卢斯海陆并进围攻叙拉古要塞",
+  "Description": "公元前214年秋，罗马执政官马塞卢斯统帅六十艘五列桨战舰与数万陆军军团，海陆两路同时猛攻坚城叙拉古，企图以桑布卡巨型攻城浮桥与撞槌强行破城。",
+  "Tags": [
+    "围攻叙拉古",
+    "马塞卢斯",
+    "桑布卡攻城梯",
+    "五列桨战舰",
+    "海陆合围",
+    "西西里决战"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 85,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前214年秋马塞卢斯率六十艘五列桨战舰与数万陆军对叙拉古发动总攻。",
+    "将战舰两两捆绑架设被称为‘桑布卡’的巨型攻城浮桥企图登上海防城墙。",
+    "陆军执政官阿庇乌斯·克劳狄率主力在陆地以攻城槌与巨弩配合正面压制。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是罗马工程兵团最壮观的狂澜！六十艘庞大的战舰并排推进，八对五列桨战船两两捆绑牢固，中间搭建起高达数丈的‘桑布卡’攻城吊梯，形如巨型竖琴般直扑叙拉古阿克拉迪纳海墙！甲板上密布投枪手与弓弩手，后方陆军阿庇乌斯正以排山倒海之势推上万斤冲槌。马塞卢斯将军立于旗舰船头，誓要让地中海最狂妄的希腊海港在军团的重击下化为齑粉！"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗马人带着他们笨拙粗暴的浮桥和战船狂叫着扑来，自以为凭兵力和粗木就能征服阿基米德的智慧！阿基米德老人早已在城墙每一处射孔、每一段城垛安放了致命的机关。海面上的罗马巨舰自以为是无坚不摧的浮动堡垒，殊不知在几何学与杠杆机械面前，他们不过是一群送上门来等待被投石砸沉、被铁爪抛翻的愚蠢祭品！"
+    },
+    {
+      "Priority": 78,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "海面上遮天蔽日全是罗马战船，鼓手的鼓点震得海岸石块直颤。两艘军舰并在一起推过来的高楼浮桥看得人倒吸凉气。可是还没等罗马战船靠上岸，城墙上就发出了鬼哭般的呼啸，那些从没见过的巨大机械开始喷吐铁石，海面上瞬间爆开一团团冲天的血浪白沫！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前214年秋，罗马统帅马塞卢斯率领六十艘五列桨战舰与陆军主力海陆并进围攻叙拉古。罗马工兵建造了被称为‘桑布卡’的双船联装巨型攻城浮梯企图强登海墙，陆路则以大型攻城槌推进。叙拉古在学者阿基米德主持的先进机械防御下顽强抗击，战役演变为漫长的持久围攻战。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "马塞卢斯海陆并进围攻叙拉古要塞",
+    "rule_punic_43"
+  ]
+}

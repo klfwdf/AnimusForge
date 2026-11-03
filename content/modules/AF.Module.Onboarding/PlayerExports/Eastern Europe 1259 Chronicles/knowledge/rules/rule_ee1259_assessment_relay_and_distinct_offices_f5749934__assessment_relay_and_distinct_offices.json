@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_assessment_relay_and_distinct_offices_f5749934",
+  "Keywords": [
+    "assessment relay and distinct offices",
+    "Supervision collection and relay duties"
+  ],
+  "RagShortTexts": [
+    "Mongol supervision, collection and relay work have different duties.",
+    "Messages require identifiable authority, hosts and receivers."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Khanly messages, local collection and relay hospitality connect distinct responsibilities. Envoys specify authority, mounts and food, while hosts need destinations and receivers. Instructions and credentials work through actual recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "An escort identifies stages and receivers. Remount access does not authorize taking any horse; missing notice can leave the next host without supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Princes monitor demands made in envoys’ names. Recording mounts and food prevents abuses that exhaust animals needed for the next urgent message."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Relay hosts lose farm work and care about returned horses’ condition. Acknowledgment and compensation sustain service beyond an envoy’s claims of urgency."
+    }
+  ],
+  "TextMappings": []
+}

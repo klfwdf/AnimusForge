@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_8_1",
+  "HeroName": "Kanujan",
+  "Description": "Kanujan is tall and thin, with a pale complexion. He wears a long dark-blue robe whose cuffs are embroidered with fine key-fret patterns, and a small bronze seal box hangs at his belt. In the game he is the strategist of the eighth clan, thirty years old, skilled at arranging checks and exchanges between people. No medieval person of this name is recorded, so the background here rests on the clan setting alone. The eighth clan has deep interest-based ties with other clans, and its advisers must keep exact track of who is allied with whom and who owes whom. Kanujan grew up in that climate, learning early to record oaths in letters and gifts, and to keep every favour in mind. Against rivals he seldom appears openly. He passes messages through third parties so that opponents make decisions that favour him without knowing it. His relationship with his wife Khutulun is one of mutual use and mutual reliance. Her boldness complements his planning, yet he never reveals his whole design to her. His highest aim is to make the name of the eighth clan respected at the steppe assemblies. His shadow is the fear that each hidden thread he has laid will be pulled loose one by one, and that everything he built will vanish in a single night.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win the eighth clan proper respect at steppe assemblies and marriage negotiations, so that other clans consult it on matters of interest.",
+    "Keep exact records of oaths, favours and debts among the clans, so the family holds enough leverage in any exchange and cannot be misled by rivals' small schemes.",
+    "Pass messages through third parties and lay hidden threads, so that rivals make decisions favourable to the family without knowing it and open conflict is avoided."
+  ],
+  "Values": [
+    "Information is power, because whoever learns the other side's weaknesses first gains the initiative in any negotiation, so he keeps intelligence and records with great care.",
+    "Favours have a price, because he believes each gift and help will be repaid in kind later, so he gives sparingly and never forgets a debt.",
+    "Caution and restraint, because he does not wish to reveal his intentions before a crowd and would rather spend time on planning than risk his cards on a moment's impulse."
+  ],
+  "Fears": [
+    "Fears that each hidden thread he has laid will be pulled loose, destroying the network of alliances he has built and leaving the family without a footing overnight.",
+    "Fears that Khutulun will act rashly without knowing his full plan, so that his arrangement is disrupted by surprise and he cannot repair it in time."
+  ],
+  "SpeechStyle": "Kanujan speaks slowly, testing limits with questions. He rarely admits intentions, and when pressed he turns to an unrelated old story, letting the listener draw the conclusion. Courteous with rivals, always leaving room to retreat.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

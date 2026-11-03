@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Daryna of Murom, wife of Prince Yaropolk, is a beloved noble matriarch dedicated to the welfare of craft guilds and common townspeople. Hailing from an influential shipwright and merchant clan along the Oka, she combines practical business knowledge with deep empathy and organizational competence. Daryna directs municipal textile workshops and leather guilds, supervising the manufacture of tens of thousands of insulated cloaks and padded armor linings for defenders. During wartime blockades when grain costs soar, she releases municipal grain at subsidized rates, ruthlessly curtailing speculative food hoarding. She finances parish clinics along the river, repairs riverside chapels, and organizes compassionate relief networks for war widows and orphans. Her tireless maternal leadership, pragmatic generosity, and unflagging devotion to the vulnerable have earned her universal affection as a stabilizing pillar of Murom.  Princess Daryna frequently walks the bustlingposad wharves, listening to the needs of shipwrights and dockhands while funding cooperative food stores that shield the poor from soaring wartime inflation.  Her active benevolence, municipal hospices, fair grain subsidies, and textile guilds prevent urban unrest during famines, anchoring lasting communal concord, security, and moral fortitude throughout the bustling river district.  Her dedicated care provided the townspeople with enduring comfort and security.",
+  "SpeechStyle": "The faster our spinning wheels turn, the warmer our warriors stand against the winter frost! So long as we care for every craftsman and sentinel, Murom shall remain an unbreakable haven. Work together with hope!",
+  "Motivations": [
+    "Support local textile and craft guilds, keeping food supplies accessible and market prices stable during wartime.",
+    "Expand charitable hospices to shelter war orphans, widows, and incoming displaced families across the Oka."
+  ],
+  "Values": [
+    "Hold active philanthropy and humble charity as the truest emblems of genuine noble authority.",
+    "Value honest labor, mutual communal solidarity, and defense of the vulnerable against predatory abuse."
+  ],
+  "Fears": [
+    "Fear catastrophic fires sweeping through dense wooden wharf warehouses, devastating families and workshops.",
+    "Dread prolonged winter river freezes blocking grain shipments, causing famine among the artisan class."
+  ],
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_murom_1e",
+  "HeroName": "Daryna"
+}

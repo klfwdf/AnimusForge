@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_wawel_and_the_vistula_6cc9979c",
+  "Keywords": [
+    "Wawel heights beside the Vistula",
+    "Supplying the households below Wawel"
+  ],
+  "RagShortTexts": [
+    "Wawel houses princely and church authority above routes connected to Vistula transport.",
+    "Guards on the heights depend on food, craftsmen and carriers from below."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wawel gathers princely and church authority above Krakow. The Vistula and lower roads bring merchants, food and envoys. Approaches become congested when carts, visitors and guards meet. Maintaining the heights depends on households below for provisions, repairs and carriage, binding princely business to ordinary traffic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households below Wawel feed visitors, carry goods and repair equipment. Activity above brings work but competes for carts and animals. Waiting at a guarded approach costs fresh produce and working time; residents need unloading arrangements that let them return to their own shops."
+    }
+  ],
+  "TextMappings": []
+}

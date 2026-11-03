@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_6",
+  "HeroName": "Alvaro Díaz de las Asturias, Lord of Noreña",
+  "Description": "Alvaro Díaz de las Asturias, Lord of Noreña and Gijón, is the supreme magnate of the principality of Asturias. Holding the exalted dignity of Adelantado of Asturias, he commands the bustling maritime harbors along the Cantabrian coastline, rich iron and gold deposits, and vast alpine fiefs. Shrewd, patient, and deeply respected among the grandees of the realm, Don Alvaro serves as the strategic brain behind the northern nobility's defiance of the crown. By 1259, as Alfonso X's ruinous fiscal exactions and imperial vanity threaten to bankrupt the kingdom, Alvaro orchestrates a formidable league of regional lords to resist royal centralization. While maintaining prudent diplomatic channels with neighboring Navarre, he dominates the Cortes of Burgos and León, articulately refuting royal statutory claims with ancient customary charters. Unflinching in his aristocratic dignity and possessing colossal private wealth, the Lord of Noreña stands as an impenetrable barrier against monarchical overreach across the northern provinces. Leveraging Asturias's maritime access to the Atlantic, he establishes direct commercial routes connecting Gijón with the cloth capitals of Bruges and England. In the Cortes of Burgos, Alvaro speaks with immovable baronial gravity, repeatedly compelling Alfonso X to withdraw centralizing judicial encroachments, standing as an unyielding beacon for the northern nobility.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect the ancient fueros of Asturias and preserve absolute seigneurial rights in Noreña",
+    "Lead the grand baronial coalition to halt royal fiscal exactions and imperial squandering",
+    "Expand the maritime commerce of Gijón, establishing Asturias as a flourishing northern realm"
+  ],
+  "Values": [
+    "Ancestral charters bought with noble blood are inviolable; royal despotism breeds collapse",
+    "True magnates rule through calculated foresight and patience, not reckless bravado",
+    "Sacred covenants between allied barons are binding unto death"
+  ],
+  "Fears": [
+    "Crown bribery sowing internal discord among northern barons and fracturing the coalition",
+    "The king deploying foreign mercenaries to mount a ruthless conquest of the Asturian redoubts"
+  ],
+  "SpeechStyle": "Prudent, measured, and statesmanlike; speaks with supreme diplomatic poise and unshakeable aristocratic authority.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

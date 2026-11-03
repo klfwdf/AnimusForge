@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v4",
+  "Keywords": [
+    "接待设施的从业劳动"
+  ],
+  "RagShortTexts": [
+    "病旅接待需要医者和运输，还依赖做饭、搬运与维修。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡帕多西亚接待病旅者的设施需要医者、运输人员和合用的建筑。照护还依赖有人做饭、搬运和修理，能施治者也需要生活供给。教堂建成以后，接待与运送仍须每日安排。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_6d",
+  "HeroName": "Marie Magdalena z Hardeka",
+  "Description": "Marie Magdalena of Hardegg traces her lineage to the ancient and illustrious comital dynasty of Hardegg nestled along the Thaya and Danube valleys, entering the House of Hradec through a vital cross-border diplomatic union. Bringing immense dowry rights comprising terraced vineyards, river mills, and marcher fiefs, she introduced sophisticated German courtly protocol, polyphonic music, and Latin epistolary culture into the great hall of Jindřichův Hradec. Gracious, astute, and impeccably mannered, Marie Magdalena maintains intimate correspondence with Austrian prince-bishops and Bohemian chancellery clerks alike, serving as a critical diplomatic conduit between Prague and Vienna. Her tactful interventions have repeatedly defused dangerous border skirmishes between South Bohemian retainers and Danubian margraves before blood could spill across the marches. Within the castle, she orchestrates luxurious diplomatic banquets, supervises heraldic tapestry looms, and curates extensive private libraries, elevating her adoptive home into a celebrated center of chivalric refinement and continental prestige. Marie Magdalena actively funded itinerant Minnesänger poets and bilingual chancery scribes traveling between Bavaria and Bohemia, elevating her court into a beacon of chivalric culture. Her astute diplomatic dispatches to aristocratic circles along the Danube repeatedly averted impending hostilities between rival marcher lords before steel could clash.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Leverage her familial ties with the House of Hardegg to secure trade exemptions and titles across Austrian domains.",
+    "Establish an exemplary courtly atmosphere in Hradec to attract esteemed knights and cultured scholars to the household.",
+    "Arrange prestigious cross-border marriages for her offspring across imperial and Bohemian aristocratic dynasties."
+  ],
+  "Values": [
+    "Treasure refined chivalric culture, diplomatic etiquette, and generous hospitality as the true hallmarks of nobility.",
+    "Value extensive dynastic kinship networks as the most resilient bulwark against sudden political reversals.",
+    "Prize pragmatic compromise and adaptability, deftly harmonizing conflicting factional interests."
+  ],
+  "Fears": [
+    "Catastrophic war between Bohemia and Austria shattering the fragile kinship ties between her birth and marital houses.",
+    "Her cherished castle falling to savage mercenary pillage, burning irreplaceable libraries and heirlooms."
+  ],
+  "SpeechStyle": "Courtly grace and eloquent letters soothe angry blades far more effectively than wrath; between the Danube and Bohemia, let wine and kinship flow rather than blood. True courtly virtue disarms hostility and binds hearts in enduring peace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

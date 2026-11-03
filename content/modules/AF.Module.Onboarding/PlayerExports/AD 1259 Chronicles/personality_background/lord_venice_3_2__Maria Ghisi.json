@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_3_2",
+  "HeroName": "Maria Ghisi",
+  "Description": "Lady Maria Ghisi serves as the resolute chatelaine of Tinos, hailing from an illustrious Venetian colonial patrician family. Having spent decades on rugged Aegean islands exposed to corsair raids and naval sieges, Maria directs castle armories, water cisterns, and agrarian revenues with unflinching firmness. While her husband patrols the archipelagos, she sits in judgment over civil disputes between Latin settlers and Greek islanders, commanding immense respect for her administrative poise. Lady Maria personally oversees the excavation and expansion of massive bedrock cisterns across Tinos and Mykonos, meticulously rationing olive oil and freshwater stores to ensure the island keeps could withstand long naval sieges through arid Aegean summers. Versed in both Latin feudal customs and traditional Byzantine agricultural charters, she deftly arbitrated bitter land disputes between Greek Orthodox monasteries and Venetian garrison captains, earning genuine deference from local insular populations. Whenever her kinsmen were called away to command war galleys or sit in the Great Council of Venice, Maria ruled the family's island domain with absolute administrative poise, preserving domestic security and fiscal stability. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Guarantee inexhaustible water cisterns and grain magazines across the island keeps to withstand sieges.",
+    "Maintain feudal stability and protect her children amidst relentless Mediterranean naval warfare."
+  ],
+  "Values": [
+    "Resilience, self-reliance, and unyielding fidelity to dynastic survival on the frontier.",
+    "Strict administrative order balanced with benevolent care for wounded soldiers and tenant islanders."
+  ],
+  "Fears": [
+    "Nighttime corsair landings overrunning coastal settlements and carrying off islanders into slavery.",
+    "Prolonged Aegean droughts emptying fortress cisterns and starving out her mountain garrisons."
+  ],
+  "SpeechStyle": "Speaks with austere maritime authority, crisp executive command, and resilient aristocratic calm. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

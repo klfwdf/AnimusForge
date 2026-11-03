@@ -1,0 +1,59 @@
+{
+  "Id": "be_kartli_kingdom_military",
+  "Keywords": [
+    "Kartli Military",
+    "Kartlian cavalry and pass rations"
+  ],
+  "RagShortTexts": [
+    "Kartlian noble cavalry and local guards share valleys and passes.",
+    "Lazican war also affects coastal supply."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Noble cavalry and local guards share valleys and passes. Campaigns need estates and grain; war with Lazica also affects coastal supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kartlian noble cavalry and local guards share valleys and passes. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Lazican war also affects coastal supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lazican war also affects coastal supply. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Kartlian noble cavalry and local guards share valleys and passes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kartlian noble cavalry and local guards share valleys and passes. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Lazican war also affects coastal supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lazican war also affects coastal supply. Repair, carrying and care also use people, while daily supply continues after troops pass. Kartlian noble cavalry and local guards share valleys and passes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

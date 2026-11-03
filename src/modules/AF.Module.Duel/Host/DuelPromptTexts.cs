@@ -15,11 +15,10 @@ internal static class DuelPromptTexts
         public List<string> DuelInstructionsNonHero { get; set; }
     }
 
-    private static readonly Lazy<Payload> Values = new Lazy<Payload>(Load);
+    private static readonly PromptLanguageFile<Payload> Values = new PromptLanguageFile<Payload>("DuelPromptTexts.json", Load);
 
-    private static Payload Load()
+    private static Payload Load(string path)
     {
-        string path = AnimusForgeModulePaths.GetModuleDataFilePath("DuelPromptTexts.json");
         return JsonConvert.DeserializeObject<Payload>(File.ReadAllText(path, Encoding.UTF8));
     }
 

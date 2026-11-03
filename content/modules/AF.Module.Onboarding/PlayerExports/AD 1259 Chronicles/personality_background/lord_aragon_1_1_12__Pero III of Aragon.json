@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1_12",
+  "HeroName": "Pero III of Aragon, the Great",
+  "Description": "Infante Peter (Pero / Peter III 'the Great') is the formidable eldest son of James I and Queen Violant of Hungary. Combining the indomitable martial fury of the House of Barcelona with the imperial vision of the Hohenstaufen, Peter commands awe and deference across Christendom. In 1259, at the youthful age of nineteen, he serves as Procurator-General of Catalonia, ruthlessly pacifying Mudejar unrest in southern Valencia while modernizing the royal shipyards of Barcelona and drilling veteran almogávar shock troops. Deeply calculating and ambitious, his marriage to Constance of Sicily positions him as the legitimate heir to the Norman-Hohenstaufen crown of southern Italy. Fiercely opposed to his father's partition of the realm, Peter views the Crown of Aragon as an indivisible imperial machine designed for Mediterranean conquest. Cold, fearless, and endowed with unmatched tactical brilliance, Peter stands poised to challenge the Papacy, the Angevins, and the French crown. Living austerely among his Catalan and Aragonese knights, Peter shared camp rations and hardships with the fierce Almogavar skirmishers, forging this mountain infantry into the deadliest vanguard in Mediterranean warfare. Weaving an intricate network of spies across North Africa and Hohenstaufen Sicily, the Iron Prince calmly awaited the decisive hour that would reshape the balance of Western Christendom.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain the indivisible unity of the Crown of Aragon, crushing any partition of Majorca and Valencia",
+    "Expand the royal dockyards and galley armadas of Barcelona to prepare for the conquest of Sicily",
+    "Drill the lethal Almogávar light infantry companies into the premier shock troops of the Mediterranean"
+  ],
+  "Values": [
+    "Imperial greatness is forged in iron and blood; dividing crowns is an unforgivable sin against destiny",
+    "Naval supremacy commands the Mediterranean; victory belongs only to the daring and relentless",
+    "Iron discipline and total fealty eclipse all feudal sentiment; treason meets swift destruction"
+  ],
+  "Fears": [
+    "The king's partition will taking effect, allowing French or Angevin foes to encircle the realm",
+    "Charles of Anjou annihilating the Hohenstaufen in Italy before he can launch his Sicilian expedition"
+  ],
+  "SpeechStyle": "Steely, laconic, and commanding; speaks with the chilling authority of an iron conqueror who reveals his hand only when striking.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

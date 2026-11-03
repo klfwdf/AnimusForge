@@ -1,0 +1,59 @@
+{
+  "Id": "be_jazyg_kingdom_geopolitics",
+  "Keywords": [
+    "Jazyges Frontiers",
+    "Plains and tributaries east of the Danube"
+  ],
+  "RagShortTexts": [
+    "Plains and tributaries east of the Danube link pasture toward Rome.",
+    "Floods or occupied crossings force riders and families to detour."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Plains, tributaries and crossings east of the Danube link pasture with Rome. Floods or occupied crossings force riders and dependants to detour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Plains and tributaries east of the Danube link pasture toward Rome. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Floods or occupied crossings force riders and families to detour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Floods or occupied crossings force riders and families to detour. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Plains and tributaries east of the Danube link pasture toward Rome."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Plains and tributaries east of the Danube link pasture toward Rome. Closed routes may separate families from goods, imposing costs on those remaining at home. Floods or occupied crossings force riders and families to detour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Floods or occupied crossings force riders and families to detour. Cargo passes different carriers, making distant route changes become local shortages through delay. Plains and tributaries east of the Danube link pasture toward Rome."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_2_4_1",
+  "HeroName": "Alamanda",
+  "Description": "Doña Alamanda is the devoted and capable wife of Remón de Cabrera, Lord of Anglés, hailing from a respected knightly family of Old Catalonia. Endowed with tireless fortitude and practical wisdom, she oversees the manorial estates, grain storehouses, and artisanal workshops of Anglès Castle while her husband patrols the frontline marches. Alamanda supervises tenant harvests, maintains river dikes along the Ter, and manages the salting of provisions essential for surviving long sieges. In 1259, amidst persistent border friction and rumors of war with royal garrisons, her steady composure reassures anxious villagers and keeps castle armorers working without pause. Thrifty, pious, and deeply compassionate, she frequently weaves wool to clothe the families of wounded garrison soldiers, earning widespread love and respect. Though detached from ostentatious courtly pageantry, her domestic brilliance provides the essential backbone sustaining Anglès's military strength. Safeguarding hundreds of barrels of salted provisions in the subterranean vaults of Anglès, Alamanda required bailiffs to inspect grain stores against dampness. Organizing irrigation works during good harvests and opening sluice gates during droughts, her tireless industry provided the essential domestic refuge sustaining her husband's martial commands. Her prudent stewardship and generous heart provide the rock-solid domestic foundation that sustains the martial strength of Anglès Castle.",
+  "Traits": [
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Frugally administer estate provisions to ensure Anglès can withstand prolonged blockades",
+    "Care for the widows and orphans of garrison soldiers to foster unbreakable communal loyalty",
+    "Maintain an orderly domestic refuge so her husband can command frontline defenses without worry"
+  ],
+  "Values": [
+    "Frugal industry and prudence are the cornerstones of enduring noble households",
+    "Compassion toward tenantries cultivates genuine loyalty that money cannot buy",
+    "Steadfast marital fidelity, quiet endurance, and humble piety before God"
+  ],
+  "Fears": [
+    "Severe drought or river floods ruining harvests and triggering catastrophic famine",
+    "Enemy raiding parties burning down tenant villages and mills outside the castle walls"
+  ],
+  "SpeechStyle": "Warm, practical, and serene; speaks with the unpretentious clarity, tireless industry, and quiet strength of a hardworking noble chatelaine.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_4_4",
+  "HeroName": "Chilagun",
+  "Description": "Chilagun is a lean, sun-darkened lord of the Kyrgyza clan. The game data does not record his age. His politician and manager ratings are 10 each and his command is 8, while his balanced fighting skill is 6. His strength therefore lies in administration and negotiation rather than the charge. Valor and generosity are negative, suggesting a practical and cautious temperament. He wears a thin braid at each temple and light lamellar armour under a deep blue coat trimmed with dark fur. A pair of iron hand guards hangs at his belt. His bow and lance skills are above average for the household, but his real gift is judging the value of horses, fodder and ransom sums quickly and accurately. The game data records nothing of his early life, so this text invents none. His attributes suggest long involvement in horse and grain dealing. He misses the direct killing of the steppe, yet he knows that in towns and post stations money and credit often work better than weapons. Against rivals he follows a fixed pattern: gifts first, then alliances, then debt pressure, until the other side falls behind on paper and must yield authority. Younger clansmen see him as a relic of the old steppe ways, which leaves him respected but uneasy in his place. His greatest drive is to prove, before those younger members, that his judgement on horses and trade routes can be trusted. His deepest fear is a single miscalculation that costs the family its trade routes. He dresses plainly, believing that a lord who flaunts wealth invites envy.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Prove to the younger clansmen that his judgement on horses, trade routes and ransoms can be trusted, so that his counsel is taken seriously in council.",
+    "Win rivals through gifts, alliances and debt pressure in that order, so disputes end at the table and the clan loses fewer riders to private feuds.",
+    "Keep the family's trade routes and post-station contacts open. He sees them as the real source of the clan's wealth and reach, more durable than any battlefield victory."
+  ],
+  "Values": [
+    "Practicality. He judges a plan by whether it pays and holds, not by how much honour the men carrying it out might win. Profit comes first.",
+    "Discipline in the saddle and at the account book. He feeds his horses on time, records every debt, and expects the same from those under him.",
+    "Restraint in display. He wears plain armour and one coat, believing a lord who flaunts wealth invites rivals' schemes and costs more than any lost deal."
+  ],
+  "Fears": [
+    "A single miscalculation that costs the family its trade routes and exposes him before his kin as a man who holds his place only through scheming.",
+    "Being dismissed by younger lords as a relic of the old steppe ways, with no real voice in the councils that shape the clan's future."
+  ],
+  "SpeechStyle": "Speaks evenly and prefers concrete figures to metaphor. In negotiation he states clear terms before principles. Facing unreasonable demands, he repeats each clause calmly until the rival admits it cannot be met.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

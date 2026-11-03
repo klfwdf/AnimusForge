@@ -1,0 +1,52 @@
+{
+  "Id": "rule_battle_of_chmielnik_1241",
+  "Keywords": [
+    "defeat at Chmielnik",
+    "Mongol invasion of Lesser Poland"
+  ],
+  "RagShortTexts": [
+    "In 1241 Mongol forces defeated Lesser Polish troops at Chmielnik and advanced toward Kraków.",
+    "Defeated troops and displaced households remember different losses and failures of relief."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1241 Mongol forces entered Poland and defeated the resistance of Lesser Poland at Chmielnik, increasing the danger toward Kraków. Polish princes maintained separate lands and followings: summoning local knights did not ensure that different contingents would meet. News sent some people searching for relatives, others moving livestock or awaiting help in strongpoints. Reports arrived at different times. Someone who saw retreating riders remembers a different part of that year from someone whose only direct experience was a plundered village."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lesser Polish houses remember deaths and lost holdings, as well as help that failed to assemble in time. A fresh warning raises questions about meeting places, grain routes and a neighbouring prince’s arrival, beyond names entered for service."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Men retreating from Chmielnik care where their company separated and which road still offers support. A soldier distinguishes what he saw at a crossing from stories circulating through the host; bringing wounded companions back matters more than a stirring account of pursuit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villagers remember lost animals, damaged homes and interrupted sowing. Another summons prompts questions about who guards seed and whether refuge can receive livestock. A prince bearing the shame of defeat does not remove these household losses."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_1_2_2",
+  "HeroName": "Emir Anuk ad-Din ibn Manqatuy",
+  "Description": "Emir Anuk ad-Din ibn Manqatuy is a game emir whom no historical source records, so his life and appearance are game setting. He is tall, broad-shouldered and thick-backed, with a short, neatly trimmed beard and an almost invisible old scar on his forehead, said to come from a street fight below a city wall. As a young man he travelled between the post stations of Egypt, escorting supplies and letters, and in doing so he came to know many junior officers and merchants, which gave him a wide network in the army. After Qutuz seized power, he used these connections to introduce his father's former followers to one another and spoke for them at several feasts, gradually becoming the camp's coordinator. He belongs to no single faction. Whichever side offers the greater benefit is the one he leans toward, though he never admits it openly. He is a good listener who finds useful clues in other men's complaints and passes them to the right people. His noble aim is to become a respected emir in the new Mamluk order, so that the Manqatuy name is remembered. His inner shadow is the fear that his double-dealing will be seen through, leaving him abandoned by every faction at once.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Build friendships among the emirs of every faction through feasts and favours, becoming an indispensable coordinator who can trade influence for higher office.",
+    "Watch factional struggles closely and join the winning side at the decisive moment, using that choice to secure troops and camps for his family.",
+    "Keep ties with post-station keepers, merchants and junior officers, so that he hears news first and can arrange matters before anyone else."
+  ],
+  "Values": [
+    "Connections and intelligence are sharper weapons than swords, and a man who listens well can change the balance inside a camp at a critical moment.",
+    "There are no permanent allies, only lasting interests, so he feels no grief at a faction's fall and simply looks for a new patron quickly.",
+    "A man's worth shows in the problems he solves for others, and every favour widens his standing, which is the basic rule of survival in camp."
+  ],
+  "Fears": [
+    "His double-dealing being seen through by every faction at once, with all contacts cutting ties and leaving him no place to stand in camp.",
+    "News from stations and caravan roads drying up, so that he cannot read camp moods and picks the wrong side at a key moment."
+  ],
+  "SpeechStyle": "He speaks warmly, using small talk and jokes to close distance, and he often finds a point in someone else's words to agree with. When he offers advice he leaves room for doubt, so the listener feels the decision was their own.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_bosporan_kingdom_internal",
+  "Keywords": [
+    "Bosporan Kingdom Nobility",
+    "Bosporan towns and hinterland"
+  ],
+  "RagShortTexts": [
+    "Bosporan court, urban elites and food suppliers have different interests.",
+    "Trade credit requires safe delivery of goods and people."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Court, Greek urban elites, grain suppliers and mounted partners have different interests. Credit requires confidence that cargo and people can arrive safely."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Bosporan court, urban elites and food suppliers have different interests. Followers retain family ties; decisions about guards and distant service affect common participation. Trade credit requires safe delivery of goods and people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Trade credit requires safe delivery of goods and people. Coordination allocates actual supply and protection duties, not merely titles. Bosporan court, urban elites and food suppliers have different interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Bosporan court, urban elites and food suppliers have different interests. Households compare burdens with neighbors; unmatched protection weakens cooperation. Trade credit requires safe delivery of goods and people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Trade credit requires safe delivery of goods and people. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Bosporan court, urban elites and food suppliers have different interests."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

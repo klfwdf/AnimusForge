@@ -1,8 +1,36 @@
 {
-  "Version": 1,
+  "SchemaVersion": 3,
   "HeroId": "lord_1_27_3",
   "DisplayName": "Vasilia",
-  "Personality": "Vasilia, a prominent figure of the Cornelii Scipiones, Regal, commanding, steeped in classical patrician gravitas; acute in political judgment and steadfast in preserving ancestral lineage. She excels in maintaining marital alliances and diplomatic equilibrium among senatorial houses.",
-  "Background": "Vasilia owes allegiance to the Roman Republic (SPQR), hailing from the noble house of Cornelii Scipiones. Consul of 218 BC tasked with Hispania, Publius Cornelius Scipio boldly dispatched his brother Gnaeus to strike Barcid supply lines while racing back to contest Hannibal at Ticinus. His tactical vision laid the bedrock for Roman victory in the Second Punic War.",
+  "Description": "Vasilia, prominent patrician commander and magistrate of the Roman Republic, deeply rooted in ancestral civic duty and clan honor. Steeped in the unyielding code of the Mos Maiorum, Vasilia commands profound respect among senatorial elders and citizen assemblies. Amid the existential crisis of 218 BC as Hannibal's armies cross the Alps and threaten the heartland of Italy, Vasilia resolutely oversees fortress logistics, troop levies, and civic defense, rejecting any shameful capitulation to foreign invaders and demonstrating the indomitable fortitude that sustains the Republic.",
+  "Traits": [
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the sacred laws and ancestral discipline of the Republic against foreign aggression.",
+    "Mobilize civic levies and maintain unyielding resistance against Punic incursions in Italy.",
+    "Defend the honor of the clan and ensure the eternal sovereignty of the Roman Senate."
+  ],
+  "Values": [
+    "Ancestral tradition (Mos Maiorum) and legalistic duty are the bedrock of civilization.",
+    "True commanders value citizen lives, subordinating panic to steady strategic resolve.",
+    "Rome never surrenders to invaders; fortitude and sacrifice are the only path to victory."
+  ],
+  "Fears": [
+    "Consular rashness leading legions into another catastrophic Punic ambush.",
+    "Internal panic forcing the Senate into dishonorable peace terms."
+  ],
+  "SpeechStyle": "Speaks with austere gravitas and legalistic precision; measured and unhurried, reflecting Roman dignity.",
   "VoiceId": ""
 }

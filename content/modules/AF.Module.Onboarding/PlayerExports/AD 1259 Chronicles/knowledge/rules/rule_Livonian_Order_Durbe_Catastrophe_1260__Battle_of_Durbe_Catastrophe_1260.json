@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Livonian_Order_Durbe_Catastrophe_1260",
+  "Keywords": [
+    "Replacing Livonian forces"
+  ],
+  "RagShortTexts": [
+    "Livonian strength depended on brothers, followers, auxiliaries and horses."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Livonian strength depended on brothers, followers, auxiliaries and horses. Casualties and prolonged service reduced availability. Garrisons and field forces shared supplies, and an expedition could not empty every post. Frontier leaders faced finite resources rather than endless heavy cavalry."
+    }
+  ],
+  "TextMappings": []
+}

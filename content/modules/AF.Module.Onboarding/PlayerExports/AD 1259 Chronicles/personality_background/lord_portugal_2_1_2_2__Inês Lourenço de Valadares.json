@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_2_1_2_2",
+  "HeroName": "Inês Lourenço de Valadares",
+  "Description": "Doña Inês Lourenço de Valadares is the cherished daughter of Dom Lourenço Soares and Lady Maria Mendes de Sousa, noble heiress of Tangil in the Alto Minho. Raised amidst the lyrical troubadour gatherings hosted by her father and the orderly estate management of her mother, Inês combines intellectual brilliance with rare courtly grace. Accomplished in playing the psaltery, reading Latin devotionals, and fine embroidery, she is adored across the northern marches. In 1259, as she blossoms into marriageable age, noble embassies from across Portugal seek her hand, recognizing her as a premier dynastic prize. Unpretentious and deeply compassionate, she routinely visits peasant cottages across the domain, distributing winter rations and warm textiles to the destitute. Radiant, intelligent, and pure of heart, Inês stands as the most beloved jewel of the House of Valadares. Singing devotional cantigas to the psaltery in the sunlit orchards of Tangil, Inês's crystal-clear voice echoed across mountain valleys, dispelling the martial gloom of the fortress. Serving her noble parents with spotless filial piety and tending impoverished tenant cottages, she was revered by the entire garrison as the purest jewel of the Minho. Her angelic purity, courtly refinement, and compassionate heart make Inês a treasured symbol of hope and virtue across the alpine marches of Tangil.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cultivate poetic and domestic arts to uphold the cultural and noble luster of her lineage",
+    "Fulfill her dynastic matrimonial duty to cement a lasting alliance for her border fief",
+    "Dispense charitable aid to rural tenants, fostering deep popular love across the mountains"
+  ],
+  "Values": [
+    "True nobility consists in moral purity and kindness; an innocent heart outshines all worldly gems",
+    "Honor family bonds and dynastic destiny, facing the future with fearless courtly grace",
+    "Reverent faith before God, filial devotion, and unwavering love for her ancestral kin"
+  ],
+  "Fears": [
+    "Being coerced into an unhappy marriage with a ruthless lord, stripped of freedom far from home",
+    "Border warfare setting fire to her beloved manor at Tangil, engulfing her kin in tragedy"
+  ],
+  "SpeechStyle": "Sweet, melodic, and graceful; speaks with youthful innocence, intellectual charm, and the refined poise of an accomplished troubadour's daughter.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

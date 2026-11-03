@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_4_3",
+  "HeroName": "Guiomar Afonso Gato",
+  "Description": "Doña Guiomar Afonso Gato is the high-spirited and radiant younger daughter of Governor Alfonso Pires Gato and Lady Urraca Fernandes de Lumiares. Growing up among the craggy heights and pine forests of the Serra da Estrela, Guiomar is endowed with an adventurous spirit, natural warmth, and unquenchable joy. An accomplished horsewoman who loves riding across alpine meadows with her hounds, she sings vernacular folk ballads with an enchanting, crystal-clear voice. In 1259, she eagerly assists her elder sister Teresa in foraging medicinal herbs and wild berries from the mountain ravines to replenish the castle dispensary. Utterly unpretentious and universally adored by garrison soldiers and servant children, her sunny disposition relieves the grim monotony of border vigilance. Pure, bright, and fearless, young Guiomar brings light, laughter, and hope to the austere granite fortress of Guarda. Rambling across high alpine pastures with her mountain hounds, Guiomar's melodic singing echoed joyfully through the rocky ravines of Guarda. Her innocent exuberance and genuine kindness brought warmth and hope to the austere stone chambers of the remote mountain citadel. Her vibrant laughter and fearless enthusiasm dispel the grim isolation of the highlands, endearing young Guiomar to the entire mountain garrison.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Explore the mountain valleys of the Serra da Estrela to gather rare alpine medicinal herbs",
+    "Hone equestrian and archery skills to prove that frontier noblewomen possess martial bravery",
+    "Bring joy and generous kindness to garrison families, banishing the gloom of alpine isolation"
+  ],
+  "Values": [
+    "Joy, innocence, and unvarnished honesty are priceless gifts from God; vanity is a worthless burden",
+    "Love the land and stand faithfully by your kin, facing life's blizzards with a fearless smile",
+    "Pure moral innocence, boundless generosity, and loving devotion to family"
+  ],
+  "Fears": [
+    "War shattering the serene beauty of the mountains, forcing her to abandon her beloved highlands",
+    "A violent blizzard or avalanche trapping her kin on patrol, causing tragic loss"
+  ],
+  "SpeechStyle": "Charming, melodious, and lively; speaks with youthful spontaneity, infectious joy, and the fearless warmth of an alpine maiden.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

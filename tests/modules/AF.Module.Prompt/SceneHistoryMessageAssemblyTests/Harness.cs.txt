@@ -18,8 +18,20 @@ internal static class Program
         SpeakerHeroId = speaker == 7 ? "ada" : "other", SpeakerName = speaker == 7 ? "Ada" : "Borin",
         TargetAgentIndex = 7, GameDate = "Autumn 11", GameHour = 9, Scene = "square"
     };
+    static void TtsCases()
+    {
+        Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts(null)=="","TTS null empty");
+        foreach (var spoken in new[]{"你好，欢迎回来！", "Hello, welcome back!"})
+        {
+            foreach (var action in new[]{"*waves*", "**bows**", "* 挥手 *", "** 鞠躬 **"})
+                Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts(action+" "+spoken)==spoken,"TTS preserves existing action exclusion and following speech");
+            Check(ConversationSpeechTextRules.SanitizeSceneSpeechTextForTts("**bows**")=="","Double-star action alone is not speech");
+        }
+    }
     static void Main()
     {
+        TtsCases();
+        if (Environment.GetCommandLineArgs().Contains("--tts-only")) return;
         var context = new SceneHistoryMessageContext { ViewerAgentIndex = 7, ViewerHeroId = "ada", PlayerName = "Player", GameDate = "today", GameHour = 10, Scene = "town", UseDistanceLabels = false };
         var fact = Message(1, "system", "[AFEF NPC行为补充] delivered");
         var self = Message(3, "assistant", "Ada: hello");

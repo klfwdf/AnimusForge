@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_4c",
+  "HeroName": "Ulrich of Sanneck",
+  "Description": "Ulrich of Sanneck, aged twenty in 1259, is the eldest son and heir of Conrad I, designated to become Ulrich I of Sanneck and one of the prime architects of his house's rise toward the later comital rank of Celje. Trained from youth in both knightly chivalry and alpine warfare under his uncle Leopold, Ulrich possesses boundless energy, sharp martial intellect, and soaring ambition. As the Babenberg inheritance war ignites the Styrian borders in 1259, Ulrich observes the clashes between King Ottokar of Bohemia and King Béla of Hungary with calculating intensity. He recognizes that the House of Sanneck must eventually transcend its valley fortress through daring feats of arms and prestigious marriages into high imperial houses such as Heunburg. Bold in tournament and battlefield alike, Ulrich prepares his personal retinue of lances to seize every strategic advantage in the unfolding geopolitical realignment. Ulrich pairs martial bravery with far-reaching geopolitical ambition, ever ready to lead his personal retinue of armored horsemen into the conflicts of the Empire. Patrolling comital estates across Carniola and Lower Styria, he commands immense respect among the younger feudal nobility with his tactical brilliance. Energetic and bold, this rising heir vows to break beyond valley confines, advancing the Sanneck banner toward Celje and the expansive southeastern plains.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with the sharp, vigorous confidence of a rising knightly heir, passionately discussing cavalry tactics, feudal expansion, and martial honor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

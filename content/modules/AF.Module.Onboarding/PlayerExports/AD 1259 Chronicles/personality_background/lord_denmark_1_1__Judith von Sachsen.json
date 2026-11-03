@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Queen Judith von Sachsen, daughter of Duke Albrecht I of Saxony, endured one of the darkest dynastic tragedies of thirteenth-century Scandinavia as the royal widow of King Eric IV Plovpenning. Following Eric's treacherous assassination on the Schlei inlet in 1250 by his own brother Abel, Judith was left isolated with four young royal daughters amidst a ruthless succession crisis. Resolute, vigilant, and politically formidable, Judith refused to allow the usurping lines of Abel and Christoffer I to confiscate her late husband's vast patrimonial estates. She fled across the Baltic to marshal imperial support from her Saxon kinsmen while formally indicting fratricidal regicide before papal legates. Judith tirelessly defended the territorial inheritance of her daughters—Sophie, Ingeborg, Jutta, and Agnes—orchestrating brilliant royal marriages with the kings of Sweden and Norway. Her diplomatic tenacity secured the dynastic dignity of her lineage across Scandinavia. Establishing perpetual memorial endowments in Saxon convents, Judith relentlessly contested her late husband's stolen domains before imperial diets, her aristocratic dignity and uncompromising maternal ferocity preserving the rightful royal titles and princely revenues of her daughters across Scandinavia. Her unyielding legal struggle before imperial assemblies preserved royal titles and secured critical Danish revenues, remembered as an indomitable queen mother who triumphed over political storms.",
+  "SpeechStyle": "Speaks with austere, regal precision and cold resolve, her words framed in legal lucidity that commands instant deference.",
+  "Motivations": [
+    "Defend the vast royal patrimonies of her daughters against predatory annexation by rival branches of the Danish royal house.",
+    "Mobilize Saxon imperial influence and papal legates to hold her husband's fratricidal murderers legally and morally accountable."
+  ],
+  "Values": [
+    "Values familial honor and rightful inheritance above political compromise, demanding justice for regicide across European courts.",
+    "Champions vigilant statecraft and foreign alliances, trusting sovereign strength and legal legitimacy to protect royal claims."
+  ],
+  "Fears": [
+    "Dreads rival Danish factions seizing her daughters' estates by military force or assassinating them in court intrigues."
+  ],
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_denmark_1_1",
+  "HeroName": "Judith von Sachsen"
+}

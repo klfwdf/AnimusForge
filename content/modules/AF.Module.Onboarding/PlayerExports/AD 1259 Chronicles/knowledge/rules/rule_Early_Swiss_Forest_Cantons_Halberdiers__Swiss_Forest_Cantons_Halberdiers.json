@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Early_Swiss_Forest_Cantons_Halberdiers",
+  "Keywords": [
+    "Swiss Forest Cantons Halberdiers",
+    "Uri Schwyz Unterwalden Confederates",
+    "Armor Piercing Swiss Halberd",
+    "Alpine Mountain Defile Chokepoint"
+  ],
+  "RagShortTexts": [
+    "Swiss forest freemen armed with cleaving halberds defended Alpine defiles against feudal."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The forest cantons of Uri, Schwyz, and Unterwalden lay around Lake Lucerne, where mountain paths linked Italy with the Rhine valleys across the Alps. Their free men held their land under imperial immediacy, answering to the emperor rather than to a local lord, and they guarded the passes that carried trade over the St. Gotthard route. Herders who grazed cattle on high pastures learned to fight as a community. They mastered the eight-foot Swiss halberd, a weapon that combined an axe head, a thrusting point, and a rear hook. In a rocky gorge, a man who could hook a rider's armour and pull him from the saddle held an advantage over any mounted knight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Controlling the St. Gotthard route, the Swiss leagues fiercely resisted Habsburg feudal domination, and every toll on the road became a question of freedom or lordship. Their defile ambushes crushed knightly hosts, and the men who fought there refused to take noble captives for ransom. A Habsburg knight captured in those mountains could expect no ransom letter to reach his kin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mountain halberds are forged from tough Alpine ore and hafted on ash shafts as long as a man is tall. Charging down a rocky gorge, you grip the shaft with both hands and let the weight of the head do the work. A single chop can cleave a mail coif and bite into the collarbone. Keep your feet on the stones, because a slip on wet scree ends the fight early."
+    }
+  ],
+  "TextMappings": []
+}

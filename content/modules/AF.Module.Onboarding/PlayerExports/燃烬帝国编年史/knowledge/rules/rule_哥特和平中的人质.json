@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v7",
+  "Keywords": [
+    "哥特和平中的人质"
+  ],
+  "RagShortTexts": [
+    "369年和议以人质保障约定，各方仍须约束追随者。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "369年罗马与哥特首领达成和议后，以人质保障约定，瓦伦斯随后返回。人质及其亲属被卷入履约关系，各方首领仍须约束自己的追随者；局部冲突不会只因交出人质便自动消失。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -38,7 +38,7 @@ manifest[bubble_path.relative_to(ROOT).as_posix()]=hashlib.sha256(bubble_path.re
 (out/'sources.json').write_text(json.dumps({'baseline':args.baseline,'sources':manifest},indent=2),encoding='utf8')
 if not args.baseline:
  binding=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneAudio.cs').read_text(encoding='utf-8-sig')
- assert 'PublishFeedImmediately = (index, name, text, info) => _j17SceneSpeechOutputQueueController.PublishNpcSpeechToMessageFeedImmediately(index, name, text, info),' in binding
+ assert 'PublishFeedImmediately = (index, name, text, info) => _j17SceneSpeechOutputQueueController.PublishNpcSpeechToMessageFeedImmediately(index, AmbientFeedLabel(index, name), text, info),' in binding
  composition=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
  assert 'CaptureConversationEpoch = () => _sceneConversationEpoch,' in composition
  assert 'BeginNewPlayerDrivenSceneConversationEpoch = () => BeginNewPlayerDrivenSceneConversationEpoch(preserveVisibleBubbles: true),' in composition

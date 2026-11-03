@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v5",
+  "Keywords": [
+    "庞培进入伊比利亚"
+  ],
+  "RagShortTexts": [
+    "庞培旧行军说明路线，不能保证下一支军队的通行条件。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "古代地理书以庞培和卡尼迪乌斯的行军说明亚美尼亚通往伊比利亚的隘路。旧行军留下可供后来军官谈论的路线经验，但前军走过并不保证下一次军队拥有相同天气、桥渡或地方接应。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

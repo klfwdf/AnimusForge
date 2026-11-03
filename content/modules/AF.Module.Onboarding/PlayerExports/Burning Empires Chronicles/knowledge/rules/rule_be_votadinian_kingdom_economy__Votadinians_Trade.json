@@ -1,0 +1,59 @@
+{
+  "Id": "be_votadinian_kingdom_economy",
+  "Keywords": [
+    "Votadinians Trade",
+    "Corda farming and Roman silver"
+  ],
+  "RagShortTexts": [
+    "Corda farming, herds, crafts and Roman exchange sustain households.",
+    "Silver and goods cannot replace the next fields and herds."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Corda households live from farming, animals, crafts and Roman exchange. Silver and goods enter settlements, but the next food season still depends on land and herds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Corda farming, herds, crafts and Roman exchange sustain households. Traveling followers need real food from this production; valuables still require a buyer and exchange. Silver and goods cannot replace the next fields and herds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Silver and goods cannot replace the next fields and herds. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Corda farming, herds, crafts and Roman exchange sustain households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Corda farming, herds, crafts and Roman exchange sustain households. Households need meals and the means to keep producing after delivering goods. Silver and goods cannot replace the next fields and herds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Silver and goods cannot replace the next fields and herds. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Corda farming, herds, crafts and Roman exchange sustain households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

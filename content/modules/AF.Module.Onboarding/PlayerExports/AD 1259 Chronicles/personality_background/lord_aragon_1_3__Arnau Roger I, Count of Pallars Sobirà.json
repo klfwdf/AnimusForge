@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_3",
+  "HeroName": "Arnau Roger I, Count of Pallars Sobirà",
+  "Description": "Arnau Roger I, Count of Pallars Sobirà, is the sovereign lord of the high Pyrenean valleys, commanding the dizzying alpine passes linking Catalonia with Toulouse and Navarre. Governing from impenetrable stone citadels perched amidst glacial peaks, he commands the unswerving loyalty of hardy mountain spearmen and crossbowmen renowned across Iberia for their endurance. A fiercely loyal vassal of the House of Barcelona, Don Arnau campaigned alongside King James I in the conquest of Valencia, earning royal trust through tireless gallantry and austere discipline. By 1259, following the geopolitical demarcations established by the Treaty of Corbeil, Count Arnau vigilantly patrols the trans-Pyrenean border trails, ruthlessly suppressing smuggling cartels and rogue mercenary bands. Spartan, incorruptible, and unshakeable in his sense of chivalric fealty, the Count of Pallars Sobirà stands as the premier mountain sentinel guarding the northern frontiers of the Crown of Aragon. Perched high within the snowy crags of Pallars Sobirà, Arnau Roger commanded formidable stone fortresses guarding vital toll roads between Catalonia, Foix, and Toulouse. A master of alpine ambuscades, he deftly maneuvered through complex trans-Pyrenean disputes, guarding the ancient feudal liberties of his county with ferocious mountain pride and unyielding resolve.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Seal the high Pyrenean passes of Pallars Sobirà against French infiltrators and bandit bands",
+    "Safeguard the hereditary fueros, mining rights, and alpine autonomy of his county in the Corts",
+    "Drill elite mountain infantry companies, maintaining peak combat readiness for royal summonses"
+  ],
+  "Values": [
+    "A mountain knight's honor is forged in incorruptible fidelity; yielding an inch of border soil is infamy",
+    "Rigid discipline and vigilance are the sole guarantors of highland survival against empires",
+    "Keep one's word inviolable; serve the royal banner of Barcelona unto death"
+  ],
+  "Fears": [
+    "A French royal host breaching the snow-clad passes, turning his ancestral valleys into scorched battlefield",
+    "Misguided royal exactions alienating his fiercely loyal mountain tenantry and triggering unrest"
+  ],
+  "SpeechStyle": "Rugged, booming, and defiant; speaks with the untamed fierce pride of an independent Pyrenean mountain count.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

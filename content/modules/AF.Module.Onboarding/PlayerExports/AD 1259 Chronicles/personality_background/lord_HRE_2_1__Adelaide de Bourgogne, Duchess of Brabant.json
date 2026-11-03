@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_2_1",
+  "HeroName": "Adelaide de Bourgogne, Duchess of Brabant",
+  "Description": "Adelaide de Bourgogne, daughter of Duke Hugh IV of Burgundy, was Duchess of Brabant and Regent. Following her husband's early death, she governed with extraordinary statecraft, boldly transferring the succession to her brilliant second son Johann I to secure the dynasty's future. Adelaide formed a regency council of scholastic jurists in Brussels, commanding the ducal army and treasury with iron resolve to shield Brabant from encroaching princes. Surmounting baronial plots in Louvain, she deployed the ducal guard to secure the capital, clearing all obstacles to secure the glorious succession of Johann I. Governing with iron fortitude, Duchess Adelaide rescued Brabant from partition, her political audacity reshaping the geopolitical map of medieval Europe. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush baronial conspiracies seeking to usurp power during her son's minority in Brussels.",
+    "Depose her incapacitated eldest son to crown the martial Johann I, saving the realm.",
+    "Correspond with Saint Thomas Aquinas on jurisprudence, applying scholastic wisdom to governance."
+  ],
+  "Values": [
+    "Believes a great regent must subordinate personal feelings to the absolute survival of the state.",
+    "Regards theological philosophy and codified law as guiding beacons for iron statecraft."
+  ],
+  "Fears": [
+    "Feudal magnates launching an armed coup to overthrow the Regency and partition Brabant.",
+    "Young Johann falling to assassination before reaching majority, destroying her dynasty."
+  ],
+  "SpeechStyle": "Speaks with commanding intellectual gravitas and iron political authority, resolute and bold. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

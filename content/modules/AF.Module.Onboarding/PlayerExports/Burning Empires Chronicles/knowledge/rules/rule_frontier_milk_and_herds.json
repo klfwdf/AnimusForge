@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v2",
+  "Keywords": [
+    "Frontier milk and herds"
+  ],
+  "RagShortTexts": [
+    "Mobile frontier households used milk, meat and plants, varying by place and season."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mobile households on the Arabian frontier used milk, meat and gathered plants, with sources varying by place and season. Milk depended on living animals, making protection of herds important to later subsistence. Grazing and water along the route also mattered."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

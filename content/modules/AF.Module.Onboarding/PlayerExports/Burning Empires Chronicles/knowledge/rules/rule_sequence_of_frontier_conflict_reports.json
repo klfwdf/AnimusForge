@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v10",
+  "Keywords": [
+    "Sequence of frontier conflict reports"
+  ],
+  "RagShortTexts": [
+    "A report of conflict required place, eyewitness and route checks."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A report of conflict required place, eyewitness and route checks. Outpost observations, merchants’ accounts and an envoy’s commitment had different scopes. Reinforcing guards could be prudent without making rumor a completed victory."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,52 @@
+{
+  "Id": "rule_votchina_allodial_dispute_forfeiture",
+  "Keywords": [
+    "rights in inherited estates",
+    "family land and deeds"
+  ],
+  "RagShortTexts": [
+    "Inherited land involves kin, rents, churches and possession, supported by deeds and witnesses.",
+    "Transfers and seizures require enforcement rather than a title alone defining all rights."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus family land may pass through kinship and inheritance, but cultivators, rent receivers and claimants can differ. Church gifts, marriage property, division among brothers and debts alter burdens. Boundaries, established use, writings and witnesses work together; a preserved letter still needs recognition and identifiable land.\n\nIn disputes, military force and local support may secure possession before another party seeks a prince, kin or church. Cultivators still need to know whom to pay and whether they can sow; a new owner does not necessarily erase arrears. Seizure involves households, stock, grain and prior promises rather than merely a changed name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Noble divisions need boundaries, rents and support duties clear to avoid passing disputes to heirs. Churches with older grants may oppose later arrangements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Takeover escorts need the scope of authority before taking stores. Troops consuming seed and oxen undermine the estate being acquired."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Cultivators need old payments and loans acknowledged after a change of owner. Witnesses to deliveries help prevent double collection."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

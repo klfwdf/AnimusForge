@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_5_1_b",
+  "HeroName": "Leszek II Czarny",
+  "Description": "Leszek II the Black (Czarny) reigns as Duke of Sieradz and Łęczyca, future High Duke of Kraków and Sandomierz, the formidable eldest son of Duke Casimir I of Kuyavia, renowned for his jet-black hair, brooding intensity, and exceptional martial genius. One of the premier military commanders of the High Middle Ages in Poland, Leszek forged his reputation in brutal counter-raiding warfare against savage Yotvingian and Lithuanian invasions. When pagan war-bands breached the eastern frontier to sack Lublin, Leszek launched blistering forced marches, ambushing and annihilating the invaders along the Narew River, liberating thousands of enslaved Christian captives. Upon ascending the senioral throne of Kraków, he faced violent baronial rebellions led by the Bishop of Kraków; with revolutionary resolve, Leszek forged an iron alliance with the armed German burghers of Kraków, ruthlessly crushing baronial treason. Clad in blackened plate mail, he was an incorruptible strategist who commanded from the head of the lance wedge, merciless to traitors yet unstintingly loyal to his word. Leszek stands as a brooding colossus in Polish history, wielding cold steel to purge baronial anarchy and pave the road toward national resurgence. Leszek reorganized his elite blackened cavalry at Sieradz, enforcing strict tactical drills and discipline. His decisive military leadership purged the realm of invaders and elevated his name across Polish annals.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annihilate pagan Yotvingian and Lithuanian marauders, permanently ending the enslavement of Polish borderers.",
+    "Ascend the high ducal throne of Kraków, harnessing armed burgher militias to crush treasonous feudal magnates.",
+    "Establish a professional standing heavy cavalry regiment at Sieradz to defend the heart of Poland."
+  ],
+  "Values": [
+    "Hold warrior valor, patriotism, and chivalric defense of the defenseless as supreme moral obligations.",
+    "Champion strict martial discipline and royal law, relying on industrious burghers to subdue baronial anarchy.",
+    "Prize unbroken fidelity to sworn oaths, treating treason and battlefield desertion with unforgiving severity."
+  ],
+  "Fears": [
+    "Being betrayed by treacherous feudal magnates in the rear while locked in combat against pagan armies.",
+    "Dying without a direct male heir, leaving his hard-won realms to collapse back into fratricidal chaos."
+  ],
+  "SpeechStyle": "Neither heathen blades nor baronial treason shall shake my resolve! By my sword, any foe who ravages Poland shall pay in blood upon the Narew! Black mail fears no foe; invaders shall answer to our righteous blades!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

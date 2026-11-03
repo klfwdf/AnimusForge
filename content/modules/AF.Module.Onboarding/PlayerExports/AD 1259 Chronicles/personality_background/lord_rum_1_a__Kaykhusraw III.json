@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_1_a",
+  "HeroName": "Kaykhusraw III",
+  "Description": "Kaykhusraw III is eighteen, a lean young prince of the Seljuk house of Rum, with a thin pale scar above his left eyebrow from a fall during a horse race outside Konya. He wears dark blue Seljuk robes and carries a curved sabre whose scabbard bears the vine-scroll motif favoured by Konya metalworkers, the only private mark that sets him apart at court. His father, Kilij Arslan IV, is dead, and during his lifetime the sultan lived under the thumb of Mu'in al-Din Parwana, the Mongol-appointed chamberlain who controlled the royal seal and most of the tax registers. As a boy, Kaykhusraw learned the bow, the lance and the Quran within the palace walls. Twice he tried to reach old retainers, and twice the plan collapsed before it began, and those failures taught him silence and watchfulness. Parwana's men are everywhere, and every outing requires a check by his household. Toward Parwana he shows courteous obedience while quietly recording the name of every official who handles royal documents. He distrusts his elder brother Ala ad-Din Kayqubad II, yet he needs that brother's troops to check the chamberlain. His aim is to return real authority over decrees and revenue to the Seljuk crown. His deepest fear is that he will share his father's end, vanishing under a silent order with no name carved in the dynastic tombs.",
+  "Traits": [
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Restore real Seljuk control over the decrees and revenues of Konya instead of letting a Mongol-appointed chamberlain sign in the sultan's name.",
+    "Rebuild loyalty among Seljuk veterans and Turkish military nobles by granting fiefs and titles in exchange for personal oaths of service.",
+    "Keep his wife Fatima Khatun and their young son Mesud safe, so the dynasty's line survives the turmoil within his own watchful reach."
+  ],
+  "Values": [
+    "Dynastic honour above personal comfort, because he believes the Seljuk name must not end within his own generation, whatever humiliation he must bear.",
+    "Keeping oaths and holding grudges; he remembers a betraying commander for years even after that man has risen to power at court.",
+    "Caution and patience, preferring to wait a full year rather than force an open clash with Mongol envoys without good odds of success."
+  ],
+  "Fears": [
+    "Dying as his father did, removed by a sealed order and a rope, with no name carved on any stone in the Konya tombs and his line forgotten.",
+    "Betrayal by close servants who owe their wealth to the chamberlain and keep old ties to his circle, so every footstep at night wakes him."
+  ],
+  "SpeechStyle": "Speaks slowly and briefly, often ending a point with a question. Trusted aides are addressed by name; Mongol envoys get formal courtesy and cold silence. He never mentions his father's death.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

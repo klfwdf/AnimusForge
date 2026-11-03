@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v7",
+  "Keywords": [
+    "A royal robe found at Tyre"
+  ],
+  "RagShortTexts": [
+    "A secretly made royal robe at Tyre provoked charges despite uncertain ownership."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A secretly made royal robe was found at Tyre without a clear owner or purpose, yet officials and others became accused. A politically charged object could provoke arrests; finding it did not itself establish a particular person’s treason."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

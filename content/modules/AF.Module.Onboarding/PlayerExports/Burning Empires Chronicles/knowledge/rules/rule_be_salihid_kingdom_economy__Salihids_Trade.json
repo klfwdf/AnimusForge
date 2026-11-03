@@ -1,0 +1,59 @@
+{
+  "Id": "be_salihid_kingdom_economy",
+  "Keywords": [
+    "Salihids Trade",
+    "Dumatha wells and caravan livelihoods"
+  ],
+  "RagShortTexts": [
+    "Dumatha wells and crops feed herders, travelers and guards.",
+    "Escort income depends on continued access to wells."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dumatha wells and crops sustain herders, travelers and guards. Camels and horses carry goods while consuming water and grass; escort and exchange depend on open routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Dumatha wells and crops feed herders, travelers and guards. Traveling followers need real food from this production; valuables still require a buyer and exchange. Escort income depends on continued access to wells."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Escort income depends on continued access to wells. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Dumatha wells and crops feed herders, travelers and guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Dumatha wells and crops feed herders, travelers and guards. Households need meals and the means to keep producing after delivering goods. Escort income depends on continued access to wells."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Escort income depends on continued access to wells. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Dumatha wells and crops feed herders, travelers and guards."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,53 @@
+{
+  "Id": "rule_riveted_chainmail_mesh",
+  "Keywords": [
+    "Riveted mail links",
+    "Repairing broken mail rings",
+    "Mail padding and carried weight"
+  ],
+  "RagShortTexts": [
+    "Linked metal rings need repairs at breaks and seams; padding affects wear and protection.",
+    "Mail takes skilled labor and upkeep beyond the means of many ordinary fighters."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mail could protect Rus retainers, wealthy knights and steppe elites, with ownership shaped by wealth and supply. Small linked rings place strain on rivets and seams, and a break burdens neighboring links. Flexible armor still weighs on its wearer and needs fitted clothing and padding; a protected fighter can still suffer injury from a blow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A wearer checks armpits, shoulders and openings, where broken links can snag cloth and enlarge a tear. Sweat and rain leave mail damp, requiring care and repairs at rest; wet padding chafes. After fighting, bruising and restricted movement matter alongside penetration when deciding whether a man can ride on."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Equipping retainers means paying for ring making, riveting, fitting and repair as well as iron. Reused armor may fit poorly, hindering riding or shield use; craftsmen and spare links burden transport. A lord must maintain those regularly exposed to close combat before extending armor provision beyond available pay and food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Repairers replace damaged links one by one, and haste misses weakened edges. Families selling grain for armor also need padding and repair money; inherited mail can become disputed property. Military repair demands compete with farm tools, cart fittings and harness for a smith's fuel and working time."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

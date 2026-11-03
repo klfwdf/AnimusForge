@@ -81,9 +81,9 @@ internal static string BuildKingdomDecisionNarrative(KingdomDecision decision, D
 		string kingdomDisplayName = GetKingdomDisplayName(decision?.Kingdom, AdapterRecordTexts.Raw("AF_REC_Political_0001"));
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return (forProposer ? AdapterRecordTexts.Raw("AF_REC_Political_0002") : AdapterRecordTexts.Raw("AF_REC_Political_0003")) + kingdomDisplayName + AdapterRecordTexts.Raw("AF_REC_Political_0004");
+			return (forProposer ? AdapterRecordTexts.W("AF_REC_Political_0002") : AdapterRecordTexts.W("AF_REC_Political_0003")) + kingdomDisplayName + AdapterRecordTexts.W("AF_REC_Political_0004");
 		}
-		return (forProposer ? AdapterRecordTexts.Raw("AF_REC_Political_0002") : AdapterRecordTexts.Raw("AF_REC_Political_0003")) + kingdomDisplayName + AdapterRecordTexts.Raw("AF_REC_Political_0005") + text;
+		return (forProposer ? AdapterRecordTexts.W("AF_REC_Political_0002") : AdapterRecordTexts.W("AF_REC_Political_0003")) + kingdomDisplayName + AdapterRecordTexts.W("AF_REC_Political_0005") + text;
 	}
 
 internal static string AppendEventMaterialSentence(string text, string addition)
@@ -194,7 +194,7 @@ internal static string BuildDeclareWarPoliticalTriggerReason(IFaction declaringF
 						string text = NormalizePoliticalReasonText(reason?.ToString());
 						if (!string.IsNullOrWhiteSpace(text))
 						{
-							parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0006") + text);
+							parts.Add(AdapterRecordTexts.W("AF_REC_Political_0006") + text);
 							hasModelReason = true;
 						}
 						AddPoliticalScoreAgainstThresholdPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0007"), score, SafeGetPoliticalDecisionThreshold(targetFaction), AdapterRecordTexts.Raw("AF_REC_Political_0008"));
@@ -241,7 +241,7 @@ internal static string BuildMakePeacePoliticalTriggerReason(IFaction peaceFactio
 						string text = NormalizePoliticalReasonText(reason?.ToString());
 						if (!string.IsNullOrWhiteSpace(text))
 						{
-							parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0006") + text);
+							parts.Add(AdapterRecordTexts.W("AF_REC_Political_0006") + text);
 							hasModelReason = true;
 						}
 						AddPoliticalScoreAgainstThresholdPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0012"), score, SafeGetPoliticalDecisionThreshold(peaceFaction), AdapterRecordTexts.Raw("AF_REC_Political_0013"));
@@ -283,7 +283,7 @@ internal static string BuildKingdomPolicyPoliticalTriggerReason(KingdomPolicyDec
 			bool isInverted = SafeGetKingdomPolicyDecisionIsInverted(decision);
 			List<string> parts = new List<string>();
 			string policyName = GetPolicyDisplayName(policy);
-			parts.Add((isInverted ? AdapterRecordTexts.Raw("AF_REC_Political_0016") : AdapterRecordTexts.Raw("AF_REC_Political_0017")) + policyName + "”");
+			parts.Add((isInverted ? AdapterRecordTexts.W("AF_REC_Political_0016") : AdapterRecordTexts.W("AF_REC_Political_0017")) + policyName + AdapterRecordTexts.CloseQuote);
 			string dominantWeight = BuildPolicyDominantWeightPart(policy, isInverted);
 			if (!string.IsNullOrWhiteSpace(dominantWeight))
 			{
@@ -391,9 +391,9 @@ internal static string BuildPolicyDominantWeightPart(PolicyObject policy, bool i
 		}
 		if (isInverted)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Political_0024") + (weight >= 0f ? AdapterRecordTexts.Raw("AF_REC_Political_0025") : AdapterRecordTexts.Raw("AF_REC_Political_0026")) + axis;
+			return AdapterRecordTexts.W("AF_REC_Political_0024") + (weight >= 0f ? AdapterRecordTexts.W("AF_REC_Political_0025") : AdapterRecordTexts.W("AF_REC_Political_0026")) + axis;
 		}
-		return AdapterRecordTexts.Raw("AF_REC_Political_0027") + (weight >= 0f ? AdapterRecordTexts.Raw("AF_REC_Political_0026") : AdapterRecordTexts.Raw("AF_REC_Political_0025")) + axis;
+		return AdapterRecordTexts.W("AF_REC_Political_0027") + (weight >= 0f ? AdapterRecordTexts.W("AF_REC_Political_0026") : AdapterRecordTexts.W("AF_REC_Political_0025")) + axis;
 	}
 
 internal static string BuildPolicyWeightSummaryPart(PolicyObject policy)
@@ -402,7 +402,7 @@ internal static string BuildPolicyWeightSummaryPart(PolicyObject policy)
 		{
 			return "";
 		}
-		return AdapterRecordTexts.Raw("AF_REC_Political_0028") + FormatPoliticalPolicyWeight(policy.EgalitarianWeight) + AdapterRecordTexts.Raw("AF_REC_Political_0029") + FormatPoliticalPolicyWeight(policy.OligarchicWeight) + AdapterRecordTexts.Raw("AF_REC_Political_0030") + FormatPoliticalPolicyWeight(policy.AuthoritarianWeight);
+		return AdapterRecordTexts.W("AF_REC_Political_0028") + FormatPoliticalPolicyWeight(policy.EgalitarianWeight) + AdapterRecordTexts.W("AF_REC_Political_0029") + FormatPoliticalPolicyWeight(policy.OligarchicWeight) + AdapterRecordTexts.W("AF_REC_Political_0030") + FormatPoliticalPolicyWeight(policy.AuthoritarianWeight);
 	}
 
 internal static string FormatPoliticalPolicyWeight(float value)
@@ -426,21 +426,21 @@ internal static string BuildPolicyProposerProfilePart(Clan clan)
 		{
 			if (clan.Kingdom != null && clan.Kingdom.RulingClan == clan)
 			{
-				return AdapterRecordTexts.Raw("AF_REC_Political_0031") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0032");
+				return AdapterRecordTexts.W("AF_REC_Political_0031") + clanName + AdapterRecordTexts.W("AF_REC_Political_0032");
 			}
 			if (clan.IsMinorFaction)
 			{
-				return AdapterRecordTexts.Raw("AF_REC_Political_0031") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0033");
+				return AdapterRecordTexts.W("AF_REC_Political_0031") + clanName + AdapterRecordTexts.W("AF_REC_Political_0033");
 			}
 			if (clan.Tier >= 3)
 			{
-				return AdapterRecordTexts.Raw("AF_REC_Political_0031") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0034") + clan.Tier + AdapterRecordTexts.Raw("AF_REC_Political_0035");
+				return AdapterRecordTexts.W("AF_REC_Political_0031") + clanName + AdapterRecordTexts.W("AF_REC_Political_0034") + clan.Tier + AdapterRecordTexts.W("AF_REC_Political_0035");
 			}
 			if (clan.Tier == 2)
 			{
-				return AdapterRecordTexts.Raw("AF_REC_Political_0031") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0036");
+				return AdapterRecordTexts.W("AF_REC_Political_0031") + clanName + AdapterRecordTexts.W("AF_REC_Political_0036");
 			}
-			return AdapterRecordTexts.Raw("AF_REC_Political_0031") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0037") + clan.Tier + AdapterRecordTexts.Raw("AF_REC_Political_0038");
+			return AdapterRecordTexts.W("AF_REC_Political_0031") + clanName + AdapterRecordTexts.W("AF_REC_Political_0037") + clan.Tier + AdapterRecordTexts.W("AF_REC_Political_0038");
 		}
 		catch
 		{
@@ -464,7 +464,7 @@ internal static string BuildPolicyLeaderTraitPart(Hero leader)
 			{
 				return "";
 			}
-			return AdapterRecordTexts.Raw("AF_REC_Political_0042") + string.Join("、", parts);
+			return AdapterRecordTexts.W("AF_REC_Political_0042") + string.Join(AdapterRecordTexts.ListSeparator, parts);
 		}
 		catch
 		{
@@ -492,7 +492,7 @@ internal static void AddPolicySupportTendencyPart(List<string> parts, float? sup
 		{
 			return;
 		}
-		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0043") + GetPolicySupportTendencyLabel(support.Value) + AdapterRecordTexts.Raw("AF_REC_Political_0044") + supportText + "）");
+		parts.Add(AdapterRecordTexts.W("AF_REC_Political_0043") + GetPolicySupportTendencyLabel(support.Value) + AdapterRecordTexts.W("AF_REC_Political_0044") + supportText + AdapterRecordTexts.CloseParen);
 	}
 
 internal static string GetPolicySupportTendencyLabel(float support)
@@ -539,7 +539,7 @@ internal static string BuildKingSelectionPoliticalTriggerReason(KingSelectionKin
 				kingdom = chosenKing.MapFaction as Kingdom;
 			}
 			List<string> parts = new List<string>();
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0051") + GetKingdomDisplayName(kingdom, AdapterRecordTexts.Raw("AF_REC_Political_0001")) + AdapterRecordTexts.Raw("AF_REC_Political_0052") + GetHeroDisplayName(chosenKing) + AdapterRecordTexts.Raw("AF_REC_Political_0053"));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0051") + GetKingdomDisplayName(kingdom, AdapterRecordTexts.W("AF_REC_Political_0001")) + AdapterRecordTexts.W("AF_REC_Political_0052") + GetHeroDisplayName(chosenKing) + AdapterRecordTexts.W("AF_REC_Political_0053"));
 			AddKingSelectionFormulaRulePart(parts);
 			AddKingSelectionCandidateProfileParts(parts, chosenKing, kingdom);
 			AddKingSelectionCandidateRankingPart(parts, decision, chosenKing);
@@ -584,24 +584,24 @@ internal static void AddKingSelectionCandidateProfileParts(List<string> parts, H
 		}
 		Clan clan = chosenKing.Clan;
 		List<string> profileParts = new List<string>();
-		profileParts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0057") + GetClanDisplayName(clan));
-		profileParts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0058") + clan.Tier);
+		profileParts.Add(AdapterRecordTexts.W("AF_REC_Political_0057") + GetClanDisplayName(clan));
+		profileParts.Add(AdapterRecordTexts.W("AF_REC_Political_0058") + clan.Tier);
 		string strengthText = FormatPoliticalReasonNumber(SafeGetDiplomacyClanStrength(clan));
 		if (!string.IsNullOrWhiteSpace(strengthText))
 		{
-			profileParts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0059") + strengthText);
+			profileParts.Add(AdapterRecordTexts.W("AF_REC_Political_0059") + strengthText);
 		}
 		string influenceText = FormatPoliticalReasonNumber(SafeGetClanInfluence(clan));
 		if (!string.IsNullOrWhiteSpace(influenceText))
 		{
-			profileParts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0060") + influenceText);
+			profileParts.Add(AdapterRecordTexts.W("AF_REC_Political_0060") + influenceText);
 		}
 		string renownText = FormatPoliticalReasonNumber(SafeGetClanRenown(clan));
 		if (!string.IsNullOrWhiteSpace(renownText))
 		{
-			profileParts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0061") + renownText);
+			profileParts.Add(AdapterRecordTexts.W("AF_REC_Political_0061") + renownText);
 		}
-		parts.Add(string.Join("、", profileParts));
+		parts.Add(string.Join(AdapterRecordTexts.ListSeparator, profileParts));
 		AddKingSelectionCandidateFiefPart(parts, clan, kingdom);
 		AddKingSelectionCandidateWarPartyPart(parts, clan);
 	}
@@ -647,7 +647,7 @@ internal static void AddKingSelectionCandidateFiefPart(List<string> parts, Clan 
 				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0062"));
 				return;
 			}
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0063") + count + AdapterRecordTexts.Raw("AF_REC_Political_0064") + FormatPoliticalReasonNumber(totalValue));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0063") + count + AdapterRecordTexts.W("AF_REC_Political_0064") + FormatPoliticalReasonNumber(totalValue));
 		}
 		catch
 		{
@@ -683,7 +683,7 @@ internal static void AddKingSelectionCandidateWarPartyPart(List<string> parts, C
 				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0065"));
 				return;
 			}
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0066") + partyCount + AdapterRecordTexts.Raw("AF_REC_Political_0067") + troopCount);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0066") + partyCount + AdapterRecordTexts.W("AF_REC_Political_0067") + troopCount);
 		}
 		catch
 		{
@@ -731,14 +731,14 @@ internal static void AddKingSelectionCandidateRankingPart(List<string> parts, Ki
 			}
 			List<Tuple<Clan, float>> candidatePool = eligible.Take(3).ToList();
 			int poolIndex = candidatePool.FindIndex((Tuple<Clan, float> x) => string.Equals(GetClanId(x.Item1), chosenClanId, StringComparison.OrdinalIgnoreCase));
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0068") + (fullIndex + 1) + "/" + eligible.Count + AdapterRecordTexts.Raw("AF_REC_Political_0069") + FormatPoliticalReasonNumber(eligible[fullIndex].Item2) + "）");
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0068") + (fullIndex + 1) + "/" + eligible.Count + AdapterRecordTexts.W("AF_REC_Political_0069") + FormatPoliticalReasonNumber(eligible[fullIndex].Item2) + AdapterRecordTexts.CloseParen);
 			if (poolIndex >= 0)
 			{
-				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0070") + (poolIndex + 1) + "/" + candidatePool.Count);
+				parts.Add(AdapterRecordTexts.W("AF_REC_Political_0070") + (poolIndex + 1) + "/" + candidatePool.Count);
 			}
 			if (fullIndex > 0)
 			{
-				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0071") + GetClanDisplayName(eligible[0].Item1) + AdapterRecordTexts.Raw("AF_REC_Political_0072"));
+				parts.Add(AdapterRecordTexts.W("AF_REC_Political_0071") + GetClanDisplayName(eligible[0].Item1) + AdapterRecordTexts.W("AF_REC_Political_0072"));
 			}
 		}
 		catch
@@ -777,10 +777,10 @@ internal static void AddKingSelectionOutcomeScorePart(List<string> parts, Decisi
 		}
 		if (!string.IsNullOrWhiteSpace(initialText) && !string.IsNullOrWhiteSpace(meritText))
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0073") + initialText + AdapterRecordTexts.Raw("AF_REC_Political_0074") + meritText);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0073") + initialText + AdapterRecordTexts.W("AF_REC_Political_0074") + meritText);
 			return;
 		}
-		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0075") + (string.IsNullOrWhiteSpace(meritText) ? initialText : meritText));
+		parts.Add(AdapterRecordTexts.W("AF_REC_Political_0075") + (string.IsNullOrWhiteSpace(meritText) ? initialText : meritText));
 	}
 
 internal static void AddKingSelectionVoteSupportPart(List<string> parts, DecisionOutcome chosenOutcome)
@@ -825,21 +825,21 @@ internal static void AddKingSelectionVoteSupportPart(List<string> parts, Decisio
 			List<string> labels = new List<string>();
 			if (slight > 0)
 			{
-				labels.Add(AdapterRecordTexts.Raw("AF_REC_Political_0076") + slight);
+				labels.Add(AdapterRecordTexts.W("AF_REC_Political_0076") + slight);
 			}
 			if (strong > 0)
 			{
-				labels.Add(AdapterRecordTexts.Raw("AF_REC_Political_0077") + strong);
+				labels.Add(AdapterRecordTexts.W("AF_REC_Political_0077") + strong);
 			}
 			if (full > 0)
 			{
-				labels.Add(AdapterRecordTexts.Raw("AF_REC_Political_0078") + full);
+				labels.Add(AdapterRecordTexts.W("AF_REC_Political_0078") + full);
 			}
 			if (other > 0)
 			{
-				labels.Add(AdapterRecordTexts.Raw("AF_REC_Political_0079") + other);
+				labels.Add(AdapterRecordTexts.W("AF_REC_Political_0079") + other);
 			}
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0080") + total + AdapterRecordTexts.Raw("AF_REC_Political_0081") + (labels.Count > 0 ? "（" + string.Join("、", labels) + "）" : ""));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0080") + total + AdapterRecordTexts.W("AF_REC_Political_0081") + (labels.Count > 0 ? AdapterRecordTexts.OpenParen + string.Join(AdapterRecordTexts.ListSeparator, labels) + AdapterRecordTexts.CloseParen : ""));
 		}
 		catch
 		{
@@ -881,7 +881,7 @@ internal static void AddKingSelectionVoterTraitPart(List<string> parts, Kingdom 
 			{
 				return;
 			}
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0082") + authoritarian + AdapterRecordTexts.Raw("AF_REC_Political_0083") + oligarchic + AdapterRecordTexts.Raw("AF_REC_Political_0084") + other + AdapterRecordTexts.Raw("AF_REC_Political_0085"));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0082") + authoritarian + AdapterRecordTexts.W("AF_REC_Political_0083") + oligarchic + AdapterRecordTexts.W("AF_REC_Political_0084") + other + AdapterRecordTexts.W("AF_REC_Political_0085"));
 		}
 		catch
 		{
@@ -900,7 +900,7 @@ internal static string BuildStartAlliancePoliticalTriggerReason(StartAllianceDec
 			Kingdom targetKingdom = decision.KingdomToStartAllianceWith;
 			bool? shouldStart = SafeGetStartAllianceOutcomeShouldStart(chosenOutcome);
 			List<string> parts = new List<string>();
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0086") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Character_0143")) + AdapterRecordTexts.Raw("AF_REC_Political_0087") + GetAgreementOutcomeLabel(shouldStart, AdapterRecordTexts.Raw("AF_REC_Political_0088"), AdapterRecordTexts.Raw("AF_REC_Political_0089")));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0086") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.W("AF_REC_Character_0143")) + AdapterRecordTexts.W("AF_REC_Political_0087") + GetAgreementOutcomeLabel(shouldStart, AdapterRecordTexts.W("AF_REC_Political_0088"), AdapterRecordTexts.W("AF_REC_Political_0089")));
 			string reasonText;
 			float? score = SafeGetStartAllianceSupportScore(decision, decision.ProposerClan, out reasonText);
 			AddAgreementModelScorePart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0090"), score, reasonText);
@@ -928,7 +928,7 @@ internal static string BuildTradeAgreementPoliticalTriggerReason(TradeAgreementD
 			Kingdom targetKingdom = decision.TargetKingdom;
 			bool? shouldStart = SafeGetTradeAgreementOutcomeShouldStart(chosenOutcome);
 			List<string> parts = new List<string>();
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0086") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Character_0143")) + AdapterRecordTexts.Raw("AF_REC_Political_0092") + GetAgreementOutcomeLabel(shouldStart, AdapterRecordTexts.Raw("AF_REC_Political_0093"), AdapterRecordTexts.Raw("AF_REC_Political_0094")));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0086") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.W("AF_REC_Character_0143")) + AdapterRecordTexts.W("AF_REC_Political_0092") + GetAgreementOutcomeLabel(shouldStart, AdapterRecordTexts.W("AF_REC_Political_0093"), AdapterRecordTexts.W("AF_REC_Political_0094")));
 			string reasonText;
 			float? score = SafeGetTradeAgreementSupportScore(sourceKingdom, targetKingdom, decision.ProposerClan, out reasonText);
 			AddTradeAgreementScorePart(parts, score, reasonText);
@@ -957,8 +957,8 @@ internal static string BuildProposeCallToWarPoliticalTriggerReason(ProposeCallTo
 			Kingdom targetKingdom = decision.KingdomToCallToWarAgainst;
 			bool? shouldCall = SafeGetProposeCallToWarOutcomeShouldCall(chosenOutcome);
 			List<string> parts = new List<string>();
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0096") + GetKingdomDisplayName(calledKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0097")) + AdapterRecordTexts.Raw("AF_REC_Battle_0096") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0098")) + AdapterRecordTexts.Raw("AF_REC_Political_0099") + GetAgreementOutcomeLabel(shouldCall, AdapterRecordTexts.Raw("AF_REC_Political_0100"), AdapterRecordTexts.Raw("AF_REC_Political_0101")));
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0102") + decision.CallToWarCost);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0096") + GetKingdomDisplayName(calledKingdom, AdapterRecordTexts.W("AF_REC_Political_0097")) + AdapterRecordTexts.W("AF_REC_Battle_0096") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.W("AF_REC_Political_0098")) + AdapterRecordTexts.W("AF_REC_Political_0099") + GetAgreementOutcomeLabel(shouldCall, AdapterRecordTexts.W("AF_REC_Political_0100"), AdapterRecordTexts.W("AF_REC_Political_0101")));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0102") + decision.CallToWarCost);
 			string reasonText;
 			float? score = SafeGetCallingToWarScore(sourceKingdom, calledKingdom, targetKingdom, decision.ProposerClan, out reasonText);
 			AddAgreementModelScorePart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0103"), score, reasonText);
@@ -987,8 +987,8 @@ internal static string BuildAcceptCallToWarPoliticalTriggerReason(AcceptCallToWa
 			Kingdom targetKingdom = decision.KingdomToCallToWarAgainst;
 			bool? shouldAccept = SafeGetAcceptCallToWarOutcomeShouldAccept(chosenOutcome);
 			List<string> parts = new List<string>();
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0105") + GetKingdomDisplayName(callingKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0106")) + AdapterRecordTexts.Raw("AF_REC_Political_0107") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0098")) + AdapterRecordTexts.Raw("AF_REC_Political_0099") + GetAgreementOutcomeLabel(shouldAccept, AdapterRecordTexts.Raw("AF_REC_Political_0108"), AdapterRecordTexts.Raw("AF_REC_Political_0109")));
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0110") + decision.CallToWarCost);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0105") + GetKingdomDisplayName(callingKingdom, AdapterRecordTexts.W("AF_REC_Political_0106")) + AdapterRecordTexts.W("AF_REC_Political_0107") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.W("AF_REC_Political_0098")) + AdapterRecordTexts.W("AF_REC_Political_0099") + GetAgreementOutcomeLabel(shouldAccept, AdapterRecordTexts.W("AF_REC_Political_0108"), AdapterRecordTexts.W("AF_REC_Political_0109")));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0110") + decision.CallToWarCost);
 			string reasonText;
 			float? score = SafeGetJoiningWarScore(callingKingdom, calledKingdom, targetKingdom, decision.ProposerClan, out reasonText);
 			AddAgreementModelScorePart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0111"), score, reasonText);
@@ -1170,7 +1170,7 @@ internal static void AddAgreementModelScorePart(List<string> parts, string label
 		if (!string.IsNullOrWhiteSpace(scoreText))
 		{
 			string tendency = score.HasValue && score.Value >= 0f ? AdapterRecordTexts.Raw("AF_REC_Political_0114") : AdapterRecordTexts.Raw("AF_REC_Political_0115");
-			parts.Add((string.IsNullOrWhiteSpace(label) ? AdapterRecordTexts.Raw("AF_REC_Political_0116") : label.Trim()) + "：" + tendency + AdapterRecordTexts.Raw("AF_REC_Political_0117") + scoreText + "）");
+			parts.Add((string.IsNullOrWhiteSpace(label) ? AdapterRecordTexts.W("AF_REC_Political_0116") : label.Trim()) + AdapterRecordTexts.Colon + tendency + AdapterRecordTexts.W("AF_REC_Political_0117") + scoreText + AdapterRecordTexts.CloseParen);
 		}
 		AddAgreementReasonTextPart(parts, reasonText);
 	}
@@ -1185,7 +1185,7 @@ internal static void AddTradeAgreementScorePart(List<string> parts, float? score
 		if (!string.IsNullOrWhiteSpace(scoreText))
 		{
 			string tendency = score.HasValue && score.Value >= 50f ? AdapterRecordTexts.Raw("AF_REC_Political_0118") : AdapterRecordTexts.Raw("AF_REC_Political_0119");
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0120") + tendency + AdapterRecordTexts.Raw("AF_REC_Political_0117") + scoreText + AdapterRecordTexts.Raw("AF_REC_Political_0121"));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0120") + tendency + AdapterRecordTexts.W("AF_REC_Political_0117") + scoreText + AdapterRecordTexts.W("AF_REC_Political_0121"));
 		}
 		AddAgreementReasonTextPart(parts, reasonText);
 	}
@@ -1199,7 +1199,7 @@ internal static void AddAgreementReasonTextPart(List<string> parts, string reaso
 		string text = NormalizePoliticalReasonText(reasonText);
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0006") + text);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0006") + text);
 		}
 	}
 
@@ -1223,7 +1223,7 @@ internal static void AddAgreementVoteSupportPart(List<string> parts, DecisionOut
 				return;
 			}
 			string action = accepted.HasValue ? (accepted.Value ? positiveLabel : negativeLabel) : AdapterRecordTexts.Raw("AF_REC_Political_0123");
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0080") + count + AdapterRecordTexts.Raw("AF_REC_Political_0124") + action);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0080") + count + AdapterRecordTexts.W("AF_REC_Political_0124") + action);
 		}
 		catch
 		{
@@ -1242,15 +1242,15 @@ internal static void AddKingdomDiplomaticStatusPart(List<string> parts, Kingdom 
 			string targetName = GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Character_0143"));
 			if (sourceKingdom.IsAtWarWith(targetKingdom))
 			{
-				parts.Add(sourceName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetName + AdapterRecordTexts.Raw("AF_REC_Political_0127"));
+				parts.Add(sourceName + AdapterRecordTexts.W("AF_REC_Political_0126") + targetName + AdapterRecordTexts.W("AF_REC_Political_0127"));
 			}
 			else if (sourceKingdom.IsAllyWith(targetKingdom))
 			{
-				parts.Add(sourceName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetName + AdapterRecordTexts.Raw("AF_REC_Political_0128"));
+				parts.Add(sourceName + AdapterRecordTexts.W("AF_REC_Political_0126") + targetName + AdapterRecordTexts.W("AF_REC_Political_0128"));
 			}
 			else
 			{
-				parts.Add(sourceName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetName + AdapterRecordTexts.Raw("AF_REC_Political_0129"));
+				parts.Add(sourceName + AdapterRecordTexts.W("AF_REC_Political_0126") + targetName + AdapterRecordTexts.W("AF_REC_Political_0129"));
 			}
 		}
 		catch
@@ -1269,9 +1269,9 @@ internal static void AddCallToWarDiplomaticStatusParts(List<string> parts, Kingd
 			string callingName = GetKingdomDisplayName(callingKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0130"));
 			string calledName = GetKingdomDisplayName(calledKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0131"));
 			string targetName = GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0098"));
-			parts.Add(callingName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + calledName + (callingKingdom.IsAllyWith(calledKingdom) ? AdapterRecordTexts.Raw("AF_REC_Political_0132") : AdapterRecordTexts.Raw("AF_REC_Political_0133")));
-			parts.Add(callingName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetName + (callingKingdom.IsAtWarWith(targetKingdom) ? AdapterRecordTexts.Raw("AF_REC_Political_0134") : AdapterRecordTexts.Raw("AF_REC_Political_0135")));
-			parts.Add(calledName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetName + (calledKingdom.IsAtWarWith(targetKingdom) ? AdapterRecordTexts.Raw("AF_REC_Political_0134") : AdapterRecordTexts.Raw("AF_REC_Political_0136")));
+			parts.Add(callingName + AdapterRecordTexts.W("AF_REC_Political_0126") + calledName + (callingKingdom.IsAllyWith(calledKingdom) ? AdapterRecordTexts.W("AF_REC_Political_0132") : AdapterRecordTexts.W("AF_REC_Political_0133")));
+			parts.Add(callingName + AdapterRecordTexts.W("AF_REC_Political_0126") + targetName + (callingKingdom.IsAtWarWith(targetKingdom) ? AdapterRecordTexts.W("AF_REC_Political_0134") : AdapterRecordTexts.W("AF_REC_Political_0135")));
+			parts.Add(calledName + AdapterRecordTexts.W("AF_REC_Political_0126") + targetName + (calledKingdom.IsAtWarWith(targetKingdom) ? AdapterRecordTexts.W("AF_REC_Political_0134") : AdapterRecordTexts.W("AF_REC_Political_0136")));
 			if (isAcceptanceDecision)
 			{
 				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0137"));
@@ -1318,7 +1318,7 @@ internal static string BuildExpelClanPoliticalTriggerReason(ExpelClanFromKingdom
 			List<string> parts = new List<string>();
 			string kingdomName = GetKingdomDisplayName(kingdom, AdapterRecordTexts.Raw("AF_REC_Political_0001"));
 			string clanName = GetClanDisplayName(targetClan);
-			parts.Add(shouldExpel.HasValue ? (AdapterRecordTexts.Raw("AF_REC_Political_0139") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0140") + kingdomName + AdapterRecordTexts.Raw("AF_REC_Political_0141") + (shouldExpel.Value ? AdapterRecordTexts.Raw("AF_REC_Political_0142") : AdapterRecordTexts.Raw("AF_REC_Political_0143"))) : (AdapterRecordTexts.Raw("AF_REC_Political_0139") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0140") + kingdomName));
+			parts.Add(shouldExpel.HasValue ? (AdapterRecordTexts.W("AF_REC_Political_0139") + clanName + AdapterRecordTexts.W("AF_REC_Political_0140") + kingdomName + AdapterRecordTexts.W("AF_REC_Political_0141") + (shouldExpel.Value ? AdapterRecordTexts.W("AF_REC_Political_0142") : AdapterRecordTexts.W("AF_REC_Political_0143"))) : (AdapterRecordTexts.W("AF_REC_Political_0139") + clanName + AdapterRecordTexts.W("AF_REC_Political_0140") + kingdomName));
 			AddExpelClanTargetProfileParts(parts, targetClan, kingdom);
 			AddExpelClanRelationNetworkParts(parts, targetClan, kingdom);
 			AddExpelClanRelationToKeyClanPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0144"), targetClan, decision.ProposerClan);
@@ -1356,11 +1356,11 @@ internal static void AddExpelClanTargetProfileParts(List<string> parts, Clan tar
 		{
 			return;
 		}
-		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0147") + targetClan.Tier + AdapterRecordTexts.Raw("AF_REC_Political_0148") + FormatPoliticalReasonNumber(SafeGetClanInfluence(targetClan)) + AdapterRecordTexts.Raw("AF_REC_Political_0149") + FormatPoliticalReasonNumber(SafeGetClanRenown(targetClan)));
+		parts.Add(AdapterRecordTexts.W("AF_REC_Political_0147") + targetClan.Tier + AdapterRecordTexts.W("AF_REC_Political_0148") + FormatPoliticalReasonNumber(SafeGetClanInfluence(targetClan)) + AdapterRecordTexts.W("AF_REC_Political_0149") + FormatPoliticalReasonNumber(SafeGetClanRenown(targetClan)));
 		string strengthText = FormatPoliticalReasonNumber(SafeGetClanStrength(targetClan));
 		if (!string.IsNullOrWhiteSpace(strengthText))
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0150") + strengthText);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0150") + strengthText);
 		}
 		AddExpelClanFiefValueParts(parts, targetClan, kingdom);
 		AddExpelClanWarPartyParts(parts, targetClan);
@@ -1419,7 +1419,7 @@ internal static void AddExpelClanFiefValueParts(List<string> parts, Clan targetC
 				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0151"));
 				return;
 			}
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0152") + count + AdapterRecordTexts.Raw("AF_REC_Political_0064") + FormatPoliticalReasonNumber(totalValue) + AdapterRecordTexts.Raw("AF_REC_Political_0153"));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0152") + count + AdapterRecordTexts.W("AF_REC_Political_0064") + FormatPoliticalReasonNumber(totalValue) + AdapterRecordTexts.W("AF_REC_Political_0153"));
 		}
 		catch
 		{
@@ -1467,7 +1467,7 @@ internal static void AddExpelClanWarPartyParts(List<string> parts, Clan targetCl
 				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0154"));
 				return;
 			}
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0155") + partyCount + AdapterRecordTexts.Raw("AF_REC_Political_0067") + troopCount + AdapterRecordTexts.Raw("AF_REC_Political_0156"));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0155") + partyCount + AdapterRecordTexts.W("AF_REC_Political_0067") + troopCount + AdapterRecordTexts.W("AF_REC_Political_0156"));
 		}
 		catch
 		{
@@ -1520,8 +1520,8 @@ internal static void AddExpelClanRelationNetworkParts(List<string> parts, Clan t
 		{
 			return;
 		}
-		string range = worstRelation.HasValue && bestRelation.HasValue ? (AdapterRecordTexts.Raw("AF_REC_Political_0157") + worstRelation.Value + "/" + bestRelation.Value) : "";
-		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0158") + positiveCount + AdapterRecordTexts.Raw("AF_REC_Political_0159") + nonPositiveCount + AdapterRecordTexts.Raw("AF_REC_Political_0160") + range);
+		string range = worstRelation.HasValue && bestRelation.HasValue ? (AdapterRecordTexts.W("AF_REC_Political_0157") + worstRelation.Value + "/" + bestRelation.Value) : "";
+		parts.Add(AdapterRecordTexts.W("AF_REC_Political_0158") + positiveCount + AdapterRecordTexts.W("AF_REC_Political_0159") + nonPositiveCount + AdapterRecordTexts.W("AF_REC_Political_0160") + range);
 		if (nonPositiveMagnitude > positiveMagnitude)
 		{
 			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0161"));
@@ -1592,7 +1592,7 @@ internal static void AddExpelClanVoteSupportPart(List<string> parts, DecisionOut
 				return;
 			}
 			string action = shouldExpel == true ? AdapterRecordTexts.Raw("AF_REC_Political_0142") : shouldExpel == false ? AdapterRecordTexts.Raw("AF_REC_Political_0143") : AdapterRecordTexts.Raw("AF_REC_Political_0123");
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0080") + count + AdapterRecordTexts.Raw("AF_REC_Political_0124") + action);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0080") + count + AdapterRecordTexts.W("AF_REC_Political_0124") + action);
 		}
 		catch
 		{
@@ -1613,7 +1613,7 @@ internal static void AddExpelClanRelationCostPart(List<string> parts, bool? shou
 				return;
 			}
 			int relationCost = diplomacyModel.GetRelationCostOfExpellingClanFromKingdom();
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0166") + relationCost);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0166") + relationCost);
 		}
 		catch
 		{
@@ -1634,15 +1634,15 @@ internal static void AddExpelClanFormulaValuePart(List<string> parts, ExpelClanF
 		}
 		if (shouldExpel == true && value.HasValue && value.Value < 0f)
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0167") + valueText + "）");
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0167") + valueText + AdapterRecordTexts.CloseParen);
 		}
 		else if (shouldExpel == false && value.HasValue && value.Value > 0f)
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0168") + valueText + "）");
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0168") + valueText + AdapterRecordTexts.CloseParen);
 		}
 		else
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0169") + valueText);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0169") + valueText);
 		}
 	}
 
@@ -1661,15 +1661,15 @@ internal static string BuildSettlementClaimantPreliminaryPoliticalTriggerReason(
 			string settlementName = GetSettlementDisplayName(settlement);
 			if (shouldChange.HasValue)
 			{
-				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0170") + settlementName + AdapterRecordTexts.Raw("AF_REC_Political_0141") + (shouldChange.Value ? AdapterRecordTexts.Raw("AF_REC_Political_0171") : AdapterRecordTexts.Raw("AF_REC_Political_0172")));
+				parts.Add(AdapterRecordTexts.W("AF_REC_Political_0170") + settlementName + AdapterRecordTexts.W("AF_REC_Political_0141") + (shouldChange.Value ? AdapterRecordTexts.W("AF_REC_Political_0171") : AdapterRecordTexts.W("AF_REC_Political_0172")));
 			}
 			else
 			{
-				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0170") + settlementName);
+				parts.Add(AdapterRecordTexts.W("AF_REC_Political_0170") + settlementName);
 			}
 			if (ownerClan != null)
 			{
-				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0173") + GetClanDisplayName(ownerClan));
+				parts.Add(AdapterRecordTexts.W("AF_REC_Political_0173") + GetClanDisplayName(ownerClan));
 				AddSettlementOwnerRelationNetworkParts(parts, ownerClan);
 				AddSettlementOwnerStrengthPart(parts, ownerClan);
 			}
@@ -1698,7 +1698,7 @@ internal static string BuildSettlementClaimantPoliticalTriggerReason(SettlementC
 			}
 			Settlement settlement = decision.Settlement;
 			List<string> parts = new List<string>();
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0176") + GetSettlementDisplayName(settlement) + AdapterRecordTexts.Raw("AF_REC_Political_0177") + GetClanDisplayName(chosenClan));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0176") + GetSettlementDisplayName(settlement) + AdapterRecordTexts.W("AF_REC_Political_0177") + GetClanDisplayName(chosenClan));
 			AddSettlementClaimantCandidateFormulaParts(parts, settlement, chosenClan);
 			AddSettlementClaimantCandidateRankingPart(parts, decision, chosenClan);
 			AddSettlementClaimantVoteSupportPart(parts, chosenOutcome);
@@ -1828,7 +1828,7 @@ internal static void AddSettlementOwnerRelationNetworkParts(List<string> parts, 
 		{
 			return;
 		}
-		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0180") + positiveCount + AdapterRecordTexts.Raw("AF_REC_Political_0159") + nonPositiveCount + AdapterRecordTexts.Raw("AF_REC_Political_0160"));
+		parts.Add(AdapterRecordTexts.W("AF_REC_Political_0180") + positiveCount + AdapterRecordTexts.W("AF_REC_Political_0159") + nonPositiveCount + AdapterRecordTexts.W("AF_REC_Political_0160"));
 		if (nonPositiveMagnitude > positiveMagnitude)
 		{
 			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0181"));
@@ -1862,7 +1862,7 @@ internal static void AddSettlementOwnerStrengthPart(List<string> parts, Clan own
 		{
 			return;
 		}
-		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0183") + strengthText + AdapterRecordTexts.Raw("AF_REC_Political_0184"));
+		parts.Add(AdapterRecordTexts.W("AF_REC_Political_0183") + strengthText + AdapterRecordTexts.W("AF_REC_Political_0184"));
 	}
 
 internal static void AddSettlementClaimantCandidateFormulaParts(List<string> parts, Settlement settlement, Clan clan)
@@ -1871,18 +1871,18 @@ internal static void AddSettlementClaimantCandidateFormulaParts(List<string> par
 		{
 			return;
 		}
-		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0185") + clan.Tier + AdapterRecordTexts.Raw("AF_REC_Political_0186"));
+		parts.Add(AdapterRecordTexts.W("AF_REC_Political_0185") + clan.Tier + AdapterRecordTexts.W("AF_REC_Political_0186"));
 		string strengthText = FormatPoliticalReasonNumber(SafeGetSettlementClaimantAdjustedStrength(settlement, clan));
 		if (!string.IsNullOrWhiteSpace(strengthText))
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0187") + strengthText + AdapterRecordTexts.Raw("AF_REC_Political_0188"));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0187") + strengthText + AdapterRecordTexts.W("AF_REC_Political_0188"));
 		}
 		AddSettlementClaimantExistingFiefParts(parts, settlement, clan);
 		AddSettlementClaimantSpecialBonusParts(parts, settlement, clan);
 		string settlementValue = FormatPoliticalReasonNumber(SafeGetSettlementValueForClan(settlement, clan));
 		if (!string.IsNullOrWhiteSpace(settlementValue))
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0189") + settlementValue + AdapterRecordTexts.Raw("AF_REC_Political_0190"));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0189") + settlementValue + AdapterRecordTexts.W("AF_REC_Political_0190"));
 		}
 	}
 
@@ -1930,7 +1930,7 @@ internal static void AddSettlementClaimantExistingFiefParts(List<string> parts, 
 			return;
 		}
 		string valueText = FormatPoliticalReasonNumber(totalValue);
-		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0192") + count + AdapterRecordTexts.Raw("AF_REC_Political_0193") + (string.IsNullOrWhiteSpace(valueText) ? "" : (AdapterRecordTexts.Raw("AF_REC_Political_0194") + valueText + AdapterRecordTexts.Raw("AF_REC_Political_0195"))));
+		parts.Add(AdapterRecordTexts.W("AF_REC_Political_0192") + count + AdapterRecordTexts.W("AF_REC_Political_0193") + (string.IsNullOrWhiteSpace(valueText) ? "" : (AdapterRecordTexts.W("AF_REC_Political_0194") + valueText + AdapterRecordTexts.W("AF_REC_Political_0195"))));
 		string distancePart = BuildSettlementClaimantDistancePart(nearest, secondNearest);
 		if (!string.IsNullOrWhiteSpace(distancePart))
 		{
@@ -1951,13 +1951,13 @@ internal static string BuildSettlementClaimantDistancePart(float nearest, float 
 			string daysText = days.ToString("0.#");
 			if (days <= 1f)
 			{
-				return AdapterRecordTexts.Raw("AF_REC_Political_0196") + daysText + AdapterRecordTexts.Raw("AF_REC_Political_0197");
+				return AdapterRecordTexts.W("AF_REC_Political_0196") + daysText + AdapterRecordTexts.W("AF_REC_Political_0197");
 			}
 			if (days <= 2.5f)
 			{
-				return AdapterRecordTexts.Raw("AF_REC_Political_0198") + daysText + AdapterRecordTexts.Raw("AF_REC_Political_0199");
+				return AdapterRecordTexts.W("AF_REC_Political_0198") + daysText + AdapterRecordTexts.W("AF_REC_Political_0199");
 			}
-			return AdapterRecordTexts.Raw("AF_REC_Political_0200") + daysText + AdapterRecordTexts.Raw("AF_REC_Political_0201");
+			return AdapterRecordTexts.W("AF_REC_Political_0200") + daysText + AdapterRecordTexts.W("AF_REC_Political_0201");
 		}
 		catch
 		{
@@ -1988,7 +1988,7 @@ internal static void AddSettlementClaimantSpecialBonusParts(List<string> parts, 
 			int gold = clan.Leader.Gold;
 			if (gold < 30000)
 			{
-				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0205") + gold + AdapterRecordTexts.Raw("AF_REC_Political_0206"));
+				parts.Add(AdapterRecordTexts.W("AF_REC_Political_0205") + gold + AdapterRecordTexts.W("AF_REC_Political_0206"));
 			}
 		}
 		catch
@@ -2075,10 +2075,10 @@ internal static void AddSettlementClaimantCandidateRankingPart(List<string> part
 			{
 				return;
 			}
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0207") + (index + 1) + "/" + candidates.Count + AdapterRecordTexts.Raw("AF_REC_Political_0117") + FormatPoliticalReasonNumber(candidates[index].Item2) + "）");
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0207") + (index + 1) + "/" + candidates.Count + AdapterRecordTexts.W("AF_REC_Political_0117") + FormatPoliticalReasonNumber(candidates[index].Item2) + AdapterRecordTexts.CloseParen);
 			if (index > 0)
 			{
-				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0208") + GetClanDisplayName(candidates[0].Item1) + AdapterRecordTexts.Raw("AF_REC_Political_0209"));
+				parts.Add(AdapterRecordTexts.W("AF_REC_Political_0208") + GetClanDisplayName(candidates[0].Item1) + AdapterRecordTexts.W("AF_REC_Political_0209"));
 			}
 		}
 		catch
@@ -2100,7 +2100,7 @@ internal static void AddSettlementClaimantVoteSupportPart(List<string> parts, De
 				return;
 			}
 			string meritText = FormatPoliticalReasonNumber(chosenOutcome.Merit);
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0080") + count + AdapterRecordTexts.Raw("AF_REC_Political_0210") + (string.IsNullOrWhiteSpace(meritText) ? "" : (AdapterRecordTexts.Raw("AF_REC_Political_0211") + meritText)));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0080") + count + AdapterRecordTexts.W("AF_REC_Political_0210") + (string.IsNullOrWhiteSpace(meritText) ? "" : (AdapterRecordTexts.W("AF_REC_Political_0211") + meritText)));
 		}
 		catch
 		{
@@ -2118,7 +2118,7 @@ internal static void AddSettlementSupportTendencyPart(List<string> parts, string
 		{
 			return;
 		}
-		parts.Add(label.Trim() + GetSettlementSupportTendencyLabel(support.Value) + AdapterRecordTexts.Raw("AF_REC_Political_0044") + supportText + "）");
+		parts.Add(label.Trim() + AdapterRecordTexts.Pad(GetSettlementSupportTendencyLabel(support.Value)) + AdapterRecordTexts.W("AF_REC_Political_0044") + supportText + AdapterRecordTexts.CloseParen);
 	}
 
 internal static string GetSettlementSupportTendencyLabel(float support)
@@ -2210,8 +2210,8 @@ internal static string BuildPeaceTributeParameter(MakePeaceKingdomDecision decis
 			return AdapterRecordTexts.Raw("AF_REC_Political_0216");
 		}
 		string factionName = GetFactionDisplayName(peaceFaction, AdapterRecordTexts.Raw("AF_REC_Political_0217"));
-		string verb = tribute > 0 ? AdapterRecordTexts.Raw("AF_REC_Political_0218") : AdapterRecordTexts.Raw("AF_REC_Political_0219");
-		return factionName + verb + AdapterRecordTexts.Raw("AF_REC_Political_0220") + Math.Abs(tribute) + AdapterRecordTexts.Raw("AF_REC_Political_0221") + Math.Abs(decision.DailyTributeDurationInDays) + AdapterRecordTexts.Raw("AF_REC_Political_0222");
+		string verb = tribute > 0 ? AdapterRecordTexts.W("AF_REC_Political_0218") : AdapterRecordTexts.W("AF_REC_Political_0219");
+		return factionName + verb + AdapterRecordTexts.W("AF_REC_Political_0220") + Math.Abs(tribute) + AdapterRecordTexts.W("AF_REC_Political_0221") + Math.Abs(decision.DailyTributeDurationInDays) + AdapterRecordTexts.W("AF_REC_Political_0222");
 	}
 
 internal static void AddPoliticalFactionParameterParts(List<string> parts, IFaction sourceFaction, IFaction targetFaction, Clan evaluatingClan)
@@ -2230,13 +2230,13 @@ internal static void AddPoliticalFactionParameterParts(List<string> parts, IFact
 		int? relation = SafeGetPoliticalRelation(evaluatingClan, sourceFaction, targetFaction);
 		if (relation.HasValue)
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0223") + relation.Value);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0223") + relation.Value);
 		}
 		int? sourceWarParties = SafeGetFactionWarPartyCount(sourceFaction);
 		int? targetWarParties = SafeGetFactionWarPartyCount(targetFaction);
 		if (sourceWarParties.HasValue && targetWarParties.HasValue)
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0224") + sourceWarParties.Value + "/" + targetWarParties.Value);
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0224") + sourceWarParties.Value + "/" + targetWarParties.Value);
 		}
 	}
 
@@ -2250,11 +2250,11 @@ internal static void AddPoliticalFallbackPartIfNeeded(List<string> parts, bool h
 		string action = string.IsNullOrWhiteSpace(actionLabel) ? AdapterRecordTexts.Raw("AF_REC_Political_0225") : actionLabel.Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0226") + action + AdapterRecordTexts.Raw("AF_REC_Political_0227"));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0226") + action + AdapterRecordTexts.W("AF_REC_Political_0227"));
 		}
 		else
 		{
-			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0226") + text + AdapterRecordTexts.Raw("AF_REC_Political_0228"));
+			parts.Add(AdapterRecordTexts.W("AF_REC_Political_0226") + text + AdapterRecordTexts.W("AF_REC_Political_0228"));
 		}
 	}
 
@@ -2281,7 +2281,7 @@ internal static string GetPoliticalEventDetailLabel(string detailText)
 		{
 			return AdapterRecordTexts.Raw("AF_REC_Political_0231");
 		}
-		return AdapterRecordTexts.Raw("AF_REC_Political_0232") + text;
+		return AdapterRecordTexts.W("AF_REC_Political_0232") + text;
 	}
 
 internal static string BuildPoliticalStrengthComparisonPart(IFaction sourceFaction, IFaction targetFaction, float? sourceStrength, float? targetStrength)
@@ -2300,14 +2300,14 @@ internal static string BuildPoliticalStrengthComparisonPart(IFaction sourceFacti
 		}
 		if (sourceStrength.Value <= 0f)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Political_0234") + sourceName + AdapterRecordTexts.Raw("AF_REC_Political_0235");
+			return AdapterRecordTexts.W("AF_REC_Political_0234") + sourceName + AdapterRecordTexts.W("AF_REC_Political_0235");
 		}
 		if (targetStrength.Value <= 0f)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Political_0234") + targetName + AdapterRecordTexts.Raw("AF_REC_Political_0235");
+			return AdapterRecordTexts.W("AF_REC_Political_0234") + targetName + AdapterRecordTexts.W("AF_REC_Political_0235");
 		}
 		string relation = GetPoliticalStrengthComparisonLabel(sourceStrength.Value, targetStrength.Value, targetName);
-		return AdapterRecordTexts.Raw("AF_REC_Political_0234") + sourceName + relation + "（" + sourceText + "/" + targetText + "）";
+		return AdapterRecordTexts.W("AF_REC_Political_0234") + sourceName + relation + AdapterRecordTexts.OpenParen + sourceText + "/" + targetText + AdapterRecordTexts.CloseParen;
 	}
 
 internal static string GetPoliticalStrengthComparisonLabel(float sourceStrength, float targetStrength, string targetName)
@@ -2316,21 +2316,21 @@ internal static string GetPoliticalStrengthComparisonLabel(float sourceStrength,
 		float ratio = sourceStrength / targetStrength;
 		if (ratio >= 1.75f)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Political_0236") + targetText;
+			return AdapterRecordTexts.W("AF_REC_Political_0236") + targetText;
 		}
 		if (ratio >= 1.2f)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Political_0237") + targetText;
+			return AdapterRecordTexts.W("AF_REC_Political_0237") + targetText;
 		}
 		if (ratio > 0.83f)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetText + AdapterRecordTexts.Raw("AF_REC_Political_0238");
+			return AdapterRecordTexts.W("AF_REC_Political_0126") + targetText + AdapterRecordTexts.W("AF_REC_Political_0238");
 		}
 		if (ratio > 0.57f)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Political_0239") + targetText;
+			return AdapterRecordTexts.W("AF_REC_Political_0239") + targetText;
 		}
-		return AdapterRecordTexts.Raw("AF_REC_Political_0240") + targetText;
+		return AdapterRecordTexts.W("AF_REC_Political_0240") + targetText;
 	}
 
 internal static float? SafeGetFactionStrength(IFaction faction)
@@ -2403,8 +2403,8 @@ internal static void AddPoliticalScoreAgainstThresholdPart(List<string> parts, s
 		string thresholdText = FormatPoliticalReasonNumber(threshold);
 		if (IsExtremePoliticalReasonScore(score))
 		{
-			string tendency = score > 0f ? AdapterRecordTexts.Raw("AF_REC_Political_0241") : AdapterRecordTexts.Raw("AF_REC_Political_0242");
-			parts.Add(string.IsNullOrWhiteSpace(thresholdText) ? (scoreLabel + tendency) : (scoreLabel + tendency + "（" + thresholdLabel + " " + thresholdText + "）"));
+			string tendency = score > 0f ? AdapterRecordTexts.W("AF_REC_Political_0241") : AdapterRecordTexts.W("AF_REC_Political_0242");
+			parts.Add(string.IsNullOrWhiteSpace(thresholdText) ? (scoreLabel + tendency) : (scoreLabel + tendency + AdapterRecordTexts.OpenParen + thresholdLabel + " " + thresholdText + AdapterRecordTexts.CloseParen));
 			return;
 		}
 		string scoreText = FormatPoliticalReasonNumber(score);
@@ -2417,7 +2417,7 @@ internal static void AddPoliticalScoreAgainstThresholdPart(List<string> parts, s
 			parts.Add(scoreLabel + " " + scoreText);
 			return;
 		}
-		parts.Add(scoreLabel + GetPoliticalScoreThresholdRelation(score, threshold.Value) + thresholdLabel + "（" + scoreText + "/" + thresholdText + "）");
+		parts.Add(scoreLabel + GetPoliticalScoreThresholdRelation(score, threshold.Value) + thresholdLabel + AdapterRecordTexts.OpenParen + scoreText + "/" + thresholdText + AdapterRecordTexts.CloseParen);
 	}
 
 internal static bool IsExtremePoliticalReasonScore(float value)
@@ -2429,22 +2429,22 @@ internal static string GetPoliticalScoreThresholdRelation(float score, float thr
 	{
 		if (threshold <= 0f)
 		{
-			return score >= threshold ? AdapterRecordTexts.Raw("AF_REC_Political_0243") : AdapterRecordTexts.Raw("AF_REC_Political_0244");
+			return score >= threshold ? AdapterRecordTexts.W("AF_REC_Political_0243") : AdapterRecordTexts.W("AF_REC_Political_0244");
 		}
 		float ratio = score / threshold;
 		if (ratio >= 1.5f)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Political_0245");
+			return AdapterRecordTexts.W("AF_REC_Political_0245");
 		}
 		if (ratio >= 1.05f)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Political_0246");
+			return AdapterRecordTexts.W("AF_REC_Political_0246");
 		}
 		if (ratio >= 0.95f)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Political_0238");
+			return AdapterRecordTexts.W("AF_REC_Political_0238");
 		}
-		return AdapterRecordTexts.Raw("AF_REC_Political_0244");
+		return AdapterRecordTexts.W("AF_REC_Political_0244");
 	}
 
 internal static string FormatPoliticalReasonNumber(float? value)
@@ -2484,8 +2484,8 @@ internal static string BuildPlayerKingdomDecisionActionText(KingdomDecision deci
 			decisionTitle = AdapterRecordTexts.Raw("AF_REC_Political_0247");
 		}
 		return string.IsNullOrWhiteSpace(outcomeTitle)
-			? (AdapterRecordTexts.Raw("AF_REC_Political_0248") + kingdomDisplayName + AdapterRecordTexts.Raw("AF_REC_Political_0249") + decisionTitle + AdapterRecordTexts.Raw("AF_REC_Political_0250"))
-			: (AdapterRecordTexts.Raw("AF_REC_Political_0248") + kingdomDisplayName + AdapterRecordTexts.Raw("AF_REC_Political_0249") + decisionTitle + AdapterRecordTexts.Raw("AF_REC_Political_0251") + outcomeTitle + "”。");
+			? (AdapterRecordTexts.W("AF_REC_Political_0248") + kingdomDisplayName + AdapterRecordTexts.W("AF_REC_Political_0249") + decisionTitle + AdapterRecordTexts.W("AF_REC_Political_0250"))
+			: (AdapterRecordTexts.W("AF_REC_Political_0248") + kingdomDisplayName + AdapterRecordTexts.W("AF_REC_Political_0249") + decisionTitle + AdapterRecordTexts.W("AF_REC_Political_0251") + outcomeTitle + AdapterRecordTexts.CloseQuote + AdapterRecordTexts.Period);
 	}
 
 internal static Hero ResolveKingdomDecisionActionTargetHero(KingdomDecision decision, DecisionOutcome chosenOutcome)
@@ -2570,15 +2570,15 @@ internal static string BuildKingdomDecisionSupporterSummary(KingdomDecision deci
 			{
 				continue;
 			}
-			list.Add(GetHeroDisplayName(supporter.Clan.Leader) + "（" + GetSupportWeightLabel(supporter.SupportWeight) + "）");
+			list.Add(GetHeroDisplayName(supporter.Clan.Leader) + AdapterRecordTexts.OpenParen + GetSupportWeightLabel(supporter.SupportWeight) + AdapterRecordTexts.CloseParen);
 		}
 		if (list.Count == 0)
 		{
 			return "";
 		}
 		string text3 = string.IsNullOrWhiteSpace(text) ? AdapterRecordTexts.Raw("AF_REC_Political_0252") : text.Trim();
-		string text4 = string.IsNullOrWhiteSpace(text2) ? "" : AdapterRecordTexts.Raw("AF_REC_Political_0253") + text2.Trim() + "”";
-		return GetKingdomDisplayName(decision.Kingdom, AdapterRecordTexts.Raw("AF_REC_Political_0001")) + AdapterRecordTexts.Raw("AF_REC_Political_0249") + text3 + AdapterRecordTexts.Raw("AF_REC_Political_0254") + text4 + AdapterRecordTexts.Raw("AF_REC_Political_0255") + string.Join("；", list) + "。";
+		string text4 = string.IsNullOrWhiteSpace(text2) ? "" : AdapterRecordTexts.W("AF_REC_Political_0253") + text2.Trim() + AdapterRecordTexts.CloseQuote;
+		return GetKingdomDisplayName(decision.Kingdom, AdapterRecordTexts.W("AF_REC_Political_0001")) + AdapterRecordTexts.W("AF_REC_Political_0249") + text3 + AdapterRecordTexts.W("AF_REC_Political_0254") + text4 + AdapterRecordTexts.W("AF_REC_Political_0255") + string.Join(AdapterRecordTexts.Semicolon, list) + AdapterRecordTexts.Period;
 	}
 
 internal static string GetKingdomDecisionTitle(KingdomDecision decision)
@@ -2638,8 +2638,8 @@ internal static bool IsTrivialKingdomDecisionOutcomeTitle(string text)
 		{
 			return true;
 		}
-		return string.Equals(text2, AdapterRecordTexts.Raw("AF_REC_Political_0256"), StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text2, AdapterRecordTexts.Raw("AF_REC_Political_0257"), StringComparison.OrdinalIgnoreCase)
+		return AdapterRecordTexts.EqualsRaw(text2, "AF_REC_Political_0256", StringComparison.OrdinalIgnoreCase)
+			|| AdapterRecordTexts.EqualsRaw(text2, "AF_REC_Political_0257", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(text2, "yes", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(text2, "no", StringComparison.OrdinalIgnoreCase);
 	}
@@ -2706,7 +2706,7 @@ internal void OnKingdomDecisionConcluded(KingdomDecision decision, DecisionOutco
 			{
 				string kingdomId = GetKingdomId(decision.Kingdom);
 				string labelPrefix = string.IsNullOrWhiteSpace(text5) ? AdapterRecordTexts.Raw("AF_REC_Political_0262") : AdapterRecordTexts.Raw("AF_REC_Political_0263");
-				RecordEventSourceMaterial("kingdom_decision_support", labelPrefix + " - " + GetKingdomDisplayName(decision.Kingdom, AdapterRecordTexts.Raw("AF_REC_Political_0001")), text4, text + ":supporters", kingdomId, "", includeInWorld: false, includeInKingdom: true);
+				RecordEventSourceMaterial("kingdom_decision_support", labelPrefix + " - " + GetKingdomDisplayName(decision.Kingdom, AdapterRecordTexts.W("AF_REC_Political_0001")), text4, text + ":supporters", kingdomId, "", includeInWorld: false, includeInKingdom: true);
 			}
 			if (isPlayerInvolved)
 			{
@@ -2732,7 +2732,7 @@ internal static string LimitCustomPolicyWeeklyMaterialText(string text, int maxC
 		{
 			return text;
 		}
-		return text.Substring(0, Math.Max(1, maxChars - 1)).TrimEnd() + "…";
+		return text.Substring(0, Math.Max(1, maxChars - 1)).TrimEnd() + "\u2026";
 	}
 
 internal void RecordWarOrPeaceMaterial(string materialKind, string actionLabel, IFaction faction1, IFaction faction2, string detailText)
@@ -2740,10 +2740,10 @@ internal void RecordWarOrPeaceMaterial(string materialKind, string actionLabel, 
 		string text = GetFactionDisplayName(faction1, AdapterRecordTexts.Raw("AF_REC_Political_0264"));
 		string text2 = GetFactionDisplayName(faction2, AdapterRecordTexts.Raw("AF_REC_Political_0265"));
 		bool flag = string.Equals((materialKind ?? "").Trim(), "war_declared", StringComparison.OrdinalIgnoreCase);
-		string text3 = flag ? (text + AdapterRecordTexts.Raw("AF_REC_Political_0266") + text2 + AdapterRecordTexts.Raw("AF_REC_Political_0267")) : (text + AdapterRecordTexts.Raw("AF_REC_Political_0126") + text2 + AdapterRecordTexts.Raw("AF_REC_Political_0268"));
+		string text3 = flag ? (text + AdapterRecordTexts.W("AF_REC_Political_0266") + text2 + AdapterRecordTexts.W("AF_REC_Political_0267")) : (text + AdapterRecordTexts.W("AF_REC_Political_0126") + text2 + AdapterRecordTexts.W("AF_REC_Political_0268"));
 		if (!string.IsNullOrWhiteSpace(detailText))
 		{
-			text3 += AdapterRecordTexts.Raw("AF_REC_Political_0269") + detailText.Trim() + "。";
+			text3 += AdapterRecordTexts.W("AF_REC_Political_0269") + detailText.Trim() + AdapterRecordTexts.Period;
 		}
 		text3 = AppendEventMaterialSentence(text3, BuildWarOrPeacePoliticalTriggerReason(materialKind, faction1, faction2, detailText));
 		string kingdomId = GetKingdomId(faction1);

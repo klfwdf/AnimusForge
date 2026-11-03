@@ -1,0 +1,38 @@
+{
+  "Id": "be_wre_palatini_guards_regiment",
+  "Keywords": [
+    "Imperial field troops and palace guards"
+  ],
+  "RagShortTexts": [
+    "Troops accompanying the emperor and palace guards had distinct duties requiring specific orders."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "An emperor needed protection while traveling and campaigning, alongside infantry and cavalry assembled with the army. Guarding palace access, securing a route and supporting battle were distinct duties. Prestige did not replace an assignment. Proximity to court offered rewards and promotion but also exposed soldiers to personnel disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Guards identified authorized visitors, watched roads and crowds and followed the commander on duty. Campaign service still involved training, camping and rations. Ceremonial display and battle deployment needed different preparations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The emperor and senior officers allocated guard and campaign duties according to reliability, experience and available men. Keeping too many troops nearby reduced support elsewhere, while removing guards endangered travel. Rewards could win support without determining every succession or court dispute."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -61,6 +61,16 @@ public static JArray BuildLlmMessageArray(WorldDiplomacyJob job,
 						+ " beforeChars=" + original.Length + " afterChars=" + (projected.Length + contract.Length + 1)
 						+ " world=" + world);
 				}
+                // Ordering must also reach already compact requests: the size-saving gate
+                // above deliberately rejects equal-sized projections. Never rewrite the job.
+                string current = (string)user["content"];
+                string ordered = DiplomacyRequestProjection.OrderForStablePrefix(job?.Kind, current);
+                if (!string.Equals(current, ordered, StringComparison.Ordinal))
+                {
+                    user["content"] = ordered;
+                    log?.Invoke("diplomacy.prefix_order job=" + job?.JobId + " kind=" + job?.Kind
+                        + " beforeChars=" + current.Length + " afterChars=" + ordered.Length);
+                }
 			}
 		}
 		return messages;

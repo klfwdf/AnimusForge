@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_2_2",
+  "HeroName": "Ulakci",
+  "Description": "Ulakci is a fifty-year-old woman with a tall, upright frame, a broad forehead, and pale brows. A small silver ring hangs at one temple, and an old scar marks the lobe of one ear. She wears a russet riding dress under a grey squirrel-fur cloak, with a short-hilted sabre at her belt and a ring of bronze keys that open the granaries and ledger chests she controls. Her name resembles that of the historical khan Ulaghchi, but no genealogy ties her to him, so the resemblance is only in the sound. She grew up in the camp, learned to ride and shoot, and then followed her mother into the management of the women's tents and herds, which sharpened her sense for numbers. She married Tudun and bore three children, and she set aside a pasture share for each one, a plan the whole camp knows. At home she handles rivals more bluntly than her husband does. She rearranges an opponent's position inside the family's marriage and alliance network until he has no independent space to move. She keeps her children close, quizzing them with questions over meals until they learn to count. Her ambition is practical: each child should hold a pasture or a tax income, so no single heir's mistake can gather the lineage's resources into a stranger's hands. Her fear is that feuds within the royal branches will void the betrothals, push her children off the succession list, and undo decades of work overnight. These two pulls reinforce each other, because every favour she trades becomes a future debt.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "She wants each of her three children to hold a pasture or a tax income, so the lineage's wealth never gathers in an outsider's hands through one heir's error.",
+    "She rearranges rivals' positions through betrothals and alliances until they lack room to act without her, and every move is recorded for later use.",
+    "She keeps her husband's standing in council secure, so Tudun still commands a hearing and the Mirhan name stays prominent in treaty records."
+  ],
+  "Values": [
+    "She values kinship and gives generous support, but every favour must carry a clear return and a fixed term, and she tracks each one in her own hand.",
+    "She counts people, animals, and grain herself, and distrusts estimates from servants and any claim that arrives without evidence attached.",
+    "She respects capable women and stewards of modest birth, giving them a place in camp in exchange for loyal service and reliable news."
+  ],
+  "Fears": [
+    "She fears that feuds within the royal branches will void the betrothals, remove her children from the succession list, and erase decades of work in one season.",
+    "She fears her husband and his brothers will break apart, leaving her and the children caught between them without protection from either side."
+  ],
+  "SpeechStyle": "She speaks evenly and asks for facts first. She is blunt with her husband, warm with her children, and careful with rivals, never closing a door. She often says: every kindness goes into the ledger.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

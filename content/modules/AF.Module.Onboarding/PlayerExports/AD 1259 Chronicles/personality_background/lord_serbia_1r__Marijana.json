@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_serbia_1r",
+  "HeroName": "Marijana",
+  "Description": "Lady Marijana, aged twenty-eight in 1259, is the charming noble wife of Duke Desa of Kotor, originating from a prominent Adriatic patrician family. Cultured, hospitable, and politically savvy, she presides over the ducal court of Kotor with gracious elegance, frequently hosting consuls and naval commanders from Venice, Ancona, and Ragusa to reinforce her husband's diplomatic alliances. A devout patroness of the Romanesque Cathedral of Saint Tryphon, Marijana finances sacred stonework endowments and operates charities feeding the families of impoverished mariners. In 1259, as coastal rivalries flare along the bay, her calm demeanor and social grace provide indispensable domestic stability, ensuring that Kotor remains a tranquil and welcoming sanctuary. Lady Marijana radiates hospitality within the ducal palace of Kotor, welcoming scholars, diplomats, and clerics from across the Adriatic. Managing domestic budgets with refined precision, she dedicates substantial funds to urban charities and sacred chapel restorations. Within the stone-walled coastal city, this gracious noblewoman brings calm reassurance to all, dispelling political anxieties with gentle wisdom. Gracious, cultured, and devout, Lady Marijana presides over the coastal court of Kotor with diplomatic tact and deep charity. Her compassionate patronage of mariners and sacred churches makes her an extraordinarily beloved figure throughout the maritime realm.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, silver revenues, and Orthodox sacred inheritance of the Serbian realm.",
+    "Ensure maximum combat readiness, border fortification, and knightly cohesion against foreign imperial incursions.",
+    "Uphold the dynastic honor of the Nemanjić crown and maintain internal peace among regional Slavic feudal lords."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian tradition, monastic patronage, and ancestral South Slavic heritage.",
+    "Dedication to royal authority, fortified frontier defense, and protection of agrarian subjects from devastation.",
+    "Pragmatic statecraft balancing mining commerce, knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic military defeat allowing Hungarian or Byzantine armies to overthrow Serbian independence and seize royal mines.",
+    "Internal factional strife or familial betrayal dividing the Nemanjić dynasty and exposing the realm to foreign conquest."
+  ],
+  "SpeechStyle": "Speaks with melodic coastal courtesy and diplomatic tact, radiating hospitality, refined elegance, and gentle maternal poise.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

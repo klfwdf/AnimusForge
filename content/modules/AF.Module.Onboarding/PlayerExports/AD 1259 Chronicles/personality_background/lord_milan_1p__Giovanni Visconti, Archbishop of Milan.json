@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_1p",
+  "HeroName": "Giovanni Visconti, Archbishop of Milan",
+  "Description": "Giovanni Visconti, son of Matteo I, reigned as Archbishop and supreme Lord of Milan. Unifying ecclesiastical and temporal lordship, he annexed Bologna and the Republic of Genoa while patronizing Petrarch, elevating Visconti rule to the absolute zenith of Italian power. Archbishop Giovanni unified ecclesiastical and secular sovereignty from the basilica of Sant'Ambrogio, deploying heavy squadrons and field armies to compel the proud Republic of Genoa into submission. Subjugating Bologna and Genoa through immense financial power and surgical diplomacy, he eliminated strategic threats on both flanks to establish Milan as Italy's dominant empire. Combining sacred archiepiscopal vestments with ruthless imperial statecraft, Archbishop Giovanni wielded piety and heavy cavalry alike to establish Milanese supremacy across northern Italy. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and Visconti dynastic grandeur against every rival commune, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leverage the archiepiscopal mantle to absorb rival bishoprics and autonomous communes.",
+    "Force Florence and Venice to acknowledge Visconti supremacy between the Alps and Tuscany.",
+    "Establish an unshakeable central administrative Chancery at Sant'Ambrogio in Milan."
+  ],
+  "Values": [
+    "Believes unified ecclesiastical and temporal sovereignty alone heals Italy's factional chaos.",
+    "Regards high literary patronage and humanist culture as the divine crowning of conquest."
+  ],
+  "Fears": [
+    "Avignon popes declaring a European crusade against Milan, fracturing his hard-won conquests.",
+    "His volatile nephews fracturing the unified state through personal cruelty after his death."
+  ],
+  "SpeechStyle": "Speaks with majestic pastoral solemnity and sovereign gravitas, commanding absolute reverence. Always fiercely defending Visconti dynastic authority, Milanese civic grandeur, and Lombard territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

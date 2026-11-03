@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v5",
+  "Keywords": [
+    "London receives Theodosius"
+  ],
+  "RagShortTexts": [
+    "London welcomed reinforcements while Theodosius still sent troops against raiders outside."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "London’s residents welcomed Theodosius’s arrival in Britain, while he sent detachments against scattered raiders. Relief inside the city did not immediately secure roads outside. Households missing relatives or property still needed searches, escorts and restitution."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

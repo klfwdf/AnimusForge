@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3e",
+  "HeroName": "Martino della Torre",
+  "Description": "Martino della Torre served as Signore of Milan and Capitano del Popolo. In the fateful year 1259, as supreme commander of the anti-tyrant league, he orchestrated the total rout and capture of Ezzelino da Romano at the Battle of Cassano d'Adda, immortalizing Torriani supremacy. Martino directed pontoon crossings and crossbow batteries along the rushing Adda at Cassano, outmaneuvering Ezzelino through feigned retreats before springing an inescapable iron trap. Spearheading heavy cavalry charges at Cassano, he broke Ezzelino's bodyguard across the bridge, lifting the dark shadow of tyranny from Lombardy as a legendary popular liberator. A legendary captain of the popular commune, Martino shattered the scourge of tyranny at Cassano, catapulting the Torriani Signoria to the pinnacle of European renown. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush Ezzelino da Romano's terrifying tyranny at Cassano d'Adda to liberate Lombardy.",
+    "Expand Milanese hegemony over Lodi, Como, and Bergamo to establish regional supremacy.",
+    "Marshal the Popolo of Sant'Ambrogio to suppress aristocratic Visconti subversion."
+  ],
+  "Values": [
+    "Believes supreme commanders must seize decisive moments with bold field aggression.",
+    "Holds popular guild trust as the ultimate source of legitimacy, cemented by victory."
+  ],
+  "Fears": [
+    "Ezzelino's horsemen breaching the Adda defensive line to slaughter Milanese citizens.",
+    "Allied forces from Mantua or Ferrara deserting the battlefield at the critical juncture."
+  ],
+  "SpeechStyle": "Speaks with thunderous field authority and soaring ambition, inspiring absolute morale. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v6",
+  "Keywords": [
+    "山口单列车流"
+  ],
+  "RagShortTexts": [
+    "高加索旧地理记载中的狭路限制成列移动，载家车辆尤其要寻找可通行地段。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "高加索旧地理记载中的狭路限制成列移动，载家车辆尤其要寻找可通行地段。能容步行者的路未必容车，领路者须在整队进入前确认退路，而不是让全体追随骑兵痕迹。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

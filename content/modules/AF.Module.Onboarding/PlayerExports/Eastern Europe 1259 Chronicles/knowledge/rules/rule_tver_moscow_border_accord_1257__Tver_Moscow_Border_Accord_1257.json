@@ -1,0 +1,52 @@
+{
+  "Id": "rule_tver_moscow_border_accord_1257",
+  "Keywords": [
+    "Land disputes around Tver",
+    "Tver crossing revenues and claims"
+  ],
+  "RagShortTexts": [
+    "Tver and Moscow land disputes involved crossings, income and local families.",
+    "Disputed possession affected whom households paid and where they brought claims."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Land, crossings and transport income around Tver and Moscow involved different princes and families. Boundary disputes affected whom households paid and where they brought claims. Possession, kinship and local recognition all shaped outcomes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Land, crossings and transport income around Tver and Moscow involved different princes and families. Boundary disputes affected whom households paid and where they brought claims. Possession, kinship and local recognition all shaped outcomes. Guards watched roads and boundaries and protected harvests or enforced decisions. In kin disputes they needed clear authority; damaged animals and crops could widen conflict."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Land, crossings and transport income around Tver and Moscow involved different princes and families. Boundary disputes affected whom households paid and where they brought claims. Possession, kinship and local recognition all shaped outcomes. Land supplied dues and service but required resident producers. Grants, inheritance and forfeiture affected partners; prolonged disputes reduced returns through abandoned fields and duplicate demands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Land, crossings and transport income around Tver and Moscow involved different princes and families. Boundary disputes affected whom households paid and where they brought claims. Possession, kinship and local recognition all shaped outcomes. Households needed to know rent recipients, pasture access and what children inherited. Disputes delayed sowing or brought duplicate demands; witnesses and kin mattered especially to poorer people."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

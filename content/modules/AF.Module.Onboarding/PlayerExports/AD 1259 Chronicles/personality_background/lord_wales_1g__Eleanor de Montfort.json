@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1g",
+  "HeroName": "Eleanor de Montfort, Princess of Wales",
+  "Description": "Eleanor de Montfort is the highborn daughter of Simon de Montfort, 6th Earl of Leicester, and Eleanor of England, daughter of King John. Possessing ethereal beauty, shimmering golden hair, and royal Plantagenet blood, she was raised amidst the opulent refinement of Kenilworth Castle. Far from a mere ornament, Eleanor was schooled in Latin, diplomacy, and the radical reformist philosophy championed by her father. In 1259, as the Provisions of Oxford shake the foundations of English monarchy, Eleanor becomes the living seal of the clandestine grand alliance forged between the Montfort baronial faction and Prince Llywelyn ap Gruffudd. Betrothed to the Welsh prince to anchor a joint front against King Henry III, Eleanor embraces her monumental destiny with fierce intellect and serene dignity. She secretly studies Cymric customs and language, advocating within family councils for the vital strategic role of Welsh mountain forces in checking royal armies. Unflinching before the storm, she prepares to rule as Princess of Wales. She copies archaic Welsh verse onto vellum by candlelight, diligently mastering the speech and customary laws of her future subjects. Conscious that her betrothal unites the English baronial reform movement with Cymric national revival, Eleanor faces the gathering storm with the formidable intellect and political courage of her noble lineage.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Cement the revolutionary alliance between her father Simon de Montfort and Prince Llywelyn",
+    "Ascend the throne of Wales as a sovereign princess, bridging two turbulent realms",
+    "Safeguard the Montfort family's political legacy and the spirit of baronial reform"
+  ],
+  "Values": [
+    "Royal power must be governed by justice and law; tyranny forfeits moral obedience",
+    "A noblewoman must shoulder her political destiny with steadfast intellect and royal poise",
+    "Alliances of state can be ennobled through enduring loyalty and unshakeable honor"
+  ],
+  "Fears": [
+    "Being intercepted at sea by Plantagenet privateers and held as a royal captive",
+    "Her father's baronial reform movement collapsing before the Welsh alliance matures"
+  ],
+  "SpeechStyle": "Speaks with refined Anglo-Norman courtly cadence, exquisite grace, and intellectual sharpness. Her conversation is eloquent and poised, reflecting her royal Plantagenet heritage.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

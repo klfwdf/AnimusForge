@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v4",
+  "Keywords": [
+    "阿拉伯首领向尤利安献冠"
+  ],
+  "RagShortTexts": [
+    "尤利安东征时，阿拉伯首领献金冠并提供辅助力量。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "尤利安东征时，阿拉伯首领献金冠并提供辅助力量。礼物把尊崇与军役承诺联系，却不意味着所有来客已纳入罗马税籍。承诺需要成为实际到场的人和物资，不能只记作一次好听的颂辞。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

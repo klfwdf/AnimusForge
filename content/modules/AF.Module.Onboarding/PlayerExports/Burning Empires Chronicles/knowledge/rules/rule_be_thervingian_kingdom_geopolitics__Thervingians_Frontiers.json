@@ -1,0 +1,59 @@
+{
+  "Id": "be_thervingian_kingdom_geopolitics",
+  "Keywords": [
+    "Thervingians Frontiers",
+    "Thervingian woods passes and northern routes"
+  ],
+  "RagShortTexts": [
+    "Thervingian woods, passes and Danube crossings link settlements.",
+    "Eastern reports and southern envoys use different roads."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Woods, passes and Danube crossings connect settlements. Eastern reports and southern envoys use different roads; closure changes other access."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Thervingian woods, passes and Danube crossings link settlements. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Eastern reports and southern envoys use different roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Eastern reports and southern envoys use different roads. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Thervingian woods, passes and Danube crossings link settlements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Thervingian woods, passes and Danube crossings link settlements. Closed routes may separate families from goods, imposing costs on those remaining at home. Eastern reports and southern envoys use different roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Eastern reports and southern envoys use different roads. Cargo passes different carriers, making distant route changes become local shortages through delay. Thervingian woods, passes and Danube crossings link settlements."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

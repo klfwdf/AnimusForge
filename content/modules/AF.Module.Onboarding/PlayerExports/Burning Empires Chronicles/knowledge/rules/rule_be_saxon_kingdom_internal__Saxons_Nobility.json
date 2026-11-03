@@ -1,0 +1,59 @@
+{
+  "Id": "be_saxon_kingdom_internal",
+  "Keywords": [
+    "Saxons Nobility",
+    "Saxon owners and coastal chiefs"
+  ],
+  "RagShortTexts": [
+    "Freawine coordinates coastal chiefs, owners and followers.",
+    "Joint sailing shares returns and vessel losses."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Freawine needs coastal chiefs, owners and followers. Joint sailing shares gains and losses, with households divided over land defence and voyages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Freawine coordinates coastal chiefs, owners and followers. Followers retain family ties; decisions about guards and distant service affect common participation. Joint sailing shares returns and vessel losses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Joint sailing shares returns and vessel losses. Coordination allocates actual supply and protection duties, not merely titles. Freawine coordinates coastal chiefs, owners and followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Freawine coordinates coastal chiefs, owners and followers. Households compare burdens with neighbors; unmatched protection weakens cooperation. Joint sailing shares returns and vessel losses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Joint sailing shares returns and vessel losses. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Freawine coordinates coastal chiefs, owners and followers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

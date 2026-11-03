@@ -8,7 +8,7 @@ internal sealed class LoyaltyPerDayPayload : NumericPolicyEffectPayload
 
 internal sealed class LoyaltyPerDayEffectModule : NumericPolicyEffectModuleBase<LoyaltyPerDayPayload>, IModelModifierPolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "loyaltyPerDay",
 		order: 40,
 		legacyIds: new[] { "loyaltyDailyDeltaPerTown" },
@@ -32,7 +32,8 @@ internal sealed class LoyaltyPerDayEffectModule : NumericPolicyEffectModuleBase<
 		playerDisplayName: PolicyCompatibilityTexts.Get("Module_loyaltyPerDay_playerDisplayName"),
 		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_loyaltyPerDay_editableUnderstandingPrompt", "Loyalty is mainly affected by perceived fairness, cultural identification, autonomy, oppression, fear, honor and the distribution of interests. When policies directly and continuously affect towns' popular support, political identification or resistance, loyalty is a direct consequence. Economic prosperity alone cannot substitute for political identification."),
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_loyaltyPerDay_editableEvaluationPrompt", "Judge actual daily changes per affected town; do not first calculate the entire duration and divide by days. Mild impact: ±0.1 to ±0.4; regular reassurance, tax burdens, fairness, cultural treatment or autonomy adjustments: ±0.4 to ±1.2; major reforms, strong oppression, heavy-tax relief, broad relief programs, honorary privileges or clear discrimination: ±2 to ±6; extreme tyranny, major rescue of the population, severe betrayal, systematic persecution or near-rebellion stimuli: ±4 to ±12."),
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

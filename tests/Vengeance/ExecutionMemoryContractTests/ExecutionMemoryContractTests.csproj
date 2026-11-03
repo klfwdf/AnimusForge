@@ -12,6 +12,7 @@
     <Compile Include="../../../src/AF.GameAdapter.Bannerlord/Memory/ExecutionWitnessObservationController.cs" Link="Production/ExecutionWitnessObservationController.cs" />
     <Compile Include="../../../src/bridges/Vengeance/Host/PublicExecutionOrderPolicy.cs" Link="Production/PublicExecutionOrderPolicy.cs" />
     <Compile Include="../../../src/bridges/Vengeance/Host/PublicExecutionOrderRuntime.cs" Link="Production/PublicExecutionOrderRuntime.cs" />
+    <Compile Include="../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
     <Compile Include="../../../src/modules/AF.Module.Prompt/Configuration/ExecutionPromptConfiguration.cs" Link="Production/ExecutionPromptConfiguration.cs" />
     <Compile Include="../../../src/modules/AF.Module.Prompt/Configuration/GuardrailRulePromptConfig.cs" Link="Production/GuardrailRulePromptConfig.cs" />
     <Compile Include="../../../src/modules/AF.Module.Prompt/Configuration/PostprocessRuleEntry.cs" Link="Production/PostprocessRuleEntry.cs" />
@@ -24,8 +25,23 @@
     <Compile Include="../../../Vengeance/Source/Core/ExecutionEnums.cs" Link="Production/ExecutionEnums.cs" />
     <Compile Include="../../../Vengeance/Source/Core/ExecutionMethodRules.cs" Link="Production/ExecutionMethodRules.cs" />
     <Compile Include="../../../Vengeance/Source/Scene/Speech/*.cs" Link="Production/%(Filename)%(Extension)" />
+    <Compile Include="../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../../src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs" Link="Production/LlmSourceTexts.cs" />
     <EmbeddedResource Include="../../../content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" WithCulture="false" />
     <Reference Include="Newtonsoft.Json"><HintPath>../../../_deps_auto/Newtonsoft.Json.dll</HintPath></Reference>
+    <Compile Include="../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" Link="Production/PromptComposerTexts.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Prompt/Composition/CampaignSystemFactProjection.cs" Link="Production/CampaignSystemFactProjection.cs" />
+    <Compile Include="../../../src/AF.GameAdapter.Bannerlord/Records/AdapterRecordTexts.cs" Link="Production/AdapterRecordTexts.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Memory/Runtime/MemoryTextResources.cs" Link="Production/MemoryTextResources.cs" />
+    <EmbeddedResource Include="../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json" LogicalName="AnimusForge.Prompt.Compatibility.json" WithCulture="false" />
+    <EmbeddedResource Include="../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.en.json" LogicalName="AnimusForge.Prompt.Compatibility.en.json" WithCulture="false" />
+    <EmbeddedResource Include="../../../content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordCompatibility.json" LogicalName="AnimusForge.Adapter.RecordCompatibility.json" WithCulture="false" />
+    <EmbeddedResource Include="../../../content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordCompatibility.en.json" LogicalName="AnimusForge.Adapter.RecordCompatibility.en.json" WithCulture="false" />
+    <EmbeddedResource Include="../../../content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.json" LogicalName="AnimusForge.Memory.SourceTexts.json" WithCulture="false" />
+    <EmbeddedResource Include="../../../content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.en.json" LogicalName="AnimusForge.Memory.SourceTexts.en.json" WithCulture="false" />
+    <Content Include="../../../content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.zh-CN.json" Link="ModuleData/PromptComposerTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.en.json" Link="ModuleData/PromptComposerTexts.en.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../content/modules/AF.Module.Prompt/ModuleData/ExecutionRulePrompts.en.json" Link="ModuleData/ExecutionRulePrompts.en.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../content/modules/AF.Module.Llm/ModuleData/LlmPromptTexts.en.json" Link="ModuleData/LlmPromptTexts.en.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

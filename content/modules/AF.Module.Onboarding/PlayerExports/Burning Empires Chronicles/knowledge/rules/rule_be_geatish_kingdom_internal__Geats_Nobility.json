@@ -1,0 +1,59 @@
+{
+  "Id": "be_geatish_kingdom_internal",
+  "Keywords": [
+    "Geats Nobility",
+    "Geatish ship and grain contributors"
+  ],
+  "RagShortTexts": [
+    "Gissur coordinates chiefs, farmers and sailing partners.",
+    "Ship and grain suppliers differ, making rewards affect cooperation."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gissur negotiates with chiefs, farmers and sailors. Households supplying vessels may differ from those supplying grain; rewards affect their next cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gissur coordinates chiefs, farmers and sailing partners. Followers retain family ties; decisions about guards and distant service affect common participation. Ship and grain suppliers differ, making rewards affect cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ship and grain suppliers differ, making rewards affect cooperation. Coordination allocates actual supply and protection duties, not merely titles. Gissur coordinates chiefs, farmers and sailing partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gissur coordinates chiefs, farmers and sailing partners. Households compare burdens with neighbors; unmatched protection weakens cooperation. Ship and grain suppliers differ, making rewards affect cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ship and grain suppliers differ, making rewards affect cooperation. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Gissur coordinates chiefs, farmers and sailing partners."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

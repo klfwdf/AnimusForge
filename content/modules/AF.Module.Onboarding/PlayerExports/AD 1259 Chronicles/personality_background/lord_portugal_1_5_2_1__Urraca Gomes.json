@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_5_2_1",
+  "HeroName": "Urraca Gomes",
+  "Description": "Doña Urraca Gomes is an accomplished noblewoman from a prominent knightly lineage of central Portugal, wife to Dom Álvaro de Alpuim, Castellan of Santarém. Reared amidst the bustling manors of the fertile Tagus basin, Urraca possesses exceptional competence in feudal estate law, trade agreements, and logistical auditing. While her husband exercises military command over the river passages, she oversees the extensive grain storehouses, salt vaults, and customs registries within Santarém. In 1259, as riverine commerce surges, she capably negotiates wharf tenures with town merchant guilds and religious orders, maximizing castle revenues. Fair, methodical, and devoutly charitable, she regularly distributes hot food and warm clothing to impoverished pilgrims passing through the gates. Her domestic brilliance and steady composure provide the indispensable foundation sustaining her husband's strategic responsibilities. Directing customs ledgers and grain storehouses at the busy river docks of Santarém, Urraca rooted out corruption and stabilized castle revenues. Her methodical fairness and pragmatic acumen established solid trust with merchant guilds, anchoring the domestic prosperity of her house. Her sharp financial acumen, fair customs administration, and charitable heart anchor the domestic stability and enduring prosperity of Santarém Castle throughout turbulent eras of war.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Efficiently manage storehouses and customs tenures to maintain continuous fiscal prosperity",
+    "Care for garrison families and veterans to sustain high morale throughout the fortress community",
+    "Support local religious charities to bolster the moral prestige and social influence of her house"
+  ],
+  "Values": [
+    "Orderly governance and transparent accounting are the bedrock of enduring noble authority",
+    "Combine equitable firmness with genuine compassion; caring for the destitute is divine service",
+    "Prudent industry, unwavering marital loyalty, and humble gratitude before God"
+  ],
+  "Fears": [
+    "Severe floods along the Tagus inundating riverside granaries and destroying valuable stores",
+    "Outbreak of epidemic disease within the crowded citadel sweeping through the garrison"
+  ],
+  "SpeechStyle": "Composed, articulate, and businesslike; speaks with the effortless authority, organizational clarity, and dignified warmth of an experienced castle chatelaine.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

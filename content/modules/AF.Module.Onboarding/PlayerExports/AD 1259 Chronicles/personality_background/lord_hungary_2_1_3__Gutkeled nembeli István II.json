@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_1_3",
+  "HeroName": "Gutkeled nembeli István II",
+  "Description": "Gutkeled nembeli István II is the third son of Ban István I, esteemed across Transdanubia for his reliable administrative service and chivalric integrity. Carrying forward his clan's martial tradition, he served in high court offices, including Master of the Stewards, overseeing royal bodyguards and county militia musters. Known for his even temper and sense of justice, István II frequently served as King Béla IV's personal escort during royal progresses between river palaces. Within the family, he plays a crucial role as a tranquil mediator between his martial elder brother Miklós and his deeply calculating brother Joachim. In 1259, amidst the gathering storm over Styria, István II oversees supply depots and road communications between Buda and Transdanubia, ensuring solid civic stability across home domains. István II personally reviewed county militia units across Transdanubia, suppressing unlawful land encroachments by predatory robber-knights. He maintained efficient courier communications and postal relay stations between Buda and the southern marches. His upright judicial administration and unswerving loyalty to the crown commanded lasting veneration from council prelates and rustic yeomen alike. His steadfast judicial stewardship and postal oversight guaranteed swift communications between royal chanceries and frontier garrisons across the southwest.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain peace and logistical transit across Gutkeled home lands, securing rear supply lines.",
+    "Preserve harmony among his brothers, preventing internal rivalry from damaging the clan."
+  ],
+  "Values": [
+    "Treasure fraternal unity and conscientious duty to the realm, valuing equity and steadfastness.",
+    "Reject reckless greed and rash adventurism, championing grounded stewardship."
+  ],
+  "Fears": [
+    "Fears fratricidal jealousy tearing the brothers apart and ruining the family patrimony.",
+    "Dreads hostile raiders infiltrating unfortified rear hamlets, inflicting destruction upon civilians."
+  ],
+  "SpeechStyle": "Protecting the realm is our bounden duty; secure supply lines guarantee triumph at the front! Under my watch, Transdanubia remains rock-solid! Duty and honor are sacred; Transdanubia's order shall never be broken!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

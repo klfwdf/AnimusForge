@@ -1,3 +1,8 @@
+<a id="merge-origin-local-171-20261103"></a>
+## 2026-11-03 最新远端 1.8 与本地 1.7.1 合并
+
+用户授权拉取并合并，随后再讨论外交修复。远端 `2822ba2f4`，本地原 HEAD `f6c75c96e`，检查点 `313b616c2`；版本保留 1.8.0，本地按事件查询世界资料和远端请求排序均保留。双 API/Bootstrap/双 seam 通过；外交 scoped 13、prefix 97、语音双语/缓存 187 项通过。未打包、部署、push 或实机验证，外交累计重试与审核问题尚未修复。四份开工 dirty 文档独立备份并于合并提交后恢复；详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merge-origin-local-171-20261103)与[代码范围](docs/architecture/af-framework-code-scope.md#merge-origin-local-171-20261103)。
+
 <a id="package-1.7.0-20261031"></a>
 ## 2026-10-31 最新本地 1.7.0 CN/EN 玩家包已生成
 
@@ -5,6 +10,631 @@
 
 **PACKAGED_OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED**。双 API、Bootstrap、seam/注册、完整双语投影和正式 ZIP 校验通过；本次补齐付款凭据兼容资源及内置音色 UI 接线，未改外交权限、金额规则或音色 ID。说客 CN/EN 各 168、音色 187、匹配表达式等价 24 项通过。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#package-1.7.0-20261031)和[代码范围](docs/architecture/af-framework-code-scope.md#package-1.7.0-20261031)。本条替代之前“尚未包含合并后代码的旧 1.7.0 包”状态，不改变历史部署、实机或远端状态。
 
+## 2026-11-02 外交请求原案前置（本任务）
+
+SOURCE_COMMITTED / TARGETED_REPLAY_PASS / DUAL_BUILD_PASS / NOT_DEPLOYED。产品9dd4028e1e，检查点7c0c4ca4d。六类结构化外交请求在最终副本中前置原案、后置摘要/实时资料/修正；字段值、来源顺序、CN/EN原文、system、存储提示词和冻结链均保持，原压缩门槛不变。
+
+新增97项、真实23请求71项、既有591项断言PASS；6组重复前缀增长，准入审核74→21304字符。1.3/1.4/Bootstrap编译exit0；双语26表PASS，全仓语言门保留原DiplomacySponsorReceiptRules四条失败。真实provider缓存命中、实机及旧档未验；未部署/打包/push。候选bin/Debug/diplomacy_prefix_order_20261102；证据.tmp/diplomacy-prefix-order-20261102/verification.json。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-stable-case-prefix-20261102)和[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-stable-case-prefix-20261102)。回滚只聚焦revert产品9dd4028e1e，保留其他作者内容。
+
+---
+## 2026-11-02 俘虏状态重复注入修复（本任务）
+
+SOURCE_FIXED / TARGETED_REPLAY_PASSED / DUAL_BUILD_PASSED / NOT_DEPLOYED。产品31f7b38e04，意图检查点92d42f54f6。普通英雄俘虏状态统一由共享Extras注入，人物介绍不再复制；城堡、巡查/非英雄专用说明保留。玩家自定义提示词原文与优先级未改。
+
+两种API配置各通过36项CN/EN定向回归，恢复旧重复入口的反例被检出。1.3/1.4生产编译exit0（各404警告/0错误），Bootstrap exit0（0警告/错误）。旧通用消息测试缺当前依赖，隔离补依赖后仍未跑通，不能称通过；未实机、部署、打包或push。候选bin/Debug/prisoner_status_20261102；[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#prisoner-status-ownership-20261102)；[源码范围](docs/architecture/af-framework-code-scope.md#prisoner-status-ownership-20261102)。撤销产品改动仅聚焦revert 31f7b38e04，不回退其他作者改动。
+
+---
+
+## 2026-11-02 营地从自动退场基线重修（当前）
+
+**DEPLOYED / OFFLINE_VERIFIED / NATIVE_NOT_RUN**。按用户“从那段开始的改动，全部重新修”，先聚焦撤销四轮后续修复至 b53736e44（相关路径等同591f9ad4d6），再提交新产品 64d6f069b0。本条替代下方不退出、帐篷与刑场路线的当前结论，不把旧00f2d17b9d无回执候选当成功部署。
+
+已重修自动退营、完整地块选址、帐篷/家具/入口、仅B键确认刑场、真实清场/可选观众与取消清理。C#428项、源码/资源93项、双语26表、双API/Bootstrap及原门禁通过；原脚本部署exit0，9007映射/三DLL/11玩家保护文件核验PASS。实机/旧档/独立Vengeance未验，隔离空间不足；保留外交既有4处语言门失败。
+
+[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-restart-20261102) / [代码范围](docs/architecture/af-framework-code-scope.md#field-camp-restart-20261102)。完整证据 .tmp/field-camp-restart-20261102/verification.json；新产品可聚焦revert回b53736e44，保留其他作者改动。未打包/push/升版本，无安装自动回滚。
+
+---
+
+## 2026-11-02 刑场确认后让场等待与可选家具状态修复已覆盖
+
+**DEPLOYED / ROUTE_AND_WIRING_PASS / NATIVE_RETEST_NOT_RUN**。用户反馈降级提示及“刑场也无法部署”；产品/构建输入`51202a5e8f`，意图点`be47cb22d`。日志确认B键已接收位置，随后16名人员准备未到Ready；11秒后离营取消，不把它虚称为已记录超时。已补营地碰撞缓存路径/逐拐点步行、多方向有界让场及可见等待提示；仍先让场和观众就位、再由原builder生成，不传送NPC/自动退出或恢复预生成刑场。可选床/箱跳过单独计数与提示，不再冒充核心设施初始化失败；实际缺失仍记录，不声称家具全部放下。
+
+生产路线81、道具23、Setup101、原C#72/105/121、接线14（旧2/14）、源码65+6、不退出15、手动刑场10、双语26表PASS。双API/Bootstrap构建通过；构建进程Get-FileHash不可用曾停在门禁，进程显式加载系统Utility后原双门禁通过，原部署脚本接续exit0更新11文件，安装/9007映射/三DLL/11玩家保护文件核验PASS。游戏未启动，实际NPC绕道、Ready和刑场成功生成仍需实机；外交既有4处语言门失败保留。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-deployment-route-20261102) / [代码图](docs/architecture/af-framework-code-scope.md#field-camp-deployment-route-20261102)。证据与before/旧项目候选在`.tmp/field-camp-deployment-route-20261102/`；无安装自动回滚，未打包/push。
+
+---
+
+## 2026-11-02 帐篷实际放置与刑场仅手动部署修复已覆盖
+
+**DEPLOYED / PROP_EXECUTION_TEST_PASS / NATIVE_RETEST_NOT_RUN**。产品/构建输入`88c3654dbc`，意图点`0e2aab63a`。用户截图反馈帐篷缺失、刑场不应提前生成；已修复把过大外包围盒/正常坡地直接删帐篷的逻辑：按地块统一适配真实模型和碰撞体，拟合地形平面，校正模型底部/轴心；保留入口、家具与水面/陡坡/台阶检查。删除进场加载最新刑场预设和默认刑台/绞架/刑场围栏路径，既有B键自定义部署/确认保留，不改Vengeance共享源码。
+
+生产道具链接测试21项（先复现旧代码删除帐篷）、手动刑场接线10项（旧2/10→新10/10）、初始化故障97项、原C#72/105/121、源码65+6、不退出15、双语26表PASS。双API/Bootstrap/managed门禁通过，原脚本接续部署成功更新9文件，安装/9007内容映射/三DLL/11玩家保护文件核验PASS。前轮不自动退出修复保留；初始化故障测试减少的5项是删除自动刑场preset阶段故障用例并新增禁止调用断言，不是删掉仍存在的业务断言。实机帐篷外观/碰撞和B键部署仍未验，外交原有4处语言门失败不变。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-tents-manual-site-20261102) / [代码图](docs/architecture/af-framework-code-scope.md#field-camp-tents-manual-site-20261102)。证据、截图、before及旧项目候选在`.tmp/field-camp-tents-manual-site-20261102/`，无安装自动回滚；未启动游戏/打包/push。
+
+---
+
+## 2026-11-02 营地不自动退出修复已覆盖
+
+**DEPLOYED / FAILURE_INJECTION_PASS / LIVE_NOT_RUN**。产品/构建输入`8876d7ff55`，意图点`591f9ad4d`。前次补丁把布置异常升级为EndMission，造成进营地即退出；现已移除这条退场链路并分阶段隔离失败。完整营地放不下时寻找安全玩家落点，帐篷/家具局部失败不拖垮全营；移除营地昏迷自动结束及越界倒计时退出owner，保留TAB/ESC主动离开、边界墙和手动清理。玩家未初始化不扣巡营时间；CN/EN降级提示已接线。
+
+新增生产Setup链接故障注入102项PASS；不自动退出源码契约旧2/15→新15/15，原C#72/105/121、源码65+6、双语26表通过。双API/Bootstrap和managed门禁通过，原统一流程成功更新11文件到`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；模块仍v1.7.0，安装/映射/三DLL及11玩家保护文件核验PASS。实机原始三地图、原生碰撞、TAB/ESC、昏迷/越界和旧档仍未验；外交语言门既有4处失败保留。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-no-auto-exit-20261102) / [代码图](docs/architecture/af-framework-code-scope.md#field-camp-no-auto-exit-20261102)。完整证据及before/旧项目候选在`.tmp/field-camp-no-auto-exit-20261102/`，无安装自动回滚；未打包/push/启动游戏。
+
+---
+
+## 2026-11-02 营地审查修复与当前世界书候选已部署（CN）
+
+**DEPLOYED / HASH_VERIFIED / LIVE_NOT_RUN**。用户本轮明确授权“部署 / 激进型 / 继续”。构建输入 `958fd4d257e92b84adef9b7c97aeb1a4b1c10ce1`，含营地九项 `175a6e0cc7`、审查修复 `e386527d47` 和当前已提交世界书更新；版本保持 v1.7.0。已通过原统一入口构建 1.3.15.110062 / 1.4.6.115628 + Bootstrap，接续原部署脚本成功更新 3947 个受管文件到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，不打包、不push。
+
+C# 72/105/121 项、源码契约65+6项、双语26表通过；9007项内容映射、三DLL/marker、19689源码输入及11份受保护文件核验通过。9023个Stage文件中8998个与安装一致，另保留2份自定义提示词和23份较新布匿战争导出，未绕过保护。全仓语言门仍有外交既有4处失败；游戏、真实TTS/provider、旧档、独立Vengeance构建未验。仅就C#离线执行、构建和安装状态替代下方营地/世界书“未部署”历史，实机结论不变。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-review-deployed-20261102) / [代码范围图](docs/architecture/af-framework-code-scope.md#field-camp-review-deployed-20261102)。完整日志/哈希在 `.tmp/deploy-camp-review-20261102/verification.json`；旧项目输出在同目录 `previous-stage/`、`previous-artifacts/`，不是安装备份，无自动回滚。
+
+---
+
+## 2026-11-02 三部历史世界书对照权游补全（源内容完成，未部署）
+
+**SOURCE_DELIVERED / TARGET_OFFLINE_PASS / LIVE_NOT_RUN**。已定位Claude会话 `cab6b663-8b2a-4189-a53d-c6b66c249264`并续接最新三书目标。权游只读提炼18维；AD1259、东欧1259、燃烬帝国六个中英源包已按实际联网正文补缺、纠正时点并接真实英文消费映射。8256个JSON，固定人设5964文件、知识1128对、国家116对六段综述；源内容终稿`5e67a4eff5`，全部产品切片见本轮`delivery-commits.json`。
+
+六包结构、三目标4128对身份映射、真实英文selector及15792次角色投影PASS；全库布匿战争1422个既有问题未改，不能称全仓通过。未构建、Stage、打包、部署、push、实机/真实模型或旧档验证。人物与史料、共享角色束等边界、消费者证据和聚焦回滚见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#worldbook-18-dimension-review-20261102)与[18维对照报告](docs/worldbook-content-comparison-20261102.md)。
+
+最终证据 `.tmp/worldbook-continuation-20261102/`，前期联网正文 `.tmp/worldbook-review-20261102/`；完整续接前备份 `continuation-start.zip`。退役战略接口未复活；源事件空表不清旧档，Week0综述档案正常。回滚只针对具名切片并核终稿哈希，不重置共享main或覆盖其他作者。
+
+## 2026-11-02 营地审查三项修复（源码，未构建部署）
+
+本地产品 `e386527d47`：修复有俘虏时决斗把全营设为敌队、堵路人物永久跳过维护、观众回营与集合/解散抢目标。仅改两个营地生产文件并新增离线源码回归检查，沿用原批次与队伍owner，没有新增UI/设置/存档身份。
+
+新检查修改前3项FAIL、修改后6项PASS；原65项接线、26表双语、两文件语法与diff-check通过。全仓语言门仍有外交既有4处失败。C#执行、双API/Bootstrap/独立Vengeance构建和实机等仍NOT_RUN，不能称已部署或游戏内通过。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-review-fixes-20261102) / [代码范围图](docs/architecture/af-framework-code-scope.md#field-camp-review-fixes-20261102)。证据/备份 `.tmp/field-camp-review-fixes-20261102/`，回滚仅聚焦 `e386527d47`，保留其他会话dirty。
+
+## 2026-11-02 营地九项修复接续完成（源码，未编译部署）
+
+本地产品 `175a6e0cc7`，接续 Claude 会话 `f0b1388c-f505-4503-bd09-7b9ff1272b3a`。帐篷/地形净空、原生HUD/F、步行围观准备、取消保场、日常/闲聊占用、处决评论候选、全部俘虏伤亡与处决TTS补丁已收口；本轮另补注视避让仪式移动、清旧限速、营地士兵身份中英Prompt和视图命名空间。按原批准计划只做本地源码与离线检查，不构建、部署、打包、push或调用模型。
+
+65项源码/资源契约、26张双语表与diff检查PASS；26个C#文件无新增解析错误。全仓语言门仍报外交原有4处中文常量。C#执行harness、双API/Bootstrap/独立Vengeance构建、实机/真实TTS/旧档全部NOT_RUN；不能视为游戏内九项通过。[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-nine-fixes-20261102) / [代码范围与恢复](docs/architecture/af-framework-code-scope.md#field-camp-nine-fixes-20261102)。证据及before位于 `.tmp/field-camp-nine-fixes-20261102/`；回滚仅聚焦产品提交，不重置共享main或覆盖其他会话dirty。
+
+## 2026-11-02 全部现有功能改动编译部署（CN）
+
+用户要求“带着所有改动提交编译部署”。源码 `49d7521fb44e40f9c3c518eb5bf62fb33a9bdfbf`：当前 HEAD 已含世界书与营地接续等产品修改，本轮补提交唯一剩余实质代码差异 `tests/modules/AF.Module.Prompt/ResidualLocalization/CourierProjection.cs`。其余源码/资源差异核实仅换行；保留本地私有 HANDOFF/主台账增量和 97 个空 NuGet 迁移标记，不提交生成物、不推送。
+
+原 `build_single_module.ps1 -Configuration Debug -Deploy` 完成 1.3.15.110062、1.4.6.115628 和 Bootstrap，两个实现均 0 错误（各 379 警告），双 coup seam/registration smoke 通过。CN 模块 v1.7.0 已覆盖到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，更新 438 个托管文件；没有改构建部署入口、打包、升版本或启动游戏。
+
+安装核验 PASS：9013 个 Stage 文件中 8988 个安装哈希相同；其余 2 个自定义提示词和 23 个较新/同时间戳布匿世界书文件按原规则保留。8997 个内容映射与源码逐项一致，11 个既有玩家配置哈希不变。1.3 DLL `40e3d5db…`、1.4 DLL `c6f2beff…`、Bootstrap `b9235d54…` 均与构建产物/marker 一致。营地接续 32 项、围观 105 项、双语表 26/0 通过；全仓语言门仍有既有外交中文常量 4 处失败。
+
+详细证据见[本轮主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-all-20261102)和 `.tmp/deploy-all-20261102-verification.json`；构建日志 `.tmp/deploy-all-20261102-build.log`。旧生成 Stage 保留在 `artifacts/deploy-backups/AnimusForge/stale-stage-20261102-49d7521/`，不是游戏安装备份；本轮无自动回滚。未验实机、旧档或全量业务回归；如需回退须选择明确源码候选重新构建部署，不重置共享工作区。
+
+## 2026-11-02 原178世界书文件完善与本地提交
+
+已按《世界书指导.md》完成原178文件的正文、时间线、RAG及必要双语对应，最终304个JSON（302知识规则、2份东欧综述）；151对规则、2114个角色上下文离线检查通过。修正旧规则中不被运行时产生的职业角色值，使用现有Occupation粗桶；无新增运行代码/热路径IO。完整范围、消费者代码坐标、来源、证据和局限见[主台账本项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#worldbook-pending-178-completion-20261102)。检查点 `304b879fef`；本地证据 `.tmp/worldbook-complete-20261102/`。
+
+304文件契约0错误，双语表26/0；全仓本地化门禁仍有外交模块4个既有字符串问题，另有东欧英文10组及卡拉迪亚中文2组既有重复Id，均已登记。未宣称三套整书全部完成或可发行，未构建、打包、部署、push、实机/旧档验证；未做所有史实逐条原典核验。保留其他作者未提交内容。回滚用本次收尾提交的聚焦inverse/revert，勿重置共享main。
+
+## 2026-11-02 营地连续处决审查修复：互斥与拒绝后重试
+
+产品 `93df60b436`：营地 owner 在决斗、屠俘、现行仪式或退场期间拒绝新处决；F/选择回调、Begin 回调后和真实 staging 前重验。下一场先 Begin 获准，才清理上一场入口；Begin 被拒绝后仍可按 F 重选，上一场结算不重复。增加接续重入守卫。
+
+验证：原统一入口双 API Release + Bootstrap、双接缝/注册冒烟通过；真实接续与真实钩子配替身回归 32 项、围观 105 项通过。双语表 26 表通过；全仓语言门仍有既有外交常量 4 处失败。未部署、未实机、未验旧档；独立工程约定路径缺失。Begin 获准后的实体清理/注入失败仍走原失败处理，不宣称所有后续失败都能恢复 F。
+
+本条更新下方接续记录的审查边界；详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-continuation-review-fix-20261102)。回滚只 `git revert 93df60b436`，保留其他 dirty。
+
+## 2026-11-02 营地同场景连续处决：源码完成，未部署/实机
+
+产品 `e3dca92e64`：处决完且玩家控制恢复后，对刽子手按 F 选下一个；沿用当前刑罚、刑场预设及位置，在同一 Mission 结算/清理上一场并启动下一场，不重新开场景。取消或选离开刑场结束仪式并回到营地。城镇仍按原流程离场结算。替代下方“连续处决未完成”的源码状态。
+
+验证：原统一入口 1.3/1.4 Release + Bootstrap、双接缝/注册冒烟通过；真实接续源码配替身生命周期回归 18 项、围观回归 105 项通过；CN/EN 新文案与消费 key 检查通过，双语表 26 表通过。全仓语言门仍有既有外交常量 4 处失败。未部署、未实机、未验旧档；独立 RichExecutions.csproj 约定路径不存在。实机仍需连续 2–3 次、各刑罚、TAB/离开、围观与战役事件验收。
+
+详细代码坐标、边界与日志见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-continuation-20261102)。回滚仅 `git revert e3dca92e64`；保留其他 dirty。
+
+## 2026-11-02 扎营处决：进营即可部署刑场、俘虏绑手（已完成）；同场景连续处决（未完成，转手）
+
+用户要求：(1) 进营地就能按 B 部署刑场，不要单独的菜单入口；(2) 可以一个接一个处决；(3) 进营地时给俘虏安排位置，绑住双手。
+
+已完成（本提交，1.3/1.4 Release 均 0 错误，输出 `.tmp/fc-exec-b`；未部署、未实机）：
+- 进营即部署：`FieldCampBehavior.Menu.cs` 删除菜单项 `af_fc_execution` 及其条件/结果方法。现在“巡视营地”（`OnPatrolConsequence`）在 Vengeance 可用且有可处决的英雄俘虏时，先调用 `TryBeginFieldCampDeployment` 预备一个临时自定义刑场会话，再打开营地；进营后按 B 即可。不部署直接离开，会话按原有流程取消（不花钱、不伤人）。营地没开成功时调用 `CancelPending`。同时删除 `FieldCampText.ExecutionTooltip/ExecutionNoPrisoner` 和 UI 字符串 `AF_FC_Menu_Execution/AF_FC_ExecutionTooltip/AF_FC_ExecutionNoPrisoner`（中英各 3 条）。
+- 俘虏绑手：`FieldCampMissionLogic.People.cs` 的 `ApplyPrisonerPose` 改为调用新增的 `PlayBoundIdle`：把俘虏切到 `as_human_warrior` 动作集（女性、平民动作集里没有绑手动作，做法同 Vengeance 受刑者），播放 `act_prisoner_conversation_idle_1/2`（双手反绑待机）；失败则退回 `act_scared_idle_1`。位置仍是原来的围栏 3×3 槽位（`FieldCampLayout.Zones.cs` `PlacePen`）。
+- 脚手架（未接线）：`Vengeance/Source/Scene/ExecutionSessionCoordinator.cs` 新增 `InjectChainedSession(mission, request, service)`，用于在同一任务里注入新的处决控制器和死亡逻辑。目前没有调用方。
+
+未完成：同场景连续处决（用户已确认：处决完一个后与刽子手对话选下一个，**同一场景、不读条**）。调查结论与建议方案：
+- 难点：`TownExecutionMissionBehavior` 把战役结算（`_service.Commit`、`KillCharacterAction.ApplyByExecution`、后果规则）推迟到离开任务时（`OnEndMission`→`CommitCampaignExecutionOnMissionExit`）。若任务进行中移除控制器，`OnRemoveBehavior` 会报 `DEATH_INVARIANT_FAILED` 且不结算。一个任务里很多代码默认只有一个控制器（`GetMissionBehavior<TownExecutionMissionBehavior>()`：`ExecutionSiteBuilderMissionView`、`ExecutionSpeechDirector`、`ExecutionWitnessObservationController`、`PublicExecutionOrderRuntime`、`SceneAgentIdentityPromptCaptureAdapter`、`ExecutionSceneConflictBridge.Register`）。
+- 建议步骤：
+  1. 控制器新增“营地接续”路径：`Request.IsFieldCamp`，并且 `State==Aftermath`、`_aftermathSessionReleased`、玩家状态已恢复时，玩家对刽子手按 F（营地没有原版对话逻辑，见 `OnAgentInteraction` 里 `MissionConversationLogic is null` 分支；`CanPlayerUseExecutionPoint` 和 `GetExecutionFocusText` 需放开 Aftermath 下的刽子手），弹出 `MultiSelectionInquiryData`（复用 `REX_Continue_Title/Description/Confirm/Cancel/Leave`），候选为 `GetDeploymentPrisonerOptions(null)` 去掉本场受刑者。
+  2. 选定后，在任务内提前结算本场：调用现有 `CommitCampaignExecutionOnMissionExit()`（它自己防重复），再 `CleanupRuntimeObjects(removeAgents: true, removeEntities: true)`。注意尸体 Agent 会被 FadeOut（穿刺尸体展示在 `CommitPendingImpaledCorpseDisplay` 已保存）。然后 `FinalizeSession()`，并 `Mission.RemoveMissionBehavior` 移除本控制器和 `_deathLogic`（先置 `_cleanupComplete`，确保 `OnRemoveBehavior` 不再报错）。
+  3. 用 `BuildDeploymentRequest(hero, source, CurrentMethod, Request.Charge, Request.Tone, null)` 生成新请求，`_service.Begin` 后调用 `ExecutionSessionCoordinator.InjectChainedSession`，再 `ExecutionSceneConflictBridge.Register`（在 AF 桥接侧，经 `VengeanceIntegration` 加一个回调，因为 Vengeance 源码不能直接引用 AF 类型，见 `Vengeance/AGENTS.md`）。
+  4. 新控制器要直接用上一场的方法、预设和根点：给控制器加一个内部入口，在 `AfterStart` 绑定玩家后调用 `TryAcceptCustomSiteLayout(method, preset, origin, forward)` 并跳过编辑器（新请求已 Begin，`TryCommitDeploymentRequest` 那一步不需要）。上一场的 `_customSitePreset`、`_placement.Origin/Forward`、`_runtimeMethod` 要在移除前取出传过去。
+  5. 营地钩子：上一场的 `FieldCampCeremonyReleased` 已触发；新一场会再次触发 `FieldCampCeremonyStaged`（`_fieldCampCeremonyStaged` 是每个控制器自己的字段，没问题）。`FieldCampMissionLogic.OnCeremonyStaged` 会再次隐藏营地里该俘虏的副本。
+  6. 验证：两版构建；独立 `RichExecutions.csproj` 目前在本机找不到（`AGENTS.md` 写的联接路径不存在），需要确认。实机需要测：连续 2 到 3 场、中途离开、选“离开刑场”、每种处决方法、旧存档。
+- 回滚：`git revert` 本提交。
+
+## 2026-11-01 扎营：摆设实体碰撞 + 士兵用场景闲聊当面反映营中问题
+
+用户实测反馈：营地物品和营帐没有碰撞；士兵反馈不要再用顶部的指挥式提示，改成复用场景喊话的闲聊，并在输入里带上反馈话题。
+- 碰撞：`FieldCampProps` 每个实体件生成后调用 `MakeSolid`，做法与 Vengeance 绞架坡道相同：设为 Stationary，整棵树去掉 Disabled/Dynamic/Moveable，再整树 `SetPhysicsState(true)`。玩家自定义刑场摆件同样处理。日志 `solid props with body=x/y`。地铺、火、火把、烤架、大锅、伤兵床仍可穿过。
+- 士兵反馈：删除进营时的 QuickInfo 开场白（`IssueOpening`，以及 UI 字符串 `AF_FC_Open_*` 中英各 9 条）。新增 `FieldCampMissionLogic.Envoys.cs`：未处理的问题逐件排队；挑该兵种（同伴纠纷挑当事同伴）离玩家最近的人，由营地自己走到玩家跟前；到位后调用 `ShoutBehavior.TryStartFieldCampEnvoyForExternal`，复用场景闲聊的“主动走近玩家”会话（`AF_CONV_Ambient_OpenPlayer`），话题为新提示词 `AF_FC_EnvoyTopic`（含问题原文）。玩家用普通喊话回答，后处理照旧带营中问题标签。没谈妥的问题过一段时间再来，每件最多来 2 次。这个会话不受场景闲聊 MCM 开关限制，但玩家或场景正忙时不会开始。处决仪式或屠俘开始时会打断，之后重新排队。
+- 验证：工作区编译到 `.tmp/fc-envoy-b`，1.3 与 1.4 Release 均 0 错误。未部署、未实机。
+
+## 2026-11-01 登记燃烬帝国 / 东欧 1259 / AD 1259 世界书并重新部署（CN）
+
+- 来源统一到 `content/modules/AF.Module.Onboarding/PlayerExports/`：仓库根 `PlayerExports/` 的燃烬帝国（中英）和东欧 1259（中英，10-31 23:56 完整版）搬入 content。content 里旧的东欧副本（中文只有人设）移到 `F:/AnimusForge-backup-20261101/worldbooks-old-20261101/repo-content-old/`。根 `PlayerExports/` 已删空。
+- `content/content-map.json` 新增 4118 条：`燃烬帝国编年史` 1071、`东欧1259编年史` 857、`AD 1259 编年史` 2190（只登记中文目录，与现有五套一致）。
+- 游戏目录里手动放入的四个旧目录移到 `F:/AnimusForge-backup-20261101/worldbooks-old-20261101/game-installed/`；旧 Stage 移到 `artifacts/deploy-backups/AnimusForge/stale-stage-20261101-worldbooks/`。
+- 部署：`build_single_module.ps1 -Deploy`，构建 success，更新 4127 个托管文件。三套中文世界书安装文件与源逐个 SHA256 一致，无多余文件。日志 `.tmp/deploy-20261101c.log`。
+- 未完成：`english-worldbook-identity-map.json` 没有燃烬帝国和东欧 1259 的映射，EN 打包会因世界书仍含中文而失败；`Eastern Europe 1259 Chronicles` 有 404 条规则但只有 303 个不同 Id。
+
+# 已部署CN：合并远端 + 扎营刑场 + 其他会话修复与世界书（2026-11-01）
+
+用户要求“部署”。部署产品为 `5fba2ac129`（含合并 `267efb4916`、扎营刑场 `fb138b0ca3`、犯罪池/YJ low/移除 minimal、AD 1259 与东欧 1259 世界书）。
+- 部署前清理（用户确认）：删除其他会话已合入 main 的两个候选 worktree（`work/persona-full-regeneration-20261031/candidate`、`work/yj-thinking-compat-20261031/candidate`，分支 `codex/yj-thinking-compat-20261031` 保留）；`work/` 其余内容整体移到 `F:/AnimusForge-backup-20261101/work`；`scratch/` 已删除（未备份，过程脚本与审计留档，成品已在 5fba2ac129）。原因：项目编译整个仓库的 `.cs`，这些目录里的源码副本和反编译文件会让构建失败或混入 DLL。
+- 旧 Stage（10-28）有 902 个内容文件过期，全部是内容表/提示词/世界书生成物，移到 `artifacts/deploy-backups/AnimusForge/stale-stage-20261101-cn-tidy/`，然后用原 `build_single_module.ps1 -Configuration Debug -Deploy` 重跑，未改脚本。
+- 结果：构建 0 错误，双 coup seam 门与注册冒烟通过；部署 success，更新 108 个托管文件，目标 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。安装的 1.3/1.4 实现与 Bootstrap 与构建产物 SHA256 一致（1.3 `210b7178…`，1.4 `2d09003f…`）；安装文本含营地刑场新字符串。
+- 未验证：实机（营地 B 键刑场编辑器、仪式与士兵围观、外交新功能、犯罪池），旧档。新世界书未进 content-map，不在安装包里。未推送、未打包。
+
+# 仓库整理：提交其他会话已完成的修复与世界书（2026-11-01）
+
+其他会话已结束，按用户确认整理本地 main：
+- 代码：此前只在隔离分支提交、聚焦应用到工作区的四个修复，按工作区内容（与原提交逐字节一致）本地提交：场景喊话犯罪池持续补满（`eccff17d58` + `ea90dc7182`）、YJ Gemini 四路统一 low（`14e49132df`）、全局移除 minimal 思考档位（`46e6480aaf`）。
+- 世界书：`content/modules/AF.Module.Onboarding/PlayerExports/` 下 AD 1259 中英、东欧 1259 中英新目录（5639 个 JSON），AD 1259 Chronicles 规则/开局/音色修改与 37 个旧人设文件删除，`NpcBuiltinNameAliases.json`，世界书指导文档（`docs/世界书指导.md`、根目录 `世界书指导.md`，删除 `docs/animusforge_worldbook_ai_authoring_guide.md`）。新世界书暂未写进 `content/content-map.json`，不会进部署。
+- 未提交：根目录 `PlayerExports/`、`scratch/`、`work/` 生成物；HANDOFF/主台账的本地私有行；仅换行差异的文件。
+
+验证：提交集合扫描无发布策略禁用文本、无密钥/内网地址。编译部署结果见本条之后的部署记录。
+
+# 合并远端 origin/main（2026-11-01）
+
+用户要求“拉取远端并合并”，冲突逐项确认后执行：
+- 远端 50 个提交（外交按国家分流、说客登记提示、双边君主直接执行、外交受理与恢复、地图外交弹窗等）整体并入；远端独有的 115 个文件逐字节取远端。
+- 代码与文本冲突取本地：`OpenAiTtsVoiceCatalog.cs`、`TtsEngine.cs`、TTS 回归 `Harness.cs.txt`/`run.py`、`NpcPersonaGenerationApplicationAdapter.cs`、`afllm_ui_strings` 与 `af_ui_strings` 中英。远端这些版本本地 `4d3865cd86` 已逐字节收入，本地之后继续改进，远端新增/改写的字符串行本地均已有。
+- 文档冲突两边都留（本地条目在上）：`HANDOFF.md`、主台账、`af-framework-code-scope.md`，逐行核对两边无缺失。
+- 自动合并后 `KingdomCivilWarTexts.cs` 出现两份相同的 `Date(int)`（两边各自加过同一方法），保留一份，结果与本地版本一致。
+
+验证：合并树 1.3/1.4 Release 0 错误；终端设置 1.3 PASS 1174、1.4 PASS 1230；外交 smoke 回放通过；外交弹窗生命周期 PASS 261；TTS 回归 103 PASS / 1 FAIL（`/audio/voices 404 → /v1/models` 回退一项，合并前本地 HEAD 同样失败，非合并引入）。未部署、未推送、未实机。
+备份：stash `backup before origin merge 2026-11-01`（237b49cae3）与 `.tmp/merge-20261101/*.patch`。回滚：`git reset --soft <合并前 HEAD fb138b0ca3>` 后按备份恢复，或 `git revert -m 1 <合并提交>`。
+
+# 大地图扎营：营地自定义刑场与完整处决仪式（2026-11-01）
+
+用户确认：营地处决要和城镇一样（按 B 开刑场编辑器、完整仪式）；营地去掉城镇后果；营地士兵围观。
+- 入口：扎营菜单新增“在营地举行公开审判与处决（自定义刑场）……”（`FieldCampBehavior.Menu.cs`）。先在 Vengeance 准备临时会话，再打开营地场景；打开失败即取消会话。没有可处决的英雄俘虏时选项置灰。
+- Vengeance（`Vengeance/Source`）：`ExecutionRequest` 新增营地请求（`IsFieldCamp`，`Venue` 为 null，`VenueId/VenueName/VenueCulture/VenueColor1/2` 兜底），旧构造函数和公开 ABI 不变。校验只看营地是否在场与俘虏是否在玩家队伍；后果只改荣誉/仁慈特质，不扣影响力、不改城镇治安忠诚、不改当地领主与名流关系；受刑者家族/王国关系仍由原版处决动作处理；历史记录 settlement id 写 `rex_field_camp`。协调器按宿主探针认领营地 mission；营地不登记 LocationCharacter、不刷镇民；没有 MissionConversationLogic 时，对刽子手按 F 直接下令行刑。
+- 宿主钩子 `VengeanceIntegration.FieldCampMissionProbe/FieldCampCeremonyStaged/FieldCampCeremonyReleased`，由 `VengeanceRuntimeBridge` 启停时注册（`FieldCampMissionLogic.Execution.cs`）。仪式布置时：藏起营地里那份受刑者，最近的 16 名空闲士兵站到刑场前方围观，刑场 9 米内的其他人让开，营地日常暂停；仪式交还后平息敌对，士兵被放回 AI 后走回原位（60 秒兜底）。
+- 刑场编辑器视图沿用 `[DefaultView]` 自动挂载，营地 ViewMethod 未改。
+- 文本：`vengeance_strings` 中英新增 5 条，`af_ui_strings` 中英新增 3 条，`LlmPromptTexts` 中英新增 3 条（营地地点、士兵刽子手、士兵围观）。
+
+验证：HEAD 临时 worktree，1.3/1.4 Release 0 错误；终端设置 1.3 PASS 1174、1.4 PASS 1230；ExecutionCrowdDispersalTests TOTAL 105、ConversationCacheTests 164、IntradayContextTests 26 通过。ExecutionMemoryContractTests 在 HEAD 上本来就编不过（缺 `WorldBulletinParticipant`），与本轮无关。未部署、未实机：营地 B 键编辑器、DefaultView 在营地是否挂载、各刑罚方式在野外地形、士兵围观与回岗、存档后果都未在游戏内验证。
+回滚：`git revert` 本提交。
+
+# 大地图扎营：搬到逻辑模块 AF.Module.FieldCamp（2026-11-01）
+
+用户确认扎营代码从适配层搬到逻辑模块，纯搬家、行为不变；仍编进同一个 `AnimusForge.dll`，不是独立子模组。
+- `src/AF.GameAdapter.Bannerlord/FieldCamp/` 的 19 个文件原样搬到 `src/modules/AF.Module.FieldCamp/`，内容逐字节与上一提交相同。根目录：`FieldCampLayout*.cs`、`FieldCampRules.cs`、`FieldCampText.cs`、`FieldCampOrderTags.cs`、`FieldCampIssues.cs`、`MainPartyTroopMemory.cs`；`Host/`：`FieldCampBehavior*.cs`、热键、大地图营火、`FieldCampMissionLauncher.cs`、`FieldCampMissionLogic*.cs`、`FieldCampProps.cs`、`FieldCampSite.cs`。
+- 文档：`docs/designs/field-camp-v1.md` 改代码位置；`docs/architecture/af-framework-code-scope.md` 顶部加扎营模块导航。代码地图本来没有扎营锚点，未改。
+
+验证：HEAD 临时 worktree，1.3/1.4 Release 0 错误；终端设置 1.3 PASS 1174、1.4 PASS 1230；`verify_code_map.py` PASS（838 锚点）。未部署、未实机。
+回滚：`git revert` 本提交。
+下一步：营地内自定义刑场与完整处决仪式（改公开处决模块，营地去掉城镇后果、营地士兵围观）。
+
+# 未部署：大地图扎营 实测反馈修复（2026-11-01）
+
+用户实测反馈：摆设无碰撞且浮空、要场景喊话头顶气泡并带上下文、TAB 无法离开、有俘虏时要刑场、决斗要进围栏、士兵傻站。
+- 摆设：改为带最终帧创建（`GameEntity.Instantiate(scene, prefab, frame)`，与原版工坊摆设相同），引擎就地建碰撞；只有地铺/火/火把/烤架/大锅/伤兵床可穿过。高度只取地形，取脚印中心和四角的最低点，不再落在帐篷或树冠上。
+- 头顶气泡与上下文：营地没有 `CampaignMissionComponent`，战役的 mission started/ended 事件不触发，所以场景喊话的气泡视图和本场历史从未挂上。新增 `ShoutBehavior.FieldCamp.cs` 两个入口，由 `FieldCampMissionLogic.OnBehaviorInitialize/OnEndMission` 调用，营地与城镇走同一条场景喊话链路（气泡、历史写入兵种记忆）。
+- TAB：加 `BasicLeaveMissionLogic` 和 `CreateMissionLeaveView`（按住 TAB 0.6 秒离开，有进度圈）。
+- 士兵：营地士兵改用 `as_human_hideout_bandit` 动作集（基于 warrior，可战斗，且有坐凳/吃饭/做饭/修车/靠栅栏/交谈/睡觉动作；原 warrior 集缺这些，所以之前只会站着）。每人 25-60 秒一次：换姿势、出去走一圈再回岗、或和附近的人面对面交谈。
+- 决斗围栏：帐篷街左后方八角围栏。`DuelBehavior` 在营地内一律就地决斗（不再开野外决斗场景），开打前 `FieldCampMissionLogic.PlaceDuelists` 把双方传送到围栏两侧、建敌对队伍；决斗结束后对手回岗、队伍恢复和平。
+- 刑场：有俘虏时在右后方布置刑场（断头木桩、绞架、围栏、火把、旗）；若玩家在 Vengeance 里存过斩首刑场预设，用最新一份替换默认件。屠戮俘虏时先把俘虏押到刑场跪成排。Vengeance 原有公开处决仪式依赖城镇定居点，营地不能直接复用，这里只复用刑场预设数据。
+
+验证：HEAD 临时 worktree，1.3/1.4 Release 0 错误；终端设置 1.3 PASS 1174、1.4 PASS 1230；Python 移植布局 120/400 人无站位落入帐篷/车/火。未部署、未实机：碰撞是否真的生效、气泡与历史、TAB、动作播放、决斗传送与队伍、刑场摆放均未在游戏里确认。回滚：revert 本提交。
+
+---
+
+# 未部署：闲聊不再隔空对话/坐着的人被拉走，接力旁观者视线分散（2026-11-01）
+
+用户截图：闲聊时坐着的一方隔着几张桌和墙边站着的人对话，随后坐着的起身走过去、站着的坐下。原因两处：(1) 坐着的发起者+站着的同伴时让同伴走过来，但同伴走到一半，闲聊仍从第一句开始（`mover==null` 判定混用），且两人可相距 12m；(2) 说完话的“恢复自主”`RestoreAgentAutonomy`/`ReleaseAgentFromSceneConversationLocks`/`ResetStaringBehavior` 对坐着的人也 `DisableScriptedMovement`+清导航目标，椅子被释放，AI 重新找位，于是坐着的起身、站着的抢座。修复：闲聊只允许站着的发起者走向同伴，坐着的发起者只能和 ≤4m 的坐着同伴原地聊；无人移动时须 ≤4m 才开聊；正在使用物体的人在释放/恢复时只清视线不清移动与导航。接力旁观者视线：被回应者看说话者，其余参与者每句约 50% 看说话者、50% 看玩家；MCM 说明 CN/EN 同步。干净 worktree 套用后 Release 双API+Bootstrap、Coup、注册冒烟 PASS。未部署、未实机。回滚：逆提交本条对应提交。
+
+---
+
+# 未部署：兼容表瘦身，删除 1148 个未用键（2026-11-01）
+
+在 19 张兼容表中，同时从中文表和对应的 `.en.json` 删除 1148 个未用键，共 2296 行。只删整行，其余字节不变。删除后逐表核对：解析结果必须恰好等于“原数据减去被删的键”。
+
+判定为“仍在使用”、予以保留的键：
+- 键名以标识符或字面量出现在运行时 C#、测试、工具或脚本中。
+- 有拼接或插值字面量是它的前缀或后缀，共约 250 个动态前缀。例如 `AF_DIP_Source_`、`AF_REC_Bulletin_`。
+- 所在表被按前缀枚举：AdapterPromptCapture 的 `Project_`/`Alias_Project_`、PolicyCoreManagement 的 `diagnostic_`、Economy 提示投影用到的键。
+- 元数据键，如 `$schema`、`_comment`。
+
+未瘦身：LegacySettingsPrompts、McmPromptSourceCompatibility、TerminalCategories、EconomyDisplaySources。这些表整体用于识别旧值。
+脚本与备份：`scratch/l10n-slim/`（`scan.py`/`verify.py`/`apply.py`，删除清单 `final.json`，原文件在 `backup/`）。
+
+验证：
+- 校验器与 `l10n_gate.py` 通过。
+- 隔离 worktree 编译 1.4 和 1.3 均通过。
+- 真实 DLL 回放在中英两种模式下均通过：消息/历史 170 项、游戏语言快照 22 项。
+- 435 项模块测试与基线对比无回归，4 项从失败变为通过；所有测试日志中没有缺键异常。
+
+未部署、未实机。CN/EN 双包仍等世界书映射修复。回滚：逆提交本条，或用 `scratch/l10n-slim/backup/` 恢复。
+
+---
+
+# 未部署：l10n 复查修复与第 4 步进度（2026-11-01）
+
+复查了第 2 步的 184 个 `.cs` 文件，找到 3 个缺陷和 1 个性能问题，已全部修复：
+- 静态字段 `SiegeAmbientReactionProfile.DefaultSettlementName` 由已翻译的键初始化，会冻结首次访问时的语言，改为属性。
+- 政策“民兵”指标的匹配改为读中文原值，英文由字面量 `militia` 兜底。
+- 历史里的库存摘要头改为中英两版都能识别（新增 `PromptComposerTexts.Editions`）。
+- 新增 `BilingualTextTable.Regexes`：按键和选项把每个语言版本的正则只编译一次。信使、场景群呼、社交 UI 的匹配改用它。
+
+同轮另有两个提交：`cdfb85a77` 把 TTS 内置音色名改为 UI 文本；`05edc0f0b` 把服务端中文性别词移进 `LlmSourceTexts`，`l10n_gate.py` 改为先解码 `\u` 再检查。
+
+验证：
+- 隔离 worktree 中正式统一构建（`build_single_module.ps1 -Stage`，1.3/1.4/Bootstrap）成功，未动游戏目录。
+- 1.3 和 1.4 正式 DLL 的真实回放在中英两种模式下均通过，其中消息/历史 170 项、游戏语言快照 22 项。
+- `l10n_gate.py` 通过。相关 160 项测试与基线对比无回归。
+
+阻塞：EN 包未产出。`english-worldbook-identity-map.json` 有 177 条映射的文件名与磁盘不符（映射用下划线，文件名是空格），来自 10-30 布匿世界书提交 `f260631f6`，不是本次引入。另一会话正在改世界书，按用户决定等它完成后再打 CN/EN 双包。
+未做：兼容表瘦身。约 2386/10930 个键没有字面引用，但存在拼接键名，需要逐键确认后单独处理。
+未部署、未实机。回滚：逆提交本条及 `05edc0f0b`、`cdfb85a77`、`707ba8444`。
+
+---
+
+# 未部署：C# 组装的事实、历史和标签改为随游戏语言（2026-10-31，四步中的第 2 步）
+
+承接第 1 步（`df5361e91`）。26 张兼容表都有了英文版 `X.en.json`，键完全相同；`"="` 表示语言无关、两种语言都用中文原值，例如匹配词、原版中文名、旧存档值、协议标记。新组装的文本按写入时的游戏语言生成；匹配旧文本、模型回复的地方中英都认。已有存档不改写。
+- 英文版共 26 张：Adapter Record/Scene/PromptCapture、Prompt Compatibility/Retrieval、ConversationRuntime、LlmSourceTexts、MemorySourceTexts、WeeklyMaterial、WorldBulletin、Coup、Economy、Social、Taunt、Duel、WorldMap、KingdomCivilWar、DiplomacyMisc、DiplomacyPrompt、Policy 三张、Siege/Castle、Illustrator、Knowledge。已登记进 `content-map.json`（`compatibility`）；嵌入的表在 `AnimusForge.csproj` 里加了 `<base>.en.json` LogicalName。
+- 不需要英文版的 4 张表已在校验器里登记原因：LegacySettingsPrompts、McmPromptSourceCompatibility（旧 MCM 默认值和已存选项值）、TerminalCategories（路由 id）、EconomyDisplaySources（UI 投影匹配）。
+- 约 190 个 C# 文件改动：
+  - 拼句时写死的中文标点改为跟随语言，读取器新增 `Period/Colon/Comma/...`。
+  - 英文片段两侧补空格，句末统一过 `Tidy`。
+  - 匹配改为 `Is/Variants/Source/EqualsRaw/ContainsRaw`，中英都认。
+  - 会冻结首次语言的静态缓存，改成 `PromptLanguageValue` 或同时持有中英两份。
+  - 英文 AFEF 事实使用 `[AFEF PLAYER_ACTION]`/`[AFEF NPC_ACTION]`，所有读取器本来就认这两种写法。
+  - 旧的 `[AFEF内战事实]` 投影成当前语言的标签（新增 `LlmSourceTexts.CivilWarFactLabel`）。
+  - 外交契约标记 000–006 写入时用当前语言，读取时中英都认。
+- 运行时 C# 中文字面量为 0；只用于匹配的旧中文词表改用 `\u` 转义。
+- 测试代码同步：
+  - 真实 DLL 回放测试改为模拟游戏语言（`AF_TEST_GAME_LANGUAGE`），并接入第 3 步的 `GameLanguageRequestChecks`。
+  - 审计测试改为按游戏语言判断语言；民变标签、外交标记的断言按语言判断。
+  - 反射调用支持可选参数和 `out` 参数。
+  - SettlementStay 的假环境补上 `PromptComposerTexts` 桩；J17 源码契约改为跟随拆出的 `RenderCategory`。
+
+验证：
+- 隔离 worktree（`artifacts/l10n-step1-build`）编译主工程 1.4 和 1.3 均通过（Debug，未产出 Bootstrap）。
+- `tools/localization/l10n_gate.py` 全部通过：26 张表齐全、全部登记，运行时中文字面量 0。
+- 真实 DLL 回放（`run_actual_message_assembly.py`，候选 `artifacts/l10n-candidate/1.4`）zh-CN 和 en 两种模式都通过：消息与历史 170 项、运行时语言/UI 280 项、终端设置 5204 项、请求审计 43 项、游戏语言请求快照 22 项。快照测试在英文/繁體中文/简体中文/Deutsch 之间切换，确认约 17 个真实组装入口在英文下不含汉字，切换后不重启即生效。
+- 模块测试按区域与 HEAD 基线（`artifacts/l10n-baseline`）对比：周报/经济/社交/世界地图/决斗/嘲讽/政变/插画/攻城后续 93 项，Prompt/Memory/GameAdapter/content 137 项，Conversation/Llm/Memory/Vengeance 196 项，Diplomacy/Kingdom 47 项。没有回归；另有 5 项从失败变为通过。其余失败项在 HEAD 上同样失败，原因是缺参数、缺候选 DLL、依赖旧测试框架。
+- `TtsRequestLifetimeRegressionTests` 的 `/audio/voices` 404 回退测试在 HEAD 上同样失败。
+
+已知限制：
+- 英文语序靠逐片段拼接，个别句子较生硬，需要英文实机抽查周报、政策和外交历史。
+- 部分旧中文记录的投影只覆盖已知模板，未知模板原样透传。
+- 外交日期仍按中文语法写入（对应键是 `"="`）。
+- `WorldDiplomacyRoundLifecycle.SmokeTests` 和 `DiplomacyFixedModeContractTests` 有只适用于中文的断言，或引用了不存在的提交，在 HEAD 上同样失败。
+
+未完成：第 4 步（兼容表瘦身、双版本单模块编译、CN/EN 双包、整体审查）。未打包、未部署、未实机。
+回滚：逆提交本条对应提交。
+
+---
+
+# 未部署：纠正扩展开关，事件改为完整人设重生（2026-10-31）
+
+按用户澄清修正此前误解：扩展开关只控制新生成字段，关闭后重生只产正文，旧扩展仍保留/可用；原独立事件开关控制完整人设重生。事件复用手动生成的事实、世界书、玩家要求、协议、parser、预约及写回保护，不再走扩展字段补丁。产品提交`296c34261`，检查点`06c4d0d8d`。中文667、英文253、事件49项通过；隔离候选双API/Bootstrap与原门禁通过，真实MCM/终端1.3/CN1174、1.4/EN1230项通过。完整l10n门禁仍有36项其他表/映射缺口，未放宽。本条替代下方2026-10-30摘要的“关闭后停用注入/演变”结论；可编辑示例迁移保留。未部署/实机/provider；[唯一台账与代码范围图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#persona-full-regeneration-20261031)，证据`artifacts/persona-full-regeneration-20261031/`，仅focused inverse本提交或该目录`rollback.patch`。
+
+---
+
+# 未部署：固定提示词改为随游戏语言选择，CN/EN 包只区分可改提示词（2026-10-31，四步中的第 1 步）
+
+用户决定（2026-10-31）：游戏语言为简体或繁体中文时，固定提示词、事实和历史用中文，其他语言一律用英文；事实和历史按写入时的游戏语言生成；授权修改 `package_localization.ps1` 和 skill/AGENTS 的语言来源规则（规则文本在第 4 步更新）。
+- 新增 `src/AF.Foundation.Runtime/Localization/PromptLanguage.cs`。`PromptLanguage.IsChinese` 读宿主注入的游戏语言，只在语言 id 变化时重新判定。`PromptLanguageFile<T>` 和 `PromptLanguageValue<T>` 让每种语言各加载一次。英文读取 `X.en.json`，缺少时退回 `X.json`。
+- 宿主 `GamePromptLanguageSource`（在 `OnSubModuleLoad` 最先安装）：通过 `LocalizedTextManager.GetSubtitleExtensionOfLanguage` 判断，zh-HANS/zh-HANT 为中文。监听 `ManagedOptions.OnManagedOptionChanged(Language)`，切换后重新发布 `AIConfigHandler.ReloadConfig()`。
+- 改为双语加载的读取器共 31 个：25 个 `XxxPromptTexts`/`PromptComposerTexts`/`AdapterPromptCapture` 等，外加 Duel、Encounter、KingdomCivilWar、Illustrator、PolicyCoreManagement 和 `PromptConfigurationLoader`（RuleBehavior、ActionPostprocess、Preprocess、Proactive、RpItem、ExecutionRule）。
+- 启动时把提示词缓存进静态字段的地方共 67 处，都改为按语言缓存：Policy 效果模块描述符和目录快照、Illustrator 导演/风格提示词、经济信任等级、恋爱/耐心等级、快报写作要求。
+- 场景动作提示词包（Core）同时加载两份 XML，由宿主注入语言选择器。GCCZ 城镇提示词按游戏语言选 zh-CN/en。
+- `content-map.json`：38 对固定提示词标为 `bilingual-prompt`，新增 `.en` 目标，两包都携带。删除不再读取的 `ModuleData/GcczTownPrompt.json`。
+- `package_localization.ps1`：`bilingual-prompt` 两包共享，并对每一对执行变量/协议契约检查和英文无中文检查。只有 CustomPrompts、`McmPromptDefaults`、世界书仍按包替换。
+- 嵌入模型仍跟包（世界书）走：`McmPromptDefaults.json` 新增 `ContentEdition`，`AnimusForgeModelStore` 改读它。
+- 测试：新增 `tests/AF.Foundation.Runtime/PromptLanguageContractTests`（18 项），25 个测试 csproj 补链接 `PromptLanguage.cs`，`LocalizedPackageContractTests` 和 `ScenePromptPackageContractTests` 的断言更新为新契约。
+
+验证：
+- 在隔离 worktree（`artifacts/l10n-step1-build`）编译主工程 1.3、1.4 各通过（Debug，未用一键脚本，未产出 Bootstrap）。
+- 测试通过：PromptLanguage 契约 18 项、PromptConfiguration 39 项、CivilWar 406 项、ConversationCache 164 项、IntradayContext 26 项、LocalizedPackage 95 项、ContentLayout、StageWhitelist、ScenePromptPackage 271 项。
+- 真实仓库 38 对固定提示词契约全部通过。
+- 以下测试在 HEAD 上同样失败，与本次无关：Composition、ResidualLocalization、Retrieval、Economy PromptProjection、DataPaths、BattleSpeechBilingual、DiplomacyCommon、DiplomacyPackaged、LocalizationResource。
+
+未完成：第 2 步。C# 用中文兼容表 `Raw`/`PcapCompat` 拼句的地方（约 5900 处）仍输出中文，英文游戏下事实和历史仍会混入中文。
+未打包、未部署、未实机（需看：切换游戏语言后下一次请求的固定提示词语言、MCM/终端默认值、场景动作目录）。
+回滚：逆提交本条对应提交。
+
+---
+
+# 未部署：SceneActions 桥接签名恢复（2026-10-31）
+
+`SceneActions.log` 自 10-29 起每次启动 `initialization failed closed: NPC queued-reply publication signature drifted`，自然动作/手势/战场喊话桥全部关闭。原因：AF `b8164a72e`（10-18）给 `EnqueueSpeechLineWithOptions`（16→17）和 `ShowNpcSpeechOutput`（6→8）追加了可选本地 TTS 参数，桥接 `AfCompatV130` 的 `IsExpectedQueuedReplyMethod`/`IsExpectedShownReplyMethod` 未同步；两处反射调用 `ShowNpcSpeechOutput` 同步补两个 null。StaticVerifier 的同名契约同步，`--bridge-only` 可用 `AF_SCENE_PROMPT_CORPUS` 指向 `SceneActionPromptTexts.xml` 以离线安装桥。验证：在 HEAD 干净 worktree 套用本次改动，Release 双API+Bootstrap、Coup 门禁、注册冒烟 PASS；新 1.3/1.4 DLL `--bridge-only` 各 4/4 PASS（含真实 Harmony 安装/卸载），已部署旧 DLL 同测仍报原错误。主工作区当前被他人未跟踪的 `scratch/decomp/ChangeKingdomAction.cs` 编译阻塞（未处理）。未部署、未实机。证据 `artifacts/fix-sceneactions-bridge-20261031/`。回滚：逆提交本条对应提交。
+
+---
+
+# 未编译未部署：场景对话不再把坐着的人拉起来罚站（2026-10-31）
+
+用户截图：接力/喊话时坐着的镇民被拉起站立。原因是注视保持（`AddAgentToStareList`、多人移动抑制）对每个参与者都 `SetScriptedPosition` 当前位置并限速0，坐着的人因此离开椅子；这是 10-08 以来的既有行为，本轮框选18人的接力把它放大。修复：正在使用物体（坐/靠/弹奏）的人只转视线，不设脚本位置、不限速；站着的人照旧原地定住。另查到 SceneActions 自 10-29 起每次启动 fail-closed（`EnqueueSpeechLineWithOptions` 签名漂移），与本问题无关，未处理。未编译、未实机。回滚：逆提交本条对应提交。
+
+---
+
+# 未部署：内战分离派诉求改为携封地脱离王国（2026-10-31）
+
+用户纠正：自治诉求不是另立新王国，而是像原版那样家族带着封地脱离王国。撤回 3ddbdf5a2 的“和平建国”方案（18487185c 为中途误提交的部分文件，本提交补齐）。
+- `CivilWarEffects.cs` GrantPrivilegesEffect（autonomy 的兑现效果）：不再加关系/影响力，改为派系内仍在本国的家族（除王室）逐个脱离王国，保留封地，成为独立家族；未离开则按可重试失败下周再试，已离开的不重复处理。
+- 原版 `ApplyByLeaveKingdom` 会把封地交给国王（反编译 ChangeKingdomAction 确认），所以宿主新增 `MyBehavior.LeaveKingdomKeepingFiefsForExternal`：用保留封地的 LeaveWithRebellion 离开，期间压住世界快报“叛乱”记录，随后立即与原王国及其敌国安静议和（含玩家家族），日志 `[autonomy_leave]`。
+- 文案 CN/EN：诉求“准许本派携封地脱离王国”、结果“{A}等家族携封地脱离王国”；提示词投影新增 `_legacy` 模板，旧存档里的“承认本派封地自治/封地特权”仍能投影。
+
+验证：CivilWarLifecycle.ContractTests 全部通过（406 检查，含新增：开战前接受自治→派系家族离国且保留封地）。未编译 1.3/1.4 主工程、未部署、未实机（需看：离国后是否真的无战争、NPC 族 AI 是否随即投靠他国、王国百科/快报显示）。
+
+---
+
+# 未部署：内战分离派诉求改为和平独立（2026-10-31）
+
+用户要求“自治派诉求就应该是独立出去”。原先未开战时国王接受 autonomy 诉求只执行 GrantPrivileges（关系+8、加影响力），派系随即解散，玩家看不到效果。
+- `KingdomCivilWarOwner.Actions.cs` Concede：诉求战争目标为 Secede 且尚未开战时，不再发特权，改为标记 `PeacefulSecession` 并走原有建国流程（同战争上限/玩家王国免疫检查，受阻返回 SecessionBlocked）；结果为 AwaitingKingdom。
+- `KingdomCivilWarOwner.cs` OnRebelKingdomCreated：PeacefulSecession 时跳过内战爆发惩罚，直接以 rebels_secede 结算（议和+承认独立）。建国失败时清除标记。AI 裁决与玩家国王接受把 AwaitingKingdom 视为已兑现。
+- 诉求文案 CN/EN 改为“准许本派携封地脱离王国独立”；新增 KW_Raw_168/169 与 Notice_SecessionAccepted/SecessionBlocked 双语。开战后的 autonomy 让步路径未改（原本即承认独立）。
+
+验证：CivilWarLifecycle.ContractTests 全部通过（407 检查，含新增和平独立 2 条）。未编译 1.3/1.4 主工程、未部署、未实机。
+
+---
+
+# 未部署：大地图扎营 V2 营地布局（2026-10-31）
+
+按用户确认的方案 v2 重做营地场景（俯视图 `.tmp/camp_plan/proposal.png`，代码移植图 `v2code_120.png`/`v2code_400.png`）：
+- 结构：外圈木栅栏，前墙开 6m 营门（火把、旗、哨兵），门内校场（集合方阵限制在两侧功能区之间，太宽先缩间距再加排数），主道通玩家主帐（放大1.6倍的帐篷，桌、箱、武器架、两面旗，玩家在帐前出生）。主道两侧帐篷街：两列帐篷面对面，火道里每两排之间一堆火加烤架/大锅、两条木凳、地铺；同一部队的帐篷相邻，首顶帐篷立部队旗，军团领主站其帐前。帐篷多时增加街数（每侧每街最多5排）。
+- 六个功能区：左侧训练场（箭靶、拿弓的弓手、训练武器架）/伙房（两堆火、做饭的人、桌、吃饭长凳）/补给库（按存粮数量堆补给、两辆车、修车、军需官）；右侧马厩（两排拴马栏+真马 agent，用主队自己的马，不会乱跑）/铁匠铺（铁砧+打铁、武器架、修车、工程师）/伤兵营（大帐、躺在草床上的伤兵、坐地伤兵、医师）。俘虏栏在帐篷街后方，栅栏开口朝主道。
+- 动作：坐凳 act_sit_*、吃饭 act_sit_eating_*、做饭、打铁 act_smithing_machine_anvil_part_2、修车 act_repair、靠栅栏 act_lean_fence_loop、交谈 act_gossip、伤兵躺 act_dungeon_prisoner_sleep_cycle、弓手 act_idle_bow_*（没弓就站着看）；名字都在本机 action_types.xml 核对。士兵按轮转分配：哨兵、工作位、坐凳、围火、巡营。
+- 文化：帐篷、栅栏、武器架、长凳、箱子、大锅、桌子、火把按部队文化选 prefab（库塞特/阿塞莱/巴旦尼亚/斯特吉亚/瓦兰迪亚/帝国），缺的回退通用款；全部在 Native/Prefabs 核对存在。栅栏首块按实测包围盒决定间距和朝向，并写日志 `fence piece`。
+- 树石：选址按营地真实矩形采样，加向下射线检测树/石（扣分，不否决）；进营后隐藏营内小型岩石/灌木/树实体并关碰撞（悬崖等大件不动），日志 `cleared=`。缩放下限改为 0.8（只缩距离不缩摆设，过小会重叠）。
+- 中断的部署：用户中止，游戏目录未改（三个 DLL 哈希与上次部署一致）；旧 Stage 已放回 `bin/Release/single_module_stage`，记录在 `artifacts/deploy-field-camp-site-20261031/receipt.json`。
+
+验证：HEAD 临时 worktree 套用改动，1.3/1.4 Release 0 错误；终端设置 1.3 PASS 1155、1.4 PASS 1211；Python 移植布局 120/400 人检查无站位落在帐篷/车/火/铁砧/桌内。未部署、未实机：prefab 实际朝向与尺寸、栅栏拼接、马 agent、动作在营地 mission 中是否播放、清理树石效果、1.3 均未在游戏里看过。回滚：revert 本提交。
+
+---
+
+# 未部署：大地图扎营 营地选址与摆设（2026-10-31）
+
+用户实测：扎营进场景掉进海里、场景里没有摆设。原因：营地中心取场景包围盒中心（海岸地图 battle_terrain_biome_093b 没有边界顶点，中心在海里，水面80m）；摆设只有29件。
+- 新增 `FieldCamp/FieldCampSite.cs`：每次进营只算一次，候选点取场景自带的 `spawn_path_*`（原版野战部署用的路径，都在陆地上），按地图遭遇点远近排序；路径不足20个点时补网格。逐点检查边界内、地面高于水面0.3m、导航网格存在、地势起伏，最好的12个再细查37点；放不下时依次缩到0.8/0.62/0.45；营地朝向沿路径方向。替换原 `ResolveCampFrame`。
+- 摆设：每顶帐篷前2个地铺、隔一顶放杂物，领主帐篷旁立旗；每堆篝火加烤架或大锅和2条木凳；补给区加2辆车、箱子、2堆柴；每排帐篷左端武器架；营道口和校场四角火把；校场左侧3个箭靶和训练武器架，右侧马栏、水槽、干草车；伤兵床改草床。新 prefab 名均在本机 Native/Prefabs XML 中核对存在。日志 `props=实际/计划`，并记录 `camp site pos=`。
+- 验证：HEAD 临时 worktree 套用改动，1.3/1.4 Release 0 错误；终端设置 1.3 PASS 1155、1.4 PASS 1211。未部署、未实机：选址是否总在陆地、摆设朝向/重叠/穿模、1.3 prefab 均未在游戏中确认。回滚：revert 本提交。
+
+---
+
+# 未编译未部署：场景自主互动允许坐着与无名NPC（2026-10-31）
+
+按用户“允许坐着，允许无名npc”：候选不再要求 Hero（儿童、俘虏、敌对、带路/传唤/跟随中仍排除），评分同条件下有名人物优先；坐着的人也可参与，站着的一方走过去，两人都坐着时须相距 ≤5m 原地开聊，坐着的人主动找玩家时须 ≤5m 且坐在原位开口。同对冷却对无名NPC按场景内 agent 计。无名NPC不写持久摘要（与原规则一致，只有名人物写）。MCM 总开关说明 CN/EN 同步。未编译、未实机。回滚：逆提交本条对应提交。
+
+---
+
+# 当前安装：CN 场景闲聊 + 布匿世界书刷新（2026-10-30，未实机）
+
+按用户“带着其他改动提交编译部署 / 部署CN”：提交 `f260631f6` 收入他人已完成的布匿CN/EN世界书改名重生成（1055增/1038删/1503改）、`docs/` 下两份世界书指南，并让 content-map 跟随改名（删428条失效、增435条）；随后 Release 双API+Bootstrap 编译、Coup门禁与注册冒烟 PASS，原部署流程更新1306项，4832项安装与Stage一致（仅保留玩家 CustomPrompts 两个文件）。DLL 1.3 `2207d810…` / 1.4 `57c7fa49…` 含本轮场景闲聊代码。未实机、未provider、未EN包；世界书身份映射校验1422项既有差异未处理。回执 `artifacts/deploy-scene-ambient-20261030/`，旧Stage在其 `previous-project-stage`。8个src/UI文件仅换行差异、根目录重复的 `世界书指导.md` 与 `scratch/`、`work/` 未提交。
+
+---
+
+# 未编译未部署：场景接力说话对象/互相注视 + 场景自主闲聊（2026-10-30）
+
+两期按 grill-me 共识一起实现，未编译、未跑测试、未实机。
+- 第一期（接力细化）：接力历史写入说话对象（首轮=玩家，之后=上一位发言者），旁听者记忆显示“（对你）/（对某人）”，Prompt 残留历史按对象选 `residual_heard_speech_to_you`/`residual_heard_target_speech`；发言时说话者看对象、其他参与者看说话者（只改 SetLookAgent，会面场景不动）；可选预取只预热下一位（≤2人）记忆，台词仍轮到时生成。MCM：互相注视默认开、预取默认关。
+- 第二期（自主闲聊，总开关默认关）：玩家空闲且在和平定居点（复用嘲讽冲突白名单，排除处决/监狱/港口/小巷），每5秒探测一次；70% NPC↔NPC（最多4句、仅文本、无后处理/动作）、30% Hero 主动走近玩家开场；全局/同对/每场景上限、玩家插话按 epoch 打断、离开20m或战斗即停；每人一条本地摘要（玩家在场追加“旁听”），不写 AFEF；消息栏“（闲聊）”标签，语音开关。设置同时进入终端 Scene 分类。
+- 新文件：`ShoutBehavior.SceneAmbient.cs`、`ShoutBehavior.SceneAmbientChat.cs`、`ShoutBehavior.SceneRelayPresentation.cs`、`DuelSettings.SceneAmbient.cs`；CN/EN 文案在 ConversationRuntimePrompts、AdapterPromptCapture、PromptComposerTexts、afconv_ui_strings、af_ui_strings。
+- 已验证：JSON/XML 可解析、CN/EN 键对齐；只读审查修正了 `SceneTauntMissionBehavior.TryCaptureScenePeaceConflictFacts` 调用（此前他人构建日志中的 SceneAmbient CS0117 即此处）并补处决场景排除、预取说明改为与实现一致。
+- 未验证：1.3/1.4/Bootstrap 编译；ChannelCutoverBoundary、SceneImmediateLifecycle、SceneSpeechEffectsRuntime 的源码逐字/哈希审查在 HEAD 上已失败，本轮又加偏差，未重建投影；实机注视、走近、闲聊与 provider 输出均未看。
+- 回滚：逆提交本条对应的单个本地提交。
+
+---
+
+# 未部署：可编辑人设示例与扩展人设开关（2026-10-30）
+
+示例/篇幅与分段要求移入CN/EN可编辑默认；新增“提示词扩展 → 扩展人设”总开关（默认开），终端/MCM共用原owner。关闭时只生成/注入正文，暂停演变并保留已有扩展数据及丢弃在途扩展更新；重新开启恢复使用。源码 `8a56f0f81` / `d7f0c3e65`。中文645、英文231、演变70项通过；隔离候选双API/Bootstrap与原门禁通过，实际MCM/终端1.3 PASS1155、1.4 PASS1211。当前dirty工作区仍被已有SceneAmbient缺失方法阻塞；设置测试只投影223个非世界书实际资产，避开无关缺失世界书，未降低行为断言。未部署/实机/provider。详见[唯一台账与代码范围图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#persona-editable-example-20261030)，证据 `artifacts/persona-editable-example-20261030/`；仅逆提交本次两个产品提交。
+
+---
+
+# 未部署：大地图就地扎营 审查修复（2026-10-30）
+
+按三路审查结论修复扎营功能（第1–5步）：
+- 俘虏：营地场景没有 `BattleAgentLogic`，屠戮杀死/打晕的普通俘虏现由 `FieldCampMissionLogic.WritePrisonerCasualty` 经 `PrisonerAgentOrigin` 写回俘虏名册；执行者改为离栏最近的主队士兵，每名俘虏2人、最多16人；屠戮结束后营地队伍与敌对队伍恢复和平；屠戮中拒绝集合/解散。
+- 兵种记忆：`MainPartyTroopMemory` 不再凭"主队名册里有这个兵种"认领无场景人物的对话，大地图只认 `ConversationParty == MainParty`；场景人物消失后用本场缓存保持同一记忆键；营中事实写入改用 `TryResolveForTroop` 并在结算前取键（开除到0人也能写入）。
+- 营中对话：集合/解散/结算规则、问题清单与 Consume 只对主队士兵和同伴生效（领主部下、俘虏不行）；prompt 选项与后处理允许值用同一个 `FieldCampBehavior.CanChoose`（钱不够或士气增益已满且无其他效果的付费选项都不出现）；营地场景排除带路/传唤/跟随规则（`AIConfigHandler.ShouldExcludeSceneMoveRuleForMission`）。
+- 问题效果：缺粮应允按三天口粮买粮食入库并付钱；遇敌/结束时清 `_resting`；只有真正搭好的营才算休整；MCM 关闭在暂停地图上也立即结束营地且不罚士气；终端/快捷键关闭时提示已禁用；巡视扣时借用已有存档字段 `_phaseEndHours`，读档后继续扣；英雄额外恢复不再依赖队里有伤兵；军团只带已并入玩家的部队。
+- 布局：闲逛点移到与帐篷同排的通道，不再和篝火重合；集合方阵最多6排，人多时加宽，不再伸进帐篷；多余同伴/领主站旗帜前的待命排；营地按场景边界缩放（最小0.45）。
+- 顺带修正第4步提交 2a8b2c848 的按 blob 暂存错误：`SceneAgentIdentityPromptCaptureAdapter.cs` 的 `"\n"` 在 HEAD 里被写成真换行，HEAD 本身编译不过（工作区文件一直是对的）。
+
+验证：在 HEAD 的干净 worktree 里套用本次改动，1.3/1.4 Release 均 0 错误；终端设置回归 1.3 PASS 1132、1.4 PASS 1188。主工作区因其他会话进行中的改动（场景闲聊、世界书删除）编译/测试不通过，与本次无关。未部署、未实机：屠戮写回、攻击者是否真的动手、缩放后的营地观感均未在游戏中确认。回滚：本提交整体 revert。
+
+---
+
+# TTS 最终口径：按火山同一规则（2026-10-30，未部署）
+
+用户确认“跟火山一样识别”，替代下方额外语义分类待办。当前两者共用原朗读前过滤：跳过单/双星号及括号段，朗读剩余正文；OpenAI兼容网关保留表情过滤。源码 `a57a5bb63` / `7b05436e8`，CN/EN各11项与网关53项离线验证通过；完整构建仍有既有阻塞，未真实服务/游戏验收或部署。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-volc-parity-final-20261030)。
+
+---
+
+# TTS 最新纠正：恢复动作过滤，语义区分尚未实现（2026-10-30，未部署）
+
+用户明确动作跳过、正文照读，且星号数量不能判断语义。`a57a5bb63` 撤回双星号统一保正文的错误改动，保留OpenAI兼容网关表情清理。实际检查火山与OpenAI共用上游TTS清理，火山本身也按星号/括号删除，没有动作语义识别。修正CN/EN回放各11项通过；同标记内动作/正文区分仍待实现，不宣称已完成。此条替代下方双星号修复摘要；[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-symbol-semantics-correction-20261030)。
+
+---
+
+# 未部署：TTS 双星号/表情正文修复（2026-10-30）
+
+产品 `7b05436e8ff5` 保留双星号内正文，并在OpenAI兼容TTS的流式/非流式请求边界过滤 `❤️` 等装饰/组合表情，保留后续正文。中英文清理各17项、真实网关源码离线HTTP回放53项通过；1.3/1.4完整构建均被既有SceneAmbient缺失方法阻塞，Bootstrap/真实服务/游戏播放未验，未部署。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-symbol-speech-20261030)，证据 `artifacts/tts-symbol-20261030/`；仅聚焦逆提交本修复。
+
+---
+
+# 未部署：交马事实接通任务完成、描述人物绑定（2026-10-30）
+
+普通给予的实际马匹数量进入当前原版任务日志，验收/后处理读取同一证据；QUEST_TURN_IN 走原版结算，已交马不重复扣、已确认报酬不重复发，交马不再依赖静默对话。任务面板缺失人物属性按自身发布者绑定。候选双API/Bootstrap及原门禁通过，CN/EN四组真实DLL回放84断言通过；**当前工作区仍被另一会话未完成SceneAmbient依赖阻塞**，候选仅对三个无关Scene文件使用显式验证overlay，工作文件未变。未部署/实机/真实provider；修复前旧任务交付不猜测补记。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#horse-quest-turn-in-20261030)，证据 artifacts/horse-quest-fix-20261030/，回滚只revert本修复。
+
+---
+
+# 未部署：GCCZ 其余被 checkpoint 改成英文的中文常量恢复（2026-10-30）
+
+续 `ae5ce775f`：`e9dbbd3d2` 还把 `AnimusForge.SiegeAftermathIntervention` 里约 90 个中文常量改成英文（中文版与 En 版常量值相同或只有英文），导致中文界面/CN 包下召集民众、抢钱、安兵、搜掠/血洗结算、离场结算、宽恕/安抚触发来源、记忆标题、兜底名、MCM 组名“14.”等显示英文，后处理上下文的默认定居点/说话者身份也成英文。修复：这些字段改为 `static readonly` 读取 `SiegeAftermathCompatibility.json`（新增 60 个键，中文为 `e9dbbd3d2^` 原值）或已有的 `CastleAftermathCompatibility.json` 键，En 常量不变；88 个字段逐个与原中文比对一致。宿主侧：搜掠/血洗/抢钱结算理由和直接毁坏动作名按界面语言选 CN/En；后处理说话者身份与默认名按 Prompt 包语言选；村庄规则标记 EN 包用 En 版；MCM 组名改 `{=AF_MCM_GcczSiege_Group}`，在 `gccz_town_manual_strings.xml` 中英补条目。验证：JSON/XML 解析通过，所有 `Raw` 键存在，无 const 语境引用被破坏（attribute/default 参数/case 扫描为空）。`CastleAftermathDynamicLocalizationContractTests.py` 在本轮之前已失败（基线 c8b6c652e 过旧），未作证据。未编译、未部署、未实机；`G:\AFMOD\GCCZ` 不存在，未镜像。回滚：revert 本提交。
+
+---
+
+# 未部署：私下契约不再公开给其他 NPC（2026-10-30）
+
+建债/结算批次保留双方 AFEF 和账本，不再生成公开行动；旧 debt_recorded/debt_payment 结构化行动及素材在公开上下文/证据/摘要候选边界过滤，实际公开领地转移事件保留。双API/Bootstrap构建与原门禁通过，实际DLL的CN/EN四组回放共52项断言通过。未部署/实机；旧无结构摘要或已生成对话中的泄露不自动清除。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#private-contract-visibility-20261030)，证据 artifacts/private-contract-20261030/；回滚只 revert 本修复提交，保留其他 dirty。
+
+---
+
+# 未部署：大地图就地扎营 第5步 同伴、军团领主、俘虏栏（2026-10-30）
+
+新增 `FieldCamp/FieldCampMissionLogic.People.cs`：营地生成时一次性放置同伴（军需官/医生/侦察兵/工程师按 `GetRoleHolder` 站补给区、伤兵帐、首个岗哨、阅兵场侧；负伤同伴进伤兵帐；其余同伴最多 24 人站阅兵场侧）、军团其他领主（`FieldCampLayout.LordSlots` 改为按部队索引，站各自首顶营帐旁；超出则沿阅兵场边排开），二者为 `Activity.Post`，不参与集合列队，可用现有 Hero 对话交谈。俘虏栏：被俘领主最多 3 人，其余按兵种轮流取，填满 9 个栏位，`PrisonerAgentOrigin`、无敌、去武器、受惊姿势。屠戮沿用 `[ACTION:TROOP_INSPECTION_SLAUGHTER_PRISONERS]` 与 `TroopInspectionPrisonerSlaughterRuntime`：`TroopInspectionBehavior` 的 Can/TryStart 两个外部入口在无检阅 mission 时转给营地；只有营中普通士兵说话才提供规则，执行者为健康普通士兵（优先有武器的），只杀普通俘虏，被杀俘虏经 origin 从俘虏名册扣除；屠戮进行中暂停营地生活维护，mission 结束时清理。
+
+同伴不和问题：主队同伴两两关系 ≤ -10，或荣誉/仁慈一正一负，取最差一对（严重度 45）；开场白由第一位同伴说。应允 = 当众调解，两人关系 +5，不花钱；整肃另扣两人对玩家关系 5–10（随领导力）；事实写入两位同伴各自的 Hero 记忆。
+
+验证：1.3/1.4 Release 均 0 错误（1.4 首次编译撞上并行会话正在新建的 `ShoutBehavior.SceneRelayPresentation.cs`，重编通过）；终端设置回归 1.3 PASS 1148、1.4 PASS 1204。无新增文本键。未部署、未实机：同伴/领主站位、俘虏姿势、营中屠戮战斗与恢复均未在游戏中看过。回滚：本提交整体 revert。
+
+---
+
+# 未部署：GCCZ 城镇入口菜单中文界面仍显示英文（2026-10-30）
+
+原因：checkpoint `e9dbbd3d2` 把 `SiegeInterventionEntryProfile` 的中文常量（`EntryMenuOptionText`、`EnabledTooltip`、`MissingSceneTooltip`、各入城提示、`DecisionPolicyMessage`）和 `SetsOwnedSettlementIncidentProfile.LeaveOptionText` 改成英文，CN/En 两个常量值相同，所以中文界面下“亲自进城决定”等也是英文。修复：这些玩家可见文本改走游戏本地化，`SiegeAftermathUiText` 新增 `AF_SETS_TownEntry_*`、`AF_SETS_CastleEntry_DecisionPolicy`、`AF_SETS_OwnedIncident_Leave` 11 个键（`sets_ui_strings.xml` / `CNs/sets_ui_strings-zh-CN.xml`，中文恢复原文案）；菜单选项用 `{=id}` 文本，每次渲染按当前界面语言解析；`SiegeAiInterventionBehavior` 的调用点改为读取这些文本，城堡 tooltip 仍走原 `Raw` 中文资源。纯 profile 常量未动（测试契约不变）。验证：两份 XML 解析通过、键无重复。未编译、未部署、未实机。回滚：revert 本提交。
+
+---
+
+# 未部署：大地图就地扎营 第4步 营中问题系统（2026-10-30）
+
+新增 `FieldCamp/FieldCampIssues.cs`、`FieldCamp/FieldCampBehavior.Issues.cs`：搭营完成时由 C# 判定一次（欠饷、缺粮、伤员多、近 7 天战败、久未休整、士气低、兵种不睦；全无则一条请战/请赏），按严重度取前 3；同伴不和留到第5步。存档 4 键 `_afFieldCamp_issues_v1`/`_moraleGained_v1`/`_suppressed_v1`/`_lastDefeatHours_v1`，扎营结束清空。进营后每个未处理问题由对应兵种 QuickInfo 说一句双语模板（不调 LLM）；问题清单经 `FieldCampOrderTags.BuildIssuePromptBlock` 接在 `SceneAgentIdentityPromptCaptureAdapter.BuildSceneUserRuntimeContextForSingle` 的运行时段（营外为空）。后处理标签 `[ACTION:SCENE_CAMP_RESOLVE:<序号>:ENCOURAGE|GRANT|REFUSE|DISCIPLINE]` 只为未处理问题注入、按金币过滤付费选项，归一化用 `RuntimeAllowedParameterValues`；`Consume` 调 `FieldCampBehavior.Resolve` 执行（鼓舞 +3~+8 随领导力、应允 +5 并付费/清欠饷、驳回 -2~-5、整肃 -3 并开除≤1% 兵力且同类不再出现；单次扎营士气增益上限 +20；拔营/遭遇时未处理问题每件 -2），并把 AFEF 事实写入该兵种主队记忆（兵种不睦两边都写）。Prompt 键在 `ConversationRuntimePrompts(.en).json`，UI 键 16 条在 `af_ui_strings(-zh-CN).xml`。
+
+验证：1.3/1.4 Release 均 0 错误；终端设置回归 1.3 PASS 1132、1.4 PASS 1188；CN/EN Prompt 28 键与 UI 44 个 `{=AF_FC_*}` 键齐全、占位符一致。未部署、未实机、未跑真实 LLM，未验证模型是否按规则输出结算标签与开场 QuickInfo 观感。回滚：本提交整体 revert。
+
+---
+
+# 未部署：大地图就地扎营 第3步 营中交谈与兵种记忆（2026-10-30）
+
+新增 `FieldCamp/MainPartyTroopMemory.cs`：玩家主队普通士兵（agent origin 为主队且非俘虏、非 Hero；无 agent 时须在主队名册）按兵种取持久记忆 `af_nonhero:troop:<兵种>|party:party_string_id:<主队>`，接在 `SceneAgentIdentityPromptCaptureAdapter.TryResolveWildernessNonHeroMemory` 的 Hero 排除之后，所以场景喊话写入/读取、原生对话历史键、后处理等所有已用该入口的链路同步生效，城内也写；保留规则沿用全体 NPC 通用的 260 行/日结压缩/MCM 注入窗口（用户确认）。`MyBehavior.MainPartyTroopMemory.cs` 每会话每兵种一次把旧的带势力/领主后缀的同主队同兵种记录合并进新键。营地场景的场景描述改为“在某地就地扎营的营地”（列队时说明正在检阅），中英两份 ConversationRuntimePrompts。信使仍只能寄给 Hero，按原设计不变。验证：1.3/1.4 隔离 dotnet build 0 错误，TerminalLiveSettings 1.4 PASS 1188，中英键齐全，键/别名匹配规则脚本回放 PASS；CampaignMemoryPersistence/NativeHistorySnapshot 测试的探针在当前工作区编不过（缺 MemoryFailureUiText 等类型，与本轮无关），未作证据。未部署、未实机。
+
+---
+
+# 未部署：大地图就地扎营 第2步 营地场景（2026-10-30）
+
+营地菜单新增“巡视营地”：按地形开原版野战场景的和平 mission `AnimusForge_FieldCamp`（`FieldCamp/FieldCampMissionLauncher.cs`，自带 `[ViewMethod]` 视图），`FieldCampLayout` 按真实兵力排营帐网格、篝火、旗帜、补给堆（随存粮）、伤兵帐与床、俘虏栏栅栏、外围岗哨；`FieldCampProps` 每类候选预制体逐个尝试，帐篷/栅栏开物理。士兵按兵种比例抽样（默认150），无敌 origin 不回写伤亡；营地生活为围篝火坐、站岗、巷道闲逛，每0.5秒处理≤20人。喊话后处理新增运行时标签 `[ACTION:SCENE_CAMP_ASSEMBLE]`/`[ACTION:SCENE_CAMP_DISMISS]`（只在营地 mission 的直接回复注入；规则文本在 ConversationRuntimePrompts 中英两份），集合按兵种列方阵、解散各回原位。TAB 离开后在等待菜单扣巡视耗时（默认1h）；营地 mission 跳过场景挑衅行为。同伴职务站位、军团领主、俘虏留到第5步。验证：1.3/1.4 隔离 dotnet build 0 错误，TerminalLiveSettings 1.4 PASS 1188 / 1.3 PASS 1132，中英键齐全；ScenePostprocessParity 因工作区他人 TTS 改动编不过，未能作为证据。未部署、未实机。
+
+---
+
+# 未部署：地牢俘虏不再触发场景冲突（2026-10-30）
+
+用户反馈在自家地牢与被关押领主乌尔玻斯聊天后出现 SCENE_TAUNT_FIGHT 并开打（日志 Key=scene_lord:town_es1:prison:lord_1_47）。原因：`prison` 在和平冲突地点白名单内，而 `IsSceneLordTauntTarget` / `IsSceneNotableTauntTarget` 未排除 `Hero.IsPrisoner`，导致俘虏被注入挑衅规则并能发起冲突。修复：两处判定加 `!IsPrisoner`，提示词注入、标签执行、领主冲突后果统一失效；狱卒、地牢其他非俘虏NPC不受影响。未编译、未部署、未实机。
+
+---
+
+# 未部署：大地图就地扎营 第1步（2026-10-30）
+
+按 `docs/designs/field-camp-v1.md` 第1步落地：新增 `src/AF.GameAdapter.Bannerlord/FieldCamp/`（FieldCampBehavior 状态机+存档键 `_afFieldCamp_*_v1` 7个、营地菜单与等待菜单、规则、快捷键 Z、每部队独立大地图营帐实体）、`DuelSettings.FieldCamp.cs`（MCM 组“19. 就地扎营”8项）；终端新增“就地扎营”节点；旧检阅在扎营期间互斥；中英各41条字符串。休整收益：伤员按原版恢复速率额外 (倍率-1)×、士气每小时+1至70，覆盖整个军团；遭遇/进城立即结束营地。频率：HourlyTick 结算，帧 tick 仅 O(1) 检查与场景引用比较。验证：1.3/1.4 隔离目录 dotnet build 均 0 错误（FieldCamp 无警告），TerminalLiveSettings 1.4 PASS 1185 / 1.3 PASS 1129。未部署、未实机；大地图营帐缩放与预制体在 1.3 上未实测。
+
+---
+
+# 设计定稿：大地图扎营与营中检阅 v1（2026-10-30，未实现）
+
+与用户逐条确认 Q1–Q55 后定稿，写入 `docs/designs/field-camp-v1.md`：大地图就地扎营（搭/拔营各1h、伤员×2与士气+1/h至70、军团整体停下、原版遭遇时自动拔营、每支部队独立大地图营帐实体）、新和平营地 mission（野战地形、按兵力与文化布置营帐/篝火/岗哨/伤兵帐/补给区、150 Agent 上限、喊话触发集合解散）、营中交谈复用场景喊话并新增“主队+兵种”三渠道记忆、C# 判定1–3件问题并以后处理标签结算鼓舞/应允/驳回/整肃。旧终端检阅保留，扎营期间互斥。仅文档，未改代码、未编译、未部署。下一步：第1步，先给用户看存档字段清单。
+
+---
+
+# 未部署：内政“贵族家族”表最后一行压住底部说明（2026-10-30，未提交）
+
+无派系（成派条件）页上方最多6条条件行，下面每页5个家族，表格高度超出后第5行画到底部“按家族不满由高到低 / 红色刻度为成派门槛”上。`KingdomInteriorPanel.cs`：该页每页改为4行（`LedgerRows` 5→4，翻页自动增加），条件行高28→24，家族行区域加 ClipContents，任何情况下都不会再盖住底部说明。估算该页所需高度653→593。InteriorChronicle 31项（复制测试并补 `CivilWarUiText.Date` 桩后，1.3/1.4各通过；原测试在HEAD上同样因缺该桩编不过）。未编译、未部署、未实机。
+
+---
+
+# 已推送：SETS 冲突卡顿修复 + TTS 主音量/会话结束取消（2026-10-30）
+
+按用户“推送”授权，在远端 f33af1e90 之上用独立 index 生成单个提交 134365229fe86c3253abd9cd687c37c460ff1a22，普通快进推送，ls-remote 确认。13 个文件（+124/−28），保留原换行符；排除 HANDOFF 与主台账。发布树本身双API+Bootstrap Release构建通过，pre-push 源码交付检查通过，凭据/内网地址扫描无命中。本地 HEAD c821a7c1a 与工作区不变。回滚：在 origin/main 上 revert 134365229。证据 artifacts/push-sets-perf-tts-volume-20261030/。
+
+---
+
+# 当前安装：CN SETS 冲突卡顿修复 + TTS 主音量/会话结束取消（2026-10-30，未提交）
+
+按用户“部署”授权，用原 `build_single_module.ps1 -Configuration Release -Deploy` 覆盖游戏 Modules/AnimusForge；源码为 HEAD c821a7c1a 加未提交工作区（含下面两条未部署记录的改动）。双API+Bootstrap构建、Coup 接缝门禁、注册冒烟通过，更新9个托管文件；4825个Stage文件除保留的玩家 CustomPrompts 外与安装一致，1.3/1.4 两个 DLL 均含新代码。未实机。旧项目Stage与收据见 artifacts/deploy-cn-sets-perf-tts-volume-20261030/。
+
+---
+
+# 未部署：SETS 带随从冲突每秒一卡 —— 守军找目标改为共享名单（2026-10-29，未提交）
+
+用户反馈带随从进村冲突后每 1 秒卡一下。SETS 冲突每秒批处理 `RefreshEnemyNativeCombatOrders` 对每个守军调用 `FindNearestPlayerSideTarget` 全场扫描（60 守军×约 100 人/秒）。改为每秒先建一次我方候选名单（同样的 IsHuman/IsActive/IsPlayerSideAgent 过滤、保持 Mission.Agents 顺序），本次批处理内所有守军共用，结束后在 finally 复原；其他调用点照旧全场扫描。`MaintainConflictTeams` 敌对关系未变时不再每秒重发 `SetIsEnemyOf`。新增 PerfProbe 计时：`Mission.SetsEntry.OnMissionTick.total`、`ConflictSecond.*`、`ConflictCivilianPanic`（仅 MCM 性能监控 + 详细日志开启时生效）。验证：新旧找目标逻辑在 400 个随机场景 18311 次选取结果完全一致，阵营判断次数 1288057→212978；CoupWallSentry 24、CoupSpawnSafety 13、执行隔离接线 33 通过；CoupHallDeployment 测试夹具缺 TextObject 编不过，HEAD 上同样失败。未编译、未部署、未实机。
+
+---
+
+# 未部署：TTS 主音量接管大地图会面并可放大，会话结束取消未播语音（2026-10-29，未提交）
+
+实机日志显示大地图会面走 tableau（`OnConversationPlay` 播 wav），wav 以固定增益1写出，MCM 主语音音量对它无效；会话关闭后流式分段仍继续排队播放。改动：主语音音量范围 0–2（MCM 与终端），≤1 用 waveOut 衰减，>1 放大 PCM（削顶），tableau wav 也按主音量写出（流式与非流式）；`TtsEngine.CancelRequests(ids, keepCurrent)` 只取消指定请求；`NativeConversationSpeechAdapter` 记录本次原生会话接受的请求，真实 `ConversationEnded`（`ShoutBehavior.OnNativeConversationEnded`）时大地图会面全部取消、场景 NPC 保留正在播的一句只丢队列。TTS 生命周期104通过（新增3例）、变异8/8、NativeSceneExitLifecycle 21通过。test_wiring 1例、NativeWaitAudioBoundary（缺历史提交 1235727e4）、TerminalCategoryContract（209条断言）在 HEAD 上同样失败，非本次引入。未编译、未部署、未实机。
+
+---
+
+# 已推送：音色列表 /v1/models 兜底（2026-10-29）
+
+按用户“推送”授权，在远端 6c7a88620 之上用独立 index 生成单个提交 f33af1e90f9048d9ef6ccbbe5a3666ab6bc59ddd，普通快进推送，ls-remote 确认。5个文件（+86/−22），保留原换行符；排除 HANDOFF 与主台账。发布树本身双API+Bootstrap Release构建通过，pre-push 检查通过。本地 HEAD/工作区不变。回滚：在 origin/main 上 revert f33af1e90。证据 artifacts/push-openai-voices-models-20261029/。
+
+---
+
+# 当前安装：CN 音色列表改从 /v1/models 读取（2026-10-29，未提交/未推送）
+
+用户的服务（asia.shenlanqaq.com）`/v1/audio/voices` 返回404，但带Key的 `/v1/models` 返回55个模型，含11个 male-/female- 基名×_happy/_angry/_sad 及 zh_default。拉取改为 voices 失败后读 models，只保留 male-*/female-*/zh_default，复用内置中文名，仍以 voices 端点为缓存键。TTS生命周期101通过（含本地HTTP 404→/models 实测）、变异8/8；MCM中英提示同步。按“部署CN”授权用原脚本 Release -Deploy 覆盖，更新9个托管文件；4825个Stage文件除保留的玩家 CustomPrompts 外与安装一致，双DLL含新代码。未实机。证据 artifacts/deploy-cn-openai-voices-models-20261029/。两条本地化合约测试失败在推送前远端 e1aba41bc 上同样存在，非本次引入。
+
+---
+
+# 已推送：OpenAI 兼容 TTS 按人物音色与情绪变体（2026-10-29）
+
+按用户“推送”授权，以独立 index 在远端 e1aba41bc 之上生成单个提交 6c7a88620a971f92421a9edd2b14dc4607b90111，普通快进推送到 origin/main，ls-remote 确认一致。含20个源码/资源/测试文件（+602/−27），保留原换行符；排除 HANDOFF 与主台账。发布树本身双API+Bootstrap Release构建通过，pre-push 源码交付检查通过，凭据/内网地址扫描无命中。本地 main HEAD c821a7c1a 与工作区未改动（这些改动在本地仍显示未提交，属预期）。回滚：在 origin/main 上 revert 6c7a88620。证据 artifacts/push-openai-voices-20261029/。
+
+---
+
+# 当前安装：CN OpenAI 音色内置名单兜底（2026-10-29，未提交）
+
+实机日志显示 shenlanqaq 服务 `/v1/audio/voices` 返回404，导致不分配音色、女声用兜底 male-gentle、百科选择框不打开。新增内置 AF 12 音色名单（11基名×happy/angry/sad + zh_default），仅当 MCM 兜底音色属于该名单时启用；服务器有列表时仍优先。TTS 生命周期测试100通过。首次部署因启动器占用旧1.4 DLL临时文件失败，已把该临时文件移到 artifacts/deploy-cn-openai-voices-builtin-20261029/replaced-temp 后重跑成功；4825个Stage文件除保留的玩家 CustomPrompts 外全部与安装一致。未实机验证。
+
+---
+
+# 当前安装：CN OpenAI 兼容 TTS 按人物音色与情绪变体（2026-10-29，未提交）
+
+按用户“部署CN”授权，用原 `build_single_module.ps1 -Configuration Release -Deploy` 覆盖游戏 Modules/AnimusForge（AF v1.7.0，Bootstrap+1.3/1.4）；源码为HEAD c821a7c1a 加未提交工作区改动（新增 `OpenAiTtsVoiceCatalog.cs`、`MyBehavior.OpenAiVoice.cs` 等）。功能：从 `/v1/audio/voices` 拉取并缓存到 `Cache/OpenAiTtsVoices.json`，英雄首次发声抽取同性别音色存档（`OpenAiVoiceId`），百科可改；后处理 MOOD 的 JOY/DELIGHTED→`_happy`、ANNOYED→`_angry`（仅列表有变体时），OpenAI 通道等待后处理≤8秒。双API构建、Coup/注册门禁通过，部署13个托管文件；8个关键安装文件与Stage hash一致、两DLL含新代码、CN文案与源码逐字节一致。测试：TTS生命周期99、变异8/8、GPT-SoVITS 561、人物生成598通过。未实机、未连真实语音服务、未提交/打包/push。旧项目Stage保留于 artifacts/deploy-cn-openai-voices-20261029/previous-project-stage；收据同目录 receipt.json。
+
+---
+
+# 当前源码已推送：百科、人物、派系与内政修复（2026-10-29）
+
+远端main普通快进至8d3619f882399e5deb57d87dbde3a3899747ce9c，43个产品/资源/测试文件与本地c821a7c1a一致；本地39个检查点/交接历史、主工作区与原dirty文档保留。排除本地台账/范围图/旧公告和所有玩家日志产物；无force、未重新构建/部署/打包。复用既有双API/Bootstrap与内政每API230、人物598证据，原实机/旧档与投票根因边界保持。外交token只调查未修改。[唯一台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-af170-fixes-20261029)；收据artifacts/push-af170-fixes-20261029/receipt.json。
+
+---
+
+# 当前安装：CN 内政标题/居中/人物重生音色修复（2026-10-29）
+
+按用户“部署CN”授权，已把产品 `3e8fc53ef` 用原部署脚本覆盖至游戏Modules/AnimusForge（AF1.7.0，普通Bootstrap+1.3/1.4）。已核对43个审查文件和候选DLL与此前最终测试相同，复用双版本构建、界面各230/人物生成598检查；本次完整CN Stage门禁通过，10关键安装文件及两API候选hash一致。未实机/真实语音/模型、未打包/push；玩家数据沿原脚本保护，无部署Recovery/自动回滚。本条替代下方“这三项尚未部署”的安装状态。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn-interior-fixes-20261029)；`artifacts/deploy-cn-interior-fixes-20261029/receipt.json`。
+
+---
+
+# 内政显示修复及本轮全部改动审查（2026-10-29，本地未部署）
+
+产品 `3e8fc53ef`：恢复“内政事务/王国议程”等6个缺失VM文字属性；修正无倒计时块时左占位导致的详情标题偏右；审查另外补齐人物重生保留GPT-SoVITS选定声音（包括生成期间换音）。当前实际DLL每API230标签/语言/原生布局检查通过，人物生成598通过；双API/Bootstrap/seam/registration通过。复核本会话43个源码/资源/测试文件，其余未发现确定新增缺陷，原投票/外交/性能现场与旧测试失败仍未确认。**这三项新修复尚未部署**，游戏仍为下条CN安装，已核对未被本次构建改变。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#interior-review-20261029)、[源码范围](docs/architecture/af-framework-code-scope.md#interior-review-20261029)；详细审查 `artifacts/interior-missing-headings-20261029/review.md`。未实机/模型/播放/打包/push。
+
+---
+
+# 当前安装：AF1.7.0 CN / 本轮百科人物与派系改动已部署（2026-10-29）
+
+已按用户“先部署CN”授权用原统一脚本构建并覆盖游戏 `Modules/AnimusForge`，包含普通Bootstrap和1.3/1.4两实现。源码 `476eb6c8f`、部署检查点 `c13da1914`；本轮百科三列两行、提示词重生、外貌主体边界、派系历法及玩家创建免冷却已进入安装，投票诊断也随当前源码部署。外交上一轮只有分析，无新修复。双API/Bootstrap/seam/registration和CN Stage门禁通过，10个关键目标文件与Stage hash一致；未启动游戏/模型/打包/push。原脚本保护玩家文件、保留未知安装文件，无Recovery/自动回滚。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn-persona-factions-20261029)；证据 `artifacts/deploy-cn-persona-factions-20261029/receipt.json`。
+
+---
+
+# 当前外交内战场景分析（2026-10-29，仅调查）
+
+用户澄清为“玩家领派系从本国叛出，向原国发宣言”。当前源码 `5ade3a7fd`：发件国取玩家当前王国；目标由正文分析决定；内战本身不会走完整附庸的宗主国替换。首次目标分析未直接注入原国/叛军国结构化关系，是已确认的信息缺口，尚未复现具体选错。回信须开场/准入/世界书/实际宫廷知识等条件完成。CN/EN开场各552、准入5826、世界书268、停滞81专项通过；旧player-response-recovery未通过，不计全套通过。无产品修改/实机/provider/部署。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-civil-war-analysis-20261029)；本机详细报告 `artifacts/diplomacy-civil-war-analysis-20261029/analysis.md`。
+
+---
+
+# 百科、人物与派系本轮本地完成（2026-10-29）
+
+产品 `43290bc9b`：百科三列两行；新增按本次提示词重生；玩家外貌上下文明确主体（未发现写入NPC profile）；派系累计日期转历法；玩家创建免冷却，NPC/起兵规则保持。双API/Bootstrap及专项离线验证通过；旧知识库全量检查的公告模板失败、未实机/模型/部署等边界见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#encyclopedia-persona-factions-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#encyclopedia-persona-factions-20261029)。其他截图仅调查记录，未宣称修复。证据与本地候选在 `artifacts/encyclopedia-persona-20261029/`；回滚用本产品聚焦inverse提交。
+
+---
+
+# 投票议程前二原因链路已复核（2026-10-29）
+
+- 原生双API各21项合成状态检查：无族长家族可同时破坏详情与投票；普通易主/转国会提前移除或取消；中心点缺失估值可复现但正常有地王国会重算。未找到玩家具体坏对象或AF制造该状态的证据。a1e9cf147只修诊断自身getter二次异常；双API/Bootstrap与注册检查通过，未部署。新候选artifacts/agenda-vote-failure-20261029/chain-probe/candidate/。[唯一台账与复现边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#agenda-vote-failure-20261029)。
+
+---
+
+# 玩家投票议程异常：诊断版已构建（2026-10-29，根因待复现）
+
+- 原日志确认详情8次、召开12次空引用；首发早于外交复议，不能认定外交对象缺失。57caba7f7增加失败阶段、议程身份和完整堆栈，纠正请求界面被误记为打开成功；未改变投票规则。双API/Bootstrap、既有注册检查与议程专项5项通过；未复现玩家存档、未确认根因、未部署或打包/push。[唯一台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#agenda-vote-failure-20261029)、[源码范围](docs/architecture/af-framework-code-scope.md#agenda-vote-failure-20261029)。诊断候选artifacts/agenda-vote-failure-20261029/candidate/；下一步需玩家对应版本复现后的新堆栈。此诊断不是无法召开问题的修复验收。
+
+---
 <a id="merge-push-20261031"></a>
 ## 2026-10-31 远端语音改动与本地外交改动已合并推送
 
@@ -107,6 +737,20 @@
 ## 封臣原版外交按钮已对齐 — 2026-10-29
 
 产品 59b902c3d，检查点43a0ee216。封臣与君主在AI外交开启时统一禁用原版外交提议按钮、显示既有双语说明并拦截点击；君主专用宣言和后台外交规则不变。双API/Bootstrap/seam通过；实际DLL原生VM 1.3专项158项、1.4合集259项通过，1.3旧整页检查受本地地图UI引用不匹配影响，未计通过。**OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。前次部署不包含本次修复。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#vassal-diplomacy-buttons-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#vassal-diplomacy-buttons-20261029)。
+
+---
+
+# 已交付：AF 1.6.6 / 游戏1.5.6特别版（2026-10-28）
+
+- 四前置已反编译，3处API签名适配及仅1.5.6 Bootstrap完成；CN已部署，安装只留1.5实现。按用户要求停止校验/哈希核对，部署后生成CN/EN双包，位于一键编译覆盖推送/packages/Bannerlord_1.5.6_Special/，文件时间戳1028_1605，AF版本固定1.6.6。包未回读/门禁校验，未实机或旧档。[台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bannerlord156-delivery-20261028)。本地证据artifacts/bannerlord156-delivery-20261028/，恢复点7c689f8；不推送。
+
+---
+
+# 游戏源码参考：1.5.6 beta（2026-10-28，REFERENCE_VERIFIED）
+
+- 已从实际v1.5.6.125053导出81程序集/8111个C#至原版游戏本体代码1.5.6；按用户要求删除1.5.5旧树，1.3.x/1.4.5保留。220个C#变化、4个删除；来源哈希/官方覆盖/工程排除通过，仅保留已知Epic缺SDK诊断。未做AF兼容适配、构建、实机或部署。[台账、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bannerlord156-reference-20261028)；旧树恢复点f022e81。
+
+---
 
 
 - 按玩家1.6.5反馈和用户推送main授权，基于远端ba3a47e1a完成产品提交17a1950c6：局部排版优化、6万字符截断提醒、中英字数栏及保存回调异常保护。保持原关闭/焦点/业务保存流程，不改其他玩法和版本号。
@@ -3536,3 +4180,42 @@ Apolytea同意命令自己的队伍巡逻 Diathma 三天；provider真实输出 
 - [唯一主台账与命令/风险](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af-bilateral-direct-20261030) / [准确代码范围](docs/architecture/af-framework-code-scope.md#af-bilateral-direct-20261030)。源/DLL SHA 与日志在 `artifacts/bilateral-direct-20261030/verification.json`。父会话已完成独立审查，无本次剩余须修问题；下一步仍需新任务授权；保留原有 dirty 文档，仅选择性提交本项追加段落，无新发布授权。
 
 - 2026-10-30 后续部署已完成，更新本项此前“部署 NOT_RUN”：原统一 Debug 双 API/Bootstrap 与门禁通过，目标为 Steam 的 `Modules/AnimusForge`，更新 11 文件；4825 项安装核对通过（4822 同 SHA、3 项保留自定义），39 个既有配置/提示词 SHA 不变。详见主台账同节“部署补记”和 `artifacts/bilateral-direct-20261030-deploy/deployment-verification.json`。实机/真实模型/旧档、打包、push 仍未验或未执行。
+
+
+---
+## 2026-11-02 1.8.0玩家公告（1.7.0→远端增量）
+
+已新增docs/releases/AnimusForge_1.8.0_更新公告_20261102.md及.txt。远端origin/main=51d5d94f43，基线065db278d1；营地/手动刑场、场景互动、新历史世界书、外交/语音修复与bekko瘦身，沿既有包体记录补充量化数据。详细来源及未验范围见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-notes-1-8-remote-comparison-20261102)；原始对比与责任入口见.tmp/release-notes-1.8-20261102/。仅写公告和记录，未构建/测试/哈希/部署/push/外部发布。
+
+
+---
+## 2026-11-02 1.8.0公告完整版
+
+按用户反馈扩写到14主题及使用提示，补人设定向重生成/经历更新、营地当面报事与决斗、派系/犯罪结算/模型参数等遗漏；世界书名修正为燃烬帝国编年史。两个既有1.8公告文件已更新，前稿备份于.tmp/release-notes-1.8-20261102/announcement-before-expansion.md/.txt。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-notes-1-8-expanded-20261102)及SOURCES.md增补。仅文档，未测试/哈希/实机/部署/push/外部发布。
+
+
+---
+## 2026-11-03 扩展人设关闭修复与全日志结论（未构建/未部署）
+
+人设关闭后隐藏扩展展示/编辑及模型上下文；关闭时成功生成清除该人物旧扩展值，正文/语音/经历状态保留，CN/EN双入口说明同步。现有23日志完整读取：1839知识结果全miss、3020实体候选全0；bekko统计窗口699次推理全成功，运行库存在，不能归咎于缺旧ONNX文件。检索空候选根因未确认；另25个外交事件证据预算耗尽、358政策快照拒绝。完整状态、代码范围、未解决项、原字节快照和checkpoint见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#expanded-persona-disable-runtime-log-20261103)及[分析报告](docs/reports/AnimusForge_运行日志分析_20261103.md)。按用户要求未做测试/构建/校验/哈希/模型实验/实机，未部署/打包/push，既有包不含本次源码；不要以本分析完成宣称检索已修复。
+
+
+---
+## 2026-11-03 检索与缓存专项（只读定位，未修复）
+
+用户要求只看检索模型。安装DLL仍有ONNX/bekko/vectors缓存；仅知识批量嵌入创建，单条成功不代表建库。已发现空实体请求跳过规则快照发布却仍建库、null快照被固化为同版本就绪空索引的源码缺陷，与上轮无建库记录/全零候选吻合，但未实机复现。游戏自行重开后当前日志已换成00:28:45新轮（目前rules=0），勿覆盖或混用上轮1839结果。未改检索源码、模型、缓存或配置，未测试/构建/校验/哈希/模型实验/部署。[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#retrieval-empty-mentions-index-cache-analysis-20261103) / [专项报告](docs/reports/AnimusForge_检索与向量缓存定位_20261103.md)。
+
+
+- 2026-11-03 00:33检索新状态：同构建DLL本轮已建库1859条向量（4.645秒、批次0失败），bekko/vectors缓存约2.8MiB已生成；玩家日耳曼问句有2次知识上下文成功，各匹配2条。日耳曼泛称仍被名字门槛过滤；空快照固化缺陷未改。详见上述检索专项报告末节及唯一主台账补记；未部署修复、未测试/构建/校验。此条替代“当前无vectors”的旧时点状态，保留上轮失败事实。
+
+
+---
+## 2026-11-03 首次对话空实体也建库（源码已修，未构建部署）
+
+用户要求首次对话必须建库，覆盖此前“空实体不建库”建议：PreparePromptLoreRetrieval始终先发布规则快照，后台沿原顺序建库后选候选；稀疏/ONNX构建器均拒绝把null快照标为空库完成。保留按版本复用、批量/线程/磁盘缓存与失败冷却。只改KnowledgeLibraryBehavior.cs、KnowledgeRuleIndex.cs；未动阈值、模型、外交/政策。按用户要求不测试/构建/校验/哈希，未部署/打包/push，产品未提交。空检查点4a5cde59d，快照及差异在.tmp/first-dialogue-knowledge-index-20261103/。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#first-dialogue-knowledge-index-fix-20261103)和[检索专项报告末节](docs/reports/AnimusForge_检索与向量缓存定位_20261103.md)；旧DLL的本轮成功不代表本修复实机通过。
+
+
+---
+## 2026-11-03 1.8.0修复已构建、打包、部署及推送
+
+此条替代上文人设/首次对话索引“未构建部署”状态。双API及Bootstrap编译0错误；1.8.0_CN/EN_1103_0049极限7Z已生成（171.47/171.03MiB），含量化bekko；435个受管理文件已部署游戏。人设eae418f4bc、索引379d24a12c和移除远端当前树旧bekko的65bb09ee45已推送origin/main；本地模型/玩家数据/向量缓存保留，Git/LFS历史未清理。无测试、门禁、归档回读、哈希或修复后实机验收。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-180-persona-index-delivery-20261103)与[交付记录](docs/releases/AnimusForge_1.8.0_交付记录_20261103.md)。本机证据.tmp/package-180-persona-index-20261103-004209/；回滚聚焦本任务提交及人设/索引before快照，不覆盖其他作者dirty，部署无自动回滚。

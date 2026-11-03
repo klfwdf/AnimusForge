@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Borjigin_Golden_Clan_and_Toluid_Schism",
+  "Keywords": [
+    "Borjigin Golden Clan Lineage",
+    "Toluid Four Khanates Partition",
+    "Khubilai and Ariq Boke Kurultai Rift",
+    "Genghis Khan Yassa Supreme Law"
+  ],
+  "RagShortTexts": [
+    "The Borjigin Golden Clan dominated Eurasia under the Yassa, facing profound schism in 1259."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Borjigin clan claimed direct descent from Genghis Khan and a mandate from Tengri to rule. Genghis had set the Yassa as the law binding his heirs and their armies, and the clan's legitimacy rested on that inheritance. Its princes divided the empire's lands into appanages and asserted their claims through the kurultai, the assembly that chose the great khan. When Möngke died in 1259 during the campaign against the Southern Song at Diaoyu, the assembly could not agree on a successor. Khubilai held his own gathering in China, while Ariq Böke was proclaimed at Karakorum, and the quarrel broke into open civil war. The fighting drained the imperial army and let the great appanages drift into autonomy, leaving the Mongol world split into four rival realms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Berke of the Golden Horde had embraced Islam, and he broke with Hulagu of the Ilkhanate over the sack of Baghdad. Armies gathered along the Caucasus as each khanate tested the other's frontier. Lords on the edges of those realms had to decide which khan's letters to answer first, and a wrong guess could cost them both pasture and tribute."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Steppe veterans speak of skies heavy with omens. When princes of the Golden Clan draw their bows against one another, the aura of invincibility that once carried the tumens across the world dissolves into fratricidal slaughter. Each man who rides against his own kin must carry the shame home with him."
+    }
+  ],
+  "TextMappings": []
+}

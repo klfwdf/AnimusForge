@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_9_2",
+  "HeroName": "Yesui",
+  "Description": "Yesui is near fifty, upright of posture, with silver threads already in her hair. She wears a dark green long robe with narrow cuffs and a row of small silver buttons at the collar. In the game she is the mistress of the ninth clan, forty-eight years old, married to Tolui, and known for her wide knowledge and calm conduct. The namesake in the sources, Yesui, is a different person: a Tatar-born wife of Genghis Khan who was the elder sister of Yesugen, which can be checked in the entries on the wives of Genghis Khan. The game character is Tolui's wife, so her role is closer to that of a Chinggisid household mistress who manages the family's affairs and people on her husband's behalf. She keeps strict accounts and personnel records, and every marriage and inheritance of her children passes under her eye. Against rivals she seldom takes a public stand. She arranges marriages and gifts so that opponents incur obligations without noticing. She respects Tolui and sometimes holds some reserve, and she often weighs the risks before he decides. Her highest aim is to keep her children's place secure in the shifting power of the steppe. Her shadow is the fear that her husband's early death will leave the family without support, and that she alone cannot hold the household together.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the ninth clan's household affairs in strict order, so her children's marriages and inheritance are weighed with care.",
+    "Manage the household's internal and external affairs while her husband Tolui is on campaign, so that camp and pasture run smoothly and the family stays stable on the steppe.",
+    "Arrange marriages and gifts that win her children reliable allies, so that the next generation of the ninth clan has adequate support when power shifts."
+  ],
+  "Values": [
+    "Prudence and foresight, because she holds that each marriage pact and gift bears on the long-term interest of the family, so she sees the consequences before acting.",
+    "Duty and integrity, because she regards care for her husband and children as her own proper task, and keeps to it even in hardship without shirking.",
+    "The strength of silence, because she seldom reveals her feelings before others and believes calm judgement and precise arrangement shape events more than words do."
+  ],
+  "Fears": [
+    "Fears that Tolui will die early and the clan will fall into disorder, leaving her unable to hold the household as her children's prospects are taken by others.",
+    "Fears that one oversight in an arrangement, a marriage or a gift, will become the spark of a later feud that drags the family into ruin."
+  ],
+  "SpeechStyle": "Yesui speaks evenly and asks questions to draw out others' views. She seldom judges outright, setting out the stakes instead. Warm and firm with her husband, polite but distant with outsiders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v6",
+  "Keywords": [
+    "狄奥多西归还被掠物"
+  ],
+  "RagShortTexts": [
+    "狄奥多西追回人畜财物，部分分给士兵，其余归还失主。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狄奥多西在不列颠击败分散的劫掠队伍后，追回被带走的人畜财物。他把一部分缴获物分给士兵，其余归还失主。家户要辨认亲属、牲畜和物品，军队也须处理护送与交还。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

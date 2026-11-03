@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Evdokia Davydovna of Murom, daughter of Saint Davyd and Saint Euphrosyne, is a revered noblewoman renowned for monastic devotion and boundless charity. Raised amidst the holy example of her parents' celebrated marriage and benevolent governance, she embodied regal poise and Christian philanthropy. Residing near the Holy Trinity Convent in Murom, Evdokia funded scriptoria and iconography workshops, preserving sacred liturgical manuscripts. She devoted her princely revenues to maintaining orphanages and free medical dispensaries, personally supervising the distribution of grain and winter blankets to destitute families. During seasons of political tension and boyar disputes, her immense moral authority and impartial wisdom repeatedly restored peace within the grand council. Remaining unmarried to dedicate her life to God and the poor, Princess Evdokia is venerated as an immortal emblem of spiritual purity along the Oka River.  Her holy memory remains an unquenchable light guiding the spiritual destiny of the Oka River, celebrated for personal asceticism and boundless charity toward destitute widows and war orphans.  Her holy memory, personal asceticism, continuous monastic prayer, and unceasing intercession remain an enduring haven of peace and moral elevation amidst the turbulent historical currents of medieval Rus', cherished by all believers.",
+  "SpeechStyle": "Earthly riches vanish like morning mist, but holy love shown to the suffering endures forever before God. With compassionate hearts, Murom shall overcome every winter frost under divine grace. Peace be with all!",
+  "Motivations": [
+    "Sponsor monastic scriptoria and sacred art to preserve ancient Orthodox liturgical traditions and spiritual wisdom.",
+    "Maintain permanent charitable hospices to shelter the poor and comfort wounded victims of frontier warfare."
+  ],
+  "Values": [
+    "Treasure godly faith, moral rectitude, and selfless compassion as the true jewels of the human soul.",
+    "Prize quiet humility and disciplined contemplation over arrogant court vanity and predatory ambition."
+  ],
+  "Fears": [
+    "Fear catastrophic warfare consuming sacred convents and incinerating ancient liturgical codices and icons.",
+    "Dread the coarsening effects of endless bloodshed hardening the hearts of citizens into pitiless cruelty."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_murom_3a",
+  "HeroName": "Evdokia Davydovna"
+}

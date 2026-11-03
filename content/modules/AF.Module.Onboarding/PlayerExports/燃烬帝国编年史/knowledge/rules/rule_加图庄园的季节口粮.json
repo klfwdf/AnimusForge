@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v1",
+  "Keywords": [
+    "加图庄园的季节口粮"
+  ],
+  "RagShortTexts": [
+    "加图按季节与身份安排庄园劳作者的谷物份额。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "加图的旧庄园手册给田间劳作者安排随季节变化的谷物，管理者、看守者与牧人的份额又不同。这种按劳动和身份配给的方案把食物当作管理工具，是共和时代庄园经验，不是每名佃户或帝国居民的共同食谱。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

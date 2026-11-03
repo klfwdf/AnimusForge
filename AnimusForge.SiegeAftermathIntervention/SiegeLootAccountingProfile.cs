@@ -12,16 +12,16 @@ public static class SiegeLootAccountingProfile
 
     public const uint DirectPlunderSettlementMessageColor = 0xFFFFC46Bu;
 
-    public const string MassacreActionName = "Massacre";
+    public static readonly string MassacreActionName = SiegeAftermathCompatibilityTexts.Raw("loot_action_massacre");
     public const string MassacreActionNameEn = "massacre";
 
-    public const string CulturalRepopulationActionName = "Colonization";
+    public static readonly string CulturalRepopulationActionName = SiegeAftermathCompatibilityTexts.Raw("loot_action_cultural_repopulation");
     public const string CulturalRepopulationActionNameEn = "colonization";
 
-    public const string PlunderSettlementLootReason = "Plunder settlement";
+    public static readonly string PlunderSettlementLootReason = SiegeAftermathCompatibilityTexts.Raw("loot_reason_plunder");
     public const string PlunderSettlementLootReasonEn = "pillage settlement";
 
-    public const string MassacreSettlementLootReason = "Massacre settlement";
+    public static readonly string MassacreSettlementLootReason = SiegeAftermathCompatibilityTexts.Raw("loot_reason_massacre");
     public const string MassacreSettlementLootReasonEn = "massacre settlement";
 
     public const string CivilianHeroFallbackGoldSource = "civilian_hero_fallback";

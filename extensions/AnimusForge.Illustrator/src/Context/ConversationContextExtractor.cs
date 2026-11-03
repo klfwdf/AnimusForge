@@ -266,10 +266,10 @@ namespace AnimusForge.Illustrator.Context
                     context.EnvironmentProfile.HostSceneDescription = hostScene;
                     string loc = context.EnvironmentProfile.SpecificLocation ?? string.Empty;
                     bool hostIsSea = IsExplicitSeaScene(hostScene);
-                    bool weSaidSea = loc.Contains(IllustratorText.Raw("Conversation_16")) || loc.Contains("Naval") || loc.Contains(IllustratorText.Raw("Conversation_17"));
-                    bool hostIsWild = hostScene.Contains(IllustratorText.Raw("Conversation_18")) || hostScene.Contains(IllustratorText.Raw("Conversation_19")) || hostScene.Contains(IllustratorText.Raw("Conversation_20"))
-                        || hostScene.Contains(IllustratorText.Raw("Conversation_21")) || hostScene.Contains(IllustratorText.Raw("Conversation_22")) || hostScene.Contains(IllustratorText.Raw("Conversation_23"));
-                    bool weSaidTown = loc.Contains(IllustratorText.Raw("Conversation_24")) || loc.Contains(IllustratorText.Raw("Conversation_25")) || loc.Contains(IllustratorText.Raw("Conversation_26")) || loc.Contains("Marketplace");
+                    bool weSaidSea = IllustratorText.ContainsRaw(loc, "Conversation_16", StringComparison.OrdinalIgnoreCase) || loc.Contains("Naval") || IllustratorText.ContainsRaw(loc, "Conversation_17", StringComparison.OrdinalIgnoreCase);
+                    bool hostIsWild = IllustratorText.ContainsRaw(hostScene, "Conversation_18", StringComparison.OrdinalIgnoreCase) || IllustratorText.ContainsRaw(hostScene, "Conversation_19", StringComparison.OrdinalIgnoreCase) || IllustratorText.ContainsRaw(hostScene, "Conversation_20", StringComparison.OrdinalIgnoreCase)
+                        || IllustratorText.ContainsRaw(hostScene, "Conversation_21", StringComparison.OrdinalIgnoreCase) || IllustratorText.ContainsRaw(hostScene, "Conversation_22", StringComparison.OrdinalIgnoreCase) || IllustratorText.ContainsRaw(hostScene, "Conversation_23", StringComparison.OrdinalIgnoreCase);
+                    bool weSaidTown = IllustratorText.ContainsRaw(loc, "Conversation_24", StringComparison.OrdinalIgnoreCase) || IllustratorText.ContainsRaw(loc, "Conversation_25", StringComparison.OrdinalIgnoreCase) || IllustratorText.ContainsRaw(loc, "Conversation_26", StringComparison.OrdinalIgnoreCase) || loc.Contains("Marketplace");
                     if (hostIsSea && !weSaidSea)
                     {
                         context.EnvironmentProfile.SpecificLocation = IllustratorText.Get("Conversation_27") + hostScene + "）";
@@ -520,7 +520,7 @@ namespace AnimusForge.Illustrator.Context
         /// 与主模组聊天提示词的场景注入同源；主模组未加载或失败时返回空串。
         /// </summary>
         internal static bool IsExplicitSeaScene(string scene)
-            => !string.IsNullOrWhiteSpace(scene) && (scene.Contains(IllustratorText.Raw("Conversation_64")) || scene.Contains(IllustratorText.Raw("Conversation_65")) || scene.Contains(IllustratorText.Raw("Conversation_66")));
+            => !string.IsNullOrWhiteSpace(scene) && (IllustratorText.ContainsRaw(scene, "Conversation_64", StringComparison.OrdinalIgnoreCase) || IllustratorText.ContainsRaw(scene, "Conversation_65", StringComparison.OrdinalIgnoreCase) || IllustratorText.ContainsRaw(scene, "Conversation_66", StringComparison.OrdinalIgnoreCase));
 
         private static string TryGetHostSceneDescription()
         {

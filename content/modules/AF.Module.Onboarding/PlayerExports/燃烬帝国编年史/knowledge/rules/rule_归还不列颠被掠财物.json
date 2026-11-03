@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v8",
+  "Keywords": [
+    "归还不列颠被掠财物"
+  ],
+  "RagShortTexts": [
+    "狄奥多西将追回掠物大部还给原主，部分分给士兵。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狄奥多西将追回掠物大部还给原主，部分分给士兵。军人报酬与失主权利要在同一批财物中安排，夺回者并不自动取得全部所有权。俘虏的去向也不能从钱物账中略去。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

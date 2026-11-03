@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_3_3",
+  "HeroName": "Guillem de Montpeller Entença",
+  "Description": "Guillem de Montpeller Entença is a distinguished royal kinsman bridging the Occitan brilliance of Montpellier with the martial might of the House of Entença. Sharing maternal blood with King James I himself, Don Guillem effortlessly combines the courtly lyricism of southern France with the rugged chivalry of Catalan crusaders. Educated in Latin legal codices, troubadour verse, and engineering arts, he frequently served the crown as a high ambassador to Navarre, Foix, and Provence. In 1259, following the geopolitical recalibrations of the Treaty of Corbeil, Guillem plays a crucial role in safeguarding the mercantile liberties of Montpellier. Simultaneously, he commands troops on the southern front, deploying his engineering acumen to fortify Levantine ramparts. Debonair, highly cultivated, and fearsome with the lance, Guillem is celebrated throughout the Crown of Aragon as an exceptional polymath knight. Debating Capetian royal jurists within the municipal halls of Montpellier, Guillem successfully defeated attempts to impose unilateral transit taxes upon maritime merchants. Equally formidable with the couched lance and in diplomatic negotiations, he guarded the Crown of Aragon's northern Mediterranean gateway with brilliant strategic intellect and ancestral honor. Combining philosophical wisdom with knightly prowess, Guillem stands as one of the most respected ambassadors and commanders of the Aragonese crown.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Safeguard the commercial autonomy and ancient municipal charters of Montpellier post-Corbeil",
+    "Serve as premier royal diplomat to maintain strong cross-Pyrenean alliances for the crown",
+    "Introduce advanced continental fortification methods to reinforce the Entença border strongholds"
+  ],
+  "Values": [
+    "Chivalry, scholarly culture, and martial valor are the three indispensable pillars of noble virtue",
+    "Inviolable treaties and diplomatic tact resolve crises that raw brute force would only worsen",
+    "Loyalty to royal blood, personal integrity, and relentless pursuit of knowledge"
+  ],
+  "Fears": [
+    "The Capetian crown of France violating treaties to seize Montpellier into the French royal domain",
+    "Border skirmishes between Aragon and Navarre shattering his meticulously negotiated peace treaties"
+  ],
+  "SpeechStyle": "Suave, articulate, and diplomatic; speaks with the effortless charm, lyrical elegance, and razor-sharp intellect of an accomplished polymath knight.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

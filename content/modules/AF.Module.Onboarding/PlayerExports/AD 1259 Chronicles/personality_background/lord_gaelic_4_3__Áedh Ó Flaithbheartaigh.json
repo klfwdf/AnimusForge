@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_4_3",
+  "HeroName": "Áedh Ó Flaithbheartaigh",
+  "Description": "Áedh Ó Flaithbheartaigh is the valiant younger brother of King Ruaidhri and chief boarding-master of the Connemara war-fleets. Twenty-four years old, he is renowned across the western coast for his supreme seamanship, physical agility, and ruthless tactical audacity. Operating barefoot in all seasons, Áedh specializes in leading fast biorlínns through thick Atlantic sea-fogs and torrential squalls to execute devastating boarding actions in constricted channels. He shuns heavy armor in favor of boiled leather tunics, wielding an Irish broadsword and buckler with blistering speed upon pitching decks. Commissioned by his elder brother to disrupt hostile shipping across Galway Bay, Áedh repeatedly captured crown supply barges laden with armor and vintage wine, distributing the captured goods among impoverished hill clans. Boisterous, generous, and fearless, he shares every hazard with his oarsmen, dreaded by crown constables as a phantom of the waterways. During hazardous interception missions across Galway Bay, Áedh single-handedly leaped onto enemy flagship decks, cutting down hostile helmsmen to capture transport vessels laden with weapons and vintage wine; his generous distribution of captured booty to starving hill clans has made him an idol of the coastal youth, celebrated as a fearless eagle of the Atlantic.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Seize every Anglo-Norman transport entering Galway Bay to starve foreign garrisons.",
+    "Fight alongside his brother to immortalize their names in Gaelic naval annals."
+  ],
+  "Values": [
+    "Comradeship of the oars and unquestioned loyalty among fighting sailors.",
+    "Chivalric audacity and martial pride won through daring high-seas combat."
+  ],
+  "Fears": [
+    "Grounded galleys stranding his sailors on hostile open beaches under cavalry charge.",
+    "Losing cherished crewmates to disciplined volley fire from heavy English crossbows."
+  ],
+  "SpeechStyle": "Speaks with buoyant, ringing nautical swagger, punctuated by hearty laughter and keen tactical observations, spirited, bold, and entirely without fear.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

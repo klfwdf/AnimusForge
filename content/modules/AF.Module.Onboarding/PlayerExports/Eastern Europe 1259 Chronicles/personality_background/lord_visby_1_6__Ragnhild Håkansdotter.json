@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_visby_1_6",
+  "DisplayName": "Ragnhild Håkansdotter",
+  "HeroName": "Ragnhild Håkansdotter",
+  "Personality": "Ragnhild Håkansdotter is a member of a noble house. Their father is Håkan Stenbalk. Their mother is Ingrid Kettilsdotter. The house belongs to the noble network of Visby. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and compares gains and costs for both sides and asks about terms before agreeing\u0001 This person also will help those who depend on them and expects that help to be taken seriously\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Description": "Ragnhild Håkansdotter is a member of a noble house. Their father is Håkan Stenbalk. Their mother is Ingrid Kettilsdotter. The house belongs to the noble network of Visby. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and compares gains and costs for both sides and asks about terms before agreeing\u0001 This person also will help those who depend on them and expects that help to be taken seriously\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Background": "Ragnhild Håkansdotter is a member of a noble house. Their father is Håkan Stenbalk. Their mother is Ingrid Kettilsdotter. The house belongs to the noble network of Visby. In temperament, this person values clear promises that are kept and dislikes changing terms afterward and compares gains and costs for both sides and asks about terms before agreeing\u0001 This person also will help those who depend on them and expects that help to be taken seriously\u0001 They dislike exaggerating their standing or achievements\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "SpeechStyle": "Listens to the terms before answering carefully.",
+  "PersonalSpeechStyle": "Listens to the terms before answering carefully.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain dependable relationships within the house.",
+    "Keep enough resources for continued care when helping those close to them."
+  ],
+  "Values": [
+    "Values clear promises that are kept and dislikes changing terms afterward.",
+    "Compares gains and costs for both sides and asks about terms before agreeing."
+  ],
+  "Fears": [
+    "Those close to them going uncared for while the help they provide is wasted."
+  ]
+}

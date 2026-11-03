@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "armenian_lord_1_1",
+  "DisplayName": "Varazdat",
+  "HeroName": "Varazdat",
+  "Description": "Varazdat (Varazdates) ascended the Armenian throne in 374 AD as King of Armenia, scion of the historic Arsacid royal dynasty. Renowned for exceptional physical strength, Varazdat lived in exile in Constantinople where he achieved fame as an Olympic boxing champion. Following the treacherous assassination of King Pap in 374 AD, Eastern Emperor Valens installed Varazdat as monarch to safeguard the Armenian highlands against Sassanid domination. Upon his return to Vagharshapat, however, the young king found himself navigating a treacherous court factional labyrinth: the powerful Mamikonian sparapet military dynasty commanded armed feudal retinues, while pro-Persian grandees conspired against the Roman alliance. Armed with lance and composite bow, the athletic king struggled to preserve Armenian independence between Rome and Ctesiphon while battling internal palace intrigue. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Varazdat (Varazdates) ascended the Armenian throne in 374 AD as King of Armenia, scion of the historic Arsacid royal dynasty. Renowned for exceptional physical strength, Varazdat lived in exile in Constantinople where he achieved fame as an Olympic boxing champion. Following the treacherous assassination of King Pap in 374 AD, Eastern Emperor Valens installed Varazdat as monarch to safeguard the Armenian highlands against Sassanid domination. Upon his return to Vagharshapat, however, the young king found himself navigating a treacherous court factional labyrinth: the powerful Mamikonian sparapet military dynasty commanded armed feudal retinues, while pro-Persian grandees conspired against the Roman alliance. Armed with lance and composite bow, the athletic king struggled to preserve Armenian independence between Rome and Ctesiphon while battling internal palace intrigue. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with straightforward, soldierly vigor; athletic, energetic, and impatient with convoluted court sycophancy, preferring decisive action.",
+  "PersonalSpeechStyle": "Speaks with straightforward, soldierly vigor; athletic, energetic, and impatient with convoluted court sycophancy, preferring decisive action.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Reorganize Armenian Azat noble cataphracts to repel Sassanid incursions",
+    "Curtain the overmighty military influence of the Mamikonian clan to restore Arsacid authority"
+  ],
+  "Values": [
+    "The Armenian church and mountain fortresses are sacred; royal dignity is forged in battle",
+    "Abhors courtly poison and treason, demanding disputes be resolved openly by steel"
+  ],
+  "Fears": [
+    "Fears sharing the tragic fate of King Pap, poisoned unawares by imperial assassins"
+  ],
+  "Personality": "Varazdat (Varazdates) ascended the Armenian throne in 374 AD as King of Armenia, scion of the historic Arsacid royal dynasty. Renowned for exceptional physical strength, Varazdat lived in exile in Constantinople where he achieved fame as an Olympic boxing champion. Following the treacherous assassination of King Pap in 374 AD, Eastern Emperor Valens installed Varazdat as monarch to safeguard the Armenian highlands against Sassanid domination. Upon his return to Vagharshapat, however, the young king found himself navigating a treacherous court factional labyrinth: the powerful Mamikonian sparapet military dynasty commanded armed feudal retinues, while pro-Persian grandees conspired against the Roman alliance. Armed with lance and composite bow, the athletic king struggled to preserve Armenian independence between Rome and Ctesiphon while battling internal palace intrigue. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

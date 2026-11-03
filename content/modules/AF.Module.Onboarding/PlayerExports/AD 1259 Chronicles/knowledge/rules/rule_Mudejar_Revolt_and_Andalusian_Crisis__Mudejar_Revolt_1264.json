@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Mudejar_Revolt_and_Andalusian_Crisis",
+  "Keywords": [
+    "Mudéjar households and local obligations"
+  ],
+  "RagShortTexts": [
+    "Muslim communities under Castilian rule faced varied demands over taxes."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Muslim communities under Castilian rule faced varied demands over taxes, land, worship and garrisons. Households could bargain, leave or endure pressure while lords depended on cultivation. Discontent did not establish participation in a general revolt."
+    }
+  ],
+  "TextMappings": []
+}

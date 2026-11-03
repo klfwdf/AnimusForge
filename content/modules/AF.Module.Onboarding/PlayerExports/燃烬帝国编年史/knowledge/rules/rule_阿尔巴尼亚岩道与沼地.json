@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v3",
+  "Keywords": [
+    "阿尔巴尼亚岩道与沼地"
+  ],
+  "RagShortTexts": [
+    "斯特拉波把从阿尔巴尼亚入伊比利亚的路线分成凿岩路段和阿拉佐尼乌斯河形成的湿地。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "斯特拉波把从阿尔巴尼亚入伊比利亚的路线分成凿岩路段和阿拉佐尼乌斯河形成的湿地。石路与泥水需要不同的行进办法，不能把所有高加索门户说成同一条石墙夹道。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

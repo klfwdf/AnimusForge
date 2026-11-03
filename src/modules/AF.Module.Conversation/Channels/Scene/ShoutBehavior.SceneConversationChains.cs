@@ -80,6 +80,8 @@ internal sealed partial class SceneConversationSessionRuntime
 
 		public Action<bool> OnCompleted;
 
+        public CancellationToken OwnerCancellationToken;
+
 		public List<object> Messages;
         internal ConversationPromptCache.Request PromptCache;
 
@@ -434,6 +436,27 @@ internal sealed partial class SceneConversationSessionRuntime
 		string continuation = firstTurn ? null : ScenePromptMessageProjectionComposer.BuildAutoGroupChatReplyInstruction(
 			GetSceneNpcHistoryNameForPrompt(currentSpeaker), engagedParticipants);
 		return BuildSceneCompositeUserBlock("", relayTurnContext, continuation);
+	}
+
+	// Prefetch: while the relay choice is pending, start the cached persisted-memory build for
+	// at most two candidates. The next turn reuses the same cached task; nothing touches scene
+	// state, and the chosen speaker is still validated live before generation.
+	private void WarmRelayCandidateMemory(bool relayPending, List<NpcDataPacket> candidates, string playerText,
+		Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts)
+	{
+		if (!relayPending || precomputedContexts == null || candidates == null || candidates.Count == 0 || candidates.Count > 2
+			|| DuelSettings.LoadedForSceneRuntime()?.ShoutRelayPrefetch != true)
+		{
+			return;
+		}
+		for (int i = 0; i < candidates.Count; i++)
+		{
+			NpcDataPacket candidate = candidates[i];
+			if (candidate == null || candidate.AgentIndex < 0) continue;
+			Task<string> warm = _ports.StartPrecomputedPersistedHistoryContextTask(candidate.AgentIndex, playerText, resolvedHeroes, precomputedContexts, "group_turn");
+			warm?.ContinueWith(t => Logger.Log("Logic", "[MemoryPerf] relay_prefetch_failed agent=" + candidate.AgentIndex + " error=" + t.Exception?.GetBaseException().Message),
+				TaskContinuationOptions.OnlyOnFaulted);
+		}
 	}
 
 	internal async Task HandleGroupResponsePerHeroIndependent(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData, SceneGroupReceipt receipt = null)
@@ -953,9 +976,12 @@ internal sealed partial class SceneConversationSessionRuntime
 						{
 							roundNpcSpeakerIndices.Add(currentSpeaker.AgentIndex);
 						}
+						// First turn answers the player; later turns answer the previous speaker.
+						int relayAddresseeAgentIndex = firstTurn ? -1 : (previousSpeaker?.AgentIndex ?? -1);
 						bool historyRecorded = await RecordSceneReplyHistoryOnMainThreadAsync(
 							currentSpeaker, allNpcData, speakingHero, npcCharacter, historyText,
-							sceneReplyGeneration, sceneReplySessionId, conversationEpoch, requireMemoryReceipt: receipt != null);
+							sceneReplyGeneration, sceneReplySessionId, conversationEpoch, requireMemoryReceipt: receipt != null,
+							addresseeAgentIndex: relayAddresseeAgentIndex, addresseeName: firstTurn ? null : previousSpeaker?.Name);
 						if (!IsCurrentModuleGroup()) return;
 						if (!historyRecorded)
 						{
@@ -1045,6 +1071,14 @@ internal sealed partial class SceneConversationSessionRuntime
 					var speechCompletion = receipt == null ? null : new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 					var localSpeechCompletion = flag11 && speechLanguage != null
                         ? new TaskCompletionSource<LocalTtsSpeech>(TaskCreationOptions.RunContinuationsAsynchronously) : null;
+					int gazeAddresseeAgentIndex = firstTurn ? -1 : (previousSpeaker?.AgentIndex ?? -1);
+					await _dispatcher.RunAsync("scene_relay_addressee", currentSpeaker.Name, currentSpeaker.AgentIndex, () =>
+					{
+						if (!IsSceneConversationEpochCurrent(conversationEpoch)) return false;
+						_ports.RegisterRelaySpeechAddressee?.Invoke(currentSpeaker.AgentIndex, gazeAddresseeAgentIndex);
+						return true;
+					}, false);
+					if (!IsCurrentModuleGroup()) return;
                     bool speechQueued = await QueueSceneMainReplyOnMainThreadAsync(
 						currentSpeaker, allNpcData, speakingHero, npcCharacter, cleaned,
 						sceneReplyGeneration, sceneReplySessionId, conversationEpoch,
@@ -1065,6 +1099,7 @@ internal sealed partial class SceneConversationSessionRuntime
 						Task<ScenePostprocessOutcome> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: relayCandidatesForNextTurn, relayPrimaryTargetAgentIndex: primaryNpc?.AgentIndex ?? (-1), relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, expectedRuntimeGeneration: sceneReplyGeneration, expectedSceneSessionId: sceneReplySessionId, relayConversationContext: relayConversationContext, localSpeechCompletion: localSpeechCompletion, speechLanguage: speechLanguage);
 						ObserveSceneRewritePostprocess(conversationEpoch, postprocessTask);
 						receipt?.AddPostprocess(postprocessTask);
+						WarmRelayCandidateMemory(relayPostprocessSelected, relayCandidatesForNextTurn, playerText, resolvedHeroes, receipt == null ? precomputedContexts : null);
 						if (relayPostprocessSelected)
 						{
 							// Release the processing flag while keeping the input gate: queued speech
@@ -1376,20 +1411,21 @@ internal sealed partial class SceneConversationSessionRuntime
 		}
 	}
 
-	internal bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false, Func<bool> canStillPublish = null, Action<bool> onCompleted = null)
+	internal bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false, Func<bool> canStillPublish = null, Action<bool> onCompleted = null, CancellationToken ownerCancellationToken = default, Action<long> onRequestRegistered = null)
 	{
 		if (!IsBannerlordMainThreadForNativeActions())
 		{
 			_ports.PostMainThread(delegate
 			{
-				TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, skipSceneFactRecord, returnSceneSummonOnTimeout, onNoSpeech, runSiegeReactionPostprocess, canStillPublish, onCompleted);
+				TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, skipSceneFactRecord, returnSceneSummonOnTimeout, onNoSpeech, runSiegeReactionPostprocess, canStillPublish, onCompleted, ownerCancellationToken, onRequestRegistered);
 			});
 			return true;
 		}
 		LlmRetryPrompt.CaptureMainThreadContext();
 		Mission mission = Mission.Current;
 		var agents = mission?.Agents;
-		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || agents == null)
+		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || agents == null
+            || ownerCancellationToken.IsCancellationRequested || !CanPublishImmediateSceneReaction(canStillPublish))
 		{
 			InvokeImmediateSceneReactionNoSpeechFallback(onNoSpeech);
 			QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
@@ -1476,6 +1512,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			}
 			request.OnNoSpeech = onNoSpeech;
 			request.OnCompleted = onCompleted;
+            request.OwnerCancellationToken = ownerCancellationToken;
 			if (!RegisterImmediateSceneReactionRequest(request))
 			{
 				FinishImmediateSceneReactionGeneration(targetAgentIndex, requestId);
@@ -1484,6 +1521,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				immediateSceneReactionGateEntered = false;
 				return false;
 			}
+            onRequestRegistered?.Invoke(request.RequestId);
 			StartImmediateSceneReactionBackgroundRequest(request.RequestId, request.TargetAgentIndex, request.Messages, request.MaxTokens, request.Temperature);
 			immediateSceneReactionGateEntered = false;
 			return true;
@@ -1616,6 +1654,17 @@ internal sealed partial class SceneConversationSessionRuntime
 		return true;
 	}
 
+    // Cancels only the owning opening, never unrelated scene reactions or a newer request.
+    internal void CancelImmediateSceneReaction(long requestId)
+    {
+        ImmediateSceneReactionRequest request;
+        lock (_immediateSceneReactionGateLock)
+        {
+            if (!_pendingImmediateSceneReactionRequests.TryGetValue(requestId, out request)) return;
+        }
+        SettleImmediateSceneReaction(request, false, allowNoSpeech: false);
+    }
+
 	internal void StartImmediateSceneReactionBackgroundRequest(long requestId, int targetAgentIndex, List<object> messages, int maxTokens, float temperature)
 	{
 		if (requestId <= 0L || targetAgentIndex < 0 || messages == null || messages.Count == 0)
@@ -1626,6 +1675,12 @@ internal sealed partial class SceneConversationSessionRuntime
 		try
 		{
 			var requestLifetime = _sceneRequestLifetime;
+            CancellationToken ownerToken;
+            lock (_immediateSceneReactionGateLock)
+            {
+                ownerToken = _pendingImmediateSceneReactionRequests.TryGetValue(requestId, out var pending)
+                    ? pending.OwnerCancellationToken : CancellationToken.None;
+            }
 			_ = Task.Run(delegate
 			{
 				bool requestSucceeded = false;
@@ -1634,13 +1689,21 @@ internal sealed partial class SceneConversationSessionRuntime
 				try
 				{
 					using IDisposable requestWorker = requestLifetime.Enter();
-					using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(requestLifetime.Token);
+                    using var linked = ownerToken.CanBeCanceled
+                        ? CancellationTokenSource.CreateLinkedTokenSource(requestLifetime.Token, ownerToken) : null;
+                    CancellationToken cancellationToken = linked?.Token ?? requestLifetime.Token;
+					using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(cancellationToken);
+                    cancellationToken.ThrowIfCancellationRequested();
 					requestSucceeded = AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, maxTokens, temperature, out response, out error);
-					if (!requestSucceeded)
+					if (!requestSucceeded && !cancellationToken.IsCancellationRequested)
 					{
 						Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] auxiliary_simple_dialogue failed: " + (error ?? ""));
 					}
 				}
+                catch (OperationCanceledException)
+                {
+                    error = "owner_cancelled";
+                }
 				catch (Exception ex)
 				{
 					error = ex.Message ?? "background_request_exception";
@@ -1650,7 +1713,7 @@ internal sealed partial class SceneConversationSessionRuntime
 				{
 					_ports.PostMainThread(delegate
 					{
-						CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded && !requestLifetime.Token.IsCancellationRequested, response, error);
+						CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded && !requestLifetime.Token.IsCancellationRequested && !ownerToken.IsCancellationRequested, response, error);
 					});
 				}
 				catch (Exception ex2)
@@ -1733,7 +1796,8 @@ internal sealed partial class SceneConversationSessionRuntime
 		{
 			return false;
 		}
-        return request.ConversationEpoch == ConversationEpoch && Volatile.Read(ref request.CompletionClaimed) == 0;
+        return !request.OwnerCancellationToken.IsCancellationRequested
+            && request.ConversationEpoch == ConversationEpoch && Volatile.Read(ref request.CompletionClaimed) == 0;
 	}
 
 	internal bool CanPublishImmediateSceneReactionRequest(ImmediateSceneReactionRequest request)
@@ -1858,13 +1922,25 @@ internal sealed partial class SceneConversationSessionRuntime
 			_ports.RecordResponseForAllNearbySafe(request.AllNpcData, request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText);
 			_ports.PersistNpcSpeechToNamedHeroes(request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText, request.AllNpcData);
 		}
-        if (!string.IsNullOrEmpty(PlayerExperiencePrompt.Evidence(request.FactText)))
+        if (request.OwnerCancellationToken.CanBeCanceled || !string.IsNullOrEmpty(PlayerExperiencePrompt.Evidence(request.FactText)))
         {
             var presented = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Func<bool> publicationGuard = request.OwnerCancellationToken.CanBeCanceled
+                ? () => CanPublishImmediateSceneReactionRequest(request) : request.CanStillPublish;
             _ports.EnqueueSpeechLineWithOptions(request.TargetNpc, text, request.AllNpcData, commitHistory: false,
                 suppressStare: request.SuppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: request.ConversationEpoch,
-                completionSource: presented, canStillPublish: request.CanStillPublish);
-            return await presented.Task;
+                completionSource: presented, canStillPublish: publicationGuard);
+            if (!request.OwnerCancellationToken.CanBeCanceled) return await presented.Task;
+            using var cancellation = request.OwnerCancellationToken.Register(() => presented.TrySetResult(false));
+            Task completed = await Task.WhenAny(presented.Task, Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs));
+            if (completed != presented.Task)
+            {
+                // Revoke the timed-out opening's queue publication before returning
+                // failure; a later queue dispatch must not resurrect the session.
+                SettleImmediateSceneReaction(request, false, allowNoSpeech: false);
+                return false;
+            }
+            return presented.Task.Result && CanPublishImmediateSceneReactionRequest(request);
         }
 		_ports.EnqueueSpeechLine(request.TargetNpc, text, request.AllNpcData, skipHistory: true, suppressStare: request.SuppressStare, canStillPublish: request.CanStillPublish);
 		return true;
@@ -2011,8 +2087,10 @@ internal sealed partial class SceneConversationSessionRuntime
 		if (candidateCount < 2) return false;
         if (framedCount > 1) return true;
         if (string.IsNullOrWhiteSpace(playerText)) return false;
-		return Regex.IsMatch(playerText.Trim(), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0728"), RegexOptions.CultureInvariant)
-            || Regex.IsMatch(playerText.Trim(), @"\b(?:you all|all of you|everyone|everybody|folks|brothers|sisters|brethren|comrades|ladies and gentlemen)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		string trimmed = playerText.Trim();
+		foreach (Regex pattern in ConversationRuntimeTexts.RawRegexes("AF_CONV_Runtime_0728", RegexOptions.CultureInvariant))
+			if (pattern.IsMatch(trimmed)) return true;
+		return Regex.IsMatch(trimmed, @"\b(?:you all|all of you|everyone|everybody|folks|brothers|sisters|brethren|comrades|ladies and gentlemen)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 	}
 
 	private static bool TrySelectUnansweredSceneGroupRelayTarget(IEnumerable<NpcDataPacket> candidates, HashSet<int> answeredAgentIndices, out int targetAgentIndex)

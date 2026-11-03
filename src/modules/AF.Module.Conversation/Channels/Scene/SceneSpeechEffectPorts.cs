@@ -45,4 +45,6 @@ internal sealed class SceneSpeechEffectPorts
     internal delegate bool TryTriggerOpenLordsHallActionCapability(NpcDataPacket npc, Agent agent, ref string content);
     internal TryTriggerOpenLordsHallActionCapability TryTriggerOpenLordsHallAction;
     internal Func<bool> GetDuelLiteralHit;
+    // Relay presentation: returns true when the speaker faces a registered NPC addressee.
+    internal Func<Agent, List<NpcDataPacket>, bool> ApplyRelaySpeechGaze;
 }

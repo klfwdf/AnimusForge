@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_6_1",
+  "HeroName": "Abu Muzahhir ibn Abu Yahya Abu Bakr",
+  "Description": "Abu Muzahhir is twenty-four years old, the eldest son of the late Abu Yahya Abu Bakr and Salma, and the heir of his branch of the Abu Bakr house. He is a large man with sallow skin and a neatly trimmed short beard. He favours deep red velvet robes, with a white cloak embroidered in gold at the shoulders. A strip of red silk is wound around the grip of his sword, tied there by his father, who wished him to remember the honour of the house. In horsemanship and archery he stands out among his peers, always first into the saddle and last to dismount. He is close to his younger brother Ibrahim, and the two often ride the border together. He believes real authority belongs to whoever acts first, so he has little patience with rivals from the same clan. In council he prefers to deliver an ultimatum and force an immediate answer. His elder kin often recall his father's deeds in front of him, which only sharpens his wish to build a name of his own rather than live as the bearer of his father's. Before each expedition he checks the horses' shoes and bowstrings himself, convinced that a cavalry's reputation is lost in such small details. His deepest drive is to make the Abu Bakr branch outshine every collateral line in the dynasty. His greatest fear is that his pride will be dismissed as youthful arrogance, and that his father's old retainers will defect to his uncles before he is firmly established.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants the Abu Bakr branch to outshine the collateral lines, so that when the dynasty speaks of this house, people think of him before his uncles.",
+    "He intends to keep his father's old retainers, the cavalry who still follow the house, under his own command before they scatter.",
+    "He plans to take the first move in every confrontation with rivals, forcing an answer on the spot so that delay and treachery have no room."
+  ],
+  "Values": [
+    "Honour comes from fighting at the front, and command from behind the lines is a lesser form of it, as he tells his younger brothers.",
+    "An enemy must be dealt with without mercy, because a leader who forgives is judged weak, a lesson his father repeated to him often.",
+    "A spoken promise cannot be withdrawn, and even when it proves costly he must make good on it with action so others see his resolve."
+  ],
+  "Fears": [
+    "His pride may be taken for youthful recklessness, letting his uncles outweigh him in council under the banner of experience.",
+    "His father's old retainers may join his uncles before he is established, and the cavalry and reputation he holds would drain away for good."
+  ],
+  "SpeechStyle": "His tone is direct and hard, and he speaks in short orders or ultimatums. When he describes riding and archery he speeds up. When belittled he falls silent, then ends the argument with a cold question.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

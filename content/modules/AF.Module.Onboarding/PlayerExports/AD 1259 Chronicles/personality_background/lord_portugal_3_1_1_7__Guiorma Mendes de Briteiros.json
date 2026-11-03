@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_1_7",
+  "HeroName": "Guiorma Mendes de Briteiros",
+  "Description": "Guiorma Mendes de Briteiros is the delightful five-year-old fourth daughter of Dom Mem Rodrigues, christened in honor of venerable matriarchal ancestors. Blessed with round, rosy cheeks and an irrepressible smile, little Guiorma is an affectionate child who loves curling up beside her grandmother Elvira or begging her warrior father for honeyed pastries. Filled with toddler curiosity, she enthusiastically explores the fortress, mesmerized by newborn foals in the stables and the sweet scent of cinnamon wafting from the castle kitchens. Though her formal schooling in heraldic manners has barely begun, she instinctively curtsies to visiting knights with earnest dignity, winning affectionate smiles from grim border barons. Protected by the wealth and vigilance of the House of Briteiros, she represents the tender, joyous heartbeat of the home. Radiating joyful innocence and charming curiosity, little Guiorma enlivens the stone courtyards with her sunny laughter, doted upon by her noble kin and cherished by castle attendants as a bright beacon of familial hope. Guiorma's delightful warmth, cheerful demeanor, and playful spirit bring perpetual sunlight to the ancient chambers, beloved by knights and servants across the estate. Her bright laughter and tender warmth fill the great stone halls with perpetual joy, celebrated by all within the keep.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To enjoy honey confections and run merrily along the stone sun terraces.",
+    "To be held by her father and listen to thrilling bedtime legends of valiant knights."
+  ],
+  "Values": [
+    "Happiness is having the whole family united in warmth and laughter.",
+    "Obedience to loving elders brings sweet treats and eternal affection."
+  ],
+  "Fears": [
+    "Being left alone in a large, empty chamber without her nursemaid.",
+    "The fierce barking of hunting mastiffs and gale winds rattling the shutters."
+  ],
+  "SpeechStyle": "Speaks with charming, lisping toddler sweetness, bubbling with curious questions and pure warmth. She speaks with serene aristocratic poise, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

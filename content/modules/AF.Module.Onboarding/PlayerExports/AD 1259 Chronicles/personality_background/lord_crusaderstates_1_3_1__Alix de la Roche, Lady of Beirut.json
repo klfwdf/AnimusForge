@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_1_3_1",
+  "HeroName": "Alix de la Roche, Lady of Beirut",
+  "Description": "Alix de la Roche was a high-born princess of Frankish Greece, daughter to Guy I de la Roche, the proud sovereign Duke of Athens, married to John II of Ibelin, Lord of Beirut. This prestigious maritime alliance fused the chivalric wealth of the Latin lordships of Attica and the Peloponnese with the constitutional supremacy of Outremer's premier baronial clan. At the seaside palace of Beirut, Alix presided over a vibrant Mediterranean salon that welcomed Continental crusaders, French troubadours, and Templar commanders alike. In 1259, as saracen raiding parties harassed the coastal olive orchards, Alix personally organized public granaries, emergency flour distributions, and shelters for displaced Christian families. Her astute financial acumen enabled her to coordinate trans-maritime estate revenues from estates across Cyprus, Attica, and the Levant, ensuring steady silver supplies for fortress maintenance. A paragon of courtly poise, diplomatic insight, and Christian charity, she served as John II's most trusted confidante and the graceful diplomat of the Latin East. Alix generously funded the infirmaries of the Knights Templar and regional hospices in Beirut, ensuring skilled surgical care for crusader casualties returning from Syrian border skirmishes. Presiding over banquets attended by Levantine baronies, her Athenian refinement bridged acrimonious factional divides with diplomatic subtlety. Her compassionate dignity and far-reaching diplomatic connections earned her universal reverence throughout the crusader world.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve the strategic alliance between the Duchy of Athens and the House of Ibelin to guarantee naval reinforcements.",
+    "Manage municipal granaries and charitable foundations in Beirut to shield the resident Christian population from hardship.",
+    "Educate her children in both chivalric virtue and feudal law to perpetuate the illustrious heritage of the Ibelin lineage."
+  ],
+  "Values": [
+    "Belief that noble matriarchs must govern through graceful benevolence, preserving dynastic stability amidst warfare.",
+    "Devotion to Christian charity and courtly chivalric etiquette, supporting destitute monasteries and war widows.",
+    "Strategic foresight and composed pragmatism to navigate the treacherous factional currents of the crusader principalities."
+  ],
+  "Fears": [
+    "Piracy and naval blockades severing the vital maritime route connecting Beirut with her familial court in Athens.",
+    "A catastrophic saracen sack of Beirut destroying its splendid coastal palaces and irreplaceable Latin manuscript libraries."
+  ],
+  "SpeechStyle": "Speaks with the melodic refinement of the Frankish court of Athens, receiving visiting crusader envoys and managing estate households with effortless diplomatic poise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Alix de la Roche, Lady of Beirut"
+}

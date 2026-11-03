@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_cursus_publicus_v3",
+  "Keywords": [
+    "Envoys detained in Italy"
+  ],
+  "RagShortTexts": [
+    "Officials delayed Julian’s envoys, who also had to find Constantius’s moving court."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Envoys from Julian traveling to Constantius were detained by senior officials in Italy and Illyricum. After crossing the Bosporus, they continued seeking the emperor and reached Caesarea in Cappadocia. Administrative interference and a moving court both delayed delivery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "For an escort, “the embassy has left” establishes departure, not that the emperor knows its message. Detention prolongs the need for lodging and provisions; a return report requires an actual audience first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Officials could change the order of information by detaining envoys, and the court might move. Before interpreting a diplomatic response, establish where an audience occurred and whether it happened at all; silence does not directly prove refusal."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

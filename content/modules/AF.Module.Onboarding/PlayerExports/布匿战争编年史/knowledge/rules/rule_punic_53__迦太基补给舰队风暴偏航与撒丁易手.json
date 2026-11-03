@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_53",
+  "Name": "迦太基补给舰队风暴偏航与撒丁战局逆转",
+  "Description": "公元前215年迦太基派往萨丁尼亚的庞大增援舰队遭遇第勒尼安海恶劣风暴，大部战船偏航漂向巴利阿里群岛，延误数月战机导致罗马从容平定全岛。",
+  "Tags": [
+    "地中海风暴",
+    "舰队偏航",
+    "后勤断绝",
+    "萨丁尼亚易手",
+    "海权得失",
+    "气候战争"
+  ],
+  "Category": "History",
+  "DefaultPriority": 78,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前215年迦太基驶往萨丁尼亚的数十艘主力补给战舰遭罕见暴风雨袭击。",
+    "舰队严重受损并被狂风逆浪刮向数百里外的巴利阿里群岛导致战机尽失。",
+    "数月延误使孤立无援的萨丁起义军在罗马老将反扑下被各个击破全歼。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "若非那场突如其来的滔天狂风，萨丁尼亚早已回到迦太基的怀抱！六十艘五列桨战舰满载粮草铁甲，原定七日之内即可直抵卡拉利斯港外与汉普西科拉会师！谁知第勒尼安海恶浪冲天，船帆扯裂、龙骨震断，整支舰队被风暴生生卷到了西班牙外海的巴利阿里群岛修整搁浅！等风平浪静修好战船再赶过去时，岛上的起义军早已被罗马军团包围吃光了！天亡迦太基，何其不公！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "涅普顿与朱庇特庇佑着罗马！迦太基人的舰队以为趁着罗马虚弱就能偷渡海峡，却在诸神掀起的怒涛中被吹得七零八落，撞在礁石上粉身碎骨！正是这场天赐的风暴为托尔夸图斯将军赢得了宝贵的一个月时间完成动员集结，等迦太基残舰赶到时，迎接他们的只有罗马军团磨快的冰冷短剑！"
+    },
+    {
+      "Priority": 72,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在大海上打仗三分靠人七分靠天。迦太基人的船造得虽好，可只要遇到黑压压的海龙卷，百桨大船也跟树叶子没两样。水手们拼死划水也没挡住风浪，等他们好不容易从荒岛上把船拖回来，岛上的弟兄早被罗马人砍得连骨头都不剩了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前215年，迦太基派遣增援萨丁尼亚起义的舰队在航行途中遭遇突发强烈风暴，战舰大量受损并严重偏航漂流至巴利阿里群岛。这一严重的后勤与航行挫败使罗马获得了充裕的调兵与反扑窗口，间接决定了萨丁尼亚战局的彻底失败。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "迦太基补给舰队风暴偏航与撒丁战局逆转",
+    "rule_punic_53"
+  ]
+}

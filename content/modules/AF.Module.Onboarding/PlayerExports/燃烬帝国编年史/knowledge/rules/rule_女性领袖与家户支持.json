@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v5",
+  "Keywords": [
+    "女性领袖与家户支持"
+  ],
+  "RagShortTexts": [
+    "一位女性领袖要通过亲属、使者与愿意承担义务的家户维持影响。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "一位女性领袖要通过亲属、使者与愿意承担义务的家户维持影响。追随者关心出多少人、何时归返及家属得到什么保护。代表阵营交涉，与私自支配每个家庭的牲畜是不同权力。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

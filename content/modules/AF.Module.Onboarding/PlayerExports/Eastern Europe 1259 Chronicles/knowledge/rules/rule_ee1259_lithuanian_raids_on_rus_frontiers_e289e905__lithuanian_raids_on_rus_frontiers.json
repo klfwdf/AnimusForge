@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_lithuanian_raids_on_rus_frontiers_e289e905",
+  "Keywords": [
+    "lithuanian raids on rus frontiers",
+    "Toropets scouts and refugee reports"
+  ],
+  "RagShortTexts": [
+    "Lithuanian raids threaten western Rus villages and forest roads.",
+    "Lost livestock harms cultivation, transport and winter survival."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lithuanian raids threatened villages and communications on the western Rus frontier, making forest roads and crossings around Toropets important to watch. Raiders could leave with livestock and grain; households lost not only immediate food but animals needed for cultivation, transport and winter survival. News often arrived with refugees, travelers or border scouts. Assessing danger required asking where and when an attack occurred and which way the raiders departed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "News of raids near Toropets might first arrive with refugees and travelers. Road guards distinguished eyewitness reports from hearsay and watched crossings, hoofprints and groups driving livestock. Pursuit along forest roads stretched columns, while mounts needed rest and fodder. Going too far could leave villages and grain carts unprotected. Escorts first needed to keep their own party together through narrow ground, rather than merely catch an enemy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Defense near Toropets depended on retainers, local mobilization and supplies along the road. Princes and notables had to allocate the same people and horses among crossings, grain escorts and pursuit. Mongol levies remained a pressure; livestock losses in villages also reduced subsequent rents and military supplies. Reliable reports and coordination with nearby posts were more useful than dispatching troops on one inflated claim of victory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Western Rus households hearing of a nearby raid worried about animals, stored grain and where to take their families. Moving cattle and horses into cover required guards, while moving grain required carts and time. Staying away from fields could disrupt work. Town relatives, markets and carters brought news, but each knew only part of the route, so villagers repeatedly asked which roads people were still using."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

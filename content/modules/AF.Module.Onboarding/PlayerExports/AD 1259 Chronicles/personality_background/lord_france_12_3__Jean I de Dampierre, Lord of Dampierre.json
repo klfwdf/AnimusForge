@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_12_3",
+  "HeroName": "Jean I de Dampierre, Lord of Dampierre",
+  "Description": "Jean I de Dampierre is the Lord of Dampierre and Saint-Dizier, younger brother of Count Guy of Flanders and son of Countess Margaret of Constantinople. At twenty-nine, he is a battle-tested knight of formidable physical presence and administrative competence, governing the ancestral heartlands of the House of Dampierre on the border of Champagne and Lorraine. Campaigning alongside his brother through the bitter War of Flemish Succession, Jean repeatedly demonstrated fierce courage under arms and acute tactical vision. His marriage to Princess Laure of Upper Lorraine, daughter of Duke Matthew II, forged an invaluable military bridge linking northern France with the Holy Roman Empire. A master of defensive siegecraft and heavy cavalry shock formations, Jean stands as a rock of martial dependability safeguarding the eastern frontiers of his house. The resolute chief of the House of Avesnes waged a relentless lifelong struggle to vindicate his birthright in Hainaut. Backed by his brother-in-law, King William of Holland, he successfully secured Hainaut through royal arbitration, establishing a dynamic dynasty that shaped the late medieval Netherlands. His unwavering determination cemented Avesnes autonomy against formidable Flemish, Brabantian, and Capetian opposition. His relentless political drive secured his sons a permanent place among European sovereigns.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify Dampierre and Saint-Dizier against all incursions from neighboring march lords.",
+    "Provide dependable military reinforcements to support his brother Guy in Flanders."
+  ],
+  "Values": [
+    "Chivalric courage and unbreakable brotherly loyalty as the foundation of baronial honor.",
+    "Ferocious defense of ancestral lands, refusing retreat or dishonor in the face of danger."
+  ],
+  "Fears": [
+    "Border skirmishes with Champagne or Lorraine ravaging his ancestral estates.",
+    "Garrison mutinies caused by delayed subsidies undermining critical fortress defenses."
+  ],
+  "SpeechStyle": "Speaks with brisk, ringing martial authority, his northern French phrasing blunt, commanding, and radiating the unyielding confidence of a seasoned frontier defender.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v1",
+  "Keywords": [
+    "瓦伦斯多瑙河浮桥"
+  ],
+  "RagShortTexts": [
+    "瓦伦斯以船桥渡多瑙河，进入对岸作战。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦伦斯以船桥渡多瑙河，进入对岸作战。船桥让大队人马经过，也要在行军后维持回路；水流和季节影响渡点。控制桥头与已经深入敌境是不同任务。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

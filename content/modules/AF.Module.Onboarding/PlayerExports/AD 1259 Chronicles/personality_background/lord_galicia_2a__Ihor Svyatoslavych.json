@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Ihor Svyatoslavych is the celebrated historical protagonist of the immortal East Slavic epic *The Tale of Igor's Campaign* (*Slovo o polku Ihorevim*), ruling as Prince of Novhorod-Siverskyi and Chernigov. A proud scion of the Olgovychi dynasty, Igor was renowned for his impetuous bravery, passionate love of glory, and unbending warrior spirit. In 1185, he led his chivalric host deep into the Don steppes against the Cumans, enduring horrific encirclement at the Kayala river and captivity before executing a legendary escape back to Rus'. His marriage to Euphrosynia of Galicia bound his lineage intimately with the Galician succession, paving the way for his sons to contest that sovereign throne. Bold, proud, and fiercely defiant, Igor remains an enduring symbol of heroic Rus' resistance against nomadic terrors. In 1259, as the epic verses of his crusade are sung in fortress barracks, Prince Igor's memory kindles the unquenchable flame of warrior pride throughout the southern frontier. Having endured captivity and bloody trial at the Kayala River, Prince Ihor forged his warriors' souls into steel, lionized in the immortal epic 'The Tale of Igor's Campaign'. His defiant martial exploits along the Don and Dnieper rivers inspired Slavic chivalry, proving that glorious valor in defense of Orthodox lands outshines the transient bitterness of military defeat.",
+  "SpeechStyle": "The bloody waves of the Kayala drenched our mail, but our warrior spirit endures! Death in battle is sweeter than dishonor; our steel charges only forward! Even surrounded, our battleaxes never yield to fear!",
+  "Motivations": [
+    "Lead fearless campaigns into the steppe to crush nomadic raiders, winning immortal epic renown for Rus'.",
+    "Expand the territorial dominion of Clan Olgovych, positioning his sons for the throne of Galicia."
+  ],
+  "Values": [
+    "Prize chivalric glory, fearless sacrifice, and battle-oaths as supreme virtues, despising timid compromise.",
+    "Value magnificent epic heroism, preferring a glorious death in the field over cautious mediocrity."
+  ],
+  "Fears": [
+    "Fears capture and humiliation at the hands of pagan enemies, dishonoring his illustrious ancestors.",
+    "Dreads future generations misconstruing his noble martial daring as foolish recklessness."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_galicia_2a",
+  "HeroName": "Ihor Svyatoslavych"
+}

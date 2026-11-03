@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_8_5",
+  "HeroName": "Chimeg",
+  "Description": "Chimeg is about thirty, of medium build and gentle face. She often tucks a dried wildflower behind her ear, one she brought back from the summer pastures. She sews well, and the robes and caps she wears are her own work, with a small cloud pattern embroidered at the collar. In the game she is the mistress of the eighth clan, thirty years old, who shares the running of household and pasture with her husband Jamtsyn. She is known for her kind heart and generous manner. This character has no medieval counterpart, so the background here rests on the clan setting alone. In a steppe family facing shortage and sickness, the mistress must look after the women, children and the ill, and her kindness and organising skill decide whether the clan's spirit holds. Chimeg learned from her mother the arts of sewing, tending livestock and dividing rations, so she knows how to get enough food to every household in a lean year. Against rivals she rarely appears in person. She calms hostility by visiting the families of opponents, giving gifts and caring for the sick, so that the other side lowers its guard out of gratitude. She respects Jamtsyn's judgement, and when his strictness goes too far she gently urges restraint. Her highest aim is to see every household of the eighth clan through the winter, so that none is scattered by poverty. Her shadow is the fear that her kindness will be exploited, and that food and medicine will be taken by people with other designs while those who truly need them go without.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Care for the clan's women, children and sick, making sure every household gets enough food and medicine in lean years so morale holds in hardship.",
+    "Ease hostility by visiting rivals' families and giving gifts, so opposing households lower their guard through gratitude and open conflict becomes less likely.",
+    "Work in step with her husband Jamtsyn, she running the household and people while he runs pastures and accounts, so the family holds steady through winter."
+  ],
+  "Values": [
+    "Kindness and goodwill, because she believes caring for the weak is the deepest strength of any people, and she would give up something herself rather than see the clan suffer.",
+    "Honesty and keeping faith, because she never lies to anyone and always fulfils what she promises, which won her deep respect and trust in the clan.",
+    "Respect for others' judgement, because she understands her husband's strictness, and even when they disagree she talks it through privately rather than arguing before others."
+  ],
+  "Fears": [
+    "Fears that her kindness will be exploited, so that food and medicine go to people with other designs while the women, children and sick who need them go without care.",
+    "Fears that in some hard winter many clansmen will die through a calamity she cannot foresee, so that her care and goodwill cannot prevent a tragedy."
+  ],
+  "SpeechStyle": "Chimeg speaks softly and gently, opening with a greeting and concern before the main point. She is respectful to elders, warm to kin, and courteous but measured with rivals, seldom saying anything sharp.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

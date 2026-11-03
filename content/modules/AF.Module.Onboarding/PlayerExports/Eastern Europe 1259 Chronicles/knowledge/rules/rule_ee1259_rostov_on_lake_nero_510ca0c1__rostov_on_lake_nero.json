@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_rostov_on_lake_nero_510ca0c1",
+  "Keywords": [
+    "Rostov and Lake Nero settlements",
+    "Church households and lake produce at Rostov"
+  ],
+  "RagShortTexts": [
+    "Rostov's church standing, fields and settlements around Lake Nero sustain urban life.",
+    "Fishing, preservation and carriage supply lake produce to markets and religious houses."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rostov links church authority, princes and surrounding land beside Lake Nero. Fish and grain support visitors and households. Religious standing attracts petitions and negotiation, but buildings, roads and hospitality need labor. Weather and water levels affect lakeside traffic, and collections draw on the same workers who produce supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lake Nero households divide work between fishing, cultivation and deliveries, with salt, containers and dry storage affecting preservation. Visitors to Rostov need hosts and food for returning home. Noble hospitality and increased collections can bring activity while leaving ordinary families chiefly concerned with their remaining provisions."
+    }
+  ],
+  "TextMappings": []
+}

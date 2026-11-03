@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_chelmno_urban_law_and_limits_30dbcced",
+  "Keywords": [
+    "chelmno urban law and limits",
+    "Chełmno town land and judicial privileges"
+  ],
+  "RagShortTexts": [
+    "Chełmno law frames town landholding and judicial arrangements.",
+    "Urban privileges coexist with obligations to rulers and the Order."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A town under Chełmno law uses granted rights for land, revenue and justice. Beneficiaries need the limits and attached obligations. Civic participation coexists with negotiation with lord or Order, and a charter still requires implementation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Town guards need defined watch and gate duties. Possessing weapons grants no free judicial authority; officers must identify the authority behind enforcement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Privileges attract settlers and trade while conceding local responsibilities. Arbitrarily changing dues damages confidence in the grant and weakens future revenue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Residents need recognized holdings and ways to resolve debt, alongside agreed duties. Disputes require witnesses and applicable terms, not simply a claim to urban freedom."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

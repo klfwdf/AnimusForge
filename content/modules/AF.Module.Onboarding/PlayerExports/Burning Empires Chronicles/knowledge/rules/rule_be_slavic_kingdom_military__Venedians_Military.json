@@ -1,0 +1,59 @@
+{
+  "Id": "be_slavic_kingdom_military",
+  "Keywords": [
+    "Venedians Military",
+    "Venedian boat guards messages and grain stores"
+  ],
+  "RagShortTexts": [
+    "Venedian river defence needs warnings, boat guards and messengers.",
+    "Mobilization removes farm labor and consumes grain reserves."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Woods and banks offer warning positions while assembly removes farm labor. Sclavenian war makes boats, messages and grain as important as continued fighting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Venedian river defence needs warnings, boat guards and messengers. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Mobilization removes farm labor and consumes grain reserves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Mobilization removes farm labor and consumes grain reserves. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Venedian river defence needs warnings, boat guards and messengers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Venedian river defence needs warnings, boat guards and messengers. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Mobilization removes farm labor and consumes grain reserves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Mobilization removes farm labor and consumes grain reserves. Repair, carrying and care also use people, while daily supply continues after troops pass. Venedian river defence needs warnings, boat guards and messengers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

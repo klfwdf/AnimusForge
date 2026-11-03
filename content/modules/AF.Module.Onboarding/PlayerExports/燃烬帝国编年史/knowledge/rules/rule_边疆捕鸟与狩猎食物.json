@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v10",
+  "Keywords": [
+    "边疆捕鸟与狩猎食物"
+  ],
+  "RagShortTexts": [
+    "捕鸟与猎获补充家户食物，活畜和储备提供不同保障。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿拉伯边疆家户可从捕鸟、狩猎、乳食与采集取得食物。猎获并不稳定，活畜和储备提供不同保障；一户可用的食物，也未必足以供应长途行军的队伍。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

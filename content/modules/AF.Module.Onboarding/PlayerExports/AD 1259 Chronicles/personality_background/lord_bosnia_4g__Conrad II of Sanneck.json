@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_4g",
+  "HeroName": "Conrad II of Sanneck",
+  "Description": "Conrad II of Sanneck, aged eighteen in 1259, is an ambitious and capable junior lord of the House of Sanneck, bearing his elder kin's celebrated name with fierce dynastic pride. Balancing martial prowess in heavy horse combat with an aptitude for administrative management, Conrad II frequently oversees the collection of milling tithes, timber tolls, and iron smithy rents across the family estates. He understands keenly that well-maintained cavalry requires disciplined revenue streams and prosperous tenantry. In 1259, as warfare ravages neighboring Austrian and Styrian lands, Conrad drills relentlessly with sword and lance while ensuring that the economic gears of Žovnek continue to turn smoothly. Pragmatic, steadfast, and eager to win his knighthood's true glory, he represents the rising vigor of the future Counts of Celje. Conrad II blends sharp administrative talent with martial knightly vigor, proving as adept with estate ledgers as he is with heavy tournament lances. Understanding that well-armed cavalry requires abundant grain stores and smithy revenues, he oversees regional mills and forge tithes with strict diligence. Facing regional geopolitical upheavals, this capable young lord vows to support his elders with unwavering loyalty, sustaining the long-term prosperity of his house. Balancing knightly discipline with prudent estate management, Conrad II ensures that his family's military power rests upon prosperous tenantry and solid revenues.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with earnest modesty and practical lucidity, balancing knightly resolve with an organized grasp of estate management.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

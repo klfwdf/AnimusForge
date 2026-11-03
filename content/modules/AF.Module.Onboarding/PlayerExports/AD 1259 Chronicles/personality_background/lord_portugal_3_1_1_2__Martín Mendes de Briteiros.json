@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_1_2",
+  "HeroName": "Martín Mendes de Briteiros",
+  "Description": "Martín Mendes de Briteiros is the eldest son and primary heir to Dom Mem Rodrigues, Lord of Maia, displaying remarkable chivalric promise and stoic discipline at just ten years of age. Raised within the stone curtain walls of the ancestral Briteiros fortress near Guimarães, he is diligently schooled by veteran squires in horsemanship, lance charges, and broadsword fencing. Acutely conscious of his destiny as heir to both the ancient blood of Maia and the vast estates of Briteiros, Martín approaches his education with solemn dedication. He reveres his father's battlefield exploits in the Algarve and yearns for the day he can formally receive his spurs at the royal court, serving King Afonso III and Crown Prince Dinis. Calm, observant, and naturally authoritative among his peers, the young lord already shadows estate bailiffs on inspection rounds, absorbing the vital statecraft and martial virtues necessary to lead one of Portugal's greatest baronies. Steeped in the martial heritage of his lineage and guided by rigorous chivalric education, young Martín represents the future strength of northern Portugal, widely anticipated by allied lords to lead the armies of Maia with distinction and honor.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To master his chivalric training and earn his knighthood on the battlefields of Portugal.",
+    "To inherit and uphold the grand territorial legacy of Maia and Briteiros."
+  ],
+  "Values": [
+    "True chivalric courage lies in strict self-discipline and unhesitating fulfillment of duty.",
+    "Loyalty to clan and sovereign is the immutable bedrock of honorable life."
+  ],
+  "Fears": [
+    "Failing to live up to the towering expectations of his illustrious lineage.",
+    "Being seen as weak or unready during moments of sudden crisis."
+  ],
+  "SpeechStyle": "Speaks with youthful crispness, respectful courtesy, and an earnest martial intensity that portends natural leadership. He speaks with calm aristocratic assurance, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

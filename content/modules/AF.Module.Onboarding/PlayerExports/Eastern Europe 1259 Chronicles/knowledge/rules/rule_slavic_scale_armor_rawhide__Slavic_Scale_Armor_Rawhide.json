@@ -1,0 +1,53 @@
+{
+  "Id": "rule_slavic_scale_armor_rawhide",
+  "Keywords": [
+    "Scale armor and its fastenings",
+    "Repairing scale armor ties",
+    "Fitting and drying scale armor"
+  ],
+  "RagShortTexts": [
+    "Scales depend on backing and fastenings; broken ties, lost plates and damp require care.",
+    "Armor sources differ among Rus and steppe elites; materials and burdens vary by garment."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Armor made from plates occurs where Rus meets the steppe. Overlapping scales attached to a backing and plates joined to one another need different repairs. Fastenings hold protection in place; missing pieces expose gaps. Bending, riding and shield use require room, while damp backing and damaged ties can disable a garment even when its metal remains intact."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A wearer checks freedom at shoulders, armpits and waist and replaces broken ties before another journey. Riding and repeated bending strain attachments; one lost plate may loosen others. Drying the backing and identifying missing pieces at camp matter more to continued fit than polishing the outer surface alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord needs repairers who understand a garment's arrangement and attachments, not merely its weight. Imported armor may need different spare plates and ties, and reassignment requires fitting. Repair stock, craftsmen and carriage belong in the supply budget alongside pay and food, or costly damaged armor becomes dead baggage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Backing, ties, holes and stitching require sound materials and handwork. A family repairing a relative's armor may also need boots, harness and cart straps from the same good leather. Urgent military demands displace household repairs. Identifying damaged sections on return saves craftsmen from dismantling an entire garment unnecessarily."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

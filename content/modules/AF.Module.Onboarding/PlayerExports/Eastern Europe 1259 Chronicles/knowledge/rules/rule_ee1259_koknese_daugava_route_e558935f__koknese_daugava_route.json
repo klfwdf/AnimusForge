@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_koknese_daugava_route_e558935f",
+  "Keywords": [
+    "Koknese and Daugava rights",
+    "Cargo landings at Koknese"
+  ],
+  "RagShortTexts": [
+    "Koknese links Daugava transport and church lands through passage and collection rights.",
+    "Landings and fort supplies need local cooperation beyond control of a single riverbank."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Koknese connects the Daugava interior and downstream routes where episcopal land, residents and merchants meet. Guards need news of boats, and owners need berths, recipients and onward passage. Banks assist observation but complicate carriage. Conflicting claims first burden waiting crews and goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Koknese households adjust usable landings to water levels. Guiding visitors or storing goods requires agreed payment and responsibility, since locals handle trouble after merchants depart. Repeated business with trusted customers sustains livelihoods better than a single broken promise."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

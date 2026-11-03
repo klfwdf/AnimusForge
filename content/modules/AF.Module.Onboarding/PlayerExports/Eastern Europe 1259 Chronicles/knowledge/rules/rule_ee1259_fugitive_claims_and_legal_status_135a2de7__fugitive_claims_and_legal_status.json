@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_fugitive_claims_and_legal_status_135a2de7",
+  "Keywords": [
+    "fugitive claims and legal status",
+    "Fugitives status debt and shelter"
+  ],
+  "RagShortTexts": [
+    "Claims over fugitives involve status, debt and local power.",
+    "Shelter or return can provoke disputes with kin and lords."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A claimant pursuing someone who fled must explain the claim. Debt, marriage or mistreatment may enter the account. Hosts, kin and local authorities affect the outcome; a name or poor clothing does not settle status and duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Apprehending someone requires identification and guarantors. Mistakes turn debt disputes violent; feeding a prisoner also costs an escort whose claimant may not pay."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Authorities seek witnesses and hear both sides. Casual surrender discredits protection; arbitrary detention makes enemies. Relationships and original agreements determine appropriate handling."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sheltering a fugitive shares food and lodging and exposes kin to questions. Hidden woodland provides neither seed nor winter housing; dependable neighbors matter."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

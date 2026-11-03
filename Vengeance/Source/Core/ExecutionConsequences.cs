@@ -31,7 +31,7 @@ public sealed class ExecutionEffectContext
 
     public void ChangeTownOrder(float securityDelta, float loyaltyDelta)
     {
-        var town = Request.Venue.Town;
+        var town = Request.Venue?.Town;
         if (town is null)
         {
             return;
@@ -75,6 +75,11 @@ public sealed class ExecutionEffectContext
     public void ChangeLocalRelations(int relationDelta)
     {
         if (relationDelta == 0)
+        {
+            return;
+        }
+
+        if (Request.Venue is null)
         {
             return;
         }
@@ -139,6 +144,15 @@ public sealed class DefaultExecutionConsequenceRule : IExecutionConsequenceRule
             request.Tone,
             request.Method.StringId,
             influenceCost: 0);
+
+        // A field camp has no town, square or local notables: only the player's
+        // own traits change here. Kin and realm relations still follow the
+        // vanilla execution action applied before these rules run.
+        if (request.IsFieldCamp)
+        {
+            TryApply("traits", () => context.ChangePlayerTraits(deltas.HonorXp, deltas.MercyXp));
+            return;
+        }
 
         TryApply("town order", () => context.ChangeTownOrder(deltas.Security, deltas.Loyalty));
         TryApply("influence", () => context.ChangePlayerInfluence(deltas.Influence));

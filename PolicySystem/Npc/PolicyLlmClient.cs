@@ -1214,7 +1214,7 @@ internal static class PolicyLlmClient
 		{
 			builder.Append(PolicyNpcCompatibilityTexts.Get("Npc_Legacy_1912732b845461e8"));
 		}
-		builder.Append("（HTTP ").Append(((int)statusCode).ToString(CultureInfo.InvariantCulture)).Append(" ").Append(statusCode).Append("）");
+		builder.Append(PolicyCompatibilityTexts.OpenParen).Append("HTTP ").Append(((int)statusCode).ToString(CultureInfo.InvariantCulture)).Append(" ").Append(statusCode).Append(PolicyCompatibilityTexts.CloseParen);
 		if (retryAfterSeconds.HasValue)
 		{
 			builder.Append(PolicyNpcCompatibilityTexts.Get("Npc_Legacy_420f8c866c0d4ef9")).Append(retryAfterSeconds.Value.ToString(CultureInfo.InvariantCulture)).Append(PolicyNpcCompatibilityTexts.Get("Npc_Legacy_fefdd07ad49cc562"));
@@ -1226,7 +1226,7 @@ internal static class PolicyLlmClient
 		string body = (responseBody ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(body))
 		{
-			builder.Append("：").Append(TrimForLog(body, 1200));
+			builder.Append(PolicyCompatibilityTexts.Colon).Append(TrimForLog(body, 1200));
 		}
 		return builder.ToString();
 	}

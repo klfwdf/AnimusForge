@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_6_4",
+  "HeroName": "Alamanno Adimari",
+  "Description": "Alamanno Adimari is a formidable shock knight of House Adimari, renowned for thunderous heavy lance charges and ambushes in mountain ravines. Relentlessly defending family honor on the field, his volatile martial temperament brooks no insult, swift to draw steel against any rival who slanders the Adimari name. Leading shock cavalry through treacherous Apennine passes, Alamanno repeatedly spearheaded thundering charges against superior mercenary contingents, establishing an undisputed reputation for martial fury. He drilled his men-at-arms in grueling close-combat swordplay, sharing harsh bivouacs while enforcing ruthless discipline that forged his household knights into an unyielding vanguard. Scorning diplomatic subterfuge, this fierce knight insisted that honor and justice were decided by sharpened steel, determined to avenge ancestral slights upon the open battlefield. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Slay hostile Ghibelline knights in open battle to avenge past factional defeats.",
+    "Carve out absolute martial respect for the Adimari banner through naked cavalry force."
+  ],
+  "Values": [
+    "Justice for a noble knight is won exclusively by sword and lance in the field.",
+    "Yielding an inch before an enemy is an unforgivable stain upon ancestral heraldry."
+  ],
+  "Fears": [
+    "Being starved out in a siege and forced into an ignoble surrender.",
+    "Growing old and infirm, unable to hoist a heavy lance in the shock of battle."
+  ],
+  "SpeechStyle": "Roars with martial bluntness and explosive fury, unyielding and fierce on every front. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_5c",
+  "HeroName": "Elisabeth Pedersdatter Ulfeldt",
+  "Description": "Lady Elisabeth Pedersdatter Ulfeldt of Kalundborg, noble daughter of Sir Peder Strangesen and Lady Ingeborg, stood as an illustrious heiress uniting the martial prestige of the Ulfeldt line with the historical glory of the Hvide dynasty. Educated in courtly diplomacy, Latin chronicles, and domestic stewardship within the fortified halls of Kalundborg, Elisabeth actively assisted her mother in auditing the extensive accounts of monastic benefactions and textile workshops. During periods of naval tension and civil discord, she displayed remarkable poise, coordinating emergency supplies and refuge for tenant families behind the citadel's walls. Highly courted among Scandinavian princely houses, she represented a vital linchpin of aristocratic loyalty to the crown. Elisabeth demonstrated exceptional talent in agricultural accountancy, systematically reorganizing ledgers across a dozen estates in western Zealand and doubling grain reserves in Kalundborg's cellars within a few seasons. Imbued with patristic theology and courtly literature, she funded intricate stained-glass windows and altar plate for the Church of Our Lady. Surrounded by suitors from prominent Scandinavian dynasties, Elisabeth evaluated diplomatic proposals with cool discernment, prioritizing the military integrity of Kalundborg and royal alliance above personal vanity, widely admired as an exemplar of aristocratic virtue.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Assist her parents in managing estate records and monastic charities, preserving the economic integrity of Kalundborg.",
+    "Maintain impeccable courtly decorum and prepare for an alliance that reinforces her family's strategic position."
+  ],
+  "Values": [
+    "Believes that ancestral filial piety and unblemished moral rectitude far surpass transient courtly flattery.",
+    "Upholds serene self-restraint and dutiful dedication, safeguarding her family's unblemished honor in all spheres."
+  ],
+  "Fears": [
+    "Dreads violent maritime wars breaching Kalundborg's defenses and scattering her beloved family into ruin."
+  ],
+  "SpeechStyle": "Speaks with soft-spoken courtly grace and impeccable modesty, her composed answers reflecting careful intellect.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,52 @@
+{
+  "Id": "rule_silver_grivna_chopping_change",
+  "Keywords": [
+    "weighing Novgorod silver bars",
+    "Kyiv ingots in exchange"
+  ],
+  "RagShortTexts": [
+    "Novgorod bars and Kyiv ingots differ in form; weighed silver needs weight and quality checks.",
+    "Account units differ from pieces of silver, so delivery and division need agreement."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Larger Rus exchanges can use weighed silver, with bar-shaped ingots familiar in Novgorod and different forms in Kyiv. Recognising a shape does not remove the need to weigh and judge the metal. Uses of the grivna differ by place, and a recorded account amount need not correspond to one identical piece in hand.\n\nPayment may involve a whole ingot, other silver or acceptable goods, while dividing metal raises weighing and loss issues. Entrusted payments need a named recipient, an accepted standard and acknowledgment. Small traders may lack silver or suitable scales, leaving grain, furs and credit in exchange. Possessing silver does not mean every needed item is available immediately."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Rent and compensation stewards distinguish accounts from metal received and check unfamiliar ingots. Ambiguous receipts carry disputes into later payments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Traveling with silver needs trusted company, a clear recipient and reliable scales. Stolen plate remains disputed property and attracts discounted offers and claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Small debts can lack an accepted means of payment rather than merely a number. Grain or fur settlement needs prior agreement to avoid a later demand."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v10",
+  "Keywords": [
+    "跨语言商人宗教联系"
+  ],
+  "RagShortTexts": [
+    "粟特社群用书信联结远处亲属与商人，也提供跨语言接触的条件。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "粟特社群用书信联结远处亲属与商人，也提供跨语言接触的条件。宗教文本可沿同类人际网络流通，却不能只因某地有商人便认定全城接受摩尼教。翻译、接待与听众选择各是一步。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

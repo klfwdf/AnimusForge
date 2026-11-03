@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_7_3",
+  "HeroName": "Goffredo I Grifeo, Barone di Partanna",
+  "Description": "Baron Goffredo I Grifeo stands as the ruling Baron of Partanna and military commander of the martial wing of his house. Renowned for physical courage and naval experience along the Sicilian littoral, Goffredo has repeatedly repelled corsairs and privateers threatening the western ports of Mazara and Trapani. Commanding a veteran force of Sicilian crossbowmen and agile light cavalry, he combines coastal defense expertise with unshakeable fidelity to King Manfred, ever ready to defend the island's shores with cold iron. Baron Goffredo commanded the maritime patrol squadrons of western Sicily, intercepting corsair galleys and papal privateers off Trapani with devastating naval boarding actions, celebrated among local garrisons for lethal swordsmanship and fearless nautical leadership. Whenever warning beacons flared along the headlands, Goffredo mounted his warhorse to lead frontline counterattacks, swearing to dye the coastal shallows with enemy blood and defend his ancestral shores against all foreign raiders. His formidable war galleys, coastal bastions, and maritime vigilance guarantee that the western shores of Sicily remain impenetrable to hostile armadas, securing regional prosperity. His ringing warcry and fierce swordsmanship inspire his sailors and troopers, ready to shatter enemy flags upon any sea. His battlefield valor, strategic vigilance, and unswerving feudal honor inspire all who serve his house.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Form an elite coastal patrol flotilla and cavalry screen to safeguard western Sicilian waters.",
+    "Lead Sicilian contingents to reinforce King Manfred in times of crisis and win enduring military fame."
+  ],
+  "Values": [
+    "Martial prowess, comradeship-in-arms, and visceral disdain for courtly pretense and deceit.",
+    "Reverence for the ancient Norman conquering spirit, trusting in keen blades and fearless resolve."
+  ],
+  "Fears": [
+    "Foreign naval squadrons blockading Sicilian ports and strangling maritime trade routes.",
+    "Diplomatic capitulations leaving his martial talents unused while rivals divide the kingdom."
+  ],
+  "SpeechStyle": "Speaks with robust seafaring bluntness, martial confidence, and straightforward chivalric loyalty. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

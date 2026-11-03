@@ -1,0 +1,59 @@
+{
+  "Id": "be_wre_kingdom_economy",
+  "Keywords": [
+    "Western Roman Empire Trade",
+    "African shipping and Gallic estates"
+  ],
+  "RagShortTexts": [
+    "Italian and African shipping, Gallic estates and workshops support western Rome.",
+    "Collected goods still need stores and transport to reach armies."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Italian and African shipping, Gallic estates and urban workshops support government and war. Collected goods still need stores, vessels, animals and roads; delays strain rations and prices."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Italian and African shipping, Gallic estates and workshops support western Rome. Traveling followers need real food from this production; valuables still require a buyer and exchange. Collected goods still need stores and transport to reach armies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Collected goods still need stores and transport to reach armies. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Italian and African shipping, Gallic estates and workshops support western Rome."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Italian and African shipping, Gallic estates and workshops support western Rome. Households need meals and the means to keep producing after delivering goods. Collected goods still need stores and transport to reach armies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Collected goods still need stores and transport to reach armies. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Italian and African shipping, Gallic estates and workshops support western Rome."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

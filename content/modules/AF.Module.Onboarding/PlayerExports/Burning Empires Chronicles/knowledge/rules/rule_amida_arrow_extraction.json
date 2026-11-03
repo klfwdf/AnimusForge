@@ -1,0 +1,38 @@
+{
+  "Id": "be_battle_amida_siege_record_v2",
+  "Keywords": [
+    "Amida arrow extraction"
+  ],
+  "RagShortTexts": [
+    "At Amida in 359, defenders rotated and wounded men needed removal and care."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At Amida in 359, defenders took turns resisting arrows and stones. Fallen wounded men obstructed nearby comrades. Those able to move sought people skilled at extracting arrowheads, and casualties still needed care after leaving their posts. Clearing passage, replacing defenders and tending wounds competed for limited manpower."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A wounded defender had to leave a position where he could bring down comrades and reach someone able to extract the missile. Relief and help off the wall mattered as well as the practitioner’s skill."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander cannot infer that casualties are cared for merely because a wall remains manned. Rotation requires replacements and access to skilled missile extraction; more orders do not create medical capacity."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

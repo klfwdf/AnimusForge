@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Provisions_of_Oxford_and_Barons_War",
+  "Keywords": [
+    "Oxford reform and councils"
+  ],
+  "RagShortTexts": [
+    "The 1258 Oxford reforms sought limits on appointments and finance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The 1258 Oxford reforms sought limits on appointments and finance, with implementation contested in 1259. King, barons and officials operated amid competing authority. A reform text differed from practice; neither compromise nor conflict was a known final outcome."
+    }
+  ],
+  "TextMappings": []
+}

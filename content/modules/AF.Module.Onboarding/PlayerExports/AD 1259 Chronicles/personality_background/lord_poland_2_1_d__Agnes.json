@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_2_1_d",
+  "HeroName": "Agnes",
+  "Description": "Agnes of Legnica is a serene and introspective princess of the Silesian Piast house, daughter of Duke Bolesław II Rogatka and Hedwig of Anhalt. Amidst the clamor of warhorses, drunken German mercenary squires, and turbulent baronial councils at Legnica Castle, Agnes found refuge within the quiet scriptorium of the castle chapel, mastering illuminated manuscript painting and Latin choral music. Gentle and reserved by nature, she possessed an instinctive revulsion toward the cynical court intrigues around her, yet maintained profound devotion to the welfare of her siblings. During seasons of siege preparation and fiscal strain, Agnes quietly audited household provisions, methodically rationing barrels of salted beef, grain wheels, and tallow candles to ensure castle servitors were sustained. Her prospective marriage to Count Frederick of Truhendingen subsequently wove the prestige of the Silesian Piasts into the elite aristocratic tapestries of Franconia in the Holy Roman Empire. Agnes shines as a pure, unwavering candle flame amidst the storms of medieval feudal warfare, dedicating her life to quiet dignity and spiritual devotion. Agnes ground vibrant mineral pigments to illuminate Latin liturgical manuscripts while supervising the distribution of smoked meats and barley from castle cellars. Her serene modesty won the profound respect of visiting imperial dignitaries, maintaining holy order within the domestic sphere.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Preserve a tranquil sanctuary of prayer within the turbulent castle, illuminating sacred manuscripts for the chapel.",
+    "Aid her mother in rationing provisions with scrupulous economy to ensure resilience during prolonged sieges.",
+    "Represent the Silesian Piast lineage with grace and dignity in imperial German dynastic alliances."
+  ],
+  "Values": [
+    "Prize quiet contemplation and inward purity over volatile worldly ambition and fleeting temporal glory.",
+    "Embrace ascetic simplicity, shunning lavish courtly extravagances that drain the treasury.",
+    "Value steadfast duty and quiet dedication, supporting her family without seeking public praise."
+  ],
+  "Fears": [
+    "Legnica Castle being sacked and burned by besiegers, destroying irreplaceable sacred texts and illuminated scrolls.",
+    "Being bartered away to a cruel foreign tyrant who despises her quiet piety and treats her as a hostage."
+  ],
+  "SpeechStyle": "Worldly clamor inevitably fades to silence; only holy psalms on parchment and inner peace endure. May God grant us patience to endure. Holy prayer and inner silence offer eternal solace against worldly chaos.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

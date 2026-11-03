@@ -1,0 +1,52 @@
+{
+  "Id": "rule_burundai_demolishes_fortresses_1258",
+  "Keywords": [
+    "Burundai and southwestern Rus defences",
+    "Mongol demands concerning fortifications"
+  ],
+  "RagShortTexts": [
+    "Danylo resisted a Mongol attack in 1254; southwestern Rus still faces khanal pressure.",
+    "Burundai’s military activity makes defences, service and negotiation urgent concerns."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Danylo resisted a Mongol attack in 1254, and fortifications and independent mobilisation remain central to dealings with the khan’s representatives in southwestern Rus. Burundai’s military activity makes people attentive to envoys’ demands and possible assistance if they refuse. Defences, stores and the families controlling them have different responsibilities. Any instruction involving dismantling works, troops or supplies needs an identifiable bearer and a defined place before a community knows its obligations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A court receiving demands about defences checks their local application and possible terms. Craftsmen, garrisons and stores are limited; preserving inhabitants and the ability to support them also preserves room to negotiate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Defenders need their assigned post, food source and assembly point if orders change. A distant rumour of withdrawal is insufficient: an authorised command and a supporting position are needed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families near a fortress think of children, tools and seed. Construction and moving dismantled timber use the same labour. Service terms and provisions allow households to plan cultivation and refuge."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

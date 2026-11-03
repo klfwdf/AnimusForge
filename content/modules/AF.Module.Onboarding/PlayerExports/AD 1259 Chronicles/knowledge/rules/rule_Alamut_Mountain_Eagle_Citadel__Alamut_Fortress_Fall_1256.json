@@ -1,0 +1,40 @@
+{
+  "Id": "rule_Alamut_Mountain_Eagle_Citadel",
+  "Keywords": [
+    "Alamut Fortress Fall 1256",
+    "Old Man of Mountain Eyrie",
+    "Nizari Ismaili Library",
+    "Alborz Mountain Redoubt"
+  ],
+  "RagShortTexts": [
+    "After Alamut’s fall, scattered readers needed surviving copies and patronage."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alamut in the Alborz mountains was an important stronghold of the Nizari Ismaili network. Its difficult approach, stores and water arrangements made terrain a major part of defence, but did not remove dependence on wider political decisions. During Hulagu's campaign of 1256 the Nizari leadership submitted and Alamut was surrendered and dismantled. Juvayni's account describes examining its collection and selecting books and instruments to preserve while condemning other works. The loss was serious, yet later stories of an entirely destroyed library or spectacular siege machinery need evidence of their own, rather than being repeated as certain details of the surrender."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Alamut's fall warns a ruler against assuming that difficult ground can substitute for diplomacy, supplies and a defensible political position. Nizari dealings with neighbouring powers differed over time; stories of tribute and daggers are not evidence that every prince paid the same protection money. A prudent lord asks how a particular stronghold and alliance actually failed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "After Alamut surrendered in 1256, books from its library were selected, dispersed or destroyed. News caused concern among scholars for scriptures and learning. Displaced readers needed surviving copies, scribes and patrons; reports of a damaged library did not reveal the fate of every volume."
+    }
+  ],
+  "TextMappings": []
+}

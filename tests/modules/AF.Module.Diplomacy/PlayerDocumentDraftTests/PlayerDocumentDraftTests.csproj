@@ -8,7 +8,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs" Link="PrimaryChatMessagePolicy.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs" Link="LlmSourceTexts.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Application/LlmPromptTexts.cs" Link="LlmPromptTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptLanguageAudit.cs" Link="PromptLanguageAudit.cs" />
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" />

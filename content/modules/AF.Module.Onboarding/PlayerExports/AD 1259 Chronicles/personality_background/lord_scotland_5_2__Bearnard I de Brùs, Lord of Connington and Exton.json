@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_5_2",
+  "HeroName": "Bearnard I de Brùs, Lord of Connington and Exton",
+  "Description": "Bernard I de Brus is the formidable younger brother of Robert V 'The Competitor', ruling as Lord of Connington in Huntingdonshire and Exton in Rutland. Thirty-four years of age, tall, athletic, and steel-nerved, his incisive gaze combines battlefield toughness with astute diplomatic dexterity. As lord of the Bruce cadet branch inheriting the fertile English honors of the Earls of Huntingdon, Bernard wields formidable influence in both Westminster courts and Scottish border councils. His strategic marriage to Alicia de Beauchamp, daughter of the baronial house of Bedford, anchored Bruce interests deep within the powerful Midlands baronial confederacy. English Close Rolls and Patent Rolls document his shrewd statesmanship amidst simmering baronial unrest under Henry III, preserving his cross-border franchises intact through disciplined governance. Fiercely devoted to his brother Robert, Bernard serves as the dynasty's vital southern listening post and military anchor across England. English Curia Regis rolls and Scottish royal embassy registers praise Sir Richard as an impeccably fair justiciar and indefatigable military administrator; managing vast estates along the Eden and Solway Firth, he serves as the trusted diplomatic right hand, battlefield deputy, and indispensable pillar to his elder brother Robert across both realms, safeguarding clan interests with shrewd statecraft and unswerving feudal rectitude.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate manorial revenues and troop levies across Connington and Exton to provide vital southern reserves for Clan Bruce.",
+    "Act as his brother's confidential diplomatic envoy in England to protect their vast trans-border titles from confiscation."
+  ],
+  "Values": [
+    "Values fraternal loyalty, legal precision, and chivalric honor as the unbreakable pillars of his life.",
+    "Believes pragmatic foresight and disciplined patience alone preserve great estates during civil turmoil."
+  ],
+  "Fears": [
+    "Fears the escalation of the Barons' War in England forcing catastrophic confiscation of his Midland manors.",
+    "Dreads factional defeat of the Annandale elder line isolating and weakening the entire Bruce dynasty."
+  ],
+  "SpeechStyle": "Speaks with curt, measured authority and sharp legal intellect, pragmatic, calm, and compelling.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

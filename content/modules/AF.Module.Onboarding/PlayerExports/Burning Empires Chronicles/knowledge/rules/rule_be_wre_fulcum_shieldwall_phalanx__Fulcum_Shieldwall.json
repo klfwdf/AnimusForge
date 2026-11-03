@@ -1,0 +1,38 @@
+{
+  "Id": "be_wre_fulcum_shieldwall_phalanx",
+  "Keywords": [
+    "Close infantry shields and reinforcement"
+  ],
+  "RagShortTexts": [
+    "At Strasbourg in 357 Roman infantry resisted with close shields and needed reinforcement."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At Strasbourg in 357, Roman infantry resisted attacks with closely packed shields, and troops under pressure received support from the Batavi and others. Shields protected the front, but casualties, ground and flanking attacks still affected cohesion. Maintaining ranks required continuing cooperation between neighbors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A shield bearer watched the shield edge and companions rather than crowding toward a single opponent. Nearby men had to close gaps when someone fell or withdrew. Raising a shield against missiles also restricted sight and movement; turning and pursuit required clear commands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Deploying close infantry required attention to depth, flanks and available reinforcements. Crowding everyone into one place impeded orders and support, while premature pursuit dismantled protection. Reinforcement at Strasbourg shows that holding ranks also depended on other troops remaining able to assist."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

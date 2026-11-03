@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_memel_foundation_and_contested_reach_e80c7e03",
+  "Keywords": [
+    "memel foundation and contested reach",
+    "Memel coastal garrison founded in 1252"
+  ],
+  "RagShortTexts": [
+    "Memel was founded in 1252.",
+    "Its coastal garrison needs shipping, local food and materials."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Memel, founded in 1252, links coastal and inland approaches. The garrison needs continuing food, timber and labor. Weather affects maritime aid and local relations sustain roads, making foundation the beginning rather than the completion of control."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Memel guards both sea and land. Arrivals need unloading and protection; concentrating inland exposes the landing, while ship guards cannot watch every road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Memel’s costs extend across sailing seasons. Delayed ships increase local dependence; exhausting neighbors fills stores once while damaging future supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Coastal residents sell and work but face carriage demands. Delayed arrivals can leave workers financing their own waiting, making reliable payment essential."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_7_1",
+  "HeroName": "Niccolo Doria",
+  "Description": "Niccolo Doria commands frontline battle squadrons as an eminent naval strategist of the legendary House of Doria, patrolling the contested waters of Sardinia and the Levant. Master of massed crossbow barrages and synchronized ramming maneuvers, his cold tactical poise has broken Pisan and Venetian battle lines time and again. Niccolo deployed battle fleets across Corsican and Sardinian waters, devastating Pisan battle lines through disciplined double-tiered formations, massed incendiary bolts, and synchronized ramming charges. Spearheading hull reforms within the Arsenale, he introduced reinforced keels and streamlined oar banks that granted Genoese galleys unmatched speed and turning agility against Mediterranean rivals. The admiral maintained that the sea was the supreme tribunal of statecraft, convinced that only permanent naval vigilance and tactical drill could anchor republican primacy. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annihilate Pisan maritime naval power across the Tyrrhenian Sea once and for all.",
+    "Carve out undisputed, exclusive trade dominance for Genoa across the eastern seas."
+  ],
+  "Values": [
+    "Naval victory hinges on iron squadron cohesion and drill rather than erratic heroics.",
+    "The Red Cross of Saint George belongs exclusively to unconquered victors."
+  ],
+  "Fears": [
+    "Frontline fleets suffering tactical fragmentation within an enemy ambush.",
+    "Domestic political paralysis starving state arsenals of vital timber and iron."
+  ],
+  "SpeechStyle": "Speaks with austere, commanding authority, forged amidst crashing gunwales and ocean storms. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

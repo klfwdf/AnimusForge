@@ -1,0 +1,52 @@
+{
+  "Id": "rule_samogitian_scythe_feud_boundary",
+  "Keywords": [
+    "Samogitian meadow boundary disputes",
+    "mowing rights and kin claims"
+  ],
+  "RagShortTexts": [
+    "Meadow, woodland-edge and grazing disputes affect winter fodder, stock and kin.",
+    "Markers, past use and witnesses shape mediation; tool fights are not a universal trial."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Samogitian farming and herding homes need suitable weather to cut and dry winter hay. Meadow boundaries and routes for livestock affect several households’ stores. Trees, channels and neighbours’ memories support claims, while floods, felling and new clearings obscure old understandings.\n\nCutting disputed grass or driving stock into uncut ground can widen compensation claims into kin quarrels. A scythe is a working tool that can injure in anger, but violence does not automatically transfer land. Leaders, elders and shared witnesses can mediate, distinguishing damaged hay, access and lasting possession so the next mowing avoids another clash."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Leaders need past use and witnesses as well as practical livestock access. Silencing a quarrel without clarifying passage leaves the next hay season exposed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Traveling parties cannot treat standing hay as ownerless fodder. Hoof damage brings claims; asking where to graze helps avoid kin disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A small hay loss can cost a poor family its winter ox. Biased witnesses risk future stock loans, mowing cooperation and marriage ties."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_braniewo_church_and_port_2f4493f1",
+  "Keywords": [
+    "Braniewo's church and Pasleka traffic",
+    "Supplies along the Warmian riverbank"
+  ],
+  "RagShortTexts": [
+    "Braniewo links Warmian church affairs and Pasleka routes, sharing supplies with its guards.",
+    "Landings, carriage and hospitality require local labor alongside church rights and trade."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Church business and Pasleka transport bring visitors, supplies and competing claims to Braniewo. Rural food and river cargo need reception and storage shared with guards and religious households. Residents need clear recipients and dispute handlers. Church authority depends on practical hospitality and protection as well as written standing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Braniewo carriers and food sellers may receive different terms from church visitors and military officers. Families reserve food before accepting work; uncollected goods occupy shelter and equipment. Local introductions help resolve disputes, while a stranger's promise rarely supports indefinite supplies on credit."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

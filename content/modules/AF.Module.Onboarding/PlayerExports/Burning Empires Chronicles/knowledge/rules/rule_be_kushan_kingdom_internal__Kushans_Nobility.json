@@ -1,0 +1,59 @@
+{
+  "Id": "be_kushan_kingdom_internal",
+  "Keywords": [
+    "Kushans Nobility",
+    "Kushan estates trade and religious patronage"
+  ],
+  "RagShortTexts": [
+    "Kipunada balances landholders, traders and religious communities.",
+    "Protection and levies affect the choice of local patron."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kipunada balances landholders, traders and religious communities. Patronage draws support, while levies can drive groups to another protector."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kipunada balances landholders, traders and religious communities. Followers retain family ties; decisions about guards and distant service affect common participation. Protection and levies affect the choice of local patron."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Protection and levies affect the choice of local patron. Coordination allocates actual supply and protection duties, not merely titles. Kipunada balances landholders, traders and religious communities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kipunada balances landholders, traders and religious communities. Households compare burdens with neighbors; unmatched protection weakens cooperation. Protection and levies affect the choice of local patron."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Protection and levies affect the choice of local patron. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Kipunada balances landholders, traders and religious communities."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

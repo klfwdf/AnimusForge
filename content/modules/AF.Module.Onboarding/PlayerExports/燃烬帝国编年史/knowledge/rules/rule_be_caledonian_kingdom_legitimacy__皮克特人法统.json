@@ -1,0 +1,59 @@
+{
+  "Id": "be_caledonian_kingdom_legitimacy",
+  "Keywords": [
+    "皮克特人法统",
+    "加特奈特的保护馈赠"
+  ],
+  "RagShortTexts": [
+    "Gartnait依靠首领承认、馈赠与保护。",
+    "远袭造成家户损失会使王者受到责问。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "高王的认可依赖首领承认、馈赠和保护，罗马来的财富可以增加声望，若因远袭丢掉家户则会招来责问。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Gartnait依靠首领承认、馈赠与保护。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。远袭造成家户损失会使王者受到责问。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "远袭造成家户损失会使王者受到责问。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。Gartnait依靠首领承认、馈赠与保护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Gartnait依靠首领承认、馈赠与保护。家户通过家人、土地与求助能否获保护来认识统治。远袭造成家户损失会使王者受到责问。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "远袭造成家户损失会使王者受到责问。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。Gartnait依靠首领承认、馈赠与保护。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

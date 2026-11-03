@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_3c",
+  "HeroName": "Ingebjørg Erlingsdatter",
+  "Description": "Lady Ingebjørg Erlingsdatter was a celebrated noblewoman of the Tanberg dynasty, the daughter of Baron Erling Alvsson and sister to Mindre-Alv. In 1259, Ingebjorg was a prominent figure within the youthful aristocratic circles of southern Norway, admired for her beauty, poise, and cultured intellect. Educated in French courtly romances, Latin devotionals, and Old Norse genealogical lore, she moved effortlessly among prelates and high-born suitors with natural dignity. She actively assisted her mother in supervising the domestic textile production of the Tanberg manors and directing medicinal charity for rural cottars. Deeply loyal to her lineage, she recognized the strategic importance of dynastic marriages, conducting herself with quiet wisdom and unyielding self-command. Her charitable endowments to local chapels and gentle, compassionate temperament established her as a luminous exemplar of Norwegian high medieval noblewomanhood. Across the Tanberg lordships, Lady Ingebjørg championed charitable devotion, endowing rural dispensaries that provided free herbal remedies to impoverished peasant families. Well-versed in ancestral sagas and French romances, her radiant conversational charm made her the admired center of high society gatherings at Oslo Castle. Her luminous intelligence and boundless benevolence shed honor upon her lineage, remembered as the benevolent guardian star of Tanberg.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Fulfil a noble daughter's duties through integrity and appropriate social conduct, winning respect for the Tanberg family.",
+    "Make a future marriage that gains strong allies and supports her parents and brothers in public affairs.",
+    "Pray and give alms, helping the family's lands retain a sense of Christian shelter during repeated wars."
+  ],
+  "Values": [
+    "True beauty lies in kindness, purity and considered judgement; outward display matters less than moral character.",
+    "Kinship is a sacred obligation deserving wholehearted service to the family's common interests and honour.",
+    "Treat suffering people with compassion and remember hunger even in prosperity; privilege entails a duty of relief."
+  ],
+  "Fears": [
+    "A coup or civil conflict killing her father and brothers or leaving them imprisoned under royal judgement.",
+    "Being treated solely as a political bargain and forced into a loveless marriage abroad with a cruel, coarse warlord."
+  ],
+  "SpeechStyle": "Speaks with sweet courtly cadence, articulate grace, and composed modesty, reflecting exemplary noble education and moral serenity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

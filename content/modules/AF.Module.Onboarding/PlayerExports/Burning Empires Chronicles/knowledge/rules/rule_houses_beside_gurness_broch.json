@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v9",
+  "Keywords": [
+    "Houses beside Gurness broch"
+  ],
+  "RagShortTexts": [
+    "Gurness’s broch stands among clustered houses linked by passages."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gurness’s broch stands among clustered houses linked by passages. Hearths, storage and movement organized settlement life beyond the tower itself. Narrow approaches made neighbors close and required coordination over carrying, cleaning and repair."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

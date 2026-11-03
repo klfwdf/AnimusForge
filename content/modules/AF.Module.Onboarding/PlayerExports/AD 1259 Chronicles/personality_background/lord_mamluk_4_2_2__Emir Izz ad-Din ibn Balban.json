@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_4_2_2",
+  "HeroName": "Emir Izz ad-Din ibn Balban",
+  "Description": "Izz ad-Din ibn Balban is thirty-one years old and the elder son of Sayf ad-Din Balban and Ardukin. He is tall and handsome, and he favours a deep red coat with silver trim over a light leather jerkin. His manner carries a deliberate confidence, and he enjoys showing off his horsemanship and archery before the men of the camp. He was trained in his father's cavalry and knows the tactics and formations of mounted troops well.\nHe came of age when power in the Mamluk court changed hands often. Emirs rose and fell, and his father moved among them with great care. Izz ad-Din learned a different lesson in the camp: he discovered how to win the cheers of soldiers, and he concluded that rank is earned with the blade and not with a father's name.\nAgainst rivals he is direct, sometimes reckless. He likes to provoke an opponent in public to force an answer, and only then decides whether to ally or break. This habit has won him a group of young riders, but it has also made several seasoned emirs wary of him.\nHis ideal is to outshine his father's reputation and become a name the cavalry speaks of with respect. His darkest fear is that one impulsive choice will bring ruin on his father and brother, and that he will be unable to save anything afterwards.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Build a cavalry following loyal to him alone, so that veterans and young riders alike know his banner and his orders.",
+    "Surpass his father's reputation with a deed the whole army praises, so the emirs stop treating him as the younger son of the Balban house.",
+    "Secure a foothold both in the camp and at court, so the family keeps a voice and a place even after his father steps back."
+  ],
+  "Values": [
+    "Honour must be defended with the blade, and a rider who shrinks from a challenge does not deserve his sword or the horse he rides.",
+    "A promise made in public must be kept, since that is the clearest line between a knight and an ordinary noble.",
+    "Enemies should be met face to face, and he scorns plots and betrayals even when they would work better, preferring to lose in the open."
+  ],
+  "Fears": [
+    "Fears that one reckless act will drag his father and brother into a political quarrel, with no way back for any of them.",
+    "Fears losing a public challenge before the whole camp, after which young riders would stop respecting or following him."
+  ],
+  "SpeechStyle": "Speaks with confidence and a challenging edge, opening with direct questions and scorning roundabout talk. In drills he issues short, forceful challenges.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

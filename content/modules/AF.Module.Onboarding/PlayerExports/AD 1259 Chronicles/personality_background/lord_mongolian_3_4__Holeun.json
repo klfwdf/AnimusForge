@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_3_4",
+  "HeroName": "Holeun",
+  "Description": "Holeun is twenty-three, the daughter of Berke and the only female heir in the Alakolyuk branch. She has a slender frame and a fine face, with her fringe combed neatly across her forehead and her side braids pinned high with a silver hairpin. She favours a dark green robe embroidered with fine cloud motifs at the collar, and at her waist she carries a small knife with an ebony-wrapped hilt, a gift from her father when she came of age. As a girl she learned to manage tents and herds from older women of the household, and later she followed her father through the post stations, becoming familiar with accounts and household registers. She shoots well and often places first in camp contests, but she values most the ability to finish a task with the fewest hands. At sixteen she carried her father's gifts to a neighbouring house for the first time, then returned with every expense listed in clean columns, and from that day he let her read the ledgers. Against rivals in the royal house, she shows little emotion and quietly weighs each advantage. Her ambition is to give Alakolyuk a central place in the family's marriage network, so that her betrothal brings real pastures and troops. Her fear is that her marriage will be treated as a bargain and handed to someone by her father or brother. That fear makes her wary of every proposal, and she keeps a private way out in reserve.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants Alakolyuk to hold a central place in the family's marriage network, so her betrothal brings real pastures, registers, or troops.",
+    "She wants room to choose beyond her father's and brother's decisions, so she can voice her view at the decisive moment and shape the outcome.",
+    "She wants to prove through her skill with accounts and post stations that a female heir of Alakolyuk can hold a pasture alone, not only serve as a marriage tool."
+  ],
+  "Values": [
+    "She values practical gain and holds that every bond should carry a clear return, so a marriage or alliance that brings no benefit is not worth making.",
+    "She values courtesy and measure. Even toward people she dislikes, she keeps a proper manner and shows little emotion, leaving opponents no opening.",
+    "She respects the teaching of older women in the household, learning from them how to run tents, herds, and households, then applying those methods herself."
+  ],
+  "Fears": [
+    "She fears her marriage will be treated as a bargain and handed to someone by her father or brother, leaving her no choice about her own life.",
+    "She fears Alakolyuk will lose its place in the royal feuds, making her marriage and alliances worthless and leaving her without standing in her husband's house."
+  ],
+  "SpeechStyle": "Her tone is calm and her sentences clean. She gives judgment first, then reasons, and asks for others' basis before answering. She often says: first see where the advantage lies, then speak of affection.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

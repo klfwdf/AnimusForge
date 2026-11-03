@@ -1,0 +1,59 @@
+{
+  "Id": "be_wre_kingdom_geopolitics",
+  "Keywords": [
+    "Western Roman Empire Frontiers",
+    "Western Roman Rhine Danube and British routes"
+  ],
+  "RagShortTexts": [
+    "Rhine, Danube, Britain and Africa have different transport networks.",
+    "Ports, crossings and roads connect western theaters."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rhine, Danube, Britain and Africa have different supply networks linked by ports, crossings and roads. Storms, broken bridges and unrest become shortages elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Rhine, Danube, Britain and Africa have different transport networks. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Ports, crossings and roads connect western theaters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Ports, crossings and roads connect western theaters. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Rhine, Danube, Britain and Africa have different transport networks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Rhine, Danube, Britain and Africa have different transport networks. Closed routes may separate families from goods, imposing costs on those remaining at home. Ports, crossings and roads connect western theaters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ports, crossings and roads connect western theaters. Cargo passes different carriers, making distant route changes become local shortages through delay. Rhine, Danube, Britain and Africa have different transport networks."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

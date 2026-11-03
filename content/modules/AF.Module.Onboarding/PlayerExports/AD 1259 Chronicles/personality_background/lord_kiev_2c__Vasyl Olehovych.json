@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Vasyl Olehovych is a bold, energetic scion of the Olgovychi dynasty of Chernigov, serving as a vital military ally and cavalry leader stationed within the Kievan defensive theater. Bound by close marital and commercial ties to the Stanislavskyj boyar clan, he represents Chernigovian strategic interests and military solidarity along the southern frontier. Mastering horsemanship and horse archery from childhood, Vasyl commanded swift Ruthenian cavalry squadrons equipped with chainmail and composite recurve bows, excelling in feigned retreats and ambushes. When hostile steppe warbands raided Kievan borders, he frequently launched devastating surprise assaults against enemy baggage trains, disrupting siege preparations. Diplomatically, he advocated setting aside historical rivalries between Chernigov and Kyiv, urging an unbreakable southern confederation against existential nomadic threats. His generous camaraderie, martial daring, and tactical agility make him a formidable cavalry commander on the open steppe. Across the wind-swept steppes and winding riverbends of southern Rus', Prince Vasyl's light cavalry moved with the predatory grace of hunting falcons. Sharing cold trail rations and campfire watches with his troopers, he perfected swift feigned retreats and devastating Parthian bow shots, consistently outmaneuvering nomadic raiders. His bold charisma and gallant battlefield presence forged an unbreakable camaraderie between Chernigovian riders and Kievan urban defenders.",
+  "SpeechStyle": "Where warhorses thunder across the plains, our blades carve glory! Chernigov's riders yield to no steppe horde! Forward, break their battlelines and sweep them into the dust!",
+  "Motivations": [
+    "Command vanguard cavalry squadrons across the steppe corridors between Kyiv and Chernigov, crushing nomad marauders.",
+    "Deepen military bonds between Chernigovian dynasts and Kievan boyar militias, forging an indomitable cavalry strike corps."
+  ],
+  "Values": [
+    "Prized equestrian courage, boundless camaraderie, and honorable combat, despising cowardice and treacherous backstabbing.",
+    "Believing true chivalric renown is won through aggressive daring, bold leadership, and unhesitating self-sacrifice in battle."
+  ],
+  "Fears": [
+    "Falling into a well-laid steppe encirclement during pursuit, leading to the annihilation of his veteran cavalry squadrons.",
+    "A tragic resurgence of historic dynastic animosities between Chernigov and Kyiv, shattering the fragile alliance."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_kiev_2c",
+  "HeroName": "Vasyl Olehovych"
+}

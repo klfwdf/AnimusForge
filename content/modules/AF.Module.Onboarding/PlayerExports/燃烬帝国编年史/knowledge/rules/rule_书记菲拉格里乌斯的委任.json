@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v4",
+  "Keywords": [
+    "书记菲拉格里乌斯的委任"
+  ],
+  "RagShortTexts": [
+    "菲拉格里乌斯的权限由职务、文书和触发条件共同限定。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "菲拉格里乌斯以秘书身份奉尤利安之命赴边地，获得一般处置授权及有条件开启的签字文书。职务、携带文件和具体行动条件共同定义权力，不是见到书记便视为拥有无限军令。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

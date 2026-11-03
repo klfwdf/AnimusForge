@@ -1,0 +1,52 @@
+{
+  "Id": "rule_battle_of_yaroslav_1245",
+  "Keywords": [
+    "Romanovych victory at Yaroslav",
+    "Danylo and Vasylko against Rostislav"
+  ],
+  "RagShortTexts": [
+    "Danylo and Vasylko defeated Rostislav and his allies at Yaroslav in 1245.",
+    "Victory strengthened Romanovych rule in Galicia while local cooperation remained necessary."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1245 Danylo and his brother Vasylko defeated Rostislav and his supporters at Yaroslav. Opponents included allies from Hungary and Poland and boyars hostile to the Romanovych house. The victory strengthened the brothers in Galicia and changed calculations among families seeking protection. Followers recall service and reward, while people living along the contested routes remember requisitions, flight and damaged dwellings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Victory gives a prince greater leverage, followed by decisions about defeated families and estates. Confiscation, pardon and renewed service all have costs; fear without cooperation cannot ensure a steady supply of people and provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Retainers remember their own banner and rewards. Some returned home after the fighting while others remained in garrison. Clear service and ration arrangements determine whether victory becomes continuing protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villagers hope a settled contest will reduce passing armies. Harvesting fields and finding a replacement ox matter sooner than praise at a princely feast. If demands remain unchanged, security is still distant."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

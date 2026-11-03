@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Cuman_Kipchak_Horse_Archers_and_Hungarian_Crown",
+  "Keywords": [
+    "Cuman Kipchak Nomad Horse Archers",
+    "Yellow Silk Kaftan and Felt Cap",
+    "Hungarian Royal Auxiliary Resettlement",
+    "Parthian Shot Feigned Retreat Tactics"
+  ],
+  "RagShortTexts": [
+    "Cuman horse archers resettled in Hungary served Béla IV with lethal feigned retreats and."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fleeing the Mongol advance, the Cuman-Kipchak pastoral nomads crossed into the Kingdom of Hungary under their leader Khan Koten. King Béla IV took them into royal service as cavalry and granted them pasture on the Hungarian plains. Their warriors wore silk caftans and conical felt caps, and each rider led several remount horses, so he could cover great distances without tiring a single mount. In battle they relied on feigned retreats, luring heavy knights into disorder before turning to loose arrows from horseback. The alliance gave the Hungarian crown a fast striking arm, though it also brought tension over pagan customs and the lands the Cumans held."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Though conservative Hungarian magnates resented the Cumans for their pagan customs, Béla IV anchored the crown's military power on that alliance. He married his son Stephen to a Cuman princess, which tied the steppe warriors more closely to the royal house. Magnates who objected found the king unwilling to listen, and each protest only reminded them that the royal army now rode with the nomads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Cuman steppe ponies thrive on scrub grass, and a rider who sleeps on the ground beside them learns to trust them. Loosing recurve arrows from a galloping saddle takes years of practice, but the Cuman archers do it with effortless ease. They pin pursuers under a storm of shafts, then wheel back to finish the rout. A young Hungarian recruit must first unlearn his fear of open ground."
+    }
+  ],
+  "TextMappings": []
+}

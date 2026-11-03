@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v6",
+  "Keywords": [
+    "琥珀首饰与奢侈批评"
+  ],
+  "RagShortTexts": [
+    "琥珀饰物彰显财富与美感，也会招来奢侈批评。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "琥珀佩饰可以显示财富与审美，也会引来花费失度的批评。买者看重色泽、雕工和稀奇，旁人却可能觉得这些钱应花在食物、家人或公共事务上。同一件小饰物会在不同人眼里有不同价值。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_medvegalis_hillfort_landscape_a086db69",
+  "Keywords": [
+    "Medvegalis upland routes",
+    "Uphill supplies at Medvegalis"
+  ],
+  "RagShortTexts": [
+    "Medvegalis heights aided observation while slopes hindered carriage.",
+    "Watch duties removed field labor while water and food still needed hauling uphill."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The heights at Medvėgalis helped watch nearby routes, with wooded slopes and weather affecting ascent and carriage. Gathering people required local food while animals and fields still needed care during watches."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The heights at Medvėgalis helped watch nearby routes, with wooded slopes and weather affecting ascent and carriage. Gathering people required local food while animals and fields still needed care during watches. Watchers needed shifts, messages and safe descent. Heights offered views without clear knowledge of valley events, while loaded parties arrived slower than scouts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The heights at Medvėgalis helped watch nearby routes, with wooded slopes and weather affecting ascent and carriage. Gathering people required local food while animals and fields still needed care during watches. Musters on heights required water and food from finite local resources. Leaders balanced observation against supply costs, lost field labor and available support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "The heights at Medvėgalis helped watch nearby routes, with wooded slopes and weather affecting ascent and carriage. Gathering people required local food while animals and fields still needed care during watches. Hauling uphill consumed time and animals and could delay the return home. A household member on watch needed others to tend livestock and fields."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -13,14 +13,15 @@ namespace AnimusForge;
 
 internal sealed class OpenAiTtsVoice
 {
-    internal OpenAiTtsVoice(string id, string name, int gender, bool builtIn = false) { Id = id; Name = name ?? ""; Gender = gender; _builtIn = builtIn; }
-    private readonly bool _builtIn;
-    internal bool UsesBuiltInLabel => _builtIn;
+    internal OpenAiTtsVoice(string id, string name, int gender, string uiTextId = null) { Id = id; Name = name ?? ""; Gender = gender; _uiTextId = uiTextId; }
+    private readonly string _uiTextId;
+    internal bool UsesBuiltInLabel => _uiTextId != null;
     internal string Id { get; }
     /// <summary>Server-provided display name, possibly empty.</summary>
     internal string Name { get; }
-    internal string Label => Name.Length == 0 ? Id
-        : (_builtIn ? LlmUiTexts.Text("AF_LLM_UI_OpenAiVoice_" + Id, Name) : Name) + " (" + Id + ")";
+    /// <summary>Name shown in the voice picker; built-in AF names follow the UI language.</summary>
+    internal string DisplayName => _uiTextId == null || Name.Length == 0 ? Name : LlmUiTexts.Text(_uiTextId, Name);
+    internal string Label => Name.Length == 0 ? Id : DisplayName + " (" + Id + ")";
     /// <summary>0 = unknown, 1 = male, 2 = female.</summary>
     internal int Gender { get; }
     internal bool HasHappy { get; private set; }
@@ -78,16 +79,17 @@ internal sealed class OpenAiTtsVoiceCatalog
     }
 
     // AF speech service voices (11 bases with _happy/_angry/_sad, plus zh_default). Used when the
+    // display names are UI text: English fallback here, localized as AF_GPT_UI_OpenAiBuiltInVoice_<id>.
     // server does not expose /audio/voices, but only if the configured fallback voice is one of
     // these names, so other OpenAI-compatible providers never receive AF voice names.
     private static readonly string[][] BuiltInVoices =
     {
-        new[] { "male-clear", "Jing Yuan - Bright young male", "1" }, new[] { "male-gentle", "Dan Heng - Gentle young male", "1" },
-        new[] { "male-steady", "Welt - Steady older male", "1" }, new[] { "male-deep", "Gepard - Deep heroic male", "1" },
-        new[] { "male-senior", "Sampo - Smooth middle-aged male", "1" }, new[] { "female-clear", "March 7th - Bright young female", "2" },
-        new[] { "female-gentle", "Firefly - Gentle young female", "2" }, new[] { "female-steady", "Himeko - Mature female", "2" },
-        new[] { "female-firm", "Serval - Confident female", "2" }, new[] { "female-senior", "Bronya - Composed young female", "2" },
-        new[] { "female-sparkle", "Sparkle - Playful theatrical female", "2" }, new[] { "zh_default", "Default Chinese female voice", "0" }
+        new[] { "male-clear", "Jing Yuan · bright youth", "1" }, new[] { "male-gentle", "Dan Heng · gentle young man", "1" },
+        new[] { "male-steady", "Welt · steady elder", "1" }, new[] { "male-deep", "Gepard · deep-voiced hero", "1" },
+        new[] { "male-senior", "Sampo · slick uncle", "1" }, new[] { "female-clear", "March 7th · bright girl", "2" },
+        new[] { "female-gentle", "Firefly · gentle girl", "2" }, new[] { "female-steady", "Himeko · mature lady", "2" },
+        new[] { "female-firm", "Serval · dashing elder sister", "2" }, new[] { "female-senior", "Bronya · calm girl", "2" },
+        new[] { "female-sparkle", "Sparkle · playful performer", "2" }, new[] { "zh_default", "Default Chinese female voice", "0" }
     };
     private static readonly Lazy<OpenAiTtsVoiceCatalog> BuiltIn = new Lazy<OpenAiTtsVoiceCatalog>(() =>
     {
@@ -286,11 +288,21 @@ internal sealed class OpenAiTtsVoiceCatalog
             string name = CleanLabel(item.Item2);
             int gender = item.Item3 != 0 ? item.Item3 : InferGender(id);
             var voice = new OpenAiTtsVoice(id, name == id ? "" : name, gender,
-                endpoint == "builtin" || (builtInLabels?.Contains(id) == true && BuiltIn.Value.Get(id)?.Name == name));
+                endpoint == "builtin" || (builtInLabels?.Contains(id) == true && BuiltIn.Value.Get(id)?.Name == name)
+                    ? BuiltInUiTextId(id, name) : null);
             voices.Add(voice); byId.Add(id, voice);
         }
         foreach (var variant in variants) if (byId.TryGetValue(variant.Item1, out var voice)) voice.MarkVariant(variant.Item2);
         return new OpenAiTtsVoiceCatalog(endpoint, voices, byId);
+    }
+
+    // Only the exact built-in English name (built-in list, /models reuse, or its cache) is localized;
+    // names supplied by a speech server stay as the server wrote them.
+    private static string BuiltInUiTextId(string id, string name)
+    {
+        foreach (var voice in BuiltInVoices)
+            if (voice[0] == id && voice[1] == name) return "AF_GPT_UI_OpenAiBuiltInVoice_" + id.Replace('-', '_');
+        return null;
     }
 
     private static LocalTtsTone ToneSuffix(string id, out string baseId)
@@ -320,6 +332,9 @@ internal sealed class OpenAiTtsVoiceCatalog
         return clean.Length > MaxLabelLength ? clean.Substring(0, MaxLabelLength) : clean;
     }
 
+    private static readonly Lazy<string[]> ServerGenderFemale = new Lazy<string[]>(() => LlmSourceTexts.Source("TtsServerGenderFemale").Split('|'));
+    private static readonly Lazy<string[]> ServerGenderMale = new Lazy<string[]>(() => LlmSourceTexts.Source("TtsServerGenderMale").Split('|'));
+
     private static int ParseGender(string value)
     {
         string normalized = (value ?? "").Trim().ToLowerInvariant();
@@ -327,11 +342,11 @@ internal sealed class OpenAiTtsVoiceCatalog
         {
             case "female": case "f": case "woman": return 2;
             case "male": case "m": case "man": return 1;
-            default:
-                if (normalized == LlmSourceTexts.Get("OpenAiVoiceGenderFemaleShort") || normalized == LlmSourceTexts.Get("OpenAiVoiceGenderFemale")) return 2;
-                if (normalized == LlmSourceTexts.Get("OpenAiVoiceGenderMaleShort") || normalized == LlmSourceTexts.Get("OpenAiVoiceGenderMale")) return 1;
-                return 0;
         }
+        // Chinese gender words some speech servers return; matching vocabulary only, never shown.
+        if (Array.IndexOf(ServerGenderFemale.Value, normalized) >= 0) return 2;
+        if (Array.IndexOf(ServerGenderMale.Value, normalized) >= 0) return 1;
+        return 0;
     }
 
     // Only an explicit gender field or a male-/female- id prefix counts; names such as a

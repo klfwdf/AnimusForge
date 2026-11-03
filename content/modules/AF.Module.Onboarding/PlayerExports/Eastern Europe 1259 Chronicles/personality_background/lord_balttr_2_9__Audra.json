@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_balttr_2_9",
+  "DisplayName": "Audra",
+  "HeroName": "Audra",
+  "Personality": "Audra is a member of a noble house. Their spouse is Sareika. The house belongs to the noble network of the Baltic tribes. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback\u0001 This person also will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Description": "Audra is a member of a noble house. Their spouse is Sareika. The house belongs to the noble network of the Baltic tribes. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback\u0001 This person also will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Background": "Audra is a member of a noble house. Their spouse is Sareika. The house belongs to the noble network of the Baltic tribes. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and can wait for a suitable moment without changing course at the first setback\u0001 This person also will help those who depend on them and expects that help to be taken seriously and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "SpeechStyle": "Listens to the terms before answering carefully.",
+  "PersonalSpeechStyle": "Listens to the terms before answering carefully.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain dependable relationships within the house.",
+    "Keep enough resources for continued care when helping those close to them."
+  ],
+  "Values": [
+    "Compares gains and costs for both sides and asks about terms before agreeing.",
+    "Can wait for a suitable moment without changing course at the first setback."
+  ],
+  "Fears": [
+    "Those close to them going uncared for while the help they provide is wasted."
+  ]
+}

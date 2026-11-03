@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v6",
+  "Keywords": [
+    "Siege ammunition and reliefs"
+  ],
+  "RagShortTexts": [
+    "At Amida missiles were exchanged while defenders relieved casualties."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At Amida missiles were exchanged while defenders relieved casualties. Stones, arrows and available operators had to coincide; counting engines alone did not measure usable fire. Carrying supplies and casualties also consumed manpower."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

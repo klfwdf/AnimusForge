@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_1a",
+  "HeroName": "Prijezda I., Ban of Bosnia",
+  "Description": "Prijezda I, aged forty-eight in 1259, reigns as the Ban of Bosnia and founding patriarch of the Kotromanić dynasty, governing from 1254 amidst the treacherous mountain defiles of the central Balkans. A cousin and successor of Ban Matej Ninoslav, Prijezda is a loyal Catholic vassal of King Béla IV of Hungary, sworn to extirpate the dualist Bogomil heresy of the autonomous Bosnian Church (Krstjani). Yet realizing that his mountainous realm would drown in blood under foreign inquisitorial crusades, Prijezda balances between Hungarian overlordship and indigenous baronial autonomy. He pledges hostages and silver tributes to Buda while quietly shielding native Bosnian magnates from wholesale annihilation. In 1259, entrenched within the formidable citadels of Bobovac and Srebrenik, the seasoned Ban maneuvers with pragmatic statecraft, anchoring the sovereign continuity of Bosnia. Clad perpetually in hardened scale armor, Prijezda inspects the mountain redoubts along the Drina and Vrbas rivers with indefatigable resolve. Facing insistent papal ultimatums demanding total inquisitorial eradication of native dualists, he skillfully cites impassable ravines and scarce supplies to delay persecutions, shielding his native barons. Within Bobovac's stone halls, he labors tirelessly to ensure that the Kotromanić name and Bosnian sovereignty endure against imperial storms.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with seasoned mountain gravitas and diplomatic caution, measured and authoritative, balancing feudal duties with pragmatism.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

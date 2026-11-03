@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v1",
+  "Keywords": [
+    "Valens’s Danube pontoon bridge"
+  ],
+  "RagShortTexts": [
+    "Valens used a bridge of boats across the Danube."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valens used a bridge of boats across the Danube. It moved a force but also needed to sustain a return route. Water and season shaped crossings; holding a bridgehead was distinct from campaigning inland."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

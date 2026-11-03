@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v5",
+  "Keywords": [
+    "Captured engines at Amida"
+  ],
+  "RagShortTexts": [
+    "Captured engines still needed trained crews, ammunition, transport and repairs."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Captured engines could be used by besiegers. A change of owner still required people familiar with the mechanism, ammunition and repairs. Moving an engine to a new position also needed transport and firm working ground."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

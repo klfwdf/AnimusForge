@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_rum_1_e",
+  "HeroName": "Kaykhusraw II",
+  "Description": "Kaykhusraw II is forty-eight, the son of Kilij Arslan IV and Gazalya Khatun. He is the eldest of three brothers who share that mother, the others being Kaykhusraw III and Ala ad-Din Kayqubad II. He is of medium build with greying temples, and an old sword scar runs from his ear to his jaw on the left cheek, a wound he says came from a minor border clash in his youth that no chronicle records. He wears coarse grey campaign wool under a worn leather cuirass and carries only a plain cavalry sabre with an undecorated hilt. He once served as quartermaster, knows supply lines and horse rotation well, and has earned the nickname 'Lord of the Grain Sacks' among his soldiers. He works closely with his wife Gulcicek Khatun, and the two often review camp accounts together. Toward Mongol envoys he keeps careful courtesy, and toward palace rivals he avoids open speech, settling disputes by administrative means only when necessary. In a year of famine he gave his own rations to the wounded, and was found three days later barely able to stand. His ambition is to keep the army fighting through shortages of grain and horses, so that a single hard winter cannot dissolve it. His deepest fear is that a supply failure in a major battle would destroy an entire cavalry force, and that he alone would be held responsible.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep grain, horses and equipment reaching the army in every season, the duty he cares about most, so shortages do not break its ranks in battle.",
+    "Hold a cautious balance between the Mongol envoys and the local nobility, so that Konya's taxes and garrison arrangements are not monopolized by any one side.",
+    "Train a successor quartermaster and leave a complete body of supply regulations, so the army no longer depends on one man's memory and judgement."
+  ],
+  "Values": [
+    "Patience and prudence, believing many battles are decided not at the first clash but by which side can hold on until the enemy's supplies fail, so he prefers slow and steady.",
+    "Responsibility toward soldiers, since he inspects every consignment of fodder and food sent to the front, and will not let troops go hungry through official negligence.",
+    "Pragmatic loyalty, serving the survival of the Seljuk house rather than any single ruler, so he keeps his distance from court intrigue and does only his own duty."
+  ],
+  "Fears": [
+    "A supply lapse destroying an entire cavalry force in battle, leaving him as quartermaster to bear full blame, whatever the truth of the matter.",
+    "The royal house falling wholly under Mongol control, so the supply system he built over a lifetime is turned to other people's wars and loses all meaning."
+  ],
+  "SpeechStyle": "Speaks briefly, answering with numbers and concrete times. Strict but not harsh, remembers every man's name. His tone rises only over supply failures.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v4",
+  "Keywords": [
+    "Ancestral rites and Gothic Christians"
+  ],
+  "RagShortTexts": [
+    "Conflicts over Gothic ancestral worship involved safety, kin and obedience."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gothic Christians could face leaders’ demands to uphold ancestral worship, while punished believers and relatives worried about safety and refuge. Leaders valued tradition and obedience; believers might see refusal to abandon their faith as fidelity. Shared language did not remove the conflict."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

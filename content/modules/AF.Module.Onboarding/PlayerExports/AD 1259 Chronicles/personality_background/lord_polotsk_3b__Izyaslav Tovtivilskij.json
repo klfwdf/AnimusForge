@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Izyaslav Tovtivilskij is the dashing eldest son and designated heir of Grand Prince Tovtivil of Polotsk, celebrated as a brilliant vanguard cavalry commander. Raised amidst the confluence of Baltic equestrian warfare and Ruthenian Orthodox statecraft, Izyaslav mastered horse-archery, javelin throwing, and nocturnal forest raids. He commanded the elite 'Falcon Guard'—a hand-picked retinue of Baltic veterans and noble Ruthenian riders who patrolled the perilous frontier bordering the Livonian Order. Operating with lightning speed, he repeatedly launched preemptive strikes against crusader staging camps, setting supply wagons ablaze before sieges could form. Charismatic, loyal, and generous, he effortlessly mediated cultural frictions between Baltic and Slavic warriors, commanding immense youthful adoration. Leading the elite Falcon Guard, Prince Izyaslav struck enemy logistics like a thunderbolt through dense border woodlands. Master of nocturnal cavalry ambushes, his unyielding chivalric loyalty and tactical daring made him the premier vanguard champion safeguarding his father's realm. Whether executing lightning strikes against enemy cavalry outposts or securing vulnerable supply convoys through boggy woodlands, his relentless courage inspired unwavering martial confidence throughout the princely army.",
+  "SpeechStyle": "Our warhorses thunder and our sabers flash in the morning light! Charge like the whirlwind; break their battlelines and let them taste the wrath of Polotsk! Forward together!",
+  "Motivations": [
+    "Command the Falcon Guard to secure border corridors, launching preemptive strikes to sever enemy invasion avenues.",
+    "Forge distinguished battlefield renown, assisting his father in elevating the Polotsk-Lithuanian union to supreme regional power."
+  ],
+  "Values": [
+    "Prized equestrian courage, boundless camaraderie, and aggressive daring, despising cowardly intrigue and hesitant retreat.",
+    "Believing lightning operational maneuver and shared blood on the battlefield forge an unconquerable martial brotherhood."
+  ],
+  "Fears": [
+    "Vanguard cavalry trapped by heavy infantry phalanxes and concealed crossbow batteries, devastating his elite retinue.",
+    "Assassination of his father triggering sudden dynastic collapse, leaving him surrounded by hostile imperial rivals."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "opportunistic",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_polotsk_3b",
+  "HeroName": "Izyaslav Tovtivilskij"
+}

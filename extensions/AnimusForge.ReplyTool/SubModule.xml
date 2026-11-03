@@ -1,0 +1,23 @@
+<Module>
+  <Name value="AnimusForge.ReplyTool" />
+  <Id value="AnimusForge.ReplyTool" />
+  <Version value="v0.1.3" />
+  <SingleplayerModule value="true" />
+  <MultiplayerModule value="false" />
+  <DependedModules>
+    <DependedModule Id="Native" />
+    <DependedModule Id="Bannerlord.Harmony" />
+    <DependedModule Id="AnimusForge" />
+  </DependedModules>
+  <SubModules>
+    <SubModule>
+      <Name value="AnimusForge.ReplyTool" />
+      <DLLName value="AnimusForge.ReplyTool.dll" />
+      <SubModuleClassType value="AnimusForge.ReplyTool.SubModule" />
+      <Tags>
+        <Tag key="DedicatedServerType" value="none" />
+        <Tag key="IsNoRenderModeElement" value="false" />
+      </Tags>
+    </SubModule>
+  </SubModules>
+</Module>

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_8_3",
+  "HeroName": "Marchesa, VI viscontessa di Cabrera",
+  "Description": "Lady Marchesa is the brilliant nineteen-year-old titular heiress of the House of Cabrera, nurtured within the vibrant courtly culture of Barcelona and the western maritime ports. Possessing striking Iberian beauty, intellectual curiosity, and sharp aristocratic pride, Marchesa is fluent in Catalan poetry, Latin diplomacy, and naval navigation. Navigating the aristocratic salons of the Mediterranean with radiant composure, she seeks an illustrious union that will enhance her autonomy and extend the continental glory of her house. Accomplished in Occitan lyric verse and diplomatic Latin correspondence, young Marchesa possesses an adventurous spirit forged by sea winds and maritime voyages, carrying herself with radiant sophistication and commanding profound admiration in high court salons. Determined to assert her personal autonomy and elevate her lineage, Marchesa navigates high-stakes matrimonial overtures with acute discernment. Her radiant poise, courtly wit, gracious hospitality, and musical accomplishments ensure that Marchesa remains celebrated in song across the noble halls of southern Europe. Her courtly refinement, sharp intellect, and poetic gifts make Marchesa a celebrated ornament and admired patron of Mediterranean arts. Her moral fortitude, serene dignity, and selfless devotion to her household illuminate her noble lineage.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure an illustrious and empowering marriage alliance that establishes her as a preeminent noblewoman.",
+    "Master Mediterranean maritime law and cartography to advance her clan's commercial and naval hegemony."
+  ],
+  "Values": [
+    "Personal autonomy, high baronial pride, and refusal to be treated as a passive pawn.",
+    "Intellectual ambition, seafaring courage, and contempt for pedestrian provincialism."
+  ],
+  "Fears": [
+    "Being coerced into an uninspiring match with a crude and uncultured provincial lord.",
+    "Shifting political alliances cutting off family sea routes and impoverishing her noble house."
+  ],
+  "SpeechStyle": "Speaks with melodic lyricism, witty aristocratic poise, and a vibrant, self-confident Mediterranean flair. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -17,6 +17,7 @@ p.add_argument('--tts-visibility-ui', action='store_true', help='Include native 
 p.add_argument('--illustrator-only', action='store_true', help='Run focused real MCM/terminal/director request checks without native UI or external HTTP.')
 p.add_argument('--tts-only', action='store_true', help='Run focused native MCM/terminal TTS configuration checks, excluding unrelated feature suites.')
 p.add_argument('--country-selection-only', action='store_true', help='Verify diplomacy count settings with actual MCM/terminal/JSON/host consumers.')
+p.add_argument('--reasoning-only', action='store_true', help='Verify reasoning options, legacy migration and actual MCM/terminal/request consumers.')
 p.add_argument('--content-language', choices=['zh-CN', 'en'], default='zh-CN')
 p.add_argument('--run-root', type=Path)
 a = p.parse_args()
@@ -45,6 +46,7 @@ assert fixture.returncode == 0, fixture.stdout + fixture.stderr
 framework = a.framework or Path('C:/Users/29310/.nuget/packages/microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2')
 deps = ROOT / '.tmp/build_check/1.4'
 sources = [Path(__file__).with_name('Program.cs'), ROOT / 'tests/modules/AF.Module.Prompt/Composition/TerminalSettingsChecks.cs']
+sources.append(Path(__file__).with_name('ReasoningSettingsChecks.cs'))
 if not a.baseline:
     sources.append(Path(__file__).with_name('CountrySelectionSettingsChecks.cs'))
     sources.append(Path(__file__).with_name('SupplementalChecks.cs'))
@@ -70,6 +72,7 @@ if not code:
         command.append(str(ui))
         command.append(str(a.butterlib or ui.parents[2] / 'Bannerlord.ButterLib/bin/Win64_Shipping_Client'))
     if a.country_selection_only: command.append('--country-selection-only')
+    if a.reasoning_only: command.append('--reasoning-only')
     run = subprocess.run(command, cwd=out, capture_output=True, text=True, encoding='utf-8', errors='replace', env=dict(env, AF_TEST_MODULE_ROOT=str(module), ANIMUSFORGE_DATA_ROOT=str(module)))
     code = run.returncode
     (out / 'run.log').write_text(run.stdout + run.stderr, encoding='utf-8')

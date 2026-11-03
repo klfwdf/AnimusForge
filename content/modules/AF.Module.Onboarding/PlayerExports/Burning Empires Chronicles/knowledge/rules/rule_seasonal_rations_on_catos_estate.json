@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v1",
+  "Keywords": [
+    "Seasonal rations on Cato’s estate"
+  ],
+  "RagShortTexts": [
+    "Cato varied estate grain allowances by season and role."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cato’s older estate manual varied grain by season and distinguished field laborers from managers, watchmen and shepherds. Food allocation served management. This was a Republican estate scheme rather than a common diet for every tenant or imperial resident."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

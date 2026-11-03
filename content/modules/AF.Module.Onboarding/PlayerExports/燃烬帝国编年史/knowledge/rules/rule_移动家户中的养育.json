@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v8",
+  "Keywords": [
+    "移动家户中的养育"
+  ],
+  "RagShortTexts": [
+    "边疆家户迁移需照顾生育、孩子和体弱者，速度受限。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "边疆妇女随家庭在不同地点居住、生育和养育，迁营要反复安排住处与照料。年轻、年长和患病者的行动能力不同，队伍还须携带家用物品，不能让所有人都按轻装骑手的速度走。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

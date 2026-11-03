@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_1_4",
+  "HeroName": "Jacopo Zeno",
+  "Description": "Jacopo Zeno is a dashing twenty-eight-year-old naval commander of the House of Zeno, serving as vice-admiral of the Adriatic galley fleet. Resolute, fearless, and tactically perceptive, Jacopo distinguished himself in high-speed galley maneuvers, ramming assaults, and marine close-quarters boarding combat. During ongoing hostilities against Genoa, he patrolled the Dalmatian and Istrian littorals, capturing hostile privateers and securing convoy lanes, celebrated as a dynamic naval spearhead of his clan. Commanding his galley division with icy resolve, Jacopo Zeno enforced strict naval discipline and led devastating boarding attacks against Genoese raiders along the Dalmatian coast, celebrated among senior sea captains as an unassailable bulwark of the Adriatic. Undaunted by sudden Mediterranean tempests or overwhelming enemy numbers, Jacopo commands his galley crews with fatherly care and iron resolve, feared by Genoese corsairs as an invincible sea captain along the Levant routes. His tactical competence, rigid command discipline, and fatherly care for his oarsmen make Jacopo Zeno an invincible naval commander shielding the trade routes of the Adriatic. His unconquered naval banners and armored retainers ensure that the Zeno dynasty remains supreme amidst the maritime wars of the Adriatic. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Shatter Genoese naval battlelines in pitched combat and secure election to the Council of Ten.",
+    "Safeguard Venetian convoy routes through the Adriatic and eradicate hostile corsairs."
+  ],
+  "Values": [
+    "Naval discipline, tactical readiness, and personal courage on the wave-washed galley decks.",
+    "Absolute fealty to the Winged Lion of Saint Mark and the maritime majesty of the Republic."
+  ],
+  "Fears": [
+    "Violent Mediterranean tempests smashing his galley squadrons against rocky shoals.",
+    "Outbreaks of disease among oarsmen in distant anchorages crippling his battle fleet."
+  ],
+  "SpeechStyle": "Speaks with crisp maritime authority, rapid nautical brevity, and confident martial vigor. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

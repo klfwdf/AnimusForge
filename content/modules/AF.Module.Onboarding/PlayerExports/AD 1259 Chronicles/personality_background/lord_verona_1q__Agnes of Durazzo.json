@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_verona_1q",
+  "HeroName": "Agnes of Durazzo",
+  "Description": "Agnes of Durazzo, daughter of Duke Charles of Durazzo of the royal Angevin house of Naples, was consort of Cansignorio della Scala. Bringing Capetian royal blood and Mediterranean connections to Verona, she governed court life with majestic elegance during the dynasty's late golden age. Princess Agnes introduced Neapolitan royal ceremonials to Verona, patronizing troubadours and scholars to cultivate a splendid late chivalric golden age. Upholding Veronese independence before Venetian and Milanese ambassadors, she deployed Angevin royal prestige to defend her house with unyielding aristocratic grace. Exquisite and resolute, Princess Agnes deployed Capetian royal pedigree to defend Veronese sovereignty, shining as a precious jewel of late Scaliger courtly refinement. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across the Veneto, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Verona, safeguarding civic liberty, territorial integrity, and Scaliger grandeur against every rival commune, hostile coalition, and Venetian league across northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor and municipal liberty across European history.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Leverage Capetian-Angevin royal blood to elevate the sovereign stature of House della Scala.",
+    "Patronize troubadours and scholars, infusing Neapolitan lyricism into Veronese court culture.",
+    "Maintain firm control of court councils during Cansignorio's illness to deter usurpation."
+  ],
+  "Values": [
+    "Holds royal Capetian blood and sovereign dignity inviolable above mundane political shifts.",
+    "Believes generous cultural patronage and charitable mercy anchor a dynasty's legitimacy."
+  ],
+  "Fears": [
+    "Dynastic civil wars in Naples engulfing her Durazzo kin, severing her southern royal backing.",
+    "Degeneration of the Scaliger line allowing Milanese Visconti armies to annex Verona."
+  ],
+  "SpeechStyle": "Speaks with effortless French royal refinement and captivating grace, majestic and poised. Always fiercely defending Scaliger dynastic authority, Veronese civic grandeur, and Veneto territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

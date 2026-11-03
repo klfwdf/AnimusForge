@@ -1,19 +1,18 @@
 using System; namespace AnimusForge; internal static class CourierProjection {internal static object CreateCourierChatMessage(string role, string content)
 	{
-		return new
-		{
-			role = role ?? "",
-			content = content ?? ""
-		};
+        return new ConversationPromptMessage(role ?? "", content ?? "");
 	}
-internal static bool TryConvertCourierMemoryMessageToChatMessage(ConversationMessage message, string npcName, string playerName, out object chatMessage)
+internal static bool TryConvertCourierMemoryMessageToChatMessage(ConversationMessage message, string npcName, string playerName, out object chatMessage, Action<int> lengthSink = null)
 	{
 		chatMessage = null;
 		if (message == null)
 		{
 			return false;
 		}
-		string content = (message.Content ?? "").Replace("\r", "").Trim();
+		string content = (message.Role ?? "").Trim().Equals("assistant", StringComparison.OrdinalIgnoreCase)
+            ? DiplomacyReplyTextRules.CleanNpcText(message.Content ?? "", message.SpeakerName)
+            : message.Content ?? "";
+		content = content.Replace("\r", "").Trim();
 		if (string.IsNullOrWhiteSpace(content))
 		{
 			return false;
@@ -23,22 +22,36 @@ internal static bool TryConvertCourierMemoryMessageToChatMessage(ConversationMes
 		string metadata = BuildCourierMemoryMetadataPrefix(message, string.IsNullOrWhiteSpace(speaker) ? PromptComposerTexts.Get("residual_record") : speaker);
 		if (ConversationRoleClassificationOwner.IsViewerAssistant(message, npcName, null, -1, useStableIdentity: false))
 		{
-			chatMessage = CreateCourierChatMessage("assistant", metadata + StripCourierSpeakerPrefix(content, npcName));
+			chatMessage = CreateMemoryChatMessage("assistant", metadata + StripCourierSpeakerPrefix(content, npcName), lengthSink);
 			return true;
 		}
 		if (role.Equals("system", StringComparison.OrdinalIgnoreCase))
 		{
-			chatMessage = CreateCourierChatMessage("user", metadata + PromptComposerTexts.Raw("main_history_raw_019") + StripCourierPromptScopeLabel(content));
+			chatMessage = CreateMemoryChatMessage("user", metadata + PromptComposerTexts.Get("history_section_scope_historical") + MemorySystemFactProjection.ProjectNpcFact(StripCourierPromptScopeLabel(content)), lengthSink);
 			return true;
 		}
 		if (role.Equals("assistant", StringComparison.OrdinalIgnoreCase))
 		{
 			string otherSpeaker = string.IsNullOrWhiteSpace(speaker) ? PromptComposerTexts.Get("residual_other_npc") : speaker;
-			chatMessage = CreateCourierChatMessage("user", metadata + PromptComposerTexts.Get("residual_past_heard") + otherSpeaker + PromptComposerTexts.Get("residual_says") + StripCourierSpeakerPrefix(content, otherSpeaker));
+			chatMessage = CreateMemoryChatMessage("user", metadata + PromptComposerTexts.Get("residual_past_heard") + otherSpeaker + PromptComposerTexts.Get("residual_says") + StripCourierSpeakerPrefix(content, otherSpeaker), lengthSink);
 			return true;
 		}
-		string player = string.IsNullOrWhiteSpace(playerName) ? PromptComposerTexts.Raw("player_fallback") : playerName.Trim();
-		chatMessage = CreateCourierChatMessage("user", metadata + StripCourierSpeakerPrefix(content, player));
+		string body;
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			// Stored records may carry the fallback label of either language.
+			body = (content ?? "").Trim();
+			foreach (string fallback in PromptComposerTexts.RawVariants("player_fallback"))
+			{
+				string stripped = StripCourierSpeakerPrefix(body, fallback);
+				if (!string.Equals(stripped, body, StringComparison.Ordinal)) { body = stripped; break; }
+			}
+		}
+		else
+		{
+			body = StripCourierSpeakerPrefix(content, playerName.Trim());
+		}
+		chatMessage = CreateMemoryChatMessage("user", metadata + body, lengthSink);
 		return true;
 	}
 internal static string BuildCourierMemoryMetadataPrefix(ConversationMessage message, string fallbackSpeaker)
@@ -60,8 +73,7 @@ internal static string StripCourierPromptScopeLabel(string text)
 		do
 		{
 			changed = false;
-			string[] prefixes = new string[4] { PromptComposerTexts.Raw("history_section_scope_current"), PromptComposerTexts.Raw("main_history_raw_019"), PromptComposerTexts.Raw("main_history_raw_031"), PromptComposerTexts.Raw("main_history_raw_032") };
-			foreach (string prefix in prefixes)
+			foreach (string prefix in CourierScopePrefixes)
 			{
 				if (value.StartsWith(prefix, StringComparison.Ordinal))
 				{

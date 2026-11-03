@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mamluk_2_2_4",
+  "HeroName": "Emira Qutqutiya ibn Qalawun",
+  "Description": "Qutqutiya was a daughter of Qalawun and, according to the sources, the mother of al-Ashraf Khalil. The sources record nothing of her personal life, so the portrait here follows the game setting. She grew up in Qalawun's household, raised among court women and familiar with palace etiquette. She is small and gentle-faced, usually wears a pale violet robe with a braided gold belt, and keeps an amber prayer string in her hand. After Khalil's accession she visited the palace as his mother, rarely opposing him to his face, but often warning him privately about the movements of old courtiers. Before each council she sends an elderly maid to learn how the factions stand, then tells her son the essentials in a few words. She reads court politics with care and knows which men will stand with her son and which will become a danger. In public she never discusses affairs of state, and when a stance is required she closes the subject with a gentle blessing. Her noble aim is to make her son a ruler who is both firm and respected, so that Qalawun's prestige lasts. Her inner shadow is the fear that his severity will provoke general anger and that he will be killed by those near him while she can do nothing to save him.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Gather news for her son in her capacity as his mother, detecting opposition early so that he has the information he needs before he decides.",
+    "Keep connections among the women of the household to win support for her son, so that he is not isolated in the council chamber.",
+    "Urge her son to weigh his measures before purges and punishments, so that the throne passes on in a more stable order."
+  ],
+  "Values": [
+    "Trust between mother and son matters more than any outsider's advice, and a mother should always stand beside her child and show him where danger lies.",
+    "Power at court makes men rash, while silence and patience often preserve more, so every step should be considered before it is taken.",
+    "Etiquette and personal bonds hold a royal house together, and without them even a powerful family loses the support of its people overnight."
+  ],
+  "Fears": [
+    "Her son being betrayed by trusted aides because of his harsh rule and murdered, leaving her to bear the loss alone within the palace.",
+    "Qalawun's prestige fading fast after her son's death, with rival factions purging the old servants of the house until her family has no one left to rely on."
+  ],
+  "SpeechStyle": "She speaks softly and slowly, seldom offering direct criticism, preferring a metaphor or an old story. In private she warns her son gently, weighing every word.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

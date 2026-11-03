@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_pisa_2g",
+  "HeroName": "Matteo della Gherardesca",
+  "Description": "Matteo della Gherardesca is a high-spirited young knight of House Gherardesca. Emulating his father and elder brothers, he trained tirelessly in swordplay, proudly convinced that his house was invincible. Practicing jousting and horsemanship along the Maremma sands, young Matteo repeatedly triumphed in chivalric tournaments, earning proud acclaim from Count Ugolino. Burning with knightly ambition, he longed to unfurl the Gherardesca banner in major combat, desperate to prove his martial mettle in frontline shock charges. Throughout the shifting political and military fortunes of the Tyrrhenian Sea and Tuscan hills, their relentless aristocratic dedication, strategic statecraft, chivalric valor, unyielding fortitude, and immense personal resources preserve the sovereign power, commercial wealth, maritime hegemony, and naval prestige of the Republic of Pisa across all contested waters, safeguarding communal independence, municipal liberty, territorial integrity, and Ghibelline honor against every Florentine, Genoese, and papal rival on Italian soil and open sea alike for future generations to inherit, commanding profound respect from allied communes and striking fear into maritime foes.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Slay an enemy captain in major combat to bring glory to his father.",
+    "Prove himself a worthy and fearless scion of the Counts of Donoratico."
+  ],
+  "Values": [
+    "No coward has ever been born to Donoratico blood; honor outweighs life.",
+    "A true warrior commands respect amidst the thunder of the charge."
+  ],
+  "Fears": [
+    "Displaying any hint of fear before companions and dishonoring his name.",
+    "Being confined to rear defense while peers march to reap combat laurels."
+  ],
+  "SpeechStyle": "Speaks with youthful exuberance and ardent knightly pride, eager for battle glory. Always fiercely defending Pisan communal liberties, Ghibelline honor, and Tyrrhenian maritime sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

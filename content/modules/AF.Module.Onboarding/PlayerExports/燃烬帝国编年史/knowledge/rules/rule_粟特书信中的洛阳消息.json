@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v2",
+  "Keywords": [
+    "粟特书信中的洛阳消息"
+  ],
+  "RagShortTexts": [
+    "313至314年前后的粟特信札传灾乱消息，影响资金与旅程。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "313至314年前后的粟特商信把洛阳受破坏、宫殿焚毁和饥荒的消息传给西方同业，用以解释道路与商业联系中断。消息经携信人长途移动，不同市场收到的时间和内容可能不同，商人据此调整资金与行程。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

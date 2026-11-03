@@ -1,0 +1,40 @@
+{
+  "Id": "rule_Truce_of_God_and_Peace_of_God_Pacts",
+  "Keywords": [
+    "Peace of God Pax Dei Movement",
+    "Truce of God Treuga Dei Mandate",
+    "Weekend Feudal Combat Prohibition",
+    "Sanctuary Protection for Peasants and Clergy"
+  ],
+  "RagShortTexts": [
+    "The Peace of God protects specified people and property; the Truce restricts fighting times.",
+    "Councils and enforcement differ, so no universal safe interval is assumed for every village."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Church councils promoted Peace of God protections for people and property, while Truce of God rules restricted fighting at specified times. These movements began in particular regions and their terms varied by council, ruler and date. Some proclamations prohibited violence from Thursday evening through Monday morning and added seasons or feast days; others set different calendars and protections. They were not one universal law automatically observed across Christendom. Bishops and local authorities relied on oaths, public pressure and spiritual penalties, with uneven results. Such measures sought to reduce harm to clergy, travelers, peasants and the tools or animals needed for work, but could not guarantee safety during every feud."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "The Peace of God condemns attacks on specified people and property, while the Truce of God restricts fighting at specified times. Councils differ in the protection they proclaim. A cleric records oaths and threatens spiritual penalties, but these are contested attempts to restrain violence, not a universal medieval law that all armed men invariably obey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A household seeks the church's protection when a feud threatens its animals and grain. Bells and an oath may encourage neighbours to travel or return to work, yet fear remains if a lord ignores the ban. The days covered by a truce depend on the local proclamation; a village cannot assume that every Thursday begins the same safe interval throughout Christendom."
+    }
+  ],
+  "TextMappings": []
+}

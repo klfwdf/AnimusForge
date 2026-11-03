@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Battle_of_Saule_1236",
+  "Keywords": [
+    "Battle of Saule 1236",
+    "Sword Brothers Annihilation",
+    "Samogitian Lithuanian Triumph",
+    "Volkwin Slain Baltic Bog"
+  ],
+  "RagShortTexts": [
+    "In 1236 at Saule, pagan Samogitians obliterated the Sword Brothers in bogs, forcing a."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Saule, fought on September 22, 1236, was the worst defeat of the Livonian Order in its early years. Samogitian warriors drew the crusaders into the treacherous bogs around the town, where heavy destriers sank in autumn mud. Grand Master Volkwin fell with nearly fifty knight-brothers, and the Order's independent campaigns in the region ended. The Sword Brothers had built their power through raids and conquest in Livonia and Courland, relying on a knightly cavalry that the mud rendered useless. The victory also encouraged local leaders to resist the Order, since it showed that knowledge of wetland ground could neutralise superior armour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "Saule ended the Sword Brothers as an independent force. Livonian lords who had sworn to the Brothers had to decide whether to accept the Teutonic Order, which absorbed the survivors under its own master. Land grants, castles, and tithe rights were renegotiated in letters sent under the new seal. A baron with estates on the Dvina frontier had to recalculate his loyalties carefully."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v4",
+  "Keywords": [
+    "旧衣回收与庄园配给"
+  ],
+  "RagShortTexts": [
+    "加图发新衣时收回旧物，以再利用旧布。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "加图要求发新衣和斗篷时收回旧物，再利用旧布，也定期发鞋。衣物既保护劳作者，也被主人当作需要控制的库存。修补和回收减少浪费，却不能消除劳动者缺衣或被强迫服役的处境。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

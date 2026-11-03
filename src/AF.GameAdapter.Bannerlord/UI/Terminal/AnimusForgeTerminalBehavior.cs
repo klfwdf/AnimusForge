@@ -779,6 +779,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 			Node("troop_inspection", Ui("AF_TERMINAL_UI_Root_TroopInspection", "Inspect troops"), TerminalCategories.Duel, "⚔", Ui("AF_TERMINAL_UI_Root_TroopInspection_Hint", "Open the troop inspection flow.")),
 
+			Node("field_camp", Ui("AF_TERMINAL_UI_Root_FieldCamp", "Field camp"), TerminalCategories.Duel, "♜", Ui("AF_TERMINAL_UI_Root_FieldCamp_Hint", "Pitch camp on the campaign map, or open the camp menu while camped.")),
+
 			Node("military_exercise", Ui("AF_TERMINAL_UI_Root_MilitaryExercise", "Military exercise"), TerminalCategories.Duel, "⚑", Ui("AF_TERMINAL_UI_Root_MilitaryExercise_Hint", "Open the military exercise flow.")),
 
 
@@ -972,6 +974,16 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			CloseTerminal();
 
 			TroopInspectionBehavior.OpenInspectionFromTerminal();
+
+			return true;
+
+
+
+		case "field_camp":
+
+			CloseTerminal();
+
+			FieldCampBehavior.OpenFromTerminal();
 
 			return true;
 

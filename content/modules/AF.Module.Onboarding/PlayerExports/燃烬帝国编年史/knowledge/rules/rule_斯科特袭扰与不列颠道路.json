@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v5",
+  "Keywords": [
+    "斯科特袭扰与不列颠道路"
+  ],
+  "RagShortTexts": [
+    "不列颠遭多支武装侵扰，守军须保护分散聚落与交通。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "皮克特人、斯科特人等武装曾侵扰不列颠，使地方军队、居民和道路承受压力。劫掠者要带走所得，守军则须保护分散的聚落和交通；渡水位置与往返路程都会影响双方行动。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

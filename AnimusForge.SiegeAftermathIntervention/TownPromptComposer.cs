@@ -178,14 +178,14 @@ public static class TownPromptComposer
             text.PostprocessSceneTemplate,
             "settlement",
             string.IsNullOrWhiteSpace(facts.SettlementName)
-                ? SiegePostprocessContextBuilder.DefaultSettlementName
+                ? SiegePostprocessContextBuilder.GetDefaultSettlementName(text.IsEnglish)
                 : facts.SettlementName.Trim());
         AppendSection(prompt, text.SceneSectionTitle, scene);
 
         string role = text.PostprocessRoleTemplate;
         role = ApplyTemplate(role, "role_marker", TownDialogueRoleContextProfile.Build(facts.DialogueRole));
         role = ApplyTemplate(role, "speaker", string.IsNullOrWhiteSpace(facts.SpeakerName) ? SiegePostprocessContextBuilder.DefaultSpeakerName : facts.SpeakerName.Trim());
-        role = ApplyTemplate(role, "identity", string.IsNullOrWhiteSpace(facts.SpeakerIdentity) ? SiegePostprocessContextBuilder.DefaultSpeakerIdentity : facts.SpeakerIdentity.Trim());
+        role = ApplyTemplate(role, "identity", string.IsNullOrWhiteSpace(facts.SpeakerIdentity) ? SiegePostprocessContextBuilder.GetDefaultSpeakerIdentity(text.IsEnglish) : facts.SpeakerIdentity.Trim());
         role = ApplyTemplate(role, "agent_index", facts.TargetAgentIndex.ToString());
         role = ApplyTemplate(role, "direct_reply", facts.ReplyIsDirectPlayerResponse ? text.PostprocessDirectReplyTrue : text.PostprocessDirectReplyFalse);
         AppendSection(prompt, text.RoleSectionTitle, role);

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_4",
+  "HeroName": "Dom Alfonso Pires Gato, Governor of Guarda",
+  "Description": "Dom Alfonso Pires Gato is the unyielding warden of Portugal's eastern frontier, governing the vital high-altitude border fortress of Guarda. Perched atop the granite heights of the Serra da Estrela over a thousand meters above sea level, Don Alfonso commands elite companies of border cavalry, heavy crossbowmen, and mountain scouts. A veteran defender who honed his martial craft in frontier clashes, he has transformed Guarda into an impregnable sentinel guarding the direct invasion route from Castile toward Coimbra. In 1259, as geopolitical tensions simmer across Iberia, Governor Gato tirelessly oversees the stockpiling of grain, the reinforcement of curtain walls, and the strict policing of transit passes. Austere, laconic, and vigilant, he enjoys the complete confidence of King Afonso III as the guardian of the kingdom's eastern gate. Steeped in martial discipline, Alfonso Pires Gato stands as an unshakeable mountain bulwark defending the territorial integrity of Portugal. Establishing an unbroken chain of beacon towers along the granite heights of Guarda, Alfonso Pires ordered sentries to maintain constant watch over Castilian movements. Unyielding and austere, his aggressive defensive posturing deterred foreign incursions, keeping the kingdom's eastern gateway locked against invasion. His uncompromising discipline and watchful vigilance ensure that the fortress of Guarda remains an impenetrable shield protecting the eastern march.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold the fortress of Guarda against all odds, denying any Castilian invasion force entry into Portugal",
+    "Maintain an unbroken beacon and courier network to alert royal armies within hours of any threat",
+    "Eradicate cross-border banditry to secure commercial trade routes and fund garrison defenses"
+  ],
+  "Values": [
+    "A border warden's sacred trust is eternal vigilance; yielding an inch of sovereign soil is treason",
+    "Iron discipline and unyielding preparedness are the only true armor against foreign surprise",
+    "Unwavering loyalty to the crown, selfless dedication, and standing firm unto death"
+  ],
+  "Fears": [
+    "A sudden Castilian winter offensive bypassing snowbound passes to sever his supply lines",
+    "Subterranean cisterns failing or being poisoned during a siege, forcing his garrison into ruin"
+  ],
+  "SpeechStyle": "Blunt, steely, and authoritative; speaks with the disciplined economy, vigilant brevity, and grim resolve of a hardened frontier warden.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -2752,7 +2752,7 @@ internal static class Program
             "queued NPC reply publication method is not unique");
         ParameterInfo[] enqueueParameters = enqueueCandidates[0].GetParameters();
         Require(enqueueCandidates[0].ReturnType == typeof(void) &&
-                enqueueParameters.Length == 16 &&
+                enqueueParameters.Length == 17 &&
                 enqueueParameters[0].ParameterType == npcPacket &&
                 enqueueParameters[1].ParameterType == typeof(string) &&
                 IsListOf(enqueueParameters[2].ParameterType, npcPacket) &&
@@ -2769,7 +2769,8 @@ internal static class Program
                 enqueueParameters[12].ParameterType == typeof(int) &&
                 enqueueParameters[13].ParameterType == typeof(Func<bool>) &&
                 enqueueParameters[14].ParameterType == typeof(string) &&
-                enqueueParameters[15].ParameterType == typeof(string),
+                enqueueParameters[15].ParameterType == typeof(string) &&
+                IsTaskOfNamedType(enqueueParameters[16].ParameterType, "AnimusForge.LocalTtsSpeech"),
             "queued NPC reply publication signature drifted");
 
         MethodInfo[] shownCandidates = behavior.GetMethods(flags)
@@ -2779,15 +2780,25 @@ internal static class Program
             "shown NPC reply publication method is not unique");
         ParameterInfo[] shownParameters = shownCandidates[0].GetParameters();
         Require(shownCandidates[0].ReturnType != typeof(void) &&
-                shownParameters.Length == 6 &&
+                shownParameters.Length == 8 &&
                 shownParameters[0].ParameterType == npcPacket &&
                 shownParameters[1].ParameterType.FullName ==
                     "TaleWorlds.MountAndBlade.Agent" &&
                 shownParameters[2].ParameterType == typeof(string) &&
                 shownParameters[3].ParameterType == typeof(bool) &&
                 shownParameters[4].ParameterType == typeof(bool) &&
-                shownParameters[5].ParameterType == typeof(bool),
+                shownParameters[5].ParameterType == typeof(bool) &&
+                shownParameters[6].ParameterType.FullName == "AnimusForge.LocalTtsSpeech" &&
+                IsTaskOfNamedType(shownParameters[7].ParameterType, "AnimusForge.LocalTtsSpeech"),
             "shown NPC reply publication signature drifted");
+    }
+
+    private static bool IsTaskOfNamedType(Type candidate, string elementFullName)
+    {
+        return candidate != null &&
+               candidate.IsGenericType &&
+               candidate.GetGenericTypeDefinition() == typeof(System.Threading.Tasks.Task<>) &&
+               candidate.GetGenericArguments()[0].FullName == elementFullName;
     }
 
     private static void VerifySpeechPromptAdmissionAfterYield()
@@ -3067,6 +3078,13 @@ internal static class Program
         MethodInfo tryGetConsentClassifier = host.GetMethod(
             "TryGetConsentClassifier",
             BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        // Probe-only: load the packaged prompt corpus that normal startup loads before the bridge.
+        Type promptPackage = module.GetType("AnimusForge.SceneActions.Core.SceneActionPromptPackage", false, false);
+        string corpusPath = Environment.GetEnvironmentVariable("AF_SCENE_PROMPT_CORPUS");
+        if (promptPackage != null && !string.IsNullOrEmpty(corpusPath))
+        {
+            promptPackage.GetMethod("Load", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] { corpusPath });
+        }
         object[] providerLookup = { "animusforge.main.v130", null };
         object[] consentProviderLookup = { "animusforge.main.v130", null };
         var observedMethods = new List<MethodBase>();

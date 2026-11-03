@@ -1,0 +1,42 @@
+{
+  "Id": "rule_micro_env_04",
+  "Name": "Folk Practice of rule_micro_env_04",
+  "Keywords": [
+    "rule_micro_env_04",
+    "rule_micro_env_04 Practice",
+    "rule_micro_env_04 Custom",
+    "rule_micro_env_04 Tradition"
+  ],
+  "RagShortTexts": [
+    "Historical micro-concept rule_micro_env_04 concerning ancient folkways, tactical mechanics,..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In ancient Mediterranean daily life, the practice of Folk Practice of rule_micro_env_04 represented a vital micro-level custom. Governing practical routines, physical tools, or sacred folk taboos, it permeated civilian and military existence, connecting seasonal agricultural rhythms, camp discipline, and streetwise survival across Roman, Punic, and Celtic communities."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "From the muddy marching trenches to frontline combat, every veteran understood the reality of Folk Practice of rule_micro_env_04. Out here in the field, surviving the cold nights and brutal centurions takes practical cunning and tough leather, not fancy senatorial speeches!"
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A wise magistrate or patrician officer never ignores Folk Practice of rule_micro_env_04. Beneath the grand strategies of statecraft, the morale of legions and the stability of urban plebeians rest upon upholding these rigorous customs and practical necessities."
+    }
+  ],
+  "TextMappings": []
+}

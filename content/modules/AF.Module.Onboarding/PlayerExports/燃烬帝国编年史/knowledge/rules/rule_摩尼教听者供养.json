@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v4",
+  "Keywords": [
+    "摩尼教听者供养"
+  ],
+  "RagShortTexts": [
+    "听者提供食物，支持受严格戒律约束的选民。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "听者向选民提供食物并寻求祝福，让严禁某些生产活动的修行者得以维生。捐助者承担采购和劳动，接受者承担教导与宗教职责。彼此依赖不表示所有人拥有相同地位或财产。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

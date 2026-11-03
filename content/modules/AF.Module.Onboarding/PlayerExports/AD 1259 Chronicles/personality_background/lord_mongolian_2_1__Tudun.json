@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mongolian_2_1",
+  "HeroName": "Tudun",
+  "Description": "Tudun is a heavyset man near fifty, with high cheekbones, a clean-shaven jaw, and hair braided thin above his ears. He wears an indigo deel under a black leather coat studded with bronze rivets, and a curved sword with a red-cord grip hangs at his waist, an heirloom from his father. His name comes from a Turkic title for a governor who stationed himself in a settlement, supervised local tribes, and pressed tribute collection, so the name itself claims authority over the frontier. As a young man he rode with elders on pasture inspections and border rounds, learning to count horses, grain, and households before he spoke. Rivals in the lineage rarely hear him argue in council. He turns every dispute into a ledger and asks each opponent to sign each line, which leaves them no room to deny what they already accepted. He shares the household with Ulakci, who keeps the granaries and marriage correspondence while he keeps the frontier books, and the two rarely quarrel in public. His ambition is concrete: the tax registers and post stations of the western pastures should stay under his own house for generations. His fear is equally concrete. If the royal branches split, a stronger outside power could seize these ledgers and erase his name from the record. The two drives feed each other, so after every concession he sits down and recalculates what he has given away and what he has received in return.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "He wants the western pastures, tax registers, and post stations to stay under his own branch, keeping envoys and rival houses away from the ledgers he built.",
+    "He keeps the royal branches in balance, yields only when necessary, and demands a written promise of troops and tribute for every concession he makes.",
+    "He wants his name in the family chronicle as the man who put the frontier accounts in order, not as the man who won one lucky battle."
+  ],
+  "Values": [
+    "He values contracts and figures. Whatever he promises, he pays out according to the books, and he expects stewards to record every grain and household entry.",
+    "He respects elders' experience but never discards a capable steward for lacking noble birth, even if that man comes from a conquered tribe with clean accounts.",
+    "He keeps measured mercy toward frontier families, checking the harvest before collecting tribute and postponing levies in famine rather than watch herders scatter."
+  ],
+  "Fears": [
+    "He fears that once the royal branches split, a stronger outside power will seize the western registers and post stations, leaving his name as one unpaid debt.",
+    "He fears supplies failing on a long march, hungry men wavering, and losing control of the whole column far from the grasslands he knows."
+  ],
+  "SpeechStyle": "He speaks slowly, opening with grain and household figures. He addresses stewards by their posts. He keeps a flat tone with rivals. In arguments he often says: line up the ledger first, then talk about hearts.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

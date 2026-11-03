@@ -1,0 +1,52 @@
+{
+  "Id": "rule_bog_walking_wooden_snowshoes",
+  "Keywords": [
+    "travel on broad snow boards",
+    "finding footing in wet woodland"
+  ],
+  "RagShortTexts": [
+    "Broad boards spread weight on snow; loads, slopes and snow conditions still limit travel.",
+    "Floating bog and thin ice require separate judgment and local route knowledge."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In deep northern forest snow, broad boards or framed footgear spread a walker’s weight and reduce sinking. Bindings must hold without cutting circulation, and turning, climbing and carrying loads take effort. A broken trail helps followers, but fresh snow, crust and fallen trees alter footing. A pedestrian route does not necessarily admit a loaded cart.\n\nBogs present different problems: roots can cover soft mud, light snow conceal channels, and surface ice fail beneath people or horses. Those familiar with ditches, woodland margins and high ground can choose firmer routes, but probing and spacing still matter. Wet foot wraps, broken bindings and a lost way home can cost more than a shorter journey saves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Winter messengers need provisions, guides and a return route. A short line across wet ground may in practice require a long detour to a maintained crossing or firm bank."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A scout’s trail may not carry an armoured party. Reports need snow depth, channels and stopping places, not merely the claim that one person crossed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Wood gathering and stock searches need enough daylight for return. Bindings can be repaired, but wet feet slow every step; a companion who knows the route helps find the way back."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

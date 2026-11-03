@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_3_2_1",
+  "HeroName": "Bernat Guillem II d'Entença, Baron of Alcolea",
+  "Description": "Bernat Guillem II d'Entença, Baron of Alcolea and Chiva, is a formidable knight of the highest Aragonese and Catalan nobility, nephew and battle-tested lieutenant to King James I. Governing vast ancestral lands along the Cinca river and rich reconquered estates in Valencia, Don Bernat has spent his life in the saddle of crusader warfare. Having spearheaded the vanguard during the historic conquest of Valencia in 1238, he earned a legendary reputation for unyielding fortitude in suppressing the Mudejar uprisings across the Levant. By 1259, standing at the height of his military prestige, he commands a retinue of battle-hardened Catalan knights and mountain scouts. His marriage to Doña Juliana of the House of Empúries forged an unbreakable alliance between inland baronies and coastal maritime power. Spartan, stern, and steeped in chivalric discipline, Baron Bernat stands as a supreme warrior-magnate anchoring the defense of the southern frontier. Leading heavy cavalry charges along the banks of the Cinca, Bernat Guillem II drilled his knights daily until sunset in full battle plate. Equitable in dispensing rewards yet merciless toward breaches of feudal duty, his fearsome martial renown struck terror into Moorish raiders and commanded reverence throughout the kingdom. His battlefield ferocity and unswerving chivalric honor make Baron Bernat an iconic commander along the contested borders of eastern Iberia.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure the fortified baronies of Alcolea and Chiva to anchor Entença dominance in Valencia",
+    "Drill his heavy cavalry vanguard to rapidly deploy against any southern Mudejar revolts",
+    "Defend the traditional judicial privileges of inland barons against royal encroachments"
+  ],
+  "Values": [
+    "Knightly fiefs sealed with blood are sacred trusts; cowardice in combat is an unpardonable sin",
+    "Iron discipline and battlefield courage alone validate a nobleman's right to rule his vassals",
+    "Uphold feudal fidelity, protect sworn followers, and honor the chivalric code unto death"
+  ],
+  "Fears": [
+    "A sudden Moroccan invasion ravaging his newly settled lands in the Kingdom of Valencia",
+    "Royal intrigue in Barcelona cutting off logistical funding for his frontline cavalry"
+  ],
+  "SpeechStyle": "Resonant, austere, and commanding; speaks with the disciplined brevity, tactical precision, and lethal authority of a veteran crusader captain.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v8",
+  "Keywords": [
+    "塞琉西亚粮运与驻军"
+  ],
+  "RagShortTexts": [
+    "塞琉西亚附近的罗马兵力能阻击来敌，河口运输却仍可能被截断。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "塞琉西亚附近的罗马兵力能阻击来敌，河口运输却仍可能被截断。城内人和驻军共同依赖粮船，增兵还会增加口粮需求。守住城墙、守住卸粮通路和补满仓库必须分别完成。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

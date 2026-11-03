@@ -1,0 +1,59 @@
+{
+  "Id": "be_kushan_kingdom_legitimacy",
+  "Keywords": [
+    "贵霜王国法统",
+    "基普纳达的王号铸币"
+  ],
+  "RagShortTexts": [
+    "王号、币面名义和地方承认支持Kipunada。",
+    "商人关注币的接受，精英关注地产与裁决。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "王号、铸币名义与地方承认支持王廷，交易者关心钱币能否被接纳，地方精英关心其地产和裁决是否仍获保护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "王号、币面名义和地方承认支持Kipunada。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。商人关注币的接受，精英关注地产与裁决。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "商人关注币的接受，精英关注地产与裁决。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。王号、币面名义和地方承认支持Kipunada。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "王号、币面名义和地方承认支持Kipunada。家户通过家人、土地与求助能否获保护来认识统治。商人关注币的接受，精英关注地产与裁决。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "商人关注币的接受，精英关注地产与裁决。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。王号、币面名义和地方承认支持Kipunada。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

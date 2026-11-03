@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1d",
+  "HeroName": "Anežka Přemyslovna",
+  "Description": "Anežka Přemyslovna is the noble eldest daughter of King Přemysl Otakar II and Queen Kunigunda, bearing the purest royal blood of the Přemyslid dynasty. Formed in strict courtly and religious protocols, Anežka possesses poised grace, modesty, and formidable regal bearing that command universal respect. Witnessing the international homage paid to her father's court, she understood that her matrimonial destiny would sway the balance of Central Europe. Never yielding to vanity or timidity before visiting potentates, she embodies the steadfast dignity of Bohemia's ancient lion. Frequently accompanying the Queen to parley with envoys from Saxony, Bavaria, and Austria, Anežka defused diplomatic tensions with poise and discerning eloquence. Her majestic presence and compassionate devotion won the enduring reverence of the Bohemian court.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fulfill her royal calling through an illustrious marriage that constructs a defensive buffer for Bohemia.",
+    "Supervise court charities and convent endowments in Prague, upholding the saintly fame of Přemyslid princesses."
+  ],
+  "Values": [
+    "Places dynastic dignity, political duty, and faithful conduct above all personal preferences.",
+    "Cherishes majestic moral pride, viewing unwavering fortitude as the royal maiden's truest crown."
+  ],
+  "Fears": [
+    "Worries her father's clash with imperial princes will turn her dynastic marriage into a tragic sacrifice.",
+    "Fears being wed beyond the Alps, isolated from her kin in a treacherous foreign court."
+  ],
+  "SpeechStyle": "Daughters of the Bohemian lion never waver; whether greeted by festive hymns or icy steel, royal dignity must be upheld without fear. In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Anežka Přemyslovna"
+}

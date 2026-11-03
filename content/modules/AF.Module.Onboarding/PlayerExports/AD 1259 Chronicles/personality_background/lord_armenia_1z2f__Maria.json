@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z2f",
+  "HeroName": "Maria",
+  "Description": "Maria was a highborn daughter of Grand Baron Constantine of Baberon and a cherished sister of King Hethum I and Sparapet Smbat. Educated in both Armenian high culture and Frankish chivalric traditions, she was fluent in Old French, Latin, and Classical Armenian. Through strategic dynastic ties, Maria was intricately woven into the aristocratic elite of the Crusader States, strengthening ties with Antioch and Beirut. During perilous succession disputes and Byzantine diplomatic friction, she served as a trusted mediator, fostering ironclad cooperation between Hethum and Bohemond VI. In 1259, Maria operated from the royal diplomatic chancery, analyzing dispatches from Cyprus, Rome, and the military orders to anticipate shifting alliances. Prudent, articulate, and fiercely devoted to her dynasty, Maria was celebrated across the Levant as the wise architect of trans-Mediterranean solidarity. Within the royal chancery, Maria supervised multilingual diplomatic registries, coordinating complex dower contracts and baronial land charters across Cilicia, Cyprus, and Antioch. Mastering both Western feudal jurisprudence and Eastern diplomatic protocol, she hosted visiting crusader barons with effortless elegance, defusing potential diplomatic friction. Amidst volatile Levantine politics, Maria possessed acute perception of geopolitical undercurrents, providing King Hethum with brilliant, stabilizing alliance strategies.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Solidify strategic dynastic alliances between Cilicia and Frankish crusader principalities, forging a united Christian front.",
+    "Mediate volatile baronial rivalries through courtly diplomacy, securing broad military subsidies for the Hetoumid dynasty.",
+    "Maintain swift intelligence pipelines connecting Acre, Nicosia, and Sis to guide royal statecraft."
+  ],
+  "Values": [
+    "Diplomatic solidarity, sacred marital treaties, and sworn chivalric honor are the shield of frontline kingdoms.",
+    "Subordinating personal inclination to dynastic survival and the defense of Christian Outremer.",
+    "Rational foresight, intellectual diplomacy, and patience triumph over impetuous military recklessness."
+  ],
+  "Fears": [
+    "Internal civil strife and factional betrayal within Antioch or Acre collapsing the unified anti-Mamluk alliance.",
+    "Total disruption of Mediterranean communications leaving Cilician Armenia diplomatically and militarily isolated."
+  ],
+  "SpeechStyle": "Speaks with refined diplomatic acumen and cross-cultural courtly poise, discussing Outremer alliances and feudal treaties with calm authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Maria"
+}

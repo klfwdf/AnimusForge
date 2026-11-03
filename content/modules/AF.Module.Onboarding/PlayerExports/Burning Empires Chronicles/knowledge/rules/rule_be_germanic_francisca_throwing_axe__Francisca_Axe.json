@@ -1,0 +1,38 @@
+{
+  "Id": "be_germanic_francisca_throwing_axe",
+  "Keywords": [
+    "Axes in hand and the cost of throwing"
+  ],
+  "RagShortTexts": [
+    "An axe can strike in the hand; throwing it sacrifices immediate use in close combat."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "An axe depended on its edge, haft and secure mounting. Striking required room to swing. Once thrown, it was no longer in the hand, and recovery depended on where it landed and who controlled the ground. Axes within a group could vary in form and purpose; work tools also needed maintenance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "The user checked for a loose or split haft and damage to the edge. Before throwing, companions and the target had to be clearly visible. A shield, spear or another weapon was then needed against approaching opponents. An axe lying among enemies could not be safely retrieved at will."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Supplying axes required haft timber, iron and repair skills, with replacements for losses. A commander arranging close ranks had to consider swinging space and danger to companions. A weapon’s reputation did not replace training, cohesion or suitable ground."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

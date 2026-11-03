@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_3f",
+  "HeroName": "Osl Katalin",
+  "Description": "Osl Katalin is the noble chatelaine and wife of János Csák, belonging to the ancient and powerful Osl clan of Sopron. Rivaling the Csáks in antiquity, the Osl dynasty held hereditary offices along the Austrian march, controlling vital trade routes and border fortresses along the upper Danube. Brilliant, regal, and diplomatically perceptive, Katalin joined two of Hungary's mightiest aristocratic lineages, cementing extensive western alliances. Within Csák domains, her decisive leadership commands respect from garrison commanders and feudal tenants alike. She expertly oversees toll stations, commercial registries, and household dispensaries, ensuring reliable resources for knightly retainers. In 1259, as Bohemian armies amass along the Austrian border, Katalin monitors frontier intelligence with keen discernment, serving as an unshakeable guardian of her family's western interests. Katalin operated commercial registries, toll gates, and supply depots linking Sopron and the Danube, maximizing clan trade revenues. Leveraging the vast western political influence of Clan Osl, she mediated disputes between rival noble factions with commanding regal poise. Her astute economic stewardship provided reliable financial strength to equip the armored cavalry regiments commanded by her husband. Her decisive political diplomacy and commercial oversight ensured that the western march stood firmly united beneath the allied banners of Osl and Csák.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate the combined hegemony of Clan Csák and Clan Osl across Upper Hungary and the western marches.",
+    "Protect family properties from devastation, providing continuous material support for her husband's campaigns."
+  ],
+  "Values": [
+    "Hold ancestral clan honor and marital alliances as supreme sacred trusts, embodying regal fortitude.",
+    "Value territorial revenues and military preparedness, scorning timid hesitation in times of crisis."
+  ],
+  "Fears": [
+    "Fears Bohemian incursions striking ancestral fortresses around Sopron and severing vital trade routes.",
+    "Dreads internal inheritance squabbles weakening clan hegemony and inviting rival baronial encroachments."
+  ],
+  "SpeechStyle": "The proud lineages of Osl and Csák unite within these halls! The frontier winds of Sopron shall never bow our banners; our foundation remains unshakeable! Our alliance stands ironclad; our combined might guarantees lasting victory!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

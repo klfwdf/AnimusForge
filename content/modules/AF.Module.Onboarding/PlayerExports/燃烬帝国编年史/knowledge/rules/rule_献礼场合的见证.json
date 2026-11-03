@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v3",
+  "Keywords": [
+    "献礼场合的见证"
+  ],
+  "RagShortTexts": [
+    "献礼的在场见证与转述消息有不同范围。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "首领向尤利安献冠时，接待官、使者与随从见到礼物和合作表示。不在场者需经转述知晓。日后争论承诺范围时，谁听见了什么与礼物本身一样重要。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

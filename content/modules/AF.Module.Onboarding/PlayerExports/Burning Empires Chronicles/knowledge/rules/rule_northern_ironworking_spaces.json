@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v9",
+  "Keywords": [
+    "Northern ironworking spaces"
+  ],
+  "RagShortTexts": [
+    "Ironworking near a stone tower needed fuel, materials and craftsmen for making and repairs."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ironworking, dwelling and storage areas lay close together near the Midhowe stone tower. Working iron required fuel, material and tools, and repairs consumed time. A leader seeking weapons still needed craftsmen and supplies rather than the mere presence of a hearth."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

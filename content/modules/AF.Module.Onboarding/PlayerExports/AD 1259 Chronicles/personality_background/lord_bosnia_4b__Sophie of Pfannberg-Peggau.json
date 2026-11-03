@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_4b",
+  "HeroName": "Sophie of Pfannberg-Peggau",
+  "Description": "Sophie of Pfannberg-Peggau, aged thirty-eight in 1259, is the comital daughter of the powerful Styrian House of Pfannberg and the noble consort of Conrad I of Sanneck. Her marriage brought immense prestige, strategic alliances, and diplomatic leverage along the Mur river corridor directly to the mountain seat of Žovnek. Highly cultured, pious, and politically astute, Sophie manages the vast domestic affairs, feudal charters, and estate revenues of Castle Sanneck. Amid the escalating warfare between Bohemia and Hungary in 1259, she maintains active correspondence with her comital kin in Peggau, ecclesiastical lords in Salzburg, and allied houses across Carinthia. Her sharp intellect and graceful diplomacy ensure that the Lords of Sanneck receive timely political intelligence, cementing the dynasty's standing among the high aristocracy of the southeastern Holy Roman Empire. Lady Sophie manages Castle Sanneck's domestic finances with extraordinary acumen, keeping cellars stocked with flour and weapons while endowing local monasteries. Well-versed in Styrian and Carinthian noble matrimonial alliances, she uses her keen political instincts to arrange advantageous betrothals for her children. At the crossroads of Central European strife, this noble Pfannberg daughter serves as the indispensable domestic foundation of the Sanneck-Celje dynasty. Her diplomatic intelligence and comital stature ensure that the Lords of Sanneck maintain vital alliances, anchoring their authority amidst imperial turmoil.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with poised aristocratic elegance and comital grace, phrasing her words meticulously to glean political intent while upholding courtly etiquette.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

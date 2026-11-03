@@ -1,0 +1,59 @@
+{
+  "Id": "be_slavic_kingdom_internal",
+  "Keywords": [
+    "Venedians Nobility",
+    "Venedian owners farmers and followers"
+  ],
+  "RagShortTexts": [
+    "Lekh coordinates chiefs, boat owners, farmers and followers.",
+    "Exchange returns and levies impose different risks."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lekh joins chiefs and households. Boat owners, cultivators and fighters bear different risks and disagree over gains and levies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lekh coordinates chiefs, boat owners, farmers and followers. Followers retain family ties; decisions about guards and distant service affect common participation. Exchange returns and levies impose different risks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Exchange returns and levies impose different risks. Coordination allocates actual supply and protection duties, not merely titles. Lekh coordinates chiefs, boat owners, farmers and followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Lekh coordinates chiefs, boat owners, farmers and followers. Households compare burdens with neighbors; unmatched protection weakens cooperation. Exchange returns and levies impose different risks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Exchange returns and levies impose different risks. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Lekh coordinates chiefs, boat owners, farmers and followers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

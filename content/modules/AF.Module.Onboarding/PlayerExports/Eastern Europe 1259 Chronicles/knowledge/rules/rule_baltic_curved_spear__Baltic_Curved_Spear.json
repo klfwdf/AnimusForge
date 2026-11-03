@@ -1,0 +1,53 @@
+{
+  "Id": "rule_baltic_curved_spear",
+  "Keywords": [
+    "Baltic spear forms",
+    "Baltic spear shaft fitting",
+    "Baltic throwing and thrusting spears"
+  ],
+  "RagShortTexts": [
+    "Baltic throwing and thrusting spears place different demands on shafts and head fittings.",
+    "Forest paths, shields and spacing shape spear use; smiths and woodworkers maintain fittings."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Baltic settlements fit iron spearheads to wooden shafts. Light throwing spears and longer weapons retained in the hand serve different purposes. Narrow forest paths constrain deployment, and fighting beside shields requires space for neighboring weapons. Loose fittings, split shafts and damp storage reduce reliability; repair needs suitable wood, ironwork and time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A Baltic spearman must watch the shaft and its fitting on the march. After throwing a weapon he needs another means of defense or support. Projecting shafts meet trees and neighboring shields on forest paths, making spacing important. After wet travel, loose joints and splits matter alongside a sharp point."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Equipping Baltic followers requires smiths, woodworkers and suitable shafts. A chief needs repair and recovery arrangements as well as a count of weapons, distinguishing throwing duties from close defense. Heads supplied without usable shafts leave additional labor and materials to be found at assembly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Baltic households supplying shafts, fittings or fighters also lose farm labor. Woodworkers select straight material and fit heads, while smiths repair damaged iron. A broken shaft brought home creates another demand before the next service. Weapon maintenance therefore falls on communities as well as the armed man."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_sabir_kingdom_internal",
+  "Keywords": [
+    "Sabirs Nobility",
+    "Sabir riders and camp-guarding kin"
+  ],
+  "RagShortTexts": [
+    "Kutilzis coordinates kin retaining households and reward claims.",
+    "Joint fighting still needs people guarding camps."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kutilzis joins mounted groups and kin chiefs retaining their own households and reward claims. Joint action also needs people left to guard camps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kutilzis coordinates kin retaining households and reward claims. Followers retain family ties; decisions about guards and distant service affect common participation. Joint fighting still needs people guarding camps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Joint fighting still needs people guarding camps. Coordination allocates actual supply and protection duties, not merely titles. Kutilzis coordinates kin retaining households and reward claims."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kutilzis coordinates kin retaining households and reward claims. Households compare burdens with neighbors; unmatched protection weakens cooperation. Joint fighting still needs people guarding camps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Joint fighting still needs people guarding camps. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Kutilzis coordinates kin retaining households and reward claims."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

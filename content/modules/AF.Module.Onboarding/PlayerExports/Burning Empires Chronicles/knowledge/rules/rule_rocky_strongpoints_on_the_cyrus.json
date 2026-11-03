@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v4",
+  "Keywords": [
+    "Rocky strongpoints on the Cyrus"
+  ],
+  "RagShortTexts": [
+    "Strabo places Harmozica and Seusamora on rocky positions beside the Cyrus and Aragus."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Strabo places Harmozica and Seusamora on rocky positions beside the Cyrus and Aragus. River approaches, confluences and high ground worked together, making control of a water route a different task from holding one pass."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

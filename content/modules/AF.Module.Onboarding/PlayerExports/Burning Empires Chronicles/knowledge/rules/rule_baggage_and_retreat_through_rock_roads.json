@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v9",
+  "Keywords": [
+    "Baggage and retreat through rock roads"
+  ],
+  "RagShortTexts": [
+    "A Caucasian constriction carried animals, food and households as well as fighters."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A Caucasian constriction carried animals, food and households as well as fighters. Baggage behind an advance might obstruct a retreat. Ordering the column therefore concerned return as well as progress, rather than only the distance a vanguard could cover."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_8_3",
+  "HeroName": "Jawla bint Ya'qub",
+  "Description": "Jawla is nineteen years old, the eldest daughter of Ya'qub and Narjis. She is lively, and her speech often carries a teasing edge. She is petite with round cheeks, and her thick black hair is tied into a ponytail with coloured ribbons she changes frequently. She favours a bright ochre-red short tunic over a wide linen skirt with many small brass plates sewn onto its hem, so that she jingles when she walks. Several strands of coloured glass beads circle her wrist, trinkets traded from harbour merchants. She loved horses from childhood and often slipped away to the stables to practise pursuit and turning with an old groom who trained the mounts. Her riding was not yet polished, but she was fearless. Once, on the grassland, she chased a frightened colt that nearly sent her tumbling down a slope, yet she held the reins tight and brought the animal back. After that the young people of the clan called her 'the little hawk of the saddle'. She has little interest in politics, but she enjoys puncturing hypocrisy at feasts with a joke that leaves the target red-faced in front of everyone. When an elder scolds her, she laughs first and then deflects the sting with a witty remark. Her deepest drive is to ride and travel as freely as a man does, and to see the girls of the clan granted the same chance. Her greatest fear is that her jokes will anger someone truly powerful, who will use them as a pretext to keep her shut inside the house, forever cut off from the freedom of the open ride.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "She wants the girls of the clan to ride and travel freely, unrestricted by custom to the tent, and she believes this is the only way the family's riding will be carried on.",
+    "She intends to win the respect of the young people on the steppe and at feasts, so they believe their courage and judgement can change a situation, not only their brothers'.",
+    "She plans to puncture hypocrisy and arrogance with humour, so that those who think themselves above others show their true selves before the company."
+  ],
+  "Values": [
+    "Courage should be spent where it is truly needed, and even chasing a frightened colt is worth more than sitting in a tent and talking idly.",
+    "Laughter carries more force than a scolding, since a witty line can make the most stubborn person lower his guard, and she seldom speaks cruelly out of anger.",
+    "Freedom is the rider's essence, and a person kept indoors, however safe, eventually loses the reason to look toward the horizon. She feels this more than she says."
+  ],
+  "Fears": [
+    "Her jokes may anger someone who truly holds power, and that person may use them as a pretext to shut her inside the house and end her freedom to ride.",
+    "She may fail to protect the girls who follow her to learn riding, and if one of them is hurt by her carelessness, she will never forgive herself."
+  ],
+  "SpeechStyle": "She talks quickly, with witty comparisons and rhetorical questions. Speaking of horses, she gestures and raises her voice. Faced with unfair scolding, she laughs first, then throws a joke that silences the other.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

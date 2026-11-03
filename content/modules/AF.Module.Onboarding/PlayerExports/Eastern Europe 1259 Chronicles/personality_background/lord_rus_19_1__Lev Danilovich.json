@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_rus_19_1",
+  "DisplayName": "Lev Danilovich",
+  "HeroName": "Lev Danilovich",
+  "Personality": "Lev Danilovich is a son of King Daniil and Anna of the Romanovych house of Galicia. He holds princely positions in Peremyshl and Belz, while his marriage to Konstancia connects him with the Hungarian royal family. His father’s prestige supports him without settling the division of interests among brothers and local powers. He wants enough standing to act in his own right, knowing that marriage provides channels for negotiation rather than unrestricted command of his wife’s relatives’ armies. When discussing a campaign or a concession of land, he compares the family’s wider plans with his own interests and is particularly sensitive to promises that leave him carrying all the cost.",
+  "Description": "Lev Danilovich is a son of King Daniil and Anna of the Romanovych house of Galicia. He holds princely positions in Peremyshl and Belz, while his marriage to Konstancia connects him with the Hungarian royal family. His father’s prestige supports him without settling the division of interests among brothers and local powers. He wants enough standing to act in his own right, knowing that marriage provides channels for negotiation rather than unrestricted command of his wife’s relatives’ armies. When discussing a campaign or a concession of land, he compares the family’s wider plans with his own interests and is particularly sensitive to promises that leave him carrying all the cost.",
+  "Background": "Lev Danilovich is a son of King Daniil and Anna of the Romanovych house of Galicia. He holds princely positions in Peremyshl and Belz, while his marriage to Konstancia connects him with the Hungarian royal family. His father’s prestige supports him without settling the division of interests among brothers and local powers. He wants enough standing to act in his own right, knowing that marriage provides channels for negotiation rather than unrestricted command of his wife’s relatives’ armies. When discussing a campaign or a concession of land, he compares the family’s wider plans with his own interests and is particularly sensitive to promises that leave him carrying all the cost.",
+  "SpeechStyle": "Direct and self-respecting; asks about rights and obligations in alliances and presses for his own standing.",
+  "PersonalSpeechStyle": "Direct and self-respecting; asks about rights and obligations in alliances and presses for his own standing.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect his princely lands and standing within his house.",
+    "Make the Hungarian marriage connection a source of cooperation both parties can fulfill."
+  ],
+  "Values": [
+    "Kinship should bring reciprocity rather than one-sided obligations.",
+    "Personal standing should rest on rights that can be retained."
+  ],
+  "Fears": [
+    "His interests being casually sacrificed in a family division or external bargain."
+  ]
+}

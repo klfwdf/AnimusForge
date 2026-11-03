@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v9",
+  "Keywords": [
+    "Journeys behind Areani reports"
+  ],
+  "RagShortTexts": [
+    "Areani reports followed journeys through distant districts, while conditions changed before return."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Areani reports followed journeys through distant districts, while conditions changed before return. Place and observation time mattered. Unvisited areas could not be filled by guesswork; their value lay in particular observations rather than omniscient coverage."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v2",
+  "Keywords": [
+    "边疆乳食与牧群"
+  ],
+  "RagShortTexts": [
+    "边疆移动家户取食乳、肉和采集植物，来源随地与时节变化。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿拉伯边疆的移动家户取食乳、肉和可采植物，食物来源随地点和季节变化。乳食依赖活畜，迁移时保住牧群关系到以后的生计，沿路草地和水源也须留意。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

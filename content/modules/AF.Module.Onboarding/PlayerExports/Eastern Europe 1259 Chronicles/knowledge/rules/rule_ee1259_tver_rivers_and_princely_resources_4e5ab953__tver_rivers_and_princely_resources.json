@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_tver_rivers_and_princely_resources_4e5ab953",
+  "Keywords": [
+    "Tver's princes and river routes",
+    "Seasonal crossings around Tver"
+  ],
+  "RagShortTexts": [
+    "Tver gathers goods through the Volga and Tvertsa, linking princely resources to local settlements.",
+    "Ice, break-up and floods alter crossings; garrisons and envoys still need steady provisions."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tver links surrounding settlements where the Tvertsa meets the Volga, drawing revenue, goods and messages along the rivers. Landings and crossings need boatmen and guards, with dependable routes changing by season. A prince receiving envoys or assembling followers still pays for food, fodder and lodging."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tver boatmen adjust landings to water levels; uncertain ice can make a detour quicker than crossing. Market households may be asked to carry princely passengers or goods. Custody, boat supply and responsibility for delay need agreement, since a stalled journey costs earnings and leaves families arranging other food."
+    }
+  ],
+  "TextMappings": []
+}

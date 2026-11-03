@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_7f",
+  "HeroName": "Theodóra Kantakouzīnī́ Raoúlaina",
+  "Description": "Theodóra Kantakouzīnī́ Raoúlaina, aged nineteen, is the daughter of nun Eulogía, niece of Michael VIII, and one of the most brilliant female scholars of the Byzantine world. Married in youth to the ill-fated Protovestiarios George Mouzalon, she witnessed her husband's brutal butchery at Sosandra in 1258, an ordeal that forged an indomitable soul. Refusing to succumb to despair, she immersed herself in classical Hellenic literature, rhetoric, and patristic philosophy, becoming a master scribe of legendary precision. Her meticulously transcribed manuscripts of classical orators such as Aelius Aristides are celebrated by imperial intellectuals as masterpieces of Byzantine calligraphy. Inheriting her mother's fierce moral fortitude, she stands unyielding against papal theological encroachment. Theodóra shines as an immortal beacon of the Palaiologan cultural renaissance and unyielding defender of Eastern Orthodox intellectual freedom and patristic dogma. Surrounded by ancient parchment scrolls in quiet contemplation, she pursues philosophical truth with unyielding perseverance, transmuting personal sorrow into an enduring beacon of cultural enlightenment and Orthodoxy.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the 7f lineage across Roman realms.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for the impending imperial campaign.",
+    "Uphold the Orthodox faith and classical heritage against Western Latin usurpers and eastern incursions alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox dogma and imperial Roman tradition, rejecting theological compromise.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and imperial prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with austere classical elegance, philosophical precision, and cold intellectual dignity, radiating unwavering moral resolve and scholarly depth.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

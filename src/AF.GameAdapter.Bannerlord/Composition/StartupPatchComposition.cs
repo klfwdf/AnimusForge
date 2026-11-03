@@ -396,6 +396,14 @@ internal static class StartupPatchComposition
 			}
 			try
 			{
+				harmony.CreateClassProcessor(typeof(Patch_SceneTaunt_CrimeSettlement)).Patch();
+			}
+			catch (Exception sceneCrimeSettlementEx)
+			{
+				Logger.LogTrace("SubModule", ">>> SceneTaunt native crime settlement patch init failed: " + sceneCrimeSettlementEx.Message);
+			}
+			try
+			{
 				BannerlordExceptionSentinel.Initialize(harmony);
 			}
 			catch (Exception ex17)

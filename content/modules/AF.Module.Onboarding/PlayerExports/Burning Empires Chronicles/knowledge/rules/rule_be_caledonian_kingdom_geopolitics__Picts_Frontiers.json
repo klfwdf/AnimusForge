@@ -1,0 +1,59 @@
+{
+  "Id": "be_caledonian_kingdom_geopolitics",
+  "Keywords": [
+    "Picts Frontiers",
+    "Northern British wetlands and firths"
+  ],
+  "RagShortTexts": [
+    "Northern British valleys, wetlands and firths connect settlements.",
+    "Knowledge of tracks and tides affects deliveries and travel."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Northern valleys, wetlands and firths separate and connect settlements. Knowledge of tracks and tides determines safe travel; Roman roads and posts form another network to the south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Northern British valleys, wetlands and firths connect settlements. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Knowledge of tracks and tides affects deliveries and travel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Knowledge of tracks and tides affects deliveries and travel. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Northern British valleys, wetlands and firths connect settlements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Northern British valleys, wetlands and firths connect settlements. Closed routes may separate families from goods, imposing costs on those remaining at home. Knowledge of tracks and tides affects deliveries and travel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Knowledge of tracks and tides affects deliveries and travel. Cargo passes different carriers, making distant route changes become local shortages through delay. Northern British valleys, wetlands and firths connect settlements."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

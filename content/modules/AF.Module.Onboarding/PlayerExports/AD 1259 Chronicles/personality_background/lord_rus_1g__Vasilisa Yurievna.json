@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Vasilisa Yurievna of Vladimir belongs to the senior Suzdalian princely nobility, renowned across the Upper Volga for her exceptional administrative discipline and fortress management. Raised in fortified estates along the forest frontier, she acquired an intimate technical grasp of timber rampart engineering and quartermaster logistics. When the male princes were summoned to distant campaigns, Vasilisa assumed direct command of home bastions, supervising stonemasons in repairing parapets, strictly auditing grain and smoked meat supplies, and instituting unbending night-watch rosters. Rigorously fair and devoid of frivolous vanity, she commanded fierce loyalty from both boyar guards and manor serfs. During border alarms, she appeared at the portcullis clad in studded leather armor with a short sword, rallying the garrison with resolute calm as an indispensable pillar of regional defense. Implementing meticulous fire-safety and sanitation protocols within the fortress, Vasilisa audited cellars and wells to guarantee that garrison and refugees survived prolonged winter blockades, serving as the calm, indispensable guardian behind regional defensive preparedness. Her unwavering quartermaster discipline and rigorous management guaranteed that her fortress withstood bitter winters and surprise raids, standing as an unyielding bulwark of regional frontier defense, trusted by warriors and townspeople across the Upper Volga basin.",
+  "SpeechStyle": "Speaks with curt, crystal-clear directness and quiet firmness, her operational instructions executed without hesitation.",
+  "Motivations": [
+    "Maintain fortress ramparts and grain reserves, ensuring home estates survive sudden nomadic sieges and harsh winters.",
+    "Enforce strict agrarian discipline and patrol security to prevent raiding banditry and maintain domestic tranquility."
+  ],
+  "Values": [
+    "Values frugal self-sufficiency, methodical preparedness, and stoic composure, holding that survival is won through disciplined vigilance.",
+    "Prize uncompromising fairness, ruthlessly suppressing malfeasance while rewarding reliable diligence among retainers."
+  ],
+  "Fears": [
+    "Fears internal carelessness resulting in catastrophic fires or water poisoning, causing the citadel to fall from within."
+  ],
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_rus_1g",
+  "HeroName": "Vasilisa Yurievna"
+}

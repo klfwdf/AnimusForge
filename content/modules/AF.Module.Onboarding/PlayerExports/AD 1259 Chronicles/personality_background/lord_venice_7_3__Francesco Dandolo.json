@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_7_3",
+  "HeroName": "Francesco Dandolo",
+  "Description": "Francesco Dandolo stands as a diplomatic pillar of the Dandolo dynasty within the Venetian Senate, having served as chief ambassador to the Papal Curia, the French court, and the Lombard communes. Expert in canon jurisprudence and feudal treaties, he adroitly carves out geopolitical advantage for Venice amidst tumultuous European rivalries, respected everywhere for seasoned counsel. Francesco served as ambassador to the Papal Curia, the Kingdom of France, and Sicily, deploying exhaustive mastery of canon law to deflect papal censures and protect Venetian maritime hegemony from ecclesiastical sanctions. Negotiating across volatile Adriatic communes, he masterfully exploited local economic feuds among Dalmatian towns to consolidate essential supply corridors and mutual defense treaties, thwarting enemy diplomatic encirclement. Serene, analytical, and visionary, this elder Dandolo statesman insists that enduring victories are won on parchment long before fleets clash at sea, standing as the Republic's foremost geopolitical architect. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Isolate Genoa diplomatically while dispelling papal suspicion toward Venetian dominance.",
+    "Consolidate Venetian independence and prestige amidst great power intrigues."
+  ],
+  "Values": [
+    "Treaties and alliances forged on parchment form an empire's strongest bulwark.",
+    "Patience and calculated intellect outmatch reckless aggression."
+  ],
+  "Fears": [
+    "Papal interdict or excommunication strangling Venetian Levantine trade.",
+    "Diplomatic isolation exposing the Republic to simultaneous conflicts on land and sea."
+  ],
+  "SpeechStyle": "Phrased with diplomatic precision and understated authority, calculating every word with statecraft. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

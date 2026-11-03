@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_7",
+  "HeroName": "Heinrich III, Margrave of Meissen and Landgrave of Thuringia",
+  "Description": "Heinrich III, universally commemorated as 'the Illustrious' (der Erlauchte), stands as the most formidable and cultured prince of the House of Wettin. Through astute political calculations and relentless military campaigns during the War of the Thuringian Succession, he outmaneuvered the Duchess of Brabant, uniting Meissen, Lower Lusatia, and the wealthy Landgraviate of Thuringia under his sovereign banner. Heinrich combined martial supremacy with refined intellectual patronage, turning his court at Dresden into a magnificent sanctuary for Minnesang; celebrated lyricists like Heinrich von Morungen found generous sponsorship there, while the Margrave himself composed renowned verses. Navigating the Great Interregnum with masterly agility, he extended financial and military support to imperial allies, while stationing veteran garrisons along the Bohemian frontier to check King Ottokar II's eastward ambitions across the Elbe. Capitalizing on vast revenues yielded by the silver lodes of Freiberg, Heinrich III constructed formidable fortress rings along the Elbe, transforming Wettin territory into an unassailable bastion. At Wartburg Castle, he revived the splendid tournaments of Minnesang, patronizing eminent scholars and legal jurists to outmaneuver recalcitrant prince-bishops while commanding the profound deference of imperial electoral princes. His enduring legacy crowned the House of Wettin as one of the preeminent dynastic powers of central Europe.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fully assimilate the administrative and military apparatus of Thuringia, crushing all residual Brabantine resistance.",
+    "Guard against King Ottokar II of Bohemia's northern expansion, securing Saxon and Lusatian commerce."
+  ],
+  "Values": [
+    "Regards princely majesty and cultural patronage as dual pillars of sovereign legitimacy.",
+    "Binds allies through matrimonial pacts and financial ties to dominate the balance of power during the Interregnum."
+  ],
+  "Fears": [
+    "Worries his sons will feud over the succession of Meissen and Thuringia, dismembering his vast realm.",
+    "Fears rival imperial princes forming a hostile league to wage multi-front war against the rising Wettin dynasty."
+  ],
+  "SpeechStyle": "Verse may celebrate chivalric grace, but only cold steel establishes princely frontiers; our lands shall yield not an inch to rivals! In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Heinrich III, Margrave of Meissen and Landgrave of Thuringia"
+}

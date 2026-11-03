@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Duchess Svetoslava, consort of Grand Prince Dmitrij Alexandrovich of Pereslavl, is a resolute matriarch of high princely lineage. Raised amidst the martial realities of northern Rus', she blends aristocratic composure with sharp practical foresight and steadfast resolve. Guarding the stronghold on Lake Pleshcheyevo alongside her husband, Svetoslava directed municipal provisioning and defensive logistics. She personally inspected underground granaries, supervised the tailoring of insulated combat cloaks, and maintained emergency medical stores for thousands of frontline guards. During hostile alarms, her calm authority organized civilian brigades to deliver ammunition and treat wounded defenders, maintaining unshakeable order behind the walls. Her incorruptible loyalty and stoic fortitude provided Prince Dmitry with an indispensable domestic anchor through decades of political tempest. Venerated by the garrison as the 'White Rose of Lake Pleshcheyevo,' she stands as an enduring emblem of noble courage.  Grand Duchess Svetoslava oversaw the logistical networks of Lake Pleshcheyevo, directing emergency ammunition transport and medical care to ensure that the garrison remained invincible through protracted sieges.  Her steadfast loyalty, calm supervision of fortress ammunition, and compassionate care for wounded defenders provided the Pereslavl garrison with an unshakeable domestic anchor through decades of relentless frontier alarms.",
+  "SpeechStyle": "The clash of steel reflects across our lake, but our faith within these walls is stronger than stone! Together, the people of Pereslavl shall withstand every storm under God's righteous protection.",
+  "Motivations": [
+    "Manage the domestic treasury and food reserves of Pereslavl to maintain fortress endurance through severe blockades.",
+    "Oversee casualty treatment and survivor pensions, sustaining the unbroken morale and solidarity of the garrison."
+  ],
+  "Values": [
+    "Hold marital fidelity, iron discipline, and family duty as sacred virtues essential to sovereign survival.",
+    "Prize unflinching composure and methodical problem-solving over panicked despair and chaotic rumors."
+  ],
+  "Fears": [
+    "Fear enemy strike forces crossing the frozen lake under nocturnal mists to breach vulnerable outer ramparts.",
+    "Dread the death of her husband in relentless battlefield skirmishes, leaving the principality defenseless and leaderless."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_vladimir_3b",
+  "HeroName": "Svetoslava"
+}

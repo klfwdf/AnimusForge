@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v7",
+  "Keywords": [
+    "Alan herds and mountain contacts"
+  ],
+  "RagShortTexts": [
+    "Alan wagon households followed herds, constrained by mountain routes, water and loads."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alan households moved with herds, carrying people and household goods in wagons. Routes near the mountains were constrained by width, grazing, water and loads. Riders passing ahead did not mean that the vehicles and dependents behind had arrived safely."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

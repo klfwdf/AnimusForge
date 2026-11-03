@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_5",
+  "HeroName": "Diego Gómez de Castañeda, Lord of Castañeda",
+  "Description": "Diego Gómez de Castañeda, Lord of Castañeda, is one of the premier feudal dynasts of the rugged Cantabrian highlands. Governing the strategic valley of Castañeda and its formidable stone bastions, his lineage has long exercised the supreme office of Merino Mayor in the northern territories, overseeing forest rights, iron foundries, and mountain transit tolls. Tempered by the harsh Atlantic gales and granite defiles of northern Iberia, Don Diego is a taciturn, iron-willed chivalric commander who commands the unswerving loyalty of elite mountain skirmishers and longbowmen. In 1259, as Alfonso X's royal judges attempt to impose uniform municipal statutes over the ancient customary charters of Cantabria, Castañeda forcefully bars crown officials from his valleys. Leveraging impassable alpine passes and coordinating with the neighboring House of Haro in Biscay, he stands as an immovable bulwark of northern seigneurial independence, preserving his clan's hereditary immunities against all encroachments from the court of Toledo. He regularly inspects the fog-wreathed crags and mountain passes guarding the approaches to Santander, enforcing mining rights and transit tolls with unrelenting severity. Defying royal crown auditors sent from Toledo, Diego boldly declares in his seigneurial council that Cantabrian highlanders obey only God and ancient fueros, warning that any royal magistrate who dares trespass will face the unforgiving wrath of highland pikes.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve hereditary jurisdictional immunities in Castañeda and expel royal crown auditors",
+    "Monopolize mountain transit tolls and iron ore trade routes to enrich family armories",
+    "Coordinate with Biscayan and Asturian barons to construct a united northern defensive league"
+  ],
+  "Values": [
+    "Mountain liberties won by ancestral spears cannot be abolished by royal parchment",
+    "Chivalric honor in the highlands requires iron fortitude and absolute loyalty to kin",
+    "Stern discipline and preparedness alone preserve mountain lordships against kings"
+  ],
+  "Fears": [
+    "A royal blockade cutting off mountain valley trade with Cantabrian seaports",
+    "Younger family scions succumbing to royal court titles and betraying ancestral fueros"
+  ],
+  "SpeechStyle": "Curt, gravelly, and unbending; speaks with the spartan bluntness of a highland chieftain who recognizes no law above ancestral custom.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

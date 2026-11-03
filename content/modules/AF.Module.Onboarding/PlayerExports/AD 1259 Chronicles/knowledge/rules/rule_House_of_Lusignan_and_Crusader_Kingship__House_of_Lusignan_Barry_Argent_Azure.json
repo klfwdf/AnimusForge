@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Lusignan_and_Crusader_Kingship",
+  "Keywords": [
+    "House of Lusignan Barry Argent Azure",
+    "Kingdom of Cyprus Crusader Crown",
+    "Jerusalem Succession Dispute",
+    "Levantine Maritime Crossroads"
+  ],
+  "RagShortTexts": [
+    "The House of Lusignan governed Cyprus, pressing claims to the embattled crown of Jerusalem."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "From Poitou came the Lusignan family, which secured the Kingdom of Cyprus in the wake of the Third Crusade. Its arms of blue and silver bars marked a dynasty that ran Cyprus with a feudal court modeled on the crusader kingdom of Jerusalem. The island's grain and sugar made it a rich source of revenue for the defense of Outremer. With the Hohenstaufen heirs far away in Germany and Sicily, Lusignan princes pressed their claims to the crown of Jerusalem before the Haute Cour at Acre. Hugh III of Cyprus used that claim to style himself King of Jerusalem, and each Lusignan king who followed had to balance that title against the barons on his own island."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Cyprus was an island breadbasket and sugar monopoly that paid for the defenses of Outremer, so its revenues mattered to every crusader lord. Rival claims by Charles of Anjou and the island's own barons complicated royal authority. The Lusignan kings learned to reward allies with grants of sugar lands and customs rights, and to keep the barons' envoys busy with tasks far from the court."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "In the Famagusta and Nicosia wharves, Lusignan liveries welcome returning knights, and a man who arrives with a horse and spare mail finds work quickly. Cyprus lies beyond the desert raids that threatened the mainland, so the island serves as a secure staging post for Levantine crusaders. Every ship bound for the coast needs crews, and sailors are paid in silver at the dock."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,53 @@
+{
+  "Id": "rule_river_crossing_ford_ambush",
+  "Keywords": [
+    "Ford crossings and ambush",
+    "Securing both banks of a ford",
+    "Probing water before wagons cross"
+  ],
+  "RagShortTexts": [
+    "A crossing divides a force; depth, footing and the far exit need examination first.",
+    "Floods and muddy steppe banks delay wagons; boats and guides affect withdrawal."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus river networks and waters along the steppe edge concentrate movement at bridges, ferries and fords. Early arrivals must secure the far exit while others remain in the water. A bed passable to horses may stop loaded wagons. Scouts examine depth, mud, banks and nearby woods; support and room to turn keep supply carts from blocking the crossing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Soldiers follow a probed route through a ford and keep within supporting distance. Fire from the far bank finds men struggling for footing and shield use. The first party needs cover and control of the exit. Packs, strings and food suffer from soaking, leaving drying and rest to consider before pursuit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander weighs an early crossing against the division of his force. Requisitioned boats need boatmen; escorts must watch upstream approaches and the wagons behind. Flood or opposition may force a different ferry, costing days and food but preserving options instead of crowding cavalry and baggage onto one muddy slope."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households near a ferry know how rising water changes shallows and use boats for grain and markets. Military demands for boats, ropes and animals interrupt that traffic. Drivers need turning space and help for broken carts. Destruction of a crossing can also cut local access to mills and trading places."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

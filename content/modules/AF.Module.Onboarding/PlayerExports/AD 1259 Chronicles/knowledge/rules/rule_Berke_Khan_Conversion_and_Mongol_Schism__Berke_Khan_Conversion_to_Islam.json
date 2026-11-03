@@ -1,0 +1,51 @@
+{
+  "Id": "rule_Berke_Khan_Conversion_and_Mongol_Schism",
+  "Keywords": [
+    "Berke Khan Conversion to Islam",
+    "Golden Horde Ilkhanate Schism",
+    "Caucasus Fratricidal War",
+    "Mongol Imperial Fragmentation"
+  ],
+  "RagShortTexts": [
+    "In 1259 the Mongol empire's shared order began to fracture.",
+    "He swore vengeance and mobilized vast steppe forces along the Terek River."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1259 the Mongol empire's shared order began to fracture. Berke Khan, ruler of the Golden Horde and a convert to Islam, was enraged by his cousin Hulagu's sack of Baghdad and the killing of Caliph al-Musta'sim. He swore vengeance and mobilized vast steppe forces along the Terek River. The quarrel turned the Mongol world against itself and pitted the Golden Horde against the Ilkhanate across the Caucasus. Religion, pasture rights, and dynastic pride all played a part, and the split proved lasting. The feud, fought between cousins who had once campaigned together, left the Caucasus a contested frontier for decades."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "From his tent city at Sarai, Berke initiated secret diplomatic ties with the Mamluk Sultanate of Cairo, forging an unprecedented alliance against his own bloodline in Tabriz. Universal Mongol obedience to Karakorum was dead, replaced by bitter sovereign rivalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mounted tumens on the Caucasus passes watched former comrades across the freezing river. Men who had ridden side by side to the gates of Poland now nocked armour-piercing arrows against their own clans. Each rider searched the far bank for a familiar standard, and some turned back without a word. The orders were clear, and the bowstrings were wet with cold sweat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Tributary serfs in Rus haul sledges of grain to Sarai under the lash of tax assessors. Each household owes tribute in silver, furs, and grain, and the Mongol officials keep lists of every household. When brother khans war, our young men are sent to baggage trains; we pray their wrath consumes only the high crags of the south."
+    }
+  ],
+  "TextMappings": []
+}

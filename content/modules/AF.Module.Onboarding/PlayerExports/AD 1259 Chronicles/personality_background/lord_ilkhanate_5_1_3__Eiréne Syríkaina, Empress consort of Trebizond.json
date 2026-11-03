@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_5_1_3",
+  "HeroName": "Eiréne Syríkaina, Empress consort of Trebizond",
+  "Description": "Eiréne Syríkaina was the last wife of Manouíl I of Trebizond, and in the game she is nineteen. The historical record names the emperor's third wife Irene Syrikaina, a noblewoman of Trebizond who bore him children including George and John II. No source describes her appearance. This game profile imagines a well-proportioned, fair-skinned noblewoman with her hair in a high knot, who wears deep red silk and a pearl necklace. Before her marriage she enjoyed a good reputation among the Trapezuntine nobility. She knew Greek and court etiquette well and could handle guests at banquets with ease. After the marriage she devoted herself to the education of her children and to court ceremony, so that both court and city thought well of her. Against old ministers and the children of the emperor's earlier wife, her method is decorum and restraint. She seldom takes a public position. When disputes arise, she passes the stakes to her husband quietly, at a banquet or through a letter, and leaves the decision to him. Her lofty aim is to secure a proper place in the succession for her son, so that her family is firmly rooted in Trebizond. Her deepest fear is that after her husband's death the sons of his earlier marriage will push her and her children aside, stripping them of standing and property and leaving them without a protector in the city they call home.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Secure a proper place in the succession for her son George and for John II, so that neither is overshadowed by the sons of the earlier marriage.",
+    "Use her noble kin to place reliable people in the army and the church of Trebizond, so that her family is not isolated at court.",
+    "Keep a calm surface with the sons of the earlier wife, so that open rivalry does not erupt after her husband dies and harm every child."
+  ],
+  "Values": [
+    "She values dignity and ceremony, believing that a noblewoman's conduct represents the imperial house, so she keeps her composure even when displeased.",
+    "She values her children's education, believing that Greek learning and religious piety win respect for a son more lastingly than force.",
+    "She values measure and discretion, gathering news through side channels and avoiding open statements that could make enemies."
+  ],
+  "Fears": [
+    "After her husband dies, the elder sons of the earlier marriage may use their seniority to press down her son and strip her household of property.",
+    "Court intrigue or an outside faction may exploit a coup to implicate her family and drive them out of the palace with no allies left."
+  ],
+  "SpeechStyle": "Gentle and courteous, she speaks in indirect phrases wrapped in compliments. When she disagrees she first says she understands the other person's concern, then offers her advice slowly and clearly.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

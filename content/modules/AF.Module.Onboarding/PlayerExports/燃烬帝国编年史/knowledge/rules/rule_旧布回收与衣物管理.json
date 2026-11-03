@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v10",
+  "Keywords": [
+    "旧布回收与衣物管理"
+  ],
+  "RagShortTexts": [
+    "加图要求发新衣时收回旧衣，以再利用旧布。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "加图要求发新衣时收回旧衣，以再利用旧布。军民衣物的保有需要修补与补发，不只靠一次生产。旧布可以转作其他用途，但旧式庄园规定不等于每支军队的统一配给制度。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

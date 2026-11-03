@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_papal_2a",
+  "HeroName": "Roffredo I Caetani",
+  "Description": "Roffredo I Caetani stands as the senior patriarch of the illustrious House of Caetani of Anagni, dominating the fortified towns and feudal domains of the Roman Campagna. Astute, far-sighted, and calculating, Roffredo built an extensive network of baronial alliances and fortress estates across Latium. Cultivating close ties with the papal curia, he invested heavily in the education of his sons in canon law and statecraft, laying the bedrock upon which his lineage would soon seize the papal tiara and dominate Western Christendom. With patient strategic calculation, Roffredo I consolidated vast agricultural manors around Anagni, constructing fortified stone keeps and cultivating intimate curial patronage to lay the indispensable groundwork for his family's ascent to supreme power. Transforming Anagni into an economic and martial stronghold, Roffredo steered his household through treacherous Roman vendettas, steadily accumulating territory and wealth to elevate the House of Caetani into Italy's premier nobility. His brilliant statecraft, territorial foresight, and steadfast devotion to his lineage establish Roffredo I Caetani as the visionary founder of an immortal southern Italian dynasty. His patient accumulation of fortress estates and curial offices establishes the Caetani name among the premier baronial powers of Italy. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to apostolic service inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand Caetani fiefs and fortress holdings across Anagni and the Roman Campagna.",
+    "Propel his gifted son Benedetto into the inner circles of curial governance and power."
+  ],
+  "Values": [
+    "Dynastic continuity, territorial consolidation, and pragmatic accumulation of wealth.",
+    "Harmonious union of juridical authority with armed baronial power."
+  ],
+  "Fears": [
+    "Entrenched rival baronies like the Colonna suppressing Caetani advancement in Latium.",
+    "Widespread warfare devastating the agricultural productivity and fortress towns of Anagni."
+  ],
+  "SpeechStyle": "Speaks with seasoned baronial gravitas, deliberate patriarchal authority, and calculating clarity. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

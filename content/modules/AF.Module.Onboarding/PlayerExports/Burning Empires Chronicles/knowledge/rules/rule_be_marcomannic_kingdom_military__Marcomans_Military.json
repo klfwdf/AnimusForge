@@ -1,0 +1,59 @@
+{
+  "Id": "be_marcomannic_kingdom_military",
+  "Keywords": [
+    "Marcomans Military",
+    "Marcomannic woodland and river watches"
+  ],
+  "RagShortTexts": [
+    "Woodland and river warnings preserve Marcomannic neutrality options.",
+    "Prolonged assembly exhausts household grain."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Present neutrality leaves room for warnings along woods and rivers while households farm. Prolonged assembly can exhaust grain before courage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Woodland and river warnings preserve Marcomannic neutrality options. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Prolonged assembly exhausts household grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Prolonged assembly exhausts household grain. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Woodland and river warnings preserve Marcomannic neutrality options."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Woodland and river warnings preserve Marcomannic neutrality options. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Prolonged assembly exhausts household grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Prolonged assembly exhausts household grain. Repair, carrying and care also use people, while daily supply continues after troops pass. Woodland and river warnings preserve Marcomannic neutrality options."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

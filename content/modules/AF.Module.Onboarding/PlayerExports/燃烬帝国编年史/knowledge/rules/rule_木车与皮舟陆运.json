@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v8",
+  "Keywords": [
+    "木车与皮舟陆运"
+  ],
+  "RagShortTexts": [
+    "凯撒用木车夜运轻舟，把陆路和渡河接成一项任务。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "凯撒将仿不列颠轻舟装车夜运，木作车辆与舟体因而接在同一供应任务里。渡河工法还依赖到岸前的陆路，工匠交付单件器物不等于整项运输已经完成。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

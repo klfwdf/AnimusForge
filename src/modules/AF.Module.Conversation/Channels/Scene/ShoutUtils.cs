@@ -202,7 +202,7 @@ public static class ShoutUtils
 		string text3 = (prof.Background ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
 		{
-			return text2 + "；" + text3;
+			return text2 + ConversationRuntimeTexts.Semicolon + text3;
 		}
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
@@ -227,7 +227,7 @@ public static class ShoutUtils
 		{
 			return text;
 		}
-		return text + "；" + text2;
+		return text + ConversationRuntimeTexts.Semicolon + text2;
 	}
 
 	public static bool TryGetUnnamedNpcPersona(Agent agent, out string personality, out string background)
@@ -1109,6 +1109,10 @@ public static class ShoutUtils
 			}
 			return ConversationRuntimeTexts.Prompt("AF_CONV_Location_0758");
 		}
+		if (FieldCampMissionLogic.Current != null && TryBuildMapLandSceneDescription(out var campLocation))
+		{
+			return FieldCampMissionLogic.BuildSceneDescription(campLocation);
+		}
 		string text = ConversationRuntimeTexts.Prompt("AF_CONV_Location_0759");
 		string text2 = "";
 		bool flag = false;
@@ -1457,7 +1461,7 @@ public static class ShoutUtils
 							stringBuilder.Append(text);
 							stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0802"));
 							stringBuilder.Append(text2);
-							stringBuilder.Append("，");
+							stringBuilder.Append(ConversationRuntimeTexts.Comma);
 							stringBuilder.Append(value2);
 							stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0803"));
 						}
@@ -1492,14 +1496,14 @@ public static class ShoutUtils
 			{
 				stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0810"));
 				stringBuilder.Append(value3);
-				stringBuilder.Append("。 ");
+				stringBuilder.Append(ConversationRuntimeTexts.Period.TrimEnd() + " ");
 			}
 			if (!string.IsNullOrWhiteSpace(text4))
 			{
 				stringBuilder.Append(text4);
-				if (!text4.EndsWith("。", StringComparison.Ordinal))
+				if (!text4.EndsWith("\u3002", StringComparison.Ordinal) && !text4.EndsWith(".", StringComparison.Ordinal))
 				{
-					stringBuilder.Append("。");
+					stringBuilder.Append(ConversationRuntimeTexts.Period.TrimEnd());
 				}
 				stringBuilder.Append(" ");
 			}
@@ -1732,7 +1736,7 @@ public static class ShoutUtils
 				string value2 = dictionary2[text4];
 				list2.Add("[" + ProjectSettlementHeroTypeForPrompt(value2) + "]" + value);
 			}
-			string text5 = ConversationRuntimeTexts.Prompt("SettlementHeroNpcPrefix") + string.Join("；", list2);
+			string text5 = ConversationRuntimeTexts.Prompt("SettlementHeroNpcPrefix") + string.Join(ConversationRuntimeTexts.Semicolon, list2);
 			if (count > maxCount)
 			{
 				text5 = text5 + ConversationRuntimeTexts.Prompt("SettlementHeroNpcTotalPrefix") + count + ConversationRuntimeTexts.Prompt("SettlementHeroNpcTotalSuffix");
@@ -1904,7 +1908,7 @@ public static class ShoutUtils
 			{
 				list.Add(ConversationRuntimeTexts.Prompt("AF_CONV_Runtime_0836"));
 			}
-			return list.Count <= 0 ? "" : ("；" + string.Join("，", list));
+			return list.Count <= 0 ? "" : (ConversationRuntimeTexts.Semicolon + string.Join(ConversationRuntimeTexts.Comma, list));
 		}
 		catch
 		{
@@ -2075,7 +2079,7 @@ public static class ShoutUtils
 		{
 			text2 = "";
 		}
-		lines.Add(dir + "：" + text + text2);
+		lines.Add(dir + ConversationRuntimeTexts.Colon + text + text2);
 	}
 
 	private static string BuildSettlementStatusLineForPrompt(Settlement settlement, Hero perspectiveHero = null)
@@ -2119,13 +2123,13 @@ public static class ShoutUtils
 			{
 				list.Add(factionRelationSummary);
 			}
-			string text5 = text + "（" + string.Join("，", list) + "）";
+			string text5 = text + ConversationRuntimeTexts.OpenParen + string.Join(ConversationRuntimeTexts.Comma, list) + ConversationRuntimeTexts.CloseParen;
 			string nativeSettlementInfoForPrompt = GetNativeSettlementInfoForPrompt(settlement);
 			if (string.IsNullOrWhiteSpace(nativeSettlementInfoForPrompt))
 			{
 				return text5;
 			}
-			return text5 + "；" + nativeSettlementInfoForPrompt;
+			return text5 + ConversationRuntimeTexts.Semicolon + nativeSettlementInfoForPrompt;
 		}
 		catch
 		{

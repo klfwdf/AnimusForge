@@ -1,0 +1,52 @@
+{
+  "Id": "rule_amber_beachcombing_grading",
+  "Keywords": [
+    "beachcombing for amber",
+    "shaping amber beads"
+  ],
+  "RagShortTexts": [
+    "Baltic gatherers collect wave-washed amber; cracks and working losses affect its price.",
+    "Amber supplies ornaments; shore access and sales involve local authorities."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Baltic storms wash amber ashore among weed and driftwood. Coastal people search fresh deposits for yellow-brown pieces, working among cold water, stones and breaking waves. The yield of a storm is uncertain. Gathered pieces are cleaned and examined for size, colour and cracks; bead material must survive drilling and grinding, and broken fragments do not fetch the price of sound large pieces.\n\nAmber becomes beads, pendants and small protective ornaments. Buyers, boatmen and craftspeople carry it away from the coast. What a gatherer receives in grain, salt or silver differs from the distant price of finished work. Access to a stretch of shore and any share demanded at delivery depend on local lords, communities or guards. A stranger carrying amber inland still faces roads and ferry inspections."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Coastal leaders gain revenue from amber, but heavy demands encourage hidden pieces and avoided collection points. Trade needs visiting buyers with salt and grain as well as secure access to the shore."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Amber makes a compact, tempting cargo. Escorts watch weighing and the mixing of fragments at handover; a market deadline does not make a stormy coastal passage safe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Gatherers divide time between the shore and fishing or farm work. Selling a large piece and keeping small ones for drilling serve different needs; a necklace also includes craft and transport costs."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

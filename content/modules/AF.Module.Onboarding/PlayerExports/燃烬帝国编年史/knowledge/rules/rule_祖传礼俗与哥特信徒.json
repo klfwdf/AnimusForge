@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v4",
+  "Keywords": [
+    "祖传礼俗与哥特信徒"
+  ],
+  "RagShortTexts": [
+    "哥特信徒与守护祖传礼拜者的冲突牵涉安全、亲族和服从。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "哥特社群的基督徒可能面对首领维护祖传礼拜的要求，受罚者与亲属则会担忧安全和去处。首领看重传统与服从，信徒可能把拒绝放弃信仰视为忠贞；共同语言并不能消除这种冲突。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

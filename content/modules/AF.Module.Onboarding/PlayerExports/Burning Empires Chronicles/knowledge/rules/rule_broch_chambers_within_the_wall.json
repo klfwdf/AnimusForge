@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_pictish_brochs_v2",
+  "Keywords": [
+    "Broch chambers within the wall"
+  ],
+  "RagShortTexts": [
+    "Mousa’s wall chambers and passages shaped storage and access."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mousa has chambers in the thick lower wall and passages between the inner and outer wall skins above. Storage and circulation occupy the masonry rather than all of the central floor. Access to these spaces shapes where goods can be kept and retrieved, independently of the tower’s impressive height."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

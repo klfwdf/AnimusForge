@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_yarlik_grants_and_court_negotiation_da882907",
+  "Keywords": [
+    "yarlik grants and court negotiation",
+    "Court recognition and the scope of commands"
+  ],
+  "RagShortTexts": [
+    "Princely court visits cost travel, gifts and waiting.",
+    "Recognition of rank differs from permission to travel."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A prince seeking recognition brings gifts and attendants and waits for audience. Instructions then travel home. Rank, passage and a specific levy are different authorities whose effect depends on recipients and local power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Credential bearers identify proper recipients and carry supplies. Passage at one stage does not ensure every remount at the next; improvised demands cause delays."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Recognition requires explaining real obligations to cities and retainers. Exaggerating a document’s scope may intimidate rivals but discredits promises that cannot be supplied."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Court journeys impose local costs and returning demands. Acknowledged payments matter because distant recognition cannot recreate depleted household stores."
+    }
+  ],
+  "TextMappings": []
+}

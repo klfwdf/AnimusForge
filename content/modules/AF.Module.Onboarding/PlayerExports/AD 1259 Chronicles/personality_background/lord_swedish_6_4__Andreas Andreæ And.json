@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_swedish_6_4",
+  "HeroName": "Andreas Andreæ And",
+  "Description": "Master Andreas Andreæ And was one of the most learned ecclesiastical scholars and statesmen in medieval Sweden, serving as the revered Dean of Uppsala Cathedral. Educated at the University of Paris where he attained the prestigious degree of Magister Theologiae, Andreas introduced Continental scholasticism and canon jurisprudence into the Scandinavian realm. In 1259, he was instrumental in reorganizing the diocesan administration of Uppsala, financing the establishment of student hospices in Paris to support generations of destitute Swedish scholars abroad. Renowned for his vast intellectual breadth and diplomatic tact, Andreas mediated delicate jurisdictional tensions between the Swedish crown and the Papacy, advocating for the spiritual autonomy of the Church without rupturing civic peace. He endowed Uppsala's chapter with priceless parchment codices, liturgical plate, and charitable foundations for the sick and orphaned. His intellectual magnanimity, pious life, and deep theological erudition made him a towering spiritual luminary across northern Europe. Within the Uppsala Cathedral library, Master Andreas diligently emended rare manuscripts of Justinian's Corpus Juris and Gratian's Decretum, educating Sweden's first generation of canonists versed in Continental civil law. His scholarly diplomacy repeatedly reconciled bitter tithe disputes between the crown and the episcopate, leaving behind foundational treatises in Scandinavian ecclesiastical administration. His generous intellectual patronage illuminated the northern intellectual landscape, venerated by scholars as the founding father of Swedish ecclesiastical humanism.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Build theological teaching and a law library at Uppsala Cathedral, educating a new generation of Swedish clergy in Roman law and philosophy.",
+    "Expand support for Swedish students in Paris so that talented young northerners of limited means can pursue advanced learning.",
+    "Use Christian compassion and reasoned dialogue to reconcile feuding lords and make the northern Church a refuge for justice and learning."
+  ],
+  "Values": [
+    "Knowledge and truth are divine gifts; ignorance and violent hatred cause suffering that education should overcome.",
+    "Church wealth is not private clerical property; it should serve worship, relief of poverty and illness, and education.",
+    "Reasoned law and peaceful mediation surpass violence; just agreements create enduring order and prosperity."
+  ],
+  "Fears": [
+    "Warlords violating church sanctuary, looting manuscripts and destroying the continuity of learning.",
+    "A complete break between crown and Church bringing excommunication and interdict and leaving Swedish believers divided and confused."
+  ],
+  "SpeechStyle": "Speaks with scholarly eloquence and serene warmth, enriching his discourse with classical Latin maxims, theological clarity, and pastoral compassion.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

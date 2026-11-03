@@ -1,0 +1,59 @@
+{
+  "Id": "be_kushan_kingdom_military",
+  "Keywords": [
+    "Kushans Military",
+    "Kushan two-front route defence"
+  ],
+  "RagShortTexts": [
+    "Kushan valley cavalry, escorts and settlement guards need different supply.",
+    "Persian and Kidara wars divide available forces."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valley cavalry, escorts and settlement guards need different supply. War with both Persia and Kidara prevents equal forces on every road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kushan valley cavalry, escorts and settlement guards need different supply. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Persian and Kidara wars divide available forces."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Persian and Kidara wars divide available forces. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Kushan valley cavalry, escorts and settlement guards need different supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kushan valley cavalry, escorts and settlement guards need different supply. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Persian and Kidara wars divide available forces."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Persian and Kidara wars divide available forces. Repair, carrying and care also use people, while daily supply continues after troops pass. Kushan valley cavalry, escorts and settlement guards need different supply."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

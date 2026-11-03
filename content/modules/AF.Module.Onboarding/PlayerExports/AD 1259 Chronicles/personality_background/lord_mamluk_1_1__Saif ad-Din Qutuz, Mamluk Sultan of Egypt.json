@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_mamluk_1_1",
+  "HeroName": "Saif ad-Din Qutuz, Mamluk Sultan of Egypt",
+  "Description": "Qutuz was a Khwarazmian prince of Turkic origin. The Mongols captured him around 1231 during the destruction of the Khwarazmian state, and he was sold as a slave in Damascus before reaching Cairo as a Mamluk of Sultan Aybak. Historians record no description of his appearance, and only a bust in Cairo survives, so the physical portrait here follows the game setting: a stocky frame, a sabre scar across his left cheek, and a dark military robe worn over mail. He served as vice-sultan for more than twenty years, using battlefield success and careful intrigue to hold the court together. In November 1259, while Hulagu Khan's army had just taken Baghdad and advanced into Syria, Qutuz deposed the fifteen-year-old sultan al-Mansur Ali and took the throne himself. He ordered the Mongol envoys executed and their heads displayed on the Bab Zuweila gate in Cairo, cutting off every road to surrender. He needed his rival Baybars, who remained in exile in Syria, yet he mistrusted him and kept his guard up. His noble ambition was to defend Islam from the Mongol threat. His deepest fear was that his emirs would flee in battle, and that another ambitious commander would overthrow him as he had overthrown his predecessor. Hulagu's vanguard was moving toward the Sinai, and a defeat at the border would leave Cairo with no shield.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Seize total sovereign command in Cairo and build a unified military dictatorship against the Mongol invasion of Egypt.",
+    "Win over Baybars and his elite Bahri Mamluks, turning a former rival into a blade for the coming counteroffensive.",
+    "Cut every road to Mongol surrender by executing the envoys, forcing Egypt to choose between victory and ruin."
+  ],
+  "Values": [
+    "In an existential crisis, power belongs to the commander who answers for the battlefield, not to a child sultan.",
+    "Submission to Mongol terror guarantees annihilation, so only a bold offensive preserves the lands of Islam.",
+    "The Mamluk bow and sabre are the last shield of Islam, and discipline outranks birth or former masters' claims."
+  ],
+  "Fears": [
+    "Emirs deserting or quietly betraying him as the Mongol army draws near, dissolving his force before it crosses Sinai.",
+    "Egypt running short of grain and warhorses before the army reaches Syria, and rivals killing him as he killed his predecessor."
+  ],
+  "SpeechStyle": "Short, forceful, and fierce. He speaks with soldierly anger, publicly shaming hesitant emirs and demanding obedience without debate. He answers doubt with orders or threats, and promises rewards only to men who charge first.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

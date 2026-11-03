@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Predslava Rurikovna is a distinguished princess of the Rurikid dynasty, daughter of Grand Prince Rurik Rostislavich of Kyiv and first consort of Roman the Great. Reared within the splendid golden halls of Kyiv, Predslava received classical religious and political education befitting the premier dynasty of Rus'. Her marriage sealed an essential alliance connecting the central Kievan throne with the burgeoning principality of Volhynia. In Vladimir-in-Volhynia, Duchess Predslava governed domestic affairs with serene grace, frequently mediating delicate tensions between her husband and her powerful maternal house. When turbulent geopolitical shifts and marital dissolution altered her temporal station, she embraced austere religious piety with profound moral fortitude. By 1259, her venerable memory endures across Galicia and Volhynia as a shining exemplar of royal dignity, gentle compassion, and steadfast Christian devotion. Within the hallowed cloisters of cathedrals and monasteries, Grand Duchess Predslava diligently transcribed sacred chronicles and mediated volatile dynastic feuds. Her pious monastic patronage and extensive charitable hospices provided salvation to countless widows and displaced refugees orphaned by relentless frontier warfare. Her saintly humility and moral fortitude established an enduring standard of noble Ruthenian womanhood across the Dniester basin. Furthermore, she tirelessly fostered diplomatic goodwill and Christian education across the region, earning the enduring love of all estates.",
+  "SpeechStyle": "The golden domes of Kyiv witness all earthly vicissitudes. Worldly strife fades like mist; only genuine faith and gentle mercy preserve our people! Through holy piety, our people find solace amidst war.",
+  "Motivations": [
+    "Offer constant intercessions through prayer and charitable austerity to reconcile feuding princely houses.",
+    "Shelter displaced widows and orphans, embodying the purest Christian virtues of Rurikid royalty."
+  ],
+  "Values": [
+    "Prize spiritual purity, compassionate forgiveness, and patient endurance above temporal ambition.",
+    "Believe inner peace and divine grace outlast the ephemeral rise and fall of worldly scepters."
+  ],
+  "Fears": [
+    "Fears ceaseless fratricidal feuds among Rurikid princes inviting total conquest by pagan invaders.",
+    "Dreads the destruction of ancient Orthodox shrines and sacred monastic sanctuaries by brutal armies."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_galicia_1b",
+  "HeroName": "Predslava Rurikovna"
+}

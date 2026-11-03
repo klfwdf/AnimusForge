@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Livonian_Sword_Brothers_and_Baltic_Crusade",
+  "Keywords": [
+    "Sword Brothers legacy and incorporation"
+  ],
+  "RagShortTexts": [
+    "Livonian garrisons required coordination over local service, property and church relations."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After the Sword Brothers’ defeat at Saule in 1236, their incorporation into the Teutonic system left service, property and church relations to be managed locally in Livonia. Residents faced garrison support, tribute and conversion demands, while commanders dealt with bishops and other authorities. Frontier resistance in 1259 made provisions, reinforcements and reliable news especially important."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Sicilian_Ghibellines_and_Montaperti_Eve",
+  "Keywords": [
+    "Sicilian and Tuscan allies"
+  ],
+  "RagShortTexts": [
+    "Manfred and Tuscan Ghibellines shared interests."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Manfred and Tuscan Ghibellines shared interests, with support possible in money, troops or recognition. Aid required transport, receipt and terms rather than automatically defeating an opponent. Each city also contained differing factions."
+    }
+  ],
+  "TextMappings": []
+}

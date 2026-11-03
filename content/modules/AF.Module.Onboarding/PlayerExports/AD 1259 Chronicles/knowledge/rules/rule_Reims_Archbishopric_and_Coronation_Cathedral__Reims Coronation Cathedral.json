@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Reims_Archbishopric_and_Coronation_Cathedral",
+  "Keywords": [
+    "Reims Coronation Cathedral",
+    "Holy Ampulla Clovis Chrism",
+    "Archbishop Duke of Reims",
+    "Smiling Angel of Reims Gothic"
+  ],
+  "RagShortTexts": [
+    "Reims hosted French royal consecrations with Holy Ampulla unction, ranking as chief ducal peer."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Reims is the sacred coronation city of the French monarchy. Beneath the tall Gothic vaults of its cathedral, the Archbishop of Reims, premier ecclesiastical peer of France, anointed the Capetian kings with holy chrism. The oil came from the Holy Ampulla, a vessel that legend said a dove had carried to Saint Remigius for the baptism of Clovis, and it was kept in the abbey of Saint-Remi and brought out for every anointing. Tradition held that the rite sanctified royal authority. Each coronation therefore strengthened the link between the king and the Church, and the archbishop's role gave the Church a voice in deciding who could wear the crown. Kings who came to Reims needed the cathedral's ceremony as much as the cathedral needed their patronage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A monarch who had not been anointed at Reims was, in the eyes of many lords, still only a warlord. The bells of its cathedral carried the weight of that tradition across Christian lands, and nobles who doubted the crown's claim could always point to the rite that was missing."
+    }
+  ],
+  "TextMappings": []
+}

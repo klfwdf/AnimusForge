@@ -1,0 +1,59 @@
+{
+  "Id": "be_alanian_kingdom_geopolitics",
+  "Keywords": [
+    "Alans Frontiers",
+    "Don and Kuban pasture routes"
+  ],
+  "RagShortTexts": [
+    "Don, Kuban and northern Caucasian routes link Alan pasture.",
+    "Crossings and grazing limit the routes available to Alan camps."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Don and Kuban rivers and northern Caucasian approaches funnel open pasture into fewer crossings. When grazing fails, neighboring permission determines where camps can move. Links from Uspe toward Black Sea markets also matter to grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Don, Kuban and northern Caucasian routes link Alan pasture. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Crossings and grazing limit the routes available to Alan camps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Crossings and grazing limit the routes available to Alan camps. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Don, Kuban and northern Caucasian routes link Alan pasture."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Don, Kuban and northern Caucasian routes link Alan pasture. Closed routes may separate families from goods, imposing costs on those remaining at home. Crossings and grazing limit the routes available to Alan camps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Crossings and grazing limit the routes available to Alan camps. Cargo passes different carriers, making distant route changes become local shortages through delay. Don, Kuban and northern Caucasian routes link Alan pasture."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

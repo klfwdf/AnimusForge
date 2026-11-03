@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_lithuanian_light_troops_and_households_bf6d4719",
+  "Keywords": [
+    "lithuanian light troops and households",
+    "Lithuanian javelins and woodland fighting"
+  ],
+  "RagShortTexts": [
+    "Javelin fighters choose engagement by distance and terrain.",
+    "Equipment and mobilization depend on households and leaders."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Light Lithuanian javelin fighters throw at suitable distance, then regroup or withdraw with companions and terrain. Weapons may not be recovered; shields and provisions limit carrying. Local familiarity works through watches and coordinated movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "After throwing, a fighter watches companions and exits rather than the landing alone. Unfamiliar pursuit scatters formation, especially after spare missiles are spent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Light troops still cost food, shields and shafts. Repeated farm absences weaken replenishment, while repair and practice consume time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A household loses a worker and funds repairs. If returns favor only leaders, suppliers and relatives guarding home have little reason to support another levy."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Volodymyr IV Rurikovich is the renowned Grand Prince of Kyiv and scion of the Smolensk Rostislavichi dynasty, twice ascending the golden throne of the Mother of Rus' Cities. A battle-hardened veteran who fought shoulder-to-shoulder with Mstislav the Bold at the fateful Battle of the Kalka River in 1223, Volodymyr miraculously broke through the Mongol encirclement, gaining invaluable tactical experience against steppe horse archers. As Grand Prince of Kyiv, he tirelessly mediated bitter feuds between the Olgovychi of Chernigov and Galician princes, seeking to forge a unified defense across the fractured southern principalities. He fortified the Dnipro riverbanks, repaired urban ramparts around the Golden Gate, and steadfastly patronized Saint Sophia Cathedral and the Kyiv Pechersk Caves Monastery. Refusing to bend the knee before the expanding Mongol tumens, Volodymyr stood as an unyielding sentinel over Ruthenian sovereignty, whose martial valor and dedication to Orthodox Christendom remain immortalized across medieval chronicles. Grand Prince Volodymyr recognized that Kyiv was not merely a military stronghold, but the living soul of Ruthenian civilization and Orthodox spirituality. He routinely inspected key river crossings and watchtowers along the Dnipro, ensuring garrisons remained supplied with fletched arrows and salted provisions. His steady presence atop the ramparts inspired battle-weary citizens and boyars alike, providing an unbreakable moral bulwark against the terrifying chaos of the thirteenth-century steppe invasions.",
+  "SpeechStyle": "Kyiv remains the sacred Mother of Rus' cities, and our Golden Gate shall never yield to foreign tyrants! So long as our swords strike true, the Dnipro runs free and our holy sanctuaries shall never bow!",
+  "Motivations": [
+    "Defend the sacred independence of Kyiv and its Orthodox sanctuaries against devastating nomad raids and foreign conquest.",
+    "Reconcile bitter Rurikid dynastic rivalries to forge an indomitable grand coalition capable of securing Rus' lands."
+  ],
+  "Values": [
+    "Holding grand-ducal vows, defense of the Orthodox Church, and protection of the realm as supreme chivalric obligations.",
+    "Valuing steadfast martial valor and judicial equity, believing unyielding faith redeems the nation from darkest perils."
+  ],
+  "Fears": [
+    "The catastrophic destruction of Kyiv's holy cathedrals and ancient monasteries beneath merciless barbarian fire.",
+    "That senseless internecine bloodshed among fratricidal Rurikid princes will irrevocably doom the realm to eastern vassalage."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_kiev_1a",
+  "HeroName": "Volodymyr IV Rurikovich"
+}

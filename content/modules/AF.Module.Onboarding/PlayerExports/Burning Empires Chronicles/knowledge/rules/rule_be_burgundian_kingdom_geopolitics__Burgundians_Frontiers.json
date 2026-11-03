@@ -1,0 +1,59 @@
+{
+  "Id": "be_burgundian_kingdom_geopolitics",
+  "Keywords": [
+    "Burgundians Frontiers",
+    "Burgundian westward woodland routes"
+  ],
+  "RagShortTexts": [
+    "Ascaucalis woodland routes and crossings connect western partners.",
+    "Lombard war threatens passage and return."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Woodland roads and crossings connect settlements with western partners. Lombard war strains passage and return; Roman markets and envoys offer another connection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Ascaucalis woodland routes and crossings connect western partners. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Lombard war threatens passage and return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Lombard war threatens passage and return. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Ascaucalis woodland routes and crossings connect western partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Ascaucalis woodland routes and crossings connect western partners. Closed routes may separate families from goods, imposing costs on those remaining at home. Lombard war threatens passage and return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Lombard war threatens passage and return. Cargo passes different carriers, making distant route changes become local shortages through delay. Ascaucalis woodland routes and crossings connect western partners."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

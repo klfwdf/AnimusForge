@@ -9,15 +9,17 @@ namespace AnimusForge.Refactor.Domain;
 internal static class WorldDiplomacyDurationDisclosure
 {
     private const RegexOptions Options = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase;
-    private static readonly Regex Durations = new(DiplomacyCompatibilityTexts.Get("Duration_Expression"), Options);
-    private static readonly Regex Negative = new(DiplomacyCompatibilityTexts.Get("Duration_NegativePrefix"), Options);
-    private static readonly Regex NonTermSuffix = new(DiplomacyCompatibilityTexts.Get("Duration_NonTermSuffix"), Options);
-    private static readonly string Separators = DiplomacyCompatibilityTexts.Get("Duration_ClauseSeparator");
+    // Recognition-only vocabulary covering both languages (English table value "="); read from the
+    // language-invariant source so these static caches never depend on the game language.
+    private static readonly Regex Durations = new(DiplomacyCompatibilityTexts.Source("Duration_Expression"), Options);
+    private static readonly Regex Negative = new(DiplomacyCompatibilityTexts.Source("Duration_NegativePrefix"), Options);
+    private static readonly Regex NonTermSuffix = new(DiplomacyCompatibilityTexts.Source("Duration_NonTermSuffix"), Options);
+    private static readonly string Separators = DiplomacyCompatibilityTexts.Source("Duration_ClauseSeparator");
     private static readonly Regex EnglishSpacing = new(@"[\s-]+", Options);
-    private static readonly string Digits = DiplomacyCompatibilityTexts.Get("Duration_ChineseDigits");
-    private static readonly string[] Units = DiplomacyCompatibilityTexts.Get("Duration_ChineseUnits").Split('|');
-    private static readonly string[] Ones = DiplomacyCompatibilityTexts.Get("Duration_EnglishOnes").Split('|');
-    private static readonly string[] Tens = DiplomacyCompatibilityTexts.Get("Duration_EnglishTens").Split('|');
+    private static readonly string Digits = DiplomacyCompatibilityTexts.Source("Duration_ChineseDigits");
+    private static readonly string[] Units = DiplomacyCompatibilityTexts.Source("Duration_ChineseUnits").Split('|');
+    private static readonly string[] Ones = DiplomacyCompatibilityTexts.Source("Duration_EnglishOnes").Split('|');
+    private static readonly string[] Tens = DiplomacyCompatibilityTexts.Source("Duration_EnglishTens").Split('|');
 
     internal static bool ContainsDays(string text, int days)
     {

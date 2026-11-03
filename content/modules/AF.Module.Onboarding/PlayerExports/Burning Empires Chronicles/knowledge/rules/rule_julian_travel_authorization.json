@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_cursus_publicus_v1",
+  "Keywords": [
+    "Julian travel authorization"
+  ],
+  "RagShortTexts": [
+    "Julian authorized Florentius’s relatives to leave with their goods on public transport."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After Florentius fled, Julian allowed his relatives to leave with their property and granted public conveyances for their journey east. The arrangement depended on authorization, with relatives and escorts traveling under its terms. Public transport needed personnel, animals and reception along the route rather than being available to every traveler at will."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts caring for relatives and goods needed to explain the authorized journey to transport staff. Animals and vehicles at the next stage still required arrangements, and delays added food and lodging needs. Adding unrelated merchants would burden the provision made for the household."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Granting public transport conveyed clemency and placed the journey under administrative protection. The concession concerned one household; it was not a general right of free delivery for private correspondence."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

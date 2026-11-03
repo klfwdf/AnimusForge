@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_2i",
+  "HeroName": "Radoslav, Count of Bribir",
+  "Description": "Radoslav, aged twenty-two in 1259, is an energetic young comital scion of the House of Šubić, commanding the ancestral fortress and garrison of Bribir itself. Thoroughly educated in Western knightly warfare, siegecraft, and logistics, he enjoys the full confidence of Count Stjepan II and his ambitious cousin Paul I. Guarding the ancestral mountain citadel and comital archives of Bribir, Radoslav inspects every stone bastion and watchtower above the karst cliffs with meticulous precision. Understanding that Bribir is the sacred dynastic heart of the clan's power, he maintains constant combat readiness. In 1259, as geopolitical alarms multiply, Radoslav reinforces the citadel's cisterns and catapult emplacements with unyielding resolve. Mounting heavy stone-throwing engines and expanding subterranean cisterns at Bribir, Radoslav guards the clan's spiritual birthplace with unshakeable resolve. Day and night he patrols the limestone ramparts, inspecting every weapon and supply cache, forbidding foreign infiltrators from approaching the sanctuary. Dignified and energetic, this young count dedicates his life to ensuring that Bribir remains an impregnable monument to his ancestors' fame. Rooted upon the limestone crags of Bribir, Radoslav unites youthful energy with disciplined vigilance, swearing to preserve his ancestral citadel against every siege.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with steady youthful resolve and disciplined clarity, concise and commanding, fiercely devoted to his ancestral home.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

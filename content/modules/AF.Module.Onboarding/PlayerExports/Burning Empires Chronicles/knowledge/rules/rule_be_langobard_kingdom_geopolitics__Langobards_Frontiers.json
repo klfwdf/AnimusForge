@@ -1,0 +1,59 @@
+{
+  "Id": "be_langobard_kingdom_geopolitics",
+  "Keywords": [
+    "Langobards Frontiers",
+    "Lombard Elbe woodland routes"
+  ],
+  "RagShortTexts": [
+    "Lombard woods and rivers lead toward the Elbe.",
+    "Smaller tracks still need food and permitted resting places."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Woods and rivers lead toward the Elbe. Guides know smaller tracks but still need food and permitted resting places."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lombard woods and rivers lead toward the Elbe. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Smaller tracks still need food and permitted resting places."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Smaller tracks still need food and permitted resting places. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Lombard woods and rivers lead toward the Elbe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Lombard woods and rivers lead toward the Elbe. Closed routes may separate families from goods, imposing costs on those remaining at home. Smaller tracks still need food and permitted resting places."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Smaller tracks still need food and permitted resting places. Cargo passes different carriers, making distant route changes become local shortages through delay. Lombard woods and rivers lead toward the Elbe."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

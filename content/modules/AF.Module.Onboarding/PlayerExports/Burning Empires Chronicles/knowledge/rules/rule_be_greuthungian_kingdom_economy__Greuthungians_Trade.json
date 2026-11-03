@@ -1,0 +1,59 @@
+{
+  "Id": "be_greuthungian_kingdom_economy",
+  "Keywords": [
+    "Greuthungians Trade",
+    "Serimum tribute and Black Sea exchange"
+  ],
+  "RagShortTexts": [
+    "Serimum grain, herds and Black Sea exchange sustain Gothic followers.",
+    "Excess tribute weakens continued settlement supply."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Serimum grain, herds and Black Sea exchange support court and followers. Tribute comes from real surplus; excess collection weakens continued supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Serimum grain, herds and Black Sea exchange sustain Gothic followers. Traveling followers need real food from this production; valuables still require a buyer and exchange. Excess tribute weakens continued settlement supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Excess tribute weakens continued settlement supply. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Serimum grain, herds and Black Sea exchange sustain Gothic followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Serimum grain, herds and Black Sea exchange sustain Gothic followers. Households need meals and the means to keep producing after delivering goods. Excess tribute weakens continued settlement supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Excess tribute weakens continued settlement supply. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Serimum grain, herds and Black Sea exchange sustain Gothic followers."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

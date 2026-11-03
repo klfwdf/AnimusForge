@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Cathar_Albigensian_Heresy_and_Montsegur",
+  "Keywords": [
+    "Cathar Albigensian Dualism",
+    "Light Spiritual and Dark Material World",
+    "Consolamentum Pure Spirit Baptism",
+    "Montsegur Castle Pyre Aftermath"
+  ],
+  "RagShortTexts": [
+    "Montsegur's fall in 1244 leaves a dangerous memory for followers and their protectors.",
+    "Admiration for the Good Men coexists with investigation, confiscation and fear."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cathars flourished across Occitania during the twelfth and early thirteenth centuries, teaching a radical dualism that set a good spiritual God against an evil creator who had trapped divine sparks in matter. Their elect, called the Perfecti, received the consolamentum, a rite of spiritual baptism that freed the soul at death, and in return they gave up meat, marriage, and property. Believers honoured them as living examples of purity, while the Church condemned the doctrine as heresy. Preaching and the growth of Cathar communities drew the attention of Rome, and the Albigensian Crusade that began in 1209 destroyed much of their network. The last large stand came at Montségur, where the Perfecti and their followers surrendered in 1244, and many were burned in a mass pyre."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "townsfolk"
+        ]
+      },
+      "Content": "The Albigensian Crusades let the Capetian crown absorb Languedoc, and the Treaty of Paris in 1229 placed the southern counties under royal control. Lords who had sheltered heretics lost castles and inheritances. Dominican inquisitors interrogated witnesses village by village and recorded their confessions in registers that outlived them. A lord who hid a Perfectus risked confiscation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A shepherd who shelters a fugitive preacher risks questions from both secular officers and church investigators. Memories of Montsegur's fall in 1244 make such decisions dangerous. Admirers praise the Good Men's poverty, while opponents call their teaching heresy. A household's account should reveal that divided loyalty, rather than assert that every preacher is incapable of lying."
+    }
+  ],
+  "TextMappings": []
+}

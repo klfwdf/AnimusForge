@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_georgia_2b",
+  "HeroName": "Tsisana",
+  "Description": "Tsisana was a highborn noblewoman of the House of Jaqeli and trusted chatelaine of the formidable stronghold of Akhaltsikhe. Raised amidst the volatile border marches of southern Georgia, she possessed acute vigilance against tribal treachery and foreign infiltration. Tsisana directed the extensive domestic logistics of Akhaltsikhe Castle, strictly managing granaries, salt provisions, and weapon magazines. Whenever military alerts sounded along the mountain defiles, she personally supervised gatehouse checkpoints, examining caravans with forensic scrutiny. In 1259, as imperial sieges loomed over Samtskhe, Tsisana enforced rigorous rationing, guaranteeing the fortress endured multi-month blockades. Austere, incorruptible, and fiercely loyal to her lineage, Tsisana was celebrated by garrison officers as the iron mistress of the southern gateway. At Akhaltsikhe, Tsisana established nocturnal challenge passwords across all watchtowers, ordering the immediate interrogation of any suspicious travelers. She maintained personal custody over the cliff cisterns and ammunition vaults, inspecting subterranean drainage at dawn to guarantee arrow fletchings and pitch remained dry. Facing hostile siege drums below, Tsisana sat calmly spinning wool atop the observation turret, her serene steel composure inspiring unshakable confidence among defending garrison troops facing overwhelming numerical odds beneath the mountain stronghold and jagged crags.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Safeguard the strategic granaries and treasuries of Akhaltsikhe Castle, ensuring the garrison withstands grueling multi-month sieges.",
+    "Screen travelers traversing the southern defiles with relentless vigilance, eliminating foreign spies and traitors.",
+    "Reinforce domestic order across Samtskhe during wartime, maintaining strict civil discipline to back Atabeg Sargis's military campaigns."
+  ],
+  "Values": [
+    "Incorruptible vigilance, administrative frugality, and relentless preparation are the true bulwarks of border bastions.",
+    "Uncompromising fealty to the House of Jaqeli; duty and operational discipline supersede all personal comfort.",
+    "Pragmatic realism and strict justice, managing fortress resources with steady hand through the darkest crises."
+  ],
+  "Fears": [
+    "Sabotage or arson destroying central granaries and arrow reserves, starving defending garrisons into capitulation.",
+    "Cistern contamination or pestilence breaking out within crowded fortress walls, shattering the defense from within."
+  ],
+  "SpeechStyle": "Speaks with brisk baronial vigilance and austere authority, directing castle provisions and frontier merchant security with meticulous precision.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Tsisana"
+}

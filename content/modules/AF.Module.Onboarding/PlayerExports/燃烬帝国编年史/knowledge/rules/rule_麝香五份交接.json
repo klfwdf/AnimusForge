@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v3",
+  "Keywords": [
+    "麝香五份交接"
+  ],
+  "RagShortTexts": [
+    "纳奈万达克要求麝香交货后按三比一比一分配。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "纳奈万达克交代一批麝香送到后分为五份：一人取三份，另两人各取一份。货物属于谁、由谁携来、到手后如何分配，都写给收件人。商队抵达不等于各合伙人已经结清，实际交货仍须发生。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

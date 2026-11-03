@@ -1,0 +1,52 @@
+{
+  "Id": "rule_nettle_chaga_wound_poultice",
+  "Keywords": [
+    "herbs and the care of wounds",
+    "herb gatherers and sick households"
+  ],
+  "RagShortTexts": [
+    "Local healers use familiar plants and families weigh experience, costs and reports.",
+    "Covering and tending wounds do not ensure a cure; worsening illness leads to further help."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cuts, burns and falls bring people to relatives, herb gatherers or experienced carers. Cloth, plants and other available materials are used according to teaching and experience; payment may be food, goods, money or an obligation. Families see bleeding, swelling, pain and whether someone can eat without understanding everything within a wound.\n\nThe injured still need rest, drink, food, changes of dirty coverings and sometimes help moving or watching at night. Sticking dressings, continued bleeding and increased pain cause renewed concern. Repeated assurances may lead relatives to another carer or to clerical prayer. Care also consumes labour as others take over the wounded person’s work, while purchased remedies reduce food money."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Estates need continuing food, shelter and carers, beyond one payment for a remedy. Distinguishing reputation from a patient’s condition helps address kin complaints."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wounded companions need transport, food and replacement watches. Unknown plants add uncertainty, while slower marching requires loads to be redistributed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Healers’ supplies vary by season and relatives often change cloth and watch at night. When a main worker is injured, borrowed grain and help with work become urgent too."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

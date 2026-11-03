@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_teutonic_1a",
+  "HeroName": "Anno von Sangerhausen",
+  "Description": "Anno von Sangerhausen reigns as Grand Master (Hochmeister) of the Teutonic Order, hailing from a distinguished Thuringian noble lineage and standing as one of the paramount military and institutional architects of the Baltic Crusades. Guiding the Order from its grand chanceries, Anno displayed exceptional strategic vision and logistical discipline, systematically recruiting thousands of zealous knights and German colonists from Saxony, Westphalia, and the Rhineland. Across the marshy frontiers of Prussia, he accelerated the construction of formidable brick and limestone fortresses, including the monumental ramparts of Königsberg, Memel, and Elbing, establishing an unbroken ring of bastions to contain pagan counteroffensives. A stern, devout, and unyielding statesman, Anno integrated monastic discipline with advanced civil administration, granting Lübeck municipal charters to coastal settlements to firmly anchor Baltic maritime commerce within the burgeoning Hanseatic trading network. Confronted by simmering Prussian unrest and the menace of Lithuanian pagan armies, Anno bound his knights under the black cross banner, determined to carve an eternal Catholic dominion along the Baltic shoreline. His masterful diplomacy with Pope Alexander IV and imperial prince-electors secured unbroken spiritual backing and crusader tithes, establishing the enduring foundations of the Monastic State of Prussia. Anno reinforced coastal garrison redoubts with heavy catapult emplacements, securing maritime supply chains across the Baltic Sea. His grand strategic stewardship made the Monastic State of Prussia an unyielding bulwark of Christendom.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Complete the masonry fortress networks of Königsberg and Memel to anchor the Order's dominion across the Baltic.",
+    "Recruit crusader squadrons and skilled German colonists to expand the Order's military power and urban economy.",
+    "Maintain supreme papal privileges and imperial exemptions to secure perpetual funding for the northern crusades."
+  ],
+  "Values": [
+    "Hold monastic crusade vows and religious discipline as supreme, eradicating pagan idolatry from the north.",
+    "Prize unbending military obedience and permanent defensive masonry as the true shields of Christendom.",
+    "Guard the communal wealth and institutional integrity of the Order against all secular corruption."
+  ],
+  "Fears": [
+    "A catastrophic pan-Baltic pagan insurrection overrunning and burning the Order's newly erected stone fortresses.",
+    "Papal legates or imperial diets revoking the autonomous territorial charters of the Monastic State."
+  ],
+  "SpeechStyle": "The Black Cross upon our breasts is Heaven's sacred charge! Every stone in Prussia bears our eternal vows; all pagan foes shall bow before the righteous fury of our holy lances! The Baltic belongs to Christ forever!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

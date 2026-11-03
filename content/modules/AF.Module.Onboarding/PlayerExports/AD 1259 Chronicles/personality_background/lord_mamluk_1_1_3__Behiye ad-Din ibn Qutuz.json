@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_1_1_3",
+  "HeroName": "Behiye ad-Din ibn Qutuz",
+  "Description": "Behiye ad-Din ibn Qutuz was the second son of Qutuz. The game lists him as an emir, but no historical source records him, so his life, appearance and character are game setting. He is quiet and fond of books, often copying Arabic poetry and Mamluk regulations in his father's study. He is tall and thin, with a faint crease between his brows. He wears plain grey-brown robes and no conspicuous jewellery, except a silver ring his father gave him. As a young man he followed his father into the camps but avoided wine and gambling. He wrote letters home for wounded soldiers, which earned him the trust of junior officers. After his father deposed the previous sultan, he was placed in charge of the grain stores and stable accounts, a post that gave him access to supply records and the private dealings of many emirs. He notes irregularities in a small notebook, speaks little, and remembers every figure. His noble aim is to keep Egypt's supplies accounted for clearly, so that Qutuz's army never collapses from an empty granary. His inner shadow is the fear that his scholarship will be mistaken for cowardice, and that the secrets he finds in the ledgers will bring a killer to his door.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 3
+    }
+  ],
+  "Motivations": [
+    "Organise the grain and horse ledgers so that every garrison's supplies can be traced, giving Qutuz's Sinai campaign a dependable logistic base.",
+    "Build contacts and intelligence within the finance office, learning which emirs diverted horses and fodder, and reporting them in writing at the right moment.",
+    "Write the army's regulations and oaths into formal texts, so that Mamluk discipline rests on written rules rather than private feuds."
+  ],
+  "Values": [
+    "Victory depends not only on courage but also on food and records, so paperwork and the sword carry equal weight in holding an army together.",
+    "An official must be honest, because one falsified account can ruin a whole army, and he would rather offend a man than alter a record for gain.",
+    "Scholars and clerks deserve respect, because what outlasts a war is writing and law, and a ruler who leaves no record cannot be judged by posterity."
+  ],
+  "Fears": [
+    "Hidden embezzlement being discovered, with an emir ordering his death in a murder that looks like an accident in camp.",
+    "The army dissolving when grain runs out, while he can only watch his ledger figures turn into a long list of irreversible deaths."
+  ],
+  "SpeechStyle": "He speaks slowly and precisely, often citing regulations or old verses to support his point. In heated arguments he pauses to collect his thoughts, then asks a calm question that forces the other person to explain his own conduct.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

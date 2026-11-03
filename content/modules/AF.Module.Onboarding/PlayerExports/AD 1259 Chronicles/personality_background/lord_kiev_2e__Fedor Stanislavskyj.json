@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Fedor Stanislavskyj is the martial scion of the Stanislavskyj clan and chief garrison commander of the Golden Gate defenses, leading elite city guards and river combat flotillas. Broad-shouldered and imposing, Fedor drilled relentlessly alongside regular infantry and crossbow companies, mastering heavy foot combat, crossbow volleys, and amphibious naval assaults along the Dnipro. Renowned for strict operational discipline, he instituted rigorous night watches, gate patrols, and counter-espionage measures, successfully thwarting saboteurs and arsonists. Under his oversight, multi-tiered stone bastions and heavy torsion ballistas were installed atop key ramparts, transforming the Golden Gate perimeter into an impregnable fortress. Fiercely protective of his soldiers, Fedor routinely leads from the front rank, earning the absolute devotion of veteran militias and guild levies. He is widely hailed as the 'Iron Gate of Kyiv', standing as the stalwart military champion of urban security. Wielding a massive steel poleaxe with thunderous strength, Fedor stood as the terrifying guardian of the Golden Gate ramparts. He personally drilled crossbow companies and river defense crews, implementing strict counter-espionage watches that caught infiltrators before alarms sounded. Leading every counter-assault from the bloody vanguard, his ferocious bravery repelled desperate ladder assaults, securing every stone crenellation with his iron-clad will.",
+  "SpeechStyle": "Beneath the Golden Gate rests the holy glory of our ancestors! While my battleaxe is raised, no invader shall cross our trenches! Crossbowmen, draw strings and hold the line!",
+  "Motivations": [
+    "Fortify the Golden Gate defenses into an impregnable bulwark, leading elite city guards to crush enemy assault columns.",
+    "Elevate his clan's martial renown through combat valor, forging an elite amphibious and terrestrial defense force."
+  ],
+  "Values": [
+    "Prized uncompromising obedience to military duty, fearless valor on ramparts, and selfless sacrifice, scorning cowardice.",
+    "Believing impenetrable stone defenses combined with ferocious resolve alone preserve ancestral homelands from extinction."
+  ],
+  "Fears": [
+    "Catastrophic failure of siege engines during peak assaults, allowing enemy battering rams to breach outer gates.",
+    "Traitorous fifth-columnists sabotaging water gates or unbolting posterns by night, compromising the entire perimeter."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_kiev_2e",
+  "HeroName": "Fedor Stanislavskyj"
+}

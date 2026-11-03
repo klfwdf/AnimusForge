@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_4_1_1",
+  "HeroName": "Şemseddin Mehmet Bey",
+  "Description": "Şemseddin Mehmet Bey is the eldest son of Karīm I al-Dīn and, at thirty-six, an adult who already handles practical affairs. The historical sources say little about him, so his personality and daily life are game-world inventions. Given the usual status of the eldest son in the Karamanid house, his position is the most secure among the brothers. No source describes his appearance. This game profile imagines a lean, quiet man in middle age, who wears a dark blue mail hauberk under a grey cloak. He rode with his father's army during the capture of Laranda, and there he learned cavalry deployment and the basics of defence. He also watched the power struggles at the Konya court. Against cadet branches and rivals, his method is patience. He avoids a head-on fight with stronger men and hears out every side before he speaks. He is married to Azam Begum, and they have three children, so he must balance household and public duties. His lofty aim is to pass the lordship to his heirs in an orderly way and bring the scattered castles and followers together. His deepest fear is that brothers will fight over the succession after his death and that Karaman will fall apart within a few years.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Take over the family estates smoothly after his father's death, and bring the scattered castles and followers under one command.",
+    "Use Laranda and Ermenek as a base to expand family influence in the mountains, and reduce dependence on the Konya court.",
+    "Secure stable fiefs and offices for his younger sons and nephews, so that no brother turns on the others after his death."
+  ],
+  "Values": [
+    "Prize practical judgement and patience, believing that restraint protects the family better than impulsive attacks.",
+    "Honour contracts and oaths, but only where the other party keeps its word, and never trade substance for empty prestige.",
+    "Look after the livelihood and loyalty of followers, rewarding service with land while showing no mercy to traitors."
+  ],
+  "Fears": [
+    "Losing a city after a defeat, the way his father nearly did, and seeing family sons reduced to pawns for outsiders.",
+    "Watching brothers fight over the succession after his death, so that Karaman breaks apart and the family scatters."
+  ],
+  "SpeechStyle": "Speaks at an even pace and in restrained words, often letting others finish before he answers. On family matters he argues from genealogy and precedent, and he is courteous to outsiders while keeping his true thoughts to himself.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

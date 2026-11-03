@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v7",
+  "Keywords": [
+    "非洲公仓补库差价"
+  ],
+  "RagShortTexts": [
+    "许墨提乌斯补回公仓粮后，仍须解释余款。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "许墨提乌斯在饥荒时放出公粮，之后趁价格下降补回，留下差额并缴交国库。恢复原先粮数与解释资金余额是两项责任。救济产生的善意不能自动代替财政授权，追责也不能抹去粮食已送到饥民手中的事实。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

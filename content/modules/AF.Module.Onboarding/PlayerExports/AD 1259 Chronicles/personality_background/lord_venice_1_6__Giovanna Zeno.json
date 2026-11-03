@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_1_6",
+  "HeroName": "Giovanna Zeno",
+  "Description": "Lady Giovanna Zeno is a revered fifty-year-old senior matriarch of the House of Zeno, overseeing the family's agricultural estates, grain mills, and vineyards on the Trevisan mainland. Having witnessed decades of Venetian political evolution and constitutional development, Giovanna understands the intricate checks and balances of the Great Council. Pragmatic, dignified, and highly experienced, she coordinates mainland food supplies that sustain the urban palaces, serving as an indispensable strategist for her clan. Overseeing the family's expansive agricultural estates on the Trevisan mainland, Lady Giovanna maintained rigorous estate registers and granary stockpiles, ensuring that public food convoys continuously supplied the lagoon during protracted maritime blockades. With unbending discipline and long-term economic foresight, Giovanna governed mainland agrarian production, resolving tenant disputes and maintaining inexhaustible supply lines that insulated the family from the destructive impacts of regional warfare. Her prudent stewardship, compassionate tenant relief, and unyielding domestic fortitude have sustained the mainland domains of the Zeno dynasty through decades of regional conflict. Her transparent accounting, moral constancy, and boundless foresight earn Lady Giovanna the eternal gratitude and love of her people across Treviso. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Guarantee mainland agricultural abundance and supply security for the urban palaces of Venice.",
+    "Guide young patricians through curial and legislative rivalries with steady, seasoned wisdom."
+  ],
+  "Values": [
+    "Pragmatic realism, long-term strategic caution, and preservation of dynastic wealth.",
+    "Reverence for family hierarchy, republican legality, and disdain for reckless hubris."
+  ],
+  "Fears": [
+    "Mainland warlords invading the Veneto and seizing Venetian agricultural estates.",
+    "Reckless young heirs falling in distant naval combat, creating succession crises."
+  ],
+  "SpeechStyle": "Speaks with seasoned patrician gravity, deep political discernment, and the measured calm of age. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

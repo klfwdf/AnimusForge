@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2k",
+  "HeroName": "Estrid Nielsdatter",
+  "Description": "Lady Estrid Nielsdatter of the Galen house, second daughter of Sir Niels, was a gifted agrarian administrator and commercial coordinator within the Scanian magnate networks. Assisting her aunt Margrethe, Estrid supervised extensive cattle ranches, warhorse breeding studs, and cured-fish warehouses dotting the coast. Endowed with acute economic foresight regarding Baltic silver exchange rates, she directed cargo shipments of Scanian oats and hides to Lübeck and Visby, converting agricultural surpluses into Continental steel armor and crossbows for her father's troops. Discreet, reliable, and deeply empathetic toward the peasantry, Estrid managed tenant accounts with scrupulous equity, unsealing emergency stores during bad harvests to alleviate hardship, revered across Scania as a practical and compassionate administrative prodigy. Estrid played an instrumental role in shaping the Galen dynasty's diplomatic strategy, negotiating vital marital alliances with highborn families in southern Sweden and West Götaland to reinforce their baronial league. Residing within the family's principal manor, she directed the harvest collection and underground cellar caching of thousands of bushels of grain, guaranteeing that their castles remained self-sufficient against punitive sieges. Her dignified conduct and insightful contributions to clan war councils established her as an indispensable matriarch whose advice preserved aristocratic solidarity through perilous times.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Manage commercial trade between Galen agricultural estates and Hanseatic ports, securing vast silver reserves for family defense.",
+    "Establish grain storage systems to guarantee abundant food supplies for tenant homesteaders and garrisons during blockades."
+  ],
+  "Values": [
+    "Believes fiscal precision and contractual reliability are the bedrock of survival, holding that armaments collapse without grain and silver.",
+    "Champions benevolent stewardship and industrious thrift, regarding popular prosperity as the ultimate measure of noble rulership."
+  ],
+  "Fears": [
+    "Dreads naval blockades strangling Baltic maritime commerce, rotting stored cargoes and triggering financial collapse."
+  ],
+  "SpeechStyle": "Speaks with tranquil, grounded clarity and statistical precision, her unadorned phrases commanding profound commercial trust.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

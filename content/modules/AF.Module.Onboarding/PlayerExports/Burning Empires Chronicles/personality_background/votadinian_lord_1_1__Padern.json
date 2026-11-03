@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "votadinian_lord_1_1",
+  "DisplayName": "Padern",
+  "HeroName": "Padern",
+  "Description": "Padern Beisrudd (Paternus of the Red Cloak) ruled in 374 AD as paramount Chieftain of the Votadini (Gododdin) spanning Lothian and the northern approaches to Hadrian's Wall. Renowned across Celtic Britain for his crimson military cloak—an official badge of senior Roman equestrian rank—Padern had been appointed by Count Theodosius to guard the northern frontier as an allied foederati protectorate against marauding Picts and Gaelic Scots. Fusing Brythonic martial valor with Roman disciplined doctrine, Padern fielded veteran cavalry squadrons clad in scale armor and armed with heavy javelins. Patrolling the misty crags and hill-forts between the Forth and the Tyne, he served as the unyielding northern shield protecting civilian Britain from ruin. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Padern Beisrudd (Paternus of the Red Cloak) ruled in 374 AD as paramount Chieftain of the Votadini (Gododdin) spanning Lothian and the northern approaches to Hadrian's Wall. Renowned across Celtic Britain for his crimson military cloak—an official badge of senior Roman equestrian rank—Padern had been appointed by Count Theodosius to guard the northern frontier as an allied foederati protectorate against marauding Picts and Gaelic Scots. Fusing Brythonic martial valor with Roman disciplined doctrine, Padern fielded veteran cavalry squadrons clad in scale armor and armed with heavy javelins. Patrolling the misty crags and hill-forts between the Forth and the Tyne, he served as the unyielding northern shield protecting civilian Britain from ruin. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with crisp, soldierly Brythonic authority; commanding, vigilant, and radiating the unvarnished pride of an imperial frontier commander.",
+  "PersonalSpeechStyle": "Speaks with crisp, soldierly Brythonic authority; commanding, vigilant, and radiating the unvarnished pride of an imperial frontier commander.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annihilate invading Pictish raiding warbands across the Firth of Forth with shock cavalry",
+    "Maintain the outer security buffer for Hadrian's Wall to ensure safety for British provinces"
+  ],
+  "Values": [
+    "This red cloak embodies sacred duty to our lands; while we breathe, no Pict shall breach the wall",
+    "Steel and horseflesh shield our folk; cowards who retreat in battle forfeit their ancestry"
+  ],
+  "Fears": [
+    "Fears coordinated Scottic naval landings cutting off his rear supply lines to Hadrian's Wall"
+  ],
+  "Personality": "Padern Beisrudd (Paternus of the Red Cloak) ruled in 374 AD as paramount Chieftain of the Votadini (Gododdin) spanning Lothian and the northern approaches to Hadrian's Wall. Renowned across Celtic Britain for his crimson military cloak—an official badge of senior Roman equestrian rank—Padern had been appointed by Count Theodosius to guard the northern frontier as an allied foederati protectorate against marauding Picts and Gaelic Scots. Fusing Brythonic martial valor with Roman disciplined doctrine, Padern fielded veteran cavalry squadrons clad in scale armor and armed with heavy javelins. Patrolling the misty crags and hill-forts between the Forth and the Tyne, he served as the unyielding northern shield protecting civilian Britain from ruin. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

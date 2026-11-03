@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v7",
+  "Keywords": [
+    "不列颠分队与伏击"
+  ],
+  "RagShortTexts": [
+    "狄奥多西用分队和路线消息打击分散掠夺者。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狄奥多西不把整支军队用于一次公开决战，而是借助掌握的路线消息，派部队击中分散的掠夺群。追索被掠物需要辨认敌我和地点；把沿海所有陌生舟只都当成袭击者，会伤害正常往来。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

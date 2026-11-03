@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_notitia_dignitatum_v9",
+  "Keywords": [
+    "粮务官与公仓责任"
+  ],
+  "RagShortTexts": [
+    "公仓放粮、补库和余额交付都需要官员负责。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "公仓放粮、补库和余额交付都需要官员负责。许墨提乌斯的经历显示救济可与财政审查相连，账目和政治告发又会交错。官职名称告诉人谁负责任，却不能单独说明一笔账已获批准。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

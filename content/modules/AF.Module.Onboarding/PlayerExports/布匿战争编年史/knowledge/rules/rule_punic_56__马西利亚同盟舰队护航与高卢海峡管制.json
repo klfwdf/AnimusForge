@@ -1,0 +1,107 @@
+{
+  "Id": "rule_punic_56",
+  "Name": "马西利亚同盟舰队护航与高卢海峡管制",
+  "Description": "希腊化商业盟邦马西利亚（今马赛）以其精锐海军全力协助罗马，担负高卢沿海侦察、海峡交通管制与军团补给护航重任，成为遏制迦太基陆海交通的坚实盟友。",
+  "Tags": [
+    "马西利亚",
+    "希腊盟友",
+    "海上护航",
+    "高卢海峡",
+    "引航情报",
+    "战时中转站"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
+  "RagShortTexts": [
+    "希腊化城邦马西利亚派出精锐舰队为罗马往返西班牙的军团提供全盘护航。",
+    "马西利亚引航员凭借高超航海经验充当罗马军团深入西地中海的耳目向导。",
+    "严密的海峡巡防切断了迦太基从西班牙沿岸向北高卢部族运送黄金的密道。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "massalia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马西利亚人世世代代与这片波涛为伴，我们懂得海流与风向的每一个秘密！罗马人懂得在陆地上筑营杀敌，但在这风云变幻的狮子湾，没有我们马西利亚的快船引航，他们的重装战舰早就在暗礁上撞得稀烂！我们为西庇阿兄弟的船队护航、在埃布罗河口刺探敌情，马西利亚的黄金与战船与罗马誓死结盟，决不允许粗鄙贪婪的迦太基海盗主宰这片神圣的希腊之海！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马西利亚是罗马在阿尔卑斯山西侧最忠诚、最珍贵的眼睛与臂膀！当汉尼拔远征高卢时，正是马西利亚的斥候第一时间将敌军渡河的情报飞报西庇阿执政官；在漫长的六年西班牙苦战中，马西利亚港口始终向罗马军舰敞开大门，修整战损、转运伤员。元老院已郑重立誓：战后必将赋予马西利亚最高荣耀与永久免税特权！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这群自命清高的马西利亚希腊商人比罗马军团更加可恨！他们利用自己对海峡暗礁的熟悉，充当罗马人的忠犬与鹰犬，拦截了我们在西班牙与利古里亚之间传递的无数密信与黄金！若非马西利亚在侧翼死死扼住高卢沿岸，哈斯德鲁拔早就可以通过海陆并进直取北意大利！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马西利亚在第二次布匿战争中扮演了极其关键的罗马海军同盟角色。凭借优越的地理位置与出色的航海技术，马西利亚舰队为罗马提供了至关重要的海上护航、水文向导与前线情报，成为罗马控制利古里亚海与伊比利亚海上通道的核心支点。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "马西利亚同盟舰队护航与高卢海峡管制",
+    "rule_punic_56"
+  ]
+}

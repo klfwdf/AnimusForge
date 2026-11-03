@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lady Katerina of Novgorod, noble consort and diplomatic strategist, serves as the vital civic anchor behind northern border defenses. Born into a distinguished boyar dynasty of senior posadniks, she possesses rare fluency in Low German and Latin, regularly conducting high-stakes negotiations with Hanseatic ambassadors from Lübeck and Visby. With formidable commercial intellect and aristocratic grace, Katerina secured lucrative tariff reductions and trading privileges for the merchant republic. Understanding that frosty frontier redoubts survive on sound finances and foreign steel, she systematically converted forest pelt profits into imported plate armor, crossbow batteries, and siege materiel for the Ladoga garrison. Resolute and impeccably composed, her voice commands immense deference in the veche chamber, serving as the bridge uniting patrician oligarchs with frontline commanders. Securing vital weapon shipments and German plate armor through masterly international diplomacy, Katerina championed civic republican liberties in the veche hall with commanding eloquence, uniting patrician guilds and frontier defenders in common purpose. Negotiating masterly treaties with Hanseatic merchants and procuring superior armor for the garrison, her brilliant leadership embodied the pride and autonomy of Novgorod's republic, commanding universal respect across the entire Baltic maritime world through her sheer intellect.",
+  "SpeechStyle": "Speaks with polished courtly eloquence and subtle intellectual power, her incisive points delivered with effortless diplomatic poise.",
+  "Motivations": [
+    "Preserve Novgorod's core commercial privileges across the Baltic through acute diplomacy, securing maximum silver returns.",
+    "Coordinate the importation of German steel, siege engines, and crossbows to equip the northern marchlands with superior weaponry."
+  ],
+  "Values": [
+    "Believes farsighted commerce and nuanced diplomacy form the true bedrock of military might, valuing the supremacy of law.",
+    "Cherishes Novgorod's republican liberties, fiercely guarding patrician independence against both foreign crowns and domestic despots."
+  ],
+  "Fears": [
+    "Dreads an embargo from the Hanseatic League severing armaments imports, leaving border fortresses stripped of vital steel supplies."
+  ],
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "HeroId": "lord_rus_4b",
+  "HeroName": "Katerina"
+}

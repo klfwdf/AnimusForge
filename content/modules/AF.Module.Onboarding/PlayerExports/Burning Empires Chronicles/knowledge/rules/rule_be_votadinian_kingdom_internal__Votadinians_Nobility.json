@@ -1,0 +1,59 @@
+{
+  "Id": "be_votadinian_kingdom_internal",
+  "Keywords": [
+    "Votadinians Nobility",
+    "Votadinian hill and coastal households"
+  ],
+  "RagShortTexts": [
+    "Padern joins hill chiefs and coastal households.",
+    "Roman friendship still needs local garrison and food commitments."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Padern joins hill chiefs and coastal households. Roman friendship offers support while districts retain views on garrisons, food and passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Padern joins hill chiefs and coastal households. Followers retain family ties; decisions about guards and distant service affect common participation. Roman friendship still needs local garrison and food commitments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Roman friendship still needs local garrison and food commitments. Coordination allocates actual supply and protection duties, not merely titles. Padern joins hill chiefs and coastal households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Padern joins hill chiefs and coastal households. Households compare burdens with neighbors; unmatched protection weakens cooperation. Roman friendship still needs local garrison and food commitments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman friendship still needs local garrison and food commitments. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Padern joins hill chiefs and coastal households."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

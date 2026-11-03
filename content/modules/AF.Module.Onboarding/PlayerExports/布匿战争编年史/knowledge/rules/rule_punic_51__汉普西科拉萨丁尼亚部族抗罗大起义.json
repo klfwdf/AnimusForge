@@ -1,0 +1,105 @@
+{
+  "Id": "rule_punic_51",
+  "Name": "汉普西科拉萨丁尼亚部族抗罗大起义",
+  "Description": "公元前215年，萨丁尼亚岛富商与部族大领袖汉普西科拉趁罗马深陷坎尼危机之机，联络迦太基并发动全岛反抗罗马苛税暴政的大起义，点燃海岛战火。",
+  "Tags": [
+    "萨丁尼亚起义",
+    "汉普西科拉",
+    "科尔努斯",
+    "反抗罗马苛税",
+    "岛屿游击战",
+    "迦太基远征"
+  ],
+  "Category": "History",
+  "DefaultPriority": 80,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前215年萨丁尼亚豪绅汉普西科拉联合全岛土著部族发动抗罗武装起义。",
+    "利用罗马在坎尼惨败后兵力捉襟见肘的虚弱期秘密向迦太基元老院遣使求援。",
+    "起义军占领内陆广大山林并切断罗马驻军设在卡拉利斯军港的粮食供应线。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "二十年来罗马总督像吸血鬼一样榨干了萨丁尼亚的每一颗麦粒！第一次布匿战争后罗马人违背停火条约无耻勒索强占了我们的岛屿，现在他们的八万军团在坎尼被汉尼拔全部剁碎了，诸神显灵的复仇时刻终于到了！汉普西科拉大人振臂一呼，全岛的高山猎人和牧民全部拿起了标枪！迦太基的战舰已经驶入外海，萨丁尼亚人绝不做罗马人的农奴！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨丁尼亚是罗马不可分割的海上粮仓与南部门户！那些野蛮的岛民竟敢趁共和国国难当头之际引狼入室，暗通迦太基！元老院早已派出铁血老将曼利乌斯·托尔夸图斯，新编军团的战船已经靠岸！对于胆敢叛乱的异族叛徒，罗马的规矩只有一条：利剑平叛、格杀勿论！"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨丁尼亚本来就是第一次布匿战争后罗马人趁人之危从我们手中敲诈勒索抢走的领土！汉普西科拉的起义正义凛然，元老院立即派出了秃头哈斯德鲁拔率领六十艘战舰与万余精兵横渡海峡！只要收复萨丁尼亚与科西嘉，迦太基就能将利古里亚海变成罗马的死海，直接切断罗马本土与西班牙战场的全部联系！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前215年，萨丁尼亚当地领袖汉普西科拉趁坎尼会战后罗马空虚之机发动全岛大起义，联络迦太基出兵支援。起义军席卷萨丁尼亚内陆山林，罗马元老院紧急起用前执政官提图斯·曼利乌斯·托尔夸图斯统率两万大军赶赴萨丁尼亚平乱。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "汉普西科拉萨丁尼亚部族抗罗大起义",
+    "rule_punic_51"
+  ]
+}

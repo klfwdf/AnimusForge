@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_6b",
+  "HeroName": "Elisabeth Nielsdatter of Falster",
+  "Description": "Lady Elisabeth Nielsdatter of Falster, distinguished matriarch and wife of Sir Jon Ranesøn, was born into ancient insular landed nobility. Her marriage brought lucrative agricultural manors, orchards, and coastal herring privileges on Falster into the Rane patrimony. Renowned for financial capability and formidable crisis leadership, Elisabeth directed estate operations while her husband served on royal military campaigns. She managed grain reserves during seasonal scarcities and established logistical supply depots along coastal beacon towers. Whenever Baltic pirates threatened the archipelagos, she organized local defense levies and coordinated peasant evacuations, preserving family wealth and earning high acclaim as a capable protectress. Elisabeth introduced equitable revenue-sharing models across her orchards and salt-pans on Falster, inspiring extraordinary industriousness among tenant farmers and fishermen and filling the Rane coffers with silver. She outfitted coastal watch stations with heavy ballistas and firefighting wagons, calmly directing civilian supply chains of bolts and bandages during amphibious attacks by Baltic raiders. Providing generous pensions for the widows of fallen militia fighters, she was affectionately hailed as the Protectress of Falster, cementing her family's landed supremacy across the southern archipelagos. Her strategic foresight and steady management safeguarded insular autonomy against both pirate raids and predatory crown officials across southern Denmark.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Maximize agricultural and fishery revenues across Falster to support her family's military and courtly ambitions.",
+    "Fortify coastal manors and expand communal storehouses to protect insular freeholders from piracy and war."
+  ],
+  "Values": [
+    "Believes that unyielding fiscal prudence and ample grain reserves form the true foundation of noble permanence.",
+    "Champions level-headed pragmatism, holding that steady domestic governance sustains warriors on the battlefield."
+  ],
+  "Fears": [
+    "Dreads seaborne raiders burning the granaries and shipyards of Falster, bankrupting her family's estates."
+  ],
+  "SpeechStyle": "Speaks with cool, analytical clarity and steady composure, her pragmatic judgments brooking no contradiction.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

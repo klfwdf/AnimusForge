@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Kyiv_Ancient_Pechersk_Lavra_and_Desolation",
+  "Keywords": [
+    "Kyiv Ancient Dnieper Golden Gate",
+    "Pechersk Lavra Cave Monastery",
+    "Mother of Rus Cities Ruins",
+    "Batu Khan 1240 Desolation"
+  ],
+  "RagShortTexts": [
+    "Their monastery became the spiritual centre of the surviving Rus lands.",
+    "Yet in deep caverns, monks pray in continuous liturgies, copying Old Church Slavonic psalters."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kyiv, once known as the Mother of Rus Cities, stood above the Dnieper River as the centre of the old Rus state. Batu Khan's Mongol army destroyed the city in 1240, and hundreds of churches and the Golden Gate were reduced to rubble. The surviving monks of the Pechersk Lavra kept their community alive in the caves beneath the hill, where the relics of saints were preserved in the catacombs. Their monastery became the spiritual centre of the surviving Rus lands. The memory of the Kievan glory was kept alive through their prayers and through the chronicles they copied in the caves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Papal envoy Plano Carpini noted unburied skulls littering fields around Kyiv, with barely two hundred houses standing. Yet in deep caverns, monks pray in continuous liturgies, copying Old Church Slavonic psalters. Carpini travelled through the region on his mission to the Mongol court from 1245 to 1247. The Mongols wrecked Kyiv in 1240, yet the cave monastery kept its copyists at work."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Dnieper fords are now open roads for steppe patrols, and their riders cross the river at will. Wolves den among the charred ruins of the palaces, and the weeds grow thick over the ruined walls. Anyone who walks these mounds must watch the horizon for riders, for the steppe does not forget a city that was left unguarded."
+    }
+  ],
+  "TextMappings": []
+}

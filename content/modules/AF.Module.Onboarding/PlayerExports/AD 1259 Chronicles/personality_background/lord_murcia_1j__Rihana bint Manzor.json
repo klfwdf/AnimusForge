@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_murcia_1j",
+  "HeroName": "Rihana bint Manzor",
+  "Description": "Rihana bint Manzor, twenty in the game setting, is the wife of Ayyub ibn Muhammad al-Hudi and the mother of a son, Marwan, and a daughter, Hamda. The patronymic Manzor does not appear in the sources, so her family background can only be a setting inference. She is small, with dark eyes that she tends to narrow, and she wears two thin silver bracelets on her left wrist whose origin the game does not explain. She talks with many gestures and often taps the arm of a listener with her fingertips to make a point. Her days are spent between the castle kitchens and the weaving rooms, arranging banquets and allotting cloth, and she knows servants and craftsmen well. After 1243, Murcian towns kept their craft and market life in local hands, and women in those trades are recorded but rarely named, so her own practical role is largely conjecture. Against rivals she uses generous gifts to soften enmity, first giving and then collecting a favour, news, or an unspoken debt. Her driving aim is to win the city's goodwill for her husband's house, so that servants and craftsmen serve the Hudids willingly. Her deepest fear is that her generosity is read as bribery and courtship, bringing the envy and retaliation of others, dragging down her husband and young children.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win the willing service of the city's craftsmen, weavers and servants, so that the Hudid house's standing rests on daily goodwill as well as force and blood.",
+    "Use banquets and gifts to bind the households of notables, gathering news so her husband Ayyub knows rivals' moves in military and financial talks.",
+    "Set aside dowries and property for her two young children, Marwan and Hamda, so that they can live with dignity without depending on others."
+  ],
+  "Values": [
+    "Generosity is a measurable form of capital, and every gift should be repaid in its proper time rather than given away for nothing.",
+    "Practicality above all, believing that visible benefit moves people better than empty oaths or moral lectures.",
+    "Care for her husband and children, holding that no family honour should cost their safety, so even a banquet's gain or loss deserves caution."
+  ],
+  "Fears": [
+    "Her generosity being mistaken for bribery and courtship, bringing envy and counterattack that damages her husband's reputation in the city overnight.",
+    "Her children losing the dowries and property they are owed in a family dispute, while she is powerless to win these for them and they become pawns for others."
+  ],
+  "SpeechStyle": "Brisk and animated, with many gestures and a habit of tapping the listener's arm. When bargaining, she praises the other side first, then names her return. Gentle and direct with her children, using everyday examples.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bulgaria_2f",
+  "HeroName": "Georgi Terter I, Boyar of Cherven",
+  "Description": "Georgi Terter (senior clan general), aged thirty, serves as the military Boyar and fortified castellan of the paramount northern stronghold of Cherven. A pillar of the warlike Terter dynasty, he commands the family's finest household squadrons of armored Cuman shock cavalry along the lower Danube riverlands. Stern, methodical, and relentless on the march, he specializes in marshland ambuscades and mountain pass bottlenecks, having annihilated numerous nomadic raiding bands. As the central court of Tarnovo fractured under endless factional strife, his unyielding stewardship transformed Cherven into an impregnable regional fortress base. Recognizing that cavalry remounts and iron armor govern survival, he systematically developed local stud farms, iron mines, and weapons forges. Confronting Byzantine diplomatic bribery from the south and relentless Golden Horde pressure from the north, he champions defiant military deterrence. General Terter vows that so long as his sword remains unbroken, the ramparts of Cherven will never lower their banners to any foreign invader. Conducting surprise inspections along lower Danubian riverbanks, he meticulously cross-examines river travelers, sealing every marshland defile against foreign reconnaissance with unrelenting soldierly rigor and tactical discipline. Their unwavering dedication and strategic foresight remain indispensable to the enduring independence and glory of the realm.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the vital strategic interests, honor, and enduring inheritance of the Bulgarian and Danubian domains.",
+    "Ensure maximum tactical efficiency, troop discipline, and logistical preparedness for impending frontier conflicts.",
+    "Uphold the Orthodox faith and Slavic heritage against foreign crusader incursions and nomad extortion alike."
+  ],
+  "Values": [
+    "Unwavering fidelity to Orthodox Christian traditions and regional Slavic sovereignty.",
+    "Dedication to noble honor, military discipline, and the defense of Christian subjects from devastation.",
+    "Pragmatic statecraft grounded in historical precedent, strategic caution, and administrative order."
+  ],
+  "Fears": [
+    "The loss of ancestral patrimony and regional prestige to foreign invaders or internal factional schism.",
+    "Catastrophic military defeat leaving the frontiers vulnerable to pillage by Latin or nomadic armies."
+  ],
+  "SpeechStyle": "Speaks with curt, razor-sharp military precision and menacing baritone authority, delivering direct battlefield orders without a wasted syllable.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_1_2_1",
+  "HeroName": "Maria Romanovna of Novogrudok",
+  "Description": "Maria Romanovna of Novogrudok is a royal princess of the Rurikid dynasty, granddaughter of King Daniel of Galicia and daughter of Prince Roman Danilovich of Black Ruthenia. Her high-born marriage to Joachim Gutkeled brought supreme East Slavic dynastic prestige into one of Hungary's mightiest baronial houses. Having witnessed the turbulent frontier wars between Lithuania, Halych, and the Mongol Golden Horde, Duchess Maria possesses rare geopolitical insight and courtly resilience. She maintains extensive diplomatic correspondences across the Carpathian ranges, binding the Gutkeled interests closely with her Ruthenian kinsmen. In 1259, as dark storm clouds gather over Eastern Europe, Maria serves as Joachim's trusted confidante, analyzing interstate rivalries with razor-sharp intellect. Maria combined the illustrious dignity of the Rurikid dynasty with acute strategic instincts forged amidst Eastern Europe's geopolitical storms. Maintaining regular diplomatic correspondences with Galician boyars, she analyzed shifting international balances to advise her husband's faction. Her aristocratic composure and sharp courtly acumen elevated the Gutkeled household into an influential powerhouse in international diplomacy. Her royal Slavic lineage and diplomatic correspondences provided crucial intelligence, securing valuable northern connections for her ambitious husband, elevating the Gutkeled dynasty to elite European prominence and courtly dignity.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Assist her husband Joachim in securing supreme power across Hungary, exalting their combined lineage.",
+    "Maintain close diplomatic ties with Galicia, ensuring mutual political support amidst shifting alliances."
+  ],
+  "Values": [
+    "Value royal dignity, strategic foresight, and familial aggrandizement above transient court approval.",
+    "Prize intelligence networks and measured timing, trusting calculated intellect over blind impulse."
+  ],
+  "Fears": [
+    "Fears devastating Golden Horde invasions destroying her family's ancestral domains in Black Ruthenia.",
+    "Dreads her husband overplaying his political hand and bringing ruin upon their house."
+  ],
+  "SpeechStyle": "Ruthenian royal blood taught me the true nature of power. The fiercer the tempest, the calmer our counsel; triumph belongs to those who know when to strike! Prudent counsel conquers all; our royal lineage shall flourish for eternity!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

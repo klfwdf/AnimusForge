@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v3",
+  "Keywords": [
+    "落果橄榄与庄园食物"
+  ],
+  "RagShortTexts": [
+    "加图将落果和出油少的橄榄留作劳作者食物。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "加图主张保存落地橄榄和不易榨油的果实给劳作者食用，吃完后改给盐水与醋。产物按用途被分开：优先榨油、耐储果与低价口粮不完全重合，地主节省成本会直接进入劳动者饭碗。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

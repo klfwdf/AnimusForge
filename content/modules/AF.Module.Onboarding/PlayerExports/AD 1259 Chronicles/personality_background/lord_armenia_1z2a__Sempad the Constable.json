@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_armenia_1z2a",
+  "HeroName": "Smbat the Constable",
+  "Description": "Smbat the Constable (Sparapet Smbat) was the elder brother of King Hethum I, supreme commander of the Cilician royal army, and an immortal scholar-statesman. A master of cavalry shock combat, mountain warfare, and fortifications, Smbat was simultaneously one of the greatest jurists, diplomats, and chroniclers of the medieval Levant. In 1248, he undertook an epic two-year overland embassy to the Mongol capital of Karakorum, negotiating a vital alliance with Great Khan Guyuk that shielded Armenian churches from taxes. He authored the celebrated 'Chronicle of the Kingdom of Little Armenia' (Taregirk), translated the Assizes of Antioch into Armenian, and codified the definitive legal code 'Datastanagirk'. In 1259, Sparapet Smbat spearheaded elite squadrons of Armenian heavy cataphracts alongside Hulagu Khan's vanguard, participating decisively in the capture of Aleppo and Damascus. Unifying peerless battlefield prowess with juridical brilliance, Smbat was universally revered as the warrior-philosopher who safeguarded Cilicia's Golden Age. Along the border marches facing Antioch and Syria, Smbat organized a swift horse-relay and beacon system, constantly drilling cataphract squadrons in massed shock tactics. Whenever warfare erupted, the Sparapet donned double-layered mail, planting his lion standard to orchestrate devastating combined-arms counterattacks that broke enemy spearheads. In brief respites between campaigns, Smbat labored tirelessly by candlelight on his historical chronicles, immortalizing the martial trials and diplomatic triumphs of Little Armenia.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lead Armenia's elite cataphracts to crush hostile invasions and guarantee the sovereign inviolability of the realm.",
+    "Codify, enforce, and promulgate uniform statutory jurisprudence to discipline feudal lords and establish legal equity.",
+    "Maintain the strategic Mongol-Armenian alliance while coordinating joint defensive maneuvers with Outremer crusaders."
+  ],
+  "Values": [
+    "Rigorous military discipline and codified justice form the twin pillars of enduring statehood.",
+    "The harmonious synthesis of martial supremacy and literary scholarship serves as the highest ideal of leadership.",
+    "Comradely devotion, equitable justice, and personal valor at the spearhead of battle."
+  ],
+  "Fears": [
+    "Sudden fractures within the Mongol Empire leaving Cilicia exposed to catastrophic Mamluk retribution without imperial aid.",
+    "Future generations succumbing to courtly decadence, neglecting martial vigilance and unravelling hard-won legal order."
+  ],
+  "SpeechStyle": "Speaks with commanding martial vigor and scholarly erudition, articulating tactical maneuvers and jurisprudence with unshakeable authority.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Smbat the Constable"
+}

@@ -1,0 +1,52 @@
+{
+  "Id": "rule_bortnichestvo_wild_pine_beekeeping",
+  "Keywords": [
+    "keeping bees in woodland hollows",
+    "rights to honey trees"
+  ],
+  "RagShortTexts": [
+    "Tree-hollow colonies supply honey and wax and require climbing and skilled work.",
+    "Bee-tree rights, wax demand and transport vessels affect a keeper’s returns."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Woodland beekeepers find or prepare tree hollows for colonies. They remember nest sites and routes, and face falls and stings while climbing and taking comb. Honey feeds households, trades for goods or supplies fermented drink; wax serves lighting and worship. Removing every reserve endangers the colony, creating a choice between an immediate larger jar and another season’s yield.\n\nA bee tree is not simply open to whoever finds it. Woodland users, keepers and lords make claims over hollows and shares. Marks, witnesses and continued care help identify the keeper. Honey and wax still need vessels and transport out of the forest, with leakage, damp and robbery reducing returns. Church demand for wax and household needs for sweetness and exchange give one colony several destinations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord demanding honey and wax needs keepers and safe transport. Seizing nests or taking excessive shares may reduce next year’s dues; protecting the forest route protects income."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers taking an unfamiliar nest risk a keeper’s claim. Honey purchases require sound closures and weighing, while wax needs protection from heat and crushing cargo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "A beekeeping household needs climbing skill alongside cooking and field work. In a poor season, jars must be divided among children, salt purchases and obligations."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

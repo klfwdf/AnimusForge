@@ -145,5 +145,16 @@
     <string id="AF_SETS_Coup_HallGuard" text="护卫" />
     <string id="AF_SETS_Coup_HallAssault" text="突击队" />
     <string id="AF_SETS_Coup_HallPointUnreachable" text="领主大厅连续15秒找不到{SIDE}可达落点，已停止本次部署；未授予胜利，已有伤亡保留。" />
+    <string id="AF_SETS_TownEntry_Option" text="亲自进城决定" />
+    <string id="AF_SETS_OwnedIncident_Leave" text="收手离开" />
+    <string id="AF_SETS_TownEntry_Tooltip" text="暂不立即处置战后事务；你将披甲带约{COUNT}名健康士兵进城，普通民众仍散在城内街区，再由现场对话或行动决定安抚、宽恕、搜掠或血洗。" />
+    <string id="AF_SETS_TownEntry_MissingSceneTooltip" text="当前没有可进入的攻城胜利定居点场景。" />
+    <string id="AF_SETS_TownEntry_MissingScene" text="【攻城处置】当前没有可进入的被攻陷定居点场景。" />
+    <string id="AF_SETS_TownEntry_Failed" text="【攻城处置】暂时无法进入被攻陷的定居点场景。" />
+    <string id="AF_SETS_TownEntry_SelectionFallback" text="【攻城处置】未选择随行队员，将自动带入健康普通士兵。" />
+    <string id="AF_SETS_TownEntry_BattleEquipment" text="【攻城处置】你已披甲执兵入城。" />
+    <string id="AF_SETS_TownEntry_NoHealthyTroops" text="【攻城处置】主部队没有可入城的健康士兵或同伴。" />
+    <string id="AF_SETS_TownEntry_DecisionPolicy" text="【攻城处置】处置方式由你现场决定：直接离场按搜掠结算；明确宽恕、安抚或宣抚会按对应处置结算；搜掠仍可因后续宽恕/宣抚回退；血洗不能回退为搜掠或正向处置，但仍可继续升级为屠民迁殖；屠民迁殖也可一开始直接触发。" />
+    <string id="AF_SETS_CastleEntry_DecisionPolicy" text="【城堡处置】进入场景后可与守城战败士兵和被俘领主交涉，并对战俘下达收编或屠戮命令；未明确处置直接离场时默认按宽恕结算。城镇民众的搜掠、宣抚、血洗和迁殖规则不适用于城堡。" />
   </strings>
 </base>

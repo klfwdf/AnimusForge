@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_veche_participation_and_elite_influence_7b965c9f",
+  "Keywords": [
+    "Novgorod's veche and influential households",
+    "Petitions and urban networks at the veche"
+  ],
+  "RagShortTexts": [
+    "Novgorod's veche participates in decisions alongside prince, archbishop and boyars.",
+    "Assemblies and enforcement need support among households of unequal wealth and influence."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Novgorod's veche gathers public discussion alongside princely, episcopal and boyar networks. Some mobilize support, others provide resources or experienced men, and decisions still require execution. Disputes over princes, trade or collections depend on those willing to supply, guarantee and cooperate as well as voices in the gathering."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Ordinary Novgorod households ask who attends an assembly and how its issue concerns debts or service. Artisans and sellers may send messages through acquaintances rather than abandon work all day. Having a request heard does not ensure execution, leaving residents to seek further news."
+    }
+  ],
+  "TextMappings": []
+}

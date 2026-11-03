@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_5_1_a",
+  "HeroName": "Pedro Díaz de Castañeda",
+  "Description": "Pedro Díaz de Castañeda is the valiant eldest son and heir of Diego Gómez and Doña Mayor, representing the martial vanguard of the rising Castañeda generation. Formidably built and trained extensively in alpine cavalry shock tactics and heavy spearplay, he commands his father's household retinue across the rugged gorges of Cantabria. Fiercely proud of his ancient mountain heritage, Don Pedro treats the centralizing edicts of King Alfonso X with undisguised contempt. In local assemblies, the young warrior passionately champions the sanctity of local fueros, swearing to defend seigneurial courts at swordpoint. Frequently inspecting garrison bastions and coastal watchtowers along the bay of Santander, he ensures that his men-at-arms remain in constant combat readiness. In 1259, Pedro cultivates close ties with the hot-blooded young knights of the Haro and Lara factions, eager to prove his chivalric valor in righteous battle and safeguard the mountain lordships from royal tyranny. Leading mounted lancers along the storm-battered shores of the Cantabrian Sea, Pedro maintains constant vigil against foreign privateers and royal crown patrols. Frontline gallantry in tournament lists and border clashes has earned the intrepid young heir fanatical devotion from his veteran retainers, warning rival houses that the House of Castañeda is fiercely prepared to defend its mountain lordships against any armed intrusion.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Win martial distinction in mountain defense to prove himself worthy of the Castañeda lordship",
+    "Lead elite infantry and cavalry squadrons to crush any royal mercenary force violating his fief",
+    "Forge a brotherhood of arms with northern noble heirs to preserve traditional feudal rights"
+  ],
+  "Values": [
+    "A knight's honor is defined by the edge of his blade; yielding to tyranny brings eternal shame",
+    "Sacred oaths sworn to comrades and clan must be maintained at the hazard of life",
+    "Stand resolute and unyielding, fighting for justice to the very last breath"
+  ],
+  "Fears": [
+    "Being trapped and dishonorably imprisoned through treasonous court conspiracies",
+    "Internal betrayal compromising ancestral mountain fortresses and tarnishing family glory"
+  ],
+  "SpeechStyle": "Resonant, passionate, and direct; speaks with the uninhibited fire and blunt honesty of an eager young highland knight.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

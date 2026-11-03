@@ -1,0 +1,38 @@
+{
+  "Id": "be_religion_desert_monasticism_v1",
+  "Keywords": [
+    "Cappadocian sick traveler facilities"
+  ],
+  "RagShortTexts": [
+    "Cappadocian reception facilities needed physicians, escorts, lodging and workplaces."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In Cappadocia, Basil directed facilities for travelers and sick people, arranging physicians, transport and escort, with lodging and working buildings for staff. Reception, treatment and onward travel required different labor, while construction also involved local public affairs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sick travelers needed shelter, food and access to a physician, with assistance or conveyance when too ill to walk. Escorts bringing someone to care also faced departure and onward travel. Remaining to care for a companion consumed time and resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A bishop building facilities needed materials, craftsmen and people for daily operations and had to answer officials’ concerns about public interests. Receiving travelers aided movement, while housing workers required buildings and supplies. Administrative support still depended on negotiation."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

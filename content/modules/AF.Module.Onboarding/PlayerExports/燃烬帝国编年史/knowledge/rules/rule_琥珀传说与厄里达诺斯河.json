@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v7",
+  "Keywords": [
+    "琥珀传说与厄里达诺斯河"
+  ],
+  "RagShortTexts": [
+    "法厄同姊妹化树、泪滴变琥珀，是诗人解释这种材料的故事。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "法厄同姊妹化树、泪滴变琥珀，是诗人解释这种材料的故事。普林尼批评人们把厄里达诺斯河等地名弄混，说明传说也会影响货物产地的想象。听过故事的人可以相信或怀疑，而河流不会因此产生客观魔法。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1l",
+  "HeroName": "Angharad ferch Llywelyn, Maiden of Meirionnydd",
+  "Description": "Angharad ferch Llywelyn is the spirited daughter of Llywelyn ap Maredudd, celebrated across southern Gwynedd for her courage and beauty. Agile as a mountain hind, with raven-black braids and keen, vigilant eyes, she was raised within the austere stone fortifications of Meirionnydd. Far from an idle maiden, Angharad is a master of herbal medicine, logistics, and archery, capable of navigating treacherous scree slopes in the dead of night. In 1259, with her father campaigning on the eastern borders, Angharad assumed domestic command of the mountain keep, rationing grain supplies, tending wounded scouts, and maintaining palisades. She oversees the distribution of salted meat and wool to highland refugees, stabilizing morale during bitter storms. When rogue English foraging parties penetrated the valley, she directed local longbowmen to unleash deadly rockfalls and volleys from the cliffs. Her steadfast resolve renders her an indispensable pillar of highland resistance. Bearing medicinal satchels, she hikes to isolated upland huts, dressing battle wounds and soothing feverish children with alpine herbal balms. Within the mountain keep, Angharad tallies every bushel of oats and barrel of salted mutton, ensuring her father's warriors remain well-fed and resolute through bitter winter sieges.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Hold the ancestral mountain stronghold securely while her father campaigns on the frontier",
+    "Gather rare alpine herbs to heal wounded warriors and alleviate peasant suffering",
+    "Preserve order and harmony among the clannish upland valleys during times of scarcity"
+  ],
+  "Values": [
+    "The survival of our people depends on every soul; duty at the hearth is as sacred as battle",
+    "Even in the darkest hours of slaughter, the light of mercy and healing must never falter",
+    "Our mountain crags are sacred; never permit foreign boots to desecrate ancestral soil"
+  ],
+  "Fears": [
+    "The front collapsing and leaving their isolated highland keep surrounded by Norman besiegers",
+    "Winter frosts sealing mountain passes and bringing famine and pestilence to the refugees"
+  ],
+  "SpeechStyle": "Speaks with melodic clarity, serene confidence, and unhurried composure. Her tone is brisk when issuing logistics orders, yet deeply comforting and tender when ministering to the sick.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

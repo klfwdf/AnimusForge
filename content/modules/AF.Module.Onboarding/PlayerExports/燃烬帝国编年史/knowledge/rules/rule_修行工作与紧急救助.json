@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v6",
+  "Keywords": [
+    "修行工作与紧急救助"
+  ],
+  "RagShortTexts": [
+    "调换共同劳作须协调，突发救急后仍要说明未完事务。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "共同劳作需要协调，成员临时换工会使原来的任务缺人。突发危险或有人无力求助时，又要及时救援。回来后说明离岗缘由，能让同伴知道哪些工作仍未完成。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

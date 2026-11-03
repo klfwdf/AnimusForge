@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_hafsid_2_1",
+  "HeroName": "Emir Yahya Butrus al-Mutawakkil",
+  "Description": "Emir Yahya Butrus al-Mutawakkil leads the second branch of the Hafsid kin. The game data records him at forty-one, with strong political and command skills, and he is the member of this branch most skilled in finance and personnel. The game model shows an adult man with an Aserai-style beard and tidy hair, and neither the sources nor the game data record any scars. His authority comes from control of accounts and tax revenues. The chronicles say nothing of him, so the account below rests on game setting and dynastic background. He has long served in the royal finance and administration offices, learning the tax districts, tribute routes, and posting roads of the realm. Through that work he built a network of contacts among provincial chiefs. He is married to Halwa, and they have two sons. The eldest, Zakariya, and the second, Hassan, have received a solid education, and he places the future of his branch in their hands. Facing rivalry among the royal kin, he usually resolves conflicts by trading favors instead of resorting to arms, and he avoids humiliating a rival in public, even an enemy. His lofty aim is to secure a firm place for his branch in the Hafsid political order, so that descendants stand on institutions rather than luck. His private dread is that a leak in the treasury will bring the branch's power down, while his sons still lack the experience to hold it together.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Hold the key posts in royal finance and administration, keeping control of taxes, tribute, and posting roads in his own hands and out of rivals' reach.",
+    "Build friendships and marriage ties with regional tribal chiefs, so that the branch's reputation rests on local support as well as royal appointment.",
+    "Train his sons Zakariya and Hassan in governance, so that the branch's financial and administrative skill survives him and does not die with him."
+  ],
+  "Values": [
+    "He believes good government rests on clear accounts and fair taxation, and every coin should be traceable to its use without ambiguity.",
+    "He values the proper measure of exchange, holding that mutual agreements are better than threats or force in dealing with rivals among the kin.",
+    "He values the education of his sons, believing a family endures only when the next generation can serve well within the institutions."
+  ],
+  "Fears": [
+    "A deficit in the royal treasury may give rivals a reason to accuse him of mismanagement, stripping away the reputation and posts his branch built over years.",
+    "After his death, his young sons may lack experience and be defeated in the struggle among the kin, and the branch's standing would decline for generations."
+  ],
+  "SpeechStyle": "His tone is calm and orderly. He lays out figures before proposing a solution. He is respectful toward elders and direct with subordinates, and when a matter is hard he says the accounts come first.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

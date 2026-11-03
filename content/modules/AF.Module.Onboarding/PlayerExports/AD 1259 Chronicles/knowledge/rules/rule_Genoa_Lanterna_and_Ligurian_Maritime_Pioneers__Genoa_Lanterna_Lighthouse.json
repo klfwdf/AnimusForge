@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Genoa_Lanterna_and_Ligurian_Maritime_Pioneers",
+  "Keywords": [
+    "Genoa harbor and maritime investment"
+  ],
+  "RagShortTexts": [
+    "Genoese shipowners, investors and crews shared maritime risk through contracts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Genoese shipowners, investors and crews shared maritime risk through contracts. Harbor facilities aided passage without removing weather or hostile fleets. Nicaean talks offered possibilities, but particular port privileges still needed agreement."
+    }
+  ],
+  "TextMappings": []
+}

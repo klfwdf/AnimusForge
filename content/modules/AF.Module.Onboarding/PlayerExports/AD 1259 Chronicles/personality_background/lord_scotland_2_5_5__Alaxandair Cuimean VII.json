@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_5_5",
+  "HeroName": "Alaxandair Cuimean VII",
+  "Description": "Alexander Comyn VII is the second son of the Earl and Countess of Buchan, seven years of age and already brimming with the fierce martial instincts of his warrior lineage. Stout, fearless, and tireless, he spends his days upon the tournament lawns of Slains Castle practicing with wooden broadswords and miniature lances. Scottish Exchequer Rolls list him among the joint beneficiaries of multiple baronial charters and fishings across the River Don. Fiercely ambitious and eager to prove his worth, he reveres his elder brother John and dreams of donning steel harness to lead Highland shock cavalry in royal campaigns. Cheered on by rugged castle guards, young Alexander repeatedly led mock counter-charges against pretend invaders with uncanny tactical instinct; he eagerly pored over parchment battle maps of ancient Scottish campaigns, committing every Highland pass and rocky Firth to memory with fierce martial ambition.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Train relentlessly in swordplay and horsemanship to become a legendary armored knight of Scotland.",
+    "Earn his father's stern praise by mastering chivalric arts and military drills at an early age."
+  ],
+  "Values": [
+    "Values martial strength, unyielding bravery, and physical endurance above books and courtly ease.",
+    "Believes unwavering devotion to his brother and clan is the highest knightly law."
+  ],
+  "Fears": [
+    "Fears being branded weak or cowardly by the hardened knights garrisoning Slains Castle.",
+    "Dreads falling short of the formidable martial expectations demanded of a son of Buchan."
+  ],
+  "SpeechStyle": "Speaks with boisterous childhood energy, spirited, bold, and overflowing with enthusiastic talk of tournaments and battle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

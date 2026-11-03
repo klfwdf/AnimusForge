@@ -1,0 +1,59 @@
+{
+  "Id": "be_frankish_kingdom_legitimacy",
+  "Keywords": [
+    "Franks Legitimacy",
+    "Genobaud’s protection and shares"
+  ],
+  "RagShortTexts": [
+    "Genobaud relies on protection, shares and recognition.",
+    "Roman office, gifts and settlement agreements also bring prestige."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Genobaud gains recognition through protection and rewards; Roman office, gifts and settlement agreements also bring prestige. Market households resist losing access for personal glory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Genobaud relies on protection, shares and recognition. Military recognition also rests on rewards and relief; a title needs willing action. Roman office, gifts and settlement agreements also bring prestige."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Roman office, gifts and settlement agreements also bring prestige. Nominal rights require local execution, with consent and supply both shaping authority. Genobaud relies on protection, shares and recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Genobaud relies on protection, shares and recognition. Households judge rule through protected families, land and responses to appeals. Roman office, gifts and settlement agreements also bring prestige."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Roman office, gifts and settlement agreements also bring prestige. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Genobaud relies on protection, shares and recognition."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

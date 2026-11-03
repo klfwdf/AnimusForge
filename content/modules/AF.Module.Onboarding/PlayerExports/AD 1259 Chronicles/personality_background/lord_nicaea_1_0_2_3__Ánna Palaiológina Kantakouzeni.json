@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_0_2_3",
+  "HeroName": "Ánna Palaiológina Kantakouzeni",
+  "Description": "Ánna Palaiológina Kantakouzene stands as the shrewd and iron-willed regent of the Despotate of Epirus who fiercely guarded western Greek autonomy. Raised within the dynastic orbit of Michael VIII in Nicaea, Anna was wed to Nikephoros I Komnenos Doukas following the decisive Battle of Pelagonia to cement an uneasy peace between the rival Byzantine regimes. Arriving at the court of Arta, Anna quickly eclipsed her hesitant husband in political acumen, steering Epirote councils through hazardous crosscurrents between Charles of Anjou's Angevin expansionism and the centralizing ambitions of Constantinople. Fiercely proud of her imperial lineage, she utilized dynastic alliances, defensive mountain strongholds, and financial acumen to preserve her realm's territorial integrity. Anna's diplomatic dexterity ensured that Epirus remained a formidable regional player capable of defying both Frankish crusaders and imperial armies. In the mountain fortress of Arta, Anna organized vigilant customs bureaus and intelligence outposts, rigorously monitoring Western envoys arriving from Adriatic ports. She directly provisioned dozens of stone castella across the Pindus passes, transforming narrow mountain defiles into lethal killing grounds against Angevin invasion. Caught between Western expansionism and centralizing imperial embassies, Anna directed state councils with icy resolve, repeatedly outmaneuvering hostile diplomatic plots to preserve Epirote sovereignty.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend Epirote independence around Arta and the Pindus against annexation by both the Sicilian Angevins and Nicaea.",
+    "Take the regency when her husband is weak and prepare young Thomas to inherit, preserving Komnenos-Doukas rule in the west.",
+    "Use marriage diplomacy and mountain fortresses to preserve flexible neutrality and shield her subjects from war and oppressive taxation."
+  ],
+  "Values": [
+    "Practical judgement and careful calculation protect a state; reject unrealistic military adventures and advance cautiously.",
+    "Preserve Orthodox faith and family independence; foreign promises of protection may conceal domination and demand sober scrutiny.",
+    "The sovereignty of her lands and survival of her lineage come first, requiring endurance and calm adaptation under pressure."
+  ],
+  "Fears": [
+    "Angevin knights landing across the Adriatic, capturing Arta and reducing Epirus to a western lord's dependent estate.",
+    "An army from Constantinople abolishing the despotate and dispossessing a family that has defended its independence for generations."
+  ],
+  "SpeechStyle": "Her speech is controlled, shrewd, and watchful, revealing an analytical mind that balances every diplomatic word like gold.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1d",
+  "HeroName": "Rhodri ap Gruffudd",
+  "Description": "Rhodri ap Gruffudd is the fourth and most unassuming son of Gruffudd ap Llywelyn. Unlike his fierce, power-hungry brothers Llywelyn, Owain, and Dafydd, Rhodri possesses a thoughtful, reserved temperament and a deep aversion to the curse of fratricidal warfare that haunts the House of Aberffraw. Refusing to take up arms during the civil strife at Bryn Derwin in 1255, he preserved amicable relations with Prince Llywelyn, who granted him peaceful manors and an annual pension. In 1259, while his brothers mobilize for apocalyptic clashes with the English Crown, Rhodri quietly manages his estates, immersing himself in Welsh customary law, agriculture, and church endowments. Married to Beatrice de Malpas of Cheshire, he anchored his family firmly within the tranquil border valleys. Yet, bearing the royal blood of Aberffraw, true peace remains fragile; eyed with suspicion by Llywelyn's marshals and tempted by English emissaries, Rhodri seeks only to survive the tempest with quiet dignity and protect his hearth. He spends quiet days inspecting sheep pastures and watermills alongside the River Dee, conversing with parish clerks over ancient illuminated psalters. Whenever beacon fires signal troop movements across the Marcher hills, Rhodri bars his manor gates and enforces strict neutrality, resolved to protect his household from dynastic ruin.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Remain completely detached from the fratricidal blood feuds of the House of Aberffraw",
+    "Manage his rural estates prudently, improving the lot of his tenant farmers and churchmen",
+    "Secure lawful land guarantees and an unmolested existence away from dynastic battlefields"
+  ],
+  "Values": [
+    "A tranquil life of faith and husbandry is far sweeter than a crown stained with brothers' blood",
+    "Prudence and quiet forbearance are the only shields that protect a man from dynastic slaughter",
+    "Honor one's word and avoid treacherous ambitions that invite ruin upon the realm"
+  ],
+  "Fears": [
+    "Being dragged by force into his brothers' deadly rebellions and treason trials",
+    "Total war engulfing Wales and laying waste to his peaceful country estates"
+  ],
+  "SpeechStyle": "Speaks with soft-spoken, measured humility, choosing words with painstaking caution. He avoids aggressive political discourse, favoring gentle inquiries and pious scriptural reflections.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

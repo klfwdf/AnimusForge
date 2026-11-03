@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_7e",
+  "HeroName": "Knut Svantepolksøn",
+  "Description": "Sir Knut Svantepolksøn, martial heir to the lordship of Viby, was the eldest son of High Justiciar Svantepolk. Inheriting the fearsome warrior spirit of his grandfather, Duke Knut of Blekinge, young Knut was schooled in heavy shock tactics, frontier reconnaissance, and siege warfare across Jutland and Östergötland. Commanding an elite vanguard of armored cavalry retainers, he garrisoned the critical forested defiles between Småland and Östergötland, ruthlessly suppressing border marauders and securing his family's far-flung estates. Known for strict soldierly justice and egalitarian comradeship with his men, he commanded passionate loyalty throughout his ranks. During turbulent power struggles across the north, Knut's martial prowess provided the indispensable armed deterrent safeguarding his father's judicial neutrality. Patrolling the dense frontier forests of Småland, young Knut demonstrated remarkable tactical foresight, surveying topographical maps and erecting timber redoubts and deadfalls across mountain defiles. When marauding Baltic reavers attempted amphibious crossings to plunder peasant hamlets, Knut spearheaded armored shock charges, annihilating the raiders along the river shallows. Upright, honorable, and fiercely protective of his vassals, he was celebrated by border communities as the impenetrable iron shield of southern Östergötland. His soldierly reputation for steadfast loyalty and tactical daring made him a respected champion across both Denmark and Sweden.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Patrol the frontier passes around Viby with armored cavalry to protect civilian hamlets from marauders.",
+    "Forge a formidable martial reputation on the battlefield to safeguard his family's cross-border political weight."
+  ],
+  "Values": [
+    "Reveres knightly battlefield courage and uncompromising fealty, believing that sharp steel secures lawful peace.",
+    "Champions unbending military discipline and brotherly solidarity, scorning cowardly intrigue in favor of open combat."
+  ],
+  "Fears": [
+    "Dreads sudden surprise assaults overrunning border defiles and leaving his beloved homeland vulnerable to devastation."
+  ],
+  "SpeechStyle": "Speaks with brisk, ringing martial authority, his concise commands reflecting seasoned tactical confidence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

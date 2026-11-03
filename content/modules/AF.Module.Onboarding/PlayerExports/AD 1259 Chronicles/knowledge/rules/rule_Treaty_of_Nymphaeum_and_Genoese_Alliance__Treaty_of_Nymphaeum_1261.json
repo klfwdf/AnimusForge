@@ -1,0 +1,50 @@
+{
+  "Id": "rule_Treaty_of_Nymphaeum_and_Genoese_Alliance",
+  "Keywords": [
+    "Treaty of Nymphaeum 1261",
+    "Michael VIII Genoese Pact",
+    "Galata Black Sea Monopoly",
+    "Shattering Venetian Naval Primacy"
+  ],
+  "RagShortTexts": [
+    "Nicaea sought naval partners through bargaining over ships and commercial concessions."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nicaea sought Constantinople, while Genoa and Venice competed over eastern Mediterranean trade and ports. Nicaean officials considering naval partners weighed ships, customs and trading quarters. Investors, shipowners and the court had different demands; assistance needed available vessels and payment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Nicaean magnates could welcome Genoese naval support while fearing lost customs revenue from exemptions. Negotiations required terms for ports, vessels, costs and jurisdiction, with Venice’s response in mind. Supporters of an alliance and beneficiaries of port dues might accept different costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Nicaean coastal soldiers watched shipping, carried news between forts and checked bolts and stores. Italian captains might bargain over passage, escort or provisions, while permission to land depended on local orders. Reports that the court sought partners did not replace a commander’s instructions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Greek coastal households hoped for safe ports and feared requisitioned boats, higher dues or interrupted routes. Italian merchants sought favorable terms, while boatmen and small traders depended on immediate sales. Nicaea’s ambition to regain the old capital shaped talk, but assistance depended on who supplied ships and paid the costs."
+    }
+  ],
+  "TextMappings": []
+}

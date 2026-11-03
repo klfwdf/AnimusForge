@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Smolensk_Key_to_Dnieper_Rus",
+  "Keywords": [
+    "Smolensk Dnieper Frontier Key",
+    "Dormition Cathedral Smolensk",
+    "Shield of Western Rus Fortress",
+    "Varangian Portage Crossroads"
+  ],
+  "RagShortTexts": [
+    "Smolensk guarded the upper Dnieper portages, serving as the storied western stone shield of."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Smolensk sat on the upper Dnieper, where portage routes linked the Baltic trade and the Varangian road to the Black Sea. The princely seat stood on high ground above the river, with earthen and timber ramparts and deep ravines protecting its approaches. Its prince controlled the crossings that merchants needed for furs, wax, and honey, and whoever held the crossings could tax the flow of goods. As Lithuania expanded east under its grand dukes, Smolensk became the shield of western Rus, a border town that had to watch both the Baltic frontier and the steppe. The Dormition Cathedral, the principal church of the principality, anchored an Orthodox community that saw itself as the guardian of the faith on that frontier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "soldier"
+        ]
+      },
+      "Content": "Seasoned druzhina axemen stood watch on the Smolensk walls through the winter of border raids. Their lord counted every man who could bear a shield, and mail was patched after each skirmish with Lithuanian riders. Inside the walls the liturgy went on through every alarm."
+    }
+  ],
+  "TextMappings": []
+}

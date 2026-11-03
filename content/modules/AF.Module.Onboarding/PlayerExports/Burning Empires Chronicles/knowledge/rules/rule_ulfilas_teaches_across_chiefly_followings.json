@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v3",
+  "Keywords": [
+    "Ulfilas teaches across chiefly followings"
+  ],
+  "RagShortTexts": [
+    "Gothic teaching passed through kin and congregations across chiefly boundaries."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Teaching in Gothic passed through kin, teachers and congregations and could cross boundaries between leaders. Following a bishop’s instruction differed from serving a particular chief. New believers also faced expectations from relatives who maintained ancestral worship."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_marinid_5_1",
+  "HeroName": "Ibrahim ibn 'Uthman Adergal",
+  "Description": "Ibrahim ibn 'Uthman Adergal was a son of 'Uthman Adergal and a full brother of 'Ali, 'Umar and Abu Rabi' Sulayman. His wife is Jariya, and their sons are Badis and Faris. No chronicle records his life, so the portrait below is a game-setting construction based on the faction's history. His appearance is a game-setting invention: a man of middle height with broad shoulders, a high forehead, and a short trimmed beard that has begun to grey. He often wears a long dark-blue robe with a fox-fur collared cloak, and at his belt hangs a bronze seal, a sign that he oversees the family's land and harvests. In youth he spent his days between the family estate and its granaries, learning to count harvests, divide provisions and settle disputes among tenants. This gave him a name for steadiness and fairness. He rarely fights in person, but in lean years he kept the granaries orderly, so that tenants and herdsmen attached to the family survived hard seasons. With rivals in the kin, he divides contested land and income into shares, giving each side something, which reduces open conflict. His highest aim is to hold the estate and its granaries, so that his two sons inherit a livelihood worth keeping when they come of age. His darkest side is wariness. He examines strangers and new partners closely and can seem harsh. His greatest fear is a poor distribution that turns tenants and herdsmen bitter in a famine, causing the estate to lose its people.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wanted to hold the estate and its granaries, so that his two sons would inherit a livelihood worth keeping rather than see the family decline through division.",
+    "He distributed provisions carefully in lean years, so that tenants and herdsmen attached to the family could survive the hardest seasons.",
+    "He divided contested land and income among kinsmen so that each side gained something, reducing open conflict and lasting resentment."
+  ],
+  "Values": [
+    "Fairness and steadiness, since he believed fair distribution matters more to people than sheer quantity, and favoritism would cost the estate its loyalty.",
+    "Responsibility and record keeping, as he held that every measure of grain and every coin of income should be traceable, so that accounts win the trust of others.",
+    "Continuity of the estate, because he saw land and granaries as the family's foundation and believed the kin stays whole only when descendants keep them."
+  ],
+  "Fears": [
+    "A poor distribution turning tenants and herdsmen bitter during a famine, sparking unrest that would cost the estate its people and its order.",
+    "His two sons quarrelling over the inheritance, so that the estate he guarded all his life splits into pieces."
+  ],
+  "SpeechStyle": "He speaks calmly, starting with figures and rules before personal matters. He explains patiently to tenants and persuades kinsmen through costs and benefits. Met with resentment, he lets others finish, then compromises.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

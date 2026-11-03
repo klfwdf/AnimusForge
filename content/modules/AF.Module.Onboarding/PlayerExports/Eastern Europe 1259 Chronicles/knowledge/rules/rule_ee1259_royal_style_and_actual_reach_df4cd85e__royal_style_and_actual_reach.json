@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_royal_style_and_actual_reach_df4cd85e",
+  "Keywords": [
+    "royal style and actual reach",
+    "Danylo’s 1253 crown and khanly pressure"
+  ],
+  "RagShortTexts": [
+    "Danylo received a crown in 1253.",
+    "Papal ties coexist with Orthodox life and Mongol pressure."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Danylo received a crown in 1253 to strengthen standing and diplomacy. It does not make every Rus prince his direct subject. Orthodox life, papal ties and Mongol demands coexist, while promised aid needs actual delivery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Royal summons still needs assembly and food. Distant support may miss the crisis; soldiers require commanders and return arrangements, not ceremonial standing alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A crown creates leverage and expectations. Service or religious commitments need local elite and church acceptance to avoid gaining one recognition at the expense of several partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families continue rents, supplies and local worship. Repeated extra demands while awaiting aid make them judge royal dignity through practical burdens."
+    }
+  ],
+  "TextMappings": []
+}

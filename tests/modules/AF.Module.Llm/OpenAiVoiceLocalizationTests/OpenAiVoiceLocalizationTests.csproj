@@ -8,7 +8,10 @@
     <Compile Include="../../../../src/modules/AF.Module.Llm/Tts/OpenAiTtsVoiceCatalog.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Tts/LlmUiTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" />
     <EmbeddedResource Include="../../../../content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" WithCulture="false" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.en.json" LogicalName="AnimusForge.Llm.RuntimeSources.en.json" WithCulture="false" />
     <Reference Include="Newtonsoft.Json"><HintPath>$(ReferenceDir)/Newtonsoft.Json.dll</HintPath></Reference>
     <Reference Include="TaleWorlds.Localization"><HintPath>$(ReferenceDir)/TaleWorlds.Localization.dll</HintPath></Reference>
     <Reference Include="TaleWorlds.Library"><HintPath>$(ReferenceDir)/TaleWorlds.Library.dll</HintPath></Reference>

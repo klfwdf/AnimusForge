@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_6_1",
+  "HeroName": "Margareta von Mecklenburg, Duchess of Pomerania",
+  "Description": "Margareta hails from the House of Werle, a cadet branch of the Mecklenburg Niklotid princely lineage, as the noble daughter of Lord Nicholas I. Her marriage to Duke Barnim I of Pomerania forged an indispensable dynastic arch spanning two major Baltic regional powers. Endowed with gentle discretion and sharp diplomatic acuity, the Duchess tirelessly assisted her lord in the court of Stettin, mediating bitter land disputes between newly arrived Saxon settlers and traditional Slavic nobility. She directed extensive personal revenues toward holy foundations, notably the nunnery of Marienfließ, fostering pious learning and charity. While Duke Barnim remained occupied across militarized frontiers and treaty councils, Margareta safeguarded palace revenues, monitored municipal tributes, and extended aid to common folk, earning deep reverence across northern German chronicles. In resolving disputes between chartered municipal markets and feudal castellans, Duchess Margareta held regular mediation sessions with graceful equity, ensuring that monastic manors and agrarian commoners remained protected from rogue military raids. She carefully instructed younger kin in sacred liturgy and courtly manners, creating an enduring moral sanctuary within the ducal household and securing the heartfelt blessings of local cathedral prelates. Her gentle benevolence provided the duchy with a moral beacon of enduring harmony across generations.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate the dynastic alliance between the House of Werle and Pomerania, preventing fratricidal Baltic conflict.",
+    "Support monastic endowments and charitable hospices to secure divine blessings for the ducal family and subjects."
+  ],
+  "Values": [
+    "Believes gentle discretion and equitable mediation resolve deep clan rifts that blades and oaths cannot heal.",
+    "Views shielding the vulnerable and honoring holy clergy as an inescapable duty of Christian noblewomen."
+  ],
+  "Fears": [
+    "Fears minor feuds among northern barons escalating into widespread war engulfing Mecklenburg and Pomerania.",
+    "Worries that her children might become political hostages in foreign dynastic marriages."
+  ],
+  "SpeechStyle": "Mercy and grace are no marks of weakness; only when every estate finds protection beneath the law can peace truly flourish. In council or on campaign, our lawful rights admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Margareta von Mecklenburg, Duchess of Pomerania"
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_4a",
+  "HeroName": "Lucas I, master of the cupbearers",
+  "Description": "Lucas I Péc is a distinguished patriarch and court officer of the ancient Péc clan, serving as royal Master of the Cupbearers (Pohárnokmester). Rooted in Zala county and the fertile lowlands around Lake Balaton, the Péc dynasty commanded vast vineyards, ancestral castles, and knightly retinues. Renowned for his unswerving loyalty, gentle manners, and meticulous attention to protocol, Lucas served at the right hand of King Béla IV throughout decades of post-war recovery. Overseeing royal banquets and household hospitality, he safeguarded the monarch against multiple poison conspiracies, earning the absolute trust of the royal family. In Zala, his benevolent administration over agrarian manors ensured flourishing wine production and contentment among his tenants. In 1259, as the aged king shoulders immense burdens of state and familial estrangement, Lucas I remains vigilant at court, serving as an irreplaceable anchor of royal domestic fidelity. Lucas established rigorous banquet inspection protocols and armed guards throughout the royal halls of Buda, faithfully safeguarding King Béla IV against domestic plots. In his ancestral manors around Zala, his paternal benevolence protected agricultural tenants and promoted viticulture. His unswerving fidelity made him one of the most cherished and irreplaceable domestic confidants of the aged monarch during difficult seasons of statecraft.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Guard the life and domestic peace of King Béla IV, ensuring total fidelity within the royal household.",
+    "Magnify the landed patrimony and honorable renown of Clan Péc across Transdanubia for his heirs."
+  ],
+  "Values": [
+    "Hold unswerving loyalty to the monarch and refined discretion as sacred duties, scorning betrayal.",
+    "Value humble diligence and upright conduct, convinced steadfast duty earns enduring renown."
+  ],
+  "Fears": [
+    "Fears court factional intrigues resorting to poison or assassination against the aged king.",
+    "Dreads enemy marauders laying waste to the family vineyards and manors in Zala."
+  ],
+  "SpeechStyle": "The royal goblet holds not merely fine wine, but sacred fidelity to Saint Stephen's crown! Under my watch, no treachery shall ever taint the king's peace! Unswerving fidelity guides my hand; Saint Stephen's crown remains inviolable!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

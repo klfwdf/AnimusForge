@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_5_3",
+  "HeroName": "Nicolò Fieschi, Count of Torriglia",
+  "Description": "Nicolò Fieschi commands as Count of Torriglia and imperial vicar, celebrated as the dashing military champion of the Guelf faction and nephew to Innocent IV. Perched within the colossal crags of Torriglia, he leads heavy cavalry squadrons across the Apennines, dreaming of carving out an independent regional principality. Perched within the crags of Torriglia, Nicolò erected sweeping stone ramparts, launching devastating cavalry charges through mountain passes to shatter Spinola mercenary columns and win renown as the Eagle of the Apennines. Harboring grand imperial ambitions, he deployed his authority as imperial vicar to enlist veteran men-at-arms from Provence and Tuscany, assembling a formidable private army capable of regional conquest. This audacious young dynast vowed to smash the fragile Genoese communal compromise through naked military force, determined to carve out an unassailable sovereign principality beneath the Fieschi crown. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Carve out a sovereign territorial principality under Fieschi dynastic hegemony.",
+    "Crush Spinola feudal influence across the Apennine passes with heavy lance and iron."
+  ],
+  "Values": [
+    "True glory is carved with heavy knightly lances and towering stone ramparts.",
+    "Better to rule as sovereign over mountain and wave than endure the yoke of rivals."
+  ],
+  "Fears": [
+    "Fatal tactical encirclement devastating his mounted household men-at-arms.",
+    "Coalitions of Genoese rivals isolating Torriglia from maritime resupply."
+  ],
+  "SpeechStyle": "Commands with soaring chivalric charisma and fierce feudal pride, restless for dominion. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

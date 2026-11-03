@@ -29,7 +29,7 @@ public partial class MyBehavior
                 Succeeded = result => result?.Success ?? false,
                 ApplySuccess = result => ApplyMemorySummarySuccess(result.Job, result.Block),
                 MarkFailure = result => MarkMemorySummaryFailure(result.Job, result.Error),
-                FailureText = result => (result.Job.HeroName ?? result.Job.HeroId) + AdapterPromptCaptureTexts.PcapCompat("Host_MemoryDayPrefix") + result.Job.GameDayIndex + AdapterPromptCaptureTexts.PcapCompat("Host_MemoryDaySuffix") + (result.Error ?? AdapterPromptCaptureTexts.PcapCompat("Host_UnknownError")),
+                FailureText = result => (result.Job.HeroName ?? result.Job.HeroId) + AdapterRecordTexts.Pad(AdapterPromptCaptureTexts.PcapCompat("Host_MemoryDayPrefix")) + result.Job.GameDayIndex + AdapterPromptCaptureTexts.PcapCompat("Host_MemoryDaySuffix") + (result.Error ?? AdapterPromptCaptureTexts.PcapCompat("Host_UnknownError")),
                 FailureDisplayText = result => MemoryFailureUiText.T("AF_MEMORY_UI_DailyFailureLine", "{NAME}, day {DAY}: {ERROR}", ("NAME", result.Job.HeroName ?? result.Job.HeroId), ("DAY", result.Job.GameDayIndex), ("ERROR", result.ErrorDisplay ?? MemoryFailureUiText.Error(result.Error)))
             },
             Major = new MemorySummaryResultPort<MajorActionSummaryExecutionResult> {

@@ -8,77 +8,47 @@ int count=0;
 void Check(bool value,string name){if(!value)throw new Exception(name);count++;}
 Hero HeroOf(string id)=>new(){StringId=id,Name=id,EncyclopediaText="A cautious landholder."};
 WorldBulletinEvent Event(string id,string hero,string kind="settlement_siege")=>new(){Key=id,Kind=kind,Hour=0,GameDate="day0",Sentence="A captured B's castle.",Detail="B was the previous owner.",Participants=new(){new(){HeroId=hero}}};
-var ids=NpcPersonaTextRules.AllowedTraitIdsForPrompt;
+string Full(string body)=>JsonConvert.SerializeObject(new {profile=body});
 foreach(string lang in new[]{"",".en"})
 {
     PersonaPromptTexts.Values=JsonConvert.DeserializeObject<Dictionary<string,string>>(File.ReadAllText(Path.Combine(args[0],"content/modules/AF.Module.Persona/ModuleData/PersonaPromptTexts"+lang+".json")));
-    var host=new MyBehavior(); MyBehavior.Instance=host;DuelSettings.Current=new();MyBehavior.NewsEnabled=true;
-    Hero a=HeroOf("a"), b=HeroOf("b"), parent=HeroOf("parent"), outsider=HeroOf("outsider");
-    b.Father=parent;parent.Children.Add(b);
-    MemoryEntityIdentityBannerlordAdapter.Heroes=new(){{"a",a},{"b",b},{"parent",parent},{"outsider",outsider}};
-    var p=host.Profile("b");p.Description="original";p.VoiceId="voice";p.Values.Add("protect family");
-    int calls=ConfiguredChatApplicationAdapter.Calls;
-    host.Tick();Check(ConfiguredChatApplicationAdapter.Calls==calls,"idle no call");
-    int settingsReads=DuelSettings.Reads;
-    var idleTimer=System.Diagnostics.Stopwatch.StartNew();
-    long idleBytes=GC.GetAllocatedBytesForCurrentThread();
-    for(int idle=0;idle<250000;idle++)host.Tick(false);
-    idleBytes=GC.GetAllocatedBytesForCurrentThread()-idleBytes;
-    idleTimer.Stop();
-    Check(DuelSettings.Reads==settingsReads&&ConfiguredChatApplicationAdapter.Calls==calls,"250000 idle checks read no settings and request no tokens");
-    Console.WriteLine("IDLE 250000 checks ms="+idleTimer.Elapsed.TotalMilliseconds+" allocatedBytes="+idleBytes+"; managed fixture, not live game timing");
-    host.Setting(false);host.Capture(Event("disabled","b"));host.Tick();Check(host.Queued==0,"off no candidates");
-    host.Setting(true);host.Capture(Event("irrelevant","b","war_declared"));Check(host.Queued==0,"irrelevant event filtered");
-    host.Capture(Event("one","b"));host.Capture(Event("one","b"));host.Capture(Event("two","b"));
-    Check(host.Queued==2 && p.Evolution.Pending.Count==2,"self and parent, merged duplicate events; no global heroes");
-    MyBehavior.NotifyPersonaEvolutionSettingChanged(new DuelSettings());
-    Check(host.Queued==2 && p.Evolution.Pending.Count==2,"loading a separate settings preset cannot retire runtime work");
-    Check(host.Profile("outsider").Evolution==null,"unrelated hero never enqueued");
-    host.Hour=9.99;host.Tick();Check(ConfiguredChatApplicationAdapter.Calls==calls,"no evaluation before ten game hours");
-    host.Tick();host.Hour=10;host.Tick();
-    Check(ConfiguredChatApplicationAdapter.Calls==calls+1,"start one request");
-    Check(JObject.Parse(ConfiguredChatApplicationAdapter.Input)["events"].Count()==2,"one NPC request merges facts");
-    host.Tick(false);Check(ConfiguredChatApplicationAdapter.Calls==calls+1,"inflight limits concurrency");
-    await host.Finish("{\"changed\":true,\"motivations\":[\"Recover the family castle\"],\"change_reason\":\"Loss of the castle changed his priorities.\"}");
-    Check(p.Motivations.Single()=="Recover the family castle"&&p.Description=="original"&&p.VoiceId=="voice"&&p.Values.Single()=="protect family","patch writes only requested fields");
-    Check(p.RecentChangeReason.Contains("castle")&&p.Evolution.Pending.Count==0,"reason saved and facts consumed");
-    host.Tick(false);Check(ConfiguredChatApplicationAdapter.Calls==calls+1,"real time throttle");
-    host.Tick();await host.Finish("{\"changed\":false}");Check(string.IsNullOrEmpty(host.Profile("parent").RecentChangeReason),"unchanged parent need not seek revenge");
-    host.Tick();host.Tick();Check(host.Queued==0,"queue drains");
-    host.Capture(Event("one","b"));Check(host.Queued==0,"completed event not repeated");
-    host.Capture(Event("three","b"));host.Tick();p.Motivations=new(){"player edit"};
-    await host.Finish("{\"changed\":true,\"motivations\":[\"old overwrite\"],\"change_reason\":\"old\"}");
-    Check(p.Motivations.Single()=="player edit","inflight result cannot overwrite manual edit");
-    host.Tick();await host.Finish("{\"changed\":false}");host.Tick();host.Tick();
-    host.Capture(Event("four","b"));host.Tick();host.Setting(false);host.Setting(true);
-    await host.Finish("{\"changed\":true,\"motivations\":[\"disabled overwrite\"],\"change_reason\":\"old\"}");
-    Check(p.Motivations.Single()=="player edit"&&p.Evolution.Pending.Count==0&&host.Queued==0,"off/on retires in-flight epoch");
-    host.Capture(Event("five","b"));host.Tick();SaveRuntimeGuard.Generation++;
-    await host.Finish("{\"changed\":true,\"motivations\":[\"wrong save\"],\"change_reason\":\"old\"}");
-    Check(p.Motivations.Single()=="player edit","old save callback discarded");
-    host.Reload();host.Tick();await host.Finish("{\"changed\":false}");
-    Check(p.Evolution.Pending.Count==0,"save requeue handles pending once");
-    host.Setting(false);host.Setting(true);
-    host.Capture(Event("bad","b"));host.Tick();await host.Finish("{\"changed\":true,\"traits\":[{\"id\":\"invalid\",\"strength\":99}],\"change_reason\":\"bad\"}");
-    Check(p.Evolution.Pending.Count==1&&p.Evolution.Attempts==1,"bad result leaves profile and permits one retry");
-    host.Tick();await host.Finish("{\"changed\":false}"); // other candidate fairly rotates
-    host.Tick();await host.Finish("invalid");
-    Check(p.Evolution.Pending.Count==0&&p.Motivations.Single()=="player edit","second failure stops retry and retains original");
+    var host=new MyBehavior();MyBehavior.Instance=host;DuelSettings.Current=new();MyBehavior.NewsEnabled=true;SaveRuntimeGuard.Generation=1;
+    Hero b=HeroOf("b"),parent=HeroOf("parent"),outsider=HeroOf("outsider");b.Father=parent;parent.Children.Add(b);
+    MemoryEntityIdentityBannerlordAdapter.Heroes=new(){{"b",b},{"parent",parent},{"outsider",outsider}};
+    var initial=host.Profile("b");initial.Description="original";initial.VoiceId="voice";initial.Values.Add("protect family");
+    host.Tick(false);
+    int calls=ConfiguredChatApplicationAdapter.Calls,reads=DuelSettings.Reads;
+    long bytes=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<250000;i++)host.Tick(false);bytes=GC.GetAllocatedBytesForCurrentThread()-bytes;
+    Check(calls==ConfiguredChatApplicationAdapter.Calls&&reads==DuelSettings.Reads&&bytes==0,"idle queue causes no settings reads, requests or allocations");
+    Console.WriteLine("IDLE managed allocation delta="+bytes+" bytes / 250000 checks; game timing not measured");
+    host.Setting(false);host.Capture(Event("disabled","b"));Check(host.Queued==0,"event switch off stops capture");host.Setting(true);
+    host.Capture(Event("irrelevant","b","war_declared"));Check(host.Queued==0,"irrelevant event filtered");
+    host.ExpandedSetting(false);host.Capture(Event("one","b"));host.Capture(Event("one","b"));host.Capture(Event("two","b"));
+    Check(host.Queued==2&&initial.Evolution.Pending.Count==2,"expanded switch off still captures same target/relative with deduplication");
+    MyBehavior.NotifyPersonaEvolutionSettingChanged(new DuelSettings());Check(host.Queued==2,"preset preview cannot invalidate live event work");
+    Check(host.Profile("outsider").Evolution==null,"unrelated NPC never enqueued");
+    host.Hour=9.99;host.Tick();Check(ConfiguredChatApplicationAdapter.Calls==calls,"ten-hour merge delay retained");host.Tick();host.Hour=10;host.Tick();
+    Check(ConfiguredChatApplicationAdapter.Calls==calls+1&&JObject.Parse(ConfiguredChatApplicationAdapter.Input)["events"].Count()==2,"one full regeneration receives merged confirmed events");
+    host.ExpandedSetting(true);host.ExpandedSetting(false);host.Tick(false);Check(ConfiguredChatApplicationAdapter.Calls==calls+1,"expanded toggle changes neither pending work nor event concurrency");
+    await host.Finish(Full("Regenerated full biography."));var p=host.Profile("b");
+    Check(p.Description=="Regenerated full biography."&&p.VoiceId=="voice"&&p.Values.Single()=="protect family"&&ReferenceEquals(p.Evolution,initial.Evolution),"full replacement preserves voice, event identity and existing extras");
+    Check(p.RecentChangeReason.Contains("castle")&&p.Evolution.Pending.Count==0,"successful full regeneration consumes exact batch and records reason");
+    host.Tick(false);Check(ConfiguredChatApplicationAdapter.Calls==calls+1,"throttle retained");host.Tick();await host.Finish(Full("Parent's full biography."));host.Tick();host.Tick();Check(host.Queued==0,"queue drains");
+    host.Capture(Event("one","b"));Check(host.Queued==0,"processed event not repeated");
+    host.Capture(Event("manual","b"));host.Tick();p.Description="player edit";await host.Finish(Full("stale rewrite"));
+    Check(host.Profile("b").Description=="player edit"&&p.Evolution.Pending.Count==0,"manual edit wins and consumes old event");
+    host.Tick();await host.Finish(Full("Parent keeps continuity."));host.Tick();host.Tick();
+    host.Capture(Event("stop","b"));host.Tick();host.Setting(false);host.Setting(true);await host.Finish(Full("disabled overwrite"));
+    Check(host.Profile("b").Description=="player edit"&&p.Evolution.Pending.Count==0&&host.Queued==0,"event off/on retires in-flight result");
+    host.Capture(Event("save","b"));host.Tick();SaveRuntimeGuard.Generation++;await host.Finish(Full("wrong save"));
+    Check(host.Profile("b").Description=="player edit","old-save request cannot commit");
+    host.Reload();host.Tick();await host.Finish(Full("Current save biography."));Check(host.Profile("b").Evolution.Pending.Count==0,"loaded pending event completes in current save");
+    host.Setting(false);host.Setting(true);host.Capture(Event("bad","b"));host.Tick();await host.Finish("{\"changed\":true,\"motivations\":[\"patch only\"]}");
+    p=host.Profile("b");Check(p.Description=="Current save biography."&&p.Evolution.Pending.Count==1&&p.Evolution.Attempts==1,"old extras-only patch is not a successful full regeneration");
+    host.Tick();await host.Finish(Full("Parent's latest biography."));host.Tick();await host.Finish("invalid");
+    Check(p.Evolution.Pending.Count==0&&p.Description=="Current save biography.","second failed attempt consumes batch and keeps original persona");
 }
 var profile=new MyBehavior.NpcPersonaProfile{Description="body",VoiceId="voice",Motivations=new(){"old revenge"},SpeechStyle="harsh",RecentChangeReason="previous"};
-foreach(string invalid in new[]{
- "{\"changed\":true,\"description\":\"overwrite\",\"change_reason\":\"x\"}",
- "{\"changed\":true,\"motivations\":null,\"change_reason\":\"x\"}",
- "{\"changed\":true,\"traits\":[{\"id\":\"bold\",\"strength\":4}],\"change_reason\":\"x\"}",
- "{\"changed\":true,\"motivations\":[\"a\",\"b\",\"c\",\"d\"],\"change_reason\":\"x\"}",
- "{\"changed\":true,\"speech_style\":42,\"change_reason\":\"x\"}",
- "{\"changed\":true,\"motivations\":[\"new\"]}",
- "{\"changed\":true,\"motivations\":[\"new\"],\"motivations\":[],\"change_reason\":\"x\"}",
- "{\"changed\":true,\"traits\":[{\"id\":\"bold\",\"strength\":2},{\"id\":\"bold\",\"strength\":1}],\"change_reason\":\"x\"}"})
- Check(!PersonaEvolutionPolicy.TryParse(invalid,ids,out _),"reject malformed/unknown patch atomically");
-Check(PersonaEvolutionPolicy.TryParse("{\"changed\":true,\"motivations\":[],\"speech_style\":\"\",\"change_reason\":\"The feud ended.\"}",ids,out var clear),"explicit clear valid");
-Check(PersonaEvolutionPolicy.Apply(profile,clear)&&profile.Motivations.Count==0&&profile.SpeechStyle==""&&profile.Description=="body","resolved motivation can disappear");
-Check(PersonaEvolutionPolicy.TryParse("{\"changed\":true,\"traits\":[{\"id\":\"cautious\",\"strength\":3}],\"change_reason\":\"Defeat taught caution.\"}",ids,out var traits)&&PersonaEvolutionPolicy.Apply(profile,traits)&&profile.Traits.Single().Strength==3,"trait strength change");
 var original=PersonaEvolutionPolicy.Snapshot(profile);profile.Description=new string('中',3000);
 var request=PersonaEvolutionPolicy.RequestPersona(PersonaEvolutionPolicy.Snapshot(profile));
 Check(profile.Description.Length==3000&&((string)request["description"]).Length==1000,"request budget preserves stored full input");
@@ -104,4 +74,4 @@ var imported=JsonConvert.DeserializeObject<MyBehavior.NpcPersonaProfile>(JsonCon
 var importedProfiles=new Dictionary<string,MyBehavior.NpcPersonaProfile>();
 PersonaImportOwner.ApplySingleProfile(ref importedProfiles,"test",imported);
 Check(imported.Evolution==null&&imported.RecentChangeReason==profile.RecentChangeReason,"external persona import keeps content but drops another campaign's pending work");
-Console.WriteLine("PASS "+count+" persona evolution assertions; actual policy, host, DTO, owner and save adapter; game/provider/dispatcher are fixtures.");
+Console.WriteLine("PASS "+count+" persona evolution assertions; actual event host, queue policy, DTO and save adapter; generation/game/provider/dispatcher are controlled leaves; real generator covered by HeroPersonaGenerationTests.");

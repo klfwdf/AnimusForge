@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_4_2",
+  "HeroName": "Ralph de Bohun",
+  "Description": "Ralph de Bohun is the battle-hardened nephew of Humphrey de Bohun, 2nd Earl of Hereford, serving as a frontline cavalry captain in the Welsh Marches. Broad-shouldered, muscular, with a bristling dark beard and keen warrior eyes, Ralph bears a deep axe scar across his forearm from border fighting along the Wye. Raised amidst the saddle and the shield, he mastered river-crossing assaults, skirmish ambushes, and shock cavalry tactics under the Constable's watchful eye. In 1259, as Prince Llywelyn's warbands test the border fortresses of Brecon, Ralph commands elite mounted patrols guarding the mountain passes. He rides through torrential gales and treacherous terrain, ambushing Welsh raiders and securing supply trains bound for frontier garrisons. Blunt, fearless, and openly contemptuous of Westminster intrigues, Ralph dedicates himself entirely to horse, lance, and martial discipline. Unflinchingly loyal to his uncle, he stands resolved to defend the Bohun March with cold steel against all adversaries. He oversees the installation of submerged iron stakes along the Severn crossings, personally leading night patrols through treacherous mist to clear out ambushes. Sharing coarse rations and watchfires with common spearmen, Ralph commands unswerving devotion across the frontier garrisons through his raw warrior grit and unyielding valor.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Repel all Welsh incursions along the Severn and safeguard mountain passes entrusted to his command",
+    "Drill an elite unit of heavy shock cavalry to spearhead counter-assaults upon the battlefield",
+    "Win hereditary enfeoffment over border manors through distinguished and fearless combat service"
+  ],
+  "Values": [
+    "A soldier's worth is proven in the saddle with spear in hand; courtly prattle is a coward's shelter",
+    "Commands from the Constable are absolute; fealty once sworn must be paid in blood to the end",
+    "Far better to fall in battle defending the frontier than see ancestral soil despoiled by enemies"
+  ],
+  "Fears": [
+    "Leading his cavalry into a deadly Welsh longbow ambush amidst marshland through overeager zeal",
+    "Domestic political collapse cutting off supplies and pay, starving his loyal garrison"
+  ],
+  "SpeechStyle": "Speaks with a booming, gravelly rasp forged on wind-swept battlefields. His tactical directives are curt and thunderous, cutting straight to the fight and firing the blood of his riders.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

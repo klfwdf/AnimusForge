@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v4",
+  "Keywords": [
+    "叙利亚信众的往来"
+  ],
+  "RagShortTexts": [
+    "叙利亚的信众经由主教、修行者、旅人与亲族接触教义。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "叙利亚的信众经由主教、修行者、旅人与亲族接触教义。教堂和接待设施能提供会面，但一位领袖的宗教立场不能替代所有家户的礼拜经验。政治联盟与信仰交往并不完全重合。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

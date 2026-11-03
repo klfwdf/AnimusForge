@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_6_2a",
+  "HeroName": "Arnbjørn Torsteinson Heimnes",
+  "Description": "Arnbjørn Torsteinson of Heimnes was a formidable royal lendmann, judge, and royal bailiff (Sysselmann) of Borgarsyssel in southeastern Norway. In 1259, governing from his fortified estate at Heimnes, Arnbjørn held supreme administrative and judicial authority along the sensitive Swedish border marches. Charged with executing royal peace ordinances, he suppressed cross-border outlaw gangs and secured vital commercial transit roads along the Glomma River with iron discipline. An incorruptible servant of King Hákon IV, he expertly audited local revenues, managed regional military levies, and presided over district ting courts with absolute fairness. His strategic defensive planning—reinforcing border beacon redoubts and wooden river blockhouses—shielded southeastern Norway from regional predatory incursions. Through alliances and marriages with the emerging Bolt dynasty, Arnbjørn established Heimnes as an enduring bastion of high medieval Norwegian royal order. In Borgarsyssel, Arnbjørn erected a stone watchtower dominating the mouth of the Glomma River, installing heavy crossbow ballistas and iron portcullises that barred unauthorized armed crossings. At the Borgarting assembly, he revised coastal defense muster rolls, training local militia levies into disciplined garrison units capable of repelling foreign incursions. His stern demeanor and impartial justice made him a formidable castellan safeguarding Norway's southeastern frontier.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Strengthen the stone fortress at the Glomma's mouth against mounted raiders threatening Viken.",
+    "Train southeastern leidang militia under Borgarting military custom to resist stronger enemies in forests and marshes.",
+    "Protect harvests around Heimnes and enforce strict discipline against garrison troops who abuse local farmers."
+  ],
+  "Values": [
+    "A frontier officer must defend his ground while he lives and refuse enemy forces passage across the Glomma line.",
+    "Strict discipline allows a small garrison to resist stronger forces; abandoning posts or fleeing battle demands uncompromising punishment.",
+    "Prefer practical preparation to empty words, ensuring that every ration and crossbow bolt is ready for a possible attack."
+  ],
+  "Fears": [
+    "Floods breaching the Glomma's banks and destroying outposts, allowing an enemy waterborne attack to collapse the Heimnes line.",
+    "The court dismantling frontier towers and river chains during peace talks and exposing unprotected civilians and defenders."
+  ],
+  "SpeechStyle": "Speaks with seasoned administrative firmness, military discipline, and calm resolve, executing royal decrees and judicial duties with unshakeable duty.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Arnbjørn Torsteinson Heimnes"
+}

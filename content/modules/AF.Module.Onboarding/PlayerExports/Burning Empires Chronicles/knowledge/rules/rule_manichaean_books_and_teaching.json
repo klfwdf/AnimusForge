@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v7",
+  "Keywords": [
+    "Manichaean books and teaching"
+  ],
+  "RagShortTexts": [
+    "Manichaean books and teaching needed language skills, materials and hosts."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Manichaean books and teaching helped transmit belief through the community. Copying and instruction needed materials, language skills and hosts. Believers and opponents could interpret the same teaching differently, so listeners needed to ask teachers about their terms and obligations."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

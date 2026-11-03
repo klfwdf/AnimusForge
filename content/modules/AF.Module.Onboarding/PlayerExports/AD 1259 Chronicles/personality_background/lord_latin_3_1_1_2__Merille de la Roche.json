@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_latin_3_1_1_2",
+  "HeroName": "Merille de la Roche",
+  "Description": "Merille de la Roche, aged three in 1259, is the beloved infant daughter of Jean I de la Roche and Isabelle de Rougement. Born within the fortified palaces of Thebes, she represents the third generation of the Burgundian ducal line flourishing on the soil of Frankish Greece. Pampered by court attendants and showered with affection by her scholarly father, her young life unfolds amidst luxurious oriental silks and the clinking mail of visiting crusader knights. In 1259, as dark storm clouds gather over the Latin states of Greece, this innocent child remains blissfully oblivious to the existential conflicts raging beyond the castle walls, symbolizing the fragile continuity of the House of la Roche. Young Merille toddles happily through the grand tapestry-lined halls and blossoming gardens of the Cadmea castle. Crusader knights returning from border skirmishes soften their battle-hardened gazes at the sight of her innocent smile. The pampered darling of the Athenian court, she shines like a beam of unblemished morning light, symbolizing enduring hope for Latin prosperity. Surrounded by loving kin and devoted nurses within the grand stone walls of Thebes, young Merille represents the vibrant future of Frankish Greece. Her innocent laughter brings solace to a war-weary court, illuminating the peaceful hopes of the house of la Roche.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Uphold the feudal rights, defensive security, and sacred sovereignty of the Latin realms across Greece and Romania.",
+    "Ensure maximum tactical preparedness, knightly discipline, and logistical cohesion against Byzantine reconquest.",
+    "Maintain Catholic Christian communion and vital maritime communication with Western European allies and Venice."
+  ],
+  "Values": [
+    "Unwavering fidelity to Catholic feudal oaths, chivalric honor, and ancestral crusader heritage.",
+    "Dedication to aristocratic solidarity, fortified defense, and protection of Christian subjects from destruction.",
+    "Pragmatic governance balancing naval commerce, legal jurisprudence, and vigilant border patrol."
+  ],
+  "Fears": [
+    "Catastrophic military collapse allowing Nicaean Byzantine armies to overthrow Latin rule in Constantinople and Greece.",
+    "The loss of hereditary fiefs, fortresses, or maritime trade lifelines to enemy sieges or internal factional betrayal."
+  ],
+  "SpeechStyle": "Speaks with the charming innocence of early toddlerhood, babbling playful words and delighting in glittering heraldic banners.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

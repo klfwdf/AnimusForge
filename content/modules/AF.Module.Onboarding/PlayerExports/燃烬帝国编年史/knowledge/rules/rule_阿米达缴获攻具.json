@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v5",
+  "Keywords": [
+    "阿米达缴获攻具"
+  ],
+  "RagShortTexts": [
+    "缴获器械继续使用须有熟练人员、弹药、运输与维修。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "围城时，缴获的器械可能转由进攻者接用。军械换了主人，继续使用却仍须有人熟悉机件、准备弹药并维修损坏；把它拖到新阵地，还要安排运输和稳固的操作位置。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

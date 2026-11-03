@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_3_1_1_2",
+  "HeroName": "Raibeart de Cèith",
+  "Description": "Robert de Keith is the eldest son and heir of Sir John de Keith and Margaret Comyn. Fifteen years of age, lean, sinewy, and possessed of watchful, steely gray eyes, he displays extraordinary tactical aptitude and iron self-discipline. Bred in the rugged coastal fortress of Dunnottar, Robert was schooled in advanced cavalry tactics, spearman coordination, and coastal reconnaissance under his father's stern command. Preparing himself to inherit the office of Great Marischal, he endures grueling daily drills in heavy harness, mastering lance, sword, and equine control. Scottish historical traditions note his early border service along the Tweed, where he demonstrated remarkable coolness under pressure and sharp battlefield observation. Critical of reckless, uncoordinated knightly charges, Robert advocates disciplined cavalry mobility, determined to forge an invincible vanguard for Scotland. Across the fog-shrouded shingle beaches beneath Dunnottar, Robert ceaselessly drilled light cavalry in rapid turning maneuvers and counter-envelopment across treacherous marshland; his tactical innovations won high praise from his father and foreshadowed the decisive cavalry charge he would one day execute to achieve immortality at Bannockburn, liberating Scotland through chivalric genius.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master advanced cavalry doctrines and shock coordination to prove himself worthy of the Marischal title.",
+    "Lead youthful retainers in securing eastern coastal forts against any sudden maritime threat."
+  ],
+  "Values": [
+    "Values battlefield discipline, calculated mobility, and rigorous drill above reckless individual bravado.",
+    "Believes unyielding fidelity to the Crown and Scotland's independence constitutes the highest chivalric calling."
+  ],
+  "Fears": [
+    "Fears a tactical misjudgment in command that might tarnish his house's unblemished martial reputation.",
+    "Dreads aristocratic factionalism paralyzing national cavalry mobilization in a time of supreme peril."
+  ],
+  "SpeechStyle": "Speaks with quiet, steely brevity and tactical precision, intense, confident, and observant.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Roman the Great (Roman Mstislavich) is the legendary founder and supreme unifier of the Principality of Galicia-Volhynia, revered across medieval Rus' as a titan of war and statecraft. A scion of Vladimir Monomakh, Roman ruled Novgorod, Vladimir-in-Volhynia, Galicia, and seized the Golden Gate of Kyiv, forging an expansive, centralized Ruthenian state across the southwestern borderlands. Renowned for his iron resolve and tactical fury, he subjugated rebellious boyar factions, checked Polish and Hungarian expansion, and launched devastating campaigns deep into Cuman steppe territories. Contemporary chronicles praised him as the 'Autocrat of all Rus' who flew like an eagle and roared like a lion in battle. Though he fell heroically at the Battle of Zawichost in 1205, Roman's formidable dynastic legacy served as the moral and political foundation upon which his sons Danylo and Vasylko resurrected their realm. By 1259, Roman's martial memory continues to inspire the warriors of Galicia to resist eastern subjugation. Under Roman's unyielding autocratic rule, rebellious Galician boyar factions were ruthlessly subdued, ensuring total monarchical supremacy. His formidable network of frontier stone fortresses and elite armored retinues repeatedly repelled massive joint invasions launched by the Polish Piast dynasty and the Hungarian Arpad crown. By binding Volhynia and Galicia into an indivisible realm, Roman bequeathed an enduring geopolitical sanctuary that shielded southwestern Rus' against eastern nomad onslaughts for generations.",
+  "SpeechStyle": "Galicia and Volhynia stand united as one, and our battleaxes never bend before foreign crowns! So long as our blood endures, Rus' remains unconquered! Treachery shall be shattered beneath our phalanxes!",
+  "Motivations": [
+    "Unify Galicia and Volhynia under centralized autocratic rule, crushing rebellious boyar oligarchies.",
+    "Establish absolute geopolitical supremacy against Polish, Hungarian, and nomadic steppe rivals."
+  ],
+  "Values": [
+    "Prize supreme autocratic authority and martial conquest above all, scorning aristocratic weakness.",
+    "Believe ruthless strength and iron discipline alone forge durable unity amidst feudal chaos."
+  ],
+  "Fears": [
+    "Fears boyar oligarchs dividing the realm after his death and inviting foreign armies to partition Rus'.",
+    "Dreads fraternal civil feuds dissolving the hard-won unity of his southwestern empire."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_galicia_1a",
+  "HeroName": "Roman the Great"
+}

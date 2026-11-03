@@ -13,7 +13,7 @@ internal sealed class ClanLeaderRelationOncePayload : NumericPolicyEffectPayload
 
 internal sealed class ClanLeaderRelationOnceEffectModule : NumericPolicyEffectModuleBase<ClanLeaderRelationOncePayload>, IScheduledOncePolicyEffectModule
 {
-	private static readonly PolicyEffectModuleDescriptor ModuleDescriptor = new PolicyEffectModuleDescriptor(
+	private static readonly PromptLanguageValue<PolicyEffectModuleDescriptor> ModuleDescriptorByLanguage = new PromptLanguageValue<PolicyEffectModuleDescriptor>(() => new PolicyEffectModuleDescriptor(
 		id: "clanLeaderRelationOnce",
 		order: 110,
 		legacyIds: Array.Empty<string>(),
@@ -42,7 +42,8 @@ internal sealed class ClanLeaderRelationOnceEffectModule : NumericPolicyEffectMo
 		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_clanLeaderRelationOnce_editableUnderstandingPrompt", "Clan leader relation reflects other lords' support for or resentment toward the publisher in affected areas or target kingdoms. When policies directly benefit, harm, insult, honor or oppress these lords or involve them in conflicts of interest, leader relations are a one-time consequence. Exclude the publisher's entire clan and clans without a valid leader."),
 		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_clanLeaderRelationOnce_editableEvaluationPrompt", "Positive improves relations and negative worsens them; judge integer relation points. Changes occur on the game day after adoption. Exclude the publisher's entire clan, and settle once per other current clan leader. Mild courtesies, inconvenience or limited benefits usually warrant ±1 to ±3 per leader; clear benefits, losses, honors or political offense ±4 to ±8; major privileges, heavy losses, public humiliation, strong oppression or significant interest conflicts ±9 to ±15; lifesaving gratitude, severe betrayal, systematic persecution or events capable of changing political alignment ±16 to ±30. Do not dilute each leader's change to 1 point because many clans are targeted or the effect settles only once. Do not use high values merely for ornate wording. Intensity follows each leader's actual benefits, losses, honor, oppression and political risks; native relation limits still apply."),
 		excludeActorClanTargets: true,
-		allowCrossKingdomTargets: true);
+		allowCrossKingdomTargets: true));
+	private static PolicyEffectModuleDescriptor ModuleDescriptor => ModuleDescriptorByLanguage.Value;
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

@@ -1,0 +1,18 @@
+{
+  "Id": "rule_War_of_Saint_Sabas_and_Acre_Naval_Clash",
+  "Keywords": [
+    "Acre Saint Sabas harbor conflict"
+  ],
+  "RagShortTexts": [
+    "The Saint Sabas dispute affected Acre’s berths, unloading and access."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Since 1256 the Saint Sabas dispute had involved Acre’s quarters, shipping and military orders. Contested berths and access disrupted unloading and exposed residents to higher costs and violence. Allies had different needs, requiring repeated negotiation over defense, shipping and passage through the port."
+    }
+  ],
+  "TextMappings": []
+}

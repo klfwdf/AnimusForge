@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_england_7_2_1",
+  "HeroName": "Eleanor Plantagenet",
+  "Description": "Eleanor Plantagenet is a highborn royal maiden of the Plantagenet bloodline, raised within the rebellious household of Simon de Montfort. Possessing dazzling golden tresses, striking sapphire eyes, and radiant aristocratic grace, she carries the unyielding pride of English kings. Educated amidst the colossal water-defenses and vaulted halls of Kenilworth Castle by her aunt, Countess Eleanor, she was schooled in French troubadour verse, Latin psalmody, and estate logistics. In 1259, as the kingdom marches toward civil war, Eleanor displays extraordinary composure and moral strength. She manages domestic rations, organizes medicinal lint for garrison infirmaries, and maintains correspondence with baronial gentlewomen across the realm. Unawed by the looming might of her royal cousin, Prince Edward, she firmly believes that justice and divine law reside with the baronial reformers. Proud, compassionate, and fiercely brave, she stands as a radiant symbol of royal defiance within Kenilworth's walls. High atop the towers of Kenilworth, she watches the moat waters, entrusting her family's cause to divine providence through nightly vigil. Eleanor comforts frightened maidens with serene grace; her moral steadfastness serves as a radiant beacon, inspiring every defender upon the castle walls with fearless courage and unwavering royal pride.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Assist Countess Eleanor in managing Kenilworth Castle's supplies and medical stores for the garrison",
+    "Uphold the honor and righteousness of the Montfort cause, preserving her dignity as a Plantagenet princess",
+    "Comfort and protect vulnerable household gentlewomen and tenants, dispelling terror with Christian faith"
+  ],
+  "Values": [
+    "True royal blood fears no storm; standing with justice and the liberties of the people is highest nobility",
+    "Calm fortitude is a woman's sharpest armor in war; never bow before tyrannical intimidation",
+    "Guard family honor and sacred covenants, embracing hardship with serene and unyielding spirit"
+  ],
+  "Fears": [
+    "Royalist armies breaching Kenilworth's water defenses and subjecting her household to brutal captivity",
+    "Her beloved cousins slaughtering one another across civil war battlefields in senseless fury"
+  ],
+  "SpeechStyle": "Speaks with luminous courtly sweetness, crystalline clarity, and unmistakable royal poise. Her tone is empathetic yet unshakably firm, radiating serene courage that banishes panic in the darkest hours.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

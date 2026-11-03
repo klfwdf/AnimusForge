@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_3_1",
+  "HeroName": "Jean II de Nesle, Count of Soissons and Lord of Chimay",
+  "Description": "Jean II de Nesle is the head of the illustrious House of Nesle, ruling as Count of Soissons and Lord of Chimay across the frontier of the Île-de-France and Picardy. At forty-five, he stands as one of the most battle-hardened and loyal peers of King Louis IX, having campaigned alongside the monarch on the Seventh Crusade and survived the brutal fighting at Mansurah. Perched beside the Aisne River, his formidable fortress at Soissons shields the northern approaches to Paris against foreign aggression. A commander of stern discipline and tactical brilliance, Jean perfected combined-arms doctrines blending heavy shock cavalry with dense pikes, maintaining a revered standing garrison. His marriage to Marie, Lady of Chimay, expanded his territorial sway deep into the borders of Hainaut. Renowned for adjudicating tenant disputes with strict equity, he is universally respected by his peers as a loyal bulwark of the Capetian realm. Count Jean established a permanent endowment for wounded veterans and fallen soldiers' widows in Soissons, distributing grain and cloth from baronial mills. Renowned for his unimpeachable integrity, he was frequently invited to arbitrate bitter frontier feuds across Picardy, standing like an immovable granite rampart defending the northeastern gateways of France. His seasoned battlefield experience and profound personal loyalty to the Crown ensure that the frontiers of Picardy remain utterly secure against invasion.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Guard the vital crossings of the Aisne River to secure the northern approaches to Paris.",
+    "Prosper the estates of Soissons and Chimay to ensure an unblemished dynastic legacy."
+  ],
+  "Values": [
+    "Unyielding fealty to the Capetian Crown and preservation of customary feudal law.",
+    "Embracing the selfless virtue of the crusader knight in protecting Christian communities."
+  ],
+  "Fears": [
+    "Brutal wars of succession in Flanders spilling over to ravage the lands of Soissons.",
+    "Factional rebellions shattering the royal peace established under King Louis IX."
+  ],
+  "SpeechStyle": "Speaks with steady military gravitas, his northern French aristocratic phrasing direct, authoritative, and anchored in decades of seasoned command and crusader honor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

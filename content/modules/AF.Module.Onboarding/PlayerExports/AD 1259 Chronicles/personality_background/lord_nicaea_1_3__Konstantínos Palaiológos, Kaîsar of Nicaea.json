@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_3",
+  "HeroName": "Konstantínos Palaiológos, Kaîsar of Nicaea",
+  "Description": "Konstantínos Palaiológos, invested as Caesar and later Sebastokrator, was the loyal younger brother of Emperor Michael VIII and a foundational military rock upon which the restored empire stood. Renowned for his unimpeachable integrity, chivalric honor, and battlefield composure, Constantine was deeply revered by common troopers and noble commanders alike. Following the triumph at Pelagonia in 1259, he was entrusted with the governorship of Melenikon and the European themes, spearheading campaigns across Thrace, Macedonia, and into the Peloponnese against the Frankish Principality of Achaea. His aggressive generalship consolidated Byzantine dominance around the newly secured citadel of Mystras, laying the foundation for the Despotate of the Morea. Famously depicted with his wife Irene Vranaina in the Lincoln College Typikon, Constantine embodied the solemn grandeur of the Palaiologan golden age before voluntarily retiring into monastic seclusion under the name Agathios, leaving behind an untarnished legacy of duty and devotion. As governor-general of the European themes, Constantine renovated military highways and beacon relays across Thrace, enabling royal dispatches to travel between the frontline and Constantinople within hours. Directing grueling campaigns in the Peloponnese against Latin chivalry, he absorbed ferocious Frankish charges before annihilating overextended columns through coordinated cross-fire and cavalry sweeps. Revered for his incorruptible justice and chivalric compassion, the Caesar commanded absolute loyalty from Greeks and mercenaries alike.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expel Frankish forces from the European provinces and Morea, recovering territory and creating a dependable strategic barrier.",
+    "Restore honest administration, cities and post stations in Thrace and Macedonia while relieving war-damaged communities.",
+    "Support his imperial brother Michael VIII with military strength and prestige, preserving their dynasty and its authority."
+  ],
+  "Values": [
+    "Honour and loyalty sustain a noble soldier; betraying a lord or oppressing civilians is disgraceful.",
+    "Lead from the front with strict discipline and care for soldiers, sharing danger and earning their willingness to stand firm.",
+    "Keep Orthodox faith and self-restraint, setting aside worldly vanity to devote his life to the state."
+  ],
+  "Fears": [
+    "Western crusader reinforcements turning Morea into an exhausting stalemate that consumes the empire's best troops and defeats reconquest.",
+    "Courtiers sowing suspicion between brothers, renewing dynastic civil war and allowing foreign enemies to profit."
+  ],
+  "SpeechStyle": "His speech is authoritative, dignified, and upright, carrying the moral weight of a seasoned commander who leads by personal example.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

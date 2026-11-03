@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Rostislavichi_Smolensk_Princes",
+  "Keywords": [
+    "House of Rostislavichi Smolensk",
+    "Headwaters of Dnieper Smolensk",
+    "Varangian Trade Tolls Smolensk",
+    "Smolensk Rus Princes Buffer"
+  ],
+  "RagShortTexts": [
+    "The Rostislavichi commanded Smolensk on the upper Dnieper, guarding ancient river highways."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Smolensk sat at the Dnieper headwaters, where the river begins its long run toward the Black Sea and the Baltic lies only a short portage away. Whoever controlled that watershed controlled the flow of furs, wax and amber between Novgorod and the steppe markets. The Rostislavichi raised earthworks around their town and built stone churches that stood as both shrines and strongpoints. Their portages were the busiest on the river, so the princes kept toll posts and granaries along the route, guarding the boats and the caravans that carried goods overland. Commercial ties with Riga and German merchants brought silver and cloth into the town, and those profits financed the walls and the professional retinues that defended them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The Smolensk princes kept a standing druzhina and posted scouts along the forest edge. Each portage toll was a steady stream of revenue, and each trade treaty with Riga or the German towns kept the boat traffic moving. Lithuanian raiders and steppe patrols were judged by their threat to that income, since any closed river lane cost the princes the goods that paid their men."
+    }
+  ],
+  "TextMappings": []
+}

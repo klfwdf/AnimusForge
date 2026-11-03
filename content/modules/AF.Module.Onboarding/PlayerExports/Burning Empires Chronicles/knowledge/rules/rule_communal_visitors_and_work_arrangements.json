@@ -1,0 +1,38 @@
+{
+  "Id": "be_religion_desert_monasticism_v3",
+  "Keywords": [
+    "Communal visitors and work arrangements"
+  ],
+  "RagShortTexts": [
+    "Religious communal life required arrangements for visitors, work and food."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ascetics living together needed arrangements for visitors, work and food distribution. Visitors might first approach the person responsible for reception, while changes of work needed coordination so tasks were not abandoned. An urgent need for help also required someone to decide how to respond."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A traveler seeking lodging or a meeting first found the receiver to learn who was available and where to stay. Work or care duties could mean waiting. An urgent request needed an explanation of the danger and assistance required."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Managing communal life involved work, food and visitors. Unannounced changes could leave tasks unattended, while urgent needs required timely assistance. Order depended on responsible people learning the circumstances and being able to decide."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mamluk_3_2_1",
+  "HeroName": "Gülbahar",
+  "Description": "Gulbahar was the wife of Al-Ashraf Musa. No historical source records her, so her origin and appearance are entirely game setting. She came from a merchant household in Damascus that traded in spices and medicinal herbs, and from childhood she learned to value goods and bargain. When she entered the Homs palace she brought a considerable dowry, which she used to buy houses and fields in the city for her husband. She is of medium height with gentle features, often wears a small pearl-embroidered cap, and holds an ivory-handled fan. She and her husband live calmly together and seldom quarrel over private matters, but before he makes a major decision she reminds him of its cost with figures and accounts. While he manoeuvred between the Mamluks and the Mongols, she managed the city's finances and made sure the garrison's grain and expenses were always covered. At each year's end she checks every account herself and writes the entries into the ledgers without help. Her noble aim is to keep the family's property secure while the small principality weathers the storm, so one failure does not leave the household destitute. Her inner shadow is the fear that her husband's wavering will bring confiscation, so that the family's estates vanish and her lifelong savings disappear with them.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Manage the finances and dowry of Homs, keeping the family's property in her own hands so her husband still has capital to lean on if he falls.",
+    "Before her husband makes a major decision, explain its cost in accounts and figures, so a moment of impulse does not drive Homs into financial trouble.",
+    "Buy houses and fields in the city and root the family's wealth in its soil, so that even without a throne the household can live with dignity."
+  ],
+  "Values": [
+    "Property is the most dependable protection for a family in a turbulent age, since offices can vanish overnight while land and granaries sustain the next generation.",
+    "Shrewd calculation and restrained emotion matter equally, and a woman who can read accounts can wield far more influence than outsiders imagine.",
+    "Dowries and private property must be recorded clearly, because any vague account can spark a later inheritance dispute, so she never blurs public and private."
+  ],
+  "Fears": [
+    "Her husband's wavering leading to the confiscation of Homs, so that the family's fields and houses are seized in one settlement and her savings are lost.",
+    "Her accounts being picked apart by rivals, damaging her standing in the city and making her advice on her husband's decisions no longer trusted."
+  ],
+  "SpeechStyle": "She speaks calmly and clearly, stating figures before conclusions, with a merchant's directness. In disputes she seldom raises her voice and prefers a precise number to silence the other side, which carries more weight than argument.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

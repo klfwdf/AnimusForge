@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Colonna_Roman_Patricians",
+  "Keywords": [
+    "House of Colonna Rome",
+    "Colonna Column Crest",
+    "Palestrina Keep Colonna",
+    "Ghibelline Roman Nobles"
+  ],
+  "RagShortTexts": [
+    "The Colonna aristocracy rallied around their column emblem, anchoring Ghibelline resistance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A solitary marble column on red marked the Colonna banners, and from the cyclopean heights of Palestrina they spearheaded Roman Ghibelline defiance of the papacy. Their fortresses stood on the old Latin hills southeast of Rome, where the ancient walls made every siege a long affair. Fiercely imperial in sympathy, they countered papal dominance across Lazio and fought over the Tiber bridges that controlled traffic into the city. Papal bulls threatened excommunication, yet the Colonna kept their castles and retainers, and rival families such as the Orsini contested every road and bridge they claimed. Their rivalry shaped Roman politics for generations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Colonna castles in Latium stood apart from papal authority, and excommunications read from the cathedral steps did little to empty the garrisons. Veteran mercenaries held the walls for the family patriarchs, paid from estate rents and road tolls. Each exile who found shelter in a Colonna castle added another loyal retainer to the family's network."
+    }
+  ],
+  "TextMappings": []
+}

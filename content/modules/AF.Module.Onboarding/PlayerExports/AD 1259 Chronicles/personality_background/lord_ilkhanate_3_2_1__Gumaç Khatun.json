@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_3_2_1",
+  "HeroName": "Gumaç Khatun",
+  "Description": "Gumaç Khatun was a wife of Kilij Arslan IV, listed in the game roster as his spouse and as the mother of Kaykhusraw III. No historical source identifies a person of this name, so her origin, dates and personal deeds are unknown, and this persona is a game-internal setting. The sources give no details of her looks, scars or dress, so no physical traits are set. As a sultan's wife, her standing depended on her husband's power and on the state of the court. In Kilij Arslan IV's time the court was dominated by Parwana, and her husband's fate and political fortunes were closely bound up with her own. Her days went to the affairs of the women's quarters and the upbringing of her children, and she had to navigate between her husband, the ministers and the royal women. Her goal was to protect her son's life and future, so that he had room to survive and recover in the struggle for the throne. Her fear was that her husband would be removed, her son would be purged, and she would lose every support. She was quiet and cautious, rarely took positions on affairs of state, and guarded her household through silence and patience while trying to leave her son a way out.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect her son Kaykhusraw III's life and future, so that he has room to survive and recover in the struggle for the throne, the thing she worries about most.",
+    "Keep a balance between her husband's power and the ministers at court, so that she and her children are not dragged into factional conflict and spared from purge.",
+    "Maintain order and ceremony in the women's quarters, so that her position as sultan's wife keeps its proper dignity and she is not pushed aside at court."
+  ],
+  "Values": [
+    "Bloodline and continuity of the family, since her son is the family's only hope at court, so she puts his safety above all else and avoids needless risk.",
+    "Patience and measure, preferring silence to any open stance on affairs of state that might draw the suspicion of ministers onto her household.",
+    "Loyalty to her husband, standing with her husband and son even in turmoil, never turning against her own household and never betraying her kin."
+  ],
+  "Fears": [
+    "Her husband being removed, leaving her son without a father's protection and exposed to purge in the struggle for the throne, with no one left to speak for him.",
+    "Being cast out of the court or caught in a purge amid the turmoil, cutting off her son's prospects and ending the family line along with her own security."
+  ],
+  "SpeechStyle": "Calm and guarded, she speaks carefully and seldom discusses affairs of state in public. She is courteous with ministers and royal women, grows gentle and firm when speaking of her son, and answers threats with silence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

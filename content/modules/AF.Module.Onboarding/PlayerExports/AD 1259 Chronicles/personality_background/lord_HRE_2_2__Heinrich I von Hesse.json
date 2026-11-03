@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_HRE_2_2",
+  "HeroName": "Heinrich I von Hesse",
+  "Description": "Heinrich I von Hesse, known as 'Heinrich the Child', was the founding Landgrave of Hesse, son of Duke Heinrich II of Brabant. Acclaimed in infancy during the War of the Thuringian Succession, he fought with audacious chivalric prowess to establish Hesse as a sovereign territorial principality. Heinrich campaigned across the forests of Thuringia and Westphalia, erecting the rock citadel of Kassel to establish the Landgraviate of Hesse as an independent sovereign realm. He codified Hessian statutes and welcomed Rhenish merchants to Kassel, securing direct imperial immediacy for his Landgraviate before Emperor Rudolf of Habsburg. Rising from embattled infancy, Heinrich forged the sovereign Landgraviate of Hesse through relentless battlefield courage, establishing an enduring sovereign realm. Throughout every bitter imperial diet, contested royal election, and shifting territorial campaign across the Rhineland and Low Countries, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Holy Roman Empire, safeguarding civic liberty, territorial integrity, and dynastic grandeur against every rival prince, papal league, and hostile coalition across Central Europe for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of chivalric honor, lawful constitutional governance, and sovereign peace across European civilization.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Vindicate absolute Hessian sovereignty over Marburg and Kassel against the Wettin dynasty.",
+    "Enlarge Saint Elizabeth's pilgrimage shrine at Marburg to enshrine ancestral sanctity over Hesse.",
+    "Secure an independent imperial Landgrave seat within the Diet, free from foreign feudal claims."
+  ],
+  "Values": [
+    "Believes sovereign principalities are forged through personal courage on the battlefield.",
+    "Reveres the saintly legacy of his grandmother Saint Elizabeth as the moral foundation of Hesse."
+  ],
+  "Fears": [
+    "Saxon and Meissen armies besieging Marburg to extinguish the newborn Landgraviate of Hesse.",
+    "Rebellious robber-knights severing communication lines between Marburg and the Rhine."
+  ],
+  "SpeechStyle": "Speaks with youthful chivalric fire, fearless determination, and inspiring martial resolve. Always fiercely defending Holy Roman imperial dignity, princely municipal liberties, and Low Countries territorial hegemony.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

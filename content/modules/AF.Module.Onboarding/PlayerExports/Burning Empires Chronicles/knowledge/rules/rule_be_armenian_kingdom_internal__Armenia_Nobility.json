@@ -1,0 +1,59 @@
+{
+  "Id": "be_armenian_kingdom_internal",
+  "Keywords": [
+    "Armenia Nobility",
+    "Nakharars court and church"
+  ],
+  "RagShortTexts": [
+    "Armenian court, nakharar houses and church retain separate resources.",
+    "Noble rivalry affects willingness to bring followers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Court, nakharar houses and church have separate supporters and resources. Military cooperation does not erase local noble power; rivalry affects willingness to bring followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Armenian court, nakharar houses and church retain separate resources. Followers retain family ties; decisions about guards and distant service affect common participation. Noble rivalry affects willingness to bring followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Noble rivalry affects willingness to bring followers. Coordination allocates actual supply and protection duties, not merely titles. Armenian court, nakharar houses and church retain separate resources."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Armenian court, nakharar houses and church retain separate resources. Households compare burdens with neighbors; unmatched protection weakens cooperation. Noble rivalry affects willingness to bring followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Noble rivalry affects willingness to bring followers. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Armenian court, nakharar houses and church retain separate resources."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

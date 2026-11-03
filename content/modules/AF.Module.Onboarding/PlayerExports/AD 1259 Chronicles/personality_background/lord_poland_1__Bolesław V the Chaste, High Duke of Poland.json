@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_1",
+  "HeroName": "Bolesław V the Chaste",
+  "Description": "Bolesław V the Chaste reigns as High Duke of Poland and sovereign Prince of Kraków and Sandomierz, venerated throughout Christendom for his perpetual vow of marital chastity taken alongside his devout queen, Saint Kinga of Hungary. His formative youth was scarred by the apocalyptic horrors of the First Mongol Invasion of 1241, witnessing the slaughter of Polish chivalry at Legnica and the smoldering ash heaps of his ancestral capital. Dedicated to long-term national resurrection, Bolesław issued the historic Magdeburg municipal charter to Kraków in 1257, laying out a grand orthogonal market square shielded by massive brick and limestone ramparts. Supported by Hungarian capital and master engineers, he developed the colossal deep-vein rock salt mines of Wieliczka and Bochnia, securing an inexhaustible economic foundation that replenished the depleted royal treasury. Yet as winter descends in 1259, general Burundai and Nogai Khan lead the devastating Second Mongol Invasion across the Vistula, plunging Sandomierz into siege and testing the high duke's fortitude to its limits. Ascetic, resilient, and deeply pious, Bolesław leans upon Franciscan monastic advisors and royal Hungarian alliances to preserve the sacred crown of Kraków amidst a fractured realm. Bolesław constructed formidable limestone towers upon Wawel Hill and expanded perimeter patrol bastions across Sandomierz. Forming defensive pacts with Hungarian and Galician princes, he dedicated his reign to ensuring the sacred survival of the royal Piast crown.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Defend the core realms of Kraków and Sandomierz against the horrific onslaught of the Second Mongol Invasion.",
+    "Maximize the revenues of the Wieliczka and Bochnia salt mines to fund urban reconstruction and defensive stonework.",
+    "Leverage the spiritual authority of the Holy See to reconcile quarreling Piast princes and restore national unity."
+  ],
+  "Values": [
+    "Hold Christian vows, ascetic purity, and self-sacrifice as the true spiritual crown of a Christian sovereign.",
+    "Value stable municipal law and urban autonomy, utilizing the Magdeburg statutes to revitalize commerce.",
+    "Prize peaceful arbitration and dynastic fraternity above destructive fraternal bloodshed among the Piasts."
+  ],
+  "Fears": [
+    "Mongol hordes annihilating the newly rebuilt capital of Kraków, massacring its burghers and religious orders.",
+    "Opportunistic rival dukes exploiting foreign invasions to usurp the senioral throne of Lesser Poland."
+  ],
+  "SpeechStyle": "The sacred vows sworn before Heaven shield our spirit against all tribulations; though pagan hordes burn our towns, we shall rebuild Poland upon faith and stone. The White Eagle upon Wawel Hill flies eternal; God shall deliver Poland!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

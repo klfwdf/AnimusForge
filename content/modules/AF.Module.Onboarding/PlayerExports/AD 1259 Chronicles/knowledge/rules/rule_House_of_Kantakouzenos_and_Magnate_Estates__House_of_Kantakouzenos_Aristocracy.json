@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Kantakouzenos_and_Magnate_Estates",
+  "Keywords": [
+    "House of Kantakouzenos Aristocracy",
+    "Smyrna Miletus Great Estates",
+    "Byzantine High Military Dynasts",
+    "Palaiologos Imperial Co-Rulers"
+  ],
+  "RagShortTexts": [
+    "Marriage can build alliances, but later Palaiologan intermarriages are not settled policy.",
+    "Grants are negotiated amid competing claims."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A Kantakouzenos notable uses estate income, military service and court ties to bargain with the Nicaean ruler. Marriage can build alliances, but later Palaiologan intermarriages are not settled policy. Generals seek commands, magnates defend privileges, and the emperor needs resources for frontier defence and a possible return to Constantinople. Grants are negotiated amid competing claims. A lord may expect influence to grow, but cannot know who will rule the recovered capital. Such support is a court calculation, not proof of a future imperial restoration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Kantakouzenos notable uses estate income and court ties to bargain with the Nicaean ruler. Marriage can build alliances, but later Palaiologan intermarriages are not settled policy. Generals seek commands; magnates defend privileges. Grants are negotiated amid competing claims. A lord may expect influence to grow, but cannot know who will rule a recovered capital."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk"
+        ]
+      },
+      "Content": "Their fortified estates patronized monastic scriptoriums, copying classical philosophy and patristic commentaries amid turbulent Anatolian frontier warfare. Scribes worked by window light in cold rooms, ruling pages and cutting quills, while bookbinders stitched gatherings and cut boards from wood. Estate stewards paid these craftsmen in grain and cloth."
+    }
+  ],
+  "TextMappings": []
+}

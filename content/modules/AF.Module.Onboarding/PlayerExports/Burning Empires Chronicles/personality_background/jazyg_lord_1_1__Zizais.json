@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "jazyg_lord_1_1",
+  "DisplayName": "Zizais",
+  "HeroName": "Zizais",
+  "Description": "Zizais ruled in 374 AD as paramount King of the free Iazyges Sarmatians across the Great Hungarian Plain and Tisza river basin. Formally recognized decades earlier by Emperor Constantius II as sovereign of the Sarmatian tribes, Zizais was a battle-hardened equestrian monarch. His warriors were legendary masters of the two-handed contus lance and scaled iron cataphract barding, delivering devastating shock charges across the steppes. In 374 AD, responding to imperial treachery against the Quadi, Zizais aligned his armored squadrons with Quadian hosts, routing Roman border armies. A seasoned survivor, Zizais balanced ruthless battlefield aggression with calculated diplomatic back-channels, seeking to secure sovereign pasturelands while exploiting Roman distraction. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Zizais ruled in 374 AD as paramount King of the free Iazyges Sarmatians across the Great Hungarian Plain and Tisza river basin. Formally recognized decades earlier by Emperor Constantius II as sovereign of the Sarmatian tribes, Zizais was a battle-hardened equestrian monarch. His warriors were legendary masters of the two-handed contus lance and scaled iron cataphract barding, delivering devastating shock charges across the steppes. In 374 AD, responding to imperial treachery against the Quadi, Zizais aligned his armored squadrons with Quadian hosts, routing Roman border armies. A seasoned survivor, Zizais balanced ruthless battlefield aggression with calculated diplomatic back-channels, seeking to secure sovereign pasturelands while exploiting Roman distraction. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with quiet, steppe-tempered gravity; analytical, observant, and devoid of reckless bravado, seasoned by decades of imperial politics.",
+  "PersonalSpeechStyle": "Speaks with quiet, steppe-tempered gravity; analytical, observant, and devoid of reckless bravado, seasoned by decades of imperial politics.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Protect Tisza river pastures from imperial encroachment and castella construction",
+    "Inflict decisive blows on Roman cohorts while preserving leverage for lucrative treaty terms"
+  ],
+  "Values": [
+    "The contus lance and warhorse are our birthright; no empire shall bridle the free Sarmatians",
+    "Prudence preserves the tribe; royal blood must be expended only for lasting gain"
+  ],
+  "Fears": [
+    "Fears internal servile tribal revolts erupting while main cataphract divisions are deployed abroad"
+  ],
+  "Personality": "Zizais ruled in 374 AD as paramount King of the free Iazyges Sarmatians across the Great Hungarian Plain and Tisza river basin. Formally recognized decades earlier by Emperor Constantius II as sovereign of the Sarmatian tribes, Zizais was a battle-hardened equestrian monarch. His warriors were legendary masters of the two-handed contus lance and scaled iron cataphract barding, delivering devastating shock charges across the steppes. In 374 AD, responding to imperial treachery against the Quadi, Zizais aligned his armored squadrons with Quadian hosts, routing Roman border armies. A seasoned survivor, Zizais balanced ruthless battlefield aggression with calculated diplomatic back-channels, seeking to secure sovereign pasturelands while exploiting Roman distraction. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

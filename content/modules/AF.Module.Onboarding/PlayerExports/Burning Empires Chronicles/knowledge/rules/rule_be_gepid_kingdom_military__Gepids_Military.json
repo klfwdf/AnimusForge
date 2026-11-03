@@ -1,0 +1,59 @@
+{
+  "Id": "be_gepid_kingdom_military",
+  "Keywords": [
+    "Gepids Military",
+    "Gepid defence against Vandals"
+  ],
+  "RagShortTexts": [
+    "Vandal war requires crossings, passes and protected grain.",
+    "Concentrating forces reduces warnings elsewhere."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vandal war requires crossings, passes and grain routes. Concentration reduces warnings elsewhere, and mounted and foot followers both depend on settlement supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Vandal war requires crossings, passes and protected grain. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Concentrating forces reduces warnings elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Concentrating forces reduces warnings elsewhere. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Vandal war requires crossings, passes and protected grain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Vandal war requires crossings, passes and protected grain. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Concentrating forces reduces warnings elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Concentrating forces reduces warnings elsewhere. Repair, carrying and care also use people, while daily supply continues after troops pass. Vandal war requires crossings, passes and protected grain."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

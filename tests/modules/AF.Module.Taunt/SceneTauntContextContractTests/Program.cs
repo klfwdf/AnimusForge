@@ -65,9 +65,10 @@ LedgerCheck(ledger.QueueDeferredCrime("", 6f) == 0f && ledger.GetDeferredCrime("
     "missing faction does not mutate ledger");
 LedgerCheck(ledger.PendingCrimeEntries().Length == 1, "pending iteration is bounded to recorded factions");
 LedgerCheck(ledger.ReserveNativeCommit("faction-a", 100f, 100f) == 0f
-    && ledger.GetDeferredCrime("faction-a") == 13f, "native cap preserves pending crime");
+    && !ledger.HasDeferredCrime, "native cap settles incident without retaining a refill pool");
+ledger.QueueDeferredCrime("faction-a", 13f);
 LedgerCheck(ledger.ReserveNativeCommit("faction-a", 95f, 100f) == 5f
-    && ledger.GetDeferredCrime("faction-a") == 8f, "partial native commit retains remainder");
+    && !ledger.HasDeferredCrime, "partial native commit settles overflow once");
 ledger.RestoreFailedNativeCommit("faction-a", 13f);
 LedgerCheck(ledger.GetDeferredCrime("faction-a") == 13f, "failed native action restores pre-commit pool");
 LedgerCheck(ledger.ReserveNativeCommit("faction-a", 0f, 100f) == 13f
@@ -89,7 +90,21 @@ LedgerCheck(ledger.AwardCriminalKnockdownTrust("", out carry) == 0 && carry == 0
 ledger.QueueDeferredCrime("faction-a", 3f);
 ledger.ClearForMainHeroDeath();
 LedgerCheck(!ledger.HasDeferredCrime, "main hero death clears pending crime");
-Console.WriteLine("16/16 scene Taunt penalty ledger cases passed; Bannerlord native crime/trust callbacks NOT_RUN");
+ledger.RestoreDeferredCrime(new Dictionary<string, float> { ["battania"] = 1670f });
+LedgerCheck(ledger.GetDeferredCrime("battania") == 100f, "legacy large pool bounded on read");
+LedgerCheck(ledger.CaptureDeferredCrime()["battania"] == 100f, "bounded legacy value saved under same key");
+LedgerCheck(ledger.QueueDeferredCrime("battania", 500f) == 100f, "new incident cannot grow an unbounded pool");
+LedgerCheck(ledger.ReserveNativeCommit("battania", 59f, 100f) == 41f && !ledger.HasDeferredCrime,
+    "legacy pool settles only available native room");
+LedgerCheck(ledger.ReserveNativeCommit("battania", 25f, 100f) == 0f,
+    "subsequent fine cannot refill native crime");
+LedgerCheck(ledger.ReserveNativeCommit("battania", 98.8f, 100f) == 0f,
+    "natural decay cannot restart a settled incident");
+ledger.RestoreFailedNativeCommit("battania", 1670f);
+LedgerCheck(ledger.GetDeferredCrime("battania") == 100f, "failure restoration remains bounded");
+ledger.ClearForMainHeroDeath();
+CrimeSettlementPatchTests.Run();
+Console.WriteLine("23/23 scene Taunt penalty ledger cases passed; native callbacks/live NOT_RUN");
 
 static void LifecycleCheck(bool condition, string label)
 {

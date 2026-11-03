@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_annona_militaris_v5",
+  "Keywords": [
+    "高卢减税与旧欠"
+  ],
+  "RagShortTexts": [
+    "尤利安治理高卢时试图减轻税负，并反对通过追索旧欠不断压迫纳税人。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "尤利安治理高卢时试图减轻税负，并反对通过追索旧欠不断压迫纳税人。国库账上的应收与家户实际能交出的粮钱不总相同。减免影响当年收入，也可能让耕作者有能力继续生产。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

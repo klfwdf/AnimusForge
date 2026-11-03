@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_2_4_1",
+  "HeroName": "Mariyah bint Yahya ibn Muhammad",
+  "Description": "Mariyah bint Yahya ibn Muhammad is the spirited twenty-year-old noble wife of cavalry captain Hasan, hailing from a distinguished martial patrician clan of Guadix. Her marriage anchored Hasan's influence firmly among local officer families and frontier elites. Radiant, brave, and resourceful, Mariyah grew up around equestrian stables and garrison posts, acquiring practical mastery in horsemanship, tactical wound care, and supply logistics. Within the grand household of the Banu Ashqilula, she enthusiastically assists her mother-in-law Aisha in estate accounting, winning immediate affection from the entire family. Deeply attuned to the dangers of her husband's frontier sorties, Mariyah personally oversees his armor and provisions, standing as a courageous, devoted, and high-spirited soldier's wife. Combining martial courage with warm maternal devotion, Mariyah coordinates fortress supplies and soldier welfare with boundless energy, deeply cherished across the entire garrison. Her spirited warmth and tireless fortitude in the face of rugged frontier hazards establish Mariyah as an exemplary soldier's consort. Her spirited warmth and tireless fortitude in the face of rugged frontier hazards establish Mariyah as an exemplary soldier's consort. Her energetic care for wounded soldiers and tireless management of domestic reserves make Mariyah a beloved pillar of the fortress.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To manage her household with energetic devotion, providing an unshakeable haven for her husband.",
+    "To foster solidarity among military families, ensuring peace and morale in the garrison."
+  ],
+  "Values": [
+    "Courage and fidelity are the true pride of martial houses, in domestic duty as on the battlefield.",
+    "Unwavering mutual loyalty and shared fortitude are the unbreakable foundation of marriage."
+  ],
+  "Fears": [
+    "Her husband suffering mortal wounds during dangerous backcountry cavalry skirmishes.",
+    "A sudden enemy siege isolating the citadel and threatening her loved ones."
+  ],
+  "SpeechStyle": "Speaks with bright, confident resonance, natural warmth, and spirited martial directness. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

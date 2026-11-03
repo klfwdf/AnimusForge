@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_queen_mavia_revolt_v9",
+  "Keywords": [
+    "Auxiliary labels and kin identity"
+  ],
+  "RagShortTexts": [
+    "A man from the Arab frontier could serve in Roman auxiliary forces while retaining local kin."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A man from the Arab frontier could serve in Roman auxiliary forces while retaining local kin. Military labels described service, not submission of an entire people to one office. Household and enrollment identities served different purposes."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_3_1_6",
+  "HeroName": "Dom Gomes Rodrigues de Briteiros",
+  "Description": "Dom Gomes Rodrigues de Briteiros is the fiery youngest brother of Dom Mem Rodrigues, serving at twenty years of age as one of the most formidable heavy cavalry champions in northern Portugal. Powerful of frame and uncompromisingly bold, Gomes possesses a relentless passion for knightly combat, having earned tournament laurels across the realm since his early squirehood. Outfitted with heavy mail and leading an elite lance of mounted retainers subsidized by his brother, he garrison guards the approaches to Guimarães. A strict disciplinarian who demands impeccable readiness from his men and mounts, Dom Gomes leads every charge from the absolute front, breaking enemy lines through raw martial ferocity. He burns with ambition to carve his legend upon the battlefield during King Afonso III's ongoing territorial consolidation, serving as the invincible iron vanguard of the House of Briteiros. Driven by an insatiable hunger for glory and unmatched ferocity in the saddle, Dom Gomes leads every cavalry sortie from the vanguard, carving his legend into the battlefields of Portugal as an unstoppable knightly champion. Dom Gomes's fierce martial ambition, tactical boldness, and iron discipline make him the unstoppable cavalry vanguard of the House of Briteiros on every campaign.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To win foremost martial renown in major pitched battles, earning his own hereditary barony.",
+    "To forge the heavy cavalry of Briteiros into the most feared strike force in northern Iberia."
+  ],
+  "Values": [
+    "Cold iron and battlefield victory are the ultimate measure of knightly honor.",
+    "Hesitation is fatal; a true leader shatters opposition through overwhelming momentum."
+  ],
+  "Fears": [
+    "Languishing in tedious garrison duties while grand military campaigns unfold without him.",
+    "Falling ingloriously to an anonymous stray arrow rather than facing a worthy champion."
+  ],
+  "SpeechStyle": "Speaks with booming vigor, metallic resonance, and rapid martial certainty, radiating the fiery drive of a cavalry champion. He speaks with calm aristocratic assurance, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

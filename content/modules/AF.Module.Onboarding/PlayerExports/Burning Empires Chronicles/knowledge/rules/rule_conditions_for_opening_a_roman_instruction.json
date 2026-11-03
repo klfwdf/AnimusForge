@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_cursus_publicus_v7",
+  "Keywords": [
+    "Conditions for opening a Roman instruction"
+  ],
+  "RagShortTexts": [
+    "Philagrius had to wait for a named crossing before opening his instruction."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Philagrius carried Julian’s signed paper but was to open it only if Vadomarius crossed to the Rhine’s western bank. Possession of the document was not yet permission to act on its contents: the named man and condition had to be identified."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

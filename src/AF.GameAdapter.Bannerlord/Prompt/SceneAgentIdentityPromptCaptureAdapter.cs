@@ -1949,6 +1949,18 @@ internal static string BuildSceneNonHeroNamingNoteForPrompt(IEnumerable<NpcDataP
 
 			}
 
+			// Main-party regular soldiers: one memory per troop type, in any scene (field camp step 3).
+
+			if (MainPartyTroopMemory.TryResolve(targetHero, targetCharacter, agentIndex, out memoryId, out memoryName))
+
+			{
+
+				LogNonHeroMemoryTrace("stage=resolve ok=1 mode=main_party_troop agent=" + agentIndex + " memoryId=" + memoryId);
+
+				return true;
+
+			}
+
 			if (!IsWildernessNonHeroMemoryScope(agentIndex))
 
 			{
@@ -3591,7 +3603,7 @@ internal static string BuildCeremonyRoleFactForPrompt(int agentIndex)
 
 			string victim = (request.Victim?.Name?.ToString() ?? string.Empty).Trim();
 
-			string venue = (request.Venue?.Name?.ToString() ?? string.Empty).Trim();
+			string venue = (request.VenueName?.ToString() ?? string.Empty).Trim();
 
 			if (string.IsNullOrWhiteSpace(charge)) charge = AdapterPromptCaptureTexts.PcapText("scene_identity_output_15");
 
@@ -3631,7 +3643,9 @@ internal static string BuildCeremonyRoleFactForPrompt(int agentIndex)
 
 			{
 
-				fact = AdapterPromptCaptureTexts.PcapFormat("scene_execution_role_crowd", "You are a civilian watching this public execution in {VENUE}; the condemned prisoner is {VICTIM}, awaiting {METHOD} for {CHARGE}.", ("VENUE", venue), ("VICTIM", victim), ("CHARGE", charge), ("METHOD", method));
+				fact = request.IsFieldCamp
+					? AdapterPromptCaptureTexts.PcapFormat("scene_execution_role_camp_crowd", "You are a soldier watching this public execution in {VENUE}; the condemned prisoner is {VICTIM}, awaiting {METHOD} for {CHARGE}.", ("VENUE", venue), ("VICTIM", victim), ("CHARGE", charge), ("METHOD", method))
+					: AdapterPromptCaptureTexts.PcapFormat("scene_execution_role_crowd", "You are a civilian watching this public execution in {VENUE}; the condemned prisoner is {VICTIM}, awaiting {METHOD} for {CHARGE}.", ("VENUE", venue), ("VICTIM", victim), ("CHARGE", charge), ("METHOD", method));
 
 			}
 
@@ -4303,13 +4317,13 @@ internal static string BuildPrisonerContextLineForPrompt(NpcDataPacket npc, Hero
 
 			}
 
-			string heroPrisonerStatusLine = SharedPromptCaptureBannerlordAdapter.BuildHeroPrisonerStatusPromptLineForExternal(hero);
-
-			if (!string.IsNullOrWhiteSpace(heroPrisonerStatusLine))
+			// Shared Prompt Extras owns ordinary hero captivity for Native, Scene and Courier.
+			// Keep castle-specific context above and inspection/non-hero context below.
+			if (hero != null && hero.IsPrisoner)
 
 			{
 
-				return heroPrisonerStatusLine;
+				return "";
 
 			}
 
@@ -4925,7 +4939,10 @@ internal static string BuildSceneUserRuntimeContextForSingle(RoleIntroCapturePor
 
 	SplitSceneNpcRoleIntroSections(fullIntro, hero != null, out var _, out var runtimeIntro);
 
-	return runtimeIntro;
+	// Field camp: the camp's open issues join every camp speaker's runtime context (empty elsewhere).
+	string fieldCampIssues = FieldCampOrderTags.BuildIssuePromptBlock(npc?.AgentIndex ?? -1);
+
+	return string.IsNullOrEmpty(fieldCampIssues) ? runtimeIntro : (runtimeIntro + "\n" + fieldCampIssues).Trim();
 
 }
 

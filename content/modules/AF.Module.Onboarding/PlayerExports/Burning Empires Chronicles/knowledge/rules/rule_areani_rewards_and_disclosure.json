@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v10",
+  "Keywords": [
+    "Areani rewards and disclosure"
+  ],
+  "RagShortTexts": [
+    "The Areani were removed for rewards and promises inducing disclosure of Roman information."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Areani were removed for rewards and promises inducing disclosure of Roman information. This was a compromised channel, not inherent ethnic disloyalty. Replacing personnel still left a need for trustworthy reports; punishment did not provide intelligence."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

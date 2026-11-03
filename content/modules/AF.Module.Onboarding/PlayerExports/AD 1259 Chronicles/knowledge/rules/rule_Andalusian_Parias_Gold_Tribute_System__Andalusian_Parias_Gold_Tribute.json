@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Andalusian_Parias_Gold_Tribute_System",
+  "Keywords": [
+    "Andalusian Parias Gold Tribute",
+    "Granada Paria Tribute System",
+    "Jaen Treaty Protection Gold",
+    "Trans Saharan Gold Dust Route"
+  ],
+  "RagShortTexts": [
+    "Tribute links Granada's diplomacy with Castilian demands for revenue and service.",
+    "Magnates may prefer payments or conquest according to their different interests."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Under the 1246 Treaty of Jaén, the Nasrid emirate of Granada kept its independence by paying an annual parias in gold to Castile. The payments came largely from the trans-Saharan gold-dust trade and the silk and craft workshops of the emirate, which made Granada rich in coin though small in land. The paradox was that the tribute financed the same Castilian army that pressed the frontier. Each year the treasury shipped gold across the border, and the crown used it to pay garrisons and campaigns. The arrangement held the kingdom between dependence and survival until later Castilian conquests changed the balance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A Castilian magnate may prefer tribute to a costly siege, yet another may seek land, office or military prestige. Royal revenue and frontier ambitions do not always point in the same direction. A bargain must therefore be read through its actual parties and terms, rather than a rule that gold payments invariably make every lord favour peace."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "In the Vega, a household measures tribute through the rent, market dues and demands laid upon its own crop. Silk, grain and irrigated orchards sustain the emir's revenue, but no village can assume a fixed share of every payment goes directly to Castile. Peace protects the harvest; an additional levy can still leave too little for seed and food."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_annona_militaris_v1",
+  "Keywords": [
+    "尤利安二十日军粮"
+  ],
+  "RagShortTexts": [
+    "尤利安在高卢用二十日存粮制干粮，先准备后出兵。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "尤利安在高卢一次不等新粮成熟便出动的行动中，命士兵领取二十日存粮，制成耐储干粮后自行携带。库存使出兵可以提前，加工、分配和负重却仍要先完成；存粮用尽以后，队伍还须接上新的补给。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "士兵背的是已经加工的耐储干粮，而非指望沿途立刻收割。加工与携带把一部分后勤劳动交给士兵；存粮吃完之后，仍必须接上新的补给。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "指挥官利用库存安排出兵时机，粮食加工先于行军。账目有谷物后，还要磨制、分发并安排负重；存粮用尽时，队伍仍须面对收获季节和下一次供给。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

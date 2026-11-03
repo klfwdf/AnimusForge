@@ -237,10 +237,30 @@ internal static bool IsSingleUseNpcFactLine(string line)
 internal static bool IsFirstMeetingNpcFactBody(string text)
 	{
 		string value = (text ?? "").Trim();
-		return value.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_cdf0b7f2b2ed"), StringComparison.Ordinal)
-			|| value.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_cd1f2e83f279"), StringComparison.Ordinal)
-			|| value.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_8abdc4deefe8"), StringComparison.Ordinal)
-			|| value.StartsWith(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_fa2aa9d7cc69"), StringComparison.Ordinal);
+		// First-meeting facts keep the language of the day they were written; accept both editions.
+		foreach (string key in FirstMeetingFactBodyKeys)
+			if (StartsWithAnyRaw(value, key)) return true;
+		return false;
+	}
+
+private static readonly string[] FirstMeetingFactBodyKeys =
+	{
+		"weekly_memory_compat_cdf0b7f2b2ed", "weekly_memory_compat_cd1f2e83f279",
+		"weekly_memory_compat_8abdc4deefe8", "weekly_memory_compat_fa2aa9d7cc69"
+	};
+
+private static bool StartsWithAnyRaw(string value, string key)
+	{
+		foreach (string prefix in AnimusForge.PromptComposerTexts.RawVariants(key))
+			if (value.StartsWith(prefix, StringComparison.Ordinal)) return true;
+		return false;
+	}
+
+private static bool ContainsAnyRaw(string value, string key, StringComparison comparison)
+	{
+		foreach (string marker in AnimusForge.PromptComposerTexts.RawVariants(key))
+			if (value.IndexOf(marker, comparison) >= 0) return true;
+		return false;
 	}
 
 internal static int CountDialogueHistoryLines(IEnumerable<DialogueDay> records)
@@ -503,7 +523,7 @@ internal static void ClassifyDialogueHistoryLine(string line, out string speaker
 			kind = ConversationRoleClassificationOwner.IsLikelyPlayerHistorySpeaker(speaker) ? "player" : "npc";
 			return;
 		}
-		if (value.IndexOf(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920"), StringComparison.Ordinal) >= 0)
+		if (ContainsAnyRaw(value, "weekly_memory_compat_991e63fe2920", StringComparison.Ordinal))
 		{
 			speaker = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920");
 			kind = "player";
@@ -736,13 +756,14 @@ internal static string BuildFirstMeetingNpcFactText(Hero observer)
 	{
 		AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.TryBuildPlayerPublicDisplayNameForPrompt(observer, out var displayName, out var isCompleteIdentity);
 		string text = (displayName ?? "").Trim();
-		if (isCompleteIdentity && !string.Equals(text, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920"), StringComparison.Ordinal))
+		bool placeholder = AnimusForge.PromptComposerTexts.IsRaw(text, "weekly_memory_compat_991e63fe2920");
+		if (isCompleteIdentity && !placeholder)
 		{
 			return AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_3047ca2d8faf") + text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_ea97afa87d58");
 		}
-		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920"), StringComparison.Ordinal))
+		if (!string.IsNullOrWhiteSpace(text) && !placeholder)
 		{
-			return AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_686b7da17b14") + text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_962a032e749a");
+			return AdapterRecordTexts.Pad(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_686b7da17b14")) + text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_962a032e749a");
 		}
 		return AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_5f59039da0e7");
 	}
@@ -788,7 +809,7 @@ internal static string ResolveInteractionMemoryOriginGameDate(int originDay, int
             if (!string.IsNullOrWhiteSpace(date)) return date.Trim();
         }
         catch { }
-        return AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_9552fe3bd366") + Math.Max(0, originDay).ToString(CultureInfo.InvariantCulture) + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_4d27420c3ba9");
+        return AdapterPromptCaptureTexts.PcapFormat("memory_capture_spaced_day", "Day {DAY}", ("DAY", Math.Max(0, originDay).ToString(CultureInfo.InvariantCulture)));
     }
 
 internal InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(InteractionMemoryCommit commit,string normalizedMemoryId,bool isNonHero,string npcName,Hero hero) {
@@ -1200,8 +1221,8 @@ internal void AppendLoreToHistory(Hero hero, string loreText)
 			{
 				return;
 			}
-			bool flag = text.IndexOf(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_2661c7df36fc"), StringComparison.OrdinalIgnoreCase) >= 0;
-			bool flag2 = text.IndexOf(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_45f1515f311c"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_fd2edac46857"), StringComparison.OrdinalIgnoreCase) >= 0;
+			bool flag = ContainsAnyRaw(text, "weekly_memory_compat_2661c7df36fc", StringComparison.OrdinalIgnoreCase);
+			bool flag2 = ContainsAnyRaw(text, "weekly_memory_compat_45f1515f311c", StringComparison.OrdinalIgnoreCase) || ContainsAnyRaw(text, "weekly_memory_compat_fd2edac46857", StringComparison.OrdinalIgnoreCase);
 			if (!flag && !flag2)
 			{
 				string text2 = "";
@@ -1222,7 +1243,7 @@ internal void AppendLoreToHistory(Hero hero, string loreText)
 				{
 					text4 = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_991e63fe2920");
 				}
-				text = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_a8201d9dfd88") + text2 + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_e77284740762") + text4 + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_0e1d3ae86da0") + text;
+				text = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_a8201d9dfd88") + text2 + AdapterRecordTexts.Pad(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_e77284740762")) + text4 + AdapterRecordTexts.Pad(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_0e1d3ae86da0")) + text;
 			}
 			string text3 = text;
 			if (dialogueDay.Lines.Count > 0)

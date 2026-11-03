@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v2",
+  "Keywords": [
+    "Single-file passage in the Caucasus"
+  ],
+  "RagShortTexts": [
+    "An ancient geographical description gives part of the Aragus road room for only one person."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "An ancient geographical description gives part of the Aragus road room for only one person. Such a constriction limits loads and wounded travelers; those behind cannot simply pass a halted animal. The order of movement shapes the speed of the whole column."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

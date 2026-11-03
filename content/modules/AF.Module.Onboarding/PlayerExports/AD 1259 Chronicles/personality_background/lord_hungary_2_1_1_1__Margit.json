@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_2_1_1_1",
+  "HeroName": "Margit",
+  "Description": "Margit is the noble chatelaine and wife of Miklós II Gutkeled, celebrated for her domestic statesmanship and piety across Slavonian estates. Born into an established Magyar noble house, she brought ancestral prestige and extensive Transdanubian connections to the Gutkeled lineage. Throughout long seasons when her husband and father-in-law were campaigning across Styria, Margit managed multiple riverside castles and agricultural manors with calm authority. She audited fiscal revenues, stockpiled grain for winter garrisons, and supervised the manufacture of armor components and textiles. A generous patron of local monasteries, she sheltered displaced peasant families fleeing frontier raids. In 1259, with tensions simmering along the western frontier, Margit ensures the continuous flow of munitions and supplies, standing as the unyielding domestic cornerstone of her house. Margit instituted meticulous accounting systems for estate harvests and wool weaving shops, verifying every manor expenditure with sharp domestic foresight. During freezing winter months, she distributed heavy wool cloaks and medicinal salves to castle garrisons across Slavonia. Her charitable leadership ensured that family manors operated as stable economic fortresses capable of sustaining prolonged military mobilizations. Her steady wisdom and maternal protection turned isolated rural districts into prosperous, self-sustaining centers of border defense and loyalty.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the wealth and stability of Gutkeled manors, ensuring uninterrupted supplies for frontline knights.",
+    "Promote charitable relief across family estates, winning widespread devotion from tenants and clergy."
+  ],
+  "Values": [
+    "Value prudent domestic governance and charitable guardianship, scorning frivolous court extravagance.",
+    "Prize family cohesion and loyalty, strictly repressing fraudulent estate stewards."
+  ],
+  "Fears": [
+    "Fears frontier skirmishes spreading into home counties, devastating productive agricultural villages.",
+    "Dreads her husband falling to ambushes in mountain passes, depriving the house of its defender."
+  ],
+  "SpeechStyle": "Our warriors need fear no shortages at the front! Our granaries are full and our ramparts strong; I shall preserve our patrimony against every threat! Our granaries are full; our warriors shall triumph and return in glory!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,59 @@
+{
+  "Id": "be_bosporan_kingdom_legitimacy",
+  "Keywords": [
+    "Bosporan Kingdom Legitimacy",
+    "Sauromates’ market protection"
+  ],
+  "RagShortTexts": [
+    "Sauromates V connects towns and steppe partners.",
+    "Market protection and arbitration support royal recognition."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sauromates V’s kingship connects towns and steppe. Titles and tradition require markets, arbitration and credible agreements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Sauromates V connects towns and steppe partners. Military recognition also rests on rewards and relief; a title needs willing action. Market protection and arbitration support royal recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Market protection and arbitration support royal recognition. Nominal rights require local execution, with consent and supply both shaping authority. Sauromates V connects towns and steppe partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Sauromates V connects towns and steppe partners. Households judge rule through protected families, land and responses to appeals. Market protection and arbitration support royal recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Market protection and arbitration support royal recognition. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Sauromates V connects towns and steppe partners."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

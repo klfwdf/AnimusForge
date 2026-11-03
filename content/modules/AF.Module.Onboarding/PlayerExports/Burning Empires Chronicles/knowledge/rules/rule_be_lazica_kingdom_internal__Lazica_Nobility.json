@@ -1,0 +1,59 @@
+{
+  "Id": "be_lazica_kingdom_internal",
+  "Keywords": [
+    "Lazica Nobility",
+    "Lazican ports and valley chiefs"
+  ],
+  "RagShortTexts": [
+    "Opsites coordinates ports and valley chiefs.",
+    "Continuous trade and garrison transport create different local demands."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Opsites coordinates ports and valley chiefs. Merchants need continuous movement and farmers watch garrison burdens; Roman relations also need local participation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Opsites coordinates ports and valley chiefs. Followers retain family ties; decisions about guards and distant service affect common participation. Continuous trade and garrison transport create different local demands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Continuous trade and garrison transport create different local demands. Coordination allocates actual supply and protection duties, not merely titles. Opsites coordinates ports and valley chiefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Opsites coordinates ports and valley chiefs. Households compare burdens with neighbors; unmatched protection weakens cooperation. Continuous trade and garrison transport create different local demands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Continuous trade and garrison transport create different local demands. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Opsites coordinates ports and valley chiefs."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

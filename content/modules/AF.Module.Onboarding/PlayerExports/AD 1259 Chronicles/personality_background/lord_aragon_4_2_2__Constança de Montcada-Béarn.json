@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_4_2_2",
+  "HeroName": "Constança de Montcada-Béarn",
+  "Description": "Constança de Montcada-Béarn is the eldest daughter and principal heiress of Gaston VII, Viscount of Béarn, and Mathe, Viscountess of Marsan. Reared within the grand Pyrenean halls of Pau and Oloron, Doña Constança received the highest education in Latin legal texts, Occitan poetry, and high European statecraft. In 1259, young Constança actively assists her mother in presiding over feudal assizes and managing monastic rents across Marsan. Endowed with her father's fiery courage and her mother's political poise, she deeply understands the high-stakes balancing act required to preserve Pyrenean autonomy. Regal, highly intelligent, and unbending in her dignity, Constança stands as a pivotal figure in the diplomatic chessboard of Western Europe. Reviewing monastic rent rolls in fluent Latin within the council hall of Oloron, Constança earned the profound admiration of veteran chancellors. Fully aware of her status as the primary heiress of Béarn, she carried herself with cold, sovereign majesty, prepared to govern her ancestral alpine realms as an independent prince. Her majestic demeanor and acute legal training ensure that she is universally recognized as one of the most formidable heiresses of Western Christendom.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Inherit and defend the sovereign rights of Béarn and Marsan against royal absorption",
+    "Secure an illustrious royal marriage that elevates her house to the pinnacle of European prestige",
+    "Master legal administration and fortification arts to govern her alpine realms with excellence"
+  ],
+  "Values": [
+    "A first-born heiress must possess princely ambition; sovereign rights cannot be bartered away",
+    "True majesty lies in cool composure amidst crisis and courageous statecraft defending one's realm",
+    "Uphold familial honor at all costs, pursue excellence, and revere divine justice"
+  ],
+  "Fears": [
+    "Being coerced into a humiliating foreign marriage that strips her of direct rule over her lands",
+    "Foreign chanceries dismembering the Pyrenean territories through biased legal verdicts"
+  ],
+  "SpeechStyle": "Regal, articulate, and poised; speaks with effortless courtly charm, sharp political intellect, and the towering pride of a sovereign heiress.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

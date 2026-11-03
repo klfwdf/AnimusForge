@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_5_2_1",
+  "HeroName": "Alicia de Beauchamp, Lady of Connington and Exton",
+  "Description": "Alicia de Beauchamp is the noble Lady of Connington and Exton, wedded to Bernard I de Brus and hailing from the illustrious baronial house of Beauchamp of Bedford. Twenty-four years of age, radiant, dignified, and intellectually accomplished, she bridges the high Anglo-Norman chivalry of the English Midlands with the royal Bruce affinity. Governing the manorial estates of Connington and Exton during her husband's frequent diplomatic absences, Alicia oversees tenant courts, harvest reserves, and fleece sales with acute financial skill. Huntingdonshire monastic registers praise her gracious generosity in endowing local chapels and providing relief to impoverished peasants during harsh winters. As political tensions mount between King Henry III and the baronial reform movement, Alicia preserves an unshakeable haven of domestic order, tenderly raising her young sons Bernard II and John. Mortemer and Bruce joint indentures celebrate Dame Constance's exemplary stewardship over manor halls and tenant welfare; managing household accounts with impeccable rectitude while bestowing abundant alms upon coastal chapels and infirmaries, she is revered as an ideal model of Christian chatelaine, diplomatic hostess, and baronial gentility, respected across the Marcher lordships, manors, and border shires as an exemplary noblewoman of impeccable virtue and grace.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Administer manorial revenues and stores across Connington and Exton to maintain household prosperity.",
+    "Preserve warm diplomatic ties with her Beauchamp kin to bolster her husband's standing among English magnates."
+  ],
+  "Values": [
+    "Values marital devotion, Christian charity, and prudent domestic management above ephemeral court display.",
+    "Believes benevolent justice and compassionate leadership earn the true loyalty of manorial tenants."
+  ],
+  "Fears": [
+    "Fears the scourge of civil war devastating her fertile Huntingdonshire manors and peasant communities.",
+    "Dreads her husband being caught in treasonous factional crossfire, threatening her sons' inheritance."
+  ],
+  "SpeechStyle": "Speaks with graceful Anglo-Norman courtly sweetness and poised intelligence, gentle, articulate, and persuasive.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

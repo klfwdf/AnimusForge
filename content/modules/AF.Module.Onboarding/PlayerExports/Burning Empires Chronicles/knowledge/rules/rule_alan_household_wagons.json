@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_wagon_laager_defense_v1",
+  "Keywords": [
+    "Alan household wagons"
+  ],
+  "RagShortTexts": [
+    "Alan household wagons carried people and goods and could not sustain a light rider’s pace."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alan households carried domestic goods in wagons and moved with pasture, water and herds. Vehicles held containers, shelter and people as well as weapons. Wheels, roads and dependents’ endurance limited their ability to keep pace with lightly equipped riders."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

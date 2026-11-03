@@ -1,0 +1,38 @@
+{
+  "Id": "be_roman_hymetius_appeal",
+  "Keywords": [
+    "Hymetius appeal and senate judgment"
+  ],
+  "RagShortTexts": [
+    "Hymetius appealed to the emperor; the senate ultimately sentenced him to exile."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hymetius, a former proconsul of Africa, became entangled in Roman proceedings over grain funds and other accusations. Facing a severe sentence at Otricoli, he invoked imperial protection and proceedings were paused. The case then went to the senate, which imposed exile. Appeal gave him another forum without restoring his freedom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "News circulated in Rome of a prominent appellant who still ended in exile. Ordinary litigants needed people able to carry petitions, money for travel and help for relatives left at home. A change of court did not mean acquittal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The senate’s sentence for Hymetius did not satisfy the emperor’s wish for harsher punishment. Leading men involved had to negotiate status protections, court pressure and responsibility for judgment. Exile still required arrangements for execution."
+    }
+  ],
+  "TextMappings": []
+}

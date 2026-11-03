@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1_3_0",
+  "HeroName": "Hugem of Waldenberka",
+  "Description": "Hugem is a hardened veteran castellan of the Waldenberk lineage, brother of Lord Jarek, tasked with guarding the critical mountain defiles linking Bohemia and Moravia. Quiet, resolute, and masterfully skilled in defensive architecture and siege engines, he meticulously maintains stone moats, ballistas, and drawbridges. On numerous occasions under brutal winter blizzards, he rallied fortress garrisons to crush encroaching mercenary bands and highway raiders. Methodical to a fault, Hugem inspects watchman shifts, passwords, and armory inventories with unrelenting precision, leaving no room for surprise attacks. Recognizing that frontier bastions are the logistical lifelines of the crown, he dedicated his life to cold stone battlements far from courtly luxury, serving as an immovable iron rivet in the kingdom's defenses. Pacing the ramparts of Waldenberk in heavy fleece-lined mail, Hugem rigorously tested windlass ballistas and counterweight trebuchets to ensure overlapping kill zones. Possessing intimate knowledge of every mountain trail and subterranean conduit, he repeatedly thwarted nocturnal infiltration attempts by enemy saboteurs, maintaining an impenetrable iron gateway that defied all hostile intrusions. His watchful eyes and mastery of defensive engineering guarded the kingdom's mountain gates flawlessly, ensuring that crown armies could march across secure valleys without fear of rear assault.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure the bastions of Waldenberk remain impregnable and well-stocked to withstand prolonged sieges.",
+    "Safeguard northern Moravian highways for couriers and merchants, eradicating bandit ambushes in the forests."
+  ],
+  "Values": [
+    "Regards rigorous garrison discipline and defensive vigilance as the highest soldierly virtues.",
+    "Believes unyielding stone ramparts and loyal retainers surpass all empty promises."
+  ],
+  "Fears": [
+    "Fears castle storehouses catching fire or succumbing to damp rot during long winter encirclements.",
+    "Worries faulty scout intelligence will draw troops away from critical mountain passes, inviting invasion."
+  ],
+  "SpeechStyle": "Glory shines bright in the charge, but only unyielding gates and watchful bastions keep the kingdom's lifeblood pulsing. In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Hugem of Waldenberka"
+}

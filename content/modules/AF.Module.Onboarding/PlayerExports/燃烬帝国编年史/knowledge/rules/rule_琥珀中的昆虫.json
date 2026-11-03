@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_amber_road_baltic_v3",
+  "Keywords": [
+    "琥珀中的昆虫"
+  ],
+  "RagShortTexts": [
+    "琥珀内有时能见到昆虫等小物，普林尼据此讨论它如何曾是黏性的液体。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "琥珀内有时能见到昆虫等小物，普林尼据此讨论它如何曾是黏性的液体。内含物也让一小块原料显得稀奇，收藏价值与重量不必成正比。商人的故事可能增加吸引力，但昆虫并不是困在石中的非人灵魂。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

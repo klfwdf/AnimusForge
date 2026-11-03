@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_1_7",
+  "HeroName": "Maria Zeno",
+  "Description": "Lady Maria Zeno is an esteemed thirty-two-year-old chatelaine of the House of Zeno, celebrated across the San Marco quarter for administrative competence and boundless charity. Overseeing the daily operations of family palaces, storehouses, and artisan workshops, Maria maintains rigorous domestic order and benevolent discipline. She actively sponsors urban hospices and convents, distributing flour and cheese to the poor during winter shortages, earning profound civic devotion for the Zeno dynasty. Lady Maria directed domestic households and hospital charities across the San Marco quarter with gentle benevolence, distributing flour and clothing to sailors' orphans and surrounding the Zeno name with deep civic veneration among ordinary citizens. Her selfless charity and tender domestic administration sustained family prosperity through turbulent years, providing her children and dependents with an unshakeable haven of spiritual peace and unconditional affection. Her unyielding domestic discipline, boundless Christian charity, and strategic household management make Lady Maria the formidable domestic anchor securing the prosperous Zeno palaces. Her delicate smiles, sweet innocence, and gentle demeanor illuminate the great stone halls with perpetual warmth, joy, and peace. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain immaculate domestic order and abundant supplies across all family properties in Venice.",
+    "Pursue charitable works to soften political rivalries and earn spiritual grace and civic popularity."
+  ],
+  "Values": [
+    "Christian compassion, personal modesty, and prudent household stewardship above all worldly vanity.",
+    "Protective care for dependents, institutional order, and unbending fidelity to family continuity."
+  ],
+  "Fears": [
+    "Epidemics carried by merchant vessels spreading rapidly through the crowded lagoon city.",
+    "Loved ones perishing in shipwrecks or naval actions across the Levant without a Christian grave."
+  ],
+  "SpeechStyle": "Speaks with gentle patrician poise, articulate administrative clarity, and sincere maternal warmth. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

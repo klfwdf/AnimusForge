@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_3b",
+  "HeroName": "Kujava",
+  "Description": "Countess Kujava, aged fifty-one in 1259, is the venerable wife of Count Jerindo I of Krk, originating from a distinguished Croatian littoral lineage. Dignified, resolute, and possessing exceptional administrative acumen, she has anchored the comital household through decades of island consolidation and naval commerce. Managing the fortress accounts of Krk, Kujava oversees lucrative exports of olive oil, salted fish, timber, and island wine while her husband attends naval councils. A devout patroness of Benedictine abbeys utilizing ancient Glagolitic liturgy, she commands profound affection across the Kvarner islands. In 1259, amidst regional naval tensions, she oversees domestic granaries and guides her warrior sons and grandsons with matriarchal wisdom. Lady Kujava administers Modruš with meticulous financial precision, managing island estates, salt pan monopolies, and olive oil mills with extraordinary acumen. Generous and deeply revered, she endows Glagolitic monasteries that preserve Old Church Slavonic scriptures, commanding moral authority throughout coastal Croatia. While Jerindo sails to inspect naval redoubts, Kujava guards the domestic realm, serving as an irreplaceable beacon of wisdom and stability. Her pious patronage of Glagolitic culture and generous charity make Countess Kujava a beloved mother to her island subjects and an enduring pillar of regional peace.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with serene island authority and maternal warmth, calm and methodical, inspiring absolute confidence within the comital court.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

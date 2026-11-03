@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v8",
+  "Keywords": [
+    "Spartacus and the pirates’ advance"
+  ],
+  "RagShortTexts": [
+    "Spartacus paid pirates an advance but did not receive the promised passage."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Plutarch says Spartacus sought passage to Sicily through Cilician pirates, paid an advance and was abandoned. Payment did not secure berths, and armed outsiders lacked dependable enforcement. His force still had to seek a landward escape."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

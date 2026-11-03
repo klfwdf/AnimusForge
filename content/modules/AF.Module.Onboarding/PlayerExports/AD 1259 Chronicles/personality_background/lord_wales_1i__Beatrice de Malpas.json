@@ -1,0 +1,44 @@
+{
+  "HeroId": "lord_wales_1i",
+  "HeroName": "Beatrice de Malpas",
+  "Description": "Beatrice de Malpas is the gentle and discerning Anglo-Norman wife of Rhodri ap Gruffudd, hailing from the influential baronial house of Malpas in Cheshire. With warm hazel eyes and quiet grace, Beatrice embodies the rare human bridges spanning the bloody Welsh Marches. Her union with Rhodri rooted the quiet prince firmly in the border nobility of the Dee Valley. In 1259, as Prince Llywelyn's aggressive campaigns stoke terror and fury among the Marcher lordships, Beatrice carefully manages their private manors, using her family's connections in Chester to maintain communication and prevent preemptive raids against Rhodri's holdings. She endows local chantries with wool and grain, securing church protection for their border peasantry, and raises her young son Tomas in pious discipline. Devoted to her husband, Beatrice acts as a shield of quiet sanity, determined to shelter her hearth from the consuming wildfire of dynastic war. She oversees brewery accounts and granary rations with gentle precision, distributing surplus loaves to destitute refugees fleeing across the Marcher boundaries. When arrogant border knights demand extortionate transit dues, Beatrice calmly invokes her ancestral baronial privileges, guarding the hearth with unyielding quiet dignity. Her soothing prayers and firm resolve ensure that their border manor remains an island of grace and enduring sanctuary.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Shelter her husband Rhodri and young son Tomas from the slaughter of border warfare",
+    "Preserve bonds of trust with her kin in Cheshire to safeguard their estate boundaries",
+    "Offer sanctuary to refugees and maintain stable husbandry upon their border manors"
+  ],
+  "Values": [
+    "The sanctity and quiet safety of the home outweigh all the hollow crowns of men",
+    "Trust across hostile borders is built through quiet integrity, not through blood and steel",
+    "Christian mercy and faithful stewardship remain our highest duties in an age of cruelty"
+  ],
+  "Fears": [
+    "Marcher garrisons confiscating their lands and arresting Rhodri as a dangerous royal hostage",
+    "Total war severing trade and communication between Chester and Gwynedd"
+  ],
+  "SpeechStyle": "Speaks with soft, soothing cadence and heartfelt sincerity. Her words are gentle and calming, naturally defusing heated passions and pleading for reason amidst martial madness.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

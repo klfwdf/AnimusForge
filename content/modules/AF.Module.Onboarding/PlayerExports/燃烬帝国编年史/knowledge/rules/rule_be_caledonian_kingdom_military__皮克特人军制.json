@@ -1,0 +1,59 @@
+{
+  "Id": "be_caledonian_kingdom_military",
+  "Keywords": [
+    "皮克特人军制",
+    "皮克特山地与沿岸作战"
+  ],
+  "RagShortTexts": [
+    "山地与湿地便利分散行动。",
+    "沿岸战争依赖船只、天气和安全返乡路。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "山地与湿地便利分散行动，沿岸航行受风潮和泊地限制。对罗马战争需要警报、粮储和返乡路线，不能让所有守卫同时南下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "山地与湿地便利分散行动。这些力量在路上仍受饮食、休息和负重限制，先锋速度不能代表全队。沿岸战争依赖船只、天气和安全返乡路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "沿岸战争依赖船只、天气和安全返乡路。可用兵力要连同供给、留守和撤离能力计算，集中一侧会减少另一侧预备。山地与湿地便利分散行动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "山地与湿地便利分散行动。出战者来自家户，长期失去劳力或牲畜会减少下一次供役能力。沿岸战争依赖船只、天气和安全返乡路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "沿岸战争依赖船只、天气和安全返乡路。修器具、搬运和照护也消耗人手，军队经过后仍要维持日常供应。山地与湿地便利分散行动。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

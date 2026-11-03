@@ -1,0 +1,59 @@
+{
+  "Id": "be_sabir_kingdom_geopolitics",
+  "Keywords": [
+    "Sabirs Frontiers",
+    "Sabir pastoral water routes"
+  ],
+  "RagShortTexts": [
+    "Water, crossings and permitted camps direct Sabir movement.",
+    "Riders and household herds pass roads at different speeds."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Water, crossings and permitted camps determine movement. Riders travel quickly but dependants and herds need more time to pass."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Water, crossings and permitted camps direct Sabir movement. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Riders and household herds pass roads at different speeds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Riders and household herds pass roads at different speeds. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Water, crossings and permitted camps direct Sabir movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Water, crossings and permitted camps direct Sabir movement. Closed routes may separate families from goods, imposing costs on those remaining at home. Riders and household herds pass roads at different speeds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Riders and household herds pass roads at different speeds. Cargo passes different carriers, making distant route changes become local shortages through delay. Water, crossings and permitted camps direct Sabir movement."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

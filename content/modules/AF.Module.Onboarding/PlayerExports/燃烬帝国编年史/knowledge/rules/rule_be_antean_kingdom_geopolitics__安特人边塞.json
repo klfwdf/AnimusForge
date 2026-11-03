@@ -1,0 +1,59 @@
+{
+  "Id": "be_antean_kingdom_geopolitics",
+  "Keywords": [
+    "安特人边塞",
+    "安特林草渡口"
+  ],
+  "RagShortTexts": [
+    "萨鲁姆的林草交界道路经过湿地和渡口。",
+    "林中支路给村落保留转移空间。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "林草交界的河流与湿地把道路压到较少渡口，开阔地便于骑兵逼近，林中支路则让村落保有转移空间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "萨鲁姆的林草交界道路经过湿地和渡口。行路者与守卫接触的是具体岸段、入口和停留地，前方可走也不保证回程仍通。林中支路给村落保留转移空间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "林中支路给村落保留转移空间。通行关系需要有人真正护住相接的路段，领地相邻不代表担保范围相同。萨鲁姆的林草交界道路经过湿地和渡口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "萨鲁姆的林草交界道路经过湿地和渡口。路被封时家人和物产未必能一同转移，留守者承担的代价也要计算。林中支路给村落保留转移空间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "林中支路给村落保留转移空间。来货经过不同承运者，换运和等候会使远处的道路变化成为本地缺货。萨鲁姆的林草交界道路经过湿地和渡口。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

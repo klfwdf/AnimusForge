@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v9",
+  "Keywords": [
+    "Gothic households and religious difference"
+  ],
+  "RagShortTexts": [
+    "Shared residence and language did not ensure one faith in Gothic households."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Teaching among Gothic communities could produce differing commitments within households and intervention by chiefs. Shared language and residence did not ensure one faith. Ritual participation, instruction and military obligation were separate relations."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

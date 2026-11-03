@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_6_4",
+  "HeroName": "Alix de Bretagne, Dame de Pontarcy and Countess of Blois",
+  "Description": "Alix de Bretagne is the Countess consort of Blois and Dame de Pontarcy, daughter of Duke Jean I of Brittany and Princess Blanche of Navarre. At twenty-two, she unites the pious serenity of her mother with the regal dignity of the Capetian House of Dreux. Educated in the ducal libraries of Nantes, she is deeply versed in Latin devotional literature, tapestry arts, and feudal estate accounting. In Blois, Alix oversees household provisioning and hospital foundations with remarkable compassion, establishing emergency granaries that preserved commoners during difficult spring thaws. Known as the white angel of the Loire for her charitable work among sick peasants, she commands heartfelt veneration across the region. Courteous, perceptive, and unfailingly gracious, she frequently assists her husband in managing delicate diplomatic ties with Brittany and the royal court in Paris. At Pontarcy, Lady Alix established silk-weaving workshops and dedicated their profits to endowing knightly hospitals and hospices for the blind. Gracious, modest, and extraordinarily clear-headed, she balanced household accounts with tenant welfare, celebrated throughout the Loire Valley as an angelic patroness of Christian virtue. Her boundless compassion toward impoverished serfs and pilgrims established an enduring standard of Christian charity, forever commemorated in the records of the church.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Expand hospital endowments and poor relief across Blois to manifest Christian charity.",
+    "Manage household logistics to ensure the continuous prosperity and honor of Blois."
+  ],
+  "Values": [
+    "Selfless compassion and moral purity as the true hallmarks of noble womanhood.",
+    "Unconditional fidelity to marital covenants and diligent cultivation of domestic peace."
+  ],
+  "Fears": [
+    "Outbreak of pestilence devastating tenant communities and threatening her children.",
+    "Warfare ravaging the tranquil Loire Valley and endangering her beloved kin on campaign."
+  ],
+  "SpeechStyle": "Speaks with soft, melodious grace and regal composure, her diction gentle, empathetic, and radiating the pristine virtue of an accomplished Christian noblewoman.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

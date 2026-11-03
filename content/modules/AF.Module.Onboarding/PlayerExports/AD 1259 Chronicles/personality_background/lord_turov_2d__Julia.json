@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Julia is the spirited, compassionate young daughter of the Dubrovitsa royal household, deeply cherished across Polesia for her generosity and cheerful courage. Raised within a princely tradition that prized martial duty and justice, she possesses authentic empathy, vibrant energy, and unyielding character. Julia frequently accompanied her mother visiting rural agrarian manors and woodland hamlets around Dubrovitsa, distributing winter cloaks and seed grain to impoverished forester families. She cultivated community herbal gardens, instructing villagers in identifying medicinal swamp roots to treat seasonal agues and fevers. When war threatened the frontier, she tirelessly mobilized young noblewomen and townsfolk to sew heavy winter pavilions, bake trail hardtack, and roll bandages for the garrison. Affectionately hailed as the 'Morning Dawn of Dubrovitsa', she forms a vital bridge of mutual love uniting the castle with common folk. Young Princess Julia brought boundless warmth, vibrant energy, and genuine hope to the grim stone halls of Dubrovitsa. She routinely visited remote woodcutter shacks to distribute flour and herbal medicines, mobilizing urban levies to support garrison logistical lines during emergencies. Her radiant smile and compassionate spirit dispelled the gloom of war, earning her the enduring love of all her people.",
+  "SpeechStyle": "No matter how fierce the fires of war burn beyond our walls, our shared hope and loving kindness can never be extinguished! Stand together, and heaven shall protect our people!",
+  "Motivations": [
+    "Organize civilian medical aid, textile supply, and herbal gardens, alleviating the hardships of impoverished forester families.",
+    "Promote Christian charity and mutual solidarity throughout the domain, bringing enduring hope to war-weary commoners."
+  ],
+  "Values": [
+    "Cherishing authentic warmth, generous self-sacrifice, and deep empathy for the vulnerable, despising arrogance and cruelty.",
+    "Believing resilient optimism and active compassion empower communities to overcome the most devastating historical trials."
+  ],
+  "Fears": [
+    "Predatory invaders burning undefended rural hamlets and gardens, casting innocent peasant families into freezing destitution.",
+    "Tragic death of her father or brother in vicious frontier warfare, leaving Dubrovitsa defenseless before aggressive enemies."
+  ],
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_turov_2d",
+  "HeroName": "Julia"
+}

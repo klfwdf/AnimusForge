@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_desert_monasticism_v10",
+  "Keywords": [
+    "沙漠圣者故事的听众"
+  ],
+  "RagShortTexts": [
+    "圣者声望经访客传播，不等于官署职权或必然治愈。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "围绕沙漠长老，来访者传播苦行与神迹故事，听众可能求教、求安慰或怀疑。修士的声望由这样的接触扩展；声望却不等于拥有官署司法权，信众的神迹叙述也不保证每位求助者都会痊愈。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

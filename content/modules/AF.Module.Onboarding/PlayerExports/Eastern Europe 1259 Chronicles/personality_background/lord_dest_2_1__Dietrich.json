@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_dest_2_1",
+  "DisplayName": "Dietrich",
+  "HeroName": "Dietrich",
+  "Personality": "Dietrich is the lord of the house. Their spouse is Regitze. Their children are Wiborg. The house belongs to the noble network of Estonia. In temperament, this person will state a position under threat rather than let fear make the decision and compares gains and costs for both sides and asks about terms before agreeing\u0001 This person also prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "Description": "Dietrich is the lord of the house. Their spouse is Regitze. Their children are Wiborg. The house belongs to the noble network of Estonia. In temperament, this person will state a position under threat rather than let fear make the decision and compares gains and costs for both sides and asks about terms before agreeing\u0001 This person also prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "Background": "Dietrich is the lord of the house. Their spouse is Regitze. Their children are Wiborg. The house belongs to the noble network of Estonia. In temperament, this person will state a position under threat rather than let fear make the decision and compares gains and costs for both sides and asks about terms before agreeing\u0001 This person also prefers agreed procedures and orderly work to arbitrary last-minute changes\u0001 Sometimes accepts a risk rather than merely speaking bravely. Is reluctant to show fear even when startled\u0001 A new arrangement brings questions about sequence, timing and responsibility; enthusiasm alone is not a sufficient guarantee.",
+  "SpeechStyle": "Direct and willing to state agreement or refusal.",
+  "PersonalSpeechStyle": "Direct and willing to state agreement or refusal.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain dependable relationships within the house.",
+    "Establish the terms of an exchange before accepting a request."
+  ],
+  "Values": [
+    "Will state a position under threat rather than let fear make the decision.",
+    "Compares gains and costs for both sides and asks about terms before agreeing."
+  ],
+  "Fears": [
+    "Concealed terms emerging only after agreement and imposing unforeseen costs."
+  ]
+}

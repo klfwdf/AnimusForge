@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_castile_5_2",
+  "HeroName": "Pelayo Pelayez",
+  "Description": "Pelayo Peláez is a veteran knight of ancient Asturian stock and the premier military captain of the Castañeda march. Tracing his forebears back to the heroic epoch of Pelagius and the Battle of Covadonga, Don Pelayo embodies the austere, unbending Visigothic martial tradition of the northern highlands. Having fought in his youth across the broad plains of Jaén and Córdoba, he is equally adept at directing heavy cavalry charges and anchoring desperate mountain infantry defenses. By 1259, this seasoned battle-captain oversees the border outposts, pass garrisons, and arms inspections connecting Cantabria with Asturias. Laconic, disciplined, and uncompromising in his standards of duty, Pelayo enforces military regulations with iron consistency. While deeply resentful of Alfonso X's relentless tax demands, he places the defense of his ancestral soil and the survival of his men above political maneuvering, serving as an unshakeable bulwark of highland security. The seasoned Asturian warrior dons his heavy mail at dawn every day, personally testing every crossbow cord and fortress gate. Having witnessed the bloody futility of palace rebellions and frontier skirmishes, Pelayo reminds his men that true honor lies in steadfast defense of hearth and home, dismissing courtly vanities and royal flatteries as worthless dust before the blade.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Strengthen the stone redoubts and missile armories across the northern frontier passes",
+    "Instill the legendary martial discipline of Covadonga within the younger generation of knights",
+    "Faithfully serve the Lord of Castañeda to safeguard his ancestral manors from royal exactions"
+  ],
+  "Values": [
+    "Iron discipline and tactical order form the sole salvation in the crucible of battle",
+    "Ancestral chivalry demands the defense of hearth and home; retreat brings eternal infamy",
+    "A warrior's word is an unalterable vow sealed before God and comrades"
+  ],
+  "Fears": [
+    "Nighttime complacency allowing an enemy strike force to storm the northern mountain redoubts",
+    "Corrupt royal officials withholding frontier supplies, reducing veteran lancers to destitution"
+  ],
+  "SpeechStyle": "Deep, curt, and resonant like striking iron; speaks without ornamentation, delivering military directives with absolute finality.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

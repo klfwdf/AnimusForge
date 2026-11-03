@@ -3,6 +3,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperUiText.cs" Link="Production/DeveloperUiText.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/PromptLanguage.cs" Link="PromptLanguage.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Localization/BilingualTextTable.cs" Link="BilingualTextTable.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Records/AdapterRecordTexts.cs" Link="Production/AdapterRecordTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Memory/Runtime/MemoryTextResources.cs" Link="Production/MemoryTextResources.cs" />
     <Compile Include="../../../../src/AF.Persistence/AnimusForgeModulePaths.cs" Link="Production/AnimusForgeModulePaths.cs" />

@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Royal_Bahri_Mamluk_Imperial_Guard",
+  "Keywords": [
+    "Royal Bahri Mamluk Elite",
+    "Kipchak Turkic Slave Cavalry",
+    "Rawda Island Nile Barracks",
+    "Composite Recurve Bow and Heavy Lance"
+  ],
+  "RagShortTexts": [
+    "The Bahri Mamluks of Cairo's Rawda Island combined nomadic composite archery with armored."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Bahri Mamluks formed the iron backbone of the Sultanate of Cairo. Boys bought as captives from the Kipchak steppe were trained in horsemanship and the martial arts known as furusiyya, usually on Rawda Island in the Nile. Their armour was fine mail and lamellar, and their weapons combined rapid composite archery with disciplined lance charges. Service in the Bahri barracks gave a man a career that could lead to command of the army and even to the throne. The corps stood apart from the Egyptian population, so its loyalty ran to the sultan and to the barracks rather than to the land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Qutuz and Baibars rose through the Bahri ranks by merit and ruthless steel. The brotherhood rejected hereditary claims and raised its most capable commanders to the sultanate. A Cairene emir who wanted office had to keep his own mamluks loyal, because the next revolt could come from the barracks as easily as from the palace."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "On the practice grounds outside Cairo, Bahri troopers loose three arrows at full gallop into an iron helm without breaking stride. Their armoured wedges crash into ill-disciplined levies and break them apart. A raw recruit learns that speed with the bow matters more than strength, and that a moment of hesitation in the charge can cost him his horse."
+    }
+  ],
+  "TextMappings": []
+}

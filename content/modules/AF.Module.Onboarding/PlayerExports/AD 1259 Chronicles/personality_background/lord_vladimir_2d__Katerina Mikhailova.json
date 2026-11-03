@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Katerina Mikhailova, daughter of Mikhail Khorobrit, is a revered noblewoman renowned across Moscow and Vladimir for sublime Christian charity. Raised in an environment of heroic memory and contemplative Orthodox devotion, she dedicated her life to comforting the afflicted and healing the wounded. Katerina founded monastic dispensaries and almshouses outside the Moscow palisades, providing perpetual sanctuary for war orphans, lepers, and crippled veterans. She personally directed the weaving of warm garments and compounding of herbal medicines, distributing food to impoverished refugees during harsh winter freezes. Free from political ambition, she commanded saintly moral reverence among the populace, often arbitrating communal disputes with gentle impartiality. Her selfless philanthropy and radiating compassion served as a spiritual anchor of hope, inspiring deep civic affection across early Moscow.  Princess Katerina dedicated her personal wealth to founding permanent clinics and orphanages, distributing food to the destitute and comforting wounded warriors as a cherished patroness of early Moscow.  Her active benevolence, charitable medical dispensaries, and selfless distribution of warm clothing and food during freezing winter blockades transformed her into an enduring light of Christian hope and healing, deeply cherished by the early citizens of Moscow.  Her gentle mercy brought divine solace to countless suffering souls.",
+  "SpeechStyle": "Our war-torn land needs warrior shields, but it also desperately needs the healing balm of holy love. In the deepest freeze of winter, God's light shines through active compassion. Peace be with every troubled soul!",
+  "Motivations": [
+    "Establish municipal clinics and orphanages across Moscow and Vladimir to shelter displaced families and war victims.",
+    "Fund parish churches and sacred iconography to cultivate spiritual comfort and Christian compassion across the realm."
+  ],
+  "Values": [
+    "Treasure selfless Christian charity, humble generosity, and active mercy as the supreme callings of mortal life.",
+    "Prize quiet humility, peaceable speech, and moral purity over worldly prestige and factional intrigue."
+  ],
+  "Fears": [
+    "Fear infectious outbreaks ravaging crowded refugee hospices, claiming the lives of the most vulnerable citizens.",
+    "Dread marauding soldiers sacking monastic sanctuaries and slaughtering innocent orphans under her care."
+  ],
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_vladimir_2d",
+  "HeroName": "Katerina Mikhailova"
+}

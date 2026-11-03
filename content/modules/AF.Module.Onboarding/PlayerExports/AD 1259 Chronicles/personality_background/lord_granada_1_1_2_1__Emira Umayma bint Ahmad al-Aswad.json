@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_1_1_2_1",
+  "HeroName": "Emira Umayma bint Ahmad al-Aswad",
+  "Description": "Emira Umayma bint Ahmad al-Aswad is the noble consort of Crown Prince Muhammad al-Faqih, flourishing at nineteen years of age. Descending from the prominent Banu al-Aswad lineage of the southwestern coastal marches, her marriage cemented royal ties with influential Andalusian families. Highly educated in classical poetry, Andalusian botany, and Islamic architectural aesthetics, Umayma actively directed the layout of medicinal herb gardens and courtyard fountain channels within the Alhambra. Demure, perceptive, and unfailingly supportive of her husband's intense administrative obligations, she oversees the private household accounts with quiet efficiency. Her graceful composure and serene piety have earned the deep respect and affection of Sultan Muhammad I and Queen Aisha. Her exquisite courtly polish, botanical intellect, and serene domestic leadership provide an unshakeable haven of peace within the Alhambra, cementing Dona Umayma as a beloved exemplar of Andalusian high nobility. Her refined cultural elegance, delicate garden stewardship, and quiet moral poise establish Dona Umayma as a beloved matriarch whose serene presence ennobles the nascent Alhambra court. Her serene piety, cultured intellect, and gracious hospitality ensure that Dona Umayma remains widely celebrated as an angelic symbol of noble Andalusian virtue, royal compassion, and timeless courtly grace.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To cultivate a serene, harmonious refuge within the Alhambra, easing her husband's burdens.",
+    "To nurture her young son, safeguarding the future succession of the Nasrid dynasty."
+  ],
+  "Values": [
+    "Serenity, modesty, and deep wisdom are the truest adornments of noble womanhood.",
+    "Courtyard waters and flourishing flora reflect the paradise promised by divine mercy."
+  ],
+  "Fears": [
+    "Venomous court factions or assassination plots endangering her husband and child.",
+    "Ravages of siege warfare destroying the peaceful gardens of the Alhambra."
+  ],
+  "SpeechStyle": "Speaks with soft, musical composure and poetic grace, exuding tranquil dignity and quiet intelligence. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

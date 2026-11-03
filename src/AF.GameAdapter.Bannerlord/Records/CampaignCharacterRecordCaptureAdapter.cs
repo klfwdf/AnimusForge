@@ -416,23 +416,23 @@ internal static string BuildTournamentParticipantActionText(string settlementDis
 		StringBuilder stringBuilder = new StringBuilder();
 		if (isChampion)
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0007")).Append(settlementDisplayName).Append(AdapterRecordTexts.Raw("AF_REC_Character_0008")).Append(championName).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Character_0007")).Append(settlementDisplayName).Append(AdapterRecordTexts.W("AF_REC_Character_0008")).Append(championName).Append(AdapterRecordTexts.Period);
 		}
 		else
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0009")).Append(settlementDisplayName).Append(AdapterRecordTexts.Raw("AF_REC_Character_0010")).Append(championName).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Character_0009")).Append(settlementDisplayName).Append(AdapterRecordTexts.W("AF_REC_Character_0010")).Append(championName).Append(AdapterRecordTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(tournamentRankLabel))
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0011")).Append(tournamentRankLabel.Trim()).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Character_0011")).Append(tournamentRankLabel.Trim()).Append(AdapterRecordTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(prizeDisplayName))
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0012")).Append(prizeDisplayName.Trim()).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Character_0012")).Append(prizeDisplayName.Trim()).Append(AdapterRecordTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(participantSummary))
 		{
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0013")).Append(participantSummary.Trim()).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Character_0013")).Append(participantSummary.Trim()).Append(AdapterRecordTexts.Period);
 		}
 		return stringBuilder.ToString();
 	}
@@ -530,7 +530,7 @@ internal static string BuildTournamentEliminationRankLabel(int furthestRoundInde
 		{
 			return AdapterRecordTexts.Raw("AF_REC_Character_0018");
 		}
-		return AdapterRecordTexts.Raw("AF_REC_Character_0019") + num3 + AdapterRecordTexts.Raw("AF_REC_Character_0020");
+		return AdapterRecordTexts.W("AF_REC_Character_0019") + num3 + AdapterRecordTexts.W("AF_REC_Character_0020");
 	}
 
 internal static Kingdom ResolveTournamentHostKingdom(Town town)
@@ -597,7 +597,7 @@ internal static string BuildTournamentWinnerStatusText(CharacterObject winner)
 		string kingdomDisplayName = GetKingdomDisplayName(kingdom, AdapterRecordTexts.Raw("AF_REC_Character_0023"));
 		int num = Math.Max(0, clan.Tier);
 		string clanTierReputationLabel = GetClanTierReputationLabel(num);
-		return AdapterRecordTexts.Raw("AF_REC_Character_0024") + clanDisplayName + AdapterRecordTexts.Raw("AF_REC_Character_0025") + kingdomDisplayName + AdapterRecordTexts.Raw("AF_REC_Character_0026") + clanTierReputationLabel + "（" + num + " level）。";
+		return AdapterRecordTexts.W("AF_REC_Character_0024") + clanDisplayName + AdapterRecordTexts.W("AF_REC_Character_0025") + kingdomDisplayName + AdapterRecordTexts.W("AF_REC_Character_0026") + clanTierReputationLabel + AdapterRecordTexts.OpenParen + num + " level" + AdapterRecordTexts.CloseParen + AdapterRecordTexts.Period;
 	}
 
 internal static string BuildTournamentCharacterRoleSuffix(CharacterObject character)
@@ -690,9 +690,9 @@ internal static string BuildTournamentParticipantSummary(MBReadOnlyList<Characte
 		{
 			string text7 = list[i];
 			int num = list2[i];
-			list3.Add(num > 1 ? (text7 + "×" + num) : text7);
+			list3.Add(num > 1 ? (text7 + " x" + num) : text7);
 		}
-		return string.Join("、", list3);
+		return string.Join(AdapterRecordTexts.ListSeparator, list3);
 	}
 
 internal static string GetTournamentPrizeDisplayName(ItemObject prize)
@@ -790,22 +790,22 @@ internal void OnTournamentFinished(CharacterObject winner, MBReadOnlyList<Charac
 			string participantSummary = BuildTournamentParticipantSummary(participants, winner);
 			Dictionary<string, string> tournamentParticipantRankLabels = BuildTournamentParticipantRankLabels(winner, town);
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append(settlementDisplayName).Append(AdapterRecordTexts.Raw("AF_REC_Character_0041")).Append(kingdomDisplayName).Append("。");
-			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0042")).Append(winnerDisplayName).Append(BuildTournamentCharacterRoleSuffix(winner)).Append("。");
+			stringBuilder.Append(settlementDisplayName).Append(AdapterRecordTexts.W("AF_REC_Character_0041")).Append(kingdomDisplayName).Append(AdapterRecordTexts.Period);
+			stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Character_0042")).Append(winnerDisplayName).Append(BuildTournamentCharacterRoleSuffix(winner)).Append(AdapterRecordTexts.Period);
 			if (!string.IsNullOrWhiteSpace(winnerStatusText))
 			{
 				stringBuilder.Append(" ").Append(winnerStatusText);
 			}
 			if (!string.IsNullOrWhiteSpace(prizeDisplayName))
 			{
-				stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0043")).Append(prizeDisplayName).Append("。");
+				stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Character_0043")).Append(prizeDisplayName).Append(AdapterRecordTexts.Period);
 			}
 			if (!string.IsNullOrWhiteSpace(participantSummary))
 			{
-				stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0044")).Append(participantSummary).Append("。");
+				stringBuilder.Append(AdapterRecordTexts.W("AF_REC_Character_0044")).Append(participantSummary).Append(AdapterRecordTexts.Period);
 			}
 			string stableKey = "tournament_finished:" + settlementId + ":" + GetCurrentGameDayIndexSafe() + ":" + GetTournamentCharacterId(winner) + ":" + ((prize?.StringId ?? "").Trim());
-			RecordEventSourceMaterial("tournament_finished", AdapterRecordTexts.Raw("AF_REC_Character_0045") + settlementDisplayName, stringBuilder.ToString(), stableKey, kingdomId, settlementId, includeInWorld: false, includeInKingdom: true, GetTournamentHeroId(winner), GetKingdomId(GetTournamentHero(winner)?.MapFaction));
+			RecordEventSourceMaterial("tournament_finished", AdapterRecordTexts.W("AF_REC_Character_0045") + settlementDisplayName, stringBuilder.ToString(), stableKey, kingdomId, settlementId, includeInWorld: false, includeInKingdom: true, GetTournamentHeroId(winner), GetKingdomId(GetTournamentHero(winner)?.MapFaction));
 			RecordTournamentParticipantNpcActions(winner, participants, town, settlementDisplayName, prizeDisplayName, participantSummary, tournamentParticipantRankLabels, stableKey);
 		}
 		catch (Exception ex)
@@ -863,7 +863,7 @@ internal void RecordExternalNpcAction(Hero actorHero, string text, string stable
 
 internal void RecordExternalPlayerAction(string text, string stableKey, string actionKind, bool isMajor, Hero targetHero, Settlement settlement, string locationText, bool? won)
 	{
-		string cleanText = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		string cleanText = AdapterRecordTexts.Tidy((text ?? "").Replace("\r", " ").Replace("\n", " ").Trim());
 		if (string.IsNullOrWhiteSpace(cleanText))
 		{
 			return;
@@ -952,11 +952,12 @@ internal void RecordEventSourceMaterial(string materialKind, string label, strin
 		string text = isPlayerMaterial
 			? PlayerNotorietyBehavior.RenderPlayerHistoryMaterialForExternal(snapshotText)
 			: PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(snapshotText);
-		text = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		text = AdapterRecordTexts.Tidy((text ?? "").Replace("\r", " ").Replace("\n", " ").Trim());
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return;
 		}
+		label = AdapterRecordTexts.Tidy(label);
         int day = dayOverride >= 0 ? dayOverride : GetCurrentGameDayIndexSafe();
         _campaignMaterialRecords.Record(new EventSourceMaterialEntry {
             Day = day,
@@ -979,6 +980,7 @@ internal void RecordNpcActionInternal(Dictionary<string, List<NpcActionEntry>> s
 			{
 				return;
 			}
+			text = AdapterRecordTexts.Tidy(text);
 			if (hero == Hero.MainHero)
 			{
 				RecordPlayerNotorietyActionFromNpcAction(text, stableKey, facts, isMajor);
@@ -1385,9 +1387,9 @@ internal static string BuildExecutedVictimActionText(Hero killer, KillCharacterA
 		}
 		if (detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent)
 		{
-			return AdapterRecordTexts.Raw("AF_REC_Character_0063") + killerName + AdapterRecordTexts.Raw("AF_REC_Character_0064");
+			return AdapterRecordTexts.W("AF_REC_Character_0063") + killerName + AdapterRecordTexts.W("AF_REC_Character_0064");
 		}
-		return AdapterRecordTexts.Raw("AF_REC_Character_0065") + killerName + AdapterRecordTexts.Raw("AF_REC_Character_0066");
+		return AdapterRecordTexts.W("AF_REC_Character_0065") + killerName + AdapterRecordTexts.W("AF_REC_Character_0066");
 	}
 
 internal static VengeanceExecutionFacts ResolvePublicExecutionFacts(Hero victim, KillCharacterAction.KillCharacterActionDetail detail)
@@ -1409,36 +1411,48 @@ internal static VengeanceExecutionFacts ResolvePublicExecutionFacts(Hero victim,
 internal static string BuildPublicExecutionVenueText(VengeanceExecutionFacts facts)
 	{
 		string venue = GetSettlementDisplayName(facts?.Venue);
-		return string.IsNullOrWhiteSpace(venue) || string.Equals(venue, AdapterRecordTexts.Raw("AF_REC_Character_0067"), StringComparison.Ordinal) ? "" : AdapterRecordTexts.Raw("AF_REC_Character_0068") + venue.Trim();
+		return string.IsNullOrWhiteSpace(venue) || AdapterRecordTexts.EqualsRaw(venue, "AF_REC_Character_0067", StringComparison.Ordinal) ? "" : AdapterRecordTexts.W("AF_REC_Character_0068") + venue.Trim();
 	}
 
 internal static string BuildPublicExecutionMethodText(VengeanceExecutionFacts facts)
 	{
-		return string.IsNullOrWhiteSpace(facts?.MethodLabel) ? AdapterRecordTexts.Raw("AF_REC_Character_0069") : AdapterRecordTexts.Raw("AF_REC_Character_0070") + facts.MethodLabel + AdapterRecordTexts.Raw("AF_REC_Character_0071");
+		return string.IsNullOrWhiteSpace(facts?.MethodLabel) ? AdapterRecordTexts.W("AF_REC_Character_0069") : AdapterRecordTexts.W("AF_REC_Character_0070") + facts.MethodLabel + AdapterRecordTexts.W("AF_REC_Character_0071");
 	}
 
 internal static string BuildPublicExecutionChargeText(VengeanceExecutionFacts facts)
 	{
-		return string.IsNullOrWhiteSpace(facts?.ChargeLabel) ? "" : AdapterRecordTexts.Raw("AF_REC_Character_0072") + facts.ChargeLabel;
+		return string.IsNullOrWhiteSpace(facts?.ChargeLabel) ? "" : AdapterRecordTexts.W("AF_REC_Character_0072") + facts.ChargeLabel;
 	}
 
 internal static string BuildPublicExecutionKillerActionText(Hero victim, VengeanceExecutionFacts facts)
 	{
 		string victimName = GetHeroDisplayName(victim);
-		string how = facts.PlayerStruck ? AdapterRecordTexts.Raw("AF_REC_Character_0073") + BuildPublicExecutionMethodText(facts) : AdapterRecordTexts.Raw("AF_REC_Character_0074") + BuildPublicExecutionMethodText(facts);
-		return AdapterRecordTexts.Raw("AF_REC_Character_0075") + BuildPublicExecutionVenueText(facts) + how + AdapterRecordTexts.Raw("AF_REC_Character_0076") + victimName + BuildPublicExecutionChargeText(facts) + "。";
+		if (!PromptLanguage.IsChinese)
+		{
+			// English word order: actor, manner, verb, object, then place and charge.
+			string clause = facts.PlayerStruck
+				? AdapterRecordTexts.W("AF_REC_Character_0073") + BuildPublicExecutionMethodText(facts) + " " + victimName
+				: AdapterRecordTexts.W("AF_REC_Character_0074") + victimName + " " + BuildPublicExecutionMethodText(facts);
+			return AdapterRecordTexts.Tidy(AdapterRecordTexts.W("AF_REC_Character_0075") + clause + " " + BuildPublicExecutionVenueText(facts) + BuildPublicExecutionChargeText(facts) + AdapterRecordTexts.Period);
+		}
+		string how = facts.PlayerStruck ? AdapterRecordTexts.W("AF_REC_Character_0073") + BuildPublicExecutionMethodText(facts) : AdapterRecordTexts.W("AF_REC_Character_0074") + BuildPublicExecutionMethodText(facts);
+		return AdapterRecordTexts.W("AF_REC_Character_0075") + BuildPublicExecutionVenueText(facts) + how + AdapterRecordTexts.W("AF_REC_Character_0076") + victimName + BuildPublicExecutionChargeText(facts) + AdapterRecordTexts.Period;
 	}
 
 internal static string BuildPublicExecutionVictimActionText(Hero killer, VengeanceExecutionFacts facts)
 	{
-		string killerText = killer != null ? AdapterRecordTexts.Raw("AF_REC_Character_0077") + GetHeroDisplayName(killer) : AdapterRecordTexts.Raw("AF_REC_Character_0078");
-		return AdapterRecordTexts.Raw("AF_REC_Character_0079") + BuildPublicExecutionVenueText(facts) + killerText + BuildPublicExecutionMethodText(facts) + BuildPublicExecutionChargeText(facts) + "。";
+		string killerText = killer != null ? AdapterRecordTexts.W("AF_REC_Character_0077") + GetHeroDisplayName(killer) : AdapterRecordTexts.W("AF_REC_Character_0078");
+		if (!PromptLanguage.IsChinese)
+			return AdapterRecordTexts.Tidy(AdapterRecordTexts.W("AF_REC_Character_0079") + BuildPublicExecutionMethodText(facts) + " " + killerText + " " + BuildPublicExecutionVenueText(facts) + BuildPublicExecutionChargeText(facts) + AdapterRecordTexts.Period);
+		return AdapterRecordTexts.W("AF_REC_Character_0079") + BuildPublicExecutionVenueText(facts) + killerText + BuildPublicExecutionMethodText(facts) + BuildPublicExecutionChargeText(facts) + AdapterRecordTexts.Period;
 	}
 
 internal static string BuildPublicExecutionClanSuffix(Hero killer, VengeanceExecutionFacts facts)
 	{
-		string by = killer != null ? AdapterRecordTexts.Raw("AF_REC_Character_0080") + GetHeroDisplayName(killer) : "";
-		return AdapterRecordTexts.Raw("AF_REC_Character_0081") + BuildPublicExecutionVenueText(facts) + by + BuildPublicExecutionMethodText(facts) + BuildPublicExecutionChargeText(facts) + "。";
+		string by = killer != null ? AdapterRecordTexts.W("AF_REC_Character_0080") + GetHeroDisplayName(killer) : "";
+		if (!PromptLanguage.IsChinese)
+			return AdapterRecordTexts.Tidy(AdapterRecordTexts.W("AF_REC_Character_0081") + BuildPublicExecutionMethodText(facts) + " " + by + " " + BuildPublicExecutionVenueText(facts) + BuildPublicExecutionChargeText(facts) + AdapterRecordTexts.Period);
+		return AdapterRecordTexts.W("AF_REC_Character_0081") + BuildPublicExecutionVenueText(facts) + by + BuildPublicExecutionMethodText(facts) + BuildPublicExecutionChargeText(facts) + AdapterRecordTexts.Period;
 	}
 
 internal static Settlement ResolveHeroExecutionSettlement(Hero victim, Hero killer)
@@ -1467,7 +1481,7 @@ internal static Settlement ResolveHeroExecutionSettlement(Hero victim, Hero kill
 internal static string ResolveHeroExecutionLocationText(Settlement settlement, Hero victim, Hero killer)
 	{
 		string text = GetSettlementDisplayName(settlement);
-		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, AdapterRecordTexts.Raw("AF_REC_Character_0082"), StringComparison.Ordinal))
+		if (!string.IsNullOrWhiteSpace(text) && !AdapterRecordTexts.EqualsRaw(text, "AF_REC_Character_0082", StringComparison.Ordinal))
 		{
 			return text;
 		}
@@ -1487,15 +1501,15 @@ internal void OnBeforeHeroesMarried(Hero hero1, Hero hero2, bool showNotificatio
 			{
 				NpcActionFacts npcActionFacts = CreateNpcActionFacts("marriage", hero1);
 				ApplyTargetFacts(npcActionFacts, hero2);
-				RecordNpcMajorAction(hero1, AdapterRecordTexts.Raw("AF_REC_Character_0083") + GetHeroDisplayName(hero2) + AdapterRecordTexts.Raw("AF_REC_Character_0084"), text, npcActionFacts);
-				RecordNpcRecentAction(hero1, AdapterRecordTexts.Raw("AF_REC_Character_0085") + GetHeroDisplayName(hero2) + AdapterRecordTexts.Raw("AF_REC_Character_0086"), text, facts: npcActionFacts);
+				RecordNpcMajorAction(hero1, AdapterRecordTexts.W("AF_REC_Character_0083") + GetHeroDisplayName(hero2) + AdapterRecordTexts.W("AF_REC_Character_0084"), text, npcActionFacts);
+				RecordNpcRecentAction(hero1, AdapterRecordTexts.W("AF_REC_Character_0085") + GetHeroDisplayName(hero2) + AdapterRecordTexts.W("AF_REC_Character_0086"), text, facts: npcActionFacts);
 			}
 			if (ShouldTrackNpcActionHero(hero2))
 			{
 				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("marriage", hero2);
 				ApplyTargetFacts(npcActionFacts2, hero1);
-				RecordNpcMajorAction(hero2, AdapterRecordTexts.Raw("AF_REC_Character_0087") + GetHeroDisplayName(hero1) + AdapterRecordTexts.Raw("AF_REC_Character_0088"), text, npcActionFacts2);
-				RecordNpcRecentAction(hero2, AdapterRecordTexts.Raw("AF_REC_Character_0089") + GetHeroDisplayName(hero1) + AdapterRecordTexts.Raw("AF_REC_Character_0090"), text, facts: npcActionFacts2);
+				RecordNpcMajorAction(hero2, AdapterRecordTexts.W("AF_REC_Character_0087") + GetHeroDisplayName(hero1) + AdapterRecordTexts.W("AF_REC_Character_0088"), text, npcActionFacts2);
+				RecordNpcRecentAction(hero2, AdapterRecordTexts.W("AF_REC_Character_0089") + GetHeroDisplayName(hero1) + AdapterRecordTexts.W("AF_REC_Character_0090"), text, facts: npcActionFacts2);
 			}
 		}
 		catch (Exception ex)
@@ -1520,7 +1534,7 @@ internal void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCha
 				ApplyTargetFacts(npcActionFacts, victim);
 				string killerText = executionFacts != null
 					? BuildPublicExecutionKillerActionText(victim, executionFacts)
-					: AdapterRecordTexts.Raw("AF_REC_Character_0091") + GetHeroKilledVerb(detail) + GetHeroDisplayName(victim) + "。";
+					: AdapterRecordTexts.W("AF_REC_Character_0091") + GetHeroKilledVerb(detail) + GetHeroDisplayName(victim) + AdapterRecordTexts.Period;
 				RecordNpcMajorAction(killer, killerText, text + ":killer", npcActionFacts);
 				RecordNpcRecentAction(killer, killerText, text + ":killer", facts: npcActionFacts);
 			}
@@ -1540,7 +1554,7 @@ internal void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCha
 					AddUniqueId(npcActionFacts2.RelatedClanIds, GetClanId(killer.Clan));
 					AddUniqueId(npcActionFacts2.RelatedKingdomIds, GetKingdomId(killer.MapFaction));
 				}
-				string text2 = AdapterRecordTexts.Raw("AF_REC_Character_0092") + GetClanDisplayName(victim.Clan) + AdapterRecordTexts.Raw("AF_REC_Character_0093") + GetHeroDisplayName(victim) + "。";
+				string text2 = AdapterRecordTexts.W("AF_REC_Character_0092") + GetClanDisplayName(victim.Clan) + AdapterRecordTexts.W("AF_REC_Character_0093") + GetHeroDisplayName(victim) + AdapterRecordTexts.Period;
 				if (executionFacts != null)
 				{
 					text2 += BuildPublicExecutionClanSuffix(killer, executionFacts);
@@ -1614,7 +1628,7 @@ internal void RecordPlayerExecutionWeeklyMaterial(Hero victim, Hero killer, Kill
 			return;
 		}
 		string baseKey = "player_execution:" + NpcActionLedger.NormalizeStableKey(stablePrefix, GetHeroId(victim) + ":" + GetHeroId(killer) + ":" + detail);
-		string label = victim == player ? AdapterRecordTexts.Raw("AF_REC_Character_0094") + GetHeroDisplayName(killer) : AdapterRecordTexts.Raw("AF_REC_Character_0095") + GetHeroDisplayName(victim);
+		string label = victim == player ? AdapterRecordTexts.W("AF_REC_Character_0094") + GetHeroDisplayName(killer) : AdapterRecordTexts.W("AF_REC_Character_0095") + GetHeroDisplayName(victim);
 		RecordEventSourceMaterial(
 			"player_execution",
 			label,
@@ -1657,52 +1671,52 @@ internal static string BuildPlayerExecutionWeeklySnapshot(Hero victim, Hero kill
 		string victimClanName = GetClanDisplayName(victim?.Clan);
 		string killerClanName = GetClanDisplayName(killer?.Clan);
 		StringBuilder sb = new StringBuilder();
-		sb.Append(victim == player ? AdapterRecordTexts.Raw("AF_REC_Character_0098") : AdapterRecordTexts.Raw("AF_REC_Character_0099"));
+		sb.Append(victim == player ? AdapterRecordTexts.W("AF_REC_Character_0098") : AdapterRecordTexts.W("AF_REC_Character_0099"));
 		if (!string.IsNullOrWhiteSpace(gameDate))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0100")).Append(gameDate.Trim()).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0100")).Append(gameDate.Trim()).Append(AdapterRecordTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(locationText))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0101")).Append(locationText.Trim()).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0101")).Append(locationText.Trim()).Append(AdapterRecordTexts.Period);
 		}
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0102")).Append(killerName).Append("。");
-		if (!string.IsNullOrWhiteSpace(killerClanName) && !string.Equals(killerClanName, AdapterRecordTexts.Raw("AF_REC_Character_0103"), StringComparison.Ordinal))
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0102")).Append(killerName).Append(AdapterRecordTexts.Period);
+		if (!string.IsNullOrWhiteSpace(killerClanName) && !AdapterRecordTexts.EqualsRaw(killerClanName, "AF_REC_Character_0103", StringComparison.Ordinal))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0104")).Append(killerClanName).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0104")).Append(killerClanName).Append(AdapterRecordTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(killerKingdomName))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0105")).Append(killerKingdomName).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0105")).Append(killerKingdomName).Append(AdapterRecordTexts.Period);
 		}
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0106")).Append(victimName).Append("。");
-		if (!string.IsNullOrWhiteSpace(victimClanName) && !string.Equals(victimClanName, AdapterRecordTexts.Raw("AF_REC_Character_0107"), StringComparison.Ordinal))
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0106")).Append(victimName).Append(AdapterRecordTexts.Period);
+		if (!string.IsNullOrWhiteSpace(victimClanName) && !AdapterRecordTexts.EqualsRaw(victimClanName, "AF_REC_Character_0107", StringComparison.Ordinal))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0108")).Append(victimClanName).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0108")).Append(victimClanName).Append(AdapterRecordTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(victimKingdomName))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0109")).Append(victimKingdomName).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0109")).Append(victimKingdomName).Append(AdapterRecordTexts.Period);
 		}
 		if (executionFacts == null)
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0110")).Append(detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent ? AdapterRecordTexts.Raw("AF_REC_Character_0111") : AdapterRecordTexts.Raw("AF_REC_Character_0112")).Append("。");
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0113"));
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0110")).Append(detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent ? AdapterRecordTexts.W("AF_REC_Character_0111") : AdapterRecordTexts.W("AF_REC_Character_0112")).Append(AdapterRecordTexts.Period);
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0113"));
 			return PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 360);
 		}
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0114"));
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0114"));
 		if (!string.IsNullOrWhiteSpace(executionFacts.MethodLabel))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0115")).Append(executionFacts.MethodLabel).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0115")).Append(executionFacts.MethodLabel).Append(AdapterRecordTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(executionFacts.ChargeLabel))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0116")).Append(executionFacts.ChargeLabel).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0116")).Append(executionFacts.ChargeLabel).Append(AdapterRecordTexts.Period);
 		}
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0117")).Append(executionFacts.ToneLabel).Append("。");
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0118")).Append(executionFacts.LegitimacyLabel).Append("。");
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0119")).Append(executionFacts.PlayerStruck ? killerName + AdapterRecordTexts.Raw("AF_REC_Character_0120") : AdapterRecordTexts.Raw("AF_REC_Character_0121") + killerName + AdapterRecordTexts.Raw("AF_REC_Character_0122")).Append("。");
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0123"));
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0117")).Append(executionFacts.ToneLabel).Append(AdapterRecordTexts.Period);
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0118")).Append(executionFacts.LegitimacyLabel).Append(AdapterRecordTexts.Period);
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0119")).Append(executionFacts.PlayerStruck ? killerName + AdapterRecordTexts.W("AF_REC_Character_0120") : AdapterRecordTexts.W("AF_REC_Character_0121") + killerName + AdapterRecordTexts.W("AF_REC_Character_0122")).Append(AdapterRecordTexts.Period);
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0123"));
 		return PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 520);
 	}
 
@@ -1780,13 +1794,13 @@ internal void OnGivenBirth(Hero mother, List<Hero> aliveChildren, int stillbornC
 			string text2 = AdapterRecordTexts.Raw("AF_REC_Character_0124");
 			if (hero != null)
 			{
-				text2 = text2 + AdapterRecordTexts.Raw("AF_REC_Character_0125") + GetHeroDisplayName(hero);
+				text2 = text2 + AdapterRecordTexts.W("AF_REC_Character_0125") + GetHeroDisplayName(hero);
 			}
 			if (stillbornCount > 0)
 			{
-				text2 = text2 + AdapterRecordTexts.Raw("AF_REC_Character_0126") + stillbornCount + AdapterRecordTexts.Raw("AF_REC_Character_0127");
+				text2 = text2 + AdapterRecordTexts.W("AF_REC_Character_0126") + stillbornCount + AdapterRecordTexts.W("AF_REC_Character_0127");
 			}
-			text2 += "。";
+			text2 += AdapterRecordTexts.Period;
 			RecordNpcMajorAction(mother, text2, text, npcActionFacts);
 			RecordNpcRecentAction(mother, text2, text, facts: npcActionFacts);
 		}
@@ -1808,24 +1822,24 @@ internal void OnSettlementOwnerChanged(Settlement settlement, bool openToClaim, 
 				NpcActionFacts npcActionFacts = CreateNpcActionFacts("settlement_owner_changed_gain", newOwner);
 				ApplyTargetFacts(npcActionFacts, oldOwner);
 				ApplySettlementFacts(npcActionFacts, settlement, newOwner, oldOwner);
-				RecordNpcMajorAction(newOwner, AdapterRecordTexts.Raw("AF_REC_Character_0128") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0129") + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":gain", npcActionFacts);
-				RecordNpcRecentAction(newOwner, AdapterRecordTexts.Raw("AF_REC_Character_0130") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0131") + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":gain", facts: npcActionFacts);
+				RecordNpcMajorAction(newOwner, AdapterRecordTexts.W("AF_REC_Character_0128") + text2 + AdapterRecordTexts.W("AF_REC_Character_0129") + GetSettlementOwnerChangeDetailLabel(detail) + AdapterRecordTexts.CloseParen + AdapterRecordTexts.Period, text + ":gain", npcActionFacts);
+				RecordNpcRecentAction(newOwner, AdapterRecordTexts.W("AF_REC_Character_0130") + text2 + AdapterRecordTexts.W("AF_REC_Character_0131") + GetSettlementOwnerChangeDetailLabel(detail) + AdapterRecordTexts.CloseParen + AdapterRecordTexts.Period, text + ":gain", facts: npcActionFacts);
 			}
 			if (ShouldTrackNpcActionHero(oldOwner))
 			{
 				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("settlement_owner_changed_loss", oldOwner);
 				ApplyTargetFacts(npcActionFacts2, newOwner);
 				ApplySettlementFacts(npcActionFacts2, settlement, newOwner, oldOwner);
-				RecordNpcMajorAction(oldOwner, AdapterRecordTexts.Raw("AF_REC_Character_0132") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0133") + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":loss", npcActionFacts2);
-				RecordNpcRecentAction(oldOwner, AdapterRecordTexts.Raw("AF_REC_Character_0134") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0135") + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":loss", facts: npcActionFacts2);
+				RecordNpcMajorAction(oldOwner, AdapterRecordTexts.W("AF_REC_Character_0132") + text2 + AdapterRecordTexts.W("AF_REC_Character_0133") + GetSettlementOwnerChangeDetailLabel(detail) + AdapterRecordTexts.CloseParen + AdapterRecordTexts.Period, text + ":loss", npcActionFacts2);
+				RecordNpcRecentAction(oldOwner, AdapterRecordTexts.W("AF_REC_Character_0134") + text2 + AdapterRecordTexts.W("AF_REC_Character_0135") + GetSettlementOwnerChangeDetailLabel(detail) + AdapterRecordTexts.CloseParen + AdapterRecordTexts.Period, text + ":loss", facts: npcActionFacts2);
 			}
 			if (ShouldTrackNpcActionHero(capturerHero) && !string.Equals(GetHeroId(capturerHero), GetHeroId(newOwner), StringComparison.OrdinalIgnoreCase))
 			{
 				NpcActionFacts npcActionFacts3 = CreateNpcActionFacts("settlement_owner_changed_capture", capturerHero);
 				ApplyTargetFacts(npcActionFacts3, newOwner);
 				ApplySettlementFacts(npcActionFacts3, settlement, newOwner, oldOwner);
-				RecordNpcMajorAction(capturerHero, AdapterRecordTexts.Raw("AF_REC_Character_0136") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0137") + GetHeroDisplayName(newOwner) + "。", text + ":capture", npcActionFacts3);
-				RecordNpcRecentAction(capturerHero, AdapterRecordTexts.Raw("AF_REC_Character_0138") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0139") + GetHeroDisplayName(newOwner) + "。", text + ":capture", facts: npcActionFacts3);
+				RecordNpcMajorAction(capturerHero, AdapterRecordTexts.W("AF_REC_Character_0136") + text2 + AdapterRecordTexts.W("AF_REC_Character_0137") + GetHeroDisplayName(newOwner) + AdapterRecordTexts.Period, text + ":capture", npcActionFacts3);
+				RecordNpcRecentAction(capturerHero, AdapterRecordTexts.W("AF_REC_Character_0138") + text2 + AdapterRecordTexts.W("AF_REC_Character_0139") + GetHeroDisplayName(newOwner) + AdapterRecordTexts.Period, text + ":capture", facts: npcActionFacts3);
 			}
 			discontinue(oldOwnerKingdom, "settlement_owner_changed:" + GetSettlementId(settlement));
 		}
@@ -1860,7 +1874,7 @@ internal void RecordPublicDailyMemoryWeeklyMaterial(CompressedMemoryBlock block)
 		string blockId = (block.Id ?? MemoryRecordRules.BuildCompressedMemoryBlockId(block.HeroId, block.GameDayIndex)).Trim();
 		string stableHash = WeeklyMemoryMaterialPolicy.ComputeWeeklyMemoryMaterialHash(blockId + "|" + kingdomId + "|" + material);
 		string stableKey = "public_daily_memory:" + kingdomId + ":" + blockId + ":" + stableHash;
-		string label = AdapterRecordTexts.Raw("AF_REC_Character_0140") + (string.IsNullOrWhiteSpace(block.HeroName) ? "NPC" : block.HeroName.Trim());
+		string label = AdapterRecordTexts.W("AF_REC_Character_0140") + (string.IsNullOrWhiteSpace(block.HeroName) ? "NPC" : block.HeroName.Trim());
 		string snapshot = WeeklyMemoryMaterialPolicy.BuildPublicDailyMemoryWeeklyMaterialSnapshotText(block, material, MemoryRecallContextOwner.FormatMemoryHourRange(block?.StartHour ?? 0, block?.EndHour ?? 0));
 		RecordEventSourceMaterial("public_daily_memory", label, snapshot, stableKey, kingdomId, settlementId, includeInWorld: false, includeInKingdom: true, actorHeroId: MemoryEntityIdentityBannerlordAdapter.GetHeroId(Hero.MainHero), actorKingdomId: kingdomId, dayOverride: block.GameDayIndex, gameDateOverride: block.GameDate);
 		Logger.Log("EventWeeklyReport", "[PublicDailyMemory] source_material_recorded block=" + blockId + " kingdom=" + kingdomId + " publicity=" + publicity);
@@ -1952,7 +1966,11 @@ internal string BuildNpcCurrentActionFact(Hero hero)
 					}
 				}
 			}
-			text = NpcActionRecordOwner.RenderText(hero?.Name?.ToString()?.Trim(), text, CampaignBattleRecordCaptureAdapter.StripBattlePlayerMarker);
+			string stripped = CampaignBattleRecordCaptureAdapter.StripBattlePlayerMarker((text ?? "").Trim());
+			// English records (current composition or a stored English entry) skip the Chinese pronoun/colon renderer.
+			text = stripped.Length > 0 && !AdapterRecordTexts.ContainsHan(stripped) && !string.IsNullOrWhiteSpace(hero?.Name?.ToString())
+				? AdapterRecordTexts.RenderEnglishActorText(hero.Name.ToString(), stripped)
+				: NpcActionRecordOwner.RenderText(hero?.Name?.ToString()?.Trim(), text, CampaignBattleRecordCaptureAdapter.StripBattlePlayerMarker);
 			return string.IsNullOrWhiteSpace(text) ? "" : (text);
 		}
 		catch
@@ -2030,7 +2048,7 @@ internal void RecordNonHeroRecentAction(string nonHeroMemoryId, string npcName, 
 		try
 		{
 			string ownerKey = MemoryRecordRules.NormalizeMemoryHeroId(nonHeroMemoryId);
-			string cleanText = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			string cleanText = AdapterRecordTexts.Tidy((text ?? "").Replace("\r", " ").Replace("\n", " ").Trim());
 			if (!MemoryBusinessStateOwner.IsNonHeroMemoryId(ownerKey) || string.IsNullOrWhiteSpace(cleanText)) return;
 			if (_memory.RecentActions == null) _memory.RecentActions = new Dictionary<string, List<NpcActionEntry>>(StringComparer.OrdinalIgnoreCase);
 			if (!_memory.RecentActions.TryGetValue(ownerKey, out List<NpcActionEntry> entries) || entries == null)
@@ -2104,21 +2122,21 @@ internal void RecordNpcPublicFeedbackEventMaterialInternal(string stableKey, str
 		}
 		string cleanPolicyName = PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(policyName, 70);
 		StringBuilder sb = new StringBuilder();
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0144"));
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0144"));
 		if (!string.IsNullOrWhiteSpace(cleanTitle))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0145")).Append(cleanTitle.Trim().TrimEnd('。')).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0145")).Append(cleanTitle.Trim().TrimEnd('\u3002', '.')).Append(AdapterRecordTexts.Period);
 		}
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0146")).Append(cleanKingdomName).Append(AdapterRecordTexts.Raw("AF_REC_Character_0147")).Append(cleanNpcName).Append("。");
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0146")).Append(cleanKingdomName).Append(AdapterRecordTexts.W("AF_REC_Character_0147")).Append(cleanNpcName).Append(AdapterRecordTexts.Period);
 		if (!string.IsNullOrWhiteSpace(cleanPolicyName))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0148")).Append(cleanPolicyName.Trim().TrimEnd('。')).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0148")).Append(cleanPolicyName.Trim().TrimEnd('\u3002', '.')).Append(AdapterRecordTexts.Period);
 		}
 		if (!string.IsNullOrWhiteSpace(cleanPolicyId))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0149")).Append(cleanPolicyId.Trim().TrimEnd('。')).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0149")).Append(cleanPolicyId.Trim().TrimEnd('\u3002', '.')).Append(AdapterRecordTexts.Period);
 		}
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0150")).Append(cleanFeedback.Trim().TrimEnd('。')).Append("。");
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0150")).Append(cleanFeedback.Trim().TrimEnd('\u3002', '.')).Append(AdapterRecordTexts.Period);
 		string snapshot = PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 300);
 		if (string.IsNullOrWhiteSpace(snapshot))
 		{
@@ -2129,7 +2147,7 @@ internal void RecordNpcPublicFeedbackEventMaterialInternal(string stableKey, str
 		string labelSuffix = !string.IsNullOrWhiteSpace(cleanTitle) ? cleanTitle : cleanPolicyName;
 		RecordEventSourceMaterial(
 			"npc_public_feedback",
-			AdapterRecordTexts.Raw("AF_REC_Character_0151") + cleanKingdomName + (string.IsNullOrWhiteSpace(labelSuffix) ? "" : " / " + labelSuffix),
+			AdapterRecordTexts.W("AF_REC_Character_0151") + cleanKingdomName + (string.IsNullOrWhiteSpace(labelSuffix) ? "" : " / " + labelSuffix),
 			snapshot,
 			key,
 			targetId,
@@ -2165,17 +2183,17 @@ internal void RecordPlayerKingdomRenameWeeklyMaterialInternal(string oldKingdomN
 		string cleanOldInformalName = PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(oldInformalName, 50);
 		string cleanNewInformalName = PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(newInformalName, 50);
 		StringBuilder sb = new StringBuilder();
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0152"));
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0152"));
 		if (!string.IsNullOrWhiteSpace(cleanDate))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0153")).Append(cleanDate).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0153")).Append(cleanDate).Append(AdapterRecordTexts.Period);
 		}
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0154")).Append(cleanOldName).Append(AdapterRecordTexts.Raw("AF_REC_Character_0155")).Append(cleanNewName).Append("。");
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0154")).Append(cleanOldName).Append(AdapterRecordTexts.W("AF_REC_Character_0155")).Append(cleanNewName).Append(AdapterRecordTexts.Period);
 		if (!string.IsNullOrWhiteSpace(cleanOldInformalName) || !string.IsNullOrWhiteSpace(cleanNewInformalName))
 		{
-			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0156")).Append(string.IsNullOrWhiteSpace(cleanOldInformalName) ? cleanOldName : cleanOldInformalName).Append(" -> ").Append(string.IsNullOrWhiteSpace(cleanNewInformalName) ? cleanNewName : cleanNewInformalName).Append("。");
+			sb.Append(AdapterRecordTexts.W("AF_REC_Character_0156")).Append(string.IsNullOrWhiteSpace(cleanOldInformalName) ? cleanOldName : cleanOldInformalName).Append(" -> ").Append(string.IsNullOrWhiteSpace(cleanNewInformalName) ? cleanNewName : cleanNewInformalName).Append(AdapterRecordTexts.Period);
 		}
-		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0157"));
+		sb.Append(AdapterRecordTexts.W("AF_REC_Character_0157"));
 		string snapshot = PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 260);
 		if (string.IsNullOrWhiteSpace(snapshot))
 		{
@@ -2184,7 +2202,7 @@ internal void RecordPlayerKingdomRenameWeeklyMaterialInternal(string oldKingdomN
 		string key = "player_kingdom_rename:" + NpcActionLedger.NormalizeStableKey(stableKey, cleanOldName + ":" + cleanNewName);
 		RecordEventSourceMaterial(
 			"player_kingdom_rename",
-			AdapterRecordTexts.Raw("AF_REC_Character_0158") + cleanNewName,
+			AdapterRecordTexts.W("AF_REC_Character_0158") + cleanNewName,
 			snapshot,
 			key,
 			targetKingdomId,
@@ -2231,12 +2249,12 @@ internal void RecordPlayerSceneConflictWeeklyMaterialInternal(string text, strin
 			Logger.Log("EventWeeklyReport", "[PlayerSceneConflict][SKIP] kingdom_missing settlement=" + resolvedSettlementId + " text=" + summary);
 			return;
 		}
-		string place = resolvedSettlementName + (string.IsNullOrWhiteSpace(location) ? "" : AdapterRecordTexts.Raw("AF_REC_Character_0160") + location);
-		string snapshot = AdapterRecordTexts.Raw("AF_REC_Character_0161") + place + AdapterRecordTexts.Raw("AF_REC_Character_0162") + summary + AdapterRecordTexts.Raw("AF_REC_Character_0163");
+		string place = resolvedSettlementName + (string.IsNullOrWhiteSpace(location) ? "" : AdapterRecordTexts.W("AF_REC_Character_0160") + location);
+		string snapshot = AdapterRecordTexts.W("AF_REC_Character_0161") + place + AdapterRecordTexts.W("AF_REC_Character_0162") + summary + AdapterRecordTexts.W("AF_REC_Character_0163");
 		string key = "player_peace_scene_crime:" + NpcActionLedger.NormalizeStableKey(stableKey, summary);
 		RecordEventSourceMaterial(
 			"player_peace_scene_crime",
-			AdapterRecordTexts.Raw("AF_REC_Character_0164") + resolvedSettlementName,
+			AdapterRecordTexts.W("AF_REC_Character_0164") + resolvedSettlementName,
 			snapshot,
 			key,
 			kingdomId,

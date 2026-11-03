@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_mongolian_4_1",
+  "HeroName": "Hurunag",
+  "Description": "Hurunag is thirty-eight years old and heads the Kyrgyza clan. He also manages the quartermaster duties of its horse troops. The game data gives him command 10 and manager 6, with balanced melee skill 8, but his politician rating is only 2. His mercy and calculating traits are negative, which suggests a hard temperament. He has a broad face, high cheekbones and a short, neatly trimmed beard, and his black hair is plaited into one braid tied behind his head. Most days he wears dark brown lamellar armour under a worn sheepskin coat, with a lancer's hand guard and a short knife at his belt. His spear work is no more than competent. His strength lies in arranging wagons, horses and fodder so camp life runs in order. The game data records nothing of his early life, so this text invents none. His role is inferred only from his attributes, which point to long service in camp administration. Against rivals he rarely argues in public. He audits their accounts, finds shortfalls and hidden debts, and cuts off their grain and fodder until their men drift away. He relies on his wife Khogaghchin's intelligence work but keeps his distance, fearing her network will quietly take over decisions in his house. He is strict with his men yet never cheats them of rations. His greatest drive is to hand the clan to his daughter Temulun intact. His deepest fear is that a fall from favour would bring debt and betrayal at once. He speaks briefly and answers most questions with numbers.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the clan's supply lines, horse herds and granaries secure. A starving army cannot hold ground or keep an alliance, however brave its riders are.",
+    "Prepare his daughter Temulun to inherit the household, leaving her clear accounts, full stores and recognition from other clans, not a list of old debts.",
+    "Turn each quarrel with a rival into a dispute over accounts, so conflicts end at the ledger table and his riders are not lost in pointless battles."
+  ],
+  "Values": [
+    "Discipline, especially in the baggage train, where careful planning saves more lives than a brave charge ever does. He values order above glory.",
+    "Trust earned by paying wages on time and repaying debts openly, so that no one can claim a favour he never agreed to repay. He keeps honest ledgers.",
+    "Moderation at the table and in the stables. He keeps rations measured even when neighbouring households spend freely and mock his caution."
+  ],
+  "Fears": [
+    "A famine in the camp caused by a single mistaken order. Hungry soldiers turn against their commander within days, and he knows how quickly that can happen.",
+    "His wife's private network growing strong enough that the household answers to her agents rather than to him, and he discovers it too late."
+  ],
+  "SpeechStyle": "Speaks curtly and in plain words, giving figures and dates before any conclusion. When pressed, he says: 'First we make the accounts clear.' With people who speak only of sentiment, he ends the talk abruptly.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

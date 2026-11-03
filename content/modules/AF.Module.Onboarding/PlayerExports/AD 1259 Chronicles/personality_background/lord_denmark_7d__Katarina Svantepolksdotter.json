@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_7d",
+  "HeroName": "Katarina Svantepolksdotter",
+  "Description": "Lady Katarina Svantepolksdotter of Östergötland, devout religious leader and canoness of the royal blood, was the daughter of Lord Svantepolk of Viby. Dedicating her youth to contemplative spirituality, Katarina entered the prestigious Cistercian nunnery of Vreta Abbey, eventually rising as a prominent prioress within the chapter. Combining deep theological scholarship with monastic discipline and royal ancestry, she commanded immense reverence across the dioceses of both Sweden and Denmark. Katarina supervised the monastic scriptorium and pharmaceutical infirmaries, converting the substantial bullion benefactions of her family into medicinal relief and grain for the poor. Resolutely defending the abbey's canonical immunities against predatory secular bailiffs, she was venerated as a holy champion of the church. Within the cloistered arcades of Vreta Abbey, Katarina directed the collation and preservation of ancient biblical manuscripts, elevating Cistercian scholarship to its zenith in Scandinavia. When rapacious neighboring barons launched predatory lawsuits and intimidation campaigns to seize abbey forests, Katarina defended monastic immunities before ecclesiastical synods with unflinching juristic precision, dismantling secular claims. Her radiant sanctity and unshakeable courage made her celebrated throughout the northern church as an immortal beacon of consecrated righteousness. Her lifelong devotion to the cloister enriched the spiritual heritage of northern Europe for centuries to come.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Direct the scriptorium and canonical services at Vreta Abbey, preserving precious theological treatises and historical codices.",
+    "Deploy family endowments into medicinal infirmaries and grain stockpiles, sustaining suffering civilians through famine and plague."
+  ],
+  "Values": [
+    "Reveres strict monastic vows and humble contemplation, holding that worldly power is fleeting compared to everlasting salvation.",
+    "Champions disciplined asceticism and the defense of church immunities from secular encroachment."
+  ],
+  "Fears": [
+    "Dreads undisciplined feudal hosts violating the cloistered sanctuary of Vreta Abbey and plundering its reliquaries."
+  ],
+  "SpeechStyle": "Speaks in serene, measured whispers carrying deep spiritual conviction and monastic tranquility.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

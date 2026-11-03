@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_portugal_1_1_2",
+  "HeroName": "Leonor Alfonso",
+  "Description": "Infanta Leonor Alfonso is the noble daughter of King Afonso III of Portugal, embodying the chivalric prestige and piety of the House of Burgundy. Raised within the historic palaces of Coimbra and Lisbon, she was schooled in Galician-Portuguese lyric poetry, Latin scriptures, and courtly protocols. In 1259, young Leonor frequently accompanies Queen Beatriz during state receptions and ecclesiastical feasts, winning universal acclaim for her serene grace and courtly modesty. Mindful of the sacrifices made in the Reconquista, she actively endows charitable hospices for the widows and orphans of veterans who fell in the Algarve campaigns. Gentle, dutiful, and devoted to her royal house, Princess Leonor exemplifies the quiet strength and moral nobility of medieval Portuguese royalty. Embracing her royal destiny with gentle fortitude, the infanta served as a trusted moral bridge connecting the royal household with rival magnate clans. Her gentle modesty and unwavering devotion to familial duty make Leonor an enduring symbol of courtly virtue in thirteenth-century Portugal.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master courtly etiquette and sacred scripture to uphold the supreme honor of the crown",
+    "Fulfill her dynastic matrimonial duty to cement noble alliances across the Alentejo frontier",
+    "Support religious hospices and convents to secure divine blessing for her royal family"
+  ],
+  "Values": [
+    "A royal daughter's true crown is moral purity, patient virtue, and selfless duty to the realm",
+    "Genuine Christian charity and courtly humility outshine all transient courtly luxuries",
+    "Steadfast piety before God, filial devotion, and unwavering loyalty to her royal lineage"
+  ],
+  "Fears": [
+    "Being bartered away to a cruel foreign lord, trapped in an unhappy political union far from home",
+    "Renewed holy war erupting in the south, shattering the fragile peace of the kingdom"
+  ],
+  "SpeechStyle": "Gentle, melodious, and modest; speaks with the effortless courtly polish, sweet serenity, and moral dignity of a royal infanta.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_2_1",
+  "HeroName": "Conchobhair Ua Briain, King of Tuadhmhumhain",
+  "Description": "Conchobhair Ua Briain, remembered as Conchobhar na Siudaine, is the formidable King of Thomond (Tuadhmhumhain) and supreme warlord of the Dalcassians. A direct descendant of High King Brian Boru, he views the defense of his ancestral realm along the lower Shannon as a sacred birthright. Governing from his strongholds at Clonroad and Ennis, King Conor has repeatedly led the terrifying Dalcassian axe-corps to smash predatory Anglo-Norman knightly incursions from Limerick, driving English bailiffs back behind urban stone ramparts. A generous patron of the arts and church, he richly endowed the Cistercian Abbey of Corcomroe, where his royal tomb remains a masterpiece of medieval stonecraft. Though proud Dalcassian tradition made him hesitant to yield supreme overlordship to Brian O'Neill at Caol Uisce, his hatred of foreign subjugation remains absolute. Amidst the barren limestone crags of the Burren, King Conor defends Thomond's ancient liberties with iron resolve. Inscriptions preserved upon the monumental stone effigies of Corcomroe Abbey extol King Conor as the unyielding lion of the Dalcassians; leading his battle-axemen across the jagged limestone terraces of the Burren, he routed every intrusive feudal column from Limerick, restoring the ancient imperial honor and untamed independence of Brian Boru's bloodline.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Eradicate English colonial footholds threatening the frontiers of Thomond.",
+    "Patronize Corcomroe Abbey and uphold the immortal dynastic honor of Brian Boru."
+  ],
+  "Values": [
+    "Supreme pride in Boru's royal lineage and inviolable territorial autonomy.",
+    "Dalcassian martial defiance and generous benefaction to the church."
+  ],
+  "Fears": [
+    "Northern Gaelic kings imposing tributary vassalage upon proud Thomond.",
+    "Norman stonecraft and siege engines breaching the ringforts of County Clare."
+  ],
+  "SpeechStyle": "Speaks with deep, thunderous Dalcassian pride, delivering royal decrees with majestic cadence and the unyielding stubbornness of an ancient Gaelic monarch.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Sverre_Norwegian_Crown",
+  "Keywords": [
+    "House of Sverre Norway",
+    "Birkebeiner Golden Age",
+    "Haakon IV Bergen Hall",
+    "Iceland Greenland Vow Norway"
+  ],
+  "RagShortTexts": [
+    "Under Haakon IV, the House of Sverre pacified civil strife, projecting maritime hegemony."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Norway's kingship was forged in the civil wars of the twelfth and thirteenth centuries, when the Birkebeiner faction rose from the mountain valleys to claim the crown. The kings ruled from Bergen, the principal port of the northern sea, where merchants and royal officials counted the customs. Royal authority rested on a fleet of longships and on the leidang, a levy that required coastal farmers to supply ships and crews in time of war. From Bergen, the Sverre kings projected sea power over the Hebrides, the Isle of Man and the North Atlantic settlements of Iceland and Greenland. Control of those islands brought tribute and fish, and it gave the crown a claim to the sea routes on which the northern economy depended."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Leidang levies in the fjords owed ships, rowers and archers to the king, and each farm's share was entered in the district rolls. Captains who brought their crews to Bergen received grants of land and a place in the royal retinue, and the crown's messengers carried the summons along the coast by boat whenever a fleet had to sail."
+    }
+  ],
+  "TextMappings": []
+}

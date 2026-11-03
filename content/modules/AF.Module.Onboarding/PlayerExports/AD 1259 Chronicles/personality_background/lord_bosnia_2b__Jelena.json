@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_2b",
+  "HeroName": "Jelena",
+  "Description": "Lady Jelena, aged forty-six in 1259, is the esteemed wife of Count Stjepan II Šubić of Bribir, originating from an ancient patrician clan of the Croatian littoral. Dignified, vigilant, and administratively gifted, she governs the domestic households of both Bribir and Trogir with flawless efficiency while her husband attends royal diets and naval campaigns. Overseeing lucrative olive oil estates, vineyard harvests, and castle armories, Jelena commands universal respect across Dalmatia. Her generous endowments to the Romanesque churches of Trogir and maritime charities earn her deep devotion from commoners and burghers. In 1259, nurturing the formidable talents of her sons Paul and Juraj, she provides the unshakeable domestic foundation of the Šubić dynasty. Lady Jelena governs the great domestic chambers of Trogir and Bribir with consummate dignity, earning universal admiration across coastal Dalmatia. Managing estate ledgers and extensive charitable endowments, she provides sanctuary to mountain refugees fleeing inland strife. Her calm composure amidst sudden war alarms provides an enduring pillar of domestic strength, sustaining her family's regional ascendancy. Her pious endowments, serene wisdom, and tireless domestic stewardship make Lady Jelena an indispensable cornerstone upholding the sovereign ascendancy and comital dignity of House Šubić.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with stately Adriatic composure and maternal authority, clear and decisive, commanding natural deference.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

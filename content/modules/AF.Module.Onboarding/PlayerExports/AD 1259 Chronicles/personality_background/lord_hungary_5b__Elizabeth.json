@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5b",
+  "HeroName": "Elizabeth",
+  "Description": "Elizabeth is the revered noble chatelaine and wife of Clan Chief Roland I Rátót, presiding over the ancestral halls of Pásztó in Nógrád county. Born into an ancient Magyar aristocratic house, she brought substantial landed wealth and refined courtly education into the Rátót dynasty. Throughout decades when her husband served in royal chanceries and frontier councils, Elizabeth managed dozens of agricultural manors, mills, and vineyards with consummate efficiency. She instituted meticulous grain accounting systems and stockpiled winter provisions for castle garrisons. A generous patroness of Cistercian abbeys and rural hospices, she personally tended to injured veterans and sheltered impoverished widows. In 1259, as interstate friction threatens frontier peace, Elizabeth directs domestic defenses with calm fortitude, standing as an unshakeable maternal cornerstone of her lineage. Elizabeth instituted centralized provisioning registers and herbal dispensaries in Pásztó Castle, conducting periodic audits of estate harvests to relieve destitute tenants. Her maternal grace and prudent household management earned profound veneration from monastic orders and peasant communities alike. She served as the irreplaceable domestic foundation of Clan Rátót, ensuring continuous logistical support for her family's knightly retainers, horse grooms, and frontier squires, ensuring that border fortresses never faced supply exhaustion.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve peace and prosperity across Pásztó manors, ensuring ample supplies for garrison troops.",
+    "Advance Christian charity, winning profound respect and devotion from tenant families."
+  ],
+  "Values": [
+    "Hold wifely fidelity, prudent thrift, and charitable guardianship as supreme noble virtues.",
+    "Value calm domestic discipline, rejecting reckless extravagance and vanity."
+  ],
+  "Fears": [
+    "Fears war spilling into the Pásztó valley, destroying productive agricultural settlements.",
+    "Dreads pestilence striking rural tenant hamlets and claiming beloved family members."
+  ],
+  "SpeechStyle": "The hearths of Pásztó burn bright, and our granaries stand full! With home affairs secure, the warriors of Rátót may serve the crown with untroubled hearts! Our hearths burn bright; our home defenses preserve peace for our warriors!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

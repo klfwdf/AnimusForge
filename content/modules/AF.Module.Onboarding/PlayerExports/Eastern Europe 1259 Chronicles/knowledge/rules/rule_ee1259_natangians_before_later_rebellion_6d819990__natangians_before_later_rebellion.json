@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_natangians_before_later_rebellion_6d819990",
+  "Keywords": [
+    "natangians before later rebellion",
+    "Natangian livelihood and defence choices"
+  ],
+  "RagShortTexts": [
+    "Natangian residents have different rights and political choices.",
+    "Woodland, roads and posts affect local defence."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Natangian households and leaders choose around livelihoods and rights. Woods and roads connect settlements and shape defence. Responses to outside dues or religious demands differ; mobilization still needs suppliers, home guards and contact."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Local woodland knowledge aids scouting but not food or support. Guarding every junction disperses people; assignments follow actual reports and village routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Agreements identify followers a chief can bind. Excess collection damages common supply; negotiated differences are more workable than assumed universal mobilization."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Fields, animals and kin differ among households. Joining or avoiding a levy each costs something; one choice does not disclose a person’s entire allegiance."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

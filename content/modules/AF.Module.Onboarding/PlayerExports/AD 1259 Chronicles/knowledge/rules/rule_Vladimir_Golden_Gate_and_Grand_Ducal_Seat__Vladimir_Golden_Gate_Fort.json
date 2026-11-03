@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Vladimir_Golden_Gate_and_Grand_Ducal_Seat",
+  "Keywords": [
+    "Vladimir Golden Gate Fort",
+    "Cathedral of Dormition Reliefs",
+    "Grand Duke of Vladimir Yarlyk",
+    "Klyazma River Forest Shield"
+  ],
+  "RagShortTexts": [
+    "Every tax roll he signed was a bargain that kept the prince's own towns from burning.",
+    "In forest homesteads, folk douse hearth fires before dark."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vladimir stood on high bluffs above the Klyazma River and served as the principal seat of north-eastern Rus. The city was entered through the Golden Gate, a limestone gate built in the twelfth century as a ceremonial and defensive landmark. Its Dormition Cathedral, built in white stone and decorated with carved reliefs, was the principal church of the Vladimir-Suzdal principality. Batu Khan's forces sacked the city in 1238, and the Mongol overlords who followed kept the old princely title in play. The prince who received the Khan's yarlyk, the charter of authority from the Golden Horde, was recognized as Grand Prince of all Rus, and the title tied the city's rulers to the Mongol court at Sarai on the Volga."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Alexander Nevsky traveled often between Sarai and Vladimir, carrying gifts and petitions to the khan. To keep the grand ducal patent and to head off punitive raids that could ruin the principality, he enforced the Mongol census and the tax collection with hard and practical resolve. Every tax roll he signed was a bargain that kept the prince's own towns from burning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "In forest homesteads, folk douse hearth fires before dark. Ever since Andrei Bogolyubsky made Vladimir the capital and raised the Golden Gate in 1164, the grand prince's officials have come for our grain and our labor. The distant jingle of harness bells still sends families fleeing into deep marshes to avoid Tatar slave-catchers."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_3b",
+  "HeroName": "Dominika Patai",
+  "Description": "Dominika Patai is the esteemed noble chatelaine and wife of Judge Royal Demeter I Csák, hailing from the ancient and distinguished Pata clan. Rooted along the southern slopes of the Mátra mountains since the Arpadian conquest, her family commanded vast vineyards, agricultural manors, and castles. Bringing substantial patrimonial wealth and political connections into the Csák lineage, Dominika manages domestic estates with formidable efficiency and grace. She oversees grain revenues, wine trade, and household expenses while ensuring her sons receive rigorous education in martial arts and customary jurisprudence. A generous patroness of rural churches, she commands widespread devotion among tenant communities and regional gentry. In 1259, with her husband engaged in high judicial diplomacy at court, Dominika presides over home affairs with calm authority, preserving the family's dignity. Dominika managed the extensive Pata and Csák estates with astute financial acumen, supervising vineyard harvests and grain rotation schedules. She educated the clan's heirs in feudal law, courtly chivalry, and noble governance, anchoring their moral discipline in ancient tradition. Her gracious hospitality and charitable endowments won enduring reverence from regional burghers, tenants, and church prelates. Her dignified stewardship preserved the prosperity of ancient vineyards and manors, providing a wealthy, stable foundation for the clan's high ambitions.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Administer extensive landed estates, ensuring financial resilience and tenant loyalty across clan domains.",
+    "Nurture her sons in chivalric discipline and statecraft, preserving the eternal prestige of the house."
+  ],
+  "Values": [
+    "Prize prudent domestic management, dignity, and wifely loyalty, trusting order preserves dynasties.",
+    "Uphold noble honor and Christian piety, condemning reckless vanity and wasteful ostentation."
+  ],
+  "Fears": [
+    "Fears feudal feuds devastating the vineyards and ancestral manors along the Mátra slopes.",
+    "Dreads envious political rivals orchestrating false accusations against her husband's judicial office."
+  ],
+  "SpeechStyle": "The vineyards of Mátra flourish and the halls of Csák remain in impeccable order. With our home secure, my lord may dispense justice with an untroubled mind! Ancient virtue and domestic order preserve the glory of our noble lineage!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

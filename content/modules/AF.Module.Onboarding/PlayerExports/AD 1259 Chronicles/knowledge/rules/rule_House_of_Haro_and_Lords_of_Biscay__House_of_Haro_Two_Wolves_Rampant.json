@@ -1,0 +1,42 @@
+{
+  "Id": "rule_House_of_Haro_and_Lords_of_Biscay",
+  "Keywords": [
+    "House of Haro Two Wolves Rampant",
+    "Lords of Biscay Basque Domain",
+    "Gernika Sacred Oak Liberties",
+    "Cantabrian Iron and Basque Navies"
+  ],
+  "RagShortTexts": [
+    "They controlled the Cantabrian iron mines and a fleet of Basque ships that sailed the Bay of Biscay.",
+    "Diego López de Haro exercised supreme influence at court."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Hereditary lords of Biscay in the Basque country, the House of Haro carried two black wolves gripping lambs on silver. Their lords swore oaths beneath the Oak of Gernika to preserve the local fueros, the customary charters that governed Basque towns and valleys. They controlled the Cantabrian iron mines and a fleet of Basque ships that sailed the Bay of Biscay. Iron from the Basque mountains supplied swords and armor across Castile, which made the family's revenue a matter of royal interest. Their power rested on those charters, which gave Biscay a legal independence that Castilian kings had to respect."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Diego López de Haro exercised supreme influence at court. Without his assent the crown could neither levy troops nor demand naval contributions in Biscay, and his sealed letters carried that authority into every Basque town. A royal summons that ignored the fueros could be refused until the Haro lord had reviewed it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "wanderer"
+        ]
+      },
+      "Content": "Basque seamen brave treacherous Bay of Biscay storms with tough iron-fastened keels. Whalers and harpooners on Haro cogs repel corsairs with savage proficiency. Crews rowed and sailed in shifts, pumping bilges and reefing sails when squalls struck. Their pay came as a share of the catch or cargo, so a poor voyage could leave a family in debt."
+    }
+  ],
+  "TextMappings": []
+}

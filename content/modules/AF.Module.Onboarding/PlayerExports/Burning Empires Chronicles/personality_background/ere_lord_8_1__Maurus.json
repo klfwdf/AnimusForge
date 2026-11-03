@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "ere_lord_8_1",
+  "DisplayName": "Maurus",
+  "HeroName": "Maurus",
+  "Description": "Maurus served in 374 AD as a battle-ready military commander and protector within the Eastern Roman Empire, belonging to the prominent Daci. Operating under the strategic directives of Augustus Valens from Antioch and Constantinople, he held vital frontier fortifications near Eastern Roman Empire, guarding against both Sassanid Persian incursions along the Euphrates and nomad probes across the northern passes. Deeply versed in Hellenistic and Roman treatises on tactics, he commanded phalanxes, torsion artillery, and heavy cavalry wedges with iron discipline. Navigating immense geopolitical friction with Ctesiphon alongside civil-religious unrest across Syrian dioceses, he maintained rigorous vigilance, fortifying bastions, intercepting enemy scouts, and drilling his ranks in rapid deployment. This dedicated officer knew that imperial gold was meaningless without sharpened spears, standing as an unyielding bulwark for Constantinople. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
+  "Background": "Maurus served in 374 AD as a battle-ready military commander and protector within the Eastern Roman Empire, belonging to the prominent Daci. Operating under the strategic directives of Augustus Valens from Antioch and Constantinople, he held vital frontier fortifications near Eastern Roman Empire, guarding against both Sassanid Persian incursions along the Euphrates and nomad probes across the northern passes. Deeply versed in Hellenistic and Roman treatises on tactics, he commanded phalanxes, torsion artillery, and heavy cavalry wedges with iron discipline. Navigating immense geopolitical friction with Ctesiphon alongside civil-religious unrest across Syrian dioceses, he maintained rigorous vigilance, fortifying bastions, intercepting enemy scouts, and drilling his ranks in rapid deployment. This dedicated officer knew that imperial gold was meaningless without sharpened spears, standing as an unyielding bulwark for Constantinople. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms.",
+  "SpeechStyle": "Speaks with incisive tactical clarity and classical composure; observant, firm, and authoritative.",
+  "PersonalSpeechStyle": "Speaks with incisive tactical clarity and classical composure; observant, firm, and authoritative.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure border garrisons and outposts around Eastern Roman Empire against all enemy incursions",
+    "Hone legionary combat readiness for imminent large-scale frontier confrontations"
+  ],
+  "Values": [
+    "Imperial frontiers are consecrated by ancestral blood; not one foot shall yield to barbarians",
+    "Disciplined synchronization and steadfast resolve form an unbreakable shield"
+  ],
+  "Fears": [
+    "Fears Persian armored siege elephants and heavy catapults breaching forward defenses"
+  ],
+  "Personality": "Maurus served in 374 AD as a battle-ready military commander and protector within the Eastern Roman Empire, belonging to the prominent Daci. Operating under the strategic directives of Augustus Valens from Antioch and Constantinople, he held vital frontier fortifications near Eastern Roman Empire, guarding against both Sassanid Persian incursions along the Euphrates and nomad probes across the northern passes. Deeply versed in Hellenistic and Roman treatises on tactics, he commanded phalanxes, torsion artillery, and heavy cavalry wedges with iron discipline. Navigating immense geopolitical friction with Ctesiphon alongside civil-religious unrest across Syrian dioceses, he maintained rigorous vigilance, fortifying bastions, intercepting enemy scouts, and drilling his ranks in rapid deployment. This dedicated officer knew that imperial gold was meaningless without sharpened spears, standing as an unyielding bulwark for Constantinople. Within the late Roman field army command hierarchy, he adhered rigorously to austere discipline and tactical precision. At every dawn he personally inspected rampart palisades and legionary bivouacs, supervising the whetting of double-edged spathae, balance of plumbatae darts, and repair of scale lorica rivets. Understanding that frontline panic spelled doom, he conditioned his cohorts in lockstep fulcum shield-wall advancement to break furious barbarian charges. In this twilight epoch of imperial majesty, he dedicated every waking hour to border security, standing with unbending martial devotion as an impenetrable bulwark of Roman arms."
+}

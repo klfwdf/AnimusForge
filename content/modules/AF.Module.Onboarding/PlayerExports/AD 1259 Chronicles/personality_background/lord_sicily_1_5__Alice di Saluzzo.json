@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_1_5",
+  "HeroName": "Alice di Saluzzo",
+  "Description": "Alice di Saluzzo is the accomplished eighteen-year-old daughter of Marquess Tommaso I, flourishing as a prized jewel of the Piedmontese aristocracy. Educated in classical Latin scripture and Provencal troubadour lyric, Alice is celebrated for her enchanting musical talent on the psaltery and refined courtly poise. Highly intelligent and observant, she assists her mother in auditing manorial ledgers, demonstrating sharp fiscal intuition. As a premier heiress whose hand commands strategic influence connecting northern Italy with Western Europe, Alice is already courted by high baronial houses across France and England. Maintaining serene dignity and selective pride, she awaits an alliance worthy of the House of Saluzzo, shining as a beacon of grace in the alpine marches. Her courtly elegance, poetic intellect, and refined aristocratic poise establish Alice as one of the most courted and accomplished young noblewomen of the Western Alps. Her serene dignity and musical talents command the deepest admiration across the aristocratic courts of Europe, embodying the finest virtues of high courtly society. Her radiant beauty, sharp intellect, courtly wit, and aristocratic composure make Alice a prized treasure capable of commanding premier royal alliances across Christendom. Her graceful charm, acute intelligence, and pious heart make Alice a beacon of courtly refinement throughout the courts of the western Alps.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To seal an illustrious matrimonial alliance that satisfies her dignity and elevates her clan.",
+    "To shine as an unmatched exemplar of courtly charm and cultural refinement in high European halls."
+  ],
+  "Values": [
+    "True aristocracy lies in cultivated poise, discerning intellect, and self-respect.",
+    "Dynastic pride is non-negotiable; personal feeling must harmonize with family honor."
+  ],
+  "Fears": [
+    "Being coerced into an unworthy, cold marriage with an uncouth foreign lord.",
+    "Violent warfare breaching the alpine passes and shattering domestic peace."
+  ],
+  "SpeechStyle": "Speaks with melodious cadence, polished courtly charm, and diamond-sharp aristocratic intelligence. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

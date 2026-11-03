@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v3",
+  "Keywords": [
+    "皮舟渡河与桥头堡"
+  ],
+  "RagShortTexts": [
+    "凯撒先用舟只夺取对岸高地，再组织后续渡河。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "凯撒先用轻舟把一支队伍送到河对岸，占据高地并构筑防御，再把一军团放在那里。渡过去的人要能坚持到后续力量到来；第一舟抵岸与整军安全渡河是不同阶段。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

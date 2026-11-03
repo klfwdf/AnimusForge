@@ -1,0 +1,59 @@
+{
+  "Id": "be_vandal_kingdom_internal",
+  "Keywords": [
+    "汪达尔人贵族",
+    "哈斯丁与西林追随集团"
+  ],
+  "RagShortTexts": [
+    "Godigisel协调不同首领与追随集团。",
+    "哈斯丁与西林名称不使所有利益相同。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Godigisel要协调不同首领和追随集团，哈斯丁与西林等名称不能让所有人的利益相同，联合还需兑现回报。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Godigisel协调不同首领与追随集团。随从有自己的家庭联系，留下谁守家、谁承担远行会影响共同服役。哈斯丁与西林名称不使所有利益相同。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "哈斯丁与西林名称不使所有利益相同。协调不是只分名号，还要弄清每一集团实际承担的供给与保护责任。Godigisel协调不同首领与追随集团。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Godigisel协调不同首领与追随集团。家户会比较自己和邻人的负担，保护与供役不相称会使合作变弱。哈斯丁与西林名称不使所有利益相同。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "哈斯丁与西林名称不使所有利益相同。一人的许诺未必约束所有收货、护路与供粮者，交涉要找到实际担责者。Godigisel协调不同首领与追随集团。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

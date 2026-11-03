@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Zahringen_Margraves_of_Baden",
+  "Keywords": [
+    "House of Zahringen Baden",
+    "Black Forest Zahringen Keeps",
+    "Baden Red Bend Heraldry",
+    "Upper Rhine Baden Margraves"
+  ],
+  "RagShortTexts": [
+    "The Margraves of Baden guarded Upper Rhine trade and Black Forest valleys beneath their."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Zähringen dynasty and its Baden branch controlled the western slopes of the Black Forest and the Upper Rhine highway. Rudolf I of Baden kept the mountain passes and the Rhine vineyards under his authority, and the margraves held their ancient Zähringen pedigree as a mark of rank. Their castles stood on high ground above the river valleys, guarding the roads that carried wine and salt across the frontier. Neighbouring lords pressed for lands on the Rhine, so the margraves kept their garrisons and their alliances in constant repair. Every mountain pass and vineyard was counted as part of the margraves' strength, and every war over them was paid for from the toll and tithe revenues."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Baden's margraves knew that every treaty over a pass or a vineyard had a price. Each toll on the Rhine road was booked by the margrave's clerks, and every new alliance was weighed against the cost of the men who held the cliff castles above the valley."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_5_1",
+  "HeroName": "Donnell Ó Con Ceanainn, King of Uí Díarmata",
+  "Description": "Donnell Ó Con Ceanainn is the hereditary ruler of Uí Díarmata (Corca Moghí) and premier marshal to the royal house of Connacht. Holding the fertile river plains between the River Suck and the River Clare, his lineage has served as the royal vanguard against eastern invaders for generations. Thirty-four years old, Donnell uniquely unites the authority of an esteemed Brehon jurist with the grit of a frontier battlefield commander, revered across the midlands for his unbending justice. Constantly patrolling regional ringforts in light chainmail, he has repeatedly repulsed predatory raiding columns from Athlone and Limerick. Donnell acutely understands that Gaelic survival requires both customary legal legitimacy and military might; at high assemblies, he tirelessly exposes forged Anglo-Norman charters while providing elite cavalry to King Aedh, standing as the judicial and military shield of the western kingdom. Coordinating defense rolls along the River Suck, King Donnell surveyed dozens of forward watchtowers and river causeways; resolving bitter inter-clan pasture disputes with strict Brehon equity and eloquence, he commands universal respect from King Aedh and regional magnates alike as the foremost legal pillar and battlefield marshal of the Connacht plains. He stands as an unshakeable guardian of native Irish liberties and customary laws.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold the ancient Brehon charters and ancestral lands of Uí Díarmata against fraud.",
+    "Support the crown of Connacht in breaking Anglo-Norman encirclement across the Suck."
+  ],
+  "Values": [
+    "Sacred integrity of Brehon law and ancestral Gaelic land tenures.",
+    "Unswerving feudal fidelity, moral rectitude, and protective duty to his tenants."
+  ],
+  "Fears": [
+    "Surprise heavy cavalry breakthroughs exposing the royal flank.",
+    "Loss or destruction of ancient charters disinheriting his sept."
+  ],
+  "SpeechStyle": "Speaks with articulate, measured authority and judicial gravitas, citing ancient Brehon legal maxims and military realities with convincing precision.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

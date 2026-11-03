@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Battle_of_Rakovor_1268",
+  "Keywords": [
+    "Rakvere strongpoint and Baltic routes"
+  ],
+  "RagShortTexts": [
+    "Rakvere linked northern Estonian routes amid Danish, German and Rus interests."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rakvere linked northern Estonian routes amid Danish, German and Rus interests. Timber, food, crossings and season shaped expeditions. Frontier tension was not a battle report, and envoys could still bargain over trade and peace."
+    }
+  ],
+  "TextMappings": []
+}

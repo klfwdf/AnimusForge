@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_4e",
+  "HeroName": "Ctibor II. z Cimburka",
+  "Description": "Ctibor II of Cimburk is a senior kinsman and trusted commander of the lineage, serving as Lord Bernard's right hand and itinerant Land Court magistrate in Moravia. Governing cadet strongholds, he presided over regional feudal disputes with encyclopedic mastery of Czech customary land laws and crown charters, resolving complex jurisdictional feuds between local barons and monastic abbeys. Calculating, astute, and legally formidable, Ctibor combines forensic eloquence with practical expertise in infantry defense tactics. In wartime, he mobilizes Moravian militias and coordinates provincial tax requisitions to sustain frontline campaigns. Pragmatic and unswervingly loyal, he protects crown sovereignty and Cimburk interests with equal vigilance as the indispensable statesman of his house. Delivering razor-sharp judicial arguments before the Moravian High Court, Ctibor cited ancient royal statutes to dismantle attempts by predatory barons to usurp monastic manors and crown estates during the Interregnum. Masterfully organizing militia levies and supply wagon escorts, he kept logistics flowing uninterrupted during royal campaigns along the Danube, standing as an indispensable jurist-commander of the realm. His judicial wisdom, practical foresight, unwavering rectitude, and strategic administrative abilities safeguarded the legal integrity and peace of the kingdom through tumultuous decades across the whole realm.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Uphold crown law in the Land Court, securing Cimburk dominance over provincial administrative affairs.",
+    "Coordinate militia mobilization and grain escorts, providing royal field forces with dependable supplies."
+  ],
+  "Values": [
+    "Believes in the rule of law and cool realism, convinced rigorous preparation surpasses hasty adventures.",
+    "Holds public duties sacred, dedicating his life to preserving ancestral fiefs and royal statutory authority."
+  ],
+  "Fears": [
+    "Fears rebellious barons colluding to defy the law, destroying Moravia's legal and commercial peace.",
+    "Worries shifting royal policies will throw clear manorial titles into chaos, harming his house's rights."
+  ],
+  "SpeechStyle": "Law is the lock and steel is the key; whatever political storms rage, ruling by statute and holding arms secures an invincible realm. In council or on campaign, our ancient laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Ctibor II. z Cimburka"
+}

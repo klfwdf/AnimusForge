@@ -91,6 +91,18 @@
     <string id="AF_GPT_UI_OpenAiVoiceSelectionHint" text="&#10;Random picks use only male-/female- voices of this hero's gender. Voices with tone variants switch to _happy/_angry from the reply mood. Saved with this campaign." />
     <string id="AF_GPT_UI_OpenAiRefreshStarted" text="Refreshing the voice list; reopen this selection shortly." />
     <string id="AF_GPT_UI_OpenAiNoGenderVoice" text="the service list has no matching voice; choose one manually." />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_male_clear" text="Jing Yuan · bright youth" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_male_gentle" text="Dan Heng · gentle young man" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_male_steady" text="Welt · steady elder" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_male_deep" text="Gepard · deep-voiced hero" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_male_senior" text="Sampo · slick uncle" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_clear" text="March 7th · bright girl" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_gentle" text="Firefly · gentle girl" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_steady" text="Himeko · mature lady" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_firm" text="Serval · dashing elder sister" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_senior" text="Bronya · calm girl" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_female_sparkle" text="Sparkle · playful performer" />
+    <string id="AF_GPT_UI_OpenAiBuiltInVoice_zh_default" text="Default Chinese female voice" />
     <string id="AF_GPT_UI_VictoryReady" text="Battle rewards have been handled. Enter GCCZ to continue, or leave." />
     <string id="AF_TTS_UI_General" text="1. Provider and playback" />
     <string id="AF_TTS_UI_Local" text="2. Local GPT-SoVITS" />

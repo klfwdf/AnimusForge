@@ -1,0 +1,59 @@
+{
+  "Id": "be_sarmatian_kingdom_geopolitics",
+  "Keywords": [
+    "Sarmatians Frontiers",
+    "Sarmatian forest-steppe routes"
+  ],
+  "RagShortTexts": [
+    "Forest-edge tracks connect steppe water with grain exchanges.",
+    "Movement in woods depends more on roads and warnings."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Water, forest-edge tracks and grain exchanges connect settlements. Open ground permits riding, while woods increase dependence on roads and warnings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Forest-edge tracks connect steppe water with grain exchanges. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Movement in woods depends more on roads and warnings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Movement in woods depends more on roads and warnings. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Forest-edge tracks connect steppe water with grain exchanges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Forest-edge tracks connect steppe water with grain exchanges. Closed routes may separate families from goods, imposing costs on those remaining at home. Movement in woods depends more on roads and warnings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Movement in woods depends more on roads and warnings. Cargo passes different carriers, making distant route changes become local shortages through delay. Forest-edge tracks connect steppe water with grain exchanges."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

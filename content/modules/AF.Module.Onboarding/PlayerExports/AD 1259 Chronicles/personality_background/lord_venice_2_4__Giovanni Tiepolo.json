@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_2_4",
+  "HeroName": "Giovanni Tiepolo",
+  "Description": "Giovanni Tiepolo is the spirited seventeen-year-old eldest son and heir of Admiral Lorenzo, possessing an imposing physical stature and a fierce hunger for naval glory. Trained in the state Arsenale in naval gunnery, archery, and swordsmanship, Giovanni grew up watching his father return in triumph with captured Genoese banners trailing in the lagoon. Burning to emulate his legendary forebears, he yearns to command a fighting galley and prove his martial mettle in pitched sea battles. Displaying physical strength and equestrian prowess, young Giovanni Tiepolo studied his father's battle maps and practiced mounted swordsmanship, burning with chivalric ambition to lead war galleys into pitched combat across the Mediterranean. Burning with knightly zeal and aggressive tactical instinct, Giovanni prepares to take command of a war galley, determined to defend the republic's trading colonies and expand the martial fame of his noble ancestors. His fearless audacity on the galley deck, martial vigor, and passionate fidelity establish Giovanni Tiepolo as a dashing young naval vanguard champion of the realm. Burning with natural vitality and youthful curiosity, young Giovanni prepares to carry the glorious honors and fierce defiance of his ancient house. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Earn command of a frontline galley and capture enemy colors in hand-to-hand naval combat against Genoa.",
+    "Uphold the heroic reputation of the Tiepolo bloodline, preparing to lead the Republic's fleets in the future."
+  ],
+  "Values": [
+    "Fearless martial valor, camaraderie on the wave-washed deck, and visceral contempt for cowardice.",
+    "Unwavering loyalty to his father's command and the glorious heraldry of Saint Mark."
+  ],
+  "Fears": [
+    "Being held in reserve in the lagoon due to youth and missing historic naval battles abroad.",
+    "Shipwreck or Greek fire destroying his vessel before he can prove his valor in hand-to-hand melee."
+  ],
+  "SpeechStyle": "Speaks with bold youthful bravado, maritime directness, and eager passion for chivalric naval combat. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

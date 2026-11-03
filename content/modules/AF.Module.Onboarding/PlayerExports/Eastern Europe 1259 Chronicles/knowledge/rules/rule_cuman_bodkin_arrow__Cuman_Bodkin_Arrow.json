@@ -1,0 +1,53 @@
+{
+  "Id": "rule_cuman_bodkin_arrow",
+  "Keywords": [
+    "Cuman arrows and their upkeep",
+    "Cuman arrowheads and shafts",
+    "Resupplying mounted archers quivers"
+  ],
+  "RagShortTexts": [
+    "Cuman arrowheads, shafts and feathers work together; mounted archers need replenished quivers.",
+    "Range, angle, armor and mounts change results; recovered arrows require inspection."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cuman arrows must suit the archer's bow, with reliable heads, shafts, feathers and nocks. Range and different armor change the shot; a sharp point does not guarantee passage through iron rings. After an encounter, arrows need replacement and shafts need attention. Damp, impacts and poor fitting can spoil the next shot."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A Cuman rider checks quiver, string and mount before contact and needs room to withdraw and replenish. Recovered arrows may have split shafts or damaged feathers. Pursuit can consume missiles, horses and grazing for the return together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Supporting Cuman archers requires smiths, shaft workers, feathers and portable stocks. A count of arrows does not establish sustained fire without transport and rested mounts. Ground needs approaches, exits and replenishment rather than crowding supplied riders into a place where they cannot move."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Arrow making joins ironwork, woodworking, feather supply and transport. Material contributions reduce what households can use for tools and repairs. Broken arrows return some resources but need further work. Shortage therefore brings more labor and requisition, not merely fewer prizes for riders."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

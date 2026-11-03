@@ -1,0 +1,59 @@
+{
+  "Id": "be_geatish_kingdom_military",
+  "Keywords": [
+    "耶阿特人军制",
+    "耶阿特陆防与近岸航行"
+  ],
+  "RagShortTexts": [
+    "耶阿特陆防与近岸航行分享人手。",
+    "丹麦战争使泊地预警更重要。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "陆上守卫和近岸航行分享兵员，丹麦战争使泊地预警更重要。风潮、维修与农忙限定行动，不是所有随从都能长期离乡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "耶阿特陆防与近岸航行分享人手。这些力量在路上仍受饮食、休息和负重限制，先锋速度不能代表全队。丹麦战争使泊地预警更重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "丹麦战争使泊地预警更重要。可用兵力要连同供给、留守和撤离能力计算，集中一侧会减少另一侧预备。耶阿特陆防与近岸航行分享人手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "耶阿特陆防与近岸航行分享人手。出战者来自家户，长期失去劳力或牲畜会减少下一次供役能力。丹麦战争使泊地预警更重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "丹麦战争使泊地预警更重要。修器具、搬运和照护也消耗人手，军队经过后仍要维持日常供应。耶阿特陆防与近岸航行分享人手。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,108 @@
+{
+  "Id": "rule_punic_23",
+  "Name": "上贝蒂斯战役与双西庇阿悲壮阵亡",
+  "Description": "公元前211年，迦太基三路大军配合同盟凯尔特伊比利亚雇佣军反戈，在安多洛与卡斯图洛击溃分散的罗马军队，老西庇阿兄弟双双阵亡，罗马西班牙防线几近瓦解。",
+  "Tags": [
+    "上贝蒂斯战役",
+    "老西庇阿之死",
+    "格奈乌斯之死",
+    "凯尔特伊比利亚叛变",
+    "马西尼萨骑兵",
+    "罗马危机"
+  ],
+  "Category": "Military",
+  "DefaultPriority": 85,
+  "IsActive": true,
+  "RagShortTexts": [
+    "公元前211年上贝蒂斯战役中罗马普布利乌斯与格奈乌斯·西庇阿双双战死。",
+    "两万凯尔特伊比利亚雇佣军临阵倒戈直接导致罗马主力陷入三路合围。",
+    "年轻的马西尼萨率领努米底亚轻骑兵在此役中对罗马步兵实施致命追击。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是罗马在西班牙最黑暗的悲剧之日！普布利乌斯执政官与格奈乌斯将军在半岛苦战七载，屡立奇功，却惨遭收受迦太基黄金的两万凯尔特伊比利亚雇佣兵无耻出卖！普布利乌斯身先士卒中矛殉国，数日后格奈乌斯被困乱石荒丘力竭战死。但西庇阿家族的血绝不会白流，年轻的大西庇阿必将踏着先烈的焦土，用利剑洗刷这一血海深仇！"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是哈斯德鲁拔·巴卡、玛戈与吉斯戈三路统帅天衣无缝的战略协同！我们精准利用了罗马分兵进剿的致命失误，以数千塔兰特黄金策反了贪婪的雇佣军，再加上马西尼萨王子那如闪电般致命的努米底亚骑兵侧袭，将横行西班牙七年的西庇阿兄弟彻底歼灭！若非那低级百夫长马尔基乌斯收拾残部死守，罗马人在半岛早已不复存在！"
+    },
+    {
+      "Priority": 82,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "numidian"
+        ],
+        "KingdomIds": [
+          "massylii"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "上贝蒂斯河畔的荒原，正是我们马西利人轻骑兵大展神威的猎场！年轻的马西尼萨王子率领我们像狂风般呼啸穿插，在罗马步兵仓皇变阵时射出暴雨般的标枪，罗马大将普布利乌斯正是倒在我们骑兵的合围之下。那是荣耀的胜利，尽管谁也没想到，几年后命运会将我们引向完全不同的阵营。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "公元前211年，迦太基三位统帅哈斯德鲁拔·巴卡、玛戈·巴卡与哈斯德鲁拔·吉斯戈在上贝蒂斯河流域合围分兵深入的罗马军团。在两万名凯尔特伊比利亚雇佣兵受贿撤离战场后，罗马将领普布利乌斯·西庇阿与格奈乌斯·西庇阿相继阵亡，罗马在西班牙的占领区几乎全境沦陷。"
+    }
+  ],
+  "TextMappings": [],
+  "Keywords": [
+    "上贝蒂斯战役与双西庇阿悲壮阵亡",
+    "rule_punic_23"
+  ]
+}

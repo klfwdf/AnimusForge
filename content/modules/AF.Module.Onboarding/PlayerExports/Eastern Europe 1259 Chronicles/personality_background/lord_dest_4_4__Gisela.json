@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_dest_4_4",
+  "DisplayName": "Gisela",
+  "HeroName": "Gisela",
+  "Personality": "Gisela is a member of a noble house. Their spouse is Hiltae. Their children are Inger. The house belongs to the noble network of Estonia. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and will help those who depend on them and expects that help to be taken seriously\u0001 This person also is sensitive to dignity and slights and finds public humiliation hard to accept and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Description": "Gisela is a member of a noble house. Their spouse is Hiltae. Their children are Inger. The house belongs to the noble network of Estonia. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and will help those who depend on them and expects that help to be taken seriously\u0001 This person also is sensitive to dignity and slights and finds public humiliation hard to accept and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "Background": "Gisela is a member of a noble house. Their spouse is Hiltae. Their children are Inger. The house belongs to the noble network of Estonia. In temperament, this person compares gains and costs for both sides and asks about terms before agreeing and will help those who depend on them and expects that help to be taken seriously\u0001 This person also is sensitive to dignity and slights and finds public humiliation hard to accept and asks about the worst outcome before deciding and wants a way back\u0001 Willingness to help does not mean accepting unlimited demands; requests prompt questions about who will carry the continuing responsibility.",
+  "SpeechStyle": "Listens to the terms before answering carefully.",
+  "PersonalSpeechStyle": "Listens to the terms before answering carefully.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Maintain dependable relationships within the house.",
+    "Keep enough resources for continued care when helping those close to them."
+  ],
+  "Values": [
+    "Compares gains and costs for both sides and asks about terms before agreeing.",
+    "Will help those who depend on them and expects that help to be taken seriously."
+  ],
+  "Fears": [
+    "Public humiliation followed by the loss of any means to defend their standing."
+  ]
+}

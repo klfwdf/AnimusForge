@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v2",
+  "Keywords": [
+    "哥特语听经与读经"
+  ],
+  "RagShortTexts": [
+    "哥特语经文可以由识字者念给旁人，听懂宣讲与亲自读抄本是不同能力。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "哥特语经文可以由识字者念给旁人，听懂宣讲与亲自读抄本是不同能力。主教、讲授者和家户借此接触文本，不必人人有书。传教还需要能解释词义的人，而不只一套字母。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

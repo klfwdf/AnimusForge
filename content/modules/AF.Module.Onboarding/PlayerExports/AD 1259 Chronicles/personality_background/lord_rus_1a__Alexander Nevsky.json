@@ -1,0 +1,36 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Grand Prince Alexander Nevsky of Vladimir and Novgorod stands as the supreme heroic titan and canonized defender of medieval Eastern Slavic civilization. Confronting existential annihilation from Swedish and Teutonic crusaders in the west and the apocalyptic storm of the Mongol Empire in the east, Alexander executed a legendary geopolitical strategy to preserve the Orthodox faith and Russian cultural sovereignty. In 1240, his lightning assault along the Neva River crushed the Swedish expedition, personally wounding Birger Jarl in the field. Two years later upon the frozen expanse of Lake Peipus, his tactical brilliance enveloped the iron wedge of the Livonian Teutonic Order in the historic Battle on the Ice, halting papal eastward conquest. Pragmatically recognizing the military disparity against the Golden Horde, Alexander repeatedly journeyed to Sarai and Karakorum, braving mortal danger to appease Batu and Berke Khan through diplomatic tribute, averting punitive invasions while securing imperial exemptions for the Orthodox Church. Revered as an eternal guardian, his statesmanship safeguarded the very survival of Rus'. Establishing legal statutes and civic harmony across the Volkhov and Vladimir's Golden Gate, he unified regional military administration with visionary resolve. The Orthodox Church flourished under his aegis, and northern commerce prospered amidst surrounding ruins, enshrining his immortal memory as the supreme shield of Russian identity and eternal savior of East Slavic civilization. His legendary campaigns across frozen waters and visionary statesmanship under the Mongol shadow established an eternal standard of Christian kingship and military brilliance for all succeeding generations of Russian rulers.",
+  "SpeechStyle": "Speaks with majestic resonance like a great bronze cathedral bell, his words imbued with sovereign gravitas, tactical lucidity, and profound spiritual certainty.",
+  "Motivations": [
+    "Repel Swedish and Teutonic crusaders to defend Orthodox faith purity and secure vital Baltic maritime trade arteries.",
+    "Navigate tributary diplomacy with the Golden Horde to prevent punitive Mongol expeditions from laying waste to northern cities."
+  ],
+  "Values": [
+    "Holds defense of Orthodoxy and national survival as sacred duties, valuing farsighted strategic prudence over reckless bravado.",
+    "Champions personal chivalry and uncompromising military discipline, leading from the front to unify his people under trial."
+  ],
+  "Fears": [
+    "Fears that rash princely insurrections against the Tatars will provoke total extermination of the remaining cities of Rus'."
+  ],
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_rus_1a",
+  "HeroName": "Alexander Nevsky"
+}

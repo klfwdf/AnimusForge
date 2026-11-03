@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lazica_lord_1_1",
+  "DisplayName": "Opsites",
+  "HeroName": "Opsites",
+  "Description": "Opsites ruled in 374 AD as King of Lazica (Egrisi) along the eastern Black Sea coast (modern western Georgia), presiding over the historic realm of ancient Colchis. Governing the lush Rioni river basin and strategic sea-lanes, Lazica served as the essential maritime and mountain bastion shielding Eastern Roman Anatolia from Persian encirclement. Opsites fortified precipitous stone citadels and marshland bastions, commanding disciplined marine infantry and elite mountain spearbands. Unyielding in his pro-Roman orientation, he granted naval bases to Constantinople's Black Sea squadrons while fortifying the passes against Sassanid probe attacks, anchoring imperial security across the Caucasian maritime frontier. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "Background": "Opsites ruled in 374 AD as King of Lazica (Egrisi) along the eastern Black Sea coast (modern western Georgia), presiding over the historic realm of ancient Colchis. Governing the lush Rioni river basin and strategic sea-lanes, Lazica served as the essential maritime and mountain bastion shielding Eastern Roman Anatolia from Persian encirclement. Opsites fortified precipitous stone citadels and marshland bastions, commanding disciplined marine infantry and elite mountain spearbands. Unyielding in his pro-Roman orientation, he granted naval bases to Constantinople's Black Sea squadrons while fortifying the passes against Sassanid probe attacks, anchoring imperial security across the Caucasian maritime frontier. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance.",
+  "SpeechStyle": "Speaks with maritime precision and steady frontier vigilance; methodical, unyielding, and immune to Persian bribery.",
+  "PersonalSpeechStyle": "Speaks with maritime precision and steady frontier vigilance; methodical, unyielding, and immune to Persian bribery.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fortify Colchian maritime bastions to deny Persian land armies access to Black Sea ports",
+    "Maintain steadfast alliance with Constantinople to secure vital trade exemptions for Lazic merchants"
+  ],
+  "Values": [
+    "Lazic liberty thrives in harmony with the sea and Roman law; we shall never bend to eastern despots",
+    "Guarding the Caucasian coastal passes guarantees generational survival for our folk"
+  ],
+  "Fears": [
+    "Fears Persian cataphract columns executing wide flanking movements cutting off land routes to Anatolia"
+  ],
+  "Personality": "Opsites ruled in 374 AD as King of Lazica (Egrisi) along the eastern Black Sea coast (modern western Georgia), presiding over the historic realm of ancient Colchis. Governing the lush Rioni river basin and strategic sea-lanes, Lazica served as the essential maritime and mountain bastion shielding Eastern Roman Anatolia from Persian encirclement. Opsites fortified precipitous stone citadels and marshland bastions, commanding disciplined marine infantry and elite mountain spearbands. Unyielding in his pro-Roman orientation, he granted naval bases to Constantinople's Black Sea squadrons while fortifying the passes against Sassanid probe attacks, anchoring imperial security across the Caucasian maritime frontier. During the tumultuous conflicts of the late fourth century, he served as an indispensable pillar of tactical stability and frontline command. Drilling his warrior retinues daily and inspecting ramparts, he personally verified spearheads, shield-bosses, and sentry postings, eliminating indiscipline through exemplary leadership. When battle was joined, his cold composure under fire directed devastating counter-thrusts that shattered hostile formations at critical junctures. Placing the preservation of his folk and territorial sovereignty above all mortal ambition, this dedicated warlord stood as an unbreakable bastion of defiance."
+}

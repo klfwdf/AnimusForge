@@ -1,0 +1,53 @@
+{
+  "Id": "rule_teutonic_brethren_lance_wall",
+  "Keywords": [
+    "Teutonic knights and supporting troops",
+    "Supporting a mounted lance attack",
+    "Fodder for cavalry in Baltic lands"
+  ],
+  "RagShortTexts": [
+    "Teutonic brother knights work with followers and infantry; footing and horse stamina limit action.",
+    "Woods, marshes, forts and supply roads shape Baltic warfare beyond mounted lance attacks."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Teutonic and Livonian forces include followers, infantry and local helpers alongside brother knights, with scouting, carriage and garrison duties to perform. Mounted lances need ground for approach, cohesion and regrouping, all constrained by Baltic woods and wetlands. Capturing a fort still leaves horses to feed and roads to escort; success in contact does not secure supplies by itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A follower watches ground and neighbors rather than simply following a lance into mud or woodland. Tired horses and broken shafts need support after contact, while infantry and equipment carriers must retain contact with the mounted party. Pursuit beyond known roads can make the return harder than the advance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A commander checks fodder, spare harness and return roads before concentrating cavalry. Emptying garrisons for a distant campaign weakens transport and local relief. Local helpers know routes but have security and maintenance demands of their own. Shares of booty, service duration and lost horses affect the next muster."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Villages supplying fodder draw on their winter stocks, and drivers carry it over difficult roads to forts. Returning cavalry bring injured horses and damaged saddles to smiths, leatherworkers and handlers. Residents may value safer markets under patrols while still bearing the grain, forage and labor consumed by a long military stay."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

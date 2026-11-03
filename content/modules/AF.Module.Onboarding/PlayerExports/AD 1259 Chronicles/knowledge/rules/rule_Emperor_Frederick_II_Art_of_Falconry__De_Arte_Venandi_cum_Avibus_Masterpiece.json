@@ -1,0 +1,41 @@
+{
+  "Id": "rule_Emperor_Frederick_II_Art_of_Falconry",
+  "Keywords": [
+    "De Arte Venandi cum Avibus Masterpiece",
+    "Gyrfalcon Peregrine and Saker Hunting",
+    "Leather Falcon Hood and Taming Discipline",
+    "Medieval Empirical Ornithology Peak"
+  ],
+  "RagShortTexts": [
+    "Frederick II's hunting treatise 'De Arte Venandi cum Avibus' pioneered empirical zoology."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Frederick II's Latin treatise De Arte Venandi cum Avibus, the Art of Hunting with Birds, stands among the most ambitious empirical works of the thirteenth century. The emperor wrote it at his court in Sicily and Apulia, and he insisted on firsthand observation over the authority of Aristotle. He recorded bird anatomy, moulting, and migration, and he described how falcons were trained and hooded. He also brought the Arab leather hood into use to calm prized gyrfalcons and sakers. The book drew on falconers from Arabic and Latin traditions, and its illustrations and precise notes made it a manual for princes as much as a scientific study of nature."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "White gyrfalcons imported from Iceland were traded between kings as the highest sovereign gifts. Royal Master Falconers received salaries and privileges that rivalled those of battlefield marshals, and a falconer who trained a bird that caught the king's favour could rise at court faster than any knight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "On the Apulian plains, the falconer unhoods a peregrine from his gauntlet. The bird climbs into the thermals, then folds its wings and drops in a stoop far faster than any horse can gallop, striking waterfowl out of the air. The man who flies it must keep his bird fed and calm, because a hungry falcon will not come back to the glove."
+    }
+  ],
+  "TextMappings": []
+}

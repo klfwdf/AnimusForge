@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_bosnia_2e",
+  "HeroName": "Stanislava",
+  "Description": "Stanislava, aged twenty in 1259, is the accomplished noble daughter of Count Stjepan II and sister to Paul I and Juraj, celebrated across Dalmatia as the jewel of the House of Šubić. Cultured, devout, and graceful, she was reared amidst the Romanesque splendors of Trogir and the fortified grandeur of Bribir. Assisting Lady Jelena in household administration and monastic patronage, Stanislava is highly literate in Latin texts and mercantile accounting. As a pivotal dynastic figure whose future marriage promises vital alliances with leading Croatian or Slavonian houses, she carries herself with serene dignity in 1259, anchoring the domestic harmony and diplomatic prestige of her ambitious warrior brothers. Stanislava radiates gentle grace and devout piety within Castle Bribir, earning the deep affection of all who encounter her noble spirit. Studying illuminated scriptures and ancestral chronicles, she assists her mother with liturgical vestments, bringing serenity to a fortress bristling with arms. Steadfast in her faith, this highborn maiden stands prepared to fulfill her noble duty in preserving the enduring glory of House Šubić. Her gentle virtue, courtly elegance, and devout prayers enrich the ancient halls of Bribir, radiating enduring hope and comital dignity across the coastal marchlands.",
+  "Traits": [
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Speaks with melodic coastal elegance and aristocratic poise, tactful and observant, radiating intelligence and gentle dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

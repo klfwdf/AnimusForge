@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v8",
+  "Keywords": [
+    "教会争论中的共同词语"
+  ],
+  "RagShortTexts": [
+    "共有神学词语不等于教义一致，译经也不消除争论。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "不同教派都使用父、子、圣灵等称呼，却会对其关系作不同解释。听到相同词语不代表信条一致，译成哥特语也不使争论消失。来访信徒需借可信讲授者理解差别。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

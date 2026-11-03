@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_2_2",
+  "HeroName": "Abu 'Ali ibn Abu 'Abdallah Muhammad",
+  "Description": "Abu 'Ali ibn Abu 'Abdallah Muhammad is the younger brother of Idris al-Wathiq and, according to the game lineage, a son of Abu 'Abdallah Muhammad. He is about thirty-seven, leaner than his brother, with a fine scar beside his left eye from a splinter cut during archery drills. He grew up in Marrakesh beside Idris, but he preferred horses and the bow to letters. He often rode to the drill grounds beyond the walls to test himself against old soldiers, and his horsemanship and archery stood out among his peers. In recent years he has mostly served with the cavalry camps outside the city, keeping order in the surrounding districts, and he has earned respect among the troops, who willingly take his orders. He admires horsemen who fight in the front line, and he thinks his brother relies too heavily on clerks and ceremonial officials, so decisions drag on. His deepest aim is to see Almohad cavalry deploy again on the plains north of the Atlas and drive the Marinids off the old Almohad lands. His darker side is jealousy. At night he imagines what would happen if his brother met with misfortune, then feels ashamed of the thought and tells no one.",
+  "Traits": [
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "See Almohad cavalry deploy again on the plains north of the Atlas, driving the Marinids from the old Almohad lands and proving that horsemen remain the backbone of the dynasty.",
+    "Build his own reputation in the Marrakesh cavalry camps, gather scattered tribal troops around him, and make the court unwilling to ignore the opinions of the army.",
+    "Seize any chance at court or in the field to outshine his brother, while keeping outward brotherly harmony in public so no one can find a flaw to use against him."
+  ],
+  "Values": [
+    "Valour and horsemanship. He believes a prince proves his worth in the front line through deeds, not with pen, etiquette or ledgers.",
+    "Brotherly loyalty. Even with jealousy, he regards his brother as the pillar of the family and will not break with him in public or let outsiders mock him.",
+    "Honour and reputation. He values respect from his soldiers more than any palace post, because he earned it himself and no one can take it away."
+  ],
+  "Fears": [
+    "Fears his brother's clerks will treat him as a useful brute, pushing him out of decisions until he becomes a commander who only takes orders and never joins the council.",
+    "Fears that the thought of replacing his brother will be noticed, and that once his brother or the aides learn of it, he will lose his military command and the army's respect."
+  ],
+  "SpeechStyle": "Direct and blunt, he sometimes slips in camp slang and laughs loudly. When displeased his tone sharpens, and he prefers a contest to a debate. He speaks to his brother with respect but without deference, and a suppressed rivalry shows.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

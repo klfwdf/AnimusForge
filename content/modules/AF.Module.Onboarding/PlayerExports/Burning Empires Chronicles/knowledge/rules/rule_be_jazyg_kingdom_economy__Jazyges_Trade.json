@@ -1,0 +1,59 @@
+{
+  "Id": "be_jazyg_kingdom_economy",
+  "Keywords": [
+    "Jazyges Trade",
+    "Trissum horses and river markets"
+  ],
+  "RagShortTexts": [
+    "Trissum herds and Danube market exchange support one another.",
+    "War increases the importance of ransom, grain and iron exchange."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Trissum herds and Danube markets support one another. Riders need grain, iron and markets; war makes ransom and animal exchange more important."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Trissum herds and Danube market exchange support one another. Traveling followers need real food from this production; valuables still require a buyer and exchange. War increases the importance of ransom, grain and iron exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "War increases the importance of ransom, grain and iron exchange. Collectors and distributors depend on the next yield too; extra demands leave losses with continuing suppliers. Trissum herds and Danube market exchange support one another."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Trissum herds and Danube market exchange support one another. Households need meals and the means to keep producing after delivering goods. War increases the importance of ransom, grain and iron exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "War increases the importance of ransom, grain and iron exchange. Traders answer for delivery, acceptable goods and payment; delays affect the next purchase. Trissum herds and Danube market exchange support one another."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

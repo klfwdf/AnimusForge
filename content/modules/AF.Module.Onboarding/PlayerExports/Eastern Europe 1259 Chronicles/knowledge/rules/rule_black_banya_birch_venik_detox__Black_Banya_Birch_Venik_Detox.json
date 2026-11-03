@@ -1,0 +1,52 @@
+{
+  "Id": "rule_black_banya_birch_venik_detox",
+  "Keywords": [
+    "smoke clearing in a bathhouse",
+    "bathhouse fuel and water"
+  ],
+  "RagShortTexts": [
+    "Bathing with heated stones needs wood and water, with smoke and heat carefully managed.",
+    "Washing and leafy switches are bathing customs; frail people still need care and rest."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A bathhouse needs water, split wood and heated stones. Water cast on the stones fills a small room with moist heat. Where smoke shares the room, dense fumes must be cleared before entry and embers watched. Wet benches, doors and the water point can be slippery; carrying water, firing and cleaning take labour.\n\nLeafy birch switches and similar branches serve for tapping and washing, while neighbours meet and discuss household affairs. Preferences for heat, cold and cleanliness differ: some cool themselves after steaming, others only wash off sweat and dirt. The weak, drunk or wounded cannot all tolerate the same heat and need watching, with drink, clothing and a resting place afterwards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "An estate bathhouse needs fuel, water and repairs to stonework and timber. Hosts must consider fire and frail guests, particularly when drinking leaves the fire unattended."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers need to dry shirts and foot wraps after washing; putting wet clothes back on soon chills them. A wounded companion’s strength, wounds and available help govern bathing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sharing a bath can save fuel but requires agreement over turns and the work of fetching wood and water. Children and elders need suitable heat, water and dry clothes."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

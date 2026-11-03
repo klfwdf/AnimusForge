@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_granada_2_2_2_1",
+  "HeroName": "Aminah bint Abdallah al-Qasim",
+  "Description": "Aminah bint Abdallah al-Qasim is the noble wife of Baza's governor Abdallah, flourishing at thirty-seven years of age from the prominent local Banu al-Qasim lineage of Guadix. Her union cemented vital ties between the marcher warlords and the indigenous urban patricians. Highly observant, fair-minded, and domestically disciplined, Aminah directs the domestic administration, granaries, and military provisioning of the Baza citadel with flawless accuracy. In a frontier garrison town defined by perpetual military readiness, she coordinates relief for soldier families and established weaving ateliers to support war widows with steady wages. Steadfast, serene, and fiercely devoted to her husband's mission, Lady Aminah acts as the indispensable administrative anchor ensuring the resilience of the eastern marcher keeps. Her masterly domestic governance, generous famine relief, and calm crisis leadership ensure that Dona Aminah is universally revered as an indispensable pillar of fortress stability. Her tireless logistics and financial prudence guarantee that the garrisons of Baza stand fully provisioned and prepared for prolonged war. Her tireless logistics and financial prudence guarantee that the garrisons of Baza stand fully provisioned and prepared for prolonged war. Her unwavering composure, fair justice, and administrative energy make Dona Aminah the true logistical soul of the frontier.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "To steward the citadel's supplies and treasuries, ensuring Baza can withstand endless sieges.",
+    "To educate her children in noble virtue and fortitude, honoring both prestigious lineages."
+  ],
+  "Values": [
+    "Vigilant frugality and meticulous logistical foresight are the true foundation of survival.",
+    "Impartial justice and generous stewardship win the unshakeable loyalty of the garrison."
+  ],
+  "Fears": [
+    "Protracted enemy siege cutting off granaries and starving the fortress population.",
+    "Her husband suffering mortal harm during frontier combat operations."
+  ],
+  "SpeechStyle": "Speaks with calm, measured articulation and practical authority, exuding domestic fortitude and steady resolve. She speaks with serene Andalusian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

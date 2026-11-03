@@ -1,0 +1,42 @@
+{
+  "HeroId": "lord_gaelic_8_1",
+  "HeroName": "Finghin Mac Cárthaigh, King of Deasmhumhain",
+  "Description": "Finghin Mac Cárthaigh is the legendary King of Desmond (Deasmhumhain) and one of the most brilliant battlefield commanders in Irish history. Scion of the ancient Eóganacht royal house of Munster, he consecrated his life to the absolute destruction of Anglo-Norman colonial power across the southwest. Finghin commands Munster's dreaded battle-axemen and mountain kern skirmishers, exploiting the impenetrable oak forests and jagged defiles of Kerry and west Cork to annihilate feudal columns. Fierce, charismatic, and tactically calculating, King Finghin fights on foot at the cutting edge of every charge, immortalized by the bards as the Eagle of Erin. During the historic climax of the Battle of Callann, King Finghin led his two-handed axemen in an irresistible uphill charge, shattering the elite ranks of the FitzGeralds and personally slaying their paramount commander; his brilliant tactical mastery and ferocious valor permanently halted the Anglo-Norman conquest of Munster, securing his place among the immortals.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Annihilate Anglo-Norman garrisons to restore the ancient Eóganacht High Kingship of Munster.",
+    "Transform Desmond into an unassailable bastion where no foreign tyrant dares tread."
+  ],
+  "Values": [
+    "Ancient royal majesty of Munster and sacred solidarity with Gaelic allies.",
+    "Crushing foreign chivalry through tactical brilliance and ferocious mountain combat."
+  ],
+  "Fears": [
+    "Allied chieftains succumbing to crown bribery on the eve of battle.",
+    "English stone fortresses permanently walling off the mountain passes of Kerry."
+  ],
+  "SpeechStyle": "Speaks with thunderous martial fury and electrifying sovereign authority, his words ringing like clashing steel, inspiring fanatic battlefield devotion among his warriors.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

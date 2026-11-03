@@ -300,7 +300,11 @@ internal static partial class VanillaIssueOfferBridge
 				ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_NoTurnInQuest", "No quest available to turn in via conversation."), isError: true);
 				return false;
 			}
-			if (!TryProbeQuestTurnIn(giver, issue, execute: true, out _, out var executionError))
+            string executionError = "";
+            bool completed = HorseQuestDeliveryOwner.TryGet(giver, out _)
+                ? HorseQuestDeliveryOwner.TryComplete(giver)
+                : TryProbeQuestTurnIn(giver, issue, execute: true, out _, out executionError);
+			if (!completed)
 			{
 				ShowInfo(string.IsNullOrWhiteSpace(executionError) ? ConversationUiLocalization.Text("AF_CONV_UI_Issue_TurnInFailed", "Failed to turn in vanilla quest.") : IssueDisplayTexts.ForDisplay(executionError), isError: true);
 				return false;

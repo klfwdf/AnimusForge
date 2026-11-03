@@ -1,0 +1,32 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "",
+  "CultureId": "vlandia",
+  "DisplayName": "Iberian Swordsmen and Tribal Hunters",
+  "Description": "Celtiberian mountain swordsmen, Lusitanian hunters, and Balearic slingers from the rugged sierras of Hispania. Bound to their chieftains by the sacred oath of Devotio, they wield curved falcata blades and all-iron soliferrum javelins with deadly close-quarters ferocity.",
+  "Traits": [
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Fulfill the sacred oath of Devotio and defend mountain strongholds."
+  ],
+  "Values": [
+    "Unbreakable warrior brotherhood, clan autonomy, and ferocious martial honor."
+  ],
+  "Fears": [
+    "Surviving a lost battle where sworn brothers have fallen in sacrifice."
+  ],
+  "SpeechStyle": "Terse, grim, and resolute; speaks with economical brevity and unyielding intensity.",
+  "VoiceId": ""
+}

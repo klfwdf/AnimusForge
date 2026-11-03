@@ -1,0 +1,59 @@
+{
+  "Id": "be_xionite_kingdom_military",
+  "Keywords": [
+    "Xionites Military",
+    "Kidarite two-front cavalry supplies"
+  ],
+  "RagShortTexts": [
+    "Kidara’s cavalry relies on horses, forage and pass supply.",
+    "Persian and Kushan fronts consume different provisions."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cavalry depends on horses, forage and pass food. Persian and Kushan fronts consume different supplies; fast pursuit does not make grain and dependants equally fast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kidara’s cavalry relies on horses, forage and pass supply. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Persian and Kushan fronts consume different provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Persian and Kushan fronts consume different provisions. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Kidara’s cavalry relies on horses, forage and pass supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kidara’s cavalry relies on horses, forage and pass supply. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Persian and Kushan fronts consume different provisions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Persian and Kushan fronts consume different provisions. Repair, carrying and care also use people, while daily supply continues after troops pass. Kidara’s cavalry relies on horses, forage and pass supply."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

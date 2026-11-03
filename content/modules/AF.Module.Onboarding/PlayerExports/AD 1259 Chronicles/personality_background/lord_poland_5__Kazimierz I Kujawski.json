@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_5",
+  "HeroName": "Kazimierz I Kujawski",
+  "Description": "Casimir I of Kuyavia reigns as Duke of Kuyavia, Sieradz, and Łęczyca, the capable second son of Konrad I of Masovia and the monumental father of both High Duke Leszek the Black and King Władysław I the Elbow-high (Łokietek). Governing the strategic crossroads of central Poland along the middle Vistula, Casimir dedicated his entire life to dynamic statecraft, opportunistic warfare, and territorial aggrandizement. Through ruthless martial campaigns and acute legal maneuvering, he wrested control of Sieradz, Łęczyca, and Dobrzyń from his kinsmen, transforming Kuyavia into the formidable geographic pivot of the fragmented realm. Constantly embroiled in high-stakes border conflicts with Duke Świętopełk II of Pomerelia and the Margraves of Brandenburg, Casimir was an aggressive siege commander who personally led ironclad cavalry charges. He actively fortified Brześć Kujawski and Włocławek with advanced masonry ramparts, welcoming Dominican preceptors and master miners to foster economic self-sufficiency. Formidable, ambitious, and calculating, Casimir's expansive rule laid the indispensable territorial and military foundations from which his sons would resurrect the unified Kingdom of Poland. Casimir constructed massive stone curtain walls around Brześć, creating an unassailable bastion in central Poland. His ambitious territorial consolidation provided the historic springboard from which his sons restored the crown.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate Kuyavia, Sieradz, and Łęczyca into an indomitable central principality to anchor his dynasty's royal future.",
+    "Seize vital river ferry crossings and commercial transit tolls along the middle Vistula from rival dukes.",
+    "Erect impregnable brick-and-stone bastions around Brześć and Łęczyca to withstand sustained baronial sieges."
+  ],
+  "Values": [
+    "Believe supreme power grows exclusively from strategic territorial control and decisive political force.",
+    "Prize aggressive military initiative and battlefield courage, holding hesitation as fatal weakness.",
+    "Forge his heirs into battle-hardened statesmen capable of defending ancestral dynastic glory."
+  ],
+  "Fears": [
+    "His sons turning upon one another in fratricidal civil war, shattering the vast realms he painstakingly assembled.",
+    "The Teutonic Order driving south across the border, severing Kuyavia's vital commercial links to the sea."
+  ],
+  "SpeechStyle": "Kuyavia is the beating heart of Poland's eagle! To rule here, one must be subtler than a wolf and fiercer than a bear; touch my castles, and pay with your life! Kuyavian steel rules the march; power alone commands respect in our realm!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

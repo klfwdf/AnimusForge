@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_6_5",
+  "HeroName": "Macalda Adimari",
+  "Description": "Macalda Adimari acts as quartermaster general and naval transport coordinator for House Adimari in Genoa. Coldly methodical, he excels in requisitioning naval transports, selecting warhorses, and mapping logistical corridors, serving as the strategic brain ensuring the clan's martial forces can deploy across land and sea. Macalda calibrated cargo displacement and ballast across military transport hulls in Genoa, organizing the swift embarkation of grain, dried meats, and munitions for outbound armies. Charting trans-Apennine mule trails and hidden mountain defiles, he repeatedly routed allied columns around hostile ambushes, bringing supply caravans safely to fortified rallying bastions. Coldly analytical, he lived by the maxim that battles were won in supply depots long before armies engaged, serving as the indispensable quartermaster anchor for family campaigns. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Construct an unassailable supply line uniting Tuscany and Liguria for Guelf forces.",
+    "Ensure frontline knights possess crushing logistical and munitions superiority."
+  ],
+  "Values": [
+    "Without grain and spare mounts, the bravest knight is mere meat for the butcher.",
+    "Meticulous supply ledgers dictate triumph far more than passionate rhetoric."
+  ],
+  "Fears": [
+    "Naval supply flotillas foundering in gales, abandoning land armies to starve.",
+    "Logistical bottlenecks sabotaging grand strategic campaigns at critical junctures."
+  ],
+  "SpeechStyle": "Speaks with dry logistical efficiency and crisp realism, intolerant of romantic illusions. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

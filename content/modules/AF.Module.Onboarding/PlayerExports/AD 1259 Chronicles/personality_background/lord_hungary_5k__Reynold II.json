@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_5k",
+  "HeroName": "Reynold II",
+  "Description": "Reynold II Rátót is an accomplished military commander and royal Master of the Horse within Clan Rátót, directing armored cavalry regiments and elite horse-breeding manors. Stalwart, fierce, and tactically sound, Reynold fought beside King Béla IV in campaigns along the Danube and Austrian frontiers, winning renown in close-quarters knightly combat. A master of equestrian logistics, he established expansive horse-breeding studs across Nógrád and Transdanubia, supplying heavy, battle-hardened war-mounts for the crown and his clan. Enforcing iron discipline while sharing camp rations beside his men, he commands immense authority among the chivalric bannerets of Hungary. In 1259, as armies mobilize for the impending Bohemian conflict, Reynold drills heavy lancers in devastating shock formations, prepared to unleash a thunderous cavalry charge at the king's command. Reynold supervised the breeding and training of purebred warhorses across the highland pastures of Nógrád, enforcing relentless cavalry drill regulations. His iron battlefield composure and equestrian expertise forged his squadron into an elite heavy shock force ready for royal deployment. He stood constantly prepared to ride at the king's command, eager to crush any adversary threatening the territorial integrity, chivalric honor, and ancient majesty of the Hungarian crown.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master clan equestrian logistics, ensuring Clan Rátót maintains unrivaled shock cavalry supremacy.",
+    "Serve the crown with unyielding fidelity, winning immortal battlefield glory in impending campaigns."
+  ],
+  "Values": [
+    "Hold chivalric honor, fearless shock combat, and rigid discipline as supreme virtues, scorning cowardice.",
+    "Prize battlefield mastery and knightly brotherhood, convinced victory validates righteousness."
+  ],
+  "Fears": [
+    "Fears sudden equine plague devastating clan breeding studs and crippling cavalry readiness.",
+    "Dreads timid politicians surrendering hard-won frontier victories and dishonoring fallen warriors."
+  ],
+  "SpeechStyle": "Our war-chargers are barded and our lances sharp! When the heavy cavalry of Rátót charges, any foe daring to stand will be pulverized beneath our hooves! Armored shock lances charge; our heavy knights shall crush all opposition!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

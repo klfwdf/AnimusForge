@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bosnia_3k",
+  "HeroName": "Bertalan IV.",
+  "Description": "Bertalan IV (Bartol IV Frankopan), aged two in 1259, is the precious young son of Guido I and Lady Anna Dragota, carrying the illustrious name of the comital lineage within the mountain stronghold of Modruš. Robust and bright-eyed, the toddler is enveloped in warm furs and doted upon by castle guardsmen. Slumbering peacefully beside glowing hearth fires while bitter mountain gales howl against the stone ramparts, the babe brings tender solace to his battle-hardened father. In 1259, shielded within this strategic mountain nexus by loyal lances, little Bertalan flourishes in sheltered innocence, a tender shoot of comital nobility carrying the enduring aspirations of the House of Frankopan into the next generation. Bertalan IV, aged only two, chases sea gulls across stone ramparts with innocent laughter, bringing gentle warmth to a fortress bristling with arms. Attendant nurses watch over him with vigilant devotion, while mailed knights smile upon this tender scion of Frankopan nobility. Shielded by formidable coastal batteries and devoted guards, the child flourishes amidst sea breezes, embodying the promising maritime future of his house. Radiant with innocent laughter and youthful wonder, little Bertalan brings cheer to mailed sentries, embodying the enduring promise of his family's maritime realm.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend the territorial sovereignty, riverine toll revenues, and mountain autonomy of the Bosnian realm.",
+    "Ensure maximum combat readiness, karst border fortification, and cavalry cohesion against foreign imperial crusades.",
+    "Uphold the dynastic honor of the regional comital lineage and preserve internal peace among local highland barons."
+  ],
+  "Values": [
+    "Unwavering fidelity to hereditary feudal charters, municipal self-rule, and ancestral South Slavic customs.",
+    "Dedication to mountain and coastal fortress defense, protecting highland villagers and island subjects from destruction.",
+    "Pragmatic statecraft balancing maritime commerce, armored knightly discipline, and vigilant regional diplomacy."
+  ],
+  "Fears": [
+    "Catastrophic foreign inquisition or royal invasion subjugating the Bosnian highlands and dispossessing native feudal houses.",
+    "Venetian or Hungarian maritime blockade strangling Adriatic trade routes and severing coastal communication lines."
+  ],
+  "SpeechStyle": "Babbles with charming toddler sweetness and musical laughter, delighting in colorful castle banners and warm hearths.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

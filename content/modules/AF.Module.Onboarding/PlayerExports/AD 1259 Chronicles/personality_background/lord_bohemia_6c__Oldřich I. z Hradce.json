@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_6c",
+  "HeroName": "Oldřich I. z Hradce",
+  "Description": "Oldřich I of Hradec stands as a consummate statesman and rising magnate of the Golden Rose dynasty, renowned throughout the royal chancellery in Prague for his diplomatic finesse and sharp political foresight. As the eldest son and primary heir of Lord Vítek I, Oldřich was thoroughly educated in Roman civil law, feudal jurisprudence, and chivalric martial arts, making him an invaluable counselor to King Přemysl Otakar II. He served as a trusted crown envoy to the Danubian courts of Vienna, negotiating intricate boundary treaties, commercial exemptions, and monastic patronage charters across Upper Austria and Styria. Within his family's southern domains, Oldřich fortified river checkpoints and masonry toll stations along the Nežárka, securing a lucrative stranglehold over cross-border trade between Bohemia and the southern Alpine passes. Calculating, articulate, and fiercely ambitious, he navigates the delicate equilibrium between royal centralization and baronial liberties with masterly poise, determined to elevate the House of Hradec into the foremost political dynasty of the Bohemian realm. In the contentious assemblies of the Prague Land Court, Oldřich repeatedly secured landmark legal triumphs by deploying ancestral property precedents against encroaching neighbors. He personally established armed convoy escorts for silver transports arriving from the Jihlava mines, firmly rooting the House of Hradec in the kingdom's financial core.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Systematically expand Hradec feudal jurisdictions and absorb neighboring manors through legal contracts and strategic purchases.",
+    "Secure supreme administrative offices in the Prague royal chancellery to dictate crown policy in favor of his house.",
+    "Monopolize commercial river transit and alpine trade routes to ensure endless revenues for mercenary retinues."
+  ],
+  "Values": [
+    "Revere written jurisprudence, feudal treaties, and legal charters as supreme instruments of governance.",
+    "Prioritize practical political compromise and tactical alliances over emotional grudges or empty bluster.",
+    "Cultivate discreet intelligence networks and calculated strategic patience in all diplomatic endeavors."
+  ],
+  "Fears": [
+    "Excessive royal centralization stripping away ancestral baronial immunities and hereditary feudal jurisdictions.",
+    "Becoming trapped on the losing side of a grand imperial coalition against the Bohemian crown."
+  ],
+  "SpeechStyle": "A royal charter sealed by parchment and verified by law often protects our baronial borders far better than a thousand reckless charges; prudence governs destiny. Legal mastery and calm patience conquer kingdoms far better than steel.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

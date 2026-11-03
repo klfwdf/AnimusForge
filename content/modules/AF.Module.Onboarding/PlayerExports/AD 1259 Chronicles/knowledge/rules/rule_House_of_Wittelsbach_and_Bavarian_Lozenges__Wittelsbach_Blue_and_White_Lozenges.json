@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Wittelsbach_and_Bavarian_Lozenges",
+  "Keywords": [
+    "Wittelsbach Blue and White Lozenges",
+    "Duchy of Bavaria Partition Patrimony",
+    "Rhenish Palatinate Electorate Power",
+    "Hohenstaufen Steadfast Imperial Ally"
+  ],
+  "RagShortTexts": [
+    "Wittelsbach authority in Bavaria depends on regional rights and local obligations.",
+    "Rural rents and succession vary between estates rather than following one universal custom."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Wittelsbach held Bavaria and the Rhenish Palatinate under the blue-and-white lozenges of their arms. In 1255 the family divided its lands between Louis II and Henry XIII, creating an Upper Bavarian and Palatine line and a Lower Bavarian line that governed separately. The Palatine branch also held the dignity of Count Palatine of the Rhine, which carried a vote in imperial elections and made the Wittelsbach a power in the Empire's politics. The dukes kept Bavaria's rivers and Alpine passes under their control, and their tolls and salt revenues paid for castles and retinues. Through the division the family learned to balance imperial service against its own territorial needs, and that balance shaped every decision about alliances and inheritance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Duke Louis the Strict kept his castles on the Alpine passes and his tolls on the Rhine in good repair, and he sent his bailiffs to every market where salt and grain changed hands. Each toll was entered in the ducal rolls, and every new alliance with a rival archbishop was weighed against the cost of raids on those routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "A Bavarian household keeps track of rents, livestock dues and the days its members must work elsewhere. Grain used for brewing cannot also fill the bread bin, so a failed harvest changes every calculation. Custom may provide an argument against a new demand, but rights and succession vary between estates; delivering a ham does not purchase universal peace."
+    }
+  ],
+  "TextMappings": []
+}

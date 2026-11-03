@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_athanaric_wall_v6",
+  "Keywords": [
+    "Peace concluded aboard boats"
+  ],
+  "RagShortTexts": [
+    "Boats were rowed to the middle of the Danube for the leaders and their parties."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Boats were rowed to the middle of the Danube for the leaders and their parties. This avoided both Athanaric’s landing and an imperial crossing. Position and escort materially expressed status rather than merely decorating a ceremony."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Princess Marina Vladimirovna is the astute, articulate daughter of Prince Vladimir of Dubrovitsa, celebrated throughout the southern Polesian borderlands for her diplomatic brilliance. Formally educated in courtly statecraft, Church Slavonic chronicles, and diplomatic rhetoric, she expertly assisted her father in drafting inter-princely correspondence and treaty accords. Poised, perceptive, and gracious, Marina served as an essential diplomatic envoy linking Dubrovitsa with the princely councils of Pinsk, Lutsk, and Volodymyr, resolving border disputes. A staunch advocate of economic cooperation over military friction, she organized the annual Dubrovitsa fur and timber fair, fostering profitable commercial bonds across regional borders. During military crises, she maintained absolute composure, supervising emergency grain rationing and bolstering civilian morale with inspirational courage. Affectionately hailed as the 'Lily of the Horyn River', she stands as an indispensable diplomatic jewel and peacemaker along the frontier. Princess Marina stood as the indispensable diplomatic jewel uniting Dubrovitsa with surrounding princely courts. Frequently dispatched as an envoy to Pinsk and Galicia, she mediated thorny disputes concerning woodland logging rights and river tolls through persuasive eloquence and legal precision. Her dedication to diplomatic honor constructed lasting bridges of trust across volatile borderlands. Her keen political foresight safeguarded ancestral rights, making her an invaluable counselor to her family during volatile times.",
+  "SpeechStyle": "Blades are sharp, but far-sighted diplomacy builds what warfare destroys. Honorable compacts and mutual respect pave the true road to lasting security across our borders!",
+  "Motivations": [
+    "Mediate strategic compacts among Polesian princes and neighboring rulers, securing long-term peace and trade for Dubrovitsa.",
+    "Supervise fiscal governance and external diplomacy, enhancing her dynasty's political prestige across Ruthenian princely diets."
+  ],
+  "Values": [
+    "Valuing diplomatic honor, rational equilibrium, and constructive reconciliation, disdaining reckless militarism and perfidy.",
+    "Believing gracious statesmanship and mutual economic advantage dissolve the bitterest dynastic feuds."
+  ],
+  "Fears": [
+    "Treacherous warlords abruptly tearing up peace treaties to launch predatory invasions, destroying years of diplomatic labor.",
+    "Brutal warfare engulfing Dubrovitsa's thriving trade fairs and artisans' quarters, reducing peaceful townsfolk to destitution."
+  ],
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_turov_2b",
+  "HeroName": "Marina Vladimirovna"
+}

@@ -1,0 +1,43 @@
+{
+  "Id": "rule_punic_03",
+  "Name": "Battle of Lake Trasimene Morning Mist Ambush",
+  "Keywords": [
+    "rule_punic_03",
+    "Battle of Lake Trasimene",
+    "Flaminius Defeat",
+    "Trasimene Morning Mist",
+    "Cortona Defile Trap"
+  ],
+  "RagShortTexts": [
+    "In 217 BC, Hannibal trapped Flaminius's 30,000 legionaries against Lake Trasimene in dense..."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In the spring of 217 BC, Hannibal baited Consul Gaius Flaminius into a narrow defile between the steep hills of Cortona and the shore of Lake Trasimene. Concealing his Celtic infantry and Numidian cavalry in the wooded heights under heavy dawn fog, Hannibal closed both ends of the pass as the marching Roman column entered. Blinded by mist and unable to deploy into manipular lines, over 15,000 Romans including Flaminius were slaughtered or drowned, throwing Rome into total panic."
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "The morning fog was thick as sheep's wool! We were marching in column when suddenly wild battle cries echoed from the ridges. Before we could uncase our shields, Gallic broadswords were hacking us into the lake mud!"
+    },
+    {
+      "Priority": 1,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Flaminius paid for his populist arrogance with his life and two consular legions. Never march into an unreconnoitered defile when facing the master of tactical deception."
+    }
+  ],
+  "TextMappings": []
+}

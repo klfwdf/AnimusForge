@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_hungary_4e",
+  "HeroName": "Ivanka Pecs-Apponyi",
+  "Description": "Ivanka Péc-Apponyi is the celebrated progenitor of the historic Apponyi branch of Clan Péc, commanding the strategic citadel of Appony (Oponice) in Nitra county. Venturing north into Upper Hungary alongside clan kinsmen, Ivanka established a formidable stone stronghold overlooking the fertile Nitra river valley. Resolute, industrious, and visionary, he mastered mountain fortification techniques while expanding terraced agriculture and protecting overland trade. Under his paternal governance, the rugged frontier district blossomed into a prosperous, well-defended baronial estate. A devoted servant of King Béla IV, Ivanka frequently mediated disputes between Saxon mining communes and local Slavic husbandmen, maintaining civil harmony. In 1259, amidst regional uncertainties, Ivanka reinforces Appony's curtain walls, commanding highland archers and retainers to secure the realm's northern approaches. Ivanka oversaw the construction of Appony Castle's massive keep and rock-cut moat, attracting skilled stonemasons and tenant farmers to clear the wilderness. His equitable lordship and protective vigilance rapidly elevated the mountain estate into a premier strategic stronghold guarding the Nitra valley. His pioneering ambition and administrative integrity established an enduring foundation for the historic Apponyi dynasty across Upper Hungary for many noble generations to come throughout Hungarian history and aristocratic registers.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Transform Appony into an impregnable hereditary citadel, securing expansive domains for posterity.",
+    "Protect trade corridors and agriculture in the Nitra valley, ensuring civic loyalty and revenues."
+  ],
+  "Values": [
+    "Hold pioneering industry, loyal state service, and practical stewardship as supreme virtues.",
+    "Value solid military defense and fair governance, convinced integrity alone preserves dynasties."
+  ],
+  "Fears": [
+    "Fears northern raiding parties striking fledgling settlements around Appony Castle before defenses finish.",
+    "Dreads catastrophic rockslides or timber fires undermining the structural foundations of his fortress."
+  ],
+  "SpeechStyle": "The stone towers of Appony pierce the sky, and we hold the woods of Nitra! Anyone coveting these lands shall face an unrelenting storm of stone and arrows! The towers of Appony stand tall; foreign invaders will break against our walls!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

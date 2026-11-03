@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_nicaea_1_0_2_4",
+  "HeroName": "Eugenia Palaiológina Kantakouzeni",
+  "Description": "Eugenia Palaiológina Kantakouzene played a pivotal behind-the-scenes role in integrating steppe nomadic military power into the Byzantine imperial apparatus. As the youngest daughter of John Kantakouzenos and Irene Eulogia, Eugenia was wed to Syrgiannes, a prominent Cuman chieftain baptized into Orthodoxy who brought thousands of elite light horsemen into imperial service. Through this crucial matrimonial pact, Emperor Michael VIII secured an indispensable equestrian strike force ahead of the campaigns for Pelagonia and Constantinople. Eugenia demonstrated exceptional cultural tact and administrative grace, bridging the divide between proud steppe chieftains and the rigid etiquette of the Nicaean court. She fostered an enduring loyalty among Cuman veterans, ensuring their reliable deployment along hostile frontiers. Her son, Syrgiannes Palaiologos, would inherit her aristocratic pride and martial heritage to become one of the most brilliant and volatile generals of the 14th century. Across her ancestral estates in southern Macedonia, Eugenia maintained expansive horse paddocks and blacksmithing forges, distributing steel sabers and reinforced saddles to Cuman cavalry squadrons. Revering their ancestral steppe customs, she frequently visited nomadic encampments to dispense supplies, grain, and medicinal wines, earning deep veneration from tribal elders. Under her benevolent oversight, thousands of fearsome horse archers remained fiercely devoted to the Palaiologan banner, executing devastating vanguard strikes against frontier invaders.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep Cuman troops loyal to the Palaiologan house and supply skilled mounted archers to defend the empire's frontiers.",
+    "Reconcile nomads with Greek subjects in Asia Minor, encouraging Orthodox integration and settled agriculture to secure prosperous family lands.",
+    "Teach the next generation both civil and military arts, combining steppe courage with imperial education to honour both families."
+  ],
+  "Values": [
+    "Cultural inclusion and honest dealing unite a diverse empire; prejudice and mistreatment of submitted soldiers invite disaster.",
+    "Remain faithful to husband and family through war, combining practical judgement with quiet firmness and exemplary conduct.",
+    "Uphold Orthodoxy and family harmony, bringing steppe settlers into the faith while protecting stability among the empire's peoples."
+  ],
+  "Fears": [
+    "Unpaid or excluded Cuman commanders mutinying and destroying a pillar of imperial defence in Asia Minor.",
+    "Noble prejudice against steppe newcomers erasing generations of family service and exposing them to suspicion and false accusations."
+  ],
+  "SpeechStyle": "Her voice is gentle and diplomatic, demonstrating patient understanding that easily reconciles proud steppe warriors with court protocol.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

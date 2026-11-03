@@ -9,11 +9,10 @@ namespace AnimusForge;
 
 internal static class EncounterPromptTexts
 {
-    private static readonly Lazy<Dictionary<string, string>> Values = new Lazy<Dictionary<string, string>>(Load);
+    private static readonly PromptLanguageFile<Dictionary<string, string>> Values = new PromptLanguageFile<Dictionary<string, string>>("EncounterPromptTexts.json", Load);
 
-    private static Dictionary<string, string> Load()
+    private static Dictionary<string, string> Load(string path)
     {
-        string path = AnimusForgeModulePaths.GetModuleDataFilePath("EncounterPromptTexts.json");
         return JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path, Encoding.UTF8));
     }
 

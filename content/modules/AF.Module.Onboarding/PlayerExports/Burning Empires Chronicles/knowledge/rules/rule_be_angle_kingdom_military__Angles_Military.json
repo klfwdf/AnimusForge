@@ -1,0 +1,59 @@
+{
+  "Id": "be_angle_kingdom_military",
+  "Keywords": [
+    "Angles Military",
+    "Angle coastal operations"
+  ],
+  "RagShortTexts": [
+    "Tides, water and vessel repair limit coastal action.",
+    "Sailing and land warnings share limited people."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Coastal operations depend on tide, water, repair and landings. Land fighters also need food; sending every person aboard leaves fields and routes unguarded."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Tides, water and vessel repair limit coastal action. These forces remain limited by food, rest and loads; vanguard speed does not represent the whole column. Sailing and land warnings share limited people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Sailing and land warnings share limited people. Usable strength includes supply, home guards and exits; concentration reduces another reserve. Tides, water and vessel repair limit coastal action."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Tides, water and vessel repair limit coastal action. Fighters come from households; prolonged loss of labor or animals weakens the next levy. Sailing and land warnings share limited people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Sailing and land warnings share limited people. Repair, carrying and care also use people, while daily supply continues after troops pass. Tides, water and vessel repair limit coastal action."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_1_3",
+  "HeroName": "Rinaldo Boccanegra",
+  "Description": "Rinaldo Boccanegra commands the civic guard and urban militia companies of Genoa as the fiercely devoted brother of the Capitano del Popolo. Stern and incorruptible, he spearheaded the demilitarization of private aristocratic towers and ruthlessly suppressed reactionary riots, forging disciplined citizen cohorts that secure the revolutionary regime. Rinaldo fortified the labyrinthine alleys of Genoa with barricades and masonry watchtowers, effectively neutralizing the shock value of aristocratic cavalry charges within the dense urban core. Enforcing harsh collective discipline among civic militia units, he maintained unceasing nocturnal patrols over harbor moles and city gates, summarily executing foreign infiltrators and aristocratic saboteurs without hesitation. Dedicated body and soul to the survival of the commune and his brother, this austere commander crushed insurgent conspiracies before they could muster arms, hated and feared by counter-revolutionaries. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, and merchant syndicates.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "ruthless",
+      "Strength": 2
+    },
+    {
+      "Id": "loyal",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Eradicate all clandestine aristocratic armed cells plotting to subvert the popular regime.",
+    "Forge the citizen militia into an invincible, disciplined professional army."
+  ],
+  "Values": [
+    "The popular republic must be defended through iron discipline and relentless vigilance.",
+    "Leniency toward treason is betrayal of the civic commonwealth."
+  ],
+  "Fears": [
+    "Aristocratic gold corrupting militia commanders to stage an internal mutiny.",
+    "Breaching of city ramparts beneath simultaneous naval blockade and overland assault."
+  ],
+  "SpeechStyle": "Speaks with curt military discipline and uncompromising vigilance, seasoned by street fighting. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

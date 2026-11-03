@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_hadrian_arcani_treason_v7",
+  "Keywords": [
+    "Restoring British civil offices"
+  ],
+  "RagShortTexts": [
+    "Theodosius restored administration as well as defenses."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Theodosius restored administration as well as defenses. Towns, garrisons and villages needed identifiable offices for responsibility, restitution and order. Military success and sustainable administration required separate arrangements."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

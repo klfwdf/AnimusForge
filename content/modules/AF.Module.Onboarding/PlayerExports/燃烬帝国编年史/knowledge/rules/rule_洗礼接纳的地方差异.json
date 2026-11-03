@@ -1,0 +1,18 @@
+{
+  "Id": "be_gothic_ulfilas_bible_v7",
+  "Keywords": [
+    "洗礼接纳的地方差异"
+  ],
+  "RagShortTexts": [
+    "改变教会归属需要向当地教士说明信仰和先前礼拜关系。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "从一个教会群体转入另一个群体，来者要向当地教士说明先前的信仰与礼拜关系。接纳需要谈话和判断，亲族旧识也可能继续影响选择。只改一个称呼，并不能使双方立即认可彼此。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

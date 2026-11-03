@@ -1,0 +1,53 @@
+{
+  "Id": "rule_mantlet_wet_rawhide_fireproof",
+  "Keywords": [
+    "Mantlets and protective covers",
+    "Moving siege mantlets",
+    "Mantlet coverings and repair"
+  ],
+  "RagShortTexts": [
+    "Mantlets shelter approaching workers but weight, ground and coverings limit movement.",
+    "Covered timber still needs maintenance, guards, fire control and an exit."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "At Rus towns or Baltic forts, mantlets shelter workers carrying earth or improving an approach. Hide coverings protect timber but add weight. Mud, ditches and flanking missiles still obstruct movement. Damaged covers, embers and loose frames need attention, with room behind for turning and withdrawal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Mantlet crews need watchers at the sides. Sunken wheels or a leaning frame expose men who continue pushing. Water carriers, repairs and relief sustain work. Withdrawal needs space rather than supply carts blocking the sheltered rear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "A lord needs carpenters, hides, transport and repair for a defined approach. Larger cover is harder to move across ditches and weak ground. Relief, fire control and another route can sustain access better than adding covering alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Leatherworkers, carpenters and drivers lose time for shoes, carts and cultivation. Water and replacement hides require repeated exposed journeys. In a long siege, payment, food and a return date determine whether workers can still sustain their households."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Military"
+}

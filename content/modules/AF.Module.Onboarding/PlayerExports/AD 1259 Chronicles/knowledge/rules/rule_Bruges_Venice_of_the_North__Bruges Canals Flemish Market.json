@@ -1,0 +1,32 @@
+{
+  "Id": "rule_Bruges_Venice_of_the_North",
+  "Keywords": [
+    "Bruges Canals Flemish Market",
+    "Zwin Bay Deep Harbor",
+    "Hanseatic Kontor Italian Banks",
+    "Bruges Belfry Textile Cloth"
+  ],
+  "RagShortTexts": [
+    "Bruges links waterways and cloth commerce with wider northern trade.",
+    "Cloth finishing and inspection tie workshop quality to a town's commercial reputation."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Bruges became a leading financial centre of northern Europe through its deep-water Zwin channel, which let seagoing ships reach the city's quays. Its merchants traded Baltic timber and grain from the Hanseatic towns against Italian silks, spices, and bills of exchange. Italian banking houses set up offices in the city, and their letters of credit moved money across the continent. The municipal belfry watched over the market, where civic authorities regulated weights, fees, and the cloth halls. The city's prosperity depended on the textile trade, the banking networks, and the uninterrupted flow of ships through the Zwin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "notable",
+          "townsfolk"
+        ]
+      },
+      "Content": "A Bruges cloth merchant relies on finishing, inspection and a reputation buyers recognise. A seal cannot turn bad work into good cloth, and one damaged consignment can lead to a costly dispute. Fullers, dyers and shearers have their own skills and costs; the town's commercial standing depends on that chain of work, not a guarantee of unmatched quality."
+    }
+  ],
+  "TextMappings": []
+}

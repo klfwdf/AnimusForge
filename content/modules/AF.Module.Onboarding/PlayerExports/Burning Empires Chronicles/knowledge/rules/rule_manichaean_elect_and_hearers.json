@@ -1,0 +1,18 @@
+{
+  "Id": "be_religion_manichaeism_spread_v1",
+  "Keywords": [
+    "Manichaean Elect and Hearers"
+  ],
+  "RagShortTexts": [
+    "Manichaean communities distinguished ascetic Elect from supporting Hearers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Manichaean communities distinguished ascetic Elect from supporting Hearers. Their obligations differed, so restrictions on food and property for the Elect did not describe every believer. Teaching depended on material support as well as doctrine."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

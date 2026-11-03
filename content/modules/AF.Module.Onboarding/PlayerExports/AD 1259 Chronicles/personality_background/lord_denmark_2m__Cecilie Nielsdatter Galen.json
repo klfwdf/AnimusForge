@@ -1,0 +1,37 @@
+{
+  "HeroId": "lord_denmark_2m",
+  "HeroName": "Cecilie Nielsdatter Galen",
+  "Description": "Lady Cecilie Nielsdatter Galen, third daughter of cavalry commander Sir Niels, was renowned across Scania for her contemplative spirituality and tireless hospital ministry. Untempted by courtly ambitions, Cecilie dedicated herself to monastic charities and copying sacred manuscripts. Amidst the destructive civil wars between the Galen clan and royalist forces, Cecilie assumed direct stewardship of relief for the orphans and widows of fallen retainers. She established dedicated hospices, personally dressing wounds, dispensing herbal remedies, and providing hot food for destitute refugees fleeing devastated villages. Combining compassionate bedside care with methodical organization of medicinal herb gardens, she saved countless lives during siege famines, venerated throughout rural Scania as an angel of Christian mercy. Educated in courtly etiquette and canonical scripture, Cecilie mastered Latin chronicles and demonstrated an extraordinary aptitude for agricultural accountancy across the family's Scanian holdings. During devastating royalist incursions into Scania, she assisted her kinsmen in marshaling grain reserves and evacuating rural peasants behind stone ramparts, mitigating immense devastation. Her gracious humility, paired with an iron resolve to preserve aristocratic autonomy, made her celebrated as an exemplary noblewoman of the medieval Danish realm, whose quiet resilience strengthened the social fabric of her ancestral homeland.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Provide shelter, nourishment, and medical relief for maimed soldiers and displaced orphans traumatized by appanage wars.",
+    "Cultivate monastic botanical infirmaries and advance surgical nursing, mitigating mortality and pestilence during sieges."
+  ],
+  "Values": [
+    "Believes deeply in the gospel commandments of sacrificial charity, convinced love alone redeems humanity from slaughter.",
+    "Exalts saintly humility and voluntary simplicity, finding holy purpose in binding wounds and comforting the brokenhearted."
+  ],
+  "Fears": [
+    "Dreads virulent typhus outbreaks tearing through crowded refugee hospices, claiming hundreds of vulnerable survivors."
+  ],
+  "SpeechStyle": "Speaks with soothing, celestial serenity and heartfelt tenderness, her gentle words dissolving despair and bringing deep peace.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

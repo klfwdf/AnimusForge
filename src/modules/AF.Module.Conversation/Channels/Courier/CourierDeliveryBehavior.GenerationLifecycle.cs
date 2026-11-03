@@ -62,7 +62,7 @@ public sealed partial class CourierDeliveryBehavior
 					{
 						playerName = Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0465");
 					}
-					bool historyAccepted = CommitCourierDialogueHistory(recipient, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0466") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0467") + session.LetterText, null, session.DeliveryFactText);
+					bool historyAccepted = CommitCourierDialogueHistory(recipient, ConversationRuntimeTexts.Tidy(ConversationRuntimeTexts.W("AF_CONV_Runtime_0466") + playerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0467")) + (PromptLanguage.IsChinese ? "" : " ") + session.LetterText, null, session.DeliveryFactText);
 					if (historyAccepted) RecordModuleCourierStep(session, CoreCourierAcceptedSteps.DeliveryHistory);
 					if (!payloadAccepted || !historyAccepted)
 					FailModuleCourierSession(session, payloadAccepted ? "courier.history_unconfirmed" : "courier.payload_unconfirmed");

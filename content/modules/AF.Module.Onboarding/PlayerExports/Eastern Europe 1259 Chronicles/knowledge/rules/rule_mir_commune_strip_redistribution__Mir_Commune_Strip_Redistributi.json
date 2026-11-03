@@ -1,0 +1,52 @@
+{
+  "Id": "rule_mir_commune_strip_redistribution",
+  "Keywords": [
+    "village boundaries and shared duties",
+    "neighbours sharing rural obligations"
+  ],
+  "RagShortTexts": [
+    "Neighbours negotiate paths, meadows, water and shared obligations under differing rights.",
+    "Cooperation does not imply periodic equal land division; kin and authority still matter."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fields, house plots and meadows intertwine with neighbours’ paths and water. Driving stock past crops, clearing ditches, repairing a crossing or meeting a collective demand requires agreement over labour and materials. People who remember boundaries, kin and local notables mediate disputes; help for labour-poor homes creates obligations affecting the next season.\n\nShared work does not make every holding equal. Inheritance, lordly or church claims, tenancy, debt and marriage alter who cultivates land. A transfer requires identifying the cultivator, rent claimant and boundary. Treating communal work as permission to redistribute every field undermines investment and inflames kin disputes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Stewards need to know each household’s animals and labour rather than hide differences under one levy. Recognising cultivation and rent claims supports future sowing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops seeking carts must ask who can promise them and whether essential plough animals are involved. One elder’s consent may not bind every kin group."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Neighbours remember carts and labour contributed to road work. Assistance creates returns at haymaking, animal loans, weddings and funerals."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

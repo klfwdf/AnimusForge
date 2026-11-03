@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v9",
+  "Keywords": [
+    "斯巴达克斯军中的去向争执"
+  ],
+  "RagShortTexts": [
+    "斯巴达克斯想返乡，部分追随者却更愿继续掠夺。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "普鲁塔克写斯巴达克斯打算越阿尔卑斯后让人各归故乡，部分追随者却因胜利与掠夺而不愿听从。共同逃离强制身份的人也会有不同目的，不能把叛军写成从来意见一致的一支队伍。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

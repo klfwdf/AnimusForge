@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1_5",
+  "HeroName": "Bavor II of Strakonic",
+  "Description": "Bavor II of Strakonice stands as southern Bohemia's most valiant royalist warlord, holding command as Burgrave of the formidable royal fortress of Zvíkov. Ruling Strakonice Castle on the Otava River, he proved one of King Přemysl Otakar II's most fiercely loyal comrades-in-arms, a bond cemented when the King granted him the hand of his natural daughter Agnes in marriage. Confronting the encroaching insubordination of the Vítkovci (House of Rosenberg) magnates across southern marches, Bavor stood as an unyielding royal fortress, controlling the river confluences from Zvíkov and repeatedly frustrating separatist revolts. Generous, fiery, and honoring his sworn oaths above all earthly riches, he mastered combined operations of river flotillas and shock cavalry, serving as Otakar's most dependable southern bastion while royal armies campaigned abroad. Fortifying the towering cliffs of Zvíkov with iron river chains and catapult platforms, Bavor II held absolute control over the confluence of the Vltava and Otava rivers, completely blocking unauthorized traffic from Rosenberg baronies. Leading heavy cavalry sorties into southern woodlands, he repeatedly routed conspirators attempting to ally with Austrian rebels, standing as King Otakar's most unyielding southern shield. His boundless loyalty and martial prowess made him the terror of all who dared rebel against the King.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "loyal",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Crush southern Bohemian separatist barons from Zvíkov Castle, securing royal dominion along the Vltava.",
+    "Lead southern cavalry levies in Danubian wars, seizing rich frontier towns under the royal banner."
+  ],
+  "Values": [
+    "Holds chivalric honor and absolute fealty to King Otakar as his sacred life creed, scorning betrayal.",
+    "Believes martial heroism and defending one's people are the true measures of aristocratic nobility."
+  ],
+  "Fears": [
+    "Fears the Vítkovci taking advantage of the King's absence to suddenly besiege Strakonice Castle.",
+    "Worries court divisions in Prague will paralyze anti-rebel efforts, allowing southern barons to expand unchecked."
+  ],
+  "SpeechStyle": "Zvíkov's granite cliffs overlook the river, and Strakonice's banners follow the King alone! If any rebel defies the crown, he answers to my lance! In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Bavor II of Strakonic"
+}

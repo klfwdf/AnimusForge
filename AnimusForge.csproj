@@ -680,4 +680,84 @@
   <Target Name="CopyModuleXmlsToBannerlordModule" AfterTargets="Build" Condition="'$(CopyLegacyAnimusForgeModuleData)' == 'true'">
     <Error Text="Direct MSBuild deployment is disabled. Use the repository single-module deploy script so Bootstrap and both version implementations stay synchronized." />
   </Target>
+  <ItemGroup>
+    <!-- English editions of runtime text tables (BilingualTextTable). -->
+    <EmbeddedResource Include="content\modules\AF.Module.Knowledge\ModuleData\KnowledgeSourceTexts.en.json">
+      <LogicalName>AnimusForge.Knowledge.SourceTexts.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- English editions of runtime text tables (BilingualTextTable). -->
+    <EmbeddedResource Include="content\modules\AF.Module.Weekly\ModuleData\WeeklyMaterialCompatibility.en.json">
+      <LogicalName>AnimusForge.Weekly.MaterialCompatibility.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Social\ModuleData\SocialSourceTexts.en.json">
+      <LogicalName>AnimusForge.Defaults.SocialSourceTexts.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Conversation\ModuleData\ConversationRuntimeCompatibility.en.json">
+      <LogicalName>AnimusForge.Conversation.RuntimeCompatibility.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Economy\ModuleData\EconomySourceTexts.en.json">
+      <LogicalName>AnimusForge.Defaults.EconomySourceTexts.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\foundation\AF.Foundation.Localization\ModuleData\AdapterRecordCompatibility.en.json">
+      <LogicalName>AnimusForge.Adapter.RecordCompatibility.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\foundation\AF.Foundation.Localization\ModuleData\AdapterSceneCompatibility.en.json">
+      <LogicalName>AnimusForge.Adapter.SceneCompatibility.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\foundation\AF.Foundation.Localization\ModuleData\AdapterPromptCaptureCompatibility.en.json">
+      <LogicalName>AnimusForge.AdapterPromptCapture.Compatibility.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\CastleAftermathCompatibility.en.json">
+      <LogicalName>AnimusForge.Defaults.CastleAftermathCompatibility.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\SiegeAftermathCompatibility.en.json">
+      <LogicalName>AnimusForge.Defaults.SiegeAftermathCompatibility.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Weekly\ModuleData\WorldBulletinCompatibility.en.json">
+      <LogicalName>AnimusForge.Weekly.WorldBulletinCompatibility.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Prompt\ModuleData\PromptCompatibility.en.json">
+      <LogicalName>AnimusForge.Prompt.Compatibility.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Taunt\ModuleData\TauntSourceTexts.en.json">
+      <LogicalName>AnimusForge.Taunt.RuntimeSources.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Prompt\ModuleData\PromptRetrievalCompatibility.en.json">
+      <LogicalName>AnimusForge.Prompt.RetrievalCompatibility.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- English editions of runtime text tables (BilingualTextTable). -->
+    <EmbeddedResource Include="content\modules\AF.Module.Llm\ModuleData\LlmSourceTexts.en.json">
+      <LogicalName>AnimusForge.Llm.RuntimeSources.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Memory\ModuleData\MemorySourceTexts.en.json">
+      <LogicalName>AnimusForge.Memory.SourceTexts.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- English editions of runtime text tables (BilingualTextTable). -->
+    <EmbeddedResource Include="content\modules\AF.Module.Diplomacy\ModuleData\DiplomacyPromptCompatibility.en.json">
+      <LogicalName>AnimusForge.Diplomacy.PromptCompatibility.en.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

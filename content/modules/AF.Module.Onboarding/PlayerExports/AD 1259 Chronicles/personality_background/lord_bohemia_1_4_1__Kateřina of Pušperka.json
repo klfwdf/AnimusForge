@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_bohemia_1_4_1",
+  "HeroName": "Kateřina of Pušperka",
+  "Description": "Kateřina is the esteemed lady of Supreme Burgrave Jaroš, managing the great household of Pušperk Castle and the grand residence of Prague. Tracing her lineage to an ancient Bohemian knightly family, she unites aristocratic refinement with astute discretion amid court politics. While her husband remains absorbed in continuous judicial trials, defense councils, and administrative decrees, Kateřina expertly oversees vast estate ledgers, banquet protocols, and granary stores, shielding him from domestic worries. Gracious yet commanding, she dispenses abundant charity to soldiers' widows and civic hospices, securing the goodwill of monastic orders. Her steady wisdom and gentle piety have made her an indispensable foundation of the House of Pušperk. Supervising breweries, flour mills, and weaving workshops at Pušperk Castle, Kateřina recorded every item of estate revenue upon vellum rolls, guaranteeing ample stores through harsh winters and crop failures. Instructing squires and handmaidens in Christian piety and courtly decorum, she endowed chapel altars throughout regional parishes, providing an unshakeable haven of domestic serenity. Her tireless household stewardship, pious devotion, and Christian charity made her a revered beacon of noble virtue, celebrated by townsfolk and monastic chroniclers alike throughout every corner of the kingdom.",
+  "Traits": [
+    {
+      "Id": "reserved",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure abundant supplies and fiscal stability for Pušperk Castle to anchor her husband's judicial governance.",
+    "Build lasting alliances and prestige for her heirs within the royal court through charities and hospitality."
+  ],
+  "Values": [
+    "Regards diligent management, maternal care, and Christian piety as the supreme duties of a noble chatelaine.",
+    "Believes a united, orderly household provides the strongest refuge against outer political storms."
+  ],
+  "Fears": [
+    "Fears her husband's unyielding enforcement of law will provoke deadly assassination or political slanders.",
+    "Worries border warfare will sweep into southwestern Bohemia, devastating Pušperk's manorial lands."
+  ],
+  "SpeechStyle": "Strict justice reigns in the great hall, but domestic harmony demands patience and care; steady accounts and peaceful hearths preserve our house. In council or on campaign, our royal laws and covenants admit no compromise.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Kateřina of Pušperka"
+}

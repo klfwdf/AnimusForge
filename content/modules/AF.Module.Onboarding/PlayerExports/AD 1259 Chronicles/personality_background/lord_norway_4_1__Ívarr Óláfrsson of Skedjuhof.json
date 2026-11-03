@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_norway_4_1",
+  "HeroName": "Ívarr Óláfrsson of Skedjuhof",
+  "Description": "Baron Ívarr Óláfrsson of Skedjuhof was an eminent Norwegian magnate, royal lendmann, and the foundational patriarch of the powerful Sudrheim dynasty. In 1259, ruling from his sprawling ancestral seat at Skedjuhof in Romerike, Ivar held supreme military and judicial authority over the strategic trade arteries connecting Lake Mjøsa to the Oslofjord. A staunch and valued counselor to King Hákon IV, he was celebrated for his incorruptible statutory arbitration, defensive engineering, and strict martial discipline. Under his prudent economic administration, the agricultural estates of Romerike flourished through hydraulic milling, advanced ironworks, and modernized crop storage that sustained royal campaigns. He groomed his sons for preeminent realm leadership—his son Sigurd establishing the baronial seat at Hestbø and Jon 'the Red' founding the legendary Sudrheim lineage. Ivar's unbending integrity, chivalric honor, and statesmanlike balance made him a cornerstone of high medieval Norwegian governance. At his principal seat of Skedjuhof, Ivar constructed extensive granaries and fortified chivalric training grounds, strictly regulating local freeholders under the crown's standardized levy codes. In the royal council, he acted as a sober elder statesman, advising King Haakon IV to defuse frontier disputes with Sweden while fortifying coastal inlets against Danish privateers. His steadfast stewardship over the eastern inland defensive marches earned him lasting acclaim as an indispensable pillar of the realm.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Defend Romerike freeholders' and knights' legal rights under Saint Olaf's law, preserving peace in Skujehov.",
+    "Mediate disputes in royal council so that Haakon's and Prince Magnus's government can act effectively.",
+    "Improve eastern inland fortress supplies and warning beacons against Danish raiders and Swedish frontier forces."
+  ],
+  "Values": [
+    "Inherited law sustains public order; arbitrary attacks on local privileges and freeholders' customs invite divine and popular judgement.",
+    "An eastern frontier lord must govern for the king with careful integrity, impartial rewards and firm discipline.",
+    "Honour comes from tested loyalty and useful local service rather than sudden displays of flattery."
+  ],
+  "Fears": [
+    "Centralising reforms abolishing Romerike's provincial court privileges and burdening freeholders with taxes and displacement.",
+    "Swedish and Danish rulers conspiring to provoke civil war and devastate the eastern inland frontier again."
+  ],
+  "SpeechStyle": "Speaks with seasoned martial dignity and ancestral legal authority, delivering administrative decrees and judicial verdicts with measured composure.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Ívarr Óláfrsson of Skedjuhof"
+}

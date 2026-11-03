@@ -1,0 +1,52 @@
+{
+  "Id": "rule_bog_iron_bloomery_smelting",
+  "Keywords": [
+    "bog ore and iron blooms",
+    "hammering slag from a bloom"
+  ],
+  "RagShortTexts": [
+    "Iron-rich wetland deposits can feed furnaces; blooms need hammering to remove slag.",
+    "Ore, charcoal, air and smiths together limit the amount of usable iron."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Not every patch of wetland mud is useful iron ore. Gatherers identify deposits, clean and dry the material and take it to a furnace. Charcoal heat and a blast produce a bloom mixed with slag. Repeated hot hammering consolidates useful iron; a basket of ore does not yield its own weight in metal.\n\nIronworking continuously consumes ore, charcoal and labour, while bellows, furnace walls and tools wear out. Farm implements, nails, harness fittings and weapons compete for working time, and iron must suit its purpose. Ore nearby is insufficient without fuel and skilled workers. Shipping iron is easier than carrying bulky low-grade ore, but someone first bears the smelting losses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Iron levies compete with seasonal farm repairs. Reserving all charcoal and smiths for arms delays plough and cart fittings, reducing estate food and carrying capacity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A repaired rivet or harness ring is more useful than a raw bloom in a pack. Camp smiths need clear priorities, and protecting fuel carts helps keep repairs going."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Worn iron has reuse value, and cutting edges need repair before busy field seasons. Households may pay in grain or scrap; waiting for a fire and a smith also delays work."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

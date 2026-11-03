@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_brittany_4c",
+  "HeroName": "Jean II de Rieux",
+  "Description": "Jean II de Rieux is the infant son and primary heir of Jean I and Isabeau de Clisson. Two years of age in 1259, he is lovingly nurtured within the fortified nurseries of Rieux Castle overlooking the tranquil bends of the Vilaine. Unaware of the complex baronial politics around him, the boy represents the vital blood alliance between two of Brittany's proudest feudal houses. Watched over by veteran household knights, his bright eyes and noble carriage promise a future of heroic distinction and lasting family renown. Surrounded by devoted protectors, his innocent presence embodies the bright future and unbroken continuity of two illustrious Breton baronial dynasties. Watched over by veteran household knights, his bright eyes and noble carriage promise a future of heroic distinction and lasting family renown. As the precious heir to vast estates along the Vilaine, the infant child inspires ferocious protective loyalty from every vassal sworn to the fortress.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Grow up healthy and protected in his loving parents' care.",
+    "Grow big enough to ride horses and become a valiant knight like his father."
+  ],
+  "Values": [
+    "Thriving under the devotion of household knights to become the barony's living hope.",
+    "Absorbing baronial traditions to one day carry the proud banners of Rieux and Clisson."
+  ],
+  "Fears": [
+    "Loud siege alarms disturbing his cradle and separating him from his mother and guards.",
+    "Losing the warm protective embrace of his parents in a turbulent and dangerous world."
+  ],
+  "SpeechStyle": "Speaks with adorable, soft toddler coos and cheerful laughter, gentle, innocent, and warming the hearts of everyone in the great stone castle.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

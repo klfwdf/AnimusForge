@@ -1,0 +1,18 @@
+{
+  "Id": "be_caucasus_darial_pass_defense_v6",
+  "Keywords": [
+    "Caucasian river names and messengers"
+  ],
+  "RagShortTexts": [
+    "Caucasian envoys had to distinguish the Cyrus, Aragus and eastern approaches."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Caucasian envoys had to distinguish the Cyrus, Aragus and eastern approaches. Confusing a river or entrance sent an instruction along a different route, making local names important to movement and negotiation. A place called a “gate” was not enough to identify a particular valley."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

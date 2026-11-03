@@ -1,0 +1,59 @@
+{
+  "Id": "be_angle_kingdom_internal",
+  "Keywords": [
+    "Angles Nobility",
+    "Angle shipowners and cultivators"
+  ],
+  "RagShortTexts": [
+    "Wihtlaeg relies on kin chiefs and sailing partners.",
+    "Crews, owners and cultivators bear different voyage costs."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wihtlaeg relies on kin chiefs and sailing partners. Crews, owners and cultivators bear different risks, requiring agreed numbers, shares and return dates."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Wihtlaeg relies on kin chiefs and sailing partners. Followers retain family ties; decisions about guards and distant service affect common participation. Crews, owners and cultivators bear different voyage costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Crews, owners and cultivators bear different voyage costs. Coordination allocates actual supply and protection duties, not merely titles. Wihtlaeg relies on kin chiefs and sailing partners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Wihtlaeg relies on kin chiefs and sailing partners. Households compare burdens with neighbors; unmatched protection weakens cooperation. Crews, owners and cultivators bear different voyage costs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Crews, owners and cultivators bear different voyage costs. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Wihtlaeg relies on kin chiefs and sailing partners."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

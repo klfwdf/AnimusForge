@@ -1,0 +1,18 @@
+{
+  "Id": "be_celtic_scotti_raiding_curraghs_v6",
+  "Keywords": [
+    "Theodosius returns recovered plunder"
+  ],
+  "RagShortTexts": [
+    "Theodosius recovered captives and goods, rewarding troops and restoring the rest to owners."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After defeating scattered raiders in Britain, Theodosius recovered captives, livestock and property. He allotted part of the recovered goods to soldiers and returned the remainder to their owners. Households had to identify relatives, animals and possessions, while troops arranged escort and restitution."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

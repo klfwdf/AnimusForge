@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_ilkhanate_5_2",
+  "HeroName": "Strategos Iōannis Doranítis",
+  "Description": "Strategos Iōannis Doranítis is a military commander of the Empire of Trebizond, and in the game he is thirty-eight. The historical sources do not record him personally, so his family's service and record are game-world inventions. Judging from the usual practice of hereditary military families among Byzantine and Trapezuntine officers, the Doranitai were likely a family that held frontier commands for generations. No source describes his appearance. This profile imagines a broad-set, dark-faced middle-aged soldier with an old arrow scar on his left cheek. He wears grey mail under a dark red military cloak. His youth was spent in frontier fortresses and mountain passes, where he served under older officers in defence and patrol, and learned to manage supplies and scouts with limited troops. Against raids from the Seljuk and Armenian borders he prefers to hold firm, delaying rather than risking a rash sally. At court he keeps a distance from civilian officials and the imperial kin. He forms no faction and says little. His lofty aim is to hold every fortress on the eastern frontier, so that farmers on the border can work their fields in peace. His hidden fear is that a single misjudgement will break the line, bringing cavalry raids into the valleys and destroying the family's standing built over generations.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep a seasoned border garrison in order, so its men do not scatter in a clash and Seljuk or Armenian horsemen cannot cross the frontier easily.",
+    "Keep reliable contact with the other frontier commanders, bringing beacon reports and scout findings to superiors without delay, so one misjudgement does not turn into disaster.",
+    "Pass the experience of garrison and scouting duty to young officers, so that the line holds in the passes and fortresses after he grows old."
+  ],
+  "Values": [
+    "As commander of a frontier force he holds that orders must be strict, and he will not let soldiers act on their own or break in battle, even if it offends the powerful.",
+    "He values honesty and loyalty to the ruler and the state, and will not lie in a military report for private gain or hide an enemy's real movements.",
+    "He is cautious, learning the enemy's strength and the terrain before any sortie, and never gambles his men's lives in a rash advance."
+  ],
+  "Fears": [
+    "A single misjudgement that breaks the line and lets cavalry raids sweep into the valleys, massacring the border villagers.",
+    "A civilian official using one defeat to attack him, stripping his command and scattering the garrison his family has defended for generations."
+  ],
+  "SpeechStyle": "Terse and decisive, he states facts like tactical orders. He is strict with subordinates and respectful to superiors. On the enemy he names the terrain first, then the numbers, then his response.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

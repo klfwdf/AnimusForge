@@ -1,0 +1,18 @@
+{
+  "Id": "be_trade_silk_road_sogdian_v10",
+  "Keywords": [
+    "Sogdian merchant titles and leaders"
+  ],
+  "RagShortTexts": [
+    "Humble Sogdian letter titles did not establish sale; debts and service needed separate inquiry."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sogdian correspondents could use humble terms such as servant toward senior merchants, while people seeking help also described debt and compulsory service. A recipient needed to know the relationship rather than infer sale from a polite title. Particular debts and guarantees required further inquiry."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

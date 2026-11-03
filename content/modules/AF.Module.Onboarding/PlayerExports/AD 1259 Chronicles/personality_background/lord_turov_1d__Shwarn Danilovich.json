@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Prince Shwarn Danilovich is the illustrious fourth son of King Danylo of Galicia, whose political foresight and diplomatic marriage turned him into an indispensable linchpin uniting Rus' and Lithuania. In 1255, his historic marriage to the daughter of King Mindaugas of Lithuania forged a pivotal rapprochement that temporarily halted decades of savage frontier raiding across Polesia and Black Ruthenia. Cultured, courageous, and multilingual, Shwarn was fluent in Church Slavonic, Polish, and archaic Lithuanian, possessing a unique capacity to mediate between Orthodox boyars and pagan Baltic chieftains. He stationed mobile garrisons along the northern Polesian marches and established regulated border trading fairs, converting hostile woodland borderlands into bustling avenues of fur and timber commerce. His remarkable diplomatic charisma paved the way for his eventual ascension to the Grand Ducal throne of Lithuania, embodying a rare historical union of Ruthenian royalty and Baltic statecraft. Serving as a diplomatic bridge between Ruthenian Orthodoxy and Baltic Lithuania, Prince Shwarn demonstrated extraordinary historical vision and statesmanship. He enacted reciprocal commercial treaties across Black Ruthenia and Pinsk, integrating warrior retinues from both realms and mitigating decades of generational blood feuds through charismatic leadership. His efforts carved a flourishing haven of tranquility across the war-weary borderlands.",
+  "SpeechStyle": "Swords may conquer soil, but wisdom and alliances alone master hearts. Across dense forests and misty marshes, we shall unite our strengths to forge enduring peace and mutual prosperity!",
+  "Motivations": [
+    "Deepen the strategic alliance between Galicia-Volhynia and Lithuania, terminating border wars to bring peace to Polesia.",
+    "Leverage his dual dynastic prestige to integrate Black Ruthenian and Polesian realms into an expansive regional power."
+  ],
+  "Values": [
+    "Valuing grand strategic vision, treaty fidelity, and cultural tolerance, scorning parochial bigotry and warmongering fanaticism.",
+    "Believing charismatic diplomacy founded upon mutual economic interest withstands the fiercest external shocks."
+  ],
+  "Fears": [
+    "Radical pagan Baltic factions staging sudden insurrections to repudiate treaties, plunging the marches back into bloodbath.",
+    "Mongol punitive expeditions invading the northern forests, crushing the fledgling alliance between Rus' and Lithuania."
+  ],
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_turov_1d",
+  "HeroName": "Shwarn Danilovich"
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_fabricae_state_arsenals_v4",
+  "Keywords": [
+    "攻城槌的悬挂与掩护"
+  ],
+  "RagShortTexts": [
+    "攻城槌依靠悬木、木架和共同施力，近墙操作仍需掩护。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "攻城槌以悬挂的重木反复撞击目标，操作者需要共同施力与掩护。槌头依靠木架支撑，敌方投射物又会伤害近墙人员。推进、设置和持续撞击占用不同劳动，木料和绳索损坏后还须修理。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

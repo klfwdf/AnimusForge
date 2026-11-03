@@ -1,0 +1,18 @@
+{
+  "Id": "rule_House_of_Guzman_Castilian_Magnates",
+  "Keywords": [
+    "Guzmán ties and Castilian service"
+  ],
+  "RagShortTexts": [
+    "Guzmán and other Castilian lineages gained influence through land, kin and royal service."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Guzmán and other Castilian lineages gained influence through land, kin and royal service. Marriage connected resources without guaranteeing identical politics among relatives. Service and fiscal demands met privileges and practical capacity in negotiation."
+    }
+  ],
+  "TextMappings": []
+}

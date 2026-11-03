@@ -1,0 +1,41 @@
+{
+  "Id": "rule_House_of_Lara_and_Castilian_Magnates",
+  "Keywords": [
+    "House of Lara Two Cauldrons Arms",
+    "Castilian Ricoshombres Magnate",
+    "Noble League Resisting Alfonso X",
+    "Seville Repartition Great Estates"
+  ],
+  "RagShortTexts": [
+    "The House of Lara led Castilian ricoshombres, resisting Alfonso X's centralized Roman law."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Castile's great magnates, the ricoshombres, drew their strength from estates, castles, and private armies that no royal official could easily reach. The House of Lara stood at the head of that group. Its arms of two cauldrons on gold were a boast of hospitality and of the retinues a lord could feed in the field. Nuño González de Lara led the family's resistance to Alfonso X's centralizing program, which rested on Las Siete Partidas and on royal courts that heard cases the lords once judged in their own halls. The Laras joined the Castilian revolts against the king, and their opposition carried a wider argument: feudal liberties and customary rights could not be overwritten by a Roman-law code drafted in the royal chancery."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Invoking the ancient Castilian right of desnaturalización, the Laras could withdraw their fealty from the king and take their vassals with them. Magnate confederations formed around such threats, and the crown had to negotiate each new tax with its great lords. Every letter of protest was copied and sent to allied houses, so a royal envoy faced many voices at once."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Lara banners carry iron cauldrons that boil smoked beef on the march, and the men who eat from them know their pay will come on time. Mercenaries crowd to the family's muster lists because noble retainers are paid promptly. A soldier who deserts loses the quarter's wages and the cauldron's ration with them, so most stay in the ranks until the campaign ends."
+    }
+  ],
+  "TextMappings": []
+}

@@ -17,6 +17,8 @@ internal interface ICivilWarHost
 	bool DiscontinueLandlessKingdom(Kingdom kingdom, string reason);
 	// Independent clans left over from a settled war make peace with everyone they are not permanently at war with.
 	void MakeClansPeaceful(IEnumerable<Clan> clans, string reason);
+	// Clan leaves its kingdom keeping its fiefs (granted autonomy); not reported as a rebellion.
+	void LeaveKingdomKeepingFiefs(Clan clan);
 	void QueueRebellion(Kingdom kingdom, Clan leader, List<Clan> followers, string factionId, bool startNow);
 	void ApplyPrestige(Kingdom kingdom, int delta, string reason);
 	void RecordMaterial(Kingdom kingdom, int week, string text);
@@ -261,7 +263,7 @@ internal static class CivilWarEffects
 			if (ctx.Host == null || !ctx.Host.DiscontinueLandlessKingdom(rebel, "civil_war_return:" + ctx.Faction.Id))
 				throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_037"), "RebelKingdomNotDissolved");
 			if (CivilWarWorld.IsAlive(rebel)) throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_038"), "RebelKingdomDissolveUnconfirmed");
-			ctx.Note("RebelKingdomDissolved", CivilWarWorld.KingdomName(rebel) + KingdomCivilWarTexts.Raw("KW_Raw_039"), CivilWarWorld.KingdomName(rebel));
+			ctx.Note("RebelKingdomDissolved", KingdomCivilWarTexts.Tidy(CivilWarWorld.KingdomName(rebel) + KingdomCivilWarTexts.W("KW_Raw_039")), CivilWarWorld.KingdomName(rebel));
 		}
 		ctx.Faction.ResolutionReturnCompleted = true;
 	}
@@ -289,7 +291,7 @@ internal sealed class MakePeaceWithTargetEffect : ICivilWarEffect
 	{
 		Kingdom target = CivilWarWorld.FindKingdom(ctx.Faction.TargetId);
 		CivilWarEffects.RequirePeace(ctx.Kingdom, target, "civil_war_make_peace");
-		ctx.Note("PeaceMade", CivilWarWorld.KingdomName(ctx.Kingdom) + KingdomCivilWarTexts.Raw("KW_Raw_042") + CivilWarWorld.KingdomName(target) + KingdomCivilWarTexts.Raw("KW_Raw_043"), CivilWarWorld.KingdomName(ctx.Kingdom), CivilWarWorld.KingdomName(target));
+		ctx.Note("PeaceMade", KingdomCivilWarTexts.Tidy(CivilWarWorld.KingdomName(ctx.Kingdom) + KingdomCivilWarTexts.W("KW_Raw_042") + CivilWarWorld.KingdomName(target) + KingdomCivilWarTexts.W("KW_Raw_043")), CivilWarWorld.KingdomName(ctx.Kingdom), CivilWarWorld.KingdomName(target));
 	}
 }
 
@@ -312,7 +314,7 @@ internal sealed class PledgeWarOnTargetEffect : ICivilWarEffect
 		ctx.State.NoPeaceUntilWeek = ctx.Week + PledgeWeeks;
 		ctx.State.NoPeaceUntilDay = CivilWarWorld.CurrentDay() + PledgeWeeks * 7;
 		ctx.State.NoPeaceClanIds = ctx.FactionClans().Select(x => x.StringId).ToList();
-		ctx.Note("PledgeNoPeace", KingdomCivilWarTexts.Raw("KW_Raw_045") + PledgeWeeks + KingdomCivilWarTexts.Raw("KW_Raw_046") + ctx.Faction.TargetName + KingdomCivilWarTexts.Raw("KW_Raw_043"), PledgeWeeks.ToString(), ctx.Faction.TargetName);
+		ctx.Note("PledgeNoPeace", KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.Raw("KW_Raw_045") + PledgeWeeks + KingdomCivilWarTexts.W("KW_Raw_046") + ctx.Faction.TargetName + KingdomCivilWarTexts.W("KW_Raw_043")), PledgeWeeks.ToString(), ctx.Faction.TargetName);
 	}
 }
 
@@ -331,7 +333,7 @@ internal sealed class RevokeTargetPolicyEffect : ICivilWarEffect
 	{
 		PolicyObject policy = Find(ctx.Faction.TargetId);
 		ctx.Kingdom.RemovePolicy(policy);
-		ctx.Note("PolicyRevoked", KingdomCivilWarTexts.Raw("KW_Raw_048") + (policy.Name?.ToString() ?? ctx.Faction.TargetName), policy.Name?.ToString() ?? ctx.Faction.TargetName);
+		ctx.Note("PolicyRevoked", KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KW_Raw_048") + (policy.Name?.ToString() ?? ctx.Faction.TargetName)), policy.Name?.ToString() ?? ctx.Faction.TargetName);
 	}
 
 	private static PolicyObject Find(string id)
@@ -360,7 +362,7 @@ internal sealed class PayRedressEffect : ICivilWarEffect
 		int amount = CivilWarPoliticalRules.RedressGold(ctx.LeaderClan.Tier, CivilWarRules.Clamp((ctx.Faction?.Grievance ?? 0f) / 100f, 0f, 1f), members, king.Gold, (ctx.Faction?.Id ?? "") + ":" + ctx.Week + ":redress");
 		if (amount > 0) GiveGoldAction.ApplyBetweenCharacters(king, leader, amount, disableNotification: true);
 		foreach (Clan clan in ctx.FactionClans()) CivilWarWorld.ChangeRelation(clan.Leader, king, clan == ctx.LeaderClan ? 10 : 5);
-		ctx.Note("RedressPaid", KingdomCivilWarTexts.Raw("KW_Raw_050") + CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.Raw("KW_Raw_051") + amount + KingdomCivilWarTexts.Raw("KW_Raw_052"), CivilWarWorld.ClanName(ctx.LeaderClan), amount.ToString());
+		ctx.Note("RedressPaid", KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KW_Raw_050") + CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.W("KW_Raw_051") + amount + KingdomCivilWarTexts.W("KW_Raw_052")), CivilWarWorld.ClanName(ctx.LeaderClan), amount.ToString());
 	}
 }
 
@@ -374,18 +376,21 @@ internal sealed class GrantPrivilegesEffect : ICivilWarEffect
 		return CivilWarEffects.Refuse(ctx, "KingGone", KingdomCivilWarTexts.Raw("KW_Raw_053"), out reason);
 	}
 
+	// Autonomy = the faction clans leave the kingdom keeping their fiefs, as independent clans. Vanilla LeaveKingdom
+	// hands fiefs to the king, so the host leaves by the fief-keeping rebellion detail and ends the wars it starts.
 	public void Apply(CivilWarEffectContext ctx)
 	{
-		foreach (Clan clan in ctx.FactionClans())
+		List<Clan> leaving = ctx.FactionClans().Where(x => x.Kingdom == ctx.Kingdom && x != ctx.Kingdom.RulingClan).ToList();
+		bool failed = false;
+		foreach (Clan clan in leaving)
 		{
-			CivilWarWorld.ChangeRelation(clan.Leader, ctx.Kingdom.Leader, 8);
-			// Privileges float with the clan's standing (tier) and a stable per-faction jitter instead of a flat grant.
-			float grant = (clan == ctx.LeaderClan ? 40f + 12f * Math.Max(0, clan.Tier) : 15f + 5f * Math.Max(0, clan.Tier))
-				* CivilWarPoliticalRules.Jitter((ctx.Faction?.Id ?? "") + ":" + ctx.Week + ":" + clan.StringId);
-			try { ChangeClanInfluenceAction.Apply(clan, (float)Math.Round(grant)); }
-			catch (Exception ex) { Logger.Log("KingdomCivilWar", "[WARN] influence grant failed: " + ex.Message); throw; }
+			try { ctx.Host.LeaveKingdomKeepingFiefs(clan); }
+			catch (Exception ex) { Logger.Log("KingdomCivilWar", "[WARN] autonomy leave failed clan=" + clan.StringId + " error=" + ex.Message); }
+			if (clan.Kingdom == ctx.Kingdom) failed = true;
 		}
-		ctx.Note("PrivilegesGranted", KingdomCivilWarTexts.Raw("KW_Raw_054") + CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.Raw("KW_Raw_055"), CivilWarWorld.ClanName(ctx.LeaderClan));
+		// Re-run is safe: clans that already left are skipped by the kingdom filter above.
+		if (failed) throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_036"), "RebelClansNotHome");
+		ctx.Note("PrivilegesGranted", KingdomCivilWarTexts.Tidy(CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.W("KW_Raw_055")), CivilWarWorld.ClanName(ctx.LeaderClan));
 	}
 }
 
@@ -402,7 +407,7 @@ internal sealed class AbdicateEffect : ICivilWarEffect
 	public void Apply(CivilWarEffectContext ctx)
 	{
 		ChangeRulingClanAction.Apply(ctx.Kingdom, ctx.LeaderClan);
-		ctx.Note("Abdicated", KingdomCivilWarTexts.Raw("KW_Raw_057") + CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.Raw("KW_Raw_058"), CivilWarWorld.ClanName(ctx.LeaderClan));
+		ctx.Note("Abdicated", KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KW_Raw_057") + CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.W("KW_Raw_058")), CivilWarWorld.ClanName(ctx.LeaderClan));
 	}
 }
 
@@ -425,7 +430,7 @@ internal sealed class UsurpThroneEffect : ICivilWarEffect
 			ChangeRulingClanAction.Apply(ctx.Kingdom, ctx.LeaderClan);
 			if (ctx.Kingdom.RulingClan != ctx.LeaderClan) throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_060"), "ThroneTransferNotInEffect");
 			CivilWarWorld.ChangeRelation(old?.Leader, ctx.LeaderClan.Leader, -30);
-			ctx.Note("ThroneSeized", CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.Raw("KW_Raw_061"), CivilWarWorld.ClanName(ctx.LeaderClan));
+			ctx.Note("ThroneSeized", KingdomCivilWarTexts.Tidy(CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.W("KW_Raw_061")), CivilWarWorld.ClanName(ctx.LeaderClan));
 		}
 		else throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_062"), "RebelLeaderNotHome");
 	}
@@ -444,7 +449,7 @@ internal sealed class SecedeEffect : ICivilWarEffect
 	public void Apply(CivilWarEffectContext ctx)
 	{
 		CivilWarEffects.RequirePeace(ctx.Kingdom, ctx.RebelKingdom, "civil_war_secede");
-		ctx.Note("Seceded", CivilWarWorld.KingdomName(ctx.RebelKingdom) + KingdomCivilWarTexts.Raw("KW_Raw_064") + CivilWarWorld.KingdomName(ctx.Kingdom), CivilWarWorld.KingdomName(ctx.RebelKingdom), CivilWarWorld.KingdomName(ctx.Kingdom));
+		ctx.Note("Seceded", KingdomCivilWarTexts.Tidy(CivilWarWorld.KingdomName(ctx.RebelKingdom) + KingdomCivilWarTexts.W("KW_Raw_064") + CivilWarWorld.KingdomName(ctx.Kingdom)), CivilWarWorld.KingdomName(ctx.RebelKingdom), CivilWarWorld.KingdomName(ctx.Kingdom));
 	}
 }
 
@@ -504,7 +509,7 @@ internal sealed class CrownVictoryEffect : ICivilWarEffect
 			try
 			{
 				ChangeKingdomAction.ApplyByLeaveKingdom(leader, showNotification: true);
-				ctx.Note("LeaderExiled", CivilWarWorld.ClanName(leader) + KingdomCivilWarTexts.Raw("KW_Raw_070"), CivilWarWorld.ClanName(leader));
+				ctx.Note("LeaderExiled", KingdomCivilWarTexts.Tidy(CivilWarWorld.ClanName(leader) + KingdomCivilWarTexts.W("KW_Raw_070")), CivilWarWorld.ClanName(leader));
 			}
 			catch (Exception ex)
 			{

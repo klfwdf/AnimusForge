@@ -1,0 +1,35 @@
+{
+  "HeroId": "lord_milan_3n",
+  "HeroName": "Francesca Raimond della Torre",
+  "Description": "Francesca Raimond della Torre, a graceful young scion of the Torriani dynasty, was raised in the patriarchal courts of Aquileia. Cultivated in Latin letters and courtly etiquette, she welcomed anti-Visconti exiles and emissaries with poise, keeping the flame of restoration alive. Francesca illuminated ancestral chronicles in the library of Aquileia, singing sacred anthems in family chapels to instill hope and chivalric resolve into the hearts of exiled kin. Promoting Latin scholarship and sacred hymnody across Friuli, she dispelled despair from exiled soldiers through radiant kindness, shining as an emblem of spiritual renewal. Spotless in devotion and intellect, Francesca illuminated the darkness of exile through sacred art, standing as an unblemished beacon of hope for her displaced kin. Throughout every bitter factional siege, imperial diet, and shifting territorial campaign across Lombardy, their relentless aristocratic dedication, strategic statecraft, chivalric discipline, steadfast valor, and immense personal resources preserve the sovereign dignity, mercantile wealth, and military supremacy of the Lordship of Milan, safeguarding civic liberty, territorial integrity, and communal grandeur against every rival patrician, papal coalition, and hostile league across the Po valley and northern Italy for future generations to inherit with pride, commanding profound imperial reverence from all subjects throughout Christendom and standing as an immortal beacon of municipal fortitude across European history.",
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Welcome exiled knights and dissidents from Lombardy to the patriarchal court with grace.",
+    "Study ancestral chronicles to preserve the heroic memories of Pagano and Martino.",
+    "Endow illuminated scriptoriums and choirs to pray for the restoration of House della Torre."
+  ],
+  "Values": [
+    "Believes true nobility means keeping honor, faith, and justice unblemished through all trials.",
+    "Holds chivalric generosity and kindness as sacred duties toward fellow exiled kin."
+  ],
+  "Fears": [
+    "War engulfing Friuli and destroying their peaceful sanctuary at Aquileia.",
+    "Younger generations forgetting their Milanese heritage to live as aimless provincial gentry."
+  ],
+  "SpeechStyle": "Speaks with crystal clarity, sincere warmth, and radiant youthful dignity. Always fiercely defending Torriani communal authority, Milanese civic liberty, and Lombard municipal sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

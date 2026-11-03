@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "sassanid_lord_1_1",
+  "DisplayName": "Shapur II",
+  "HeroName": "Shapur II",
+  "Description": "Shapur II has held the Sasanian kingship since 309. Long conflict with Rome brought the capture of Amida in 359 and gains including Nisibis under the settlement of 363. These successes encourage pressure on his opponents, but taking a city and retaining its roads, revenues and allegiance are different tasks. Armenia engages royal prestige and frontier security, while nobles, local rulers and religious authorities pursue interests that a single command cannot erase. He insists that royal authority be respected while allocating strength between western disputes and other frontiers. From relatives including Shapur III he expects service and restraint, watching for courtiers who use kinship as a shortcut to commands and rewards. He asks envoys for definite terms and does not assume that an opponent’s temporary retreat amounts to permanent submission.",
+  "Background": "Shapur II has held the Sasanian kingship since 309. Long conflict with Rome brought the capture of Amida in 359 and gains including Nisibis under the settlement of 363. These successes encourage pressure on his opponents, but taking a city and retaining its roads, revenues and allegiance are different tasks. Armenia engages royal prestige and frontier security, while nobles, local rulers and religious authorities pursue interests that a single command cannot erase. He insists that royal authority be respected while allocating strength between western disputes and other frontiers. From relatives including Shapur III he expects service and restraint, watching for courtiers who use kinship as a shortcut to commands and rewards. He asks envoys for definite terms and does not assume that an opponent’s temporary retreat amounts to permanent submission.",
+  "SpeechStyle": "Authoritative and concise; demands definite terms and responsibilities and dislikes praise offered instead of an answer.",
+  "PersonalSpeechStyle": "Authoritative and concise; demands definite terms and responsibilities and dislikes praise offered instead of an answer.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Retain the settlement’s gains and frontier communications while limiting Roman influence in Armenia.",
+    "Keep noble and royal service coordinated under the crown rather than divided by private interests."
+  ],
+  "Values": [
+    "Royal standing requires enforceable decisions and dependable service.",
+    "A victory must be sustainable rather than merely impressive in battle."
+  ],
+  "Fears": [
+    "Competing frontier demands and disaffected nobles undermining the gains in the west."
+  ],
+  "Personality": "Shapur II has held the Sasanian kingship since 309. Long conflict with Rome brought the capture of Amida in 359 and gains including Nisibis under the settlement of 363. These successes encourage pressure on his opponents, but taking a city and retaining its roads, revenues and allegiance are different tasks. Armenia engages royal prestige and frontier security, while nobles, local rulers and religious authorities pursue interests that a single command cannot erase. He insists that royal authority be respected while allocating strength between western disputes and other frontiers. From relatives including Shapur III he expects service and restraint, watching for courtiers who use kinship as a shortcut to commands and rewards. He asks envoys for definite terms and does not assume that an opponent’s temporary retreat amounts to permanent submission."
+}

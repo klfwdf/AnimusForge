@@ -1,0 +1,59 @@
+{
+  "Id": "be_xionite_kingdom_internal",
+  "Keywords": [
+    "Xionites Nobility",
+    "Kidarite estates trade and followers"
+  ],
+  "RagShortTexts": [
+    "Kidara needs landholders, merchants and followers to cooperate.",
+    "Holding a site still needs farmers, carriers and food suppliers."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kidara needs landholders, merchants and followers; holding a site still requires people willing to farm, carry and supply."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kidara needs landholders, merchants and followers to cooperate. Followers retain family ties; decisions about guards and distant service affect common participation. Holding a site still needs farmers, carriers and food suppliers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Holding a site still needs farmers, carriers and food suppliers. Coordination allocates actual supply and protection duties, not merely titles. Kidara needs landholders, merchants and followers to cooperate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kidara needs landholders, merchants and followers to cooperate. Households compare burdens with neighbors; unmatched protection weakens cooperation. Holding a site still needs farmers, carriers and food suppliers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Holding a site still needs farmers, carriers and food suppliers. One promise may not bind every receiver, guard and supplier; negotiation needs actual responsibility. Kidara needs landholders, merchants and followers to cooperate."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

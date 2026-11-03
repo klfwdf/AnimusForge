@@ -1,0 +1,59 @@
+{
+  "Id": "be_danish_kingdom_legitimacy",
+  "Keywords": [
+    "丹麦人法统",
+    "丹的安全回航"
+  ],
+  "RagShortTexts": [
+    "安全回航和王者馈赠支持Dan的认可。",
+    "偏袒王族会使其他出船者怀疑合作。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "王者馈赠和安全回航支持承认，首领如果只奖自己的亲族，其他参与者便会怀疑下一次共同出航是否值得。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "安全回航和王者馈赠支持Dan的认可。军旅中的承认也看报酬和救援是否兑现，称号必须有人愿意为之行动。偏袒王族会使其他出船者怀疑合作。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "偏袒王族会使其他出船者怀疑合作。名义上的权利要经地方执行，谁愿服从与谁能供给同样影响权威。安全回航和王者馈赠支持Dan的认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "安全回航和王者馈赠支持Dan的认可。家户通过家人、土地与求助能否获保护来认识统治。偏袒王族会使其他出船者怀疑合作。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "偏袒王族会使其他出船者怀疑合作。能处理争执并使承诺兑现的人支持交易信用，远处名望仍需本地回应。安全回航和王者馈赠支持Dan的认可。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

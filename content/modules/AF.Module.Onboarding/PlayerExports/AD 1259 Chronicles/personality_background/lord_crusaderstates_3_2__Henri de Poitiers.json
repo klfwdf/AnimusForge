@@ -1,0 +1,41 @@
+{
+  "HeroId": "lord_crusaderstates_3_2",
+  "HeroName": "Henry of Antioch",
+  "Description": "Henry of Antioch, son of Prince Bohemond IV of Antioch, married Princess Isabella of Lusignan, founding the illustrious second House of Lusignan that would unite the thrones of Cyprus and Jerusalem. A seasoned statesman of impeccable lineage, he served for decades as the premier diplomatic mediator and senior military counselor bridging northern and southern Outremer. In 1259, as the Levant trembled before Mamluk ascendance, the elder prince mentored his ambitious son, the future Hugh III, instilling disciplined statecraft and military prudence. His encyclopedic command of feudal genealogy and customary law enabled him to defuse succession disputes within the Cypriot high nobility before they ignited armed conflict. Henry directed the engineering of coastal beacon networks and naval signal stations along the southern coast of Cyprus, fortifying the strategic harbor of Kyrenia. Modest, incorruptible, and profoundly wise, Henry chose to serve as the steadfast patriarchal architect anchoring his dynasty's imperial renaissance. At Kyrenia Castle, Henry curated the ancient charters and treaties of Antioch and Cyprus, applying rigorous genealogical jurisprudence to settle complex land inheritance disputes. Whenever young knights threatened bloodshed over border hunting estates, Henry mediated with venerable authority, extinguishing dangerous vendettas. His patriarchic wisdom and diplomatic patience provided the solid foundation enabling his dynastic line to achieve imperial renown.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Guide and counsel his son Hugh III to consolidate undisputed sovereign power over the dual crowns of Cyprus and Jerusalem.",
+    "Maintain vital naval communication and military transport routes linking Antioch, Tripoli, and the ports of Cyprus.",
+    "Refine coastal warning beacons and harbor defenses around Cyprus to protect maritime communities from corsair incursions."
+  ],
+  "Values": [
+    "Prudence, patience, and systemic preparation invariably triumph over impetuous military rashness in the governance of realms.",
+    "Enduring fidelity to the crusading vows of his ancestors, employing patriarchal mediation to heal factional fractures.",
+    "Selfless devotion to the long-term flourishing of his royal heirs and the defense of the Christian commonwealth of Outremer."
+  ],
+  "Fears": [
+    "Younger dynastic heirs engaging in reckless open-field battles against overwhelming Mamluk armies, squandering elite knights.",
+    "Perishing in a sudden maritime shipwreck before fully securing his son's uncontested ascension to the Cypriot throne."
+  ],
+  "SpeechStyle": "Speaks with seasoned, dispassionate gravity and encyclopedic dynastic memory, offering measured counsel on naval strategy and feudal rights with patriarchal composure.",
+  "SchemaVersion": 3,
+  "VoiceId": "",
+  "Name": "Henry of Antioch"
+}

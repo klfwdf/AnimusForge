@@ -1,0 +1,52 @@
+{
+  "Id": "rule_triennial_quriltai_of_sarai_1259",
+  "Keywords": [
+    "Rus princes visiting the khan",
+    "audiences and travel costs at Sarai"
+  ],
+  "RagShortTexts": [
+    "Rus princes sought recognition at Mongol courts; Danylo visited Batu in 1246.",
+    "Gifts, interpreters, escorts and waiting used resources before replies reached home."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rus princes travelled to Mongol courts for recognition, summonses or disputes over rights. Danylo visited Batu in 1246, while other houses had journeys of their own. Gifts, interpreters and attendants accompanied visitors seeking the court’s location and waiting for reception. Embassies differed in season and purpose and did not meet identical officials. A reply returning home still needed explanation of authority and responsibility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Travel costs come from particular estates and households. Gifts carry hopes and risks. A prince needs people able to remember the reply and administration remaining at home during his absence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts ask about fodder, water, support and return time. Waiting still requires baggage guards and care for the sick. Merchants provide news, while reception officers determine admission."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Loading gifts removes food, animals or silver from local use. Families hope for an understandable result. Returned instructions should recognise earlier deliveries and define remaining duties rather than provoke repeated collection."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

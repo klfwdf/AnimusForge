@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_bohemia_7f",
+  "HeroName": "Anežka z Rožmberka",
+  "Description": "Anežka of Rožmberk is the pious and contemplative daughter of High Marshal Vok I, revered throughout the Vltava valley for her unwavering asceticism, literary patronage, and Christian mercy. Deeply inspired by the spiritual revival radiating from Saint Agnes of Bohemia's Clarisse convent in Prague and the austere discipline of the Cistercians, she eschewed lavish aristocratic silks in favor of unadorned wool and linen. Anežka became an ardent benefactress of the fledgling Vyšší Brod Monastery, personally funding the construction of the monastic infirmary and scriptorium while commissioning rare theological translations. Within the castle grounds, she established a vibrant herbary and medicinal dispensary, mastering herbal compounding to treat ailments, ulcers, and battlefield injuries among common servants and peasant families. Resolute, meditative, and immune to worldly flattery, she repeatedly declined high-born marital suitors to dedicate her youth to charitable intercession and the moral elevation of her ancestral house. Anežka embroidered exquisite altar cloths and kept dawn prayer vigils for her brothers campaigning along the Danube and Styrian borderlands. Devoting her entire dowry annuities to purchasing wheat, firewood, and woolen cloaks for indigent villagers, her radiant Christian charity brought enduring solace to those ravaged by war.",
+  "Traits": [
+    {
+      "Id": "merciful",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Endow the scriptorium and library of Vyšší Brod to preserve invaluable spiritual and classical manuscripts for posterity.",
+    "Establish rural apothecary dispensaries across southern Bohemia to ensure sick commoners receive care.",
+    "Inspire her kin to temper their martial fury with Christian honor, employing their swords only to protect the defenseless."
+  ],
+  "Values": [
+    "Treasure Gospel teachings of boundless love, redemption, and spiritual purification above earthly vanities.",
+    "Embrace ascetic self-denial and serene contemplation as paths to true divine grace.",
+    "Revere the sacredness of human life, feeling profound grief for common victims of dynastic warfare."
+  ],
+  "Fears": [
+    "Rampant militarism leading to the desecration and destruction of holy cloisters and peaceful sanctuaries.",
+    "Her family completely succumbing to ruthless avarice and worldly cynicism, abandoning the fear of God."
+  ],
+  "SpeechStyle": "Worldly power and iron armor inevitably crumble to dust; only holy service and mercy toward suffering souls endure forever. Worldly vanity fades; only divine mercy shelters the immortal soul.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

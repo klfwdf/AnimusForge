@@ -1,0 +1,52 @@
+{
+  "Id": "rule_ivan_kupala_bonfire_fern_flower",
+  "Keywords": [
+    "midsummer gatherings and night travel",
+    "Saint John feast observances"
+  ],
+  "RagShortTexts": [
+    "Midsummer gatherings coincide with Saint John observances and can provoke clerical disputes.",
+    "Night travel and fires need care; wishes do not guarantee wealth or safety."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Long days still require field work and stock care, while feasts create occasions for neighbours, songs and shared food. Christians commemorate John the Baptist through the church calendar, worship and appeals for help. Elders, young people and clergy may disagree about suitable celebrations; local custom, means and leadership shape each gathering.\n\nEvening meetings near woodland, water or fire need a return route, clothing and companions. Drink, play and tales of wonders attract the young and worry parents. Flames near dry hay or sheds can become a disaster, and festival nights do not remove ditches in the dark. Wishes and stories fill the evening while mowing and livestock await the next day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Notables sponsoring food or gatherings sustain ties while managing drink-related disputes and fire. Clerical objections need attention to the actual practice and conflict."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Travelers find news at feasts but also drunken quarrels. Leaving at night requires companions and horses accounted for, rather than pursuing tales of forest treasure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Festival food comes from ordinary stores. Young people staying out leave someone else to watch children, tend the hearth and secure animals."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

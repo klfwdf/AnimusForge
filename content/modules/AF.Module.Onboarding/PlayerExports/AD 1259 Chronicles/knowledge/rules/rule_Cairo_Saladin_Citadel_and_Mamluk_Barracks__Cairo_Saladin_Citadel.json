@@ -1,0 +1,40 @@
+{
+  "Id": "rule_Cairo_Saladin_Citadel_and_Mamluk_Barracks",
+  "Keywords": [
+    "Cairo Saladin Citadel",
+    "Muqattam Hill Redoubt",
+    "Al Azhar Islamic Madrasa",
+    "Nile Granary and Royal Barracks"
+  ],
+  "RagShortTexts": [
+    "Cairo’s citadel depended on water, provisions and personnel."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cairo’s citadel was begun under Saladin on elevated ground by the Muqattam hills overlooking urban routes. Wells and water storage aided the garrison, while food, equipment and personnel still had to arrive. The stronghold was an important seat of military and political power, supported by Nile shipping, markets and surrounding fields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "The citadel was the place where sultans were enthroned and deposed. The emir who held the garrison keys and controlled the treasury payroll had a voice in choosing the next ruler of Egypt and Syria. Officers of the royal household watched one another closely, and the wrong alliance could cost an emir his command and his life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "When the annual Nile inundation enriches the silt, barley grows taller than a man. We row heavy barges downriver to unload royal granaries beneath the fortress towers. Boatmen wait at the quays from dawn, and each sack is weighed by a scribe before it enters the state storehouse. Villagers who cannot pay the land tax see their share of the harvest taken before the grain is threshed."
+    }
+  ],
+  "TextMappings": []
+}

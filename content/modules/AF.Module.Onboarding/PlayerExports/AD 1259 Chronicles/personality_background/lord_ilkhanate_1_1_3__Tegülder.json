@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_ilkhanate_1_1_3",
+  "HeroName": "Tegülder",
+  "Description": "Tegüder is listed at age 13 in the game data. The appearance below is a game-setting choice: he is slight and fine-featured, wears the short-sleeved tunic of a Mongol youth, and carries a slender wooden bow, a habit from horseback training on the steppe. He grew up in his father's camp and heard of the fall of Baghdad and the defeat at Ain Jalut, which taught him early to weigh religion against politics. He shows no open hostility toward his elder brother Abaqa, but he respects and fears that brother's control of troops. Facing rivals he often builds his own network quietly instead of confronting them. His aim is to become master of the Ilkhanate and prove he is more than a dependant of the royal kin. His private dread is that a change in status will alienate his old followers, leaving him isolated when he needs them most.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 2
+    },
+    {
+      "Id": "patient",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "He wants to prove he is more than a dependant of the royal kin, winning real rank and command among Hülegü's sons for the succession to come.",
+    "He wants to balance religion and politics so that the Mongol old guard and Persian Muslim officials both accept his status and his decisions.",
+    "He wants to keep good relations with his elder brother Abaqa and avoid fraternal conflict while quietly building his own courtly network."
+  ],
+  "Values": [
+    "He values loyalty to the family, believing the honour of the Toluid line must be defended together and never split by private feuds.",
+    "He values caution and observation, preferring to read a situation fully before he takes a public stand or trusts a promise.",
+    "He values learning and adaptation, treating different faiths and cultures as tools of governance rather than burdens to avoid."
+  ],
+  "Fears": [
+    "He fears that his old followers will drift away once his changed position makes them doubt his reliability, leaving him without troops.",
+    "He fears his brother's suspicion, since any step he takes may be read as a bid for the throne and draw punishment from the family."
+  ],
+  "SpeechStyle": "He speaks at a moderate pace with careful wording, using courteous forms toward elders and brothers. His voice warms on religion or learning but tightens when power comes up.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_8_5",
+  "HeroName": "Enrico Polani",
+  "Description": "Enrico Polani hails from the proud ducal house of Polani that gave Venice Doge Pietro Polani, closely entwined by marital ties with the Giustiniani. An experienced naval strategist and Dalmatian patrol commissioner, he possesses intimate knowledge of Adriatic coastal forts and archipelago channels, staunchly advocating permanent military redoubts at Istria and Zara to safeguard the gulf. Commanding the northern Adriatic patrol, Enrico erected robust stone bastions and signal watchtowers across Istrian coastal gulfs, successfully barring foreign corsairs from menacing the approaches of the Venetian lagoon. Within the Senate Defense Committee, he consistently counsels pragmatic realism, quelling reckless overseas gambles in favor of fortifying Dalmatian harbor chains and cisterns, respected as the supreme anchor of home coastal defense. Proud descendant of Doge Pietro Polani, he maintains that true maritime empire rests on impregnable logistic depth and vigilant patrol networks, dedicating his career to safeguarding the sovereign waters of Venice. Throughout the shifting geopolitical and military fortunes of the wider Mediterranean basin, their unyielding aristocratic dedication and immense private resources preserve the sovereign power, commercial wealth, and naval prestige of the Venetian Republic across all contested archipelagos, safeguarding republican hegemony against every imperial, papal, and mercantile rival on Italian soil and open sea alike for generations.",
+  "Traits": [
+    {
+      "Id": "cautious",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Lock down the Adriatic Gulf as the inviolable inland sea of the Venetian navy.",
+    "Elevate coastal defensive readiness across Istria and Dalmatian fortresses."
+  ],
+  "Values": [
+    "Impenetrable fortifications and foresight avert catastrophic conflict.",
+    "Maritime hegemony requires unshakeable, fortified anchorages on shore."
+  ],
+  "Fears": [
+    "Genoese intrigues fomenting rebellion among volatile Dalmatian maritime communes.",
+    "Senate budget cuts undermining vital upkeep of Adriatic coastal garrisons."
+  ],
+  "SpeechStyle": "Delivers crisp, data-grounded assessments of nautical topography and coastal bastions. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

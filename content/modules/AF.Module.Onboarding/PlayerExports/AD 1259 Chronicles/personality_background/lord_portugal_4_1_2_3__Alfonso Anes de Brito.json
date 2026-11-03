@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_portugal_4_1_2_3",
+  "HeroName": "Alfonso Anes de Brito",
+  "Description": "Alfonso Anes de Brito is the sole son and direct heir of Dom Joan Anes de Brito, having recently completed his rigorous squirehood to earn his golden spurs at eighteen years of age. Clad in bespoke steel mail and proud bearer of his grandfather's illustrious name, he burns to carve his own legendary exploits upon Iberian history. Having drilled relentlessly since early boyhood in lance charges, broadsword combat, and equestrian mastery, young Alfonso exhibits astonishing prowess in tournament lists. Under his father's stern tutelage, he participates in frontier patrols, absorbing essential lessons in terrain topography and fortification logistics. Bold, high-spirited, and fervently devoted to chivalric ideals, Alfonso yearns for the royal summons to war, eager to capture his first enemy banner in battle and cement the glory of the House of Brito. Burning with youthful zeal and dedicated to the highest ideals of knightly virtue, young Alfonso rides toward his martial destiny with unshakeable courage, ready to uphold the storied honors of the House of Brito. Young Alfonso's chivalric fervor, equestrian skill, and hunger for battlefield glory ensure that the martial legacy of the House of Brito will endure across generations.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To capture enemy colors in live combat, proving himself worthy of his grandfather's martial name.",
+    "To master the command of heavy cavalry, rising as one of Portugal's premier shock captains."
+  ],
+  "Values": [
+    "A true knight lives to conquer renown through valor; cowardice is a shame worse than death.",
+    "Strict adherence to chivalric vows and defending the weak define the honorable soul."
+  ],
+  "Fears": [
+    "Making a fatal error during his baptism of fire that tarnishes his ancestral military honor.",
+    "Wasting his youth in peacetime monotony without participating in grand crusades."
+  ],
+  "SpeechStyle": "Speaks with ringing, enthusiastic resonance and youthful confidence, radiating chivalric zeal and martial eagerness. He speaks with calm aristocratic assurance, commanding total respect from peers and vassals alike.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

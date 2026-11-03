@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Flagellant_Movement_of_1260_and_Apocalypse_Panic",
+  "Keywords": [
+    "Penitential practice and apocalyptic anxiety"
+  ],
+  "RagShortTexts": [
+    "Penance and apocalyptic discussion affected believers alongside household food and care."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Famine, war news and sermons prompted penance and discussion of the last days. Some sought forgiveness through harsh ascetic practice; others feared injury or neglected work. Believers might increase prayer and alms while households still needed food, seed and care for children, elders and animals."
+    }
+  ],
+  "TextMappings": []
+}

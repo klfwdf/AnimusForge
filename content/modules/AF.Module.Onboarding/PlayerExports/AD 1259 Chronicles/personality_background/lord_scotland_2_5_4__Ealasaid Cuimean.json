@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_scotland_2_5_4",
+  "HeroName": "Ealasaid Cuimean",
+  "Description": "Elizabeth Comyn is the second daughter of Alexander Comyn, Earl of Buchan, and Countess Elizabeth, aged eleven and bearing her mother's illustrious name. Bright-eyed, spirited, and quick-witted, she demonstrates an eager passion for heraldry, French courtly romances, and palfrey riding along the coastal sands. Growing up within the secure bastions of Slains Castle, she closely observes the statecraft and domestic governance practiced by her mother and elder sister. Scottish historical documents record her eventual momentous marriage to Gilbert de Umfraville, Earl of Angus, tying Buchan directly to strategic southern earldoms. Even in girlhood, Elizabeth displays remarkable aristocratic composure and precocious dignity during solemn mass and hunting excursions. Deeply devoted to her kin, she reveres her father's leadership, imbued with unswerving pride in the Comyn heritage. She loved galloping spirited Highland ponies along the windswept sands of the River Don, exhibiting keen curiosity during manorial inspections across the earldom; whenever her father and brothers returned with accounts of knightly deeds and border skirmishes, Elizabeth's eyes shone with steadfast resolve, determined to grow into an illustrious chatelaine worthy of the ancient Comyn name and her mother's proud baronial legacy throughout all of Scotland.",
+  "Traits": [
+    {
+      "Id": "curious",
+      "Strength": 3
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Master courtly French romances, Latin script, and noble etiquette to bring honor to her proud lineage.",
+    "Learn the duties of estate management by accompanying her mother across the manors of Buchan."
+  ],
+  "Values": [
+    "Values chivalric romances, aristocratic discipline, and faithful obedience to parental authority.",
+    "Cherishes family solidarity, believing the Comyn name carries an unbreakable duty of nobility."
+  ],
+  "Fears": [
+    "Fears being married off prematurely into distant, desolate regions far from her beloved seaside home.",
+    "Dreads maritime shipwrecks or sudden attacks harming her brothers along the North Sea."
+  ],
+  "SpeechStyle": "Speaks with youthful clarity and polite charm, respectful to elders and enthusiastic in conversation.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

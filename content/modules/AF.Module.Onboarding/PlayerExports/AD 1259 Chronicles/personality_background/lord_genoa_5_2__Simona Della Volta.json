@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_genoa_5_2",
+  "HeroName": "Simona Della Volta",
+  "Description": "Simona Della Volta descends from the ancient vice-comital aristocracy of Della Volta, functioning as the vital link between Genoese financial patricians and the feudal counts of Lavagna. An expert in maritime credit and custom valuations, he channels extensive mercantile syndicates to finance Guelf military operations across Northern Italy. Simona supervised prime vaulted warehouses, draft inspections, and bottomry registers in Genoa, utilizing ancestral financial networks to furnish low-interest bullion loans and marine insurance for Levantine armadas. Behind senatorial scenes, he mediated the transshipment of papal tithe revenues, deftly circumventing Tuscan Ghibelline embargoes to ensure gold shipments and naval timber reached allied Ligurian yards safely. This master of European exchange bills understood that quiet currents of gold commanded wars far more decisively than battlefield steel, dedicating his fortune to keeping Guelf banners flying. Throughout the shifting political and military fortunes of the Western Mediterranean basin, their relentless aristocratic dedication, strategic statecraft, and immense personal resources preserve the sovereign power, commercial wealth, and naval prestige of the Republic of Genoa across all contested seas, safeguarding Ligurian independence, naval supremacy, and communal liberties against every imperial, Pisan, and Venetian rival on Italian land and open water alike for future generations of citizens, guilds, patrician houses, and overseas merchant syndicates across the seas and distant colonial horizons.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Secure Della Volta monopolies over Genoese maritime loan markets and customs farms.",
+    "Anchor financial control over the eastern littoral to fund Guelf dominance."
+  ],
+  "Values": [
+    "Impeccable credit and abundant coin decide the ultimate outcome of protracted wars.",
+    "Methodical financial maneuvering outmatches reckless battlefield gambles."
+  ],
+  "Fears": [
+    "State default and civic bankruptcy obliterating family banking fortunes.",
+    "Ghibelline triumph resulting in wholesale confiscation of prime urban wharves."
+  ],
+  "SpeechStyle": "Articulates with quiet financial precision, weighing geopolitical alliances by ledger revenues. Always fiercely defending Genoese communal autonomy, maritime monopolies, and Ligurian naval sovereignty.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_hafsid_1_1_2",
+  "HeroName": "Abu Zakariya Yahya II",
+  "Description": "Abu Zakariya Yahya II is the son of Muhammad I al-Mustansir. The game data records him at fifteen, trained by a court tactics tutor, and his name carries that of his grandfather, the dynasty's founder. The game model shows a youthful face with dark Arab-style hair and no battle scars yet, though he already practices the lance from horseback. The chronicles record nothing of his birth, so his early life rests on game setting and the dynastic setting alone. He sits in on his father's audiences and learns the rules of war and city defense, and he trains in archery and horsemanship on the royal drill ground at Tunis. His tutors came from the palace guard, so he values military honor more than his father does. Among the uncles and cousins of the house his feelings are mixed. He is proud of his father's favor, and he quietly resents older kinsmen who treat him as a boy. When his father debates the frontier in council, he studies the map for a long time and commits each pass to memory. Each night he practices his sword alone until his breath steadies, and the palace servants all know this habit. His sacred aim is to prove through deeds that he deserves his grandfather's name. His private shadow is the fear that youthful impulse will lead him into a fatal error that disgraces the family, and he never speaks of it openly.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Join his father's audiences and military councils, and win battle honors quickly enough to show he deserves the dynasty's succession rather than remaining a junior prince.",
+    "Outdo the other young men of the house in archery and lance work, until the veteran guardsmen acknowledge his skill and judgment to his face.",
+    "Find his place among his father and uncles, neither dismissed as an unready child nor feared as a rival claimant, so that his ambition reads as loyalty to the branch."
+  ],
+  "Values": [
+    "He holds that honor matters more than wealth, and he would rather fail openly on the field than be quietly despised by others behind his back.",
+    "He reveres his grandfather's name and the founding achievements of the dynasty, and treats old custom as the measure of his own conduct.",
+    "He believes courage and martial skill are a ruler's foundation, and he would rather lead a charge in person than give orders from deep inside the palace."
+  ],
+  "Fears": [
+    "His youthful impulsiveness may bring a disastrous misjudgment in battle, costing many cavalry and the trust his father and the veterans place in him.",
+    "He may fail to earn respect among the kinsmen, be dismissed as immature, lose his claim to the throne, and sink into a minor branch of the royal house."
+  ],
+  "SpeechStyle": "Bright, direct, and fond of rider and battlefield images. He tries to sound steady before elders, but speeds up when he wants to prove himself, sometimes cuts others off, and then apologizes awkwardly.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

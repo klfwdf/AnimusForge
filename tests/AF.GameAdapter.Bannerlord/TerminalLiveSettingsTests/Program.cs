@@ -70,6 +70,12 @@ class Program
                 TerminalProviderProbe.Owners.Add(owner.Id, owner);
             }
             var duel = (BaseSettings)TerminalProviderProbe.Owners["AnimusForge_global_settings"];
+            if (args.Contains("--reasoning-only"))
+            {
+                ReasoningSettingsChecks.Run(af, duel, Check);
+                Console.WriteLine("PASS " + checks + " reasoning settings checks");
+                return 0;
+            }
 #if !AF_BASELINE
             if (args.Contains("--country-selection-only"))
             {

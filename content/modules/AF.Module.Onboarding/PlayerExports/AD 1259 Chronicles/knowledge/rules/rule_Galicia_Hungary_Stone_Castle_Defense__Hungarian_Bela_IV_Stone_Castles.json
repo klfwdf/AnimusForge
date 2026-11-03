@@ -1,0 +1,50 @@
+{
+  "Id": "rule_Galicia_Hungary_Stone_Castle_Defense",
+  "Keywords": [
+    "Hungarian Bela IV Stone Castles",
+    "Galician Danylo Anti Mongol Forts",
+    "Carpathian Fortified Bastions",
+    "Cuman Horse Auxiliaries Settlement"
+  ],
+  "RagShortTexts": [
+    "Béla IV encouraged castles and rebuilding, requiring labor and negotiated resources."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "After the Mongol invasion of 1241, Béla IV encouraged stone castles and the rebuilding of damaged towns. Fortification required masons, timber, transport and food and brought negotiations over resources and rights between crown and nobles. Rulers in neighboring Galicia also valued defenses, under different political and practical conditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Barons invested colossal fortunes into masonry keeps overlooking the Danube and Carpathians. Béla IV proved that while steppe horsemen dominate open grasslands, stone fortifications equipped with siege machinery completely blunt the velocity of nomadic invasions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Garrisons on the walls of Buda and Visegrád man heavy springalds and ballistas. The steppe tumens cannot forage when royal storehouses sit behind twenty feet of mortar and ashlar stone. A sentry on the keep looks out over the plain each morning, watching for the dust that would mean the horsemen were coming again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Béla IV allowed barons and prelates to erect stone fortresses after the Mongol invasion of 1241, reversing the old rule against private castles. Serfs quarried limestone until their hands bled, yet few men cursed the labor, because the walls promised shelter. When horsemen descend with torch and lariat, survival means driving cattle across the drawbridge before the portcullis drops."
+    }
+  ],
+  "TextMappings": []
+}

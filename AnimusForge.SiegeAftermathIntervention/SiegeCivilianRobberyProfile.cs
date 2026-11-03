@@ -6,7 +6,7 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCivilianRobberyProfile
 {
-    public const string ActionName = "Extortion";
+    public static readonly string ActionName = SiegeAftermathCompatibilityTexts.Raw("robbery_action_name");
     public const string ActionNameEn = "Extortion";
     
     public const string MarketInventoryLootReasonEn = "demand supplies by robbery";
@@ -40,12 +40,12 @@ public static class SiegeCivilianRobberyProfile
 
     public const float MarketInventoryMaxRatio = 0.30f;
 
-    public const string MarketInventoryLootReason = "Extortion of supplies";
+    public static readonly string MarketInventoryLootReason = SiegeAftermathCompatibilityTexts.Raw("robbery_market_inventory_reason");
 
-    public const string MemoryTitle = "Extortion";
+    public static readonly string MemoryTitle = SiegeAftermathCompatibilityTexts.Raw("robbery_memory_title");
     
-    public const string GoldMemoryText = "The player demanded denars from the defeated civilian or notable; this is local extortion, not vanilla plunder.";
+    public static readonly string GoldMemoryText = SiegeAftermathCompatibilityTexts.Raw("robbery_gold_memory");
 
-    public const string GoodsMemoryText = "The player demanded supplies from the defeated civilian or notable; this is local extortion, not vanilla plunder.";
+    public static readonly string GoodsMemoryText = SiegeAftermathCompatibilityTexts.Raw("robbery_goods_memory");
 
 }

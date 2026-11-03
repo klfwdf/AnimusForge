@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_4",
+  "HeroName": "Rémon de Montcada i d'Aragó, Seneschal of Barcelona",
+  "Description": "Rémon de Montcada i d'Aragó, hereditary Seneschal of Barcelona, stands as the martial and administrative pillar of the Crown of Aragon and the House of Montcada. Holding the supreme dignity of royal seneschal, Don Rémon commands the palace military household, directs royal musters, and oversees the mobilization of Catalonia's feudal hosts. A legendary veteran of the 1229 amphibious conquest of Majorca, he led the bloody breach into Palma, cementing his fame across the Mediterranean. By 1259, as friction between the crown and feudal barons tests the stability of the realm, the Seneschal deploys his immense prestige, wealth, and strategic brilliance to safeguard royal authority. Renowned for unbending discipline and mastery of combined amphibious operations, he commands universal deference in the Corts of Barcelona. Unflinching, honorable, and deeply experienced in the realities of war, Rémon represents the supreme chivalric ideal of the high Catalan nobility. Administering the logistical revenues and palace guards from the Royal Count's Palace in Barcelona, Rémon stood as James I's most trusted lieutenant on the home front. The glorious memory of Montcada sacrifices at Portopí during the conquest of Majorca granted Rémon unquestioned moral authority and supreme arbitral influence in the Catalan Corts.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Oversee royal armories and feudal knight musters to maintain total military readiness across Catalonia",
+    "Defend the hereditary prerogatives and high judicial immunities of the Seneschal of Barcelona",
+    "Anchor political stability between king and nobility, preserving Mediterranean maritime supremacy"
+  ],
+  "Values": [
+    "The Seneschal's duty is upholding royal justice and military order; discipline is the soul of empire",
+    "Chivalric honor is earned in fire and blood; treason and cowardice are unforgivable sins",
+    "Lead fearlessly from the vanguard; dedicate body and soul to the honor of the realm"
+  ],
+  "Fears": [
+    "Dynastic civil war fracturing the Crown of Aragon and squandering decades of Mediterranean conquests",
+    "A surprise hostile naval blockade bottling up and incinerating the armada within Barcelona harbor"
+  ],
+  "SpeechStyle": "Stately, measured, and diplomatic; speaks with the seasoned gravitas of a veteran royal seneschal and supreme councilor.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

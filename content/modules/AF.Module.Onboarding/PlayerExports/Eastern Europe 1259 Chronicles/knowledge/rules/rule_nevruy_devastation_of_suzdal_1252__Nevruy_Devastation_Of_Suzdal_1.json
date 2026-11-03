@@ -1,0 +1,52 @@
+{
+  "Id": "rule_nevruy_devastation_of_suzdal_1252",
+  "Keywords": [
+    "Nevryui’s intervention in 1252",
+    "Andrey’s departure and Alexander"
+  ],
+  "RagShortTexts": [
+    "In 1252 Mongol intervention displaced Andrey; Alexander then took authority in Vladimir.",
+    "The change of prince and passage of troops affected families and settlements differently."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1252 Mongol forces under Nevryui intervened in northeastern Rus. Andrey lost authority in Vladimir and fled; Alexander subsequently became grand prince. Courts faced changes in rank, recognition and allegiance, while settlements along military routes lost provisions, animals and shelter. Distant people speculated about dealings between brothers. Someone witnessing damage to a village might never meet those envoys, but could identify troops passing his door and neighbours who did not return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Grand-princely standing needs external recognition and local support. A successor must address former followers, displaced relatives and damaged communities so that the same households are not pursued by both sides."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "A soldier may withdraw with Andrey or remain awaiting orders. Identifying authority and a supporting position matters more than treating a change of house as permission to seize supplies. Private revenge makes return routes less safe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Military losses are not settled automatically by a new prince. Families need borrowed animals, food and witnesses to earlier requisitions. A willingness to hear them affects whether they remain locally."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

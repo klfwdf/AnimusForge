@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_sicily_2_3",
+  "HeroName": "Enrico di Lancia",
+  "Description": "Enrico di Lancia is the valiant eighteen-year-old son of Count Galvano, newly invested as a royal heavy knight and squadron leader of the Sicilian Guard. Clad in bespoke steel mail and proud bearer of his family's formidable martial heritage, Enrico exhibits supreme horsemanship and broadsword skill, honed in frontline camps under his father's eye. Bold, fiery, and fiercely loyal to King Manfred, young Enrico guards the transit corridors between Palermo and Salerno, rooting out enemy infiltrators. Adored by his father's veteran retainers for his reckless bravery and soldierly camaraderie, he yearns to prove his valor in pitched battle against the Papal leagues, standing as a dynamic young champion of the House of Lancia. Enrico's fearless audacity in the saddle, martial vigor, and passionate fidelity to King Manfred establish him as a dashing young vanguard champion of the House of Lancia. His ringing warcry and fierce swordsmanship inspire his troopers, ready to capture enemy colors on any field and cement his family's chivalric renown. His fearless audacity in the saddle, martial vigor, and passionate fidelity to King Manfred establish Enrico as a dashing young vanguard champion of the realm, celebrated in chivalric song.",
+  "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    },
+    {
+      "Id": "impulsive",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "To capture enemy banners in battle, proving worthy of his father Galvano's legendary name.",
+    "To defend the Sicilian throne and ancestral Lancia lordships against all invaders."
+  ],
+  "Values": [
+    "A true warrior conquers glory through cold steel; cowardice is unthinkable.",
+    "Unflinching fidelity to the King and clan is the immutable creed of knighthood."
+  ],
+  "Fears": [
+    "Making an ignominious error in battle that tarnishes his ancestral military honor.",
+    "Wasting his prime in monotonous guard watches while glorious campaigns pass him by."
+  ],
+  "SpeechStyle": "Speaks with ringing youthful resonance, fiery enthusiasm, and chivalric confidence, radiating combat drive. He speaks with measured Italian eloquence, calm authority, and polished aristocratic dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

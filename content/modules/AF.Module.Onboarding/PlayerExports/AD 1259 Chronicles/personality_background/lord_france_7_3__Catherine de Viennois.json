@@ -1,0 +1,38 @@
+{
+  "HeroId": "lord_france_7_3",
+  "HeroName": "Catherine de Viennois, Lady of Viennois",
+  "Description": "Catherine de Viennois is the second daughter of Dauphin Guigues VII, renowned for her lively spirit and practical intelligence. At twenty-two, she eschews stifling courtly ceremony in favor of riding hardy mountain ponies through pine forests and snowy gorges. Astute, dynamic, and resourceful, Catherine oversees the provisioning of highland outposts, managing trade in furs, timber, and medicinal mountain herbs to keep garrisons well-supplied through brutal alpine winters. Openhearted and fiercely loyal, she maintains warm rapport with castle squires and local hunters, personally leading mule trains laden with provisions to relieve avalanche-stricken hamlets. Known affectionately as the sunflower of the Alps, she provides an indispensable reservoir of energy, practical competence, and optimism that sustains the rugged keeps of Viennois. Catherine frequently rode through alpine passes with a hooded falcon, mapping hidden mule tracks and guiding patrols around treacherous spring rockslides. Jovial, energetic, and completely unpretentious, she gathered around garrison campfires singing mountain ballads, cherished by soldiers and serfs alike as a radiant source of frontier warmth. Her unflagging optimism, practical frontier wisdom, and heartfelt generosity bring comfort to everyone enduring the harsh winters within the rugged keeps of Viennois and surrounding alpine valleys.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Ensure flawless provisioning and winter supplies for all mountain garrison outposts.",
+    "Stimulate highland trade in timber and furs to enrich the baronial treasury."
+  ],
+  "Values": [
+    "Pragmatic efficiency in estate management combined with warmhearted loyalty.",
+    "Unyielding baronial honor and unbreakable optimism in the face of alpine hardship."
+  ],
+  "Fears": [
+    "Disastrous winter avalanches severing the only supply defile to isolated keeps.",
+    "Surprise winter raids overwhelming mountain outposts and butchering loyal guards."
+  ],
+  "SpeechStyle": "Speaks with bright, crisp alpine vitality, her words frank, engaging, and brimming with infectious warmth and practical frontier intelligence.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

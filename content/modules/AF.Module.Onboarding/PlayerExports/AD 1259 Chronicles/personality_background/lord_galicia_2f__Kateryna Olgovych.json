@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Kateryna Olgovych is a distinguished noble chatelaine of the Olgovych dynasty, commanding deep reverence across Chernigov and western border manors. Steeped in the heroic lore of *The Tale of Igor's Campaign* and royal Rurikid genealogies, Kateryna possesses graceful dignity, administrative poise, and moral resilience. Managing multiple estates and riverside castles along the Desna basin, she oversees tithe registers, grain silos, and textile looms with formidable efficiency. Her prudent management ensures that regional garrisons remain well-provisioned with rations, barding, and medical supplies. Devoted to Christian charity, she endows Orthodox hospices and shelters displaced families fleeing border warfare, earning widespread affection as a benefactress. In 1259, as war clouds gather once again over Eastern Europe, Kateryna anchors domestic defenses with tranquil fortitude, safeguarding her family's heritage. Overseeing prosperous agrarian manors and trade workshops along the Desna River, Lady Kateryna ensured a continuous flow of timber, grain, and armaments for frontline garrisons. Her extensive charitable shelters comforted war orphans, transforming her peaceful ancestral domains into a secure haven amidst the turbulent storms of the thirteenth century. Her benevolent leadership transformed rural estates into thriving sanctuaries of agricultural productivity, guaranteeing ample provisions and warmth for returning border guards throughout harsh winters.",
+  "SpeechStyle": "The Desna rushes south, and our hearths dispel the bitter winter! With home defenses vigilant, our dynasty and warriors shall endure in honor! Well-tended granaries build our family's prosperity.",
+  "Motivations": [
+    "Preserve peace and prosperity across Desna manors, ensuring ample supplies for garrison troops.",
+    "Promote Orthodox Christian charity, cultivating profound respect and moral authority for her house."
+  ],
+  "Values": [
+    "Hold domestic devotion, clan fidelity, and charitable generosity as supreme virtues.",
+    "Value tranquil domestic harmony over noisy court ostentation and grasping ambition."
+  ],
+  "Fears": [
+    "Fears warfare spilling into the Desna valley, destroying flourishing manors and historic hamlets.",
+    "Dreads accidental fires or freezing blizzards destroying grain reserves, subjecting families to famine."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "frugal",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_galicia_2f",
+  "HeroName": "Kateryna Olgovych"
+}

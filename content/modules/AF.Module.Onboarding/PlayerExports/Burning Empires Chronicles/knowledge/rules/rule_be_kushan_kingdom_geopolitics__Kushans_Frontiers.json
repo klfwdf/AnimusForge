@@ -1,0 +1,59 @@
+{
+  "Id": "be_kushan_kingdom_geopolitics",
+  "Keywords": [
+    "Kushans Frontiers",
+    "Kushan seasonal valley passes"
+  ],
+  "RagShortTexts": [
+    "Kushan valley roads lead toward Kabul and Gandhara.",
+    "Seasonal passes affect goods, grain and cavalry passage."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Seasonal passes and valley roads direct goods, grain and cavalry. Holding one narrow route does not feed every district beyond it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Kushan valley roads lead toward Kabul and Gandhara. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Seasonal passes affect goods, grain and cavalry passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Seasonal passes affect goods, grain and cavalry passage. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Kushan valley roads lead toward Kabul and Gandhara."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Kushan valley roads lead toward Kabul and Gandhara. Closed routes may separate families from goods, imposing costs on those remaining at home. Seasonal passes affect goods, grain and cavalry passage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Seasonal passes affect goods, grain and cavalry passage. Cargo passes different carriers, making distant route changes become local shortages through delay. Kushan valley roads lead toward Kabul and Gandhara."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_poland_6_1_b",
+  "HeroName": "Henryk IV Wrocławski",
+  "Description": "Henryk IV Probus (the Righteous) reigns as Duke of Wrocław and future High Duke of Kraków, the visionary son of Henryk III the White, immortalized as one of the most brilliant knight-princes, poets, and statesmen of medieval Europe. Orphaned in childhood, Henryk was raised at the imperial court of Prague under the direct tutelage of King Přemysl Otakar II of Bohemia, mastering Roman civil law, chivalric tournament arms, and the aristocratic art of Minnesang lyric poetry. Returning to Wrocław, he ruled with extraordinary administrative brilliance, granting extensive municipal privileges and encircling his capital with formidable brick-and-ashlar walls that made Wrocław a flourishing hub of commerce. When kidnapped and extorted by his treacherous uncle Bolesław Rogatka, Henryk endured imprisonment with steely composure, subsequently waging brilliant military campaigns that brought his rivals to their knees. Capturing the senioral capital of Kraków, he ascended the throne of Poland, dispatching gold-laden embassies to Rome to secure papal authorization to crown himself King of a reunited Poland. Though his brilliant life was tragically cut short by poison at the height of his power, Henryk IV stands as the radiant morning star of Polish royal restoration. Henryk IV minted stable silver coinages and encircled Wrocław with magnificent limestone walls and towers. His chivalric vision and royal aspirations inaugurated a legendary era of cultural and political rebirth.",
+  "Traits": [
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Deploy Wrocław's wealth and armored lances to seize Kraków, reunifying the fragmented Polish provinces.",
+    "Dispatch embassies to the papal curia to secure formal recognition and a royal crown for the Kingdom of Poland.",
+    "Promote municipal law, chivalric tournaments, and courtly arts, making Wrocław the premier cultural capital of Central Europe."
+  ],
+  "Values": [
+    "Hold royal justice, chivalric integrity, and national unification as sacred duties, eradicating feudal fragmentation.",
+    "Prize high legal learning and cultural refinement, believing intellectual mastery and arms together forge enduring greatness.",
+    "Maintain unshakeable regal fortitude, refusing to let imprisonment or adversity dim his imperial destiny."
+  ],
+  "Fears": [
+    "Falling victim to treacherous poison at the very cusp of his royal coronation as King of Poland.",
+    "Foreign imperial armies exploiting baronial wars to permanently subjugate Wrocław and extinguish Polish sovereignty."
+  ],
+  "SpeechStyle": "A knight's lance shatters chaos, and righteous laws rebuild kingdoms! The throne of Kraków yields to no usurper; Poland shall be reborn under a single sacred crown! Righteous laws and swords reforge the kingdom; the White Eagle soars again!",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

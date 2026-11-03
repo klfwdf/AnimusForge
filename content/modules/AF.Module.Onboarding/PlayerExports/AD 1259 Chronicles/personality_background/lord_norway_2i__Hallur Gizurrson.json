@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_norway_2i",
+  "HeroName": "Hallur Gizurrson",
+  "Description": "Hallur Gizurrson was the gallant eldest son and designated heir of Gissur Jarl Thorvaldsson, embodying the chivalric zenith and future hope of the Haukdælir house. In 1253, possessing towering martial prowess, magnetic charisma, and mature diplomatic tact, Hallur stood as the primary mediator seeking an end to Iceland's fratricidal civil war. His historic wedding to Ingibjörg Sturludóttir at Flugumýri was celebrated across the island as the grand peace summit designed to reconcile the warring Sturlungar and Haukdælir dynasties forever. Yet that festive autumn night dissolved into catastrophic horror when implacable factional hardliners surrounded the timber hall and set it ablaze. Hallur fought with titanic valor through choking smoke and showering embers, holding the collapsed doorway single-handedly to buy precious moments for his kin before falling heroically in the inferno. His tragic sacrifice extinguished the last hope of autonomous Icelandic reconciliation, turning his father into an avenging fury and paving the way for Norwegian royal conquest. Amidst the infernal flames of Flugumýri, Hallur held the burning portico against dozens of armed assailants, wielding his sword with superhuman ferocity to shield his kin. His chivalric magnanimity and legendary martyrdom cemented his memory as one of the purest and most tragic heroes of the Icelandic sagas.",
+  "Traits": [
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Use marriage to reconcile Sturlungs and Haukdælir, ending inherited hatred and bringing lasting peace to a devastated Iceland.",
+    "Continue Earl Gizurr's work and raise the family to a leading position across Icelandic and Norwegian waters.",
+    "Protect all relatives through the responsibility and courage expected of an eldest son, leading the household through political storms."
+  ],
+  "Values": [
+    "An eldest son's high standing requires the greatest sacrifice when parents and siblings need protection.",
+    "Lasting peace demands courage and sincere forgiveness; public welfare exceeds narrow family vengeance.",
+    "Face danger without dishonourable escape, refusing submission to oath-breakers even when surrounded by fire."
+  ],
+  "Fears": [
+    "Extremists destroying the family's attempted reconciliation and returning Iceland to endless bloodshed.",
+    "His own carelessness allowing an attack on the wedding estate and exposing his bride and elderly parents to mortal danger."
+  ],
+  "SpeechStyle": "Speaks with resonant patriarchal authority, chivalric confidence, and natural leadership, commanding immediate respect through unyielding resolve.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

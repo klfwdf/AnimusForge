@@ -1,0 +1,52 @@
+{
+  "Id": "rule_dung_bed_winter_earth_cellar",
+  "Keywords": [
+    "winter storage in an earth cellar",
+    "cellar damp and ventilation"
+  ],
+  "RagShortTexts": [
+    "Earth cellars moderate temperature but need protection from seepage, mould and rodents.",
+    "Seed, vegetables and fuel have different storage needs, and inspection takes labour."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "An underground store shields vegetables and vessels from wind and severe cold, but a low site can admit rain and meltwater. Covers, drainage and supports need maintenance, and a household must check beyond the top basket. Freezing, mould and rodents steadily consume reserves; one leak can reduce a planned winter supply.\n\nGrain, seed and fresh produce require suitable storage, with damp bedding renewed rather than spoiled food buried beneath good supplies. Animal dung has agricultural uses but also brings dirt and smells, so food stores must be considered alongside stock and runoff. Opening the store, carrying baskets and sorting all take labour, and illness can delay even regular inspection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Stewards need usable stores rather than a mere count of sacks. Drainage and sound covers can preserve more food than another hurried grain levy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops using village stores disrupt arrangements through repeated access. Recording condition and handovers helps avoid blaming all spring spoilage on hidden food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Families keep sound seed apart despite immediate hunger. Leaks require quick movement, and a neighbour’s dry space can determine the scale of loss."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

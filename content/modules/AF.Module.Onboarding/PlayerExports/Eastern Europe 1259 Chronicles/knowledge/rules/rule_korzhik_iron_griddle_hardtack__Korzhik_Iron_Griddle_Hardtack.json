@@ -1,0 +1,52 @@
+{
+  "Id": "rule_korzhik_iron_griddle_hardtack",
+  "Keywords": [
+    "baking flat cakes for a journey",
+    "softening hard travel bread"
+  ],
+  "RagShortTexts": [
+    "Flat cakes cook on a suitable heated surface; keeping depends on dryness and packing.",
+    "Hard bread needs sound teeth or softening, alongside an adequate staple supply."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ground grain mixed with water can be made into thin cakes at a hearth, on hot stone or on a suitable baking surface. Tools and habits vary the shape and thickness. Thin cakes cook quickly while a thick centre needs more heat. Grain in hand does not immediately become cooked provisions without fuel or milling.\n\nTravel bread needs cloth or containers that keep out rain and animal sweat. Dry hardness helps carrying but does not prevent all mould. Poor teeth may require broken bread soaked soft; gruel needs water, a pot, fuel and time to stop. Ration counts must consider size, edible remains and the next supply point rather than pieces alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Provisioning workers needs milling, baking and distribution planned together. Grain requisitioned only at departure transfers the shortage to cooks and carriers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Troops inspect wet rations and crumbs at the bottom of packs. Wounded people unable to chew need water, heat and companions’ time, which affects the march."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households may cook extra while a fire is hot, balancing travel food against what remains at home. Breaking borrowed cookware can cost far more than a few cakes."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

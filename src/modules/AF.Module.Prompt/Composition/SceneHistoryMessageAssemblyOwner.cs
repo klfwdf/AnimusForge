@@ -230,7 +230,13 @@ internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessa
 				return true;
 			}
 			string text4 = string.IsNullOrWhiteSpace(msg.SpeakerName) ? PromptComposerTexts.Get("residual_other_npc") : msg.SpeakerName.Trim();
-			chatMessage = MainPromptMessageAssemblyOwner.CreateMemoryChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text4, PromptComposerTexts.Format("residual_heard_speech", ("NAME", text4), ("TEXT", text3))), lengthSink);
+			// NPC lines that carry an NPC addressee (scene relay/ambient chat) keep who was spoken to.
+			string heard = msg.TargetAgentIndex >= 0 && msg.TargetAgentIndex == npcAgentIndex
+				? PromptComposerTexts.Format("residual_heard_speech_to_you", ("NAME", text4), ("TEXT", text3))
+				: msg.TargetAgentIndex >= 0 && !string.IsNullOrWhiteSpace(msg.TargetName)
+					? PromptComposerTexts.Format("residual_heard_target_speech", ("NAME", text4), ("TARGET", msg.TargetName.Trim()), ("TEXT", text3))
+					: PromptComposerTexts.Format("residual_heard_speech", ("NAME", text4), ("TEXT", text3));
+			chatMessage = MainPromptMessageAssemblyOwner.CreateMemoryChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text4, heard), lengthSink);
 			return true;
 		}
 		if (text.Equals("user", StringComparison.OrdinalIgnoreCase))

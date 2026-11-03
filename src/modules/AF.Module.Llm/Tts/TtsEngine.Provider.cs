@@ -16,7 +16,7 @@ internal sealed partial class TtsEngine
 
     private sealed class ProviderSnapshot
     {
-        internal readonly bool OpenAi, Enabled, SceneWinmm, Streaming;
+        internal readonly bool OpenAi, Enabled, SceneWinmm, Streaming, WaitForPostprocessEmotion;
         internal readonly int ProviderMode;
         internal readonly GptSoVitsLanguage SpeechLanguage;
         internal readonly string Url, Credential, AppId, ResourceId, Voice, Encoding, Extra, Model;
@@ -28,6 +28,7 @@ internal sealed partial class TtsEngine
             ProviderMode = settings?.TtsProviderDropdown?.SelectedIndex ?? 0;
             SpeechLanguage = GptSoVitsLanguage.Parse(settings?.TtsGptSoVitsOutputLanguage);
             Streaming = settings?.TtsStreamingPlaybackEnabled ?? true;
+            WaitForPostprocessEmotion = settings?.TtsWaitForPostprocessEmotion ?? true;
             Enabled = settings?.IsSelectedTtsEnabled ?? false;
             Url = OpenAi ? settings.TtsOpenAiApiUrl : settings?.TtsVolcDedicatedApiUrl;
             Credential = OpenAi ? settings.TtsOpenAiApiKey : settings?.TtsVolcDedicatedApiKey;

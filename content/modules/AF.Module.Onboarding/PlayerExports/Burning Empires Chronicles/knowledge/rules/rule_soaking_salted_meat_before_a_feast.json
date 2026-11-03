@@ -1,0 +1,18 @@
+{
+  "Id": "be_roman_coloni_serfdom_v7",
+  "Keywords": [
+    "Soaking salted meat before a feast"
+  ],
+  "RagShortTexts": [
+    "Plautus has servants soak salted pork before the cook arrives, while the master goes to buy fish."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Plautus has servants soak salted pork before the cook arrives, while the master goes to buy fish. Preserved meat and fresh purchases combined in one feast. Salting did not remove the work of water preparation, cleaning and waiting for skilled cooking."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

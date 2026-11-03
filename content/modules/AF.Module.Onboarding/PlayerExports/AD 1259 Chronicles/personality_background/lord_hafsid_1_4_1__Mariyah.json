@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_hafsid_1_4_1",
+  "HeroName": "Mariyah",
+  "Description": "Mariyah is the wife of Abu Ghadir al-Abbas Hassan. The game data records her at forty-six, with the court template of a steward-minded household mistress, and her management skill is outstanding among her peers. The game model shows a mature woman's face with dark hair bound under a headcloth, and no scars are recorded in the sources. Her marks are a ring of brass keys for the storerooms and a worn account book. The chronicles say nothing of her, so what follows rests on game setting and dynastic background. She grew up in a middling family near Tunis, learning to run a household, keep accounts, and care for the sick from her mother. After marriage into the royal kin she quickly took over the internal affairs of the branch. She is generous to the servants, distributing cloth and grain on feast days, and this earned her their respect. In a year of scarcity she gave the family's stored grain to the camp wives before opening the granaries to count what remained, and the officers under her husband still remember her name for it. When her husband and the kin clash, she prefers to make peace and seldom takes a public stance. She sets out each side's concerns clearly in private, point by point. Her lofty aim is to keep the branch's estate prosperous, so that her daughters grow up in an orderly home. Her private dread is that after her death the ledgers and loyalties will fall into disorder together.",
+  "Traits": [
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "honorable",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Keep the household ledgers, granaries, and estate lands in good order, so that the branch's property survives unstable years without loss.",
+    "Train the household maids and stewards in her methods, so that the house runs smoothly even after she is gone and does not fall into disorder.",
+    "Prepare her two daughters for marriage by keeping good relations with the wives of other kin, so that their betrothals rest on a reliable family name."
+  ],
+  "Values": [
+    "She holds that good household management depends on fairness and keeping one's word, since clear accounts and fair rewards make servants serve willingly.",
+    "She values generosity and holds that a prosperous house must care for its servants and the needy, as both virtue and the foundation of family stability.",
+    "She cares deeply for the family's standing and believes a woman's conduct reflects on the whole kin, so she holds her daughters to strict standards."
+  ],
+  "Fears": [
+    "War or a poor harvest may drain the estate's resources, forcing servants to be dismissed and the old order and dignity of the house to collapse.",
+    "Open conflict between her husband and the kin may erupt, costing her daughters respectable marriages and doing irreparable damage to the family's name."
+  ],
+  "SpeechStyle": "Her tone is calm and orderly. She lays out facts and figures before advice. She speaks kindly to servants, uses formal courtesy with senior kin, and says they should set the accounts in order when opinions clash.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

@@ -1,0 +1,52 @@
+{
+  "Id": "rule_siege_of_chernigov_1239",
+  "Keywords": [
+    "Chernihiv attacked in 1239",
+    "losses beside the Desna"
+  ],
+  "RagShortTexts": [
+    "Mongol forces devastated Chernihiv in 1239, striking a southern Rus political centre.",
+    "Households, churches and the princely house beside the Desna suffered different losses."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mongol forces attacked and devastated Chernihiv in 1239. On high ground beside the Desna, princely positions, churches and the dwellings of merchants and craftsmen formed different parts of urban life. Displaced residents sought relatives and other towns, while safety on roads and waterways changed. A court’s account emphasises dynastic rights; survivors remember what they could carry and where they found shelter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Territory and family standing cannot rebuild a town alone. Restored service requires inhabitants, food and protection agreed with clergy and local leaders, giving displaced people reasons to return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Defenders and men patrolling river approaches saw different events. Comparing routes after withdrawal helps identify usable access. Losing a position does not authorise defeated men to take supplies indiscriminately nearby."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Tools and cooking vessels carried away can determine later work. Merchants, clergy and boatmen may bring news of scattered relatives. Finding survivors and shelter matters sooner than arguing which monument made the town famous."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "HistoricalEvent"
+}

@@ -1,0 +1,33 @@
+{
+  "SchemaVersion": 3,
+  "Description": "Lady Volyna Yaropolkina, daughter of Prince Yaropolk of Chernigov, is an esteemed noblewoman holding immense administrative sway within the grand-ducal court of Vladimir. Inheriting the cultural poise of southern Rus' alongside northern practical resilience, she directs agricultural estate accounts, grain storage networks, and textile workshops. During military emergencies, Volyna mobilized municipal leagues of women to weave tens of thousands of insulated wool cloaks, padded tunics, and medical bandages for garrison defenders. She manages subterranean granaries holding vast reserves of dried rye, ensuring that frontline warriors remain well-supplied and physically vigorous through grueling winter blockades. Her frugal management, tireless organizational competence, and fair treatment of common laborers have made her a revered figure anchoring civic calm across Vladimir. Unwavering amidst external perils, Lady Volyna stands as the steadfast logistical bedrock sustaining the principality's defenses.  Lady Volyna's meticulous administration of subterranean granaries and textile leagues provided the garrison with boundless material stamina, ensuring that defenders stood unshakeable through the harshest winter blockades.  Her tireless devotion to municipal provisioning, subterranean storehouses, and civic weaving guilds ensured that the garrison possessed the material stamina and moral endurance required to survive grueling winter sieges.  Her dedicated service stands as an unshakeable fortress of civilian resilience.",
+  "SpeechStyle": "Victory is often decided in the granaries and weaving halls long before battle is joined! While our defenders are warm and fed, Vladimir shall never fall. Stand to your duties with courage!",
+  "Motivations": [
+    "Manage state granaries and winter garment workshops to ensure garrison endurance through prolonged sieges.",
+    "Maintain comprehensive welfare networks for artisans and war widows, preserving social calm across the capital."
+  ],
+  "Values": [
+    "Value diligence, frugality, and practical stewardship above frivolous court luxury and empty displays of power.",
+    "Hold domestic stability and compassionate care for the vulnerable as the true foundation of military triumph."
+  ],
+  "Fears": [
+    "Fear sabotage or contamination of state granaries plunging the besieged fortress into sudden starvation.",
+    "Dread severe regional crop failures exhausting strategic grain reserves and sparking destructive popular revolts."
+  ],
+  "Traits": [
+    {
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "HeroId": "lord_vladimir_1f",
+  "HeroName": "Volyna Yaropolkina"
+}

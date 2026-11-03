@@ -1,0 +1,51 @@
+{
+  "Id": "rule_ee1259_pskov_river_defenses_0c45ca11",
+  "Keywords": [
+    "pskov river defenses",
+    "Velikaia channels ice and Pskov watches"
+  ],
+  "RagShortTexts": [
+    "Pskov uses the Velikaia and terrain in its defence.",
+    "Water and ice conditions alter approaches by boats and people."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pskov watches the Velikaia’s channels, banks and town approaches. Flood, freezing and thaw alter accessible points. The river obstructs attackers but also carries food and travelers, requiring defence that considers both uses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "River guards distinguish navigable channels and landings and revise patrols as ice changes. Watching midstream alone neglects shore tracks and food deliveries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "River defence competes with port work and gate watches. Closing an approach also raises food costs, so authorities need an alternative way to receive cargo."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Boatmen and shore residents notice changing water and ice, though reporting interrupts work. Carriers need permitted landings and receivers, not merely arrival at the town."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

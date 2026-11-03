@@ -1,0 +1,31 @@
+{
+  "Id": "rule_House_of_Luna_Aragonese_Dynasty",
+  "Keywords": [
+    "House of Luna Aragon",
+    "Crescent Moon Banner Luna",
+    "Zaragoza Archbishopric Luna",
+    "Aragonese Cortes Magnates"
+  ],
+  "RagShortTexts": [
+    "Bearing the heraldic silver crescent, the House of Luna wielded formidable influence in."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rising over the Ebro valley, the House of Luna held estates around Zaragoza and flew a reversed silver crescent on red. Its lords became champions of Aragonese liberties in the Aragonese Union, the league of noble and urban interests that resisted royal absolutism. The family defended the regional fueros, the written charters that set out local rights, against every attempt by the crown to centralize justice and taxation. Their resistance made Zaragoza a center of noble politics, where feasts and assemblies brought the great houses together. Luna influence reached into the cathedral chapters and the parliamentary Cortes, so a royal decree issued without their approval could meet quiet refusal in every town."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Luna prelates and knights dictated policy in the church synods and in the parliamentary Cortes alike, commanding loyalty that few royal officials could match. A Luna vote could carry a motion or sink it, and the king's secretaries learned to draft requests with the family's approval in mind."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Battle_of_Tagliacozzo_1268",
+  "Keywords": [
+    "Abruzzo routes and Hohenstaufen claims"
+  ],
+  "RagShortTexts": [
+    "Abruzzo roads linked southern Italy with northern approaches."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Abruzzo roads linked southern Italy with northern approaches, requiring passage, local reception and food. Conradin’s dynastic claim differed from Manfred’s actual rule. In 1259 a young claimant’s fate was not an available conclusion."
+    }
+  ],
+  "TextMappings": []
+}

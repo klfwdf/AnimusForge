@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_5_4",
+  "HeroName": "Marino Contarini",
+  "Description": "Marino Contarini is an astute thirty-three-year-old patrician magistrate and financial commissioner of the Great Council, directing maritime trade syndicates across the Levant. Master of commercial law, bullion credit at the Zecca, and state bond issues, Marino coordinates public wartime loans that finance the republic's naval campaigns. Calculating, influential, and visionary in commercial statecraft, he orchestrates patrician capital to sustain battle fleets, serving as the financial architect of the Contarini house. Having served as magistrate of the Sal Office and chief maritime inspector, Marino zealously prosecuted smugglers, contraband merchants, and forged shipping passports, recovering immense customs revenues for the republican treasury. When adjudicating volatile maritime disputes with Byzantine envoys and Dalmatian communes, he unyieldingly upheld Venetian trading monopolies while adhering strictly to ratified diplomatic treaties, displaying seasoned statecraft and legal mastery. Respected for his incorruptible severity and steadfast loyalty to the laws of Saint Mark, this influential statesman stands as an unyielding pillar of fiscal oversight and judicial integrity in the Venetian Senate. Throughout the shifting political and military fortunes of the wider Mediterranean basin, their relentless aristocratic dedication preserves the sovereign power, commercial wealth, and naval prestige of the Venetian Republic.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "frugal",
+      "Strength": 3
+    },
+    {
+      "Id": "pragmatic",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Dominate state banking and fiscal magistracies, securing premier trade concessions for his house.",
+    "Deploy commercial capital and state loans to mobilize legislative alliances backing Contarini interests."
+  ],
+  "Values": [
+    "Fiscal solvency, mathematical precision, and commercial efficiency as the true bedrocks of empire.",
+    "Cold pragmatism, believing public wealth and credit sustain naval victories far longer than raw courage."
+  ],
+  "Fears": [
+    "Naval blockades strangling trade routes and triggering a collapse in public bond credit at the Rialto.",
+    "Hostile sack of overseas trading factories obliterating millions of ducats in bullion reserves."
+  ],
+  "SpeechStyle": "Speaks with precise financial gravitas, cool mercantile intellect, and senatorial authority. Always defending Venetian maritime statutes, Saint Mark's glory, and shrewd Levantine policy.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

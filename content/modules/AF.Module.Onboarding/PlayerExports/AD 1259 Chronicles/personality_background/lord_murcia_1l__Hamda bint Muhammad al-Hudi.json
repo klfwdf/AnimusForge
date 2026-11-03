@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_murcia_1l",
+  "HeroName": "Hamda bint Muhammad al-Hudi",
+  "Description": "Hamda bint Muhammad al-Hudi, only one in the game setting, is the daughter of Ayyub ibn Muhammad al-Hudi and Rihana, the younger sister of Marwan, and a granddaughter of Baha' ad-Dawla. Her name follows naming habits seen in the period, but the family record cannot be verified, so her standing rests only on the kinship given by the game. She has sparse hair, large eyes and the flushed skin of an infant, and she is often wrapped in a pale cloth that once belonged to her mother, its origin unexplained in the game. She cannot yet speak in full words, producing only a few simple sounds, but she responds keenly to sounds and colours around her. The sources record nothing of her, so her childhood can only be inferred from the setting. She is likely held by her mother and a wet-nurse, kept company by Marwan and cousin Aisha in the courtyard, and learns to sit and walk under her grandfather's watchful eye. Her attitude to strangers is probably curiosity rather than fear, and she reaches for a stranger's fingers, showing an innate trust. Her driving aim is to grow into a gentle and sensible woman who can deal peacefully with others at banquets and talks. Her deepest fear is that, before she can understand, a misfortune strikes the family and she is taken from her mother and brother to some strange place.",
+  "Traits": [
+    {
+      "Id": "sociable",
+      "Strength": 2
+    },
+    {
+      "Id": "merciful",
+      "Strength": 2
+    },
+    {
+      "Id": "curious",
+      "Strength": 1
+    }
+  ],
+  "Motivations": [
+    "Learn to get along with others at banquets and courtly occasions when she is older, befriending the women of other households with gentle manners.",
+    "Stay close to her brother Marwan and cousin Aisha, learning to share and care for others through their company, so the Hudid children hold together.",
+    "Learn her mother Rihana's hospitality and her grandfather's courtly customs, so that as she grows she can carry duties suited to her age with dignity in the family."
+  ],
+  "Values": [
+    "Warmth and closeness, an innate readiness to approach strangers and a belief that most people can be won over by kindness at first sight.",
+    "Shelter and safety in the family's embrace, feeling settled only with her mother and brother, so that any separation unsettles her.",
+    "Delight in beautiful things, especially bright colours and soft cloth, which she treats as precious objects worth keeping safe."
+  ],
+  "Fears": [
+    "Being taken from her mother and brother in some family misfortune before she can understand, left in a strange place where no one grasps her cries or needs.",
+    "Her gentleness being mistaken for weakness, so that the family loses respect at court and her mother and brother are looked down upon in turn."
+  ],
+  "SpeechStyle": "Cannot yet speak in full sentences, using simple sounds, short calls and gestures to ask for what she wants. Reaches out to touch strangers, showing a wish to be close. Laughs brightly and clearly in the company of her mother and brother.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

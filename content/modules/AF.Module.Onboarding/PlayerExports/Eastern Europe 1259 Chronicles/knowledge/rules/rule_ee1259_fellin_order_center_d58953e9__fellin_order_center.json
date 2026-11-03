@@ -1,0 +1,31 @@
+{
+  "Id": "rule_ee1259_fellin_order_center_d58953e9",
+  "Keywords": [
+    "Fellin's Order post and countryside",
+    "Repairs and hospitality at Fellin"
+  ],
+  "RagShortTexts": [
+    "Fellin is a Livonian Order post dependent on local supplies for guards, stores and travelers.",
+    "Repairs, grain carriage and farming compete for craftsmen and working animals."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fellin's Order garrison receives food, timber and equipment from surrounding settlements, with travelers adding hospitality and messages. Stores need counting, care and controlled issue, while damaged tack, cart parts and weapons require repair. Local cooperation and roads limit how far the post can support operations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Artisans near Fellin repair military gear and farm tools, prioritizing competing urgent jobs. Drivers and animals consume provisions while waiting with grain. Clear recipients and prompt returns reduce disruption, and residents count travel days as part of their service burden."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

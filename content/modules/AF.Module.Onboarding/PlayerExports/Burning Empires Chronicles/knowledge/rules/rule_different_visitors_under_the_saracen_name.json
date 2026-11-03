@@ -1,0 +1,18 @@
+{
+  "Id": "be_arab_lakhmid_camel_cavalry_v7",
+  "Keywords": [
+    "Different visitors under the Saracen name"
+  ],
+  "RagShortTexts": [
+    "Saracen was a broad name; guards still needed to establish visitors’ purposes and leaders."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Romans used Saracen for several Arabian frontier groups. Arrivals might be envoys, herders, guides or armed parties. Guards needed to ask their purpose, destination and leader; people sharing that broad name could still oppose one another."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

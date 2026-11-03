@@ -1,0 +1,34 @@
+{
+  "HeroId": "lord_venice_2_10",
+  "HeroName": "Marchesina Badoer",
+  "Description": "Lady Marchesina Badoer hails from the premier 'apostolic' founding dynasty of Venice—the ancient House of Badoer tracing its lineage to imperial Roman senators. Combining regal patrician composure with sharp political intellect, Marchesina possesses mastery over Great Council electoral procedures and joint maritime commercial syndicates. Navigating curial alliances with consummate skill, she secures pivotal financial backing and legislative votes, anchoring the political alliance between Badoer and Tiepolo. Lady Marchesina Badoer deployed the immense commercial capital of her apostolic lineage to solidify the legislative alliance between Badoer and Tiepolo, mastering Great Council electoral statutes to ensure her faction dominated republican policy. Guiding the Great Council with cool realpolitik and ancestral authority, Marchesina Badoer preserved the constitutional supremacy of Venice's founding families, ensuring that republican institutions remained governed by seasoned aristocratic wisdom. Her administrative rigor, financial integrity, and calm crisis governance make Marchesina Badoer the formidable domestic rock securing the apostolic wealth of her house. Her unyielding discipline, moral integrity, and administrative mastery command the unreserved loyalty and deep respect of the entire Great Council. Throughout these turbulent Italian campaigns, their unswerving fortitude and devotion to the Republic of Saint Mark inspire universal reverence across the Christian world.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve Badoer dominance in the Great Council and Council of Ten, securing apostolic privileges.",
+    "Deploy commercial capital to solidify the alliance with Tiepolo, ensuring their candidate claims the dogate."
+  ],
+  "Values": [
+    "Apostolic patrician bloodlines, constitutional antiquity, and defense of oligarchic traditions.",
+    "Long-term institutional calculation and diplomatic equilibrium over reckless political gambles."
+  ],
+  "Fears": [
+    "Democratic populist agitation eroding the constitutional supremacy of the ancient patriciate.",
+    "Severe naval blockades bankrupting family shipping investments across the Levant."
+  ],
+  "SpeechStyle": "Speaks with antique patrician eloquence, incisive legislative clarity, and diplomatic poise. She speaks with serene Italian poise, gentle articulation, and gracious noble dignity.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

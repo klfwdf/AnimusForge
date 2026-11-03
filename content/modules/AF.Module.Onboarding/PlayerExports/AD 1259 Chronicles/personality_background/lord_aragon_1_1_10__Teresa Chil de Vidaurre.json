@@ -1,0 +1,40 @@
+{
+  "HeroId": "lord_aragon_1_1_10",
+  "HeroName": "Teresa Chil de Vidaurre",
+  "Description": "Doña Teresa Gil de Vidaurre (Teresa Chil de Vidaurre) is a high-born noblewoman from the Kingdom of Navarre, whose beauty, intellect, and tragic resilience defined the later years of King James I. Following the death of Queen Violant in 1251, the Conqueror fell passionately in love with Teresa, pledging matrimony in private and fathering two noble sons—Jaime, Baron of Jérica, and Pedro, Baron of Ayerbe. Yet her royal life took a harrowing turn when she contracted leprosy; King James cruelly attempted to disown her, petitioning Rome for an annulment on grounds that no binding union existed. Refusing to submit to royal abandonment, Doña Teresa demonstrated extraordinary legal fortitude, appealing directly to Popes Urban IV and Clement IV, who decisively validated her marriage and protected her sons' legitimacy. Retiring to the Cistercian Monastery of La Zaidía in Valencia, which she founded, Teresa bore her afflictions with saintly dignity, remembered as a fearless noblewoman who defeated royal despotism through canonical justice. Within the tranquil cloistered orchards of La Zaidía, Teresa endured her worsening infirmity with heroic spiritual fortitude, devoting her remaining days to illuminating Latin psalters and providing succor to orphaned waifs. The papal bulls confirming her lawful marriage were guarded within an iron casket, testifying across Europe to the triumph of canonical virtue and female dignity over royal despotism.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "disciplined",
+      "Strength": 3
+    },
+    {
+      "Id": "patient",
+      "Strength": 3
+    },
+    {
+      "Id": "reserved",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Vindicate her lawful royal marriage before the papal curia, defeating the king's abandonment",
+    "Secure the seigneurial titles and patrimonies of Jérica and Ayerbe for her beloved sons",
+    "Endow the Monastery of La Zaidía in Valencia to shelter the sick and advance spiritual contemplation"
+  ],
+  "Values": [
+    "Matrimonial vows sworn before God are eternal; earthly kings possess no power to dissolve sacred truth",
+    "Maternal duty and personal honor empower a noblewoman to triumph over the cruelest betrayals",
+    "Patient endurance in holy suffering purifies the soul and conquers worldly arrogance"
+  ],
+  "Fears": [
+    "The papal curia bowing to political pressure, disinheriting her sons and branding them bastards",
+    "Succumbing to wasting disease before securing irrevocable legal protection for her children"
+  ],
+  "SpeechStyle": "Poised, sorrowful yet unyielding; speaks with precise canonical clarity and the quiet, indomitable dignity of a wronged queen.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

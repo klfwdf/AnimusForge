@@ -1,0 +1,59 @@
+{
+  "Id": "be_vandal_kingdom_geopolitics",
+  "Keywords": [
+    "Vandals Frontiers",
+    "Vandal rivers and pass supply carts"
+  ],
+  "RagShortTexts": [
+    "Vandal rivers, passes and settlement routes carry grain carts.",
+    "Narrow roads defend but also congest dependants and animals."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rivers, passes and settlement routes direct forces and carts. Narrow roads aid defence but can block household and animal movement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Vandal rivers, passes and settlement routes carry grain carts. Travelers and guards use specific banks, entrances and stops; outward access does not ensure return. Narrow roads defend but also congest dependants and animals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Narrow roads defend but also congest dependants and animals. Passage relations need actual protection for adjoining sections; proximity does not equal a shared guarantee. Vandal rivers, passes and settlement routes carry grain carts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Vandal rivers, passes and settlement routes carry grain carts. Closed routes may separate families from goods, imposing costs on those remaining at home. Narrow roads defend but also congest dependants and animals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Narrow roads defend but also congest dependants and animals. Cargo passes different carriers, making distant route changes become local shortages through delay. Vandal rivers, passes and settlement routes carry grain carts."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

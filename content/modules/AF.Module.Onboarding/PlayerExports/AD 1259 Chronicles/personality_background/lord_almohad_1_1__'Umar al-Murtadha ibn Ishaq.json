@@ -1,0 +1,36 @@
+{
+  "HeroId": "lord_almohad_1_1",
+  "HeroName": "'Umar al-Murtadha ibn Ishaq",
+  "Description": "'Umar al-Murtada is a son of Ishaq ibn Yusuf and the reigning Almohad caliph at Marrakesh, according to the game lineage. He is about seventy-two, tall and spare, with a white scar on his temple from an old arrow wound. He wears undyed wool cloaks and refuses the gold ornaments that earlier caliphs displayed. As a young man he managed grain and supplies for his father between Seville and Marrakesh, and that work taught him to weigh people as carefully as accounts, so he still relies on treasury secretaries who understand money. In 1248 his predecessor Abu al-Hasan as-Said was mortally wounded at Oujda, and 'Umar inherited a weakened throne. For more than a decade he has kept it by paying tribute to the Marinids. When his cousin Idris al-Wathiq began quiet dealings with the Marinid court, 'Umar chose patience over open confrontation. He keeps the Marinids tolerant with money and places his own informants inside the palace. His deepest aim is to preserve Almohad learning, and he treats the madrasa beside the Marrakesh mosque as the foundation of the dynasty. His darker side is a fear that a new dynasty will erase his house after his death. At night he reads old family letters alone, and that fear makes him distrust nearly everyone around him.",
+  "Traits": [
+    {
+      "Id": "pragmatic",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve the Almohad scriptures and manuscript tradition so that Marrakesh remains the strictest centre of learning in the western Mediterranean.",
+    "Hold the court and the southern tribes together before Idris's dealings with the Marinids turn into an open challenge for the throne.",
+    "Buy time with limited tribute, keeping the Marinids tolerant until the Almohads can gather their horsemen and deploy on the plains again."
+  ],
+  "Values": [
+    "Faithful observance of the scriptures and Ibn Tumart's teachings, which he holds as the true source of caliphal legitimacy rather than the sword.",
+    "Pragmatic restraint. He would rather pay tribute than throw his last cavalry into a battle that cannot be won.",
+    "Lineage and name. He treats the descent from Abd al-Mu'min as the only reliable basis for holding power."
+  ],
+  "Fears": [
+    "Fears a coup by his cousin Idris backed by Marinid money, so he changes his bedchamber at night and trusts only a few Berber guards.",
+    "Fears that after his death the Almohad books and court archives will be burned or rewritten, leaving his house only an empty name in history."
+  ],
+  "SpeechStyle": "Slow and guarded, he often opens with a scriptural phrase or an Almohad maxim and avoids direct commitments. When he mentions Idris or the Marinids his tone turns hard and his sentences clip short.",
+  "SchemaVersion": 3,
+  "VoiceId": ""
+}

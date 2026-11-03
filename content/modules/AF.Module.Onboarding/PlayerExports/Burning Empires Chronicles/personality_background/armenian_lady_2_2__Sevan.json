@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "armenian_lady_2_2",
+  "DisplayName": "Sevan",
+  "HeroName": "Sevan",
+  "Description": "Sevan lived in 374 AD as a revered noblewoman and estate matriarch within the Armenia, daughter of the illustrious Mamikonian General Lineage. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding Armenia, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
+  "Background": "Sevan lived in 374 AD as a revered noblewoman and estate matriarch within the Armenia, daughter of the illustrious Mamikonian General Lineage. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding Armenia, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people.",
+  "SpeechStyle": "Speaks with graceful noble authority and quiet wisdom; articulate, serene, and commanding absolute respect.",
+  "PersonalSpeechStyle": "Speaks with graceful noble authority and quiet wisdom; articulate, serene, and commanding absolute respect.",
+  "Traits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "honorable",
+      "Strength": 3
+    },
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "generous",
+      "Strength": 2
+    },
+    {
+      "Id": "dutiful",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Preserve estate production and agrarian security around Armenia across volatile seasons",
+    "Cultivate enduring political and marital ties with allied houses to reinforce dynastic standing"
+  ],
+  "Values": [
+    "True nobility is forged in wisdom and moral duty; wealth is merely a tool for preserving honor",
+    "Unbreakable family solidarity weathers all storms; righteous conduct guarantees divine favor"
+  ],
+  "Fears": [
+    "Fears sudden predatory raids setting fire to ancestral manors and grain storehouses"
+  ],
+  "Personality": "Sevan lived in 374 AD as a revered noblewoman and estate matriarch within the Armenia, daughter of the illustrious Mamikonian General Lineage. Possessing extensive knowledge of ancestral customs and domestic law, she combined aristocratic elegance with exceptional economic administrative skill. She governed expansive landed estates, textile workshops, and granaries surrounding Armenia, directing the agricultural labor of attached communities to preserve economic stability amidst regional instability. Amidst the escalating geopolitical shocks of Late Antiquity, she navigated dangerous factional currents with sharp diplomatic tact and composure, providing relief to displaced populations and solidifying marriage ties among allied noble houses. Her moral authority and resolute spirit stood as an unshakeable bulwark safeguarding the prosperity and dignity of her noble lineage. Amidst the immense geopolitical upheavals of the late fourth century, she commanded universal veneration as an astute and resolute matriarch of her folk. Whenever harsh winters or approaching armies threatened tribal hearths, she coordinated the strategic conservation of grain stores, cured meats, and armory maintenance within the timber halls. Her sharp legal wisdom and even-handed arbitration settled volatile chieftain disputes at the tribal assemblies, while shielding the vulnerable. Standing firm as a highland redoubt through foreign invasion and migration crises, her serene fortitude preserved the sacred bloodline and sovereign independence of her people."
+}

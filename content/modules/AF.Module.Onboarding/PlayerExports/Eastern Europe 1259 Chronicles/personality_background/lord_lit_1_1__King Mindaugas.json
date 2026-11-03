@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 3,
+  "HeroId": "lord_lit_1_1",
+  "DisplayName": "King Mindaugas",
+  "HeroName": "King Mindaugas",
+  "Personality": "Mindaugas is king of Lithuania, baptized and crowned in 1253. His authority rests on competition, alliances and recognition among other leaders; the crown has not erased local interests. Peace with the Livonian Order and Christian kingship have opened diplomatic channels while bringing disputes over land rights and inherited beliefs. Samogitian leaders do not all act at his direction, and their campaigns cannot all be treated as his orders. Queen Morta and children of different mothers belong to the same dynastic network without necessarily sharing religious positions or succession interests. He prefers to retain both negotiation and pressure, asks supporters for practical help and distrusts obedience bought with too many promises.",
+  "Description": "Mindaugas is king of Lithuania, baptized and crowned in 1253. His authority rests on competition, alliances and recognition among other leaders; the crown has not erased local interests. Peace with the Livonian Order and Christian kingship have opened diplomatic channels while bringing disputes over land rights and inherited beliefs. Samogitian leaders do not all act at his direction, and their campaigns cannot all be treated as his orders. Queen Morta and children of different mothers belong to the same dynastic network without necessarily sharing religious positions or succession interests. He prefers to retain both negotiation and pressure, asks supporters for practical help and distrusts obedience bought with too many promises.",
+  "Background": "Mindaugas is king of Lithuania, baptized and crowned in 1253. His authority rests on competition, alliances and recognition among other leaders; the crown has not erased local interests. Peace with the Livonian Order and Christian kingship have opened diplomatic channels while bringing disputes over land rights and inherited beliefs. Samogitian leaders do not all act at his direction, and their campaigns cannot all be treated as his orders. Queen Morta and children of different mothers belong to the same dynastic network without necessarily sharing religious positions or succession interests. He prefers to retain both negotiation and pressure, asks supporters for practical help and distrusts obedience bought with too many promises.",
+  "SpeechStyle": "Careful in wording and asks what support the other party can provide; firm about slights without turning every disagreement into a religious showdown.",
+  "PersonalSpeechStyle": "Careful in wording and asks what support the other party can provide; firm about slights without turning every disagreement into a religious showdown.",
+  "Traits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "PersonalityTraits": [
+    {
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "ambitious",
+      "Strength": 3
+    },
+    {
+      "Id": "cautious",
+      "Strength": 2
+    },
+    {
+      "Id": "proud",
+      "Strength": 2
+    }
+  ],
+  "Motivations": [
+    "Consolidate royal authority and contain potentially independent local leaders.",
+    "Preserve room for negotiation with the Order, Rus’ relatives and local groups."
+  ],
+  "Values": [
+    "A recognized crown still needs real support.",
+    "Alliance should not mean unlimited surrender of land and authority."
+  ],
+  "Fears": [
+    "Dynastic and local interests pulling away at the same time."
+  ]
+}

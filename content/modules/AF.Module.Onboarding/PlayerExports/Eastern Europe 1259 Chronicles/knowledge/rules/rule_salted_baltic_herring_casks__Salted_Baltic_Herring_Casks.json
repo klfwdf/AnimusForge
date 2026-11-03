@@ -1,0 +1,52 @@
+{
+  "Id": "rule_salted_baltic_herring_casks",
+  "Keywords": [
+    "salted herring cargo in barrels",
+    "Baltic fish and salt trade"
+  ],
+  "RagShortTexts": [
+    "Herring and other sea fish travel salted; salt, barrels and prompt handling limit trade.",
+    "Barrel handovers need checks of count, leakage and condition, beyond a shared cargo name."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Baltic fish needs cleaning, salt and containers before leaving the shore. A large catch does not automatically increase income: without salt and barrels, fresh fish spoils while waiting. Staves, hoops and closures must withstand handling; leaks damage the fish and neighbouring cargo, while loading must avoid crushing and excess weight.\n\nSalted fish travels inland to people who cannot regularly obtain fresh catches, with freight, salt and intermediaries included in the price. Opening a barrel involves agreeing species, number or weight and inspecting the contents rather than trusting the outside. Fasts may bring more buyers, but household purchases still depend on money and storage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Purchases need agreed inspection, losses and port costs. Requisitioning boats or barrels can delay the next supply as well."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Escorts check leaks and keep wet fish cargo away from cloth and grain. Reporting broken barrels at handover prevents old damage becoming an accusation of theft."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Urban households may afford small portions rather than a whole barrel. Retailers must keep opened stock, with slow sales and warmer weather reducing what remains saleable."
+    }
+  ],
+  "TextMappings": [],
+  "Category": "Culture"
+}

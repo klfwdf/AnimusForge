@@ -1,0 +1,59 @@
+{
+  "Id": "be_sclavenian_kingdom_geopolitics",
+  "Keywords": [
+    "斯拉夫人边塞",
+    "斯克拉文湿地渡口"
+  ],
+  "RagShortTexts": [
+    "斯克拉文林路与河谷通过湿地和渡口相连。",
+    "水位和地方支路影响行旅通行。"
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "林路和河谷把聚落连起，湿地与渡口让道路时断时续，熟悉水位和支路的人对行旅十分重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "斯克拉文林路与河谷通过湿地和渡口相连。行路者与守卫接触的是具体岸段、入口和停留地，前方可走也不保证回程仍通。水位和地方支路影响行旅通行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "水位和地方支路影响行旅通行。通行关系需要有人真正护住相接的路段，领地相邻不代表担保范围相同。斯克拉文林路与河谷通过湿地和渡口相连。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "斯克拉文林路与河谷通过湿地和渡口相连。路被封时家人和物产未必能一同转移，留守者承担的代价也要计算。水位和地方支路影响行旅通行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "水位和地方支路影响行旅通行。来货经过不同承运者，换运和等候会使远处的道路变化成为本地缺货。斯克拉文林路与河谷通过湿地和渡口相连。"
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}

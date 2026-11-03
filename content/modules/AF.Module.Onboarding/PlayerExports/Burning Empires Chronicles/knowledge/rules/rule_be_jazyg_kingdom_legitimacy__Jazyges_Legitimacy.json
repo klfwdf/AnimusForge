@@ -1,0 +1,59 @@
+{
+  "Id": "be_jazyg_kingdom_legitimacy",
+  "Keywords": [
+    "Jazyges Legitimacy",
+    "Zizais’ pasture and hostage guarantees"
+  ],
+  "RagShortTexts": [
+    "Protection, recognition and negotiation sustain Zizais.",
+    "Households judge oaths through pasture and hostage safety."
+  ],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Leadership depends on protection, recognition and negotiation. Dignity affects acceptable oaths while households judge pasture and hostage safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ]
+      },
+      "Content": "Protection, recognition and negotiation sustain Zizais. Military recognition also rests on rewards and relief; a title needs willing action. Households judge oaths through pasture and hostage safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "lord",
+          "notable"
+        ]
+      },
+      "Content": "Households judge oaths through pasture and hostage safety. Nominal rights require local execution, with consent and supply both shaping authority. Protection, recognition and negotiation sustain Zizais."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "villager"
+        ]
+      },
+      "Content": "Protection, recognition and negotiation sustain Zizais. Households judge rule through protected families, land and responses to appeals. Households judge oaths through pasture and hostage safety."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "townsfolk",
+          "commoner"
+        ]
+      },
+      "Content": "Households judge oaths through pasture and hostage safety. Arbitration and delivered promises support trading credit; distant prestige still needs local response. Protection, recognition and negotiation sustain Zizais."
+    }
+  ],
+  "SemanticPrototypes": [],
+  "TextMappings": []
+}
