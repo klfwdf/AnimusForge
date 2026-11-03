@@ -256,5 +256,6 @@
   "Event_SilenceWarAnnouncementPattern": "=",
   "Event_TradeInterestCues": "=",
   "Event_SilenceWarTitles": "=",
-  "Event_SilenceTitleNegations": "="
+  "Event_SilenceTitleNegations": "=",
+  "SponsorReceipt_GoldCnPattern": "="
 }

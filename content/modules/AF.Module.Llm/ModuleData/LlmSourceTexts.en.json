@@ -205,5 +205,9 @@
   "LegacyRuleHeaderPrefix": "=",
   "CivilWarFactLabel": "[Civil war fact]",
   "TtsServerGenderFemale": "=",
-  "TtsServerGenderMale": "="
+  "TtsServerGenderMale": "=",
+  "OpenAiVoiceGenderFemaleShort": "=",
+  "OpenAiVoiceGenderFemale": "=",
+  "OpenAiVoiceGenderMaleShort": "=",
+  "OpenAiVoiceGenderMale": "="
 }
