@@ -1,3 +1,8 @@
+<a id="camp-idle-routing-20261104"></a>
+## 2026-11-04 营地巡游和导航图标续修
+
+源码5614cf726d，一基行号。FieldCampMissionLogic.Life.cs的UpkeepBatchOfAgents约第400行将巡游交Refresh，第442行Refresh处理预算延期，第677行IssueCampWalk跳过到达路点并使用中途NeverSlowDown，第715行LogCampWalkPending记录节流诊断，第726行IsCampPositionAvailable保留工作岗位与在途目标预留，第777行ApplyPose将站姿占位转Wander并保留Returning。所有工作仍在主线程既有20人/0.5秒与2次寻路预算内。AFTerminalMapBarBrushes.xml第12行显式覆盖kingdom图标XOffset=0。只确认双API和Bootstrap编译，实机活动与视觉未验。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#camp-idle-routing-20261104)。
+
 <a id="camp-life-fence-duel-20261104"></a>
 ## 2026-11-04 营地居民、围栏与决斗职责
 

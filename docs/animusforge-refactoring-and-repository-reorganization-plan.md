@@ -1,3 +1,16 @@
+<a id="camp-idle-routing-20261104"></a>
+## 2026-11-04 营地站姿循环与王国图标偏移续修
+
+LOCAL_BUILT / VALIDATION_DISABLED_BY_USER / LIVE_NOT_RUN。用户反馈08e297c3d3部署后仍原地站立并间隔切换动作，本条续修该现场。检查点c3bc06cee，产品5614cf726d。实际06:08:51日志为ready=True、stageFailure=False、residents=84，不能归因于全体初始化失败。截图文件通过view_image未返回可见内容，本轮依据源码与真实日志定位，视觉结果未确认。
+
+Life.ApplyPose此前把StandActions和GroomActions占位当成有效工作，健康可离岗人员现在转Wander，短延迟请求巡游；临时外出且Returning的工作人员保留返岗身份。Upkeep中独立巡游分支复用Refresh，预算耗尽0.5秒延期，不记录为选点失败。巡游终点间距从1.6米改为既有通用占位0.8米，保留工作岗位和活动目的地预留，取消巡游出生点永久预留。IssueCampWalk跳过已到路点，中途点使用NeverSlowDown，仍沿含围栏的既有路由，无碰撞传送。移动失败日志每场景至多10秒一条，包含选点/停滞原因、Agent/活动/路线索引/坐标/导航状态，无额外全量扫描。原有0.5秒20人、2次寻路和2次选点预算保持。
+
+导航栏kingdom背景上轮已改中段，但原图标仍有XOffset=-11，本轮显式改0，终端继续收尾。没有新增玩家文案、配置、存档身份。
+
+采用既有会话build.ps1和独立输出目录编译，1.3与1.4均exit0、407警告0错误，Bootstrap exit0、0警告0错误。产物bin/Debug/camp-idle-routing-20261104/，日志.tmp/camp-idle-routing-20261104/。最终实现编译包含工作区现有其他作者源码，提交只含本轮具名产品文件。遵用户要求未运行测试、哈希、校验、冒烟或实机。尚未证明动态路点移动、所有可用动作播放及视觉间距在游戏中正确，现有日志不足以排除其他移动阻塞。
+
+游戏进程14324仍运行，当前修复尚未部署，也未打包或push。既有e04c54c0c0已推送的上一轮状态保留。需要退出游戏后部署候选并重新进入营地观察。回滚使用5614cf726d聚焦逆向提交，检查点c3bc06cee；不可整树恢复其他作者改动。代码证据见docs/architecture/af-framework-code-scope.md#camp-idle-routing-20261104。
+
 <a id="camp-life-fence-duel-20261104-deployed"></a>
 ## 2026-11-04 营地修复部署与获准推送
 
