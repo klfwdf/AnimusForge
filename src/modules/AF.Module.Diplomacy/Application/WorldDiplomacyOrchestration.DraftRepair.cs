@@ -136,7 +136,9 @@ internal sealed partial class WorldDiplomacyOrchestration
     private bool RetryConceptAudit(WorldDiplomacyJob job, string reason)
     {
         job.MaterialRepairFeedback = "event_concept_audit_invalid:" + reason + ";review_same_draft";
-        if (++job.PrivacyAuditRetries >= 3) HoldTechnicalRequest(job, job.MaterialRepairFeedback);
+        CountPlanningFailure(job);
+        if (++job.PrivacyAuditRetries >= 3 || job.PlanningFailureAttempts >= PlanningFailureLimit)
+            HoldTechnicalRequestCore(job, job.MaterialRepairFeedback, false);
         else { job.IsRunning = false; job.LlmMessages?.Clear(); }
         return true;
     }

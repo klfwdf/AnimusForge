@@ -215,6 +215,7 @@
     <Reference Include="TaleWorlds.Library"><HintPath>$(BannerlordBin)/TaleWorlds.Library.dll</HintPath></Reference>
     <Reference Include="TaleWorlds.DotNet"><HintPath>$(BannerlordBin)/TaleWorlds.DotNet.dll</HintPath></Reference>
     <Content Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json" Link="ModuleData/DiplomacyPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.en.json" Link="ModuleData/DiplomacyPromptTexts.en.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.json" Link="ModuleData/DiplomacyMiscPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json" Link="ModuleData/DiplomacyMiscCompatibility.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.zh-CN.json" Link="ModuleData/PromptComposerTexts.json" CopyToOutputDirectory="PreserveNewest" />

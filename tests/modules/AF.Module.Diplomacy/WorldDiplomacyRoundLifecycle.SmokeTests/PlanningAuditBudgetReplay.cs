@@ -34,6 +34,9 @@ internal static partial class MaterialSupplyReplay
             "reviewer receives an explicit output field manifest separate from author draft requirements");
         AuditCall(o, "HoldTechnicalRequest", j, "event_required_evidence_budget_exceeded:retain_prior_cases_and_selected_sources");
         AuditCall(o, "TryResumeTechnicalRequest", j, false);
+        Test.True(j.SuspendedReason.Length > 0 && j.PrivacyDraft == storedDraft,
+            "unchanged over-budget audit stays held without another model call");
+        AuditCall(o, "TryResumeTechnicalRequest", j, true);
         Test.True(j.Kind == "event_concept_audit" && j.PrivacyDraft == storedDraft && j.SuspendedReason == "",
             "local audit budget recovery retains the already-written draft instead of spending another writer request");
         Console.WriteLine("Planning audit budget: lossless request projection and same-draft budget recovery PASS; irreducible evidence remains fail-closed.");

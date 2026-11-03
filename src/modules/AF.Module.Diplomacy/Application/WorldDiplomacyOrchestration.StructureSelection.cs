@@ -40,6 +40,12 @@ internal sealed partial class WorldDiplomacyOrchestration
     private bool RejectStoryCandidate(WorldDiplomacyJob job, string reason, JObject audit)
     {
         if (!CanSelectEventStructure(job)) return false;
+        CountPlanningFailure(job);
+        if (job.PlanningFailureAttempts >= PlanningFailureLimit)
+        {
+            HoldTechnicalRequestCore(job, reason, false);
+            return true;
+        }
         var round = ResolveRound(job.RoundId);
         _host.Log("diplomacy.structure_rejected job=" + job.JobId + " pass=" + job.MaterialSearchPass + " reason=" + reason);
         // Retire the selected seed before the common search reset can mark it

@@ -8,6 +8,20 @@ namespace AnimusForge;
 
 internal sealed partial class WorldDiplomacyOrchestration
 {
+    private const int PlanningFailureLimit = 6;
+
+    private static bool IsPlanningBudgetFailure(WorldDiplomacyJob job) => IsEventPlanningJob(job)
+        && ((job.SuspendedReason ?? "").StartsWith("event_required_evidence_budget_exceeded:", StringComparison.Ordinal)
+            || (job.SuspendedReason ?? "").StartsWith("input budget exceeded", StringComparison.Ordinal));
+
+    private static bool PlanningRecoveryHeld(WorldDiplomacyJob job) => IsEventPlanningJob(job)
+        && (job.PlanningFailureAttempts >= PlanningFailureLimit || IsPlanningBudgetFailure(job) || HasExhaustedLocalReview(job));
+
+    private static void CountPlanningFailure(WorldDiplomacyJob job)
+    {
+        if (IsEventPlanningJob(job)) job.PlanningFailureAttempts = Math.Min(PlanningFailureLimit, job.PlanningFailureAttempts + 1);
+    }
+
     private static bool HasExhaustedLocalReview(WorldDiplomacyJob job)
     {
         string reason = job.SuspendedReason ?? "";
@@ -20,10 +34,14 @@ internal sealed partial class WorldDiplomacyOrchestration
     }
 
     private void HoldTechnicalRequest(WorldDiplomacyJob job, string reason)
+        => HoldTechnicalRequestCore(job, reason, true);
+
+    private void HoldTechnicalRequestCore(WorldDiplomacyJob job, string reason, bool countPlanningFailure)
     {
         job.IsRunning = false;
         job.SuspendedReason = string.IsNullOrWhiteSpace(reason) ? "technical_request_failed" : reason;
         job.TechnicalRecoveryAttempts++;
+        if (countPlanningFailure) CountPlanningFailure(job);
         // Local review already used its full repair allowance. Do not multiply
         // that allowance by the outer recovery loop. Existing abandonment/search
         // rules still release uncommitted NPC work; binding obligations stay held.
@@ -35,6 +53,24 @@ internal sealed partial class WorldDiplomacyOrchestration
         job.RecoveryConfiguration = SpeechConfiguration();
         job.RecoveryServiceEpoch = Storage.SpeechServiceRecoveryEpoch;
         var round = ResolveRound(job.RoundId);
+        if (PlanningRecoveryHeld(job))
+        {
+            // A candidate switch, successful intermediate stage or reload cannot
+            // replenish this task's allowance. Preserve the current evidence/draft.
+            job.MaterialRepairFeedback = job.SuspendedReason;
+            job.RecoveryRevision = round?.ConversationRevision ?? 0;
+            job.RecoveryKnowledgeRevision = DiplomacyEventRules.KnowledgeRevision(round, job.AuthorKingdomId);
+            job.RetryAfterUtcTicks = 0;
+            job.NextRecoveryProbeUtcTicks = DateTime.UtcNow.AddSeconds(30).Ticks;
+            if (round != null)
+            {
+                round.TechnicalHoldReason = round.TechnicalRequestHoldReason = job.SuspendedReason;
+                if (round.TechnicalHoldStartedHour < 0) round.TechnicalHoldStartedHour = _host.CurrentCampaignHours();
+            }
+            _host.Log("diplomacy.planning_held job=" + job.JobId + " failures=" + job.PlanningFailureAttempts
+                + " reason=" + job.SuspendedReason);
+            return;
+        }
         if ((job.SuspendedReason.StartsWith("admission_identity_", StringComparison.Ordinal)
                 || job.SuspendedReason.StartsWith("admission_core_", StringComparison.Ordinal)
                 || job.SuspendedReason.StartsWith("admission_seed_identity_changed", StringComparison.Ordinal))
@@ -124,7 +160,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (!_host.WorldDiplomacyEnabled() || string.IsNullOrEmpty(job.SuspendedReason)
             || IsSpeechReviewJob(job) || !string.IsNullOrEmpty(job.DialogueArrangementId)) return;
         var round = ResolveRound(job.RoundId);
-        if (ResumeRejectedStory(job)) return;
+        bool planningHeld = PlanningRecoveryHeld(job);
+        if (!planningHeld && ResumeRejectedStory(job)) return;
         bool exhaustedDraftRepair = IsAdmissionProtocolFailure(job, job.SuspendedReason)
             || job.SuspendedReason.StartsWith("event_candidate", StringComparison.Ordinal)
             || job.SuspendedReason.StartsWith("event_comparison", StringComparison.Ordinal)
@@ -134,7 +171,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             || job.SuspendedReason.StartsWith("admission_participants_", StringComparison.Ordinal)
             || job.SuspendedReason.StartsWith("narrative_", StringComparison.Ordinal)
             || job.SuspendedReason == "pipeline_json_invalid";
-        if (IsEventPlanningJob(job) && exhaustedDraftRepair && job.TechnicalRecoveryAttempts >= 3 && CanContinueMaterialSearch(round))
+        if (!planningHeld && IsEventPlanningJob(job) && exhaustedDraftRepair && job.TechnicalRecoveryAttempts >= 3 && CanContinueMaterialSearch(round))
         {
             // Old saves may already be parked at the retired permanent hold.
             // Consume the persisted batch budget rather than refilling attempts.
@@ -145,7 +182,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             return;
         }
         long now = DateTime.UtcNow.Ticks;
-        bool localSchemaRepair = IsEventPlanningJob(job) && (IsAdmissionProtocolFailure(job, job.SuspendedReason)
+        bool localSchemaRepair = !planningHeld && IsEventPlanningJob(job) && (IsAdmissionProtocolFailure(job, job.SuspendedReason)
             || IsLegacyAdmissionProtocolFailure(job, job.SuspendedReason)
             || job.SuspendedReason.StartsWith("event_candidate", StringComparison.Ordinal)
             || job.SuspendedReason.StartsWith("event_comparison", StringComparison.Ordinal));
@@ -165,7 +202,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         bool recoveredAdmissionIdentity = HasRecoveredAdmissionIdentity(job, round);
         // Also consumes already-exhausted legacy saves, without replenishing
         // retries on reload or treating unknown identity as a valid participant.
-        if (!recoveredAdmissionIdentity && TryCloseExhaustedAdmissionDraft(job, round)) return;
+        if (!planningHeld && !recoveredAdmissionIdentity && TryCloseExhaustedAdmissionDraft(job, round)) return;
         if ((job.SuspendedReason.StartsWith("admission_identity_", StringComparison.Ordinal)
                 || job.SuspendedReason.StartsWith("admission_core_", StringComparison.Ordinal)
                 || job.SuspendedReason.StartsWith("admission_seed_identity_changed", StringComparison.Ordinal))
@@ -236,18 +273,10 @@ internal sealed partial class WorldDiplomacyOrchestration
             || job.RecoveryRevision != round.ConversationRevision
             || job.RecoveryKnowledgeRevision != DiplomacyEventRules.KnowledgeRevision(round, job.AuthorKingdomId)
             || job.RecoverOnService && job.RecoveryServiceEpoch < Storage.SpeechServiceRecoveryEpoch;
-        if (!changed && IsEventPlanningJob(job) && HasScopedWorldSnapshot(job)
-            && job.SuspendedReason.StartsWith("event_required_evidence_budget_exceeded:", StringComparison.Ordinal))
-        {
-            // Frozen input cannot shrink by replaying it. Move ordinary discovery
-            // to a new bounded batch; preserve human obligations for explicit resume.
-            if (!IsBoundMatterPlanning(job) && string.IsNullOrEmpty(job.DialogueArrangementId) && CanContinueMaterialSearch(round))
-                ContinueMaterialSearch(job, round, false);
-            return;
-        }
+        if (!changed && planningHeld) return;
         if (!changed && (job.TechnicalRecoveryAttempts >= 3 || HasExhaustedLocalReview(job))) return;
         if (!changed && job.SuspendedReason.StartsWith("event_required_input_budget_exceeded:", StringComparison.Ordinal)) return;
-        if (changed) job.TechnicalRecoveryAttempts = 0;
+        if (changed) { job.TechnicalRecoveryAttempts = 0; job.PlanningFailureAttempts = 0; }
         if (repairedSovereignControl) job.MaterialRepairFeedback = sovereignFeedback;
         if (repairedBoundMatter) { job.StoryReviewVersion = 2; job.MaterialRepairFeedback = ""; }
         if (repairedEndingBudget) job.EndingContextVersion = 1;
