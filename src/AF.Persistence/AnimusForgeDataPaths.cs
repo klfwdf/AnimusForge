@@ -83,11 +83,15 @@ internal static class AnimusForgeDataPaths
 
     private static void ValidateAncestors(string path)
     {
+        bool insideModule = true;
         for (DirectoryInfo? d = new DirectoryInfo(path); d != null; d = d.Parent)
         {
             if (File.Exists(d.FullName)) throw new InvalidOperationException("AnimusForge storage crosses a file.");
-            if (d.Exists && (d.Attributes & FileAttributes.ReparsePoint) != 0)
-                throw new InvalidOperationException("AnimusForge storage crosses a reparse point.");
+            if (insideModule && d.Exists && (d.Attributes & FileAttributes.ReparsePoint) != 0)
+                throw new InvalidOperationException("AnimusForge storage crosses a reparse point: " + d.FullName);
+            // Steam libraries and game installations may be mapped by the host.
+            // The module itself and every data path below it must remain direct.
+            if (IsModuleRoot(d.FullName)) insideModule = false;
             if (IsStageDirectory(d.Name)) throw new InvalidOperationException("AnimusForge runtime storage cannot use a Stage directory.");
         }
     }

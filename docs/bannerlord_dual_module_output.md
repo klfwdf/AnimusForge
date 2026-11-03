@@ -15,7 +15,7 @@ Compression-method support, Unicode filename support and content integrity are s
 
 ArchiveFormat defaults to 7z; an explicit -ArchiveFormat zip preserves the legacy writer for compatibility. The existing ZIP projection, layout, DLL and version-transaction checks remain an internal step for the normal verified flow; 7z readback is compared with the locked projection before publishing either final archive. References to ZIP streams/checks below describe that internal or explicitly selected legacy format, not the default delivery extension.
 
-Models are included by default from AnimusForge/ONNX/bekko. To select another original or quantized bekko payload, pass -OnnxModelDir with the directory containing model.onnx, tokenizer.json and config.json. Only these three files are projected to ONNX/bekko in both editions; vector caches and retired rerankers are not bundled. No model is copied into the game or source by packaging.
+Models are included by default from AnimusForge/ONNX/bekko, using the previously delivered INT8 bekko payload (model.onnx is 124,972,807 bytes). To select another original or quantized bekko payload, pass -OnnxModelDir with the directory containing model.onnx, tokenizer.json and config.json. Only these three files are projected to ONNX/bekko in both editions; vector caches and retired rerankers are not bundled. No model is copied into the game or source by packaging.
 
 This changes archive creation only. The existing build, Bootstrap/dual-implementation layout, version increments, rollback and game-directory protection remain. Session-specific requests to omit tests or hashes do not remove the normal future release gates; such a one-off delivery must record the omitted evidence separately.
 

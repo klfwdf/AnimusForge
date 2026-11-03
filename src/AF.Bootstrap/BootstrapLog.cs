@@ -53,12 +53,16 @@ namespace AnimusForge.Bootstrap
         {
             if (string.IsNullOrWhiteSpace(binDirectory) || !Path.IsPathRooted(binDirectory)) return null;
             DirectoryInfo directory = new DirectoryInfo(Path.GetFullPath(binDirectory));
+            bool insideModule = true;
             for (DirectoryInfo d = directory; d != null; d = d.Parent)
             {
                 if (File.Exists(Path.Combine(d.FullName, "AnimusForge.csproj"))
                     || string.Equals(d.Name, "single_module_stage", StringComparison.OrdinalIgnoreCase)
                     || string.Equals(d.Name, "Stage", StringComparison.OrdinalIgnoreCase)
-                    || (d.Exists && (d.Attributes & FileAttributes.ReparsePoint) != 0)) return null;
+                    || (insideModule && d.Exists && (d.Attributes & FileAttributes.ReparsePoint) != 0)) return null;
+                if (string.Equals(d.Name, "AnimusForge", StringComparison.OrdinalIgnoreCase)
+                    && IsCurrentManifest(Path.Combine(d.FullName, "SubModule.xml"))
+                    && Directory.Exists(Path.Combine(d.FullName, "ModuleData"))) insideModule = false;
             }
             for (DirectoryInfo d = directory; d != null; d = d.Parent)
             {
