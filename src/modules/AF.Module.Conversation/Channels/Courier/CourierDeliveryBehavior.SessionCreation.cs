@@ -689,11 +689,6 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			throw new InvalidOperationException(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0616"));
 		}
-		courier.IsVisible = true;
-		ApplyCourierMapBannerVisual(courier, "create");
-		courier.Party.SetCustomName(ConversationUiLocalization.Object("AF_CONV_UI_Courier_PartyName", "Courier party - {NAME}", ("NAME", flow.Recipient.Name ?? ConversationUiLocalization.Object("AF_CONV_UI_Courier_Recipient", "recipient"))));
-		courier.SetMoveModeHold();
-		ApplyCourierAiOverrides(courier, "create");
 
 		CourierSession session = new CourierSession
 		{
@@ -707,12 +702,39 @@ public sealed partial class CourierDeliveryBehavior
 			Entries = CloneEntries(flow.SelectedEntries),
 			CrewEntries = BuildCargoEntriesFromRoster(flow.CrewRoster, "crew")
 		};
-		MoveRosterFromMainParty(flow.CrewRoster, courier, "crew");
-		AssignCourierLeader(courier);
-		EnsureCourierCampaignIdentity(courier, session, "create_session");
-		PrepareOutgoingPayload(session, courier);
-		session.DeliveryFactText = BuildDeliveryFactText(session, delivered: false, flow.Recipient);
-		PlayerNotorietyBehavior.NoteCourierSentForExternal(flow.Recipient);
+		// Register before the first transfer so partial dispatch remains recoverable.
+		lock (_sessionLock) _sessions[session.Id] = session;
+		try
+		{
+			courier.IsVisible = true;
+			ApplyCourierMapBannerVisual(courier, "create");
+			courier.Party.SetCustomName(ConversationUiLocalization.Object("AF_CONV_UI_Courier_PartyName", "Courier party - {NAME}", ("NAME", flow.Recipient.Name ?? ConversationUiLocalization.Object("AF_CONV_UI_Courier_Recipient", "recipient"))));
+			courier.SetMoveModeHold();
+			ApplyCourierAiOverrides(courier, "create");
+
+			MoveRosterFromMainParty(flow.CrewRoster, courier, "crew", session.PendingReturnHeroIds);
+			AssignCourierLeader(courier);
+			EnsureCourierCampaignIdentity(courier, session, "create_session");
+			PrepareOutgoingPayload(session, courier);
+			session.DeliveryFactText = BuildDeliveryFactText(session, delivered: false, flow.Recipient);
+			PlayerNotorietyBehavior.NoteCourierSentForExternal(flow.Recipient);
+			session.PendingReturnHeroIds.Clear();
+		}
+		catch
+		{
+			session.Stage = CourierStage.Returning.ToString();
+			try
+			{
+				AddCourierRuntimeIndex(session);
+				if (ReturnCourierContentsToPlayer(session, courier))
+					CompleteAndDestroyCourier(session, courier);
+			}
+			catch (Exception recoveryError)
+			{
+				Log("dispatch recovery pending session=" + session.Id + " error=" + recoveryError);
+			}
+			throw;
+		}
 		return session;
 	}
 
@@ -757,7 +779,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			else if (string.Equals(entry.Kind, "troop", StringComparison.OrdinalIgnoreCase))
 			{
-				MoveCharacterFromMainMembersToParty(entry.Id, entry.Amount, courier, entry.IsHero);
+				MoveCharacterFromMainMembersToParty(entry.Id, entry.Amount, courier, entry.IsHero, session.PendingReturnHeroIds);
 				Log("escrow troop session=" + session.Id + " troop=" + entry.Id + " amount=" + entry.Amount);
 			}
 			else if (string.Equals(entry.Kind, "prisoner", StringComparison.OrdinalIgnoreCase))

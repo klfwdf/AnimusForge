@@ -1,0 +1,274 @@
+using System.Text.Json;
+#pragma warning disable CS0649
+
+sealed class Hero
+{
+    public static Hero MainHero = new();
+    public string StringId;
+    public TextObject Name = new();
+    public bool IsDead, IsPrisoner, IsHumanPlayerCharacter, IsTraveling;
+    public object StayingInSettlement;
+    public MobileParty PartyBelongedTo;
+    public PartyBase PartyBelongedToAsPrisoner;
+    public CharacterObject CharacterObject;
+}
+sealed class CharacterObject
+{
+    public string StringId;
+    public Hero HeroObject;
+    public bool IsHero => HeroObject != null;
+    public bool IsPlayerCharacter => HeroObject?.IsHumanPlayerCharacter == true;
+}
+sealed class TroopRosterElement
+{
+    public CharacterObject Character;
+    public int Number = 1, WoundedNumber, Xp, Amount;
+}
+sealed class TroopRoster
+{
+    public List<TroopRosterElement> Rows = new();
+    public int TotalManCount => Rows.Sum(row => row.Number);
+    public static TroopRoster CreateDummyTroopRoster() => new();
+}
+sealed class ItemRoster
+{
+    public int Count => 0;
+    public TroopRosterElement GetElementCopyAtIndex(int index) => new();
+}
+sealed class PartyBase
+{
+    public static PartyBase MainParty;
+    public MobileParty MobileParty;
+    public TroopRoster MemberRoster = new(), PrisonRoster = new();
+    public string Name = "party";
+    public void SetCustomName(TextObject name) { }
+}
+sealed class MobileParty
+{
+    public static MobileParty MainParty = new();
+    public string StringId = Guid.NewGuid().ToString();
+    public PartyBase Party;
+    public Hero LeaderHero;
+    public bool IsVisible, IsActive = true;
+    public float Position, Speed = 4;
+    public object CurrentSettlement;
+    public TroopRoster MemberRoster => Party.MemberRoster;
+    public TroopRoster PrisonRoster => Party.PrisonRoster;
+    public ItemRoster ItemRoster = new();
+    public MobileParty() { Party = new() { MobileParty = this }; }
+    public void SetMoveModeHold() { }
+}
+static class AddHeroToPartyAction
+{
+    public static Action<Hero, MobileParty, int> Fault;
+    public static void Apply(Hero hero, MobileParty target, bool notification)
+    {
+        Fault?.Invoke(hero, target, 0);
+        var source = hero.PartyBelongedTo;
+        if (source != null)
+        {
+            source.MemberRoster.Rows.RemoveAll(row => row.Character == hero.CharacterObject);
+            if (source.LeaderHero == hero) source.LeaderHero = null;
+        }
+        hero.PartyBelongedTo = null;
+        Fault?.Invoke(hero, target, 1);
+        target.MemberRoster.Rows.Add(new() { Character = hero.CharacterObject });
+        hero.PartyBelongedTo = target;
+        Fault?.Invoke(hero, target, 2);
+    }
+}
+static class TakePrisonerAction
+{
+    public static int Captures;
+    public static void Apply(PartyBase capturer, Hero hero)
+    {
+        Captures++;
+        hero.PartyBelongedTo.MemberRoster.Rows.RemoveAll(row => row.Character == hero.CharacterObject);
+        hero.PartyBelongedTo = null;
+        hero.IsPrisoner = true;
+        hero.PartyBelongedToAsPrisoner = capturer;
+    }
+}
+sealed class TextObject { }
+static class Clan { public static object PlayerClan = new(); }
+static class ConversationUiLocalization { public static TextObject Object(string key, string fallback, params (string, object)[] args) => new(); }
+static class ConversationRuntimeTexts { public static string Raw(string key) => key; }
+static class PlayerNotorietyBehavior { public static void NoteCourierSentForExternal(Hero hero) { } }
+static class GiveGoldAction { public static void ApplyBetweenCharacters(Hero source, Hero target, int gold, bool show) { } }
+static class CustomPartyComponent
+{
+    public static MobileParty Last;
+    public static MobileParty CreateCustomPartyWithTroopRoster(float position, float radius, object settlement,
+        TextObject name, object clan, TroopRoster members, TroopRoster prisoners, Hero owner, string mount, string harness, float speed, bool avoid)
+        => Last = new();
+}
+enum CourierStage { Outbound, Returning }
+enum CourierPayloadMode { Normal }
+sealed class CourierCargoEntry { public string Kind, Id; public bool IsHero, Delivered; }
+sealed class PlayerExperienceMotive { }
+sealed class PendingCourierFlow
+{
+    public Hero Recipient = new();
+    public TroopRoster CrewRoster = new();
+    public List<CourierCargoEntry> SelectedEntries = new();
+    public CourierPayloadMode Mode;
+}
+sealed class CourierDeliveryBehavior
+{
+    private const string CourierDirectionOutbound = "Outbound";
+    static readonly Dictionary<string, CharacterObject> Characters = new();
+    readonly Dictionary<string, CourierSession> _sessions = new();
+    readonly object _sessionLock = new();
+    public bool ThrowPayload;
+    static List<TroopRosterElement> SnapshotRoster(TroopRoster roster) => roster.Rows.ToList();
+    static CharacterObject ResolveCharacter(string id) => Characters.GetValueOrDefault(id);
+    static int CountRosterCharacter(TroopRoster roster, CharacterObject character) => roster.Rows.Where(row => row.Character == character).Sum(row => row.Number);
+    static void MoveRegularMember(PartyBase source, PartyBase target, CharacterObject character, int count, int wounded, int xp)
+    {
+        source.MemberRoster.Rows.RemoveAll(row => row.Character == character);
+        target.MemberRoster.Rows.Add(new() { Character = character, Number = count });
+    }
+    static void MoveWholePrisonRoster(PartyBase source, PartyBase target) { }
+    static void MoveWholeItemRoster(ItemRoster source, ItemRoster target) { }
+    static void Log(string text) { }
+    static void LogVerbose(string key, string text, double seconds) { }
+    static string NewSessionId() => Guid.NewGuid().ToString();
+    static string SafeHeroId(Hero hero) => hero.StringId;
+    static List<CourierCargoEntry> CloneEntries(List<CourierCargoEntry> entries) => entries.ToList();
+    static List<CourierCargoEntry> BuildCargoEntriesFromRoster(TroopRoster roster, string kind) => roster.Rows.Select(row => new CourierCargoEntry { Id = row.Character.StringId, IsHero = row.Character.IsHero, Kind = kind }).ToList();
+    static void ApplyCourierMapBannerVisual(MobileParty party, string reason) { }
+    static void ApplyCourierAiOverrides(MobileParty party, string reason) { }
+    static void AssignCourierLeader(MobileParty party) { }
+    static void EnsureCourierCampaignIdentity(MobileParty party, CourierSession session, string reason) { }
+    void PrepareOutgoingPayload(CourierSession session, MobileParty party) { if (ThrowPayload) throw new Exception("payload fault"); }
+    static string BuildDeliveryFactText(CourierSession session, bool delivered, Hero recipient) => "fact";
+    void AddCourierRuntimeIndex(CourierSession session) { }
+    void CompleteAndDestroyCourier(CourierSession session, MobileParty party)
+    {
+        Check(party.MemberRoster.TotalManCount == 0 && session.PendingReturnHeroIds.Count == 0, "destroy only confirmed empty party");
+        _sessions.Remove(session.Id);
+        party.IsActive = false;
+    }
+    @@PRODUCTION@@
+
+    static int Checks;
+    static void Check(bool condition, string name)
+    {
+        Checks++;
+        if (!condition) throw new Exception("FAIL " + name);
+    }
+    static Hero NewHero(MobileParty party)
+    {
+        var hero = new Hero { StringId = Guid.NewGuid().ToString() };
+        hero.CharacterObject = new() { StringId = hero.StringId, HeroObject = hero };
+        Characters[hero.StringId] = hero.CharacterObject;
+        AddHeroToPartyAction.Apply(hero, party, false);
+        return hero;
+    }
+    public static void Main()
+    {
+        var owner = new CourierDeliveryBehavior();
+        PartyBase.MainParty = MobileParty.MainParty.Party;
+        foreach (int phase in new[] { -1, 0, 1, 2 })
+        {
+            var source = new MobileParty();
+            var hero = NewHero(source);
+            source.LeaderHero = hero;
+            var session = new CourierSession();
+            AddHeroToPartyAction.Fault = (_, _, point) => { if (point == phase) throw new Exception("transfer fault"); };
+            bool returned = owner.ReturnCourierContentsToPlayer(session, source);
+            Check(returned == (phase == -1 || phase == 2), "native transfer outcome " + phase);
+            if (!returned)
+            {
+                Check(session.PendingReturnHeroIds.Contains(hero.StringId), "retain hero intent " + phase);
+                var options = new JsonSerializerOptions { IncludeFields = true };
+                session = JsonSerializer.Deserialize<CourierSession>(JsonSerializer.Serialize(session, options), options);
+            }
+            AddHeroToPartyAction.Fault = null;
+            Check(owner.ReturnCourierContentsToPlayer(session, source), "retry after save/load " + phase);
+            Check(hero.PartyBelongedTo == MobileParty.MainParty && CountRosterCharacter(MobileParty.MainParty.MemberRoster, hero.CharacterObject) == 1, "one main party hero " + phase);
+            Check(source.LeaderHero == null && source.MemberRoster.TotalManCount == 0, "old party released " + phase);
+        }
+        var destroyed = new MobileParty();
+        var other = new MobileParty();
+        var movedHero = NewHero(other);
+        var remainingHero = NewHero(destroyed);
+        var losses = new CourierSession { CrewEntries = new() {
+            new() { Id = movedHero.StringId, IsHero = true, Kind = "crew" },
+            new() { Id = remainingHero.StringId, IsHero = true, Kind = "crew" } } };
+        owner.TryMoveHeroLossesToDestroyer(losses, destroyed, new MobileParty().Party);
+        Check(TakePrisonerAction.Captures == 1 && movedHero.PartyBelongedTo == other && !movedHero.IsPrisoner, "capture only present crew");
+        var reassignedIntent = new List<string> { movedHero.StringId };
+        Check(MoveWholeMemberRoster(destroyed.Party, MobileParty.MainParty.Party, reassignedIntent)
+            && reassignedIntent.Count == 0 && movedHero.PartyBelongedTo == other, "later reassignment retires pending return");
+        foreach (string laterState in new[] { "dead", "prisoner", "traveling", "settlement" })
+        {
+            var departed = NewHero(destroyed);
+            destroyed.MemberRoster.Rows.Clear();
+            departed.PartyBelongedTo = null;
+            departed.IsDead = laterState == "dead";
+            departed.IsPrisoner = laterState == "prisoner";
+            departed.IsTraveling = laterState == "traveling";
+            departed.StayingInSettlement = laterState == "settlement" ? new object() : null;
+            Check(MoveWholeMemberRoster(destroyed.Party, MobileParty.MainParty.Party, new() { departed.StringId })
+                && departed.PartyBelongedTo == null, "later native state supersedes return " + laterState);
+        }
+        destroyed.MemberRoster.Rows.Add(new() { Character = movedHero.CharacterObject });
+        Check(!MoveWholeMemberRoster(destroyed.Party, MobileParty.MainParty.Party, new()), "stale source cannot reclaim another party hero");
+        Check(movedHero.PartyBelongedTo == other, "other party remains authoritative");
+        foreach (bool failRecovery in new[] { false, true })
+        {
+            owner = new() { ThrowPayload = true };
+            var hero = NewHero(MobileParty.MainParty);
+            var flow = new PendingCourierFlow();
+            flow.CrewRoster.Rows.Add(new() { Character = hero.CharacterObject });
+            AddHeroToPartyAction.Fault = (_, target, phase) => { if (failRecovery && target == MobileParty.MainParty && phase == 1) throw new Exception("recovery fault"); };
+            bool threw = false;
+            try { owner.CreateCourierSession(flow, "letter"); } catch { threw = true; }
+            Check(threw, "dispatch failure reported");
+            Check(owner._sessions.Count == (failRecovery ? 1 : 0), "dispatch recovery registration");
+            if (failRecovery)
+            {
+                var pending = owner._sessions.Values.Single();
+                Check(pending.Stage == "Returning" && CustomPartyComponent.Last.IsActive && pending.PendingReturnHeroIds.Contains(hero.StringId), "partial dispatch retained");
+                AddHeroToPartyAction.Fault = null;
+                Check(owner.ReturnCourierContentsToPlayer(pending, CustomPartyComponent.Last), "partial dispatch retry");
+                owner.CompleteAndDestroyCourier(pending, CustomPartyComponent.Last);
+            }
+            AddHeroToPartyAction.Fault = null;
+            Check(hero.PartyBelongedTo == MobileParty.MainParty && !CustomPartyComponent.Last.IsActive, "dispatch recovery completed");
+        }
+        foreach (int dispatchPhase in new[] { 0, 1, 2 })
+        {
+            owner = new();
+            var hero = NewHero(MobileParty.MainParty);
+            var flow = new PendingCourierFlow();
+            flow.CrewRoster.Rows.Add(new() { Character = hero.CharacterObject });
+            AddHeroToPartyAction.Fault = (_, target, phase) =>
+            {
+                if (target != MobileParty.MainParty && phase == dispatchPhase)
+                    throw new Exception("outbound transfer interrupted");
+            };
+            bool threw = false;
+            try { owner.CreateCourierSession(flow, "letter"); } catch { threw = true; }
+            AddHeroToPartyAction.Fault = null;
+            Check(threw && owner._sessions.Count == 0 && !CustomPartyComponent.Last.IsActive,
+                "outbound transfer fault cleaned up " + dispatchPhase);
+            Check(hero.PartyBelongedTo == MobileParty.MainParty
+                && CountRosterCharacter(MobileParty.MainParty.MemberRoster, hero.CharacterObject) == 1,
+                "outbound transfer fault returns hero once " + dispatchPhase);
+        }
+        owner = new();
+        var normalHero = NewHero(MobileParty.MainParty);
+        var normalFlow = new PendingCourierFlow();
+        normalFlow.CrewRoster.Rows.Add(new() { Character = normalHero.CharacterObject });
+        var normalSession = owner.CreateCourierSession(normalFlow, "letter");
+        Check(owner._sessions.Count == 1 && normalHero.PartyBelongedTo == CustomPartyComponent.Last, "normal dispatch");
+        Check(normalSession.PendingReturnHeroIds.Count == 0, "successful dispatch clears recovery intents");
+        normalSession.PendingReturnHeroIds = null;
+        Check(owner.ReturnCourierContentsToPlayer(normalSession, CustomPartyComponent.Last), "old null recovery field");
+        owner.CompleteAndDestroyCourier(normalSession, CustomPartyComponent.Last);
+        Check(normalHero.PartyBelongedTo == MobileParty.MainParty, "normal return");
+        Console.WriteLine($"PASS courier party recovery checks={Checks} live=NOT_RUN");
+    }
+}

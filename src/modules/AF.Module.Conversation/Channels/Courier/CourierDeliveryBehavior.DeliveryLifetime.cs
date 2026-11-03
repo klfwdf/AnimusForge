@@ -54,7 +54,11 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			if (ReturnCourierContentsToPlayer(session, courier))
 				RecordModuleCourierStep(session, CoreCourierAcceptedSteps.ContentsReturned);
-			else FailModuleCourierSession(session, "courier.contents_return_unconfirmed");
+			else
+			{
+				LogVerbose("return_pending:" + session.Id, "courier contents return pending session=" + session.Id, 10.0);
+				return;
+			}
 			if (session.DeliveryApplied && !session.ReplyPopupShown && !string.IsNullOrWhiteSpace(session.ReplyText))
 			{
 				session.ReplyPopupShown = true;
@@ -337,7 +341,8 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			return false;
 		}
-		MoveWholeMemberRoster(courier.Party, playerParty);
+		session.PendingReturnHeroIds ??= new List<string>();
+		bool membersReturned = MoveWholeMemberRoster(courier.Party, playerParty, session.PendingReturnHeroIds);
 		MoveWholePrisonRoster(courier.Party, playerParty);
 		MoveWholeItemRoster(courier.ItemRoster, MobileParty.MainParty?.ItemRoster);
 		if (!session.DeliveryApplied && session.EscrowGold > 0)
@@ -346,7 +351,7 @@ public sealed partial class CourierDeliveryBehavior
 			Log("refunded escrow gold session=" + session.Id + " amount=" + session.EscrowGold);
 			session.EscrowGold = 0;
 		}
-		if (courier.MemberRoster.TotalManCount != 0 || courier.PrisonRoster.TotalManCount != 0) return false;
+		if (!membersReturned || courier.MemberRoster.TotalManCount != 0 || courier.PrisonRoster.TotalManCount != 0) return false;
 		for (int i = 0; i < courier.ItemRoster.Count; i++)
 			if (courier.ItemRoster.GetElementCopyAtIndex(i).Amount > 0) return false;
 		return session.DeliveryApplied || session.EscrowGold == 0;
@@ -379,7 +384,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			FailModuleCourierSession(session, "courier.transport_destroyed", CoreCourierTransportOutcome.Destroyed);
 			DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_DestroyerDetail", " Destroyer: {NAME}", "NAME", destroyerName));
-			TryMoveHeroLossesToDestroyer(session, destroyerParty);
+			TryMoveHeroLossesToDestroyer(session, destroyedParty, destroyerParty);
 			string fact = ConversationRuntimeTexts.W("AF_CONV_Runtime_0447") + (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0448")) + ConversationRuntimeTexts.W("AF_CONV_Runtime_0449") + destroyerName + ConversationRuntimeTexts.W("AF_CONV_Runtime_0450");
 			if (!session.DeliveryApplied)
 			{
@@ -407,9 +412,9 @@ public sealed partial class CourierDeliveryBehavior
 		}
 	}
 
-	private void TryMoveHeroLossesToDestroyer(CourierSession session, PartyBase destroyerParty)
+	private void TryMoveHeroLossesToDestroyer(CourierSession session, MobileParty destroyedParty, PartyBase destroyerParty)
 	{
-		if (session == null || destroyerParty == null)
+		if (session == null || destroyedParty == null || destroyerParty == null)
 		{
 			return;
 		}
@@ -429,6 +434,8 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				continue;
 			}
+			if (hero.PartyBelongedTo != destroyedParty || CountRosterCharacter(destroyedParty.MemberRoster, character) <= 0)
+				continue;
 			try
 			{
 				if (!hero.IsPrisoner || hero.PartyBelongedToAsPrisoner == null)

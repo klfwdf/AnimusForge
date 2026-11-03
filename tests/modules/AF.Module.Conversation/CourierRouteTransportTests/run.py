@@ -54,6 +54,9 @@ require("ProcessSessionCore(session);" in process_wrapper,
 require("FailModuleCourierSession(session, \"courier.transport_processing_failed\");" in process_wrapper,
         "session wrapper must still fail on transport exceptions")
 process = extract.declaration(session, "private void ProcessSessionCore(")
+require('if ((stage == CourierStage.Outbound || stage == CourierStage.WaitingRecipient)'
+        in process[:process.index('StartCourierReplyGeneration(session, "outbound_preflight");')],
+        "returning/recovery sessions must not start outbound preflight")
 ordered(process,
         "TryGetRecipientTarget(",
         "IsAtRecipient(",

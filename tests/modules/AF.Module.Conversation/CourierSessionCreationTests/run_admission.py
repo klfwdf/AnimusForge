@@ -120,6 +120,8 @@ def main():
             declarations = [part.replace(before, after) for part in declarations]
 
     output = new_run_root(ROOT, 'courier-session-admission', args.run_root)
+    if not args.ref:
+        (output / 'RuntimeTexts.json').write_text(read('content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimeCompatibility.json'), encoding='utf-8')
     harness = (HERE / 'AdmissionHarness.cs.txt').read_text(encoding='utf-8')
     (output / 'Program.cs').write_text(harness.replace('@@DECLARATIONS@@', '\n'.join(declarations)) + ((HERE / 'LifecycleHarness.cs.txt').read_text(encoding='utf-8') if args.lifecycle else ''), encoding='utf-8')
     defines = '' if args.ref else '<DefineConstants>COURIER_DRAFT_TICKETS' + (';COURIER_LIFECYCLE' if args.lifecycle else '') + '</DefineConstants>'

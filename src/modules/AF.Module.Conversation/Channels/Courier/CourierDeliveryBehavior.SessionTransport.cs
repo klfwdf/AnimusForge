@@ -71,7 +71,8 @@ public sealed partial class CourierDeliveryBehavior
 			ProcessInboundToPlayerSession(session, courier);
 			return;
 		}
-		if (!session.DeliveryApplied && recipient != null && !recipient.IsDead && !session.ReplyGenerated && !session.ReplyGenerationStarted)
+		if ((stage == CourierStage.Outbound || stage == CourierStage.WaitingRecipient)
+			&& !session.DeliveryApplied && recipient != null && !recipient.IsDead && !session.ReplyGenerated && !session.ReplyGenerationStarted)
 		{
 			StartCourierReplyGeneration(session, "outbound_preflight");
 		}

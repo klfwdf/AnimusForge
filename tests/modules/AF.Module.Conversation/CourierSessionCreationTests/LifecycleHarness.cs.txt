@@ -42,6 +42,15 @@ static partial class Program
             else if(fault=="retire")owner.Retire();
             else if(fault=="replacement")owner.ReplaceTransport();
             else owner.ReturnNow();
+            if(fault=="contents")
+            {
+                Check(!op.Completion.IsCompleted && owner.HasPendingReturn,"failed-return-keeps-party-and-session");
+                Life.FailContents=false;
+                owner.ReturnNow();
+                Check(op.Completion.IsCompleted && !owner.HasPendingReturn,"failed-return-retry-completes");
+                owner.Retire();Released(owner,"fault-"+fault);
+                continue;
+            }
             Check(op.Completion.IsCompleted&&op.Snapshot.State==CoreDialogueState.Failed,"terminal-failure-settled-"+fault);
             if(fault=="destroyed"||fault=="missing")
                 Check(op.Snapshot.Courier.Has(CoreCourierAcceptedSteps.Actions|CoreCourierAcceptedSteps.ReplyHistory)
@@ -127,7 +136,7 @@ sealed class Execution { public InteractionStatus Status; }
 sealed class LegacyChannelActionCommitter { public LegacyChannelActionCommitResult Prepare(string text)=>new(){HasActions=(text??"").Contains("[ACTION:")}; }
 static class LegacyActionTagParser { public static string RemoveProtocolTags(string text,Func<string,bool> predicate)=>System.Text.RegularExpressions.Regex.Replace(text??"",@"\[ACTION:[^\]]*\]",""); }
 static class AnimusForgeTextInputSanitizer { public const int MaxCourierLetterChars=16000; public static string SanitizeMultiline(string t,int max)=>t??""; }
-static class CourierVisibleLetterSanitizer { public static string Clean(string t)=>t??""; }
+static class CourierVisibleLetterSanitizer { public static string Clean(string t)=>t??""; public static string CleanNpcLetter(string t)=>t??""; }
 sealed partial class CourierDeliveryBehavior
 {
     private readonly System.Runtime.CompilerServices.ConditionalWeakTable<CourierSession,CourierPromptRun> _courierPromptRuns=new();
@@ -140,10 +149,12 @@ sealed partial class CourierDeliveryBehavior
     private Hero LifeRecipient=new(){Name="recipient"};
     private MobileParty LifeParty=new();
     private CourierSession LifeSession;
-    private sealed partial class CourierSession { public bool DeliveryApplied,ReplyGenerated,ReplyGenerationStarted,ReplyPopupShown,PostprocessConsumed;public string LetterText="letter",DeliveryFactText,ReplyText,ReplyPostprocessedText;public int EscrowGold; }
+    private sealed partial class CourierSession { public bool DeliveryApplied,ReplyGenerated,ReplyGenerationStarted,ReplyPopupShown,PostprocessConsumed;public string LetterText="letter",DeliveryFactText,ReplyText,ReplyPostprocessedText;public string DiplomacyReplyBody; public List<string> DiplomacyReplyReceipts; public int EscrowGold; public List<string> PendingReturnHeroIds=new(); }
     internal void ResetLifecycle(){Life.Reset();PartyBase.MainParty=MobileParty.MainParty.Party;LifeParty.MemberRoster.Entries.Add(new(){Number=1});}
     private static bool IsTerminalStage(CourierSession s)=>s.Stage=="Completed"||s.Stage=="Destroyed";
     private CourierSession Current=>LifeSession??=_sessions.Values.Single();
+    private static void LogVerbose(string key,string text,double seconds){}
+    internal bool HasPendingReturn=>_sessions.ContainsKey(Current.Id)&&LifeParty.IsActive;
     internal int LetterCount=>_courierLetterInventoryRecords?.Count??0;
     internal bool HasReply=>Current.ReplyGenerated;
     private CourierReplyGenerationRequest PrepareRequest()
@@ -164,7 +175,7 @@ sealed partial class CourierDeliveryBehavior
     private void RouteToSender(CourierSession s,MobileParty p){}
     private void ProcessSessionById(string id,string reason){}
     private void HandleInboundCourierDestroyed(CourierSession s,MobileParty p,string n){}
-    private void TryMoveHeroLossesToDestroyer(CourierSession s,PartyBase p){}
+    private void TryMoveHeroLossesToDestroyer(CourierSession s,MobileParty destroyed,PartyBase p){}
     private static void ShowCourierReplyNotice(string id,string name,string text){}
     private static void EnqueueMainThreadActionForGeneration(long g,Action a,string reason){MainThreadActions.Enqueue(()=>{if(SaveRuntimeGuard.IsCurrentGeneration(g))a();});}
     private static string SafeHeroId(Hero h)=>h?.Name??"";
@@ -174,10 +185,23 @@ sealed partial class CourierDeliveryBehavior
     private static bool ContainsKingdomAnnexActionTag(string t)=>false;
     private static bool MayContainGeneratedRpItemReward(string t)=>false;
     private RewardSystemBehavior.RpItemIntroductionContext CreateCourierRpItemIntroductionContext(CourierSession s,Hero h,string t)=>null;
-    private static void MoveWholeMemberRoster(PartyBase from,PartyBase to){if(Life.FailContents)return;to.MemberRoster.Entries.AddRange(from.MemberRoster.Entries);from.MemberRoster.Entries.Clear();}
+    private static bool MoveWholeMemberRoster(PartyBase from,PartyBase to,List<string> pending){if(Life.FailContents)return false;to.MemberRoster.Entries.AddRange(from.MemberRoster.Entries);from.MemberRoster.Entries.Clear();return true;}
     private static void MoveWholePrisonRoster(PartyBase from,PartyBase to){to.PrisonRoster.Entries.AddRange(from.PrisonRoster.Entries);from.PrisonRoster.Entries.Clear();}
     private static void MoveWholeItemRoster(ItemRoster from,ItemRoster to){to.Entries.AddRange(from.Entries);from.Entries.Clear();}
     private static string BuildCourierLetterInventoryTitle(string name,bool reply)=>name+" letter";
     private static bool TrySplitCourierLetterInventoryDisplayName(string name,out string title,out string body){title=name;body="";return false;}
     private static int GetCourierInventoryDayIndex()=>1;
 }
+
+
+sealed class DiplomacyDialogueSourceScope : IDisposable
+{
+    public static DiplomacyDialogueSourceScope Begin(params string[] args) => new();
+    public void Dispose() { }
+}
+static class DiplomacyConversationBridge
+{
+    public static void ProcessDiplomacyTagsDispatch(Hero hero, ref string text, List<string> receipts) { }
+    public static string ComposeReply(string text, List<string> receipts, bool forUi = false) => text;
+}
+static class DiplomacyReplyTextRules { public static string CleanNpcText(string text) => text; }

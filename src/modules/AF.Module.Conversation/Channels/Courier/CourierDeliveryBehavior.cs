@@ -147,6 +147,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		public int EscrowGold;
 		public List<CourierCargoEntry> Entries = new List<CourierCargoEntry>();
 		public List<CourierCargoEntry> CrewEntries = new List<CourierCargoEntry>();
+		// Persist transfer intent before native roster callbacks can leave a hero between parties.
+		public List<string> PendingReturnHeroIds = new List<string>();
 	}
 
 	private sealed class CourierCargoEntry
@@ -1367,7 +1369,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		return list;
 	}
 
-	private static void MoveRosterFromMainParty(TroopRoster selectedRoster, MobileParty targetParty, string label)
+	private static void MoveRosterFromMainParty(TroopRoster selectedRoster, MobileParty targetParty, string label, List<string> pendingHeroIds)
 	{
 		foreach (TroopRosterElement item in SnapshotRoster(selectedRoster))
 		{
@@ -1378,6 +1380,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			if (character.IsHero)
 			{
+				if (!pendingHeroIds.Contains(character.StringId)) pendingHeroIds.Add(character.StringId);
 				AddHeroToPartyAction.Apply(character.HeroObject, targetParty, false);
 				continue;
 			}
@@ -1385,7 +1388,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void MoveCharacterFromMainMembersToParty(string characterId, int amount, MobileParty targetParty, bool isHero)
+	private static void MoveCharacterFromMainMembersToParty(string characterId, int amount, MobileParty targetParty, bool isHero, List<string> pendingHeroIds)
 	{
 		CharacterObject character = ResolveCharacter(characterId);
 		if (character == null || targetParty == null || amount <= 0)
@@ -1394,6 +1397,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		if (isHero || character.IsHero)
 		{
+			if (!pendingHeroIds.Contains(character.StringId)) pendingHeroIds.Add(character.StringId);
 			AddHeroToPartyAction.Apply(character.HeroObject, targetParty, false);
 			return;
 		}
@@ -1514,8 +1518,9 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		return moved;
 	}
 
-	private static void MoveWholeMemberRoster(PartyBase source, PartyBase target)
+	private static bool MoveWholeMemberRoster(PartyBase source, PartyBase target, List<string> pendingHeroIds)
 	{
+		if (source?.MemberRoster == null || target?.MobileParty == null) return false;
 		foreach (TroopRosterElement item in SnapshotRoster(source?.MemberRoster))
 		{
 			CharacterObject character = item.Character;
@@ -1525,19 +1530,45 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			if (character.IsHero)
 			{
-				try
-				{
-					AddHeroToPartyAction.Apply(character.HeroObject, target.MobileParty, false);
-				}
-				catch
-				{
-				}
+				if (!pendingHeroIds.Contains(character.StringId)) pendingHeroIds.Add(character.StringId);
 			}
 			else
 			{
 				MoveRegularMember(source, target, character, item.Number, item.WoundedNumber, item.Xp);
 			}
 		}
+		for (int i = pendingHeroIds.Count - 1; i >= 0; i--)
+		{
+			CharacterObject character = ResolveCharacter(pendingHeroIds[i]);
+			Hero hero = character?.HeroObject;
+			if (hero == null) continue;
+			bool leftSource = CountRosterCharacter(source.MemberRoster, character) == 0;
+			bool reassigned = hero.PartyBelongedTo != null && hero.PartyBelongedTo != source.MobileParty
+				&& hero.PartyBelongedTo != target.MobileParty;
+			if (leftSource && (reassigned || hero.IsDead || hero.IsPrisoner
+				|| hero.PartyBelongedToAsPrisoner != null || hero.IsTraveling || hero.StayingInSettlement != null))
+			{
+				// A later native assignment supersedes this interrupted return.
+				pendingHeroIds.RemoveAt(i);
+				continue;
+			}
+			try
+			{
+				// An interrupted native transfer may have removed the source roster entry already.
+				// Never reclaim a hero who has since joined another party or become a prisoner.
+				if (!hero.IsDead && !hero.IsPrisoner && hero.PartyBelongedToAsPrisoner == null
+					&& (hero.PartyBelongedTo == source.MobileParty || hero.PartyBelongedTo == null))
+					AddHeroToPartyAction.Apply(hero, target.MobileParty, false);
+			}
+			catch (Exception ex)
+			{
+				LogVerbose("return_hero:" + pendingHeroIds[i], "hero return failed hero=" + pendingHeroIds[i] + " error=" + ex, 10.0);
+			}
+			if (hero.PartyBelongedTo == target.MobileParty && CountRosterCharacter(target.MemberRoster, character) == 1
+				&& CountRosterCharacter(source.MemberRoster, character) == 0)
+				pendingHeroIds.RemoveAt(i);
+		}
+		return pendingHeroIds.Count == 0;
 	}
 
 	private static void MoveWholePrisonRoster(PartyBase source, PartyBase target)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -418,3 +419,16 @@ sealed partial class CourierDeliveryBehavior
 }
 
 static class CourierFixture { internal static bool FailCleanup; }
+
+static class ConversationUiLocalization
+{
+    public static string Text(string key, string fallback, params object[] args) => fallback;
+}
+static class ConversationRuntimeTexts
+{
+    static readonly System.Text.Json.JsonElement Texts = System.Text.Json.JsonDocument.Parse(System.IO.File.ReadAllText("RuntimeTexts.json")).RootElement;
+    public static string Raw(string key) => Texts.GetProperty(key).GetString();
+    public static string W(string key) => Raw(key);
+    public static string Tidy(string value) => value;
+}
+static class PromptLanguage { public static bool IsChinese => true; }
