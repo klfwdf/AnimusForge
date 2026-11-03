@@ -90,7 +90,7 @@ internal static class TerminalSettingsCoverage
         if (RetiredDiplomacySettings.Contains(id)) return false;
         if (id == "Illustrator.DirectorMaxTokens" || id == "ScreenNotifications"
             || id == "EnemyInterruptRadiusMeters" || id == "DiagnosticsEnabled"
-            || id == "TerminalHotkeyEnabled" || id == "TerminalMapIconEnabled") return false;
+            || id == "TerminalHotkeyEnabled") return false;
         return true;
     }
 

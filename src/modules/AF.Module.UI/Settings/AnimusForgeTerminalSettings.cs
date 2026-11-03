@@ -14,33 +14,16 @@ public static class AnimusForgeTerminalSettings
 {
     public static bool IsHotkeyEnabled
     {
-        get
+        get => DuelSettings.GetSettings()?.TerminalHotkeyEnabled ?? true;
+        set
         {
             var settings = DuelSettings.GetSettings();
-            return settings == null || settings.TerminalHotkeyEnabled || !settings.TerminalMapIconEnabled;
-        }
-        set => SetEntry(value, true);
-    }
-
-    public static bool IsMapIconEnabled
-    {
-        get => DuelSettings.GetSettings()?.TerminalMapIconEnabled ?? true;
-        set => SetEntry(value, false);
-    }
-
-    private static void SetEntry(bool value, bool hotkey)
-    {
-        var settings = DuelSettings.GetSettings();
-        if (settings == null) return;
-        bool previous = hotkey ? settings.TerminalHotkeyEnabled : settings.TerminalMapIconEnabled;
-        if (previous == value) return;
-        if (!value && !(hotkey ? settings.TerminalMapIconEnabled : settings.TerminalHotkeyEnabled)) return;
-        if (hotkey) settings.TerminalHotkeyEnabled = value;
-        else settings.TerminalMapIconEnabled = value;
-        if (!DuelSettings.SaveCurrentSettings())
-        {
-            if (hotkey) settings.TerminalHotkeyEnabled = previous;
-            else settings.TerminalMapIconEnabled = previous;
+            if (settings == null || settings.TerminalHotkeyEnabled == value) return;
+            settings.TerminalHotkeyEnabled = value;
+            if (!DuelSettings.SaveCurrentSettings())
+            {
+                settings.TerminalHotkeyEnabled = !value;
+            }
         }
     }
 

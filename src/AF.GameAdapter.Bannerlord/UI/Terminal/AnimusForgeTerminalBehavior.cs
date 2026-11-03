@@ -535,7 +535,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			_lastTerminalHintDay = campaignDayIndex;
 
 			// Hide the periodic hotkey text; retain the hotkey and map navigation entry.
-			if (!AnimusForgeTerminalSettings.IsHotkeyEnabled && AnimusForgeTerminalSettings.IsMapIconEnabled)
+			if (!AnimusForgeTerminalSettings.IsHotkeyEnabled)
 
 			{
 

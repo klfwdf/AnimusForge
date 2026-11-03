@@ -77,13 +77,12 @@ internal static class McmSettingsStorage
             var file = files.GetFile(directory, filename + ".json");
             byte[] bytes = file == null ? null : files.ReadData(file);
             var stored = bytes == null ? new JObject() : JObject.Parse(Encoding.UTF8.GetString(bytes).TrimStart('\uFEFF'));
-            if (stored[nameof(DuelSettings.TerminalHotkeyEnabled)] != null && stored[nameof(DuelSettings.TerminalMapIconEnabled)] != null) return;
+            if (stored[nameof(DuelSettings.TerminalHotkeyEnabled)] != null) return;
             string legacy = Path.Combine(AnimusForgeDataPaths.GetSettingsDirectory(AnimusForgeModulePaths.GetCurrentModuleRoot()), "TerminalSettings.json");
             if (!AnimusForgeTerminalSettings.TryLoadSettingsFile(legacy, out var entry)) return;
             // Only missing entry fields on load. Existing MCM values win; no
             // business configuration is merged, overwritten or deleted.
-            if (stored[nameof(DuelSettings.TerminalHotkeyEnabled)] == null) settings.TerminalHotkeyEnabled = entry.IsHotkeyEnabled;
-            if (stored[nameof(DuelSettings.TerminalMapIconEnabled)] == null) settings.TerminalMapIconEnabled = entry.IsMapIconEnabled;
+            settings.TerminalHotkeyEnabled = entry.IsHotkeyEnabled;
         }
         catch (Exception ex) { Logger.Log("TerminalSettings", "Shared entry compatibility skipped: " + ex.GetType().Name); }
     }

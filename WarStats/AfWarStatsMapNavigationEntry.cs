@@ -21,9 +21,7 @@ internal static class AfWarStatsMapNavigationEntry
 
     private const string HarmonyId = "AnimusForge.terminal.mapbar.navigation";
 
-    private const string KingdomItemId = "kingdom";
 
-    private const string MiddleKingdomItemId = "af_terminal_kingdom";
 
     private static bool _patched;
 
@@ -81,7 +79,7 @@ internal static class AfWarStatsMapNavigationEntry
             }
             _currentNavigation = new WeakReference<MapNavigationVM>(__instance);
             _currentHandler = new WeakReference<MapNavigationHandler>(handler);
-            SyncVisibility();
+            AppendTerminalEntry();
         }
         catch (Exception ex)
         {
@@ -89,8 +87,8 @@ internal static class AfWarStatsMapNavigationEntry
         }
     }
 
-    // Adds or removes the bar item so the terminal setting toggle applies without reopening the map.
-    internal static void SyncVisibility()
+    // Append the terminal once per map navigation instance.
+    private static void AppendTerminalEntry()
     {
         MapNavigationVM navigation = null;
         if (_currentNavigation == null || !_currentNavigation.TryGetTarget(out navigation) || navigation?.NavigationItems == null)
@@ -98,37 +96,17 @@ internal static class AfWarStatsMapNavigationEntry
             return;
         }
         MBBindingList<MapNavigationItemVM> items = navigation.NavigationItems;
-        int existingIndex = -1;
-        bool shouldShow = AnimusForge.AnimusForgeTerminalSettings.IsMapIconEnabled;
-        for (int i = 0; i < items.Count; i++)
+        foreach (MapNavigationItemVM item in items)
         {
-            string id = items[i]?.ItemId;
-            if (id == ItemId)
+            if (item?.ItemId == ItemId)
             {
-                existingIndex = i;
-            }
-            else if (id == KingdomItemId || id == MiddleKingdomItemId)
-            {
-                // ItemId selects presentation only; NavigationElement retains kingdom behavior.
-                // Property notification refreshes the native background and icon when toggled.
-                items[i].ItemId = shouldShow ? MiddleKingdomItemId : KingdomItemId;
+                return;
             }
         }
-        if (shouldShow && existingIndex < 0)
-        {
-            // The terminal owns the curved end cap while visible and is the final navigation item.
-            MapNavigationHandler handler = null;
-            _currentHandler?.TryGetTarget(out handler);
-            // Must run before the item VM binds so the icon widget copies the custom sprite.
-            AfTerminalMapBarIconSprite.EnsureApplied();
-            items.Add(new MapNavigationItemVM(new TerminalNavigationElement(handler)));
-        }
-        else if (!shouldShow && existingIndex >= 0)
-        {
-            MapNavigationItemVM item = items[existingIndex];
-            items.RemoveAt(existingIndex);
-            item.OnFinalize();
-        }
+        MapNavigationHandler handler = null;
+        _currentHandler?.TryGetTarget(out handler);
+        AfTerminalMapBarIconSprite.EnsureApplied();
+        items.Add(new MapNavigationItemVM(new TerminalNavigationElement(handler)));
     }
 
     private sealed class TerminalNavigationElement : INavigationElement
