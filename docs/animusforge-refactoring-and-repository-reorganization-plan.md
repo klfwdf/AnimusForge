@@ -1,3 +1,14 @@
+<a id="mapped-game-int8-cn-20261104"></a>
+## 2026-11-04 网吧安装映射与包体回归修复
+
+用户提供Bootstrap弹窗，Stage为OnSubModuleLoad，Game v1.4.8.119303，API1.4，异常为AnimusForge storage crosses a reparse point。前次日志容错已令真实错误可见。产品 `f41ec80df4`，检查点 `01c407dc0`。实际哪个目录是重解析点尚无玩家路径细节，不能宣称实机问题已解决。
+
+`src/AF.Persistence/AnimusForgeDataPaths.cs` 的 ValidateAncestors 第84行起以IsModuleRoot为检查边界，模组本身/内部仍拒绝重解析点，模组以上安装目录允许映射；源码/Stage/模块身份限制保持。新错误包含被拒绝目录。`src/AF.Bootstrap/BootstrapLog.cs` 的 ResolveModuleRoot 第52行起同步边界，避免上级游戏映射使文件日志失效。只在原路径访问边界执行，未新增Tick工作或缓存扫描。
+
+用户指出包体由约170MiB变为240.8MiB。定位为0342包误选原始bekko（199300251字节），历史INT8模型124972807字节。已复用 .tmp/worldbook-bekko-quantization-20261102/candidate-int8/ONNX/bekko 三文件覆盖仓库忽略的 AnimusForge/ONNX/bekko 默认包源，原始三文件备份 .tmp/mapped-install-cn-20261104-034946/original-bekko/。说明同步INT8默认值，保持不排除模型。
+
+按用户要求直接编译和打包，未运行测试/校验/冒烟/哈希/回读。复用现有直接编译参数，1.3与1.4各0错误407警告，Bootstrap0错误0警告，日志 .tmp/mapped-install-cn-20261104-034946/*-compile.log。打包复用此前CN内容和本轮三DLL，marker Sha256=null/ValidationStatus=DisabledByUser，使用既有LZMA2 level9/16MiB编码器。目标 一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1104_0351.7z，交付状态见本地delivery.json及encode.log。只打CN，未部署、push或启动游戏。旧包保留但由0351替代。回滚产品使用f41ec80df4逆向提交，模型可从上述原始备份恢复。
+
 <a id="remove-onnx-exclusion-20261104"></a>
 ## 2026-11-04 删除 ONNX 排除选项与规则
 

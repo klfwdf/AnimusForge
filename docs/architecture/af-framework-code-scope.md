@@ -1,3 +1,8 @@
+<a id="mapped-game-int8-cn-20261104"></a>
+## 2026-11-04 网吧上级安装目录映射兼容
+
+修订 `f41ec80df4`。`src/AF.Persistence/AnimusForgeDataPaths.cs` 的 ValidateAncestors 第84行起，实际消费者为ResolveRoot、ValidatePath和RequireUnderRoot；在已识别模组之上允许安装目录映射，模组本身及内部路径保留拒绝，并报告具体路径。`src/AF.Bootstrap/BootstrapLog.cs` 的 ResolveModuleRoot 第52行起以相同模块边界允许上级映射，模组和bin路径仍检查。两API/Bootstrap仅编译完成，真实网吧目录/旧档未验，测试/校验按用户要求跳过。详见[台账](../animusforge-refactoring-and-repository-reorganization-plan.md#mapped-game-int8-cn-20261104)。
+
 <a id="bootstrap-nonfatal-logging-20261104"></a>
 ## 2026-11-04 Bootstrap 文件日志容错
 

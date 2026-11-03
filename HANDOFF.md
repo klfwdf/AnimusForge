@@ -1,3 +1,7 @@
+## 2026-11-04 网吧重解析路径兼容与 INT8 CN 重包
+
+玩家弹窗确认 OnSubModuleLoad 抛出 storage crosses a reparse point，日志容错修复后已可见真实错误。产品提交 `f41ec80df4`，允许已验证模块之上的Steam/游戏安装目录映射，模组本身及内部数据路径继续拒绝重解析点，错误附具体路径。此前0342包选错原始模型，已将仓库默认bekko替换为既有INT8版，模型124972807字节，原始版备份在本地任务目录。双API及Bootstrap仅编译完成，按用户要求未运行测试/校验/冒烟。新CN包0351用于复测，详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#mapped-game-int8-cn-20261104)。
+
 ## 2026-11-04 移除 ONNX 排除规则
 
 用户明确要求删除排除规则。打包入口移除 ExcludeOnnx 参数、无模型分支和 ONNX 禁入检查，默认及自定义模型路径均固定加入三个 bekko 文件；现行说明与旧测试签名同步。按用户要求本轮跳过测试/校验。已完成的含模型 CN 包为 `一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1104_0342.7z`。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remove-onnx-exclusion-20261104)。
