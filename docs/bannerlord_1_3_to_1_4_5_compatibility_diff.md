@@ -28,7 +28,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build\build_single
 
 Direct `BannerlordApi=1.3` project builds intentionally fail unless the unified script has first verified the pinned 1.3 reference line. A compile symbol must never be treated as reference provenance.
 
-Packaging must produce both CN and EN client ZIPs, each with one `AnimusForge/...` root. Names follow `AnimusForge_v1.X.X_CN_MMdd_HHmm.zip` / `AnimusForge_v1.X.X_EN_MMdd_HHmm.zip`; both share the version and local minute stamp, and a collision suffix if needed. The unified module in each archive contains a minimal `AnimusForge.Bootstrap.dll` plus both implementation DLLs:
+Packaging must produce both CN and EN client archives using the shared extreme-compression 7z encoder, each with one `AnimusForge/...` root. Names follow `AnimusForge_v1.X.X_CN_MMdd_HHmm.7z` / `AnimusForge_v1.X.X_EN_MMdd_HHmm.7z`; both share the version and local minute stamp, and a collision suffix if needed. The unified module in each archive contains a minimal `AnimusForge.Bootstrap.dll` plus both implementation DLLs:
 
 - `AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll`
 - `AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll`
@@ -92,7 +92,7 @@ Review these files before changing related systems:
 - `ShoutBehavior.cs`: party role detection and scene agent navigation.
 - `AnimusForgeModulePaths.cs`: active module root must resolve only to `Modules/AnimusForge`; legacy versioned folders are read-only migration inputs at most.
 - `deploy_module.ps1` in the one-click script folder: unified module assembly and deployment.
-- `package_mod.ps1` in the one-click script folder: single unified-client ZIP packaging.
+- `package_mod.ps1` in the one-click script folder: unified-client CN/EN extreme 7z packaging.
 
 ## Compatibility Patterns
 

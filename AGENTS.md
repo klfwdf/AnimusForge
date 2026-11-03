@@ -42,9 +42,9 @@
 - 后续新增或调整可改运行选项，必须同任务同步接入终端和 MCM，并维护 CN/EN 分类、名称、说明、范围、默认值和原保存 owner。用户说“加 MCM 选项”按双入口同步执行；有意隐藏项须明确记录，不得仅添加属性或单边控件就宣称接线完成。
 - 外观、字体、对话历史控件、信件样式、显示通知与插画外观集中在终端“UI”页；既有分类路由值、信件样式索引和原配置对象保持。终端修改扩展设置后按各自 owner 保存，失败保留待重试；不在 Tick 扫描元数据或读写配置。
 - 固定包默认提示词位于 `ModuleData/Defaults/CustomPrompts/`，`CustomPrompts/` 保留用户编辑。按 `McmKnownPromptDefaults.json` 的确切已知默认哈希识别旧发布文件，维护清册时同步两种资产；已编辑、未知和旧用户内容保值。映射迁移需要新建干净 Stage 并保留旧项目输出，不能放行 Stage 中未知文件来解决旧输出冲突。
-- 正式打包必须一次生成 CN 和 EN 两份 ZIP，名称为 `AnimusForge_v1.X.X_CN_MMdd_HHmm.zip` / `AnimusForge_v1.X.X_EN_MMdd_HHmm.zip`，例如 `AnimusForge_v1.5.8_CN_1007_0802.zip`。同一对包共用版本和本机月日/时分；重名时两包同加 `_1`、`_2` 等尾号，保留旧包，禁止自定义 PackageLabel 改名。
+- 正式打包使用现有极限压缩 7Z 编码器，一次生成 CN 和 EN 两份 .7z，名称为 `AnimusForge_v1.X.X_CN_MMdd_HHmm.7z` / `AnimusForge_v1.X.X_EN_MMdd_HHmm.7z`，例如 `AnimusForge_v1.5.8_CN_1007_0802.7z`。同一对包共用版本和本机月日/时分；重名时两包同加 `_1`、`_2` 等尾号，保留旧包，禁止自定义 PackageLabel 改名。
 - 部署脚本不再创建或使用 `Modules/.AnimusForge.Recovery`：不生成部署备份、manifest、完成标记或自动回滚。部署前必须通过 Stage/目标/玩家目录保护校验；失败时停止并报告现场，不能声称已恢复，需人工检查后重试。
-- 每份 ZIP 只有一个 `AnimusForge/` 模块，含 Bootstrap 和 1.3/1.4 实现。正式发行验证完整 Stage 的两种内容投影及旧值/变量/语义；日常验证按变更风险复用有效证据，保持缓存策略，不新增 Tick IO/扫描。遵守原版本事务、两包校验成功后才发布、失败清理及不隐式部署规则。
+- 每份 7Z 只有一个 `AnimusForge/` 模块，含 Bootstrap 和 1.3/1.4 实现。正式发行验证完整 Stage 的两种内容投影及旧值/变量/语义；日常验证按变更风险复用有效证据，保持缓存策略，不新增 Tick IO/扫描。遵守原版本事务、两包校验成功后才发布、失败清理及不隐式部署规则。
 - 按该 skill 的长期指南维护；规范更新不改变产品状态、不隐式授权生产打包、部署、push、全局安装或其他副本写入。实际状态与未验项仍登记唯一主台账和 HANDOFF。
 
 ## 单模块双实现输出案例
@@ -61,7 +61,7 @@
 - 本项目使用一套源码，分别编译 1.3.x / 1.4.x 实现，但只发布一个 `Modules/AnimusForge` 模块。
 - `SubModule.xml` 只加载 `AnimusForge.Bootstrap.dll`，Bootstrap 根据游戏版本只加载一个实现。
 - 两个实现保持程序集名 `AnimusForge`，分别存放在 `versions/1.3/AnimusForge.dll` 和 `versions/1.4/AnimusForge.dll`，严禁同时加载。
-- 模块 `Id`、`Name` 和输出文件夹统一为 `AnimusForge`；CN、EN 各生成一个 ZIP，每个 ZIP 都包含同一单模块的两 API 实现，并遵循上方双语包命名。
+- 模块 `Id`、`Name` 和输出文件夹统一为 `AnimusForge`；CN、EN 各生成一个极限压缩 7Z，每个 7Z 都包含同一单模块的两 API 实现，并遵循上方双语包命名。
 - 不要恢复 `AnimusForge_1_3_x` / `AnimusForge_1_4_5` 双模块输出，也不要覆盖游戏或 TaleWorlds 原版 DLL。
 
 ## 百科按钮注入案例

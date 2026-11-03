@@ -10,7 +10,7 @@
 | 兼容词/事实/历史 | 旧值、顺序、字段与失败状态守恒；UI/Prompt 投影执行，保存对象及协议身份不变 |
 | C#/嵌入/API/构建闭包 | 原统一入口的两 API 与 Bootstrap、实际引用来源/marker/DLL hashes；编译符号不证明引用版本 |
 | 纯非嵌入 XML/资产 | 解析、键/变量、原 ID/非文本结构与实际 consumer；只有未变编译闭包和 DLL 的哈希证据才可复用旧构建 |
-| 正式双包/部署 | 完整 Stage CN/EN 投影，全部资产、路径、DLL 闭包、UI 两表；正式 ZIP 命名及每包单模块、失败回滚、源/Stage 保全 |
+| 正式双包/部署 | 完整 Stage CN/EN 投影，全部资产、路径、DLL 闭包、UI 两表；极限压缩 7Z 正式命名及每包单模块、失败回滚、源/Stage 保全 |
 | skill/纯说明 | frontmatter、链接/入口、指南一致性与实际使用场景；不启动无关产品构建 |
 
 复用有效既有测试和冻结输入，失败或新的具体风险才补测试/重跑。保留业务条件、拒绝路径、数值、目标、权限、执行及回滚断言；旧中文断言可精确迁移为资源/选版断言，但不能删业务覆盖或虚构 public API。
@@ -43,7 +43,7 @@
 
 ## 完成与保全
 
-正式打包使用原一键入口/`package_mod.ps1`：两包同版本、同时间戳、同 DLL，完整双包通过后才发布；名称遵循 SKILL/AGENTS。本机 `MMdd_HHmm` 精度为分钟，同名尾号两包一致，旧文件不可覆盖。保原版本递增/FileVersion/失败恢复事务、Bootstrap-only XML、DLL allowlist、无 ONNX 与单模块约束。
+正式打包使用原一键入口/`package_mod.ps1` 的极限压缩 7Z 输出：两包同版本、同时间戳、同 DLL，完整双包通过后才发布；名称遵循 SKILL/AGENTS。本机 `MMdd_HHmm` 精度为分钟，同名尾号两包一致，旧文件不可覆盖。保原版本递增/FileVersion/失败恢复事务、Bootstrap-only XML、DLL allowlist、无 ONNX 与单模块约束。
 
 不使用 Unicode/Base64 隐藏汉字，不删规则、吞异常、扩大标签权限、关闭门禁或豁免整文件制造通过。发现 EN 包加载旧中文覆盖、AFEF 原值进入 UI、文字绑定丢失等实际运行证据时，继续追 consumer 并修，不以源码清零结案。
 

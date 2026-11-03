@@ -111,14 +111,14 @@ Because the launcher module id changes from a retired versioned id to `AnimusFor
 
 ## Package Rules
 
-One-click packaging creates two client packages from the same Stage and runtime DLLs, for example:
+One-click packaging creates two extreme-compression 7z client archives from the same Stage and runtime DLLs:
 
 ```text
-AnimusForge_v1.X.X_CN_MMdd_HHmm.zip
-AnimusForge_v1.X.X_EN_MMdd_HHmm.zip
+AnimusForge_v1.X.X_CN_MMdd_HHmm.7z
+AnimusForge_v1.X.X_EN_MMdd_HHmm.7z
 ```
 
-The version prefix is always `v`; `MMdd_HHmm` is the local month/day and hour/minute captured once for the pair. For example: `AnimusForge_v1.5.8_CN_1007_0802.zip` and `AnimusForge_v1.5.8_EN_1007_0802.zip`. If either filename already exists, both new archives receive the same next `_1`, `_2`, etc. suffix after the time. Existing files are preserved. `-PackageLabel` is rejected before version selection/build, since release names must follow this contract. Explicit four-part versions retain their micro component.
+The version prefix is always `v`; `MMdd_HHmm` is the local month/day and hour/minute captured once for the pair. For example: `AnimusForge_v1.5.8_CN_1007_0802.7z` and `AnimusForge_v1.5.8_EN_1007_0802.7z`. If either filename already exists, both new archives receive the same next `_1`, `_2`, etc. suffix after the time. Existing files are preserved. `-PackageLabel` is rejected before version selection/build, since release names must follow this contract. Explicit four-part versions retain their micro component.
 
 Each root folder must be `AnimusForge`. Each package must contain:
 
@@ -128,11 +128,11 @@ Each root folder must be `AnimusForge`. Each package must contain:
 
 Both one-click package entries increment the patch component by one, carrying at 10: `1.5.5 -> 1.5.6`, `1.5.9 -> 1.6.0`, `1.9.9 -> 2.0.0`. The source `AnimusForge/SubModule.xml` records the last successful package version; the initial baseline for this flow is `v1.5.5`, so the first package is `v1.5.6`.
 
-The one-click entry passes `-Build` to `package_mod.ps1`: select the next version before invoking the existing unified build/Stage, stamp `Properties/AssemblyInfo.cs` with the matching four-part `AssemblyFileVersion` (for example `1.5.6.0`), and require both implementation DLL file versions to match before writing the ZIP. `AssemblyVersion` stays `0.0.0.0`; Bootstrap selection, hashes, clean-Stage validation and the single-module layout remain unchanged. Packaging does not deploy.
+The one-click entry passes `-Build` to `package_mod.ps1`: select the next version before invoking the existing unified build/Stage, stamp `Properties/AssemblyInfo.cs` with the matching four-part `AssemblyFileVersion` (for example `1.5.6.0`), and require both implementation DLL file versions to match before writing the package candidates. `AssemblyVersion` stays `0.0.0.0`; Bootstrap selection, hashes, clean-Stage validation and the single-module layout remain unchanged. Packaging does not deploy.
 
-Successful packaging retains that version in both the source and project-local staged XML for the next increment. `-NoBump` keeps the current version; explicit `-Version` overrides it; explicit `-BumpMicro` remains available but neither one-click entry enables it by default. Captured build/ZIP failures restore version sources byte-for-byte without consuming a release number; concurrent source edits are preserved and reported instead of overwritten. A direct package-only invocation requires already-built DLLs matching the requested version; it cannot just relabel old DLLs through XML. Interrupted processes or system failures still require inspecting version sources and rebuilding before retrying.
+Successful packaging retains that version in both the source and project-local staged XML for the next increment. `-NoBump` keeps the current version; explicit `-Version` overrides it; explicit `-BumpMicro` remains available but neither one-click entry enables it by default. Captured build or archive failures restore version sources byte-for-byte without consuming a release number; concurrent source edits are preserved and reported instead of overwritten. A direct package-only invocation requires already-built DLLs matching the requested version; it cannot just relabel old DLLs through XML. Interrupted processes or system failures still require inspecting version sources and rebuilding before retrying.
 
-`package_localization.ps1` projects localized content only into ZIP streams. The CN archive retains the release projection of the clean Stage (excluding PDB and the Lite worldbook); the EN archive selects sibling `.en.json` / `.en-US.json` bodies under the original package filenames. Both archives retain the registered English and Chinese UI resources, so interface language switching remains available in either edition. Source Chinese assets and the clean Stage are never rewritten by localization. JSON field/type/array contracts, stable identities, variables and protocol examples must survive translation. The English prose check permits stable identity fields and preserved protocol tags; surrounding natural-language text must still be English. Missing English or invalid XML/JSON fails closed.
+`package_localization.ps1` builds the localized package projection for the archive writer. The CN archive retains the release projection of the clean Stage (excluding PDB and the Lite worldbook); the EN archive selects sibling `.en.json` / `.en-US.json` bodies under the original package filenames. Both archives retain the registered English and Chinese UI resources, so interface language switching remains available in either edition. Source Chinese assets and the clean Stage are never rewritten by localization. JSON field/type/array contracts, stable identities, variables and protocol examples must survive translation. The English prose check permits stable identity fields and preserved protocol tags; surrounding natural-language text must still be English. Missing English or invalid XML/JSON fails closed.
 
 Worldbook selection first uses `PlayerExports/english-worldbook-identity-map.json` for the four mapped Chinese/English editions. Package directories and filenames retain the Chinese source paths. When an English knowledge asset has a mapped translated `Id`, projection verifies both mapped identities and writes the original Chinese source `Id` into the package bytes; the source English file is unchanged. Without an explicit mapping, the legacy Calradia index matches personality files by hero prefix, knowledge rules by `Id`, and shared files by relative path. Every selected body still passes the JSON and English-prose contracts; a mapping alone does not prove translation quality or runtime acceptance.
 

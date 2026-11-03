@@ -59,9 +59,9 @@ metadata:
 
 ## 发行与完成边界
 
-- 正式打包必须同时产出 CN、EN：`AnimusForge_v1.X.X_CN_MMdd_HHmm.zip`、`AnimusForge_v1.X.X_EN_MMdd_HHmm.zip`。两包同版本、同本机时间戳；同分钟重名时使用一致递增尾号，不覆盖已有包。`1007_0802` 表示 10 月 7 日 08:02，不是固定字符串。
+- 正式打包使用现有极限压缩 7Z 编码器，同时产出 CN、EN：`AnimusForge_v1.X.X_CN_MMdd_HHmm.7z`、`AnimusForge_v1.X.X_EN_MMdd_HHmm.7z`。两包同版本、同本机时间戳；同分钟重名时使用一致递增尾号，不覆盖已有包。`1007_0802` 表示 10 月 7 日 08:02，不是固定字符串。
 - 每包只有 `AnimusForge/` 根，包含 Bootstrap 和两 API 实现；两包 UI 与固定 Prompt 都保持双语，可改提示词默认值和世界书按包选正文并保留原文件名。自定义 PackageLabel 不得改变规范名称。
-- 发行验收使用完整 Stage 的 CN/EN 内容投影，覆盖 GUI、物品 XML、ModuleData、CustomPrompts、全部世界书及真实 DLL 闭包。小样本 ZIP、局部 ModuleData、源代码无汉字和 DLL 门禁不能代替完整投影或逐条语义审校。
+- 发行验收使用完整 Stage 的 CN/EN 内容投影，覆盖 GUI、物品 XML、ModuleData、CustomPrompts、全部世界书及真实 DLL 闭包。小样本归档、局部 ModuleData、源代码无汉字和 DLL 门禁不能代替完整投影或逐条语义审校。
 - C#/嵌入/兼容性变更按既有统一入口验证双 API 与 Bootstrap；纯说明不启动游戏构建。纯非嵌入资源可以在源码/项目/嵌入闭包和实际 DLL 哈希未变的明确证据下复用有效构建，仍须验证资源及完整相关投影。
 - 分别报告源码迁移、真实接线、词法门禁、语义审校、构建、完整投影、正式双包、部署、实机及旧档。请求范围内必要验证完成才可交付；没有实机/真实 provider 证据不能声称实际对话语言已通过。
 - 修改 skill 或脚本不自动授权执行版本递增、生产打包、部署、push、工作区外镜像或全局安装；依据当前用户授权行动。构建/打包不得隐式覆盖游戏。
