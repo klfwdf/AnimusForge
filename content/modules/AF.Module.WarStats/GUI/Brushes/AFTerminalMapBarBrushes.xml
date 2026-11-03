@@ -9,6 +9,7 @@
 
   <Brush Name="AFTerminal.MapBar.Left.Icons" OverrideBrush="MapBar.Left.Icons">
     <Layers>
+      <BrushLayer Name="kingdom" Sprite="MapBar\mapbar_icon6" XOffset="0" ExtendTop="-5" ExtendBottom="-5" ExtendRight="-5" ExtendLeft="-5" ImageFit.Type="Contain" ImageFit.VerticalAlignment="Center" ImageFit.HorizontalAlignment="Center" />
       <!-- Sprite is replaced at runtime by GUI/SpriteParts/af_terminal/af_terminal_icon.png (AfTerminalMapBarIconSprite.cs); WarIcon is the fallback. -->
       <BrushLayer Name="af_terminal" XOffset="-11" Sprite="SPGeneral\MapOverlay\Encounter\WarIcon" WidthPolicy="StretchToTarget" HeightPolicy="StretchToTarget" ExtendTop="-2" ExtendBottom="-2" ExtendLeft="-2" ExtendRight="-2" ImageFit.Type="Contain" ImageFit.VerticalAlignment="Center" ImageFit.HorizontalAlignment="Center" />
     </Layers>
