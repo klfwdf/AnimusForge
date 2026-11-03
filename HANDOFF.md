@@ -1,6 +1,6 @@
 ## 2026-11-03 TTS取消同步解除口型
 
-SOURCE_FIXED / DUAL_BUILD_PASS / LIVE_NOT_RUN / NOT_DEPLOYED。修复说话NPC死亡后口型未解除、声音被清理导致原生崩溃的链路；死亡/删除/受击、取消事件、对话结束及Mission结束同步取消音频和口型，旧请求不能影响新播放。17项fixture与双API/Bootstrap构建通过；完整TTS回归103 PASS/1个既有音色备用接口FAIL。未部署/实机；原现场、范围与回滚见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-death-cancel-lipsync-20261103)及[代码图](docs/architecture/af-framework-code-scope.md#tts-death-cancel-lipsync-20261103)。
+DEPLOYED / HASH_VERIFIED / LIVE_NOT_RUN。修复说话NPC死亡后口型未解除、声音被清理导致原生崩溃的链路；死亡/删除/受击、取消事件、对话结束及Mission结束同步取消音频和口型，旧请求不能影响新播放。17项fixture与双API/Bootstrap构建通过；完整TTS回归103 PASS/1个既有音色备用接口FAIL。已用当前修复源码重建并部署；Bootstrap、1.3、1.4安装DLL哈希均匹配，模块仅声明Bootstrap。部署日志`.tmp/tts-death-build-deploy-20261103.log`；实机复测未运行。旧生成Stage已移至`.tmp/tts-death-stale-stage-20261103/`保留。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-death-cancel-lipsync-20261103)及[代码图](docs/architecture/af-framework-code-scope.md#tts-death-cancel-lipsync-20261103)。
 
 ## 2026-11-02 外交请求原案前置（本任务）
 
