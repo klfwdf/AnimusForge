@@ -14503,25 +14503,25 @@
       "heroes": {
         "personality_background/cla_lord_patreon_hayster__西格露恩·埃里克多蒂尔.json": {
           "hero_id": "cla_lord_patreon_hayster",
-          "en_file": "personality_background/cla_lord_patreon_hayster__Sigrune_Eiriksdottir.json"
+          "en_file": "personality_background/cla_lord_patreon_hayster__Sigrune Eiriksdottir.json"
         },
         "personality_background/cla_lord_patreon_sarin__提比略·萨图里亚.json": {
           "hero_id": "cla_lord_patreon_sarin",
-          "en_file": "personality_background/cla_lord_patreon_sarin__Tiberius_Saturia.json"
+          "en_file": "personality_background/cla_lord_patreon_sarin__Tiberius Saturia.json"
         },
         "personality_background/dead_lord_2_1__冈蒂沃尔法兹.json": {
           "hero_id": "dead_lord_2_1",
-          "en_file": "personality_background/dead_lord_2_1__Gunthiwulfaz.json"
+          "en_file": "personality_background/dead_lord_2_1__Haukaz.json"
         },
         "personality_background/dead_lord_2_2__瓦拉.json": {
           "hero_id": "dead_lord_2_2",
-          "en_file": "personality_background/dead_lord_2_2__Varra.json"
+          "en_file": "personality_background/dead_lord_2_2__Hildiz.json"
         },
-        "personality_background/dead_lord_3_1__阿隆.json": {
+        "personality_background/dead_lord_3_1__尼姆尔.json": {
           "hero_id": "dead_lord_3_1",
-          "en_file": "personality_background/dead_lord_3_1__Alon.json"
+          "en_file": "personality_background/dead_lord_3_1__Nimr.json"
         },
-        "personality_background/dead_lord_6_1__乌尔坤.json": {
+        "personality_background/dead_lord_6_1__乌尔昆.json": {
           "hero_id": "dead_lord_6_1",
           "en_file": "personality_background/dead_lord_6_1__Urkhun.json"
         },
@@ -14529,11 +14529,11 @@
           "hero_id": "dead_lord_6_2",
           "en_file": "personality_background/dead_lord_6_2__Solun.json"
         },
-        "personality_background/dead_lord_6_3__库尤格.json": {
+        "personality_background/dead_lord_6_3__库于格.json": {
           "hero_id": "dead_lord_6_3",
           "en_file": "personality_background/dead_lord_6_3__Kuyug.json"
         },
-        "personality_background/dead_lord_6_4__乌恩杜尔.json": {
+        "personality_background/dead_lord_6_4__温杜尔.json": {
           "hero_id": "dead_lord_6_4",
           "en_file": "personality_background/dead_lord_6_4__Undul.json"
         },
@@ -14931,7 +14931,7 @@
         },
         "personality_background/er_lord_calavii_1__帕库维乌斯·卡拉维乌斯.json": {
           "hero_id": "er_lord_calavii_1",
-          "en_file": "personality_background/er_lord_calavii_1__Pacuvius_Calavius.json"
+          "en_file": "personality_background/er_lord_calavii_1__Pacuvius Calavius.json"
         },
         "personality_background/er_lord_calavii_2__克劳狄娅.json": {
           "hero_id": "er_lord_calavii_2",
@@ -14939,7 +14939,7 @@
         },
         "personality_background/er_lord_calavii_3__佩罗拉·卡拉维乌斯.json": {
           "hero_id": "er_lord_calavii_3",
-          "en_file": "personality_background/er_lord_calavii_3__Perolla_Calavius.json"
+          "en_file": "personality_background/er_lord_calavii_3__Perolla Calavius.json"
         },
         "personality_background/er_lord_calavii_4__卡拉维娅.json": {
           "hero_id": "er_lord_calavii_4",
@@ -14947,11 +14947,11 @@
         },
         "personality_background/er_lord_calavii_5__奥维乌斯·卡拉维乌斯.json": {
           "hero_id": "er_lord_calavii_5",
-          "en_file": "personality_background/er_lord_calavii_5__Ovius_Calavius.json"
+          "en_file": "personality_background/er_lord_calavii_5__Ovius Calavius.json"
         },
         "personality_background/er_lord_calvus_1__“秃头”哈斯德鲁巴.json": {
           "hero_id": "er_lord_calvus_1",
-          "en_file": "personality_background/er_lord_calvus_1__Hasdrubal_Calvus.json"
+          "en_file": "personality_background/er_lord_calvus_1__Hasdrubal Calvus.json"
         },
         "personality_background/er_lord_calvus_2__阿莫特巴尔.json": {
           "hero_id": "er_lord_calvus_2",
@@ -14959,7 +14959,7 @@
         },
         "personality_background/er_lord_calvus_3__哈斯德鲁巴之子汉诺.json": {
           "hero_id": "er_lord_calvus_3",
-          "en_file": "personality_background/er_lord_calvus_3__Hanno_son_of_Hasdrubal.json"
+          "en_file": "personality_background/er_lord_calvus_3__Hanno son of Hasdrubal.json"
         },
         "personality_background/er_lord_calvus_4__波德什蒙.json": {
           "hero_id": "er_lord_calvus_4",
@@ -14999,39 +14999,39 @@
         },
         "personality_background/er_lord_empire_south_1_5__格奈乌斯·科尔内利乌斯·西庇阿·卡尔乌斯.json": {
           "hero_id": "er_lord_empire_south_1_5",
-          "en_file": "personality_background/er_lord_empire_south_1_5__Gnaeus_Cornelius_Scipio_Calvus.json"
+          "en_file": "personality_background/er_lord_empire_south_1_5__Gnaeus Cornelius Scipio Calvus.json"
         },
         "personality_background/er_lord_empire_south_1_6__盖乌斯·科尔内利乌斯.json": {
           "hero_id": "er_lord_empire_south_1_6",
-          "en_file": "personality_background/er_lord_empire_south_1_6__Gaius_Cornelius.json"
+          "en_file": "personality_background/er_lord_empire_south_1_6__Gaius Cornelius.json"
         },
         "personality_background/er_lord_empire_south_3_5__阿庇乌斯·克劳狄乌斯·普尔凯尔.json": {
           "hero_id": "er_lord_empire_south_3_5",
-          "en_file": "personality_background/er_lord_empire_south_3_5__Appius_Claudius_Pulcher.json"
+          "en_file": "personality_background/er_lord_empire_south_3_5__Appius Claudius Pulcher.json"
         },
         "personality_background/er_lord_empire_south_3_6__卢基乌斯·克劳狄乌斯.json": {
           "hero_id": "er_lord_empire_south_3_6",
-          "en_file": "personality_background/er_lord_empire_south_3_6__Lucius_Claudius.json"
+          "en_file": "personality_background/er_lord_empire_south_3_6__Lucius Claudius.json"
         },
         "personality_background/er_lord_empire_south_5_4__提贝里乌斯·塞姆普罗尼乌斯·格拉古.json": {
           "hero_id": "er_lord_empire_south_5_4",
-          "en_file": "personality_background/er_lord_empire_south_5_4__Tiberius_Sempronius_Gracchus.json"
+          "en_file": "personality_background/er_lord_empire_south_5_4__Tiberius Sempronius Gracchus.json"
         },
         "personality_background/er_lord_empire_south_5_5__盖乌斯·塞姆普罗尼乌斯.json": {
           "hero_id": "er_lord_empire_south_5_5",
-          "en_file": "personality_background/er_lord_empire_south_5_5__Gaius_Sempronius.json"
+          "en_file": "personality_background/er_lord_empire_south_5_5__Gaius Sempronius.json"
         },
         "personality_background/er_lord_empire_south_6_4__卢基乌斯·弗拉米尼乌斯.json": {
           "hero_id": "er_lord_empire_south_6_4",
-          "en_file": "personality_background/er_lord_empire_south_6_4__Lucius_Flaminius.json"
+          "en_file": "personality_background/er_lord_empire_south_6_4__Lucius Flaminius.json"
         },
         "personality_background/er_lord_empire_south_9_4__奥卢斯·泰伦提乌斯·瓦罗.json": {
           "hero_id": "er_lord_empire_south_9_4",
-          "en_file": "personality_background/er_lord_empire_south_9_4__Aulus_Terentius_Varro.json"
+          "en_file": "personality_background/er_lord_empire_south_9_4__Aulus Terentius Varro.json"
         },
         "personality_background/er_lord_empire_south_9_5__卢基乌斯·泰伦提乌斯.json": {
           "hero_id": "er_lord_empire_south_9_5",
-          "en_file": "personality_background/er_lord_empire_south_9_5__Lucius_Terentius.json"
+          "en_file": "personality_background/er_lord_empire_south_9_5__Lucius Terentius.json"
         },
         "personality_background/er_lord_empire_west_2_5__昂德卡穆利亚.json": {
           "hero_id": "er_lord_empire_west_2_5",
@@ -15087,7 +15087,7 @@
         },
         "personality_background/er_lord_fulvii_1__昆图斯·富尔维乌斯·弗拉库斯.json": {
           "hero_id": "er_lord_fulvii_1",
-          "en_file": "personality_background/er_lord_fulvii_1__Quintus_Fulvius_Flaccus.json"
+          "en_file": "personality_background/er_lord_fulvii_1__Quintus Fulvius Flaccus.json"
         },
         "personality_background/er_lord_fulvii_2__利奇尼亚.json": {
           "hero_id": "er_lord_fulvii_2",
@@ -15095,7 +15095,7 @@
         },
         "personality_background/er_lord_fulvii_3__格奈乌斯·富尔维乌斯·弗拉库斯.json": {
           "hero_id": "er_lord_fulvii_3",
-          "en_file": "personality_background/er_lord_fulvii_3__Gnaeus_Fulvius_Flaccus.json"
+          "en_file": "personality_background/er_lord_fulvii_3__Gnaeus Fulvius Flaccus.json"
         },
         "personality_background/er_lord_fulvii_4__富尔维娅.json": {
           "hero_id": "er_lord_fulvii_4",
@@ -15103,7 +15103,7 @@
         },
         "personality_background/er_lord_fulvii_5__小富尔维娅.json": {
           "hero_id": "er_lord_fulvii_5",
-          "en_file": "personality_background/er_lord_fulvii_5__Fulvia_Secunda.json"
+          "en_file": "personality_background/er_lord_fulvii_5__Fulvia Secunda.json"
         },
         "personality_background/er_lord_garsyeris_1__加尔西耶里斯.json": {
           "hero_id": "er_lord_garsyeris_1",
@@ -15147,7 +15147,7 @@
         },
         "personality_background/er_lord_hadramawt_1__亚达伊尔·巴因.json": {
           "hero_id": "er_lord_hadramawt_1",
-          "en_file": "personality_background/er_lord_hadramawt_1__Yadail_Bayyin.json"
+          "en_file": "personality_background/er_lord_hadramawt_1__Yada'il Bayyin.json"
         },
         "personality_background/er_lord_hadramawt_2__沙姆丝.json": {
           "hero_id": "er_lord_hadramawt_2",
@@ -15155,15 +15155,15 @@
         },
         "personality_background/er_lord_hadramawt_3__伊尔阿兹·亚利特.json": {
           "hero_id": "er_lord_hadramawt_3",
-          "en_file": "personality_background/er_lord_hadramawt_3__Ilazz_Yalit.json"
+          "en_file": "personality_background/er_lord_hadramawt_3__Il'azz Yalit.json"
         },
         "personality_background/er_lord_hadramawt_4__雅斯胡尔伊尔.json": {
           "hero_id": "er_lord_hadramawt_4",
-          "en_file": "personality_background/er_lord_hadramawt_4__Yashhuril.json"
+          "en_file": "personality_background/er_lord_hadramawt_4__Yashhur'il.json"
         },
         "personality_background/er_lord_hamilcar_1__吉斯戈之子哈米尔卡.json": {
           "hero_id": "er_lord_hamilcar_1",
-          "en_file": "personality_background/er_lord_hamilcar_1__Hamilcar_son_of_Gisgo.json"
+          "en_file": "personality_background/er_lord_hamilcar_1__Hamilcar son of Gisgo.json"
         },
         "personality_background/er_lord_hamilcar_2__阿里沙特巴尔.json": {
           "hero_id": "er_lord_hamilcar_2",
@@ -15171,7 +15171,7 @@
         },
         "personality_background/er_lord_hamilcar_3__哈米尔卡之子吉斯戈.json": {
           "hero_id": "er_lord_hamilcar_3",
-          "en_file": "personality_background/er_lord_hamilcar_3__Gisgo_son_of_Hamilcar.json"
+          "en_file": "personality_background/er_lord_hamilcar_3__Gisgo son of Hamilcar.json"
         },
         "personality_background/er_lord_hamilcar_4__阿卜德塔尼特.json": {
           "hero_id": "er_lord_hamilcar_4",
@@ -15183,7 +15183,7 @@
         },
         "personality_background/er_lord_hemiolios_1__“斜帆_赫米奥利奥斯”狄奥多托斯.json": {
           "hero_id": "er_lord_hemiolios_1",
-          "en_file": "personality_background/er_lord_hemiolios_1__Theodotos_Hemiolios.json"
+          "en_file": "personality_background/er_lord_hemiolios_1__Theodotos Hemiolios.json"
         },
         "personality_background/er_lord_hemiolios_2__拉奥达米娅.json": {
           "hero_id": "er_lord_hemiolios_2",
@@ -15201,7 +15201,7 @@
           "hero_id": "er_lord_hemiolios_5",
           "en_file": "personality_background/er_lord_hemiolios_5__Timarete.json"
         },
-        "personality_background/er_lord_hieronidai_1__菲利斯蒂斯.json": {
+        "personality_background/er_lord_hieronidai_1__菲利斯提斯.json": {
           "hero_id": "er_lord_hieronidai_1",
           "en_file": "personality_background/er_lord_hieronidai_1__Philistis.json"
         },
@@ -15335,7 +15335,7 @@
         },
         "personality_background/er_lord_lihyan_3__哈纳斯.json": {
           "hero_id": "er_lord_lihyan_3",
-          "en_file": "personality_background/er_lord_lihyan_3__Hanas.json"
+          "en_file": "personality_background/er_lord_lihyan_3__Han'as.json"
         },
         "personality_background/er_lord_lindioi_1__克塞诺凡托斯.json": {
           "hero_id": "er_lord_lindioi_1",
@@ -15371,7 +15371,7 @@
         },
         "personality_background/er_lord_main_1__阿比亚达·亚提.json": {
           "hero_id": "er_lord_main_1",
-          "en_file": "personality_background/er_lord_main_1__Abiyada_Yathi.json"
+          "en_file": "personality_background/er_lord_main_1__Abiyada' Yathi'.json"
         },
         "personality_background/er_lord_main_2__巴拉特.json": {
           "hero_id": "er_lord_main_2",
@@ -15379,11 +15379,11 @@
         },
         "personality_background/er_lord_main_3__瓦卡伊尔·萨迪克.json": {
           "hero_id": "er_lord_main_3",
-          "en_file": "personality_background/er_lord_main_3__Waqahil_Sadiq.json"
+          "en_file": "personality_background/er_lord_main_3__Waqah'il Sadiq.json"
         },
         "personality_background/er_lord_main_4__伊利亚法·雅舒尔.json": {
           "hero_id": "er_lord_main_4",
-          "en_file": "personality_background/er_lord_main_4__Ilyafa_Yashur.json"
+          "en_file": "personality_background/er_lord_main_4__Ilyafa' Yashur.json"
         },
         "personality_background/er_lord_masaesyli_1__西法克斯.json": {
           "hero_id": "er_lord_masaesyli_1",
@@ -15393,7 +15393,7 @@
           "hero_id": "er_lord_masaesyli_2",
           "en_file": "personality_background/er_lord_masaesyli_2__Tafsut.json"
         },
-        "personality_background/er_lord_masaesyli_3__韦尔米纳.json": {
+        "personality_background/er_lord_masaesyli_3__维尔米纳.json": {
           "hero_id": "er_lord_masaesyli_3",
           "en_file": "personality_background/er_lord_masaesyli_3__Vermina.json"
         },
@@ -15405,7 +15405,7 @@
           "hero_id": "er_lord_massyli_1",
           "en_file": "personality_background/er_lord_massyli_1__Masinissa.json"
         },
-        "personality_background/er_lord_massyli_2__奥埃扎尔克斯.json": {
+        "personality_background/er_lord_massyli_2__埃扎尔凯斯.json": {
           "hero_id": "er_lord_massyli_2",
           "en_file": "personality_background/er_lord_massyli_2__Oezalces.json"
         },
@@ -15459,7 +15459,7 @@
         },
         "personality_background/er_lord_mithridatids_4__小米特里达梯.json": {
           "hero_id": "er_lord_mithridatids_4",
-          "en_file": "personality_background/er_lord_mithridatids_4__Mithridates_the_Younger.json"
+          "en_file": "personality_background/er_lord_mithridatids_4__Mithridates the Younger.json"
         },
         "personality_background/er_lord_mithridatids_5__米特罗布扎内斯.json": {
           "hero_id": "er_lord_mithridatids_5",
@@ -15487,7 +15487,7 @@
         },
         "personality_background/er_lord_monomachus_1__“单打独斗者”汉尼拔.json": {
           "hero_id": "er_lord_monomachus_1",
-          "en_file": "personality_background/er_lord_monomachus_1__Hannibal_Monomachus.json"
+          "en_file": "personality_background/er_lord_monomachus_1__Hannibal Monomachus.json"
         },
         "personality_background/er_lord_monomachus_2__埃利萨.json": {
           "hero_id": "er_lord_monomachus_2",
@@ -15495,7 +15495,7 @@
         },
         "personality_background/er_lord_monomachus_3__汉尼拔之子汉诺.json": {
           "hero_id": "er_lord_monomachus_3",
-          "en_file": "personality_background/er_lord_monomachus_3__Hanno_son_of_Hannibal.json"
+          "en_file": "personality_background/er_lord_monomachus_3__Hanno son of Hannibal.json"
         },
         "personality_background/er_lord_monomachus_4__萨卡巴尔.json": {
           "hero_id": "er_lord_monomachus_4",
@@ -15535,7 +15535,7 @@
         },
         "personality_background/er_lord_nabatu_3__乌拜杜.json": {
           "hero_id": "er_lord_nabatu_3",
-          "en_file": "personality_background/er_lord_nabatu_3__Ubaydu.json"
+          "en_file": "personality_background/er_lord_nabatu_3__'Ubaydu.json"
         },
         "personality_background/er_lord_nabatu_4__马利库.json": {
           "hero_id": "er_lord_nabatu_4",
@@ -15599,7 +15599,7 @@
         },
         "personality_background/er_lord_pentri_1__努梅利乌斯·德西米乌斯.json": {
           "hero_id": "er_lord_pentri_1",
-          "en_file": "personality_background/er_lord_pentri_1__Numerius_Decimius.json"
+          "en_file": "personality_background/er_lord_pentri_1__Numerius Decimius.json"
         },
         "personality_background/er_lord_pentri_2__奥维娅.json": {
           "hero_id": "er_lord_pentri_2",
@@ -15607,11 +15607,11 @@
         },
         "personality_background/er_lord_pentri_3__斯塔蒂乌斯·德西米乌斯.json": {
           "hero_id": "er_lord_pentri_3",
-          "en_file": "personality_background/er_lord_pentri_3__Statius_Decimius.json"
+          "en_file": "personality_background/er_lord_pentri_3__Statius Decimius.json"
         },
         "personality_background/er_lord_pentri_4__加维乌斯·庞提乌斯.json": {
           "hero_id": "er_lord_pentri_4",
-          "en_file": "personality_background/er_lord_pentri_4__Gavius_Pontius.json"
+          "en_file": "personality_background/er_lord_pentri_4__Gavius Pontius.json"
         },
         "personality_background/er_lord_pentri_5__德西米娅.json": {
           "hero_id": "er_lord_pentri_5",
@@ -15715,7 +15715,7 @@
         },
         "personality_background/er_lord_qedar_2__特埃尔库努.json": {
           "hero_id": "er_lord_qedar_2",
-          "en_file": "personality_background/er_lord_qedar_2__Teelkhunu.json"
+          "en_file": "personality_background/er_lord_qedar_2__Te'elkhunu.json"
         },
         "personality_background/er_lord_qedar_3__卡伊努.json": {
           "hero_id": "er_lord_qedar_3",
@@ -15723,7 +15723,7 @@
         },
         "personality_background/er_lord_saba_1__亚达伊尔·扎里赫.json": {
           "hero_id": "er_lord_saba_1",
-          "en_file": "personality_background/er_lord_saba_1__Yadail_Dharih.json"
+          "en_file": "personality_background/er_lord_saba_1__Yada'il Dharih.json"
         },
         "personality_background/er_lord_saba_2__比尔奇斯.json": {
           "hero_id": "er_lord_saba_2",
@@ -15731,11 +15731,11 @@
         },
         "personality_background/er_lord_saba_3__卡里比伊尔·瓦塔尔.json": {
           "hero_id": "er_lord_saba_3",
-          "en_file": "personality_background/er_lord_saba_3__Karibil_Watar.json"
+          "en_file": "personality_background/er_lord_saba_3__Karib'il Watar.json"
         },
         "personality_background/er_lord_saba_4__苏姆胡阿莱·亚努夫.json": {
           "hero_id": "er_lord_saba_4",
-          "en_file": "personality_background/er_lord_saba_4__Sumhualay_Yanuf.json"
+          "en_file": "personality_background/er_lord_saba_4__Sumhu'alay Yanuf.json"
         },
         "personality_background/er_lord_sequani_1__卡塔曼塔洛埃迪斯.json": {
           "hero_id": "er_lord_sequani_1",
@@ -15841,7 +15841,7 @@
           "hero_id": "er_lord_suren_4",
           "en_file": "personality_background/er_lord_suren_4__Mithradates.json"
         },
-        "personality_background/er_lord_tarantinoi_1__德谟克拉底.json": {
+        "personality_background/er_lord_tarantinoi_1__德莫克拉特斯.json": {
           "hero_id": "er_lord_tarantinoi_1",
           "en_file": "personality_background/er_lord_tarantinoi_1__Demokrates.json"
         },
@@ -15853,7 +15853,7 @@
           "hero_id": "er_lord_tarantinoi_3",
           "en_file": "personality_background/er_lord_tarantinoi_3__Aristarchos.json"
         },
-        "personality_background/er_lord_tarantinoi_4__菲洛达摩斯.json": {
+        "personality_background/er_lord_tarantinoi_4__菲洛达莫斯.json": {
           "hero_id": "er_lord_tarantinoi_4",
           "en_file": "personality_background/er_lord_tarantinoi_4__Philodamos.json"
         },
@@ -15939,47 +15939,47 @@
         },
         "personality_background/lord_1_10__梅尔凯娅.json": {
           "hero_id": "lord_1_10",
-          "en_file": "personality_background/lord_1_10__Melkea.json"
+          "en_file": "personality_background/lord_1_10__Plaucia.json"
         },
         "personality_background/lord_1_111__卡西农.json": {
           "hero_id": "lord_1_111",
-          "en_file": "personality_background/lord_1_111__Casinon.json"
+          "en_file": "personality_background/lord_1_111__Ambicatus.json"
         },
         "personality_background/lord_1_11__克罗托尔.json": {
           "hero_id": "lord_1_11",
-          "en_file": "personality_background/lord_1_11__Crotor.json"
+          "en_file": "personality_background/lord_1_11__Seuvo.json"
         },
-        "personality_background/lord_1_12__利西卡.json": {
+        "personality_background/lord_1_12__萨克罗维拉.json": {
           "hero_id": "lord_1_12",
-          "en_file": "personality_background/lord_1_12__Lysica.json"
+          "en_file": "personality_background/lord_1_12__Sacrovira.json"
         },
         "personality_background/lord_1_14__拉盖娅.json": {
           "hero_id": "lord_1_14",
-          "en_file": "personality_background/lord_1_14__Rhagaea.json"
+          "en_file": "personality_background/lord_1_14__Pomponia.json"
         },
-        "personality_background/lord_1_155__昆图斯·法比乌斯·马克西穆斯.json": {
+        "personality_background/lord_1_155__芝诺.json": {
           "hero_id": "lord_1_155",
-          "en_file": "personality_background/lord_1_155__Zeno.json"
+          "en_file": "personality_background/lord_1_155__Quintus Fabius Maximus.json"
         },
-        "personality_background/lord_1_15__昆图斯·法比乌斯·马克西穆斯.json": {
+        "personality_background/lord_1_15__法隆.json": {
           "hero_id": "lord_1_15",
-          "en_file": "personality_background/lord_1_15__Pharon.json"
+          "en_file": "personality_background/lord_1_15__Quintus Fabius Maximus Verrucosus.json"
         },
-        "personality_background/lord_1_16__马蒂拉.json": {
+        "personality_background/lord_1_16__克劳狄娅.json": {
           "hero_id": "lord_1_16",
-          "en_file": "personality_background/lord_1_16__Martira.json"
+          "en_file": "personality_background/lord_1_16__Claudia.json"
         },
-        "personality_background/lord_1_177__小马克利努斯·克劳狄乌斯·马尔凯鲁斯.json": {
+        "personality_background/lord_1_177__奥拉.json": {
           "hero_id": "lord_1_177",
-          "en_file": "personality_background/lord_1_177__Aura.json"
+          "en_file": "personality_background/lord_1_177__Marcus Claudius Marcellus the Younger.json"
         },
-        "personality_background/lord_1_17__马克利努斯·克劳狄乌斯·马尔凯鲁斯.json": {
+        "personality_background/lord_1_17__奥罗斯.json": {
           "hero_id": "lord_1_17",
-          "en_file": "personality_background/lord_1_17__Oros.json"
+          "en_file": "personality_background/lord_1_17__Marcus Claudius Marcellus.json"
         },
         "personality_background/lord_1_18__亚特娅.json": {
           "hero_id": "lord_1_18",
-          "en_file": "personality_background/lord_1_18__Jathea.json"
+          "en_file": "personality_background/lord_1_18__Postumia.json"
         },
         "personality_background/lord_1_1_10__罗达.json": {
           "hero_id": "lord_1_1_10",
@@ -15991,25 +15991,25 @@
         },
         "personality_background/lord_1_1_12__埃皮费里娅.json": {
           "hero_id": "lord_1_1_12",
-          "en_file": "personality_background/lord_1_1_12__Epipheria.json"
+          "en_file": "personality_background/lord_1_1_12__Triteuta.json"
         },
         "personality_background/lord_1_1_13__瓦西莉亚.json": {
           "hero_id": "lord_1_1_13",
-          "en_file": "personality_background/lord_1_1_13__Vasilia.json"
+          "en_file": "personality_background/lord_1_1_13__Berenike.json"
         },
-        "personality_background/lord_1_1_14__蒂利亚娜.json": {
+        "personality_background/lord_1_1_14__蒂里亚娜.json": {
           "hero_id": "lord_1_1_14",
           "en_file": "personality_background/lord_1_1_14__Tyliana.json"
         },
         "personality_background/lord_1_1_15__尤斯蒂娜.json": {
           "hero_id": "lord_1_1_15",
-          "en_file": "personality_background/lord_1_1_15__Justina.json"
+          "en_file": "personality_background/lord_1_1_15__Nereis.json"
         },
         "personality_background/lord_1_1_16__莱翁蒂娅.json": {
           "hero_id": "lord_1_1_16",
-          "en_file": "personality_background/lord_1_1_16__Leontia.json"
+          "en_file": "personality_background/lord_1_1_16__Harmonia.json"
         },
-        "personality_background/lord_1_1_17__瓦里阿西斯.json": {
+        "personality_background/lord_1_1_17__瓦里亚西斯.json": {
           "hero_id": "lord_1_1_17",
           "en_file": "personality_background/lord_1_1_17__Variasis.json"
         },
@@ -16017,7 +16017,7 @@
           "hero_id": "lord_1_1_1",
           "en_file": "personality_background/lord_1_1_1__Susada.json"
         },
-        "personality_background/lord_1_1_2__德坎蒂娅.json": {
+        "personality_background/lord_1_1_2__德坎提亚.json": {
           "hero_id": "lord_1_1_2",
           "en_file": "personality_background/lord_1_1_2__Decantia.json"
         },
@@ -16029,103 +16029,103 @@
           "hero_id": "lord_1_1_4",
           "en_file": "personality_background/lord_1_1_4__Phalarisa.json"
         },
-        "personality_background/lord_1_1_5__普雷西亚娜.json": {
+        "personality_background/lord_1_1_5__普雷斯基亚娜.json": {
           "hero_id": "lord_1_1_5",
           "en_file": "personality_background/lord_1_1_5__Presciana.json"
         },
-        "personality_background/lord_1_1_6__阿德里凯娅.json": {
+        "personality_background/lord_1_1_6__阿德里凯亚.json": {
           "hero_id": "lord_1_1_6",
           "en_file": "personality_background/lord_1_1_6__Adrichea.json"
         },
         "personality_background/lord_1_1_7__许拉西亚娜.json": {
           "hero_id": "lord_1_1_7",
-          "en_file": "personality_background/lord_1_1_7__Hylasiana.json"
+          "en_file": "personality_background/lord_1_1_7__Eurydike.json"
         },
         "personality_background/lord_1_1_8__阿波利泰娅.json": {
           "hero_id": "lord_1_1_8",
-          "en_file": "personality_background/lord_1_1_8__Apolytea.json"
+          "en_file": "personality_background/lord_1_1_8__Philiska.json"
         },
-        "personality_background/lord_1_1_9__埃奥迪西亚.json": {
+        "personality_background/lord_1_1_9__埃奥狄西亚.json": {
           "hero_id": "lord_1_1_9",
           "en_file": "personality_background/lord_1_1_9__Eodisia.json"
         },
-        "personality_background/lord_1_1__腓力.json": {
+        "personality_background/lord_1_1__卢库斯.json": {
           "hero_id": "lord_1_1",
-          "en_file": "personality_background/lord_1_1__Lucus.json"
+          "en_file": "personality_background/lord_1_1__Philippos.json"
         },
-        "personality_background/lord_1_20__法罗斯的德米特里乌斯.json": {
+        "personality_background/lord_1_20__恩库里翁.json": {
           "hero_id": "lord_1_20",
-          "en_file": "personality_background/lord_1_20__Encurion.json"
+          "en_file": "personality_background/lord_1_20__Demetrios.json"
         },
         "personality_background/lord_1_21__阿斯奇龙.json": {
           "hero_id": "lord_1_21",
-          "en_file": "personality_background/lord_1_21__Ascyron.json"
+          "en_file": "personality_background/lord_1_21__Taurion.json"
         },
         "personality_background/lord_1_22__安德罗斯.json": {
           "hero_id": "lord_1_22",
-          "en_file": "personality_background/lord_1_22__Andros.json"
+          "en_file": "personality_background/lord_1_22__Mikion.json"
         },
-        "personality_background/lord_1_23__亚斯蒂翁.json": {
+        "personality_background/lord_1_23__雅斯提翁.json": {
           "hero_id": "lord_1_23",
           "en_file": "personality_background/lord_1_23__Jastion.json"
         },
         "personality_background/lord_1_24__塔德乌斯.json": {
           "hero_id": "lord_1_24",
-          "en_file": "personality_background/lord_1_24__Tadeos.json"
+          "en_file": "personality_background/lord_1_24__Ollovico.json"
         },
         "personality_background/lord_1_25__埃罗尼克斯.json": {
           "hero_id": "lord_1_25",
-          "en_file": "personality_background/lord_1_25__Eronyx.json"
+          "en_file": "personality_background/lord_1_25__Cogianus.json"
         },
         "personality_background/lord_1_26__梅里托尔.json": {
           "hero_id": "lord_1_26",
-          "en_file": "personality_background/lord_1_26__Meritor.json"
+          "en_file": "personality_background/lord_1_26__Comboios.json"
         },
-        "personality_background/lord_1_27_1__韦里娜.json": {
+        "personality_background/lord_1_27_1__维里娜.json": {
           "hero_id": "lord_1_27_1",
           "en_file": "personality_background/lord_1_27_1__Verina.json"
         },
-        "personality_background/lord_1_27_2__小普布利乌斯·科尔内利乌斯·西庇阿.json": {
+        "personality_background/lord_1_27_2__尤特罗皮乌斯.json": {
           "hero_id": "lord_1_27_2",
-          "en_file": "personality_background/lord_1_27_2__Eutropios.json"
+          "en_file": "personality_background/lord_1_27_2__Publius Cornelius Scipio the Younger.json"
         },
-        "personality_background/lord_1_27_3__瓦西莉亚.json": {
+        "personality_background/lord_1_27_3__瓦西里亚.json": {
           "hero_id": "lord_1_27_3",
           "en_file": "personality_background/lord_1_27_3__Vasilia.json"
         },
-        "personality_background/lord_1_27__普布利乌斯·科尔内利乌斯·西庇阿.json": {
+        "personality_background/lord_1_27__帕蒂尔.json": {
           "hero_id": "lord_1_27",
-          "en_file": "personality_background/lord_1_27__Patyr.json"
+          "en_file": "personality_background/lord_1_27__Publius Cornelius Scipio.json"
         },
-        "personality_background/lord_1_28__马库斯·法比乌斯·布泰奥.json": {
+        "personality_background/lord_1_28__特米翁.json": {
           "hero_id": "lord_1_28",
-          "en_file": "personality_background/lord_1_28__Temion.json"
+          "en_file": "personality_background/lord_1_28__Marcus Fabius Buteo.json"
         },
-        "personality_background/lord_1_29__盖乌斯·克劳狄·尼禄.json": {
+        "personality_background/lord_1_29__萨尼翁.json": {
           "hero_id": "lord_1_29",
-          "en_file": "personality_background/lord_1_29__Sanion.json"
+          "en_file": "personality_background/lord_1_29__Gaius Claudius Nero.json"
         },
         "personality_background/lord_1_2__泽罗西卡.json": {
           "hero_id": "lord_1_2",
-          "en_file": "personality_background/lord_1_2__Zerosica.json"
+          "en_file": "personality_background/lord_1_2__Chryseis.json"
         },
         "personality_background/lord_1_30_1__尤斯蒂娜.json": {
           "hero_id": "lord_1_30_1",
-          "en_file": "personality_background/lord_1_30_1__Justina.json"
+          "en_file": "personality_background/lord_1_30_1__Papiria.json"
         },
-        "personality_background/lord_1_30_2__卡利尼娅.json": {
+        "personality_background/lord_1_30_2__卡利妮亚.json": {
           "hero_id": "lord_1_30_2",
           "en_file": "personality_background/lord_1_30_2__Callinia.json"
         },
         "personality_background/lord_1_30_3__西内西奥斯.json": {
           "hero_id": "lord_1_30_3",
-          "en_file": "personality_background/lord_1_30_3__Synesios.json"
+          "en_file": "personality_background/lord_1_30_3__Marcus Aemilius Lepidus.json"
         },
-        "personality_background/lord_1_30__卢基乌斯·埃米利乌斯·鲍鲁斯.json": {
+        "personality_background/lord_1_30__图里阿多斯.json": {
           "hero_id": "lord_1_30",
-          "en_file": "personality_background/lord_1_30__Turiados.json"
+          "en_file": "personality_background/lord_1_30__Lucius Aemilius Paullus.json"
         },
-        "personality_background/lord_1_31__佐安娜.json": {
+        "personality_background/lord_1_31__佐阿娜.json": {
           "hero_id": "lord_1_31",
           "en_file": "personality_background/lord_1_31__Zoana.json"
         },
@@ -16135,67 +16135,67 @@
         },
         "personality_background/lord_1_33__查利亚.json": {
           "hero_id": "lord_1_33",
-          "en_file": "personality_background/lord_1_33__Chalia.json"
+          "en_file": "personality_background/lord_1_33__Archidike.json"
         },
-        "personality_background/lord_1_34__纳德娅.json": {
+        "personality_background/lord_1_34__纳德亚.json": {
           "hero_id": "lord_1_34",
           "en_file": "personality_background/lord_1_34__Nadea.json"
         },
         "personality_background/lord_1_35__阿梅农.json": {
           "hero_id": "lord_1_35",
-          "en_file": "personality_background/lord_1_35__Amenon.json"
+          "en_file": "personality_background/lord_1_35__Mocus.json"
         },
-        "personality_background/lord_1_36__法埃娅.json": {
+        "personality_background/lord_1_36__费埃亚.json": {
           "hero_id": "lord_1_36",
           "en_file": "personality_background/lord_1_36__Phaea.json"
         },
-        "personality_background/lord_1_37__莉拉.json": {
+        "personality_background/lord_1_37__伊拉.json": {
           "hero_id": "lord_1_37",
-          "en_file": "personality_background/lord_1_37__Lira.json"
+          "en_file": "personality_background/lord_1_37__Ira.json"
         },
-        "personality_background/lord_1_38__海莉娅.json": {
+        "personality_background/lord_1_38__法比娅.json": {
           "hero_id": "lord_1_38",
-          "en_file": "personality_background/lord_1_38__Helea.json"
+          "en_file": "personality_background/lord_1_38__Fabia.json"
         },
         "personality_background/lord_1_39__德巴娜.json": {
           "hero_id": "lord_1_39",
           "en_file": "personality_background/lord_1_39__Debana.json"
         },
-        "personality_background/lord_1_3__欧律克雷德斯.json": {
+        "personality_background/lord_1_3__曼特奥斯.json": {
           "hero_id": "lord_1_3",
-          "en_file": "personality_background/lord_1_3__Manteos.json"
+          "en_file": "personality_background/lord_1_3__Eurykleides.json"
         },
         "personality_background/lord_1_40_1__卡特拉.json": {
           "hero_id": "lord_1_40_1",
           "en_file": "personality_background/lord_1_40_1__Catella.json"
         },
-        "personality_background/lord_1_40__蒂诺普斯.json": {
+        "personality_background/lord_1_40__提诺普斯.json": {
           "hero_id": "lord_1_40",
           "en_file": "personality_background/lord_1_40__Tynops.json"
         },
         "personality_background/lord_1_411__阿里翁.json": {
           "hero_id": "lord_1_411",
-          "en_file": "personality_background/lord_1_411__Arion.json"
+          "en_file": "personality_background/lord_1_411__Apelles.json"
         },
         "personality_background/lord_1_41__阿尔科尔.json": {
           "hero_id": "lord_1_41",
-          "en_file": "personality_background/lord_1_41__Arcor.json"
+          "en_file": "personality_background/lord_1_41__Antigonos.json"
         },
         "personality_background/lord_1_422__毛伦蒂乌斯.json": {
           "hero_id": "lord_1_422",
-          "en_file": "personality_background/lord_1_422__Maurentios.json"
+          "en_file": "personality_background/lord_1_422__Antigenes.json"
         },
         "personality_background/lord_1_42__贝利索尔.json": {
           "hero_id": "lord_1_42",
-          "en_file": "personality_background/lord_1_42__Belithor.json"
+          "en_file": "personality_background/lord_1_42__Kephisodoros.json"
         },
-        "personality_background/lord_1_43__查松.json": {
+        "personality_background/lord_1_43__卡松.json": {
           "hero_id": "lord_1_43",
           "en_file": "personality_background/lord_1_43__Chason.json"
         },
         "personality_background/lord_1_44__内莫斯.json": {
           "hero_id": "lord_1_44",
-          "en_file": "personality_background/lord_1_44__Nemos.json"
+          "en_file": "personality_background/lord_1_44__Ambiorix.json"
         },
         "personality_background/lord_1_45_1__阿格纳拉.json": {
           "hero_id": "lord_1_45_1",
@@ -16205,15 +16205,15 @@
           "hero_id": "lord_1_45_2",
           "en_file": "personality_background/lord_1_45_2__Phostor.json"
         },
-        "personality_background/lord_1_45_3__涅瑞达.json": {
+        "personality_background/lord_1_45_3__内雷伊达.json": {
           "hero_id": "lord_1_45_3",
           "en_file": "personality_background/lord_1_45_3__Nereida.json"
         },
-        "personality_background/lord_1_45__德斯波里昂.json": {
+        "personality_background/lord_1_45__德斯波里翁.json": {
           "hero_id": "lord_1_45",
           "en_file": "personality_background/lord_1_45__Desporion.json"
         },
-        "personality_background/lord_1_46_1__谢尔吉斯.json": {
+        "personality_background/lord_1_46_1__塞奥吉斯.json": {
           "hero_id": "lord_1_46_1",
           "en_file": "personality_background/lord_1_46_1__Seorgys.json"
         },
@@ -16225,23 +16225,23 @@
           "hero_id": "lord_1_47_1",
           "en_file": "personality_background/lord_1_47_1__Mina.json"
         },
-        "personality_background/lord_1_47_2__卡西丽娅.json": {
+        "personality_background/lord_1_47_2__卡西里亚.json": {
           "hero_id": "lord_1_47_2",
           "en_file": "personality_background/lord_1_47_2__Casyrea.json"
         },
-        "personality_background/lord_1_47_3__科兰贝娅.json": {
+        "personality_background/lord_1_47_3__科兰贝亚.json": {
           "hero_id": "lord_1_47_3",
           "en_file": "personality_background/lord_1_47_3__Colambea.json"
         },
-        "personality_background/lord_1_47__卢基乌斯·科尔内利乌斯·西庇阿.json": {
+        "personality_background/lord_1_47__乌尔博斯.json": {
           "hero_id": "lord_1_47",
-          "en_file": "personality_background/lord_1_47__Ulbos.json"
+          "en_file": "personality_background/lord_1_47__Lucius Cornelius Scipio.json"
         },
         "personality_background/lord_1_48_1__阿林皮娅.json": {
           "hero_id": "lord_1_48_1",
-          "en_file": "personality_background/lord_1_48_1__Alympia.json"
+          "en_file": "personality_background/lord_1_48_1__Fabia Secunda.json"
         },
-        "personality_background/lord_1_48_2__阿内娅.json": {
+        "personality_background/lord_1_48_2__阿内亚.json": {
           "hero_id": "lord_1_48_2",
           "en_file": "personality_background/lord_1_48_2__Anea.json"
         },
@@ -16249,33 +16249,33 @@
           "hero_id": "lord_1_48_3",
           "en_file": "personality_background/lord_1_48_3__Nonesos.json"
         },
-        "personality_background/lord_1_48__约龙.json": {
+        "personality_background/lord_1_48__若伦.json": {
           "hero_id": "lord_1_48",
           "en_file": "personality_background/lord_1_48__Joron.json"
         },
         "personality_background/lord_1_49_1__特里斯坦娅.json": {
           "hero_id": "lord_1_49_1",
-          "en_file": "personality_background/lord_1_49_1__Tristania.json"
+          "en_file": "personality_background/lord_1_49_1__Aemilia Tertia.json"
         },
         "personality_background/lord_1_49_2__戈尔迪亚娜.json": {
           "hero_id": "lord_1_49_2",
-          "en_file": "personality_background/lord_1_49_2__Gordiana.json"
+          "en_file": "personality_background/lord_1_49_2__Aemilia.json"
         },
-        "personality_background/lord_1_49__小卢基乌斯·埃米利乌斯·鲍鲁斯.json": {
+        "personality_background/lord_1_49__奥布龙.json": {
           "hero_id": "lord_1_49",
-          "en_file": "personality_background/lord_1_49__Obron.json"
+          "en_file": "personality_background/lord_1_49__Lucius Aemilius Paullus the Younger.json"
         },
         "personality_background/lord_1_4__费诺里娅.json": {
           "hero_id": "lord_1_4",
-          "en_file": "personality_background/lord_1_4__Phenoria.json"
+          "en_file": "personality_background/lord_1_4__Hegeso.json"
         },
         "personality_background/lord_1_50__吉福尔.json": {
           "hero_id": "lord_1_50",
           "en_file": "personality_background/lord_1_50__Gyphor.json"
         },
-        "personality_background/lord_1_51__希埃隆.json": {
+        "personality_background/lord_1_51__尼卡索尔.json": {
           "hero_id": "lord_1_51",
-          "en_file": "personality_background/lord_1_51__Nicasor.json"
+          "en_file": "personality_background/lord_1_51__Hieron.json"
         },
         "personality_background/lord_1_52_1__米纳尔维娜.json": {
           "hero_id": "lord_1_52_1",
@@ -16295,23 +16295,23 @@
         },
         "personality_background/lord_1_54_1__孔斯塔莉娅.json": {
           "hero_id": "lord_1_54_1",
-          "en_file": "personality_background/lord_1_54_1__Constalia.json"
+          "en_file": "personality_background/lord_1_54_1__Postumia Paulla.json"
         },
-        "personality_background/lord_1_54__盖乌斯·弗拉米尼乌斯.json": {
+        "personality_background/lord_1_54__西哈尼斯.json": {
           "hero_id": "lord_1_54",
-          "en_file": "personality_background/lord_1_54__Sichanis.json"
+          "en_file": "personality_background/lord_1_54__Gaius Flaminius.json"
         },
-        "personality_background/lord_1_55_1__梅格蒂娅.json": {
+        "personality_background/lord_1_55_1__梅盖蒂亚.json": {
           "hero_id": "lord_1_55_1",
           "en_file": "personality_background/lord_1_55_1__Megethia.json"
         },
-        "personality_background/lord_1_55__塞兰多恩.json": {
+        "personality_background/lord_1_55__塞兰东.json": {
           "hero_id": "lord_1_55",
           "en_file": "personality_background/lord_1_55__Serandon.json"
         },
         "personality_background/lord_1_56_1__日尔曼娜.json": {
           "hero_id": "lord_1_56_1",
-          "en_file": "personality_background/lord_1_56_1__Germana.json"
+          "en_file": "personality_background/lord_1_56_1__Mukatra.json"
         },
         "personality_background/lord_1_56_2__鲁斯蒂卡.json": {
           "hero_id": "lord_1_56_2",
@@ -16319,13 +16319,13 @@
         },
         "personality_background/lord_1_56__塞拉诺尔.json": {
           "hero_id": "lord_1_56",
-          "en_file": "personality_background/lord_1_56__Seranor.json"
+          "en_file": "personality_background/lord_1_56__Zyraxes.json"
         },
-        "personality_background/lord_1_57_1__索法莉娅.json": {
+        "personality_background/lord_1_57_1__索法利亚.json": {
           "hero_id": "lord_1_57_1",
           "en_file": "personality_background/lord_1_57_1__Sophalia.json"
         },
-        "personality_background/lord_1_57_2__杰法莉娅.json": {
+        "personality_background/lord_1_57_2__杰法利亚.json": {
           "hero_id": "lord_1_57_2",
           "en_file": "personality_background/lord_1_57_2__Jephalia.json"
         },
@@ -16337,37 +16337,37 @@
           "hero_id": "lord_1_58",
           "en_file": "personality_background/lord_1_58__Tasynor.json"
         },
-        "personality_background/lord_1_5__斯拉西达欧斯.json": {
+        "personality_background/lord_1_5__彭顿.json": {
           "hero_id": "lord_1_5",
-          "en_file": "personality_background/lord_1_5__Penton.json"
+          "en_file": "personality_background/lord_1_5__Thrasydaios.json"
         },
-        "personality_background/lord_1_62_1__阿里塔.json": {
+        "personality_background/lord_1_62_1__阿里萨.json": {
           "hero_id": "lord_1_62_1",
           "en_file": "personality_background/lord_1_62_1__Arytha.json"
         },
-        "personality_background/lord_1_62__塞亚隆.json": {
+        "personality_background/lord_1_62__塞哈隆.json": {
           "hero_id": "lord_1_62",
           "en_file": "personality_background/lord_1_62__Sejaron.json"
         },
-        "personality_background/lord_1_63_1__瓦拉里娅.json": {
+        "personality_background/lord_1_63_1__瓦拉里亚.json": {
           "hero_id": "lord_1_63_1",
           "en_file": "personality_background/lord_1_63_1__Valaria.json"
         },
         "personality_background/lord_1_63_2__科马塔萨.json": {
           "hero_id": "lord_1_63_2",
-          "en_file": "personality_background/lord_1_63_2__Comatasa.json"
+          "en_file": "personality_background/lord_1_63_2__Sulpicia.json"
         },
-        "personality_background/lord_1_63_3__埃利迪莉娅.json": {
+        "personality_background/lord_1_63_3__埃利狄莱亚.json": {
           "hero_id": "lord_1_63_3",
           "en_file": "personality_background/lord_1_63_3__Elidilea.json"
         },
-        "personality_background/lord_1_63__提比略·塞姆普罗尼乌斯·隆古斯.json": {
+        "personality_background/lord_1_63__巴拉诺尔.json": {
           "hero_id": "lord_1_63",
-          "en_file": "personality_background/lord_1_63__Baranor.json"
+          "en_file": "personality_background/lord_1_63__Tiberius Sempronius Longus.json"
         },
-        "personality_background/lord_1_64__皮涅斯.json": {
+        "personality_background/lord_1_64__米龙.json": {
           "hero_id": "lord_1_64",
-          "en_file": "personality_background/lord_1_64__Miron.json"
+          "en_file": "personality_background/lord_1_64__Pinnes.json"
         },
         "personality_background/lord_1_66__兰塔诺尔.json": {
           "hero_id": "lord_1_66",
@@ -16375,17 +16375,17 @@
         },
         "personality_background/lord_1_67__奥利波斯.json": {
           "hero_id": "lord_1_67",
-          "en_file": "personality_background/lord_1_67__Olypos.json"
+          "en_file": "personality_background/lord_1_67__Gelon.json"
         },
         "personality_background/lord_1_68_1__西尔维娜.json": {
           "hero_id": "lord_1_68_1",
-          "en_file": "personality_background/lord_1_68_1__Silvina.json"
+          "en_file": "personality_background/lord_1_68_1__Flaminia.json"
         },
         "personality_background/lord_1_68__萨罗斯.json": {
           "hero_id": "lord_1_68",
-          "en_file": "personality_background/lord_1_68__Tharos.json"
+          "en_file": "personality_background/lord_1_68__Gaius Flaminius the Younger.json"
         },
-        "personality_background/lord_1_69_1__阿雷利亚娜.json": {
+        "personality_background/lord_1_69_1__阿雷利安娜.json": {
           "hero_id": "lord_1_69_1",
           "en_file": "personality_background/lord_1_69_1__Areliana.json"
         },
@@ -16399,17 +16399,17 @@
         },
         "personality_background/lord_1_6__法多恩.json": {
           "hero_id": "lord_1_6",
-          "en_file": "personality_background/lord_1_6__Phadon.json"
+          "en_file": "personality_background/lord_1_6__Echekratidas.json"
         },
-        "personality_background/lord_1_70__帕纳莱娅.json": {
+        "personality_background/lord_1_70__帕纳莱亚.json": {
           "hero_id": "lord_1_70",
           "en_file": "personality_background/lord_1_70__Panalea.json"
         },
         "personality_background/lord_1_71__维庞.json": {
           "hero_id": "lord_1_71",
-          "en_file": "personality_background/lord_1_71__Vipon.json"
+          "en_file": "personality_background/lord_1_71__Pytheas.json"
         },
-        "personality_background/lord_1_72_1__维维安娜.json": {
+        "personality_background/lord_1_72_1__维维亚娜.json": {
           "hero_id": "lord_1_72_1",
           "en_file": "personality_background/lord_1_72_1__Viviana.json"
         },
@@ -16425,413 +16425,413 @@
           "hero_id": "lord_1_73",
           "en_file": "personality_background/lord_1_73__Ovagos.json"
         },
-        "personality_background/lord_1_74_1__泽娜.json": {
+        "personality_background/lord_1_74_1__齐娜.json": {
           "hero_id": "lord_1_74_1",
           "en_file": "personality_background/lord_1_74_1__Zena.json"
         },
-        "personality_background/lord_1_74__小提贝里乌斯·塞姆普罗尼乌斯·隆古斯.json": {
+        "personality_background/lord_1_74__扎哈尼斯.json": {
           "hero_id": "lord_1_74",
-          "en_file": "personality_background/lord_1_74__Zachanis.json"
+          "en_file": "personality_background/lord_1_74__Tiberius Sempronius Longus the Younger.json"
         },
         "personality_background/lord_1_75__泰菲洛斯.json": {
           "hero_id": "lord_1_75",
-          "en_file": "personality_background/lord_1_75__Thephilos.json"
+          "en_file": "personality_background/lord_1_75__Britomartus.json"
         },
         "personality_background/lord_1_7__加里乌斯.json": {
           "hero_id": "lord_1_7",
-          "en_file": "personality_background/lord_1_7__Garios.json"
+          "en_file": "personality_background/lord_1_7__Ducarius.json"
         },
         "personality_background/lord_1_8__韦德利娅.json": {
           "hero_id": "lord_1_8",
-          "en_file": "personality_background/lord_1_8__Vendelia.json"
+          "en_file": "personality_background/lord_1_8__Comatta.json"
         },
         "personality_background/lord_1_9__阿皮斯.json": {
           "hero_id": "lord_1_9",
-          "en_file": "personality_background/lord_1_9__Apys.json"
+          "en_file": "personality_background/lord_1_9__Meticanius.json"
         },
-        "personality_background/lord_2_10__辛萨瓦吉扬丁霍.json": {
+        "personality_background/lord_2_10__瓦拉.json": {
           "hero_id": "lord_2_10",
-          "en_file": "personality_background/lord_2_10__Sinthawagjandinjo.json"
+          "en_file": "personality_background/lord_2_10__Valla.json"
         },
         "personality_background/lord_2_111__阿尔比盖扎兹.json": {
           "hero_id": "lord_2_111",
-          "en_file": "personality_background/lord_2_111__Albigaizaz.json"
+          "en_file": "personality_background/lord_2_111__Claodicus.json"
         },
         "personality_background/lord_2_11__艾博.json": {
           "hero_id": "lord_2_11",
-          "en_file": "personality_background/lord_2_11__Aibo.json"
+          "en_file": "personality_background/lord_2_11__Wiljaburgo.json"
         },
         "personality_background/lord_2_121__斯坦纳瓦尔贾兹.json": {
           "hero_id": "lord_2_121",
-          "en_file": "personality_background/lord_2_121__Stainawarjaz.json"
+          "en_file": "personality_background/lord_2_121__Hathuwigaz.json"
         },
         "personality_background/lord_2_12__弗罗希拉.json": {
           "hero_id": "lord_2_12",
-          "en_file": "personality_background/lord_2_12__Frohila.json"
+          "en_file": "personality_background/lord_2_12__Swanihildiz.json"
         },
         "personality_background/lord_2_13_1__布伦约希尔迪兹.json": {
           "hero_id": "lord_2_13_1",
-          "en_file": "personality_background/lord_2_13_1__Brunjohildiz.json"
+          "en_file": "personality_background/lord_2_13_1__Hildigardiz.json"
         },
-        "personality_background/lord_2_13_2__埃尔穆纳希尔迪兹.json": {
+        "personality_background/lord_2_13_2__安德鲁塔.json": {
           "hero_id": "lord_2_13_2",
-          "en_file": "personality_background/lord_2_13_2__Ermunahildiz.json"
+          "en_file": "personality_background/lord_2_13_2__Andruta.json"
         },
-        "personality_background/lord_2_13_3__古达格博.json": {
+        "personality_background/lord_2_13_3__鲁达.json": {
           "hero_id": "lord_2_13_3",
-          "en_file": "personality_background/lord_2_13_3__Gudagebo.json"
+          "en_file": "personality_background/lord_2_13_3__Luda.json"
         },
-        "personality_background/lord_2_13_4__艾佐贡蒂霍.json": {
+        "personality_background/lord_2_13_4__特塔.json": {
           "hero_id": "lord_2_13_4",
-          "en_file": "personality_background/lord_2_13_4__Aizogunthjo.json"
+          "en_file": "personality_background/lord_2_13_4__Teta.json"
         },
-        "personality_background/lord_2_13__阿吉瑟瓦兹.json": {
+        "personality_background/lord_2_13__埃尔马纳吉尔达兹.json": {
           "hero_id": "lord_2_13",
-          "en_file": "personality_background/lord_2_13__Agithewaz.json"
+          "en_file": "personality_background/lord_2_13__Ermanagildaz.json"
         },
         "personality_background/lord_2_14_1__吉萨拉希尔迪奥.json": {
           "hero_id": "lord_2_14_1",
-          "en_file": "personality_background/lord_2_14_1__Gisalahildjo.json"
+          "en_file": "personality_background/lord_2_14_1__Ansiliubo.json"
         },
         "personality_background/lord_2_14_2__阿拉贡蒂霍.json": {
           "hero_id": "lord_2_14_2",
-          "en_file": "personality_background/lord_2_14_2__Alagunthjo.json"
+          "en_file": "personality_background/lord_2_14_2__Radagundo.json"
         },
-        "personality_background/lord_2_14_3__戈达希尔迪奥.json": {
+        "personality_background/lord_2_14_3__维兹杜娜.json": {
           "hero_id": "lord_2_14_3",
-          "en_file": "personality_background/lord_2_14_3__Godahildjo.json"
+          "en_file": "personality_background/lord_2_14_3__Vizhduna.json"
         },
         "personality_background/lord_2_14__哈尔贾瓦尔达兹.json": {
           "hero_id": "lord_2_14",
-          "en_file": "personality_background/lord_2_14__Harjawaldaz.json"
+          "en_file": "personality_background/lord_2_14__Wiljamundaz.json"
         },
         "personality_background/lord_2_15_1__阿鲁诺.json": {
           "hero_id": "lord_2_15_1",
-          "en_file": "personality_background/lord_2_15_1__Aluruno.json"
+          "en_file": "personality_background/lord_2_15_1__Sigilindo.json"
         },
-        "personality_background/lord_2_15_2__尼蒂亚兹.json": {
+        "personality_background/lord_2_15_2__哈杜维戈.json": {
           "hero_id": "lord_2_15_2",
-          "en_file": "personality_background/lord_2_15_2__Nithjaz.json"
+          "en_file": "personality_background/lord_2_15_2__Haduwigo.json"
         },
-        "personality_background/lord_2_15_3__吉萨拉希尔迪奥.json": {
+        "personality_background/lord_2_15_3__维莉娜.json": {
           "hero_id": "lord_2_15_3",
-          "en_file": "personality_background/lord_2_15_3__Gisalahildjo.json"
+          "en_file": "personality_background/lord_2_15_3__Velina.json"
         },
         "personality_background/lord_2_15_4__维利亚赫尔马兹.json": {
           "hero_id": "lord_2_15_4",
-          "en_file": "personality_background/lord_2_15_4__Wiljahelmaz.json"
+          "en_file": "personality_background/lord_2_15_4__Ansuwaldaz.json"
         },
-        "personality_background/lord_2_15__巴尔塔维尼兹.json": {
+        "personality_background/lord_2_15__巴尔塔维尼斯.json": {
           "hero_id": "lord_2_15",
-          "en_file": "personality_background/lord_2_15__Balthawiniz.json"
+          "en_file": "personality_background/lord_2_15__Ariowaldaz.json"
         },
-        "personality_background/lord_2_16_1__贝尔吉尼奥.json": {
+        "personality_background/lord_2_16_1__蒂亚斯卡.json": {
           "hero_id": "lord_2_16_1",
-          "en_file": "personality_background/lord_2_16_1__Berginjo.json"
+          "en_file": "personality_background/lord_2_16_1__Tyaska.json"
         },
         "personality_background/lord_2_16__里卡哈杜兹.json": {
           "hero_id": "lord_2_16",
-          "en_file": "personality_background/lord_2_16__Rikaharduz.json"
+          "en_file": "personality_background/lord_2_16__Masyos.json"
         },
-        "personality_background/lord_2_17_1__阿拉贡斯.json": {
+        "personality_background/lord_2_17_1__贡蒂瓦罗.json": {
           "hero_id": "lord_2_17_1",
-          "en_file": "personality_background/lord_2_17_1__Alagunth.json"
+          "en_file": "personality_background/lord_2_17_1__Gunthiwaro.json"
         },
         "personality_background/lord_2_17__海马里克斯.json": {
           "hero_id": "lord_2_17",
-          "en_file": "personality_background/lord_2_17__Haimariks.json"
+          "en_file": "personality_background/lord_2_17__Arpus.json"
         },
         "personality_background/lord_2_18_1__维拉加兹.json": {
           "hero_id": "lord_2_18_1",
-          "en_file": "personality_background/lord_2_18_1__Wilagaz.json"
+          "en_file": "personality_background/lord_2_18_1__Wandalgaro.json"
         },
         "personality_background/lord_2_18__雷达沃尔法兹.json": {
           "hero_id": "lord_2_18",
-          "en_file": "personality_background/lord_2_18__Redawulfaz.json"
+          "en_file": "personality_background/lord_2_18__Raws.json"
         },
-        "personality_background/lord_2_19_1__艾尔伦.json": {
+        "personality_background/lord_2_19_1__维托米拉.json": {
           "hero_id": "lord_2_19_1",
-          "en_file": "personality_background/lord_2_19_1__Ailrun.json"
+          "en_file": "personality_background/lord_2_19_1__Vitomira.json"
         },
         "personality_background/lord_2_19__蒂乌多贝尔塔兹.json": {
           "hero_id": "lord_2_19",
-          "en_file": "personality_background/lord_2_19__Theudoberhtaz.json"
+          "en_file": "personality_background/lord_2_19__Harigastiz.json"
         },
         "personality_background/lord_2_1__乌兹达盖扎兹.json": {
           "hero_id": "lord_2_1",
-          "en_file": "personality_background/lord_2_1__Uzdagaizaz.json"
+          "en_file": "personality_background/lord_2_1__Maelo.json"
         },
         "personality_background/lord_2_20_1__艾吉拉特鲁西兹.json": {
           "hero_id": "lord_2_20_1",
-          "en_file": "personality_background/lord_2_20_1__Aigilathruthiz.json"
+          "en_file": "personality_background/lord_2_20_1__Liubwini.json"
         },
         "personality_background/lord_2_20__盖扎里克斯.json": {
           "hero_id": "lord_2_20",
-          "en_file": "personality_background/lord_2_20__Gaizariks.json"
+          "en_file": "personality_background/lord_2_20__Gannaskaz.json"
         },
-        "personality_background/lord_2_21_1__马瓦兹.json": {
+        "personality_background/lord_2_21_1__伊斯登卡.json": {
           "hero_id": "lord_2_21_1",
-          "en_file": "personality_background/lord_2_21_1__Mawaz.json"
+          "en_file": "personality_background/lord_2_21_1__Izdenka.json"
         },
         "personality_background/lord_2_21__孔贾蒙杜兹.json": {
           "hero_id": "lord_2_21",
-          "en_file": "personality_background/lord_2_21__Kunjamunduz.json"
+          "en_file": "personality_background/lord_2_21__Theudoberhtaz.json"
         },
         "personality_background/lord_2_22_1__马沃.json": {
           "hero_id": "lord_2_22_1",
-          "en_file": "personality_background/lord_2_22_1__Mawo.json"
+          "en_file": "personality_background/lord_2_22_1__Gerlindo.json"
         },
         "personality_background/lord_2_22__罗斯希盖扎兹.json": {
           "hero_id": "lord_2_22",
-          "en_file": "personality_background/lord_2_22__Hrothigaizaz.json"
+          "en_file": "personality_background/lord_2_22__Agilamundaz.json"
         },
-        "personality_background/lord_2_23_1__弗劳伊兰.json": {
+        "personality_background/lord_2_23_1__兹拉特卡.json": {
           "hero_id": "lord_2_23_1",
-          "en_file": "personality_background/lord_2_23_1__Fraujilan.json"
+          "en_file": "personality_background/lord_2_23_1__Zlatka.json"
         },
         "personality_background/lord_2_23__阿萨拉沃尔法兹.json": {
           "hero_id": "lord_2_23",
-          "en_file": "personality_background/lord_2_23__Athalawulfaz.json"
+          "en_file": "personality_background/lord_2_23__Raptaz.json"
         },
-        "personality_background/lord_2_24_1__戈达希尔德.json": {
+        "personality_background/lord_2_24_1__佐里娜.json": {
           "hero_id": "lord_2_24_1",
-          "en_file": "personality_background/lord_2_24_1__Godahild.json"
+          "en_file": "personality_background/lord_2_24_1__Zorina.json"
         },
-        "personality_background/lord_2_24__阿尔比哈尔贾兹.json": {
+        "personality_background/lord_2_24__瓦克拉兹.json": {
           "hero_id": "lord_2_24",
-          "en_file": "personality_background/lord_2_24__Albiharjaz.json"
+          "en_file": "personality_background/lord_2_24__Wakraz.json"
         },
         "personality_background/lord_2_2__玛蒂希尔迪兹.json": {
           "hero_id": "lord_2_2",
-          "en_file": "personality_background/lord_2_2__Mahtihildiz.json"
+          "en_file": "personality_background/lord_2_2__Audawini.json"
         },
         "personality_background/lord_2_3__拉吉纳哈杜兹.json": {
           "hero_id": "lord_2_3",
-          "en_file": "personality_background/lord_2_3__Raginaharduz.json"
+          "en_file": "personality_background/lord_2_3__Boiorix.json"
         },
         "personality_background/lord_2_4_1__比尔吉娜.json": {
           "hero_id": "lord_2_4_1",
-          "en_file": "personality_background/lord_2_4_1__Birgina.json"
+          "en_file": "personality_background/lord_2_4_1__Ingunthi.json"
         },
-        "personality_background/lord_2_4__伊迪斯.json": {
+        "personality_background/lord_2_4__奥斯特罗.json": {
           "hero_id": "lord_2_4",
-          "en_file": "personality_background/lord_2_4__Idiz.json"
+          "en_file": "personality_background/lord_2_4__Austro.json"
         },
         "personality_background/lord_2_5__瓦尔达哈尔贾兹.json": {
           "hero_id": "lord_2_5",
-          "en_file": "personality_background/lord_2_5__Waldaharjaz.json"
+          "en_file": "personality_background/lord_2_5__Ermanariks.json"
         },
         "personality_background/lord_2_6__尼蒂霍.json": {
           "hero_id": "lord_2_6",
-          "en_file": "personality_background/lord_2_6__Nithijo.json"
+          "en_file": "personality_background/lord_2_6__Gunthihildiz.json"
         },
         "personality_background/lord_2_7_1__贝尔努哈杜兹.json": {
           "hero_id": "lord_2_7_1",
-          "en_file": "personality_background/lord_2_7_1__Bernuharduz.json"
+          "en_file": "personality_background/lord_2_7_1__Walhamaraz.json"
         },
         "personality_background/lord_2_7__蒂乌达里克斯.json": {
           "hero_id": "lord_2_7",
-          "en_file": "personality_background/lord_2_7__Theudariks.json"
+          "en_file": "personality_background/lord_2_7__Segimundaz.json"
         },
         "personality_background/lord_2_8__罗斯希里克斯.json": {
           "hero_id": "lord_2_8",
-          "en_file": "personality_background/lord_2_8__Hrothiriks.json"
+          "en_file": "personality_background/lord_2_8__Lugius.json"
         },
         "personality_background/lord_2_9__弗里图盖扎兹.json": {
           "hero_id": "lord_2_9",
-          "en_file": "personality_background/lord_2_9__Frithugaizaz.json"
+          "en_file": "personality_background/lord_2_9__Wulfagaz.json"
         },
         "personality_background/lord_3_10__伊塔巴尔.json": {
           "hero_id": "lord_3_10",
-          "en_file": "personality_background/lord_3_10__Ittabaal.json"
+          "en_file": "personality_background/lord_3_10__Amoteshmun.json"
         },
         "personality_background/lord_3_11__帕尼娜.json": {
           "hero_id": "lord_3_11",
-          "en_file": "personality_background/lord_3_11__Panina.json"
+          "en_file": "personality_background/lord_3_11__Elishat.json"
         },
-        "personality_background/lord_3_12__西维娅.json": {
+        "personality_background/lord_3_12__巴特诺阿姆.json": {
           "hero_id": "lord_3_12",
-          "en_file": "personality_background/lord_3_12__Siwia.json"
+          "en_file": "personality_background/lord_3_12__Batnoam.json"
         },
-        "personality_background/lord_3_13_1__巴特诺姆.json": {
+        "personality_background/lord_3_13_1__西拉.json": {
           "hero_id": "lord_3_13_1",
-          "en_file": "personality_background/lord_3_13_1__Batnoam.json"
+          "en_file": "personality_background/lord_3_13_1__Sira.json"
         },
-        "personality_background/lord_3_13_2__塔尼塔.json": {
+        "personality_background/lord_3_13_2__拉扎娜.json": {
           "hero_id": "lord_3_13_2",
-          "en_file": "personality_background/lord_3_13_2__Tanitha.json"
+          "en_file": "personality_background/lord_3_13_2__Razana.json"
         },
-        "personality_background/lord_3_13__马戈·巴卡.json": {
+        "personality_background/lord_3_13__皮莱萨.json": {
           "hero_id": "lord_3_13",
-          "en_file": "personality_background/lord_3_13__Pilessar.json"
+          "en_file": "personality_background/lord_3_13__Mago Barca.json"
         },
         "personality_background/lord_3_14_1__西萨.json": {
           "hero_id": "lord_3_14_1",
-          "en_file": "personality_background/lord_3_14_1__Sisa.json"
+          "en_file": "personality_background/lord_3_14_1__Sapanbaal.json"
         },
-        "personality_background/lord_3_14__汉诺·波米尔卡之子.json": {
+        "personality_background/lord_3_14__伯沙撒.json": {
           "hero_id": "lord_3_14",
-          "en_file": "personality_background/lord_3_14__Belshazzar.json"
+          "en_file": "personality_background/lord_3_14__Hanno son of Bomilcar.json"
         },
-        "personality_background/lord_3_15_1__舒沙娜.json": {
+        "personality_background/lord_3_15_1__希姆拉.json": {
           "hero_id": "lord_3_15_1",
-          "en_file": "personality_background/lord_3_15_1__Shushana.json"
+          "en_file": "personality_background/lord_3_15_1__Shimra.json"
         },
-        "personality_background/lord_3_15_2__巴特梅尔卡.json": {
+        "personality_background/lord_3_15_2__布希拉.json": {
           "hero_id": "lord_3_15_2",
-          "en_file": "personality_background/lord_3_15_2__Batmelka.json"
+          "en_file": "personality_background/lord_3_15_2__Bushila.json"
         },
-        "personality_background/lord_3_15__阿德赫巴尔.json": {
+        "personality_background/lord_3_15__亚里赫.json": {
           "hero_id": "lord_3_15",
-          "en_file": "personality_background/lord_3_15__Yarikh.json"
+          "en_file": "personality_background/lord_3_15__Adherbal.json"
         },
-        "personality_background/lord_3_16_1__齐卜克特.json": {
+        "personality_background/lord_3_16_1__法里娜.json": {
           "hero_id": "lord_3_16_1",
-          "en_file": "personality_background/lord_3_16_1__Zibqet.json"
+          "en_file": "personality_background/lord_3_16_1__Farina.json"
         },
-        "personality_background/lord_3_16__波米尔卡.json": {
+        "personality_background/lord_3_16__谢梅什.json": {
           "hero_id": "lord_3_16",
-          "en_file": "personality_background/lord_3_16__Shemesh.json"
+          "en_file": "personality_background/lord_3_16__Bomilcar.json"
         },
         "personality_background/lord_3_17_1__约法.json": {
           "hero_id": "lord_3_17_1",
-          "en_file": "personality_background/lord_3_17_1__Yofa.json"
+          "en_file": "personality_background/lord_3_17_1__Ummashtart.json"
         },
         "personality_background/lord_3_17_2__扎米拉.json": {
           "hero_id": "lord_3_17_2",
-          "en_file": "personality_background/lord_3_17_2__Zamira.json"
+          "en_file": "personality_background/lord_3_17_2__Hanna.json"
         },
-        "personality_background/lord_3_17__马戈.json": {
+        "personality_background/lord_3_17__格尔米尔卡特.json": {
           "hero_id": "lord_3_17",
-          "en_file": "personality_background/lord_3_17__Germilqart.json"
+          "en_file": "personality_background/lord_3_17__Mago.json"
         },
         "personality_background/lord_3_18_1__希拉.json": {
           "hero_id": "lord_3_18_1",
-          "en_file": "personality_background/lord_3_18_1__Shira.json"
+          "en_file": "personality_background/lord_3_18_1__Arisham.json"
         },
-        "personality_background/lord_3_18_2__谢霍拉.json": {
+        "personality_background/lord_3_18_2__哈菲萨.json": {
           "hero_id": "lord_3_18_2",
-          "en_file": "personality_background/lord_3_18_2__Shehora.json"
+          "en_file": "personality_background/lord_3_18_2__Hafisa.json"
         },
-        "personality_background/lord_3_18_3__泽丰.json": {
+        "personality_background/lord_3_18_3__祖阿德.json": {
           "hero_id": "lord_3_18_3",
-          "en_file": "personality_background/lord_3_18_3__Zefon.json"
+          "en_file": "personality_background/lord_3_18_3__Zuad.json"
         },
-        "personality_background/lord_3_18_4__马哈巴尔.json": {
+        "personality_background/lord_3_18_4__希姆普萨尔.json": {
           "hero_id": "lord_3_18_4",
-          "en_file": "personality_background/lord_3_18_4__Hiempsal.json"
+          "en_file": "personality_background/lord_3_18_4__Maharbal.json"
         },
-        "personality_background/lord_3_18__希米尔科.json": {
+        "personality_background/lord_3_18__米尔卡雷利翁.json": {
           "hero_id": "lord_3_18",
-          "en_file": "personality_background/lord_3_18__Milqarelyon.json"
+          "en_file": "personality_background/lord_3_18__Himilco.json"
         },
         "personality_background/lord_3_19_1__萨拉阿.json": {
           "hero_id": "lord_3_19_1",
-          "en_file": "personality_background/lord_3_19_1__Saraa.json"
+          "en_file": "personality_background/lord_3_19_1__Tanitbaal.json"
         },
         "personality_background/lord_3_19_2__阿马特莉萨.json": {
           "hero_id": "lord_3_19_2",
-          "en_file": "personality_background/lord_3_19_2__Amatelissa.json"
+          "en_file": "personality_background/lord_3_19_2__Tanitshillek.json"
         },
-        "personality_background/lord_3_19_3__齐塔.json": {
+        "personality_background/lord_3_19_3__苏尔哈娜.json": {
           "hero_id": "lord_3_19_3",
-          "en_file": "personality_background/lord_3_19_3__Zitta.json"
+          "en_file": "personality_background/lord_3_19_3__Sulhana.json"
         },
-        "personality_background/lord_3_19__卡萨洛.json": {
+        "personality_background/lord_3_19__里巴迪.json": {
           "hero_id": "lord_3_19",
-          "en_file": "personality_background/lord_3_19__Ribaddi.json"
+          "en_file": "personality_background/lord_3_19__Carthalo.json"
         },
-        "personality_background/lord_3_1__汉尼拔.json": {
+        "personality_background/lord_3_1__埃利卢坦.json": {
           "hero_id": "lord_3_1",
-          "en_file": "personality_background/lord_3_1__Elilutan.json"
+          "en_file": "personality_background/lord_3_1__Hannibal.json"
         },
-        "personality_background/lord_3_20_1__索福尼斯巴.json": {
+        "personality_background/lord_3_20_1__阿姆萨加.json": {
           "hero_id": "lord_3_20_1",
-          "en_file": "personality_background/lord_3_20_1__Ampsaga.json"
+          "en_file": "personality_background/lord_3_20_1__Sophonisba.json"
         },
         "personality_background/lord_3_20_2__阿迪娜.json": {
           "hero_id": "lord_3_20_2",
-          "en_file": "personality_background/lord_3_20_2__Adina.json"
+          "en_file": "personality_background/lord_3_20_2__Batshillek.json"
         },
         "personality_background/lord_3_20__克雷特.json": {
           "hero_id": "lord_3_20",
-          "en_file": "personality_background/lord_3_20__Keret.json"
+          "en_file": "personality_background/lord_3_20__Hanno.json"
         },
-        "personality_background/lord_3_21_1__哈亚.json": {
+        "personality_background/lord_3_21_1__阿希萨.json": {
           "hero_id": "lord_3_21_1",
-          "en_file": "personality_background/lord_3_21_1__Haya.json"
+          "en_file": "personality_background/lord_3_21_1__Ashisa.json"
         },
-        "personality_background/lord_3_21__哈米尔卡.json": {
+        "personality_background/lord_3_21__阿希梅尔卡特.json": {
           "hero_id": "lord_3_21",
-          "en_file": "personality_background/lord_3_21__Ahimelqart.json"
+          "en_file": "personality_background/lord_3_21__Hamilcar.json"
         },
         "personality_background/lord_3_22_1__巴特亚姆.json": {
           "hero_id": "lord_3_22_1",
-          "en_file": "personality_background/lord_3_22_1__Batyam.json"
+          "en_file": "personality_background/lord_3_22_1__Arishat.json"
         },
         "personality_background/lord_3_22_2__苏里娅.json": {
           "hero_id": "lord_3_22_2",
-          "en_file": "personality_background/lord_3_22_2__Suria.json"
+          "en_file": "personality_background/lord_3_22_2__Thasa.json"
         },
         "personality_background/lord_3_22_3__库黑娜.json": {
           "hero_id": "lord_3_22_3",
-          "en_file": "personality_background/lord_3_22_3__Kuhena.json"
+          "en_file": "personality_background/lord_3_22_3__Elissa.json"
         },
-        "personality_background/lord_3_22_4__泰凯莱特.json": {
+        "personality_background/lord_3_22_4__巴特巴尔.json": {
           "hero_id": "lord_3_22_4",
-          "en_file": "personality_background/lord_3_22_4__Tekhelet.json"
+          "en_file": "personality_background/lord_3_22_4__Batbaal.json"
         },
-        "personality_background/lord_3_22__加拉.json": {
+        "personality_background/lord_3_22__察沃.json": {
           "hero_id": "lord_3_22",
-          "en_file": "personality_background/lord_3_22__Tsavo.json"
+          "en_file": "personality_background/lord_3_22__Gaia.json"
         },
-        "personality_background/lord_3_23_1__齐波拉.json": {
+        "personality_background/lord_3_23_1__苏凯娜.json": {
           "hero_id": "lord_3_23_1",
-          "en_file": "personality_background/lord_3_23_1__Sippora.json"
+          "en_file": "personality_background/lord_3_23_1__Sukayna.json"
         },
         "personality_background/lord_3_23__埃兹里.json": {
           "hero_id": "lord_3_23",
-          "en_file": "personality_background/lord_3_23__Ezri.json"
+          "en_file": "personality_background/lord_3_23__Hasdrubal.json"
         },
-        "personality_background/lord_3_2__伊米尔采.json": {
+        "personality_background/lord_3_2__多纳蒂娅.json": {
           "hero_id": "lord_3_2",
-          "en_file": "personality_background/lord_3_2__Donatiya.json"
+          "en_file": "personality_background/lord_3_2__Imilce.json"
         },
         "personality_background/lord_3_3_1__马森森.json": {
           "hero_id": "lord_3_3_1",
-          "en_file": "personality_background/lord_3_3_1__Masensen.json"
+          "en_file": "personality_background/lord_3_3_1__Abdmelqart.json"
         },
-        "personality_background/lord_3_3__大汉诺.json": {
+        "personality_background/lord_3_3__马尔戈德.json": {
           "hero_id": "lord_3_3",
-          "en_file": "personality_background/lord_3_3__Marqod.json"
+          "en_file": "personality_background/lord_3_3__Hanno the Great.json"
         },
         "personality_background/lord_3_4__迪娜.json": {
           "hero_id": "lord_3_4",
-          "en_file": "personality_background/lord_3_4__Dina.json"
+          "en_file": "personality_background/lord_3_4__Amotmelqart.json"
         },
-        "personality_background/lord_3_51__吉斯科.json": {
+        "personality_background/lord_3_51__阿希塔尔.json": {
           "hero_id": "lord_3_51",
-          "en_file": "personality_background/lord_3_51__Ahital.json"
+          "en_file": "personality_background/lord_3_51__Gisco.json"
         },
-        "personality_background/lord_3_5__哈斯德鲁拔·吉斯戈.json": {
+        "personality_background/lord_3_5__哈尼诺.json": {
           "hero_id": "lord_3_5",
-          "en_file": "personality_background/lord_3_5__Hanino.json"
+          "en_file": "personality_background/lord_3_5__Hasdrubal Gisco.json"
         },
-        "personality_background/lord_3_6__萨法尼巴尔.json": {
+        "personality_background/lord_3_6__鲁玛.json": {
           "hero_id": "lord_3_6",
-          "en_file": "personality_background/lord_3_6__Safanibaal.json"
+          "en_file": "personality_background/lord_3_6__Ruma.json"
         },
-        "personality_background/lord_3_7__哈斯德鲁巴·巴卡.json": {
+        "personality_background/lord_3_7__阿比纳多布.json": {
           "hero_id": "lord_3_7",
-          "en_file": "personality_background/lord_3_7__Abinadob.json"
+          "en_file": "personality_background/lord_3_7__Hasdrubal Barca.json"
         },
-        "personality_background/lord_3_8__哈斯德鲁拔·海杜斯.json": {
+        "personality_background/lord_3_8__凯伦巴尔.json": {
           "hero_id": "lord_3_8",
-          "en_file": "personality_background/lord_3_8__Qerenbaal.json"
+          "en_file": "personality_background/lord_3_8__Hasdrubal Haedus.json"
         },
-        "personality_background/lord_3_9__梅伊尔.json": {
+        "personality_background/lord_3_9__乌赛尔.json": {
           "hero_id": "lord_3_9",
-          "en_file": "personality_background/lord_3_9__Meyir.json"
+          "en_file": "personality_background/lord_3_9__Usair.json"
         },
         "personality_background/lord_4_10__埃利斯.json": {
           "hero_id": "lord_4_10",
@@ -16843,97 +16843,97 @@
         },
         "personality_background/lord_4_121__拉桑德.json": {
           "hero_id": "lord_4_121",
-          "en_file": "personality_background/lord_4_121__Lasand.json"
+          "en_file": "personality_background/lord_4_121__Caros.json"
         },
-        "personality_background/lord_4_12__西尔温德.json": {
+        "personality_background/lord_4_12__西尔维德.json": {
           "hero_id": "lord_4_12",
           "en_file": "personality_background/lord_4_12__Silvind.json"
         },
         "personality_background/lord_4_13__罗蒙德.json": {
           "hero_id": "lord_4_13",
-          "en_file": "personality_background/lord_4_13__Romund.json"
+          "en_file": "personality_background/lord_4_13__Audax.json"
         },
         "personality_background/lord_4_141__阿莫尔孔.json": {
           "hero_id": "lord_4_141",
-          "en_file": "personality_background/lord_4_141__Amorcon.json"
+          "en_file": "personality_background/lord_4_141__Tirtanos.json"
         },
         "personality_background/lord_4_14__莫尔孔.json": {
           "hero_id": "lord_4_14",
-          "en_file": "personality_background/lord_4_14__Morcon.json"
+          "en_file": "personality_background/lord_4_14__Ditalcus.json"
         },
-        "personality_background/lord_4_15__埃杜兰.json": {
+        "personality_background/lord_4_15__苏奥斯图诺斯.json": {
           "hero_id": "lord_4_15",
           "en_file": "personality_background/lord_4_15__Erdurand.json"
         },
         "personality_background/lord_4_16_1__米特拉.json": {
           "hero_id": "lord_4_16_1",
-          "en_file": "personality_background/lord_4_16_1__Mitela.json"
+          "en_file": "personality_background/lord_4_16_1__Neitinbeles.json"
         },
-        "personality_background/lord_4_16__因迪比利斯.json": {
+        "personality_background/lord_4_16__英加尔瑟.json": {
           "hero_id": "lord_4_16",
-          "en_file": "personality_background/lord_4_16__Ingalther.json"
+          "en_file": "personality_background/lord_4_16__Indibilis.json"
         },
         "personality_background/lord_4_17__埃尔贝特.json": {
           "hero_id": "lord_4_17",
-          "en_file": "personality_background/lord_4_17__Elbet.json"
+          "en_file": "personality_background/lord_4_17__Iltirbikis.json"
         },
         "personality_background/lord_4_181__阿尔塔蒙德.json": {
           "hero_id": "lord_4_181",
-          "en_file": "personality_background/lord_4_181__Arthamund.json"
+          "en_file": "personality_background/lord_4_181__Bilustibas.json"
         },
-        "personality_background/lord_4_18__曼多尼乌斯.json": {
+        "personality_background/lord_4_18__阿马尔贡.json": {
           "hero_id": "lord_4_18",
-          "en_file": "personality_background/lord_4_18__Amalgun.json"
+          "en_file": "personality_background/lord_4_18__Mandonius.json"
         },
         "personality_background/lord_4_19__阿塞拉.json": {
           "hero_id": "lord_4_19",
-          "en_file": "personality_background/lord_4_19__Asela.json"
+          "en_file": "personality_background/lord_4_19__Bilosoton.json"
         },
         "personality_background/lord_4_1__德凯巴鲁斯.json": {
           "hero_id": "lord_4_1",
-          "en_file": "personality_background/lord_4_1__Decebalus.json"
+          "en_file": "personality_background/lord_4_1__Punicus.json"
         },
         "personality_background/lord_4_20_1__英格尔特鲁德.json": {
           "hero_id": "lord_4_20_1",
-          "en_file": "personality_background/lord_4_20_1__Ingeltrud.json"
+          "en_file": "personality_background/lord_4_20_1__Camala.json"
         },
         "personality_background/lord_4_20__瓦尔蒙德.json": {
           "hero_id": "lord_4_20",
-          "en_file": "personality_background/lord_4_20__Varmund.json"
+          "en_file": "personality_background/lord_4_20__Reburrus.json"
         },
-        "personality_background/lord_4_21__斯科里洛.json": {
+        "personality_background/lord_4_21__科提斯.json": {
           "hero_id": "lord_4_21",
-          "en_file": "personality_background/lord_4_21__Scorilo.json"
+          "en_file": "personality_background/lord_4_21__Kotys.json"
         },
         "personality_background/lord_4_22_1__阿尔维斯.json": {
           "hero_id": "lord_4_22_1",
-          "en_file": "personality_background/lord_4_22_1__Alwith.json"
+          "en_file": "personality_background/lord_4_22_1__Belesiar.json"
         },
         "personality_background/lord_4_22__塞尔维克.json": {
           "hero_id": "lord_4_22",
-          "en_file": "personality_background/lord_4_22__Servic.json"
+          "en_file": "personality_background/lord_4_22__Medugenus.json"
         },
-        "personality_background/lord_4_23_1__里谢尔达.json": {
+        "personality_background/lord_4_23_1__阿尔凯亚.json": {
           "hero_id": "lord_4_23_1",
-          "en_file": "personality_background/lord_4_23_1__Richelda.json"
+          "en_file": "personality_background/lord_4_23_1__Arcea.json"
         },
         "personality_background/lord_4_23_2__安斯特鲁达.json": {
           "hero_id": "lord_4_23_2",
-          "en_file": "personality_background/lord_4_23_2__Anstruda.json"
+          "en_file": "personality_background/lord_4_23_2__Asterdumar.json"
         },
         "personality_background/lord_4_23_3__埃莱杜兰.json": {
           "hero_id": "lord_4_23_3",
-          "en_file": "personality_background/lord_4_23_3__Eleduran.json"
+          "en_file": "personality_background/lord_4_23_3__Pentius.json"
         },
         "personality_background/lord_4_23__贝尔吉尔.json": {
           "hero_id": "lord_4_23",
-          "en_file": "personality_background/lord_4_23__Belgir.json"
+          "en_file": "personality_background/lord_4_23__Tritaius.json"
         },
         "personality_background/lord_4_24_1__阿达尔特鲁德.json": {
           "hero_id": "lord_4_24_1",
-          "en_file": "personality_background/lord_4_24_1__Adaltrud.json"
+          "en_file": "personality_background/lord_4_24_1__Sakarbiskar.json"
         },
-        "personality_background/lord_4_24_2__古多恩赫尔达.json": {
+        "personality_background/lord_4_24_2__古敦赫尔达.json": {
           "hero_id": "lord_4_24_2",
           "en_file": "personality_background/lord_4_24_2__Gudonhelda.json"
         },
@@ -16947,99 +16947,99 @@
         },
         "personality_background/lord_4_24__赫卡德.json": {
           "hero_id": "lord_4_24",
-          "en_file": "personality_background/lord_4_24__Hecard.json"
+          "en_file": "personality_background/lord_4_24__Hilernus.json"
         },
         "personality_background/lord_4_25_1__贝尔蒂利亚娜.json": {
           "hero_id": "lord_4_25_1",
-          "en_file": "personality_background/lord_4_25_1__Bertliana.json"
+          "en_file": "personality_background/lord_4_25_1__Bendidora.json"
         },
         "personality_background/lord_4_25__卢坎德.json": {
           "hero_id": "lord_4_25",
-          "en_file": "personality_background/lord_4_25__Lucand.json"
+          "en_file": "personality_background/lord_4_25__Teres.json"
         },
-        "personality_background/lord_4_26_1__赖恩加尔达.json": {
+        "personality_background/lord_4_26_1__雷因加达.json": {
           "hero_id": "lord_4_26_1",
           "en_file": "personality_background/lord_4_26_1__Reingarda.json"
         },
         "personality_background/lord_4_26__佩里克.json": {
           "hero_id": "lord_4_26",
-          "en_file": "personality_background/lord_4_26__Peric.json"
+          "en_file": "personality_background/lord_4_26__Urgidar.json"
         },
         "personality_background/lord_4_27_1__利特加尔迪斯.json": {
           "hero_id": "lord_4_27_1",
-          "en_file": "personality_background/lord_4_27_1__Lietgardis.json"
+          "en_file": "personality_background/lord_4_27_1__Theodote.json"
         },
         "personality_background/lord_4_27__瓦尔廷.json": {
           "hero_id": "lord_4_27",
-          "en_file": "personality_background/lord_4_27__Vartin.json"
+          "en_file": "personality_background/lord_4_27__Euthydemos.json"
         },
-        "personality_background/lord_4_28_1__阿达林迪斯.json": {
+        "personality_background/lord_4_28_1__萨特妮克.json": {
           "hero_id": "lord_4_28_1",
-          "en_file": "personality_background/lord_4_28_1__Adalindis.json"
+          "en_file": "personality_background/lord_4_28_1__Satenik.json"
         },
         "personality_background/lord_4_28_2__毛里亚娜.json": {
           "hero_id": "lord_4_28_2",
-          "en_file": "personality_background/lord_4_28_2__Mauriana.json"
+          "en_file": "personality_background/lord_4_28_2__Tigranuhi.json"
         },
-        "personality_background/lord_4_28__埃卡兰德.json": {
+        "personality_background/lord_4_28__奥龙特斯.json": {
           "hero_id": "lord_4_28",
-          "en_file": "personality_background/lord_4_28__Ecarand.json"
+          "en_file": "personality_background/lord_4_28__Orontes.json"
         },
         "personality_background/lord_4_2__菲勒诺拉.json": {
           "hero_id": "lord_4_2",
-          "en_file": "personality_background/lord_4_2__Philenora.json"
+          "en_file": "personality_background/lord_4_2__Tangina.json"
         },
         "personality_background/lord_4_3_1__梅根赫尔达.json": {
           "hero_id": "lord_4_3_1",
-          "en_file": "personality_background/lord_4_3_1__Megenhelda.json"
+          "en_file": "personality_background/lord_4_3_1__Luxinia.json"
         },
         "personality_background/lord_4_3__阿尔德里克.json": {
           "hero_id": "lord_4_3",
-          "en_file": "personality_background/lord_4_3__Aldric.json"
+          "en_file": "personality_background/lord_4_3__Attenes.json"
         },
-        "personality_background/lord_4_4__埃尔希尔德.json": {
+        "personality_background/lord_4_4__埃尔斯蒂尔德.json": {
           "hero_id": "lord_4_4",
           "en_file": "personality_background/lord_4_4__Elthild.json"
         },
-        "personality_background/lord_4_5__乌恩泰里.json": {
+        "personality_background/lord_4_5__图鲁斯.json": {
           "hero_id": "lord_4_5",
-          "en_file": "personality_background/lord_4_5__Unthery.json"
+          "en_file": "personality_background/lord_4_5__Thurrus.json"
         },
         "personality_background/lord_4_6_1__奥多弗莱德.json": {
           "hero_id": "lord_4_6_1",
-          "en_file": "personality_background/lord_4_6_1__Odofled.json"
+          "en_file": "personality_background/lord_4_6_1__Bileseton.json"
         },
         "personality_background/lord_4_6__卡拉蒂尔德.json": {
           "hero_id": "lord_4_6",
-          "en_file": "personality_background/lord_4_6__Calatild.json"
+          "en_file": "personality_background/lord_4_6__Abulia.json"
         },
         "personality_background/lord_4_7__阿拉里.json": {
           "hero_id": "lord_4_7",
-          "en_file": "personality_background/lord_4_7__Alary.json"
+          "en_file": "personality_background/lord_4_7__Caesarus.json"
         },
         "personality_background/lord_4_8__富恩哈德.json": {
           "hero_id": "lord_4_8",
-          "en_file": "personality_background/lord_4_8__Furnhard.json"
+          "en_file": "personality_background/lord_4_8__Culchas.json"
         },
-        "personality_background/lord_4_9__阿卢西乌斯.json": {
+        "personality_background/lord_4_9__托蒙德.json": {
           "hero_id": "lord_4_9",
-          "en_file": "personality_background/lord_4_9__Thomund.json"
+          "en_file": "personality_background/lord_4_9__Alucius.json"
         },
         "personality_background/lord_5_10__科林.json": {
           "hero_id": "lord_5_10",
-          "en_file": "personality_background/lord_5_10__Corein.json"
+          "en_file": "personality_background/lord_5_10__Epasnacta.json"
         },
         "personality_background/lord_5_11__阿莉内丝.json": {
           "hero_id": "lord_5_11",
-          "en_file": "personality_background/lord_5_11__Alynneth.json"
+          "en_file": "personality_background/lord_5_11__Enica.json"
         },
-        "personality_background/lord_5_12__威休因.json": {
+        "personality_background/lord_5_12__威斯温.json": {
           "hero_id": "lord_5_12",
           "en_file": "personality_background/lord_5_12__Wythuin.json"
         },
-        "personality_background/lord_5_131__拉斯.json": {
+        "personality_background/lord_5_131__贝洛维苏斯.json": {
           "hero_id": "lord_5_131",
-          "en_file": "personality_background/lord_5_131__Rath.json"
+          "en_file": "personality_background/lord_5_131__Bellovesos.json"
         },
         "personality_background/lord_5_13_1__比萨格.json": {
           "hero_id": "lord_5_13_1",
@@ -17047,55 +17047,55 @@
         },
         "personality_background/lord_5_13__穆因瑟.json": {
           "hero_id": "lord_5_13",
-          "en_file": "personality_background/lord_5_13__Muinser.json"
+          "en_file": "personality_background/lord_5_13__Celtillos.json"
         },
         "personality_background/lord_5_14_1__埃比尔.json": {
           "hero_id": "lord_5_14_1",
-          "en_file": "personality_background/lord_5_14_1__Eabyr.json"
+          "en_file": "personality_background/lord_5_14_1__Banona.json"
         },
         "personality_background/lord_5_14__路伊坎.json": {
           "hero_id": "lord_5_14",
-          "en_file": "personality_background/lord_5_14__Luichan.json"
+          "en_file": "personality_background/lord_5_14__Duratios.json"
         },
         "personality_background/lord_5_15_1__弗洛赖.json": {
           "hero_id": "lord_5_15_1",
-          "en_file": "personality_background/lord_5_15_1__Floraidh.json"
+          "en_file": "personality_background/lord_5_15_1__Dunobella.json"
         },
         "personality_background/lord_5_15_2__贝特林.json": {
           "hero_id": "lord_5_15_2",
-          "en_file": "personality_background/lord_5_15_2__Beitrin.json"
+          "en_file": "personality_background/lord_5_15_2__Voccio.json"
         },
         "personality_background/lord_5_15_3__迪尔万.json": {
           "hero_id": "lord_5_15_3",
-          "en_file": "personality_background/lord_5_15_3__Diarbhain.json"
+          "en_file": "personality_background/lord_5_15_3__Biracatta.json"
         },
         "personality_background/lord_5_15__普林多尔.json": {
           "hero_id": "lord_5_15",
-          "en_file": "personality_background/lord_5_15__Pryndor.json"
+          "en_file": "personality_background/lord_5_15__Cincibilos.json"
         },
         "personality_background/lord_5_16_1__利亚辛.json": {
           "hero_id": "lord_5_16_1",
-          "en_file": "personality_background/lord_5_16_1__Liasin.json"
+          "en_file": "personality_background/lord_5_16_1__Eluissa.json"
         },
         "personality_background/lord_5_16_2__加文.json": {
           "hero_id": "lord_5_16_2",
-          "en_file": "personality_background/lord_5_16_2__Gawen.json"
+          "en_file": "personality_background/lord_5_16_2__Vercana.json"
         },
         "personality_background/lord_5_16__埃龙.json": {
           "hero_id": "lord_5_16",
-          "en_file": "personality_background/lord_5_16__Aeron.json"
+          "en_file": "personality_background/lord_5_16__Brancus.json"
         },
-        "personality_background/lord_5_17_1__布里汉.json": {
+        "personality_background/lord_5_17_1__利图玛拉.json": {
           "hero_id": "lord_5_17_1",
-          "en_file": "personality_background/lord_5_17_1__Brighan.json"
+          "en_file": "personality_background/lord_5_17_1__Litumara.json"
         },
-        "personality_background/lord_5_17__阿拉德维尔.json": {
+        "personality_background/lord_5_17__图蒂索斯.json": {
           "hero_id": "lord_5_17",
-          "en_file": "personality_background/lord_5_17__Aradwyr.json"
+          "en_file": "personality_background/lord_5_17__Toutissos.json"
         },
         "personality_background/lord_5_18_1__谢纳格.json": {
           "hero_id": "lord_5_18_1",
-          "en_file": "personality_background/lord_5_18_1__Seonag.json"
+          "en_file": "personality_background/lord_5_18_1__Camma.json"
         },
         "personality_background/lord_5_18__布拉诺克.json": {
           "hero_id": "lord_5_18",
@@ -17103,251 +17103,251 @@
         },
         "personality_background/lord_5_19__费纳甘.json": {
           "hero_id": "lord_5_19",
-          "en_file": "personality_background/lord_5_19__Fenagan.json"
+          "en_file": "personality_background/lord_5_19__Lemonos.json"
         },
         "personality_background/lord_5_1_1__梅拉格.json": {
           "hero_id": "lord_5_1_1",
-          "en_file": "personality_background/lord_5_1_1__Merag.json"
+          "en_file": "personality_background/lord_5_1_1__Ritumara.json"
         },
         "personality_background/lord_5_1__韦尔根托里克斯.json": {
           "hero_id": "lord_5_1",
-          "en_file": "personality_background/lord_5_1__Vergentorix.json"
+          "en_file": "personality_background/lord_5_1__Luernios.json"
         },
-        "personality_background/lord_5_20__西阿拉穆斯.json": {
+        "personality_background/lord_5_20__阿特格纳托斯.json": {
           "hero_id": "lord_5_20",
-          "en_file": "personality_background/lord_5_20__Siaramus.json"
+          "en_file": "personality_background/lord_5_20__Ategnatos.json"
         },
         "personality_background/lord_5_21_1__贝萨格.json": {
           "hero_id": "lord_5_21_1",
           "en_file": "personality_background/lord_5_21_1__Beathag.json"
         },
-        "personality_background/lord_5_21_2__陶尔瑟.json": {
+        "personality_background/lord_5_21_2__陶尔斯.json": {
           "hero_id": "lord_5_21_2",
           "en_file": "personality_background/lord_5_21_2__Taorse.json"
         },
         "personality_background/lord_5_21__卡尔菲德.json": {
           "hero_id": "lord_5_21",
-          "en_file": "personality_background/lord_5_21__Carfyd.json"
+          "en_file": "personality_background/lord_5_21__Esugenos.json"
         },
         "personality_background/lord_5_22__菲亚拉德.json": {
           "hero_id": "lord_5_22",
-          "en_file": "personality_background/lord_5_22__Fiarad.json"
+          "en_file": "personality_background/lord_5_22__Litaviccos.json"
         },
         "personality_background/lord_5_3_1__拉纳翁.json": {
           "hero_id": "lord_5_3_1",
-          "en_file": "personality_background/lord_5_3_1__Ranaon.json"
+          "en_file": "personality_background/lord_5_3_1__Senuna.json"
         },
         "personality_background/lord_5_3_2__拉多古尔.json": {
           "hero_id": "lord_5_3_2",
-          "en_file": "personality_background/lord_5_3_2__Ladogual.json"
+          "en_file": "personality_background/lord_5_3_2__Sentica.json"
         },
         "personality_background/lord_5_3__埃尔热翁.json": {
           "hero_id": "lord_5_3",
-          "en_file": "personality_background/lord_5_3__Ergeon.json"
+          "en_file": "personality_background/lord_5_3__Boiorix.json"
         },
         "personality_background/lord_5_4__尼温.json": {
           "hero_id": "lord_5_4",
-          "en_file": "personality_background/lord_5_4__Nywin.json"
+          "en_file": "personality_background/lord_5_4__Bodicca.json"
         },
-        "personality_background/lord_5_5_1__埃利丝.json": {
+        "personality_background/lord_5_5_1__塞诺瓦拉.json": {
           "hero_id": "lord_5_5_1",
-          "en_file": "personality_background/lord_5_5_1__Eilidh.json"
+          "en_file": "personality_background/lord_5_5_1__Senovara.json"
         },
         "personality_background/lord_5_5__梅利迪尔.json": {
           "hero_id": "lord_5_5",
-          "en_file": "personality_background/lord_5_5__Melidir.json"
+          "en_file": "personality_background/lord_5_5__Catumaros.json"
         },
         "personality_background/lord_5_6__阿尔凯亚.json": {
           "hero_id": "lord_5_6",
-          "en_file": "personality_background/lord_5_6__Alcaea.json"
+          "en_file": "personality_background/lord_5_6__Ollognata.json"
         },
-        "personality_background/lord_5_7__门古斯.json": {
+        "personality_background/lord_5_7__比图伊托斯.json": {
           "hero_id": "lord_5_7",
-          "en_file": "personality_background/lord_5_7__Mengus.json"
+          "en_file": "personality_background/lord_5_7__Bituitos.json"
         },
         "personality_background/lord_5_8__塞因.json": {
           "hero_id": "lord_5_8",
-          "en_file": "personality_background/lord_5_8__Sein.json"
+          "en_file": "personality_background/lord_5_8__Dorulatos.json"
         },
         "personality_background/lord_5_91__特根.json": {
           "hero_id": "lord_5_91",
-          "en_file": "personality_background/lord_5_91__Tegan.json"
+          "en_file": "personality_background/lord_5_91__Dunorix.json"
         },
         "personality_background/lord_5_9__库尔恩.json": {
           "hero_id": "lord_5_9",
-          "en_file": "personality_background/lord_5_9__Culharn.json"
+          "en_file": "personality_background/lord_5_9__Ollognatos.json"
         },
-        "personality_background/lord_6_101__博拉特.json": {
+        "personality_background/lord_6_101__波拉特.json": {
           "hero_id": "lord_6_101",
           "en_file": "personality_background/lord_6_101__Bolat.json"
         },
-        "personality_background/lord_6_10__阿里津.json": {
+        "personality_background/lord_6_10__阿里金.json": {
           "hero_id": "lord_6_10",
           "en_file": "personality_background/lord_6_10__Alijin.json"
         },
         "personality_background/lord_6_11__亚纳.json": {
           "hero_id": "lord_6_11",
-          "en_file": "personality_background/lord_6_11__Yana.json"
+          "en_file": "personality_background/lord_6_11__Ermingardiz.json"
         },
         "personality_background/lord_6_12__阿巴盖.json": {
           "hero_id": "lord_6_12",
-          "en_file": "personality_background/lord_6_12__Abagai.json"
+          "en_file": "personality_background/lord_6_12__Brigindo.json"
         },
         "personality_background/lord_6_13__博尔图.json": {
           "hero_id": "lord_6_13",
-          "en_file": "personality_background/lord_6_13__Bortu.json"
+          "en_file": "personality_background/lord_6_13__Gatalos.json"
         },
-        "personality_background/lord_6_15_1__霍里津.json": {
+        "personality_background/lord_6_15_1__霍里金.json": {
           "hero_id": "lord_6_15_1",
           "en_file": "personality_background/lord_6_15_1__Khorijin.json"
         },
-        "personality_background/lord_6_15_2__彻辰.json": {
+        "personality_background/lord_6_15_2__塞臣.json": {
           "hero_id": "lord_6_15_2",
           "en_file": "personality_background/lord_6_15_2__Sechen.json"
         },
-        "personality_background/lord_6_15__奥拉古尔.json": {
+        "personality_background/lord_6_15__奥达瓦克拉兹.json": {
           "hero_id": "lord_6_15",
-          "en_file": "personality_background/lord_6_15__Oragur.json"
+          "en_file": "personality_background/lord_6_15__Audawakraz.json"
         },
-        "personality_background/lord_6_16_1__昌布伊.json": {
+        "personality_background/lord_6_16_1__格努拉.json": {
           "hero_id": "lord_6_16_1",
-          "en_file": "personality_background/lord_6_16_1__Chambui.json"
+          "en_file": "personality_background/lord_6_16_1__Gnoura.json"
         },
         "personality_background/lord_6_16_2__乌纳根.json": {
           "hero_id": "lord_6_16_2",
-          "en_file": "personality_background/lord_6_16_2__Unagen.json"
+          "en_file": "personality_background/lord_6_16_2__Spargapitha.json"
         },
         "personality_background/lord_6_16__胡鲁纳格.json": {
           "hero_id": "lord_6_16",
-          "en_file": "personality_background/lord_6_16__Hurunag.json"
+          "en_file": "personality_background/lord_6_16__Saitapharnes.json"
         },
         "personality_background/lord_6_17_1__埃尔根.json": {
           "hero_id": "lord_6_17_1",
-          "en_file": "personality_background/lord_6_17_1__Ergene.json"
+          "en_file": "personality_background/lord_6_17_1__Kamasarye.json"
         },
         "personality_background/lord_6_17_2__叶苏姆.json": {
           "hero_id": "lord_6_17_2",
-          "en_file": "personality_background/lord_6_17_2__Yesum.json"
+          "en_file": "personality_background/lord_6_17_2__Komosarye.json"
         },
         "personality_background/lord_6_17__阿克鲁姆.json": {
           "hero_id": "lord_6_17",
-          "en_file": "personality_background/lord_6_17__Akrum.json"
+          "en_file": "personality_background/lord_6_17__Hygiainon.json"
         },
         "personality_background/lord_6_18_1__蒂伦.json": {
           "hero_id": "lord_6_18_1",
-          "en_file": "personality_background/lord_6_18_1__Tilun.json"
+          "en_file": "personality_background/lord_6_18_1__Opoia.json"
         },
-        "personality_background/lord_6_18_2__查古恩.json": {
+        "personality_background/lord_6_18_2__塞纳莫蒂斯.json": {
           "hero_id": "lord_6_18_2",
-          "en_file": "personality_background/lord_6_18_2__Chagun.json"
+          "en_file": "personality_background/lord_6_18_2__Senamotis.json"
         },
         "personality_background/lord_6_18__伊拉塔尔.json": {
           "hero_id": "lord_6_18",
-          "en_file": "personality_background/lord_6_18__Ilatar.json"
+          "en_file": "personality_background/lord_6_18__Kanites.json"
         },
         "personality_background/lord_6_19_1__索哈泰.json": {
           "hero_id": "lord_6_19_1",
-          "en_file": "personality_background/lord_6_19_1__Sokhatai.json"
+          "en_file": "personality_background/lord_6_19_1__Zarinaia.json"
         },
         "personality_background/lord_6_19_2__科尔特.json": {
           "hero_id": "lord_6_19_2",
-          "en_file": "personality_background/lord_6_19_2__Korte.json"
+          "en_file": "personality_background/lord_6_19_2__Tomyris.json"
         },
         "personality_background/lord_6_19__卡努詹.json": {
           "hero_id": "lord_6_19",
-          "en_file": "personality_background/lord_6_19__Kanujan.json"
+          "en_file": "personality_background/lord_6_19__Amorges.json"
         },
         "personality_background/lord_6_1__蒙楚格.json": {
           "hero_id": "lord_6_1",
-          "en_file": "personality_background/lord_6_1__Monchug.json"
+          "en_file": "personality_background/lord_6_1__Medosakkos.json"
         },
         "personality_background/lord_6_20_1__吉古尔.json": {
           "hero_id": "lord_6_20_1",
-          "en_file": "personality_background/lord_6_20_1__Jigur.json"
+          "en_file": "personality_background/lord_6_20_1__Rhoxane.json"
         },
-        "personality_background/lord_6_20__塔斯卢尔.json": {
+        "personality_background/lord_6_20__斯帕尔加皮塞斯.json": {
           "hero_id": "lord_6_20",
-          "en_file": "personality_background/lord_6_20__Taslur.json"
+          "en_file": "personality_background/lord_6_20__Spargapises.json"
         },
         "personality_background/lord_6_21_1__埃萨切.json": {
           "hero_id": "lord_6_21_1",
-          "en_file": "personality_background/lord_6_21_1__Esachei.json"
+          "en_file": "personality_background/lord_6_21_1__Alkathoe.json"
         },
         "personality_background/lord_6_21__乌尔曼.json": {
           "hero_id": "lord_6_21",
-          "en_file": "personality_background/lord_6_21__Ulman.json"
+          "en_file": "personality_background/lord_6_21__Spartokos.json"
         },
-        "personality_background/lord_6_22_1__埃瑟伦.json": {
+        "personality_background/lord_6_22_1__马扎亚.json": {
           "hero_id": "lord_6_22_1",
-          "en_file": "personality_background/lord_6_22_1__Eselen.json"
+          "en_file": "personality_background/lord_6_22_1__Mazaia.json"
         },
         "personality_background/lord_6_22__阿恰库.json": {
           "hero_id": "lord_6_22",
-          "en_file": "personality_background/lord_6_22__Achaku.json"
+          "en_file": "personality_background/lord_6_22__Argotas.json"
         },
         "personality_background/lord_6_23__金特格.json": {
           "hero_id": "lord_6_23",
-          "en_file": "personality_background/lord_6_23__Kinteg.json"
+          "en_file": "personality_background/lord_6_23__Skunkha.json"
         },
         "personality_background/lord_6_24__梅希尔.json": {
           "hero_id": "lord_6_24",
-          "en_file": "personality_background/lord_6_24__Mehir.json"
+          "en_file": "personality_background/lord_6_24__Palakos.json"
         },
         "personality_background/lord_6_2__阿纳特.json": {
           "hero_id": "lord_6_2",
-          "en_file": "personality_background/lord_6_2__Anat.json"
+          "en_file": "personality_background/lord_6_2__Amage.json"
         },
         "personality_background/lord_6_3__巴盖.json": {
           "hero_id": "lord_6_3",
-          "en_file": "personality_background/lord_6_3__Bagai.json"
+          "en_file": "personality_background/lord_6_3__Visurix.json"
         },
         "personality_background/lord_6_4__梅苏伊.json": {
           "hero_id": "lord_6_4",
-          "en_file": "personality_background/lord_6_4__Mesui.json"
+          "en_file": "personality_background/lord_6_4__Sunnihildiz.json"
         },
         "personality_background/lord_6_51__哈达.json": {
           "hero_id": "lord_6_51",
-          "en_file": "personality_background/lord_6_51__Khada.json"
+          "en_file": "personality_background/lord_6_51__Ollogaisaz.json"
         },
         "personality_background/lord_6_5__图拉格.json": {
           "hero_id": "lord_6_5",
-          "en_file": "personality_background/lord_6_5__Tulag.json"
+          "en_file": "personality_background/lord_6_5__Teutagonus.json"
         },
         "personality_background/lord_6_6__苏兰.json": {
           "hero_id": "lord_6_6",
-          "en_file": "personality_background/lord_6_6__Suran.json"
+          "en_file": "personality_background/lord_6_6__Skilouros.json"
         },
         "personality_background/lord_6_7__查干.json": {
           "hero_id": "lord_6_7",
-          "en_file": "personality_background/lord_6_7__Chaghan.json"
+          "en_file": "personality_background/lord_6_7__Tasios.json"
         },
         "personality_background/lord_6_81__纳颜台.json": {
           "hero_id": "lord_6_81",
-          "en_file": "personality_background/lord_6_81__Nayantai.json"
+          "en_file": "personality_background/lord_6_81__Andagis.json"
         },
         "personality_background/lord_6_8__埃苏尔.json": {
           "hero_id": "lord_6_8",
-          "en_file": "personality_background/lord_6_8__Esur.json"
+          "en_file": "personality_background/lord_6_8__Swebaz.json"
         },
         "personality_background/lord_6_9__特穆恩.json": {
           "hero_id": "lord_6_9",
-          "en_file": "personality_background/lord_6_9__Temun.json"
+          "en_file": "personality_background/lord_6_9__Gaesorix.json"
         },
         "personality_background/lord_A9_c__阿马特.json": {
           "hero_id": "lord_A9_c",
-          "en_file": "personality_background/lord_A9_c__Amat.json"
+          "en_file": "personality_background/lord_A9_c__Tiziri.json"
         },
-        "personality_background/lord_A9_l__米卢伊斯.json": {
+        "personality_background/lord_A9_l__米杜斯.json": {
           "hero_id": "lord_A9_l",
-          "en_file": "personality_background/lord_A9_l__Midus.json"
+          "en_file": "personality_background/lord_A9_l__Alazeir.json"
         },
         "personality_background/lord_A9_s__玛尔卡.json": {
           "hero_id": "lord_A9_s",
-          "en_file": "personality_background/lord_A9_s__Malka.json"
+          "en_file": "personality_background/lord_A9_s__Namgedde.json"
         },
         "personality_background/lord_A9_u__诺萨尔.json": {
           "hero_id": "lord_A9_u",
-          "en_file": "personality_background/lord_A9_u__Nossar.json"
+          "en_file": "personality_background/lord_A9_u__Adikran.json"
         },
         "personality_background/lord_achaean_league_11_spouse__帕西菲拉.json": {
           "hero_id": "lord_achaean_league_11_spouse",
@@ -17403,7 +17403,7 @@
         },
         "personality_background/lord_achaean_league_2_spouse__小阿拉托斯.json": {
           "hero_id": "lord_achaean_league_2_spouse",
-          "en_file": "personality_background/lord_achaean_league_2_spouse__Aratos_the_Younger.json"
+          "en_file": "personality_background/lord_achaean_league_2_spouse__Aratos the Younger.json"
         },
         "personality_background/lord_achaean_league_3__埃佩拉托斯.json": {
           "hero_id": "lord_achaean_league_3",
@@ -17475,15 +17475,15 @@
         },
         "personality_background/lord_B8_c__瓜兰.json": {
           "hero_id": "lord_B8_c",
-          "en_file": "personality_background/lord_B8_c__Guaran.json"
+          "en_file": "personality_background/lord_B8_c__Taurisicos.json"
         },
         "personality_background/lord_B8_l__迈雷斯.json": {
           "hero_id": "lord_B8_l",
-          "en_file": "personality_background/lord_B8_l__Maireas.json"
+          "en_file": "personality_background/lord_B8_l__Cintugena.json"
         },
         "personality_background/lord_B8_s__罗达拉克.json": {
           "hero_id": "lord_B8_s",
-          "en_file": "personality_background/lord_B8_s__Rodarac.json"
+          "en_file": "personality_background/lord_B8_s__Bathanattos.json"
         },
         "personality_background/lord_belgae_10_spouse__昂德孔博斯.json": {
           "hero_id": "lord_belgae_10_spouse",
@@ -17971,23 +17971,23 @@
         },
         "personality_background/lord_K8_u__博龙查尔.json": {
           "hero_id": "lord_K8_u",
-          "en_file": "personality_background/lord_K8_u__Boronchar.json"
+          "en_file": "personality_background/lord_K8_u__Sakesphares.json"
         },
         "personality_background/lord_K9_c1__阿尔图.json": {
           "hero_id": "lord_K9_c1",
-          "en_file": "personality_background/lord_K9_c1__Altu.json"
+          "en_file": "personality_background/lord_K9_c1__Artabanos.json"
         },
         "personality_background/lord_K9_c2__梅拉.json": {
           "hero_id": "lord_K9_c2",
-          "en_file": "personality_background/lord_K9_c2__Mela.json"
+          "en_file": "personality_background/lord_K9_c2__Ariazate.json"
         },
         "personality_background/lord_K9_l__古苏坎.json": {
           "hero_id": "lord_K9_l",
-          "en_file": "personality_background/lord_K9_l__Gusukan.json"
+          "en_file": "personality_background/lord_K9_l__Arsakes.json"
         },
         "personality_background/lord_K9_s__瑟文.json": {
           "hero_id": "lord_K9_s",
-          "en_file": "personality_background/lord_K9_s__Sevin.json"
+          "en_file": "personality_background/lord_K9_s__Rinnu.json"
         },
         "personality_background/lord_NE7_u__内斯蒂斯.json": {
           "hero_id": "lord_NE7_u",
@@ -17995,35 +17995,35 @@
         },
         "personality_background/lord_NE8_c1__西阿维索斯.json": {
           "hero_id": "lord_NE8_c1",
-          "en_file": "personality_background/lord_NE8_c1__Theavisos.json"
+          "en_file": "personality_background/lord_NE8_c1__Dapyx.json"
         },
         "personality_background/lord_NE8_c2__卢卡拉.json": {
           "hero_id": "lord_NE8_c2",
-          "en_file": "personality_background/lord_NE8_c2__Lucala.json"
+          "en_file": "personality_background/lord_NE8_c2__Tzinta.json"
         },
-        "personality_background/lord_NE8_l__马里齐乌斯.json": {
+        "personality_background/lord_NE8_l__奥罗莱斯.json": {
           "hero_id": "lord_NE8_l",
-          "en_file": "personality_background/lord_NE8_l__Maritzios.json"
+          "en_file": "personality_background/lord_NE8_l__Oroles.json"
         },
-        "personality_background/lord_NE8_s__普拉登蒂娅.json": {
+        "personality_background/lord_NE8_s__狄达.json": {
           "hero_id": "lord_NE8_s",
-          "en_file": "personality_background/lord_NE8_s__Pradentia.json"
+          "en_file": "personality_background/lord_NE8_s__Dida.json"
         },
-        "personality_background/lord_NE9_d__瓦米娜.json": {
+        "personality_background/lord_NE9_d__齐亚.json": {
           "hero_id": "lord_NE9_d",
-          "en_file": "personality_background/lord_NE9_d__Vamina.json"
+          "en_file": "personality_background/lord_NE9_d__Zia.json"
         },
         "personality_background/lord_NE9_l__波尔法利乌斯.json": {
           "hero_id": "lord_NE9_l",
-          "en_file": "personality_background/lord_NE9_l__Porphalios.json"
+          "en_file": "personality_background/lord_NE9_l__Zalmodegikos.json"
         },
         "personality_background/lord_NE9_s__埃索斯.json": {
           "hero_id": "lord_NE9_s",
-          "en_file": "personality_background/lord_NE9_s__Aesos.json"
+          "en_file": "personality_background/lord_NE9_s__Rhemaxos.json"
         },
         "personality_background/lord_ptolemaic_10_spouse__小索西比乌斯.json": {
           "hero_id": "lord_ptolemaic_10_spouse",
-          "en_file": "personality_background/lord_ptolemaic_10_spouse__Sosibios_the_Younger.json"
+          "en_file": "personality_background/lord_ptolemaic_10_spouse__Sosibios the Younger.json"
         },
         "personality_background/lord_ptolemaic_10__密尔利内.json": {
           "hero_id": "lord_ptolemaic_10",
@@ -18031,7 +18031,7 @@
         },
         "personality_background/lord_ptolemaic_11__索西比乌斯之子托勒密.json": {
           "hero_id": "lord_ptolemaic_11",
-          "en_file": "personality_background/lord_ptolemaic_11__Ptolemaios_son_of_Sosibios.json"
+          "en_file": "personality_background/lord_ptolemaic_11__Ptolemaios son of Sosibios.json"
         },
         "personality_background/lord_ptolemaic_17_spouse__阿加索克莱亚.json": {
           "hero_id": "lord_ptolemaic_17_spouse",
@@ -18059,7 +18059,7 @@
         },
         "personality_background/lord_ptolemaic_1__托勒密·爱父者.json": {
           "hero_id": "lord_ptolemaic_1",
-          "en_file": "personality_background/lord_ptolemaic_1__Ptolemaios_Philopator.json"
+          "en_file": "personality_background/lord_ptolemaic_1__Ptolemaios Philopator.json"
         },
         "personality_background/lord_ptolemaic_25_spouse__阿斯帕西亚.json": {
           "hero_id": "lord_ptolemaic_25_spouse",
@@ -18083,7 +18083,7 @@
         },
         "personality_background/lord_ptolemaic_2_spouse__德拉塞阿斯之子托勒密.json": {
           "hero_id": "lord_ptolemaic_2_spouse",
-          "en_file": "personality_background/lord_ptolemaic_2_spouse__Ptolemaios_son_of_Thraseas.json"
+          "en_file": "personality_background/lord_ptolemaic_2_spouse__Ptolemaios son of Thraseas.json"
         },
         "personality_background/lord_ptolemaic_3__埃凯克拉特斯.json": {
           "hero_id": "lord_ptolemaic_3",
@@ -18107,43 +18107,43 @@
         },
         "personality_background/lord_S8_u__哈尔雅莫达兹.json": {
           "hero_id": "lord_S8_u",
-          "en_file": "personality_background/lord_S8_u__Harjamodaz.json"
+          "en_file": "personality_background/lord_S8_u__Hathuwulfaz.json"
         },
         "personality_background/lord_S9_c__罗斯希贝尔塔兹.json": {
           "hero_id": "lord_S9_c",
-          "en_file": "personality_background/lord_S9_c__Hrothiberhtaz.json"
+          "en_file": "personality_background/lord_S9_c__Ingwiomeraz.json"
         },
         "personality_background/lord_S9_l__安苏莱巴兹.json": {
           "hero_id": "lord_S9_l",
-          "en_file": "personality_background/lord_S9_l__Ansulaibaz.json"
+          "en_file": "personality_background/lord_S9_l__Segimeraz.json"
         },
         "personality_background/lord_S9_m__比达瓦里贾兹.json": {
           "hero_id": "lord_S9_m",
-          "en_file": "personality_background/lord_S9_m__Bidawarijaz.json"
+          "en_file": "personality_background/lord_S9_m__Swanaburgo.json"
         },
-        "personality_background/lord_S9_u__安苏瓦尔达兹.json": {
+        "personality_background/lord_S9_u__西吉瓦尔达兹.json": {
           "hero_id": "lord_S9_u",
-          "en_file": "personality_background/lord_S9_u__Ansuwaldaz.json"
+          "en_file": "personality_background/lord_S9_u__Sigiwaldaz.json"
         },
-        "personality_background/lord_SE8_c__伊塔里娅.json": {
+        "personality_background/lord_SE8_c__伊塔里亚.json": {
           "hero_id": "lord_SE8_c",
           "en_file": "personality_background/lord_SE8_c__Itaria.json"
         },
         "personality_background/lord_SE9_c1__帕加里奥斯.json": {
           "hero_id": "lord_SE9_c1",
-          "en_file": "personality_background/lord_SE9_c1__Pagarios.json"
+          "en_file": "personality_background/lord_SE9_c1__Quintus Terentius Culleo.json"
         },
-        "personality_background/lord_SE9_c2__迪阿斯卡.json": {
+        "personality_background/lord_SE9_c2__狄斯卡.json": {
           "hero_id": "lord_SE9_c2",
           "en_file": "personality_background/lord_SE9_c2__Diasca.json"
         },
-        "personality_background/lord_SE9_l__盖乌斯·特伦提乌斯·瓦罗.json": {
+        "personality_background/lord_SE9_l__萨特罗斯.json": {
           "hero_id": "lord_SE9_l",
-          "en_file": "personality_background/lord_SE9_l__Satros.json"
+          "en_file": "personality_background/lord_SE9_l__Gaius Terentius Varro.json"
         },
         "personality_background/lord_SE9_s__容娜.json": {
           "hero_id": "lord_SE9_s",
-          "en_file": "personality_background/lord_SE9_s__Jonna.json"
+          "en_file": "personality_background/lord_SE9_s__Aelia.json"
         },
         "personality_background/lord_seleucid_11_spouse__菲洛泰拉.json": {
           "hero_id": "lord_seleucid_11_spouse",
@@ -18179,7 +18179,7 @@
         },
         "personality_background/lord_seleucid_21__埃托利亚人狄奥多托斯.json": {
           "hero_id": "lord_seleucid_21",
-          "en_file": "personality_background/lord_seleucid_21__Theodotos_the_Aetolian.json"
+          "en_file": "personality_background/lord_seleucid_21__Theodotos the Aetolian.json"
         },
         "personality_background/lord_seleucid_22_spouse__帕奈托洛斯.json": {
           "hero_id": "lord_seleucid_22_spouse",
@@ -18195,7 +18195,7 @@
         },
         "personality_background/lord_seleucid_2_spouse__小安条克.json": {
           "hero_id": "lord_seleucid_2_spouse",
-          "en_file": "personality_background/lord_seleucid_2_spouse__Antiochos_the_Younger.json"
+          "en_file": "personality_background/lord_seleucid_2_spouse__Antiochos the Younger.json"
         },
         "personality_background/lord_seleucid_2__菲拉.json": {
           "hero_id": "lord_seleucid_2",
@@ -18229,25 +18229,25 @@
           "hero_id": "lord_seleucid_4_spouse",
           "en_file": "personality_background/lord_seleucid_4_spouse__Ardys.json"
         },
-        "personality_background/lord_V11_c1__埃兰达拉.json": {
+        "personality_background/lord_V11_c1__斯特拉托妮基.json": {
           "hero_id": "lord_V11_c1",
-          "en_file": "personality_background/lord_V11_c1__Elendara.json"
+          "en_file": "personality_background/lord_V11_c1__Stratonike.json"
         },
         "personality_background/lord_V11_c2__达古尼克.json": {
           "hero_id": "lord_V11_c2",
-          "en_file": "personality_background/lord_V11_c2__Dagunic.json"
+          "en_file": "personality_background/lord_V11_c2__Eumenes.json"
         },
         "personality_background/lord_V11_l__贝里坎.json": {
           "hero_id": "lord_V11_l",
-          "en_file": "personality_background/lord_V11_l__Berican.json"
+          "en_file": "personality_background/lord_V11_l__Attalos.json"
         },
         "personality_background/lord_V11_u__沃莱里克.json": {
           "hero_id": "lord_V11_u",
-          "en_file": "personality_background/lord_V11_u__Voleric.json"
+          "en_file": "personality_background/lord_V11_u__Philetairos.json"
         },
         "personality_background/lord_V9_u__乌伦杜尔夫.json": {
           "hero_id": "lord_V9_u",
-          "en_file": "personality_background/lord_V9_u__Urundulf.json"
+          "en_file": "personality_background/lord_V9_u__Teleas.json"
         },
         "personality_background/lord_veneti_1_spouse__奥斯蒂亚拉.json": {
           "hero_id": "lord_veneti_1_spouse",
@@ -18275,13 +18275,13 @@
         },
         "personality_background/lord_WE8_c__伊克拉蒂娅.json": {
           "hero_id": "lord_WE8_c",
-          "en_file": "personality_background/lord_WE8_c__Icratia.json"
+          "en_file": "personality_background/lord_WE8_c__Aristarche.json"
         },
         "personality_background/lord_WE8_u__瓦尔米罗斯.json": {
           "hero_id": "lord_WE8_u",
-          "en_file": "personality_background/lord_WE8_u__Varmyros.json"
+          "en_file": "personality_background/lord_WE8_u__Euthymenes.json"
         },
-        "personality_background/lord_WE9_l__温坎蒂乌斯.json": {
+        "personality_background/lord_WE9_l__温坎提奥斯.json": {
           "hero_id": "lord_WE9_l",
           "en_file": "personality_background/lord_WE9_l__Vincantios.json"
         },
@@ -18289,67 +18289,67 @@
           "hero_id": "lord_WE9_u2",
           "en_file": "personality_background/lord_WE9_u2__Torvasis.json"
         },
-        "personality_background/lord_WE9_u__欧瑞萨.json": {
+        "personality_background/lord_WE9_u__欧雷萨.json": {
           "hero_id": "lord_WE9_u",
           "en_file": "personality_background/lord_WE9_u__Euresa.json"
         },
-        "personality_background/new_lord_hellenic_10__海伦娜.json": {
+        "personality_background/new_lord_hellenic_10__Hellena.json": {
           "hero_id": "new_lord_hellenic_10",
           "en_file": "personality_background/new_lord_hellenic_10__Hellena.json"
         },
-        "personality_background/new_lord_hellenic_1__扬尼.json": {
+        "personality_background/new_lord_hellenic_1__Yianni.json": {
           "hero_id": "new_lord_hellenic_1",
           "en_file": "personality_background/new_lord_hellenic_1__Yianni.json"
         },
-        "personality_background/new_lord_hellenic_2__露基娅.json": {
+        "personality_background/new_lord_hellenic_2__Loukia.json": {
           "hero_id": "new_lord_hellenic_2",
           "en_file": "personality_background/new_lord_hellenic_2__Loukia.json"
         },
-        "personality_background/new_lord_hellenic_3__埃夫多基娅.json": {
+        "personality_background/new_lord_hellenic_3__Evdokia.json": {
           "hero_id": "new_lord_hellenic_3",
           "en_file": "personality_background/new_lord_hellenic_3__Evdokia.json"
         },
-        "personality_background/new_lord_hellenic_4__潘特莉娜.json": {
+        "personality_background/new_lord_hellenic_4__Pantelina.json": {
           "hero_id": "new_lord_hellenic_4",
           "en_file": "personality_background/new_lord_hellenic_4__Pantelina.json"
         },
-        "personality_background/new_lord_hellenic_5__罗克萨尼.json": {
+        "personality_background/new_lord_hellenic_5__Roxanni.json": {
           "hero_id": "new_lord_hellenic_5",
           "en_file": "personality_background/new_lord_hellenic_5__Roxanni.json"
         },
-        "personality_background/new_lord_hellenic_6__米凯拉.json": {
+        "personality_background/new_lord_hellenic_6__Michaella.json": {
           "hero_id": "new_lord_hellenic_6",
           "en_file": "personality_background/new_lord_hellenic_6__Michaella.json"
         },
-        "personality_background/new_lord_hellenic_7__达夫妮.json": {
+        "personality_background/new_lord_hellenic_7__Dafni.json": {
           "hero_id": "new_lord_hellenic_7",
           "en_file": "personality_background/new_lord_hellenic_7__Dafni.json"
         },
-        "personality_background/new_lord_hellenic_8__法妮.json": {
+        "personality_background/new_lord_hellenic_8__Fani.json": {
           "hero_id": "new_lord_hellenic_8",
           "en_file": "personality_background/new_lord_hellenic_8__Fani.json"
         },
-        "personality_background/new_lord_hellenic_9__济诺维娅.json": {
+        "personality_background/new_lord_hellenic_9__Zinovia.json": {
           "hero_id": "new_lord_hellenic_9",
           "en_file": "personality_background/new_lord_hellenic_9__Zinovia.json"
         },
-        "personality_background/new_lord_rome_south_1__阿莱克蒂娅.json": {
+        "personality_background/new_lord_rome_south_1__Allectia.json": {
           "hero_id": "new_lord_rome_south_1",
           "en_file": "personality_background/new_lord_rome_south_1__Allectia.json"
         },
-        "personality_background/new_lord_rome_south_2__苏爱狄娅.json": {
+        "personality_background/new_lord_rome_south_2__Suedia.json": {
           "hero_id": "new_lord_rome_south_2",
           "en_file": "personality_background/new_lord_rome_south_2__Suedia.json"
         },
-        "personality_background/new_lord_rome_south_3__凯基娅.json": {
+        "personality_background/new_lord_rome_south_3__Caecia.json": {
           "hero_id": "new_lord_rome_south_3",
           "en_file": "personality_background/new_lord_rome_south_3__Caecia.json"
         },
-        "personality_background/new_lord_rome_south_4__奥里娅.json": {
+        "personality_background/new_lord_rome_south_4__Auria.json": {
           "hero_id": "new_lord_rome_south_4",
           "en_file": "personality_background/new_lord_rome_south_4__Auria.json"
         },
-        "personality_background/new_lord_rome_south_5__多塞尼亚.json": {
+        "personality_background/new_lord_rome_south_5__Dossenia.json": {
           "hero_id": "new_lord_rome_south_5",
           "en_file": "personality_background/new_lord_rome_south_5__Dossenia.json"
         }
