@@ -1,4 +1,6 @@
 {
+  "sponsorReceiptChinesePattern": "^{0}已经将 (?<gold>[1-9][0-9]*) 第纳尔（合计总值约 \\k<gold> 第纳尔） 交给 {1}。如果你正在和{0}交易，并核对好了数量和价值，那么你现在可以将商量好的物品，第纳尔或人交给{0}（本次交易动作记录#[0-9]+）$",
+  "sponsorReceiptEnglishPattern": "^{0} has given (?<gold>[1-9][0-9]*) denars \\(total value approx\\. \\k<gold> denars\\) to {1}\\. If you are trading with {0} and have verified the quantity and value, you may now deliver the agreed items, denars, or people to {0} \\(trade action record #[0-9]+\\)$",
   "replyWrappers": [
     "【回信】",
     "[Reply]"

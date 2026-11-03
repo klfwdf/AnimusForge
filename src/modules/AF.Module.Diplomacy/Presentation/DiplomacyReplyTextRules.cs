@@ -34,13 +34,23 @@ internal static class DiplomacyReplyTextRules
     };
     private static readonly Lazy<Regex> ReceiptLine = new Lazy<Regex>(BuildReceiptLine);
     private sealed class ReceiptPattern { public string Key { get; set; } public string Value { get; set; } }
-    private sealed class ReceiptCorpus { public string[] ReplyWrappers { get; set; } public ReceiptPattern[] Patterns { get; set; } }
+    private sealed class ReceiptCorpus
+    {
+        public string[] ReplyWrappers { get; set; }
+        public ReceiptPattern[] Patterns { get; set; }
+        public string SponsorReceiptChinesePattern { get; set; }
+        public string SponsorReceiptEnglishPattern { get; set; }
+    }
+
     private static readonly Lazy<ReceiptCorpus> Corpus = new Lazy<ReceiptCorpus>(() =>
     {
         using (var stream = typeof(DiplomacyReplyTextRules).Assembly.GetManifestResourceStream("AnimusForge.Diplomacy.ReceiptCompatibility.json"))
         using (var reader = new StreamReader(stream ?? throw new InvalidDataException("Missing embedded diplomacy receipt compatibility.")))
             return JsonConvert.DeserializeObject<ReceiptCorpus>(reader.ReadToEnd());
     });
+
+    internal static string SponsorReceiptChinesePattern => Corpus.Value.SponsorReceiptChinesePattern;
+    internal static string SponsorReceiptEnglishPattern => Corpus.Value.SponsorReceiptEnglishPattern;
 
     internal static string CleanNpcText(string text, string speakerName = null)
     {
