@@ -1,5 +1,10 @@
 ## 2026-11-04 打包切换 LZMA2 / 16 MiB 字典
 
+## 2026-11-04 远端已合并，合并后构建与专项通过，部署执行中
+
+合并 `c9a3b818e3`（远端 `bb9ec7ee15`）保留营地/自由镜头与外交/TTS双方修复；冲突已解决。双API/Bootstrap/双接缝及相关专项通过，8997文件干净Stage验证通过；原部署脚本正在覆盖F盘统一模块，未得成功回执前不声明部署完成。校验修正 `53dde75c20` 的主l10n门禁零失败；旧XML全量测试仍有远端既有重复提示键，未声称通过。完整证据及剩余边界见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#pending-changes-review-sync-20261104)。本轮未打包、未启动实机或调用模型，普通push待部署核实后执行。
+
+
 ## 2026-11-04 待提交改动已审查，本地已提交，远端同步待完成
 
 产品 `d0d8035578`；保留营地/自由镜头改动，修复复仇共享源码直接依赖AF与落点全场Agent扫描，补齐针对性测试。双API/Bootstrap与双接缝构建通过；208/87/9/24条专项、6例源码回归和65条接线资源通过；实机/旧档及完整独立复仇构建未验。用户已授权后续普通合并、编译、部署和推送；不强推、不打发布包。详细证据、已知旧夹具/范围图边界及回滚见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#pending-changes-review-sync-20261104)和[范围图](docs/architecture/af-framework-code-scope.md#pending-changes-review-sync-20261104)。

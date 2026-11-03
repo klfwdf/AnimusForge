@@ -14696,3 +14696,14 @@ INVESTIGATED / NO_PRODUCT_CHANGE / NO_PLAYER_CRASH_EVIDENCE。用户报告部分
 实际部署：复用已验证 Stage，通过临时调用器加载并执行未修改的 deploy_module.ps1 原部署 owner；仅按用户明确例外检查 CN 投影收据，保留当前产物、模块身份、路径、玩家文件、哈希/并发修改及同卷替换保护。目标为 E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge；不创建 Recovery 备份或自动回滚，不改游戏原版 DLL。安装后核对全部 Stage 文件与保护文件，双实现 DLL 和 Bootstrap 哈希已记录在 verification.json。现有配置和自定义提示词保留，较新玩家导出按原规则保留。
 
 本地证据：artifacts/diplomacy-deploy-push-20261104/verification.json；旧 Stage 原样保留于 previous-stage/。本次未启动游戏、未调用真实 provider、未验收玩家存档、未制作发行包；构建与文件安装验收不能代替实机外交行为验收。
+
+
+### 合并后验证补记（2026-11-04T03:09:58+08:00）
+
+- 审查产品 `d0d8035578`、历史记录与审查证据 `6a59ef7c9a`；普通合并 `c9a3b818e3` 含远端 `bb9ec7ee15`，4处冲突已人工处理：三份记录保留双方独立条目、无重复HTML锚点；付款回执保留双语嵌入模板并使用InvariantCulture，两侧中文正则逐字等价，未恢复英文C#硬编码。
+- 合并源码双API各407警告/0错误、Bootstrap0警告/0错误；双Coup seam/registration通过，实际引用1.3.15与1.4.6。游戏Native XML为1.4.8，编译引用版本不冒充实机版本。
+- 合并后重跑：外交付款168、规划纠错38（CN/EN）、按事件世界资料查询13、前缀排序97、原生语言切换音色187；营地算法87、场地/生命周期24、宿主输入9、自由视角208，源码回归6及接线65均通过。完整独立复仇工程和完整续场旧fixture仍未验。
+- 最初Stage校验正确阻断旧Stage16个资源不匹配；没有游戏写入。旧Stage保留于 `.tmp/review-uncommitted-20261104_023448/stale-stage-retained/`，原脚本从空目录重建8997文件Stage，当前构建标记与内容映射精确校验通过，映射字节差异0。没有放行旧输出未知文件，没有改一键构建/覆盖脚本。
+- 校验工具修正 `53dde75c20`：DiplomacyReceiptCompatibility 是仅匹配旧双语身份的单一嵌入表（不按语言生成正文），归入现有身份表豁免；XML键允许原生已验证的连字符，稳定音色ID不改。主l10n门禁26表/2106运行文件、汉字字面量0、失败0。较旧全量XML契约继续报远端原有重复 `AF_MCM_Tts_Provider_Hint`（UI和LLM表各一项）；本次没有改业务提示词/加载顺序来掩盖该既有问题，不宣称该测试通过。
+- 推送前闭包检查未发现被排除本地HANDOFF、私有官网/输出/work/NuGet路径；暂存区干净。未跟踪资料、14个纯换行文件的stash `e661d37eb7ff523b9e0fc5eede70412fc7eb71f3` 和原字节快照保留，交付末尾恢复。
+- 部署已调用未修改的 `scripts/build/deploy_module.ps1`，只覆盖统一模块受管文件，保持Stage/目标/reparse/玩家文件/哈希/并发改动保护；目标 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。部署前确认进程与3个DLL独占写句柄，记录模块保护文件11、原生MCM JSON13、原版关键文件3、PlayerExports8540个哈希/时间戳；当前等待原部署owner成功回执，尚不声明完成。最终部署/远端核实追加如下。
