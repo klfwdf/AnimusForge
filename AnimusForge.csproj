@@ -24,7 +24,7 @@
   <ItemGroup>
     <!-- Extension trees are excluded, then Illustrator, Dialogue UI, Coup, and the
          XihaiAction core/runtime sources are linked back into this implementation assembly. -->
-    <Compile Remove="extensions\**\*.cs;artifacts\**\*.cs;tests\**\*.cs" />
+    <Compile Remove="extensions\**\*.cs;artifacts\**\*.cs;tests\**\*.cs;work\**\*.cs;outputs\**\*.cs" />
   </ItemGroup>
   <PropertyGroup Condition="($([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) Or $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.5')))">
     <DefineConstants>$(DefineConstants);BANNERLORD_1_4_OR_GREATER</DefineConstants>
