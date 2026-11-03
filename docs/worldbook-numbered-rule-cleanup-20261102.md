@@ -1,6 +1,7 @@
 # 燃烬帝国编号知识卡整理（2026-11-02）
 
-状态：SOURCE_ORGANIZED / OFFLINE_VERIFIED / NOT_DEPLOYED。源码在 main 分支；意图检查点 4c9afac227，整理切片 3634343e53。
+状态：SOURCE_ORGANIZED / OFFLINE_VERIFIED / CONTENT_DEPLOYED / LIVE_NOT_RUN。源码在 main 分支；整理切片 3634343e53。意图检查点 4c9afac227。
+
 
 ## 处理
 
@@ -18,3 +19,9 @@
 ## 回滚
 
 优先使用聚焦逆提交 git revert 3634343e53；意图提交 4c9afac227 可作为整理边界。不要 reset 共享 main。 .tmp/worldbook-numbered-cleanup-20261102/rename-plan.json 保存改名前后路径与哈希；同目录 before-ledger.md、before-HANDOFF.md 保存本次记录修改前的既有脏文档状态。
+
+## 部署补记（2026-11-02）
+
+用户明确要求部署后，仅在 Steam 安装目录 Modules/AnimusForge/PlayerExports/燃烬帝国编年史/knowledge/rules 将 187 个已校验文件改为提交中的新文件名；每个旧/新文件 SHA-256 一一相同。部署前确认 Bannerlord 未运行、目标模块身份为 AnimusForge、目标路径无 reparse point、无文件冲突。部署后 414 条规则文件名与提交源包一致，缺失/多余/哈希差异均为 0。
+
+本次未更改 DLL 或其他 PlayerExports 数据，未启动游戏、未发起模型请求；新战役导入可验，旧存档内已导入知识未做实机确认。现有项目 Stage 仍为旧文件名投影（414条中187个旧名），不作为本次内容来源；后续正式 Stage/打包前需刷新干净 Stage。未创建游戏目录备份。回滚按提交 3634343e53 的旧/新路径映射，将 187 个新文件名改回对应旧名。

@@ -17,6 +17,117 @@
 - `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs`: `ShoutMissionBehavior.OnAgentRemoved/OnAgentDeleted/OnEndMission`529-544；`ShoutBehavior.SceneAudio.cs`36-43取消地图端口绑定。
 - `tests/modules/AF.Module.Conversation/TtsNativeCleanupTests/`: 当前生产方法抽取与17行为检查，原生叶子为stub；不覆盖真实TaleWorlds.Native/WinMM或实际Mission。修订为本任务fix提交；构建及未验见[台账](../animusforge-refactoring-and-repository-reorganization-plan.md#tts-death-cancel-lipsync-20261103)。
 
+<a id="diplomacy-image-slim-extreme-7z-20261102"></a>
+## 2026-11-02 外交插画体积与低配世界书发布边界
+
+产品2dc2f04600，检查点af3ded5f1；状态与未验见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-image-slim-extreme-7z-20261102)。未新增运行时职责、语言键、协议、存档、DLL接口或Tick开销。
+
+| 来源/符号 | 变更职责与覆盖边界 |
+| --- | --- |
+| content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_diplomacy_event/*.png | 18张插画1116x372；底板保持1254x1254，仅离线制作用PNG重编码，不改变ID或加载入口 |
+| content/modules/AF.Module.Diplomacy/GUI/Prefabs/DiplomacyEventPopup.xml:5-19 | 已有558x186插画槽为尺寸依据，本次未修改prefab |
+| scripts/build/package_localization.ps1:260-268 / Test-AnimusForgePlayerPackageOmission | 统一PDB、中英Lite世界书发布排除，源/Stage保留 |
+| scripts/build/package_localization.ps1:269起 / Get-AnimusForgePackageProjection | 在投影读内容前应用排除，保留CN/EN真实包身份 |
+| scripts/build/package_mod.ps1:605起 / Assert-ZipLayout；737起 / Assert-ZipMatchesCleanStage | 复用同一排除谓词；本会话未执行门禁或比较 |
+| .tmp/diplomacy-png-slim-20261102/slim.py、pack_extreme.py、pack_more.py、pack_context_split.py | 一次性图片转换、截图目录同步和归档候选生成；lp2、高上下文和模型分块只改变7Z编码，同一内容输入；支持复用已完成候选恢复中断任务；不属于运行时热路径 |
+
+不覆盖或声称已验证：Bannerlord实机表现、模型推理、图像/归档比较、完整正式门禁。旧包与原图备份保留；回滚仅聚焦2dc2f04600。
+
+---
+<a id="client-package-pdb-prune-maximum-20261102"></a>
+## 2026-11-02 玩家归档PDB边界与资源精简
+
+规则提交2cb99b15a6，交付和未验见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#client-package-pdb-prune-maximum-20261102)。没有新增运行时职责、公开API、存档键、语言资源或Tick工作。
+
+| 源码/符号 | 本次职责 |
+| --- | --- |
+| scripts/build/package_localization.ps1 / Get-AnimusForgePackageProjection | 玩家内容投影跳过.pdb，Stage和构建本地符号仍保留 |
+| scripts/build/package_mod.ps1 / Assert-ZipLayout | 玩家ZIP不再要求/放行PDB，明确拒绝符号归档 |
+| scripts/build/package_mod.ps1 / Assert-ZipMatchesCleanStage | 对照发布投影时排除Stage中的本地PDB |
+| docs/bannerlord_dual_module_output.md / Player Package Debug Symbols | 记录本地符号与发包边界，不变更构建或覆盖流程 |
+| .tmp/package-prune-20261102/repackage.py、compress_maximum.py | 复用原1.8.0 payload剔除已授权29项并输出双ZIP/512MiB字典实体7z |
+
+现有PatternName/SealName动态图片消费者继续保留素材。规则脚本未执行合同/门禁测试；新归档只报告实际写入/压缩命令成功，非实机验收。其他作者改动保留。回滚范围是2cb99b15a6与本次新归档，旧包和本地PDB保留。
+
+---
+<a id="unused-dialogue-sprite-cleanup-20261102"></a>
+## 2026-11-02 闲置DialogueUI方案图片清理
+
+产品155301c335；状态及未验见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#unused-dialogue-sprite-cleanup-20261102)。只移除extensions/AnimusForge.DialogueUI/GUI/SpriteParts下26张无注册/无生产消费者的旧候选PNG与content/content-map.json条目，安装目录同步删除同名26图。保留现有DialogueUiSprites.Names、SceneNames、RewriteNames和ShoutScrollNames消费的全部41张根图，不改C#、prefab、双语文本、公开API、存档或Tick工作。
+
+删除身份及恢复路径见.tmp/sprite-cleanup-20261102/cleanup.json；源码可按检查点305903fb3或聚焦逆向产品提交恢复。现有1.8.0 ZIP/7z不变，不能视为清理后安装包。用户要求未测试/校验/哈希/实机，不声称画面通过。
+
+---
+<a id="release-180-bekko-20261102"></a>
+## 2026-11-02 1.8.0 与内含 bekko 的安装包
+
+版本提交 b3b39f2333；交付/未验边界见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#release-180-bekko-20261102)。本次没有新增玩法、公开 API、存档结构或 Tick 工作。
+
+| 源路径 / 符号 | 本次职责 |
+| --- | --- |
+| Properties/AssemblyInfo.cs / AssemblyFileVersion、AssemblyInformationalVersion | 1.8.0 文件/信息版本；保持 AssemblyVersion 身份 |
+| AnimusForge/SubModule.xml / Version | v1.8.0，保持单模块 Bootstrap 入口 |
+| .tmp/package-1.8.0-bekko-20261102/produce.ps1 | 原生产参数分别生成 1.3/1.4 与 Bootstrap，使用独立输出与 obj |
+| .tmp/package-1.8.0-bekko-20261102/package.py / copy_into、english_source、plans、ZipFile | 映射内容、双语包选择、同 hero_id 实际文件定位、唯一模块根、bekko 三文件及成对 ZIP 发布 |
+
+产物为一键编译覆盖推送/packages/AnimusForge_v1.8.0_{CN,EN}_1102_2120.zip；写入完成命令 exit0。没有修改 checked-in 构建/打包入口；没有门禁、哈希、ZIP 回读或实机证据，没有部署或推送版本提交。代码编译来源是当时工作树，不等于干净提交闭包；其他作者改动和共享记录保留，未整体提交。
+
+---
+<a id="bekko-model-delivery-20261102"></a>
+## 2026-11-02 bekko 模型与设备设置退役
+
+产品 51d5d94f43；实际上传、推送及未验状态以[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#bekko-model-delivery-20261102)为准。以下按源路径与符号记录范围，不声称测试或实机通过。
+
+| 源路径 / 符号 | 本次职责 |
+| --- | --- |
+| src/AF.Persistence/AnimusForgeModelStore.cs / ResolveEmbedding、ResolveReranker | bekko 唯一模型路径，旧嵌入回退及重排器加载退役，保留内部接口 |
+| src/modules/AF.Module.Knowledge/Semantic/OnnxCrossEncoderReranker.cs / EnsureInitialized | 不初始化旧重排器，沿用既有 embedding fallback |
+| src/modules/AF.Module.Knowledge/Semantic/RerankerDeviceRuntime.cs / CreateLocalSession | 移除设备设置消费者与 CUDA worker 创建分支，保留既有内部 CPU 工厂 |
+| src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs / RerankerDeviceDropdown（删除） | 移除 MCM 属性、元数据与 backing field |
+| src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs、TerminalSettingsLocalization.cs | 删除终端设备设置注册与映射 |
+| content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml、CNs/af_ui_strings-zh-CN.xml | 删除对应 CN/EN 资源键，保留其他文本 |
+| .gitattributes、.gitignore、content/models.lock.json、AnimusForge/ONNX/bekko/ | 精确纳入三模型文件，前两项 Git LFS，排除 vectors 和旧模型 |
+
+未覆盖：本次源码生产编译、DLL 安装、安装后回读、模型推理、游戏设置界面和性能实机。没有新增 Tick 扫描、反射、轮询、配置副本或公开 API。交付记录见 [bekko 说明](../bekko-model-delivery-20261102.md)。
+
+---
+<a id="terminal-camp-direct-kill-20261102"></a>
+## 2026-11-02 终端底栏、营地到场与非刑场杀俘
+
+最终df503155a2，产品链575e0abd2f/0e5feac4d2/9341c84bf2/df503155a2；实际交付/未验与范围纠正在[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#terminal-camp-direct-kill-20261102)。没有新公开API、存档键或配置owner。
+
+| 源码（一基起始行或符号） | 覆盖职责 |
+| --- | --- |
+| content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml（Bottom controls） | 删除截图整组入口开关/提示，保留返回和关闭 |
+| src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalUiModels.cs:850、2057 | 去掉017/018/019绑定与入口切换命令，原其他终端功能保留 |
+| content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml、Languages/CNs/af_ui_strings-zh-CN.xml | 同步移除8个闲置中英文键，映射/加载路径保持 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.FieldCamp.cs:140、155 | 既有角色直接就位，观众不参与处决Ready门槛，下一位复用现场 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.ExecutionActors.cs:102、117 | 只定位已经借用且session匹配的真实Agent；清理导航、瞬移、暂停并保持朝向 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:470、507 | 最多16名原居民观众，独立有界寻路/步行/到位围观，停滞不持续顶墙 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.cs（既有upkeep） | 复用维护节拍处理观众，每轮2次寻路，不新增Tick全场扫描 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.People.cs:768、830 | 仅本营地非受保护俘虏真实致死事件，Murdered标记及原生死亡清理，避开Executed关系/荣誉分支 |
+| Vengeance/Source/Core/ExecutionService.cs（Commit死亡调用） | df503恢复原正式处决分支；不是本次无处决惩罚规则的适用对象 |
+
+未覆盖实机外观/到场高度/路径/对话/真实关系变化；按用户要求未执行测试或校验哈希。最终双实现生产编译完成并覆盖9项文件，不能替代游戏行为验收。9341扩大到刑场的中间行为明确无效，以df503和用户“没上刑场的俘虏”澄清为准。
+
+<a id="field-camp-footprint-nobles-20261102"></a>
+## 2026-11-02 营地刑台实际占地与全部贵族俘虏
+
+产品75cdcbb36c；交付与未验边界见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-footprint-nobles-20261102)。保持同DLL内部接缝，不新增公开API或存档形状。
+
+| 源码（一基起始行） | 符号 | 覆盖职责 |
+| --- | --- | --- |
+| src/modules/AF.Module.FieldCamp/FieldCampLayout.cs:191 | Build | 初始化统计全部存活贵族，围栏/缓存前扩展后沿与人数槽位 |
+| src/modules/AF.Module.FieldCamp/FieldCampLayout.Zones.cs:188 | PlacePen | 三列真实俘虏槽位与向后扩展围栏，保留入口 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.People.cs:244 | SpawnPrisoners | 移除前三名贵族上限，保持真实roster与伤员状态 |
+| Vengeance/Source/Customization/ExecutionSiteBuilderController.Core.cs:97、272 | LoadPrisonerOptions / ShowMainPanel | 用户打开面板时刷新实际场内俘虏，避免初始化时序的空缓存 |
+| Vengeance/Source/Customization/ExecutionSiteBuilderController.Panels.cs:426 | TryCommitDeploymentSelection | 提交前确认选定俘虏仍有现有Agent |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.Scene.cs:2016 | BuildFieldCampPreparationAreas | 实际碰撞子部件/mesh占地与真实变换，排除重复自动角色 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:446 | OnCeremonyGeometryChangedHook | 先匹配session；从未发布几何的失败不重采地面 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:795 | RefreshGroundObstacles | 只对旋转部件附近网格原生重采，单次事件去重 |
+
+未覆盖实机卡死线程、实际大贵族roster完整到场、地形/建场/交互体验；用户要求未运行测试/校验/哈希。双实现与Bootstrap仅完成生产编译，六文件覆盖命令成功，不视作实机验收。原来借用现有人员、楼梯入场、复用刑场/刽子手和活俘虏对话职责保留。
+
 <a id="diplomacy-stable-case-prefix-20261102"></a>
 ## 2026-11-02 外交请求原案与动态尾部顺序
 
@@ -30,6 +141,22 @@
 | tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/Program.cs:96-100 | Main | 接入--prefix-ordering与--prefix-ordering-log |
 
 未覆盖provider缓存能力/TTL/计费和实机接受；不更改API路由、模型、亲和调度、业务规则、历史压缩或当前世界事实获取。没有跨请求结果复用或Tick IO。
+
+---
+<a id="field-camp-review-entry-fixes-20261102"></a>
+## 2026-11-02 刑场入场、复位、楼梯和建场提交修复
+
+源码cc588b61d9；交付及未验范围见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-review-entry-fixes-20261102)。未运行坐标校验、离线测试、哈希或实机。
+
+| 源码入口 | 符号 | 责任 |
+| --- | --- | --- |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.Placement.cs:1539 | SetCeremonyAlliesFormationControl | 保留营地借用人员的入场/复位控制 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.ExecutionActors.cs:106 | WalkCampCeremonyActor | 已在目标点直接完成，不下台绕行 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.FieldCamp.cs:144 | FieldCampStageApproach | 复用真实踏面采样，缓存并移交下一位入口 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:155 | PrepareCeremony | 宿主消费Ready同次调用补看真实占地 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:386 | CompleteCeremonyPreparation | 提交时补收晚进入的实际占用者 |
+
+复用Apparatus中的TryProjectStairFootprint/TrySampleStairSurface/ComposePlacementPoint；消费者仍是原Scene初始化和FieldCamp人员入场状态机。范围不修改城镇人员释放、伤亡结算、存档协议、公开API或一键构建。实机楼梯行走、连续处决及动态让位未验。
 
 ---
 <a id="prisoner-status-ownership-20261102"></a>
@@ -50,6 +177,99 @@
 | tests/modules/AF.Module.Prompt/PrisonerStatusOwnershipTests/Harness.cs.txt:1–70 | 普通、特殊和单来源状态断言，使用受控游戏叶子；不代表实机引擎。 |
 
 玩家提示词/优先级及消息拼装策略未改。旧通用消息测试缺依赖，未宣称通过。[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#prisoner-status-ownership-20261102)。
+
+---
+
+<a id="field-camp-empty-site-20261102"></a>
+## 2026-11-02 空地部署占用判定修复
+
+源码82df6b7fb8；交付及未验范围见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-empty-site-20261102)。未运行坐标校验、离线测试、哈希或实机。
+
+| 源码入口 | 符号 | 本次责任 |
+| --- | --- | --- |
+| Vengeance/Source/Core/VengeanceIntegration.cs:18 | FieldCampCeremonyArea | 确认时保存道具方向和投影范围，Contains按真实方向判断 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.Scene.cs:2016 | BuildFieldCampPreparationAreas | 使用有方向范围并记录道具技术诊断 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:155 | PrepareCeremony | 只记录确认时实际占地的人，无占用直接Ready |
+
+覆盖内部占地与建场准备；不改工作人员生成、后续处决结算、城镇入场、公开API或存档协议。实际空地生成、实体碰撞和让位行为均未实机确认。
+
+---
+<a id="field-camp-persistent-ceremony-20261102"></a>
+## 2026-11-02 连续处决与现有营地人员借用
+
+产品f0c1c3c7dc（主体669cc5625e）；交付状态及未验范围见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-persistent-ceremony-20261102)。以下为源码读取的一基声明入口；未运行代码坐标校验、离线测试、哈希或实机。
+
+| 源码入口 | 符号 | 责任 |
+| --- | --- | --- |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.ExecutionActors.cs:54 | AcquireCampCeremonyActor | 借用原居民或对应原俘虏，保存装备/队伍快照 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.ExecutionActors.cs:106 | WalkCampCeremonyActor | 已有Agent步行入场 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.ExecutionActors.cs:176 | ReleaseCampCeremonyActors | 整个刑场结束才归还工作人员 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.FieldCamp.cs:47 | BorrowExistingFieldCampActor | 营地角色入口借用真实Agent |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.FieldCamp.cs:84 | AdoptRetainedFieldCampSite | 下一位接收刑场和原刽子手待命点 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.FieldCamp.cs:117 | DetachFieldCampSiteForContinuation | 释放旧句约束/临时表现，保留刑场实体 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.FieldCamp.cs:142 | FieldCampStageApproach | 使用真实斜坡/台阶入场 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.FieldCamp.cs:172 | BeginFieldCampActorEntry | 工作人员先复位 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.FieldCamp.cs:187 | TickFieldCampActorEntry | 复位后安排围观，再带现有俘虏 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.Continuation.cs:96 | ContinueFieldCamp | 下一位复用刑场与工作人员 |
+| Vengeance/Source/Scene/ExecutionVictimDeathMissionLogic.cs:963 | IsValidBinding内owner分支 | 精确接纳营地已有PrisonerAgentOrigin |
+
+接线另含VengeanceIntegration typed同DLL接缝、Vengeance/Source/Scene/ExecutionSessionCoordinator.cs中的InjectChainedSession、Scene/Placement/Ceremony入口和营地Execution/日常占用排除。范围不扩展公开子MOD API、不重写城镇生成或存档协议。实机步行、刑具复位、连续处决、伤亡及F对话未验。
+
+---
+<a id="field-camp-life-ceremony-20261102"></a>
+## 2026-11-02 营地生活与刑场占地修复
+
+源码e7f08e7092（主体730cdedbd7），状态见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-life-ceremony-20261102)。以下为声明入口的一基定位；未运行代码坐标校验、离线测试或实机。范围不包含选址重写、死亡结算重写或公开子MOD API扩展。
+
+| 入口行号 | 符号 | 本次责任 |
+|---|---|---|
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.cs:409-410 | private void Track( | 实际工位及日常调度 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Life.cs:503-504 | private void MoveTo( | 日常分段移动、软停与原生对话接管 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Execution.cs:138-139 | private FieldCampCeremonyReadiness PrepareCeremony( | 占地清场、建场后围观及逐人归还 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:588-589 | private static int PlaceWall( | 围栏端点/长轴/原点补偿 |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs:795-796 | internal static void RefreshGroundObstacles( | 事件级局部障碍刷新 |
+| Vengeance/Source/Core/VengeanceIntegration.cs:18-19 | internal readonly struct FieldCampCeremonyArea | typed内部占地与几何事件 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.Scene.cs:2005-2006 | private void BuildFieldCampPreparationAreas( | 道具测量及真实建场消费者 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.Death.cs:786-787 | private bool TryBlockVictimConversationAfterLethalFrame( | 受刑者屏蔽、营地全局对话解锁 |
+| Vengeance/Source/Scene/TownExecutionMissionBehavior.Lifecycle.cs:101-102 | private bool CleanupRuntimeObjects( | 实际实体删除后的缓存刷新 |
+
+---
+
+<a id="field-camp-best-effort-20261102"></a>
+## 2026-11-02 不理想选址继续生成（85940f4b6e，未运行校验）
+
+双实现/Bootstrap已生成并替换游戏目录六项DLL/build.json；未进行校验、离线测试、哈希检查或实机验收。恢复最佳可用候选、累计坏点评分和不理想地形布置，NPC分组独立尝试；局部失败不再因全营选址/缓存条件而跳过全部生成。
+
+| 源码 | 一基行范围 | 符号 |
+| --- | --- | --- |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs | 91–161 | FieldCampSite.Resolve |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs | 304–335 | FieldCampSite.Evaluate |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs | 694–732 | FieldCampSite.TryFindSpawnPosition |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs | 299–387 | FieldCampProps.PlaceTent |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs | 411–435 | FieldCampProps.TryFitTentGround |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.cs | 212–244 | FieldCampMissionLogic.SetUpCamp |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.cs | 378–404 | FieldCampMissionLogic.SpawnCharacter |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.People.cs | 313–344 | FieldCampMissionLogic.SpawnPrisoner |
+
+覆盖：选址评分与兜底、粗地形帐篷第二轮、独立人物分组、营地附近有界出生。未覆盖：实机地形/帐篷碰撞、实际居民数及活动、F交互、B键刑场和长时间不自动退出。[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-best-effort-20261102)。回滚聚焦revert 85940f4b6e，前序5cebbfdcba；无自动安装回滚。
+
+---
+
+<a id="field-camp-site-ranking-20261102"></a>
+## 2026-11-02 营地选址候选范围（5cebbfdcba，未运行校验）
+
+双实现/Bootstrap生产编译完成并替换游戏目录六项DLL/build.json；本轮没有校验、离线测试、哈希或实机验收。最新截图及日志的1900/1900粗筛拒绝仍是实际故障证据，不能将此候选写成实机已修好。
+
+| 源码 | 一基行范围 | 符号与职责 |
+| --- | --- | --- |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs | 87–152 | FieldCampSite.Resolve |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs | 287–325 | FieldCampSite.Evaluate |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampSite.cs | 330–385 | FieldCampSite.Probe |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs | 232–264 | FieldCampProps.CanSupportTents |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs | 266–292 | FieldCampProps.TryMeasureTent |
+| src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs | 299–385 | FieldCampProps.PlaceTent |
+
+覆盖：全营起伏只用于排序、真实帐篷占地/拟合筛选、一次入场尺寸缓存、拒绝原因汇总。未覆盖：093b地图实际出现营地、帐篷入口/碰撞、人物F交互、B键部署和长时间不自动退场。[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-site-ranking-20261102)。聚焦revert 5cebbfdcba可撤销本轮源码，不存在自动安装回滚。
 
 ---
 
@@ -2752,3 +2972,20 @@ Player docs live under `docs/tts/`; `.agents/skills/af-gptsovits-guides/` mainta
 | `content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts{,.en}.json` / Bilateral_*、OralArrangementHeader、CountryAdmissionOral；Prompt/RuleBehaviorPrompts{,.en}.json / diplomacy | 955–961、519、10；对应 diplomacy 段 | 原真实 lazy reader/内容映射，CN/EN 成对资源与实际消费者；关闭模式六标签原条件保留，不强制模型输出语言 |
 | `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/BilateralReplay.cs`；CountryAdmissionReplay / Entrances；NativeDiplomacyFallbackReplay；PromptMemoryReplay | 1–245；对应新增分支；本次差异 | 执行/异常/原案/重载/legacy 与完整事件 host 离线验证；机械回执受控，非实机证明 |
 | `tests/content/J15ContentContractTests/DiplomacyBilateralContractTests.py` | 全文件 | 7 key 配对、协议/变量、真实 reader、native 模式隔离；不冒充全历史语料门禁 |
+
+
+<a id="pending-changes-review-sync-20261104"></a>
+## 2026-11-04 营地、输入owner与自由视角审查
+
+源修订 `d0d8035578`；状态与详细验证见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#pending-changes-review-sync-20261104)。不修改旧JSON范围图锚点，也不将历史图当作当前全仓验证。
+
+| 源码（一基行）/符号 | 本轮职责与消费者 |
+| --- | --- |
+| `Vengeance/Source/Core/VengeanceIntegration.cs:95-95` / `SceneHotkeysBlocked` | 可选同DLL输入owner；ReleaseEmbeddedHost清理见179行，不扩外部公开API |
+| `Vengeance/Source/Customization/ExecutionSiteBuilderController.Core.cs:193-196` / `SceneHotkeysBlocked` | 共享编辑器只查询可选宿主，不直接引用AF UI；自身panel仍可操作 |
+| `src/bridges/Vengeance/Host/VengeanceRuntimeBridge.cs:23-55` / `Initialize` | AF注册实际HotkeyInputGuard，失败/Shutdown走ReleaseEmbeddedHost |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Life.cs:639-665` / `IsCampPositionAvailable` | 引擎邻域查询与复用列表，保留营地/行刑未来目标占位 |
+| `src/modules/AF.Module.FieldCamp/FieldCampGroundRouter.cs:31-75` / `TryRoute` | 营内边界约束BFS，原搜索/拐点上限和scratch复用保留 |
+| `extensions/AnimusForge.Illustrator/src/Engine/MissionScreenshotCapture.cs:59-110` / `MissionScreenshotCapture / Restore` | 引擎暂停和摄影mode保留正常渲染；Restore在291-292恢复原状态 |
+
+覆盖生产双API编译及针对性fixture/源码/资源契约；不覆盖真实GPU、原生AI/输入、独立RichExecutions整工程、旧档或全仓发行门禁。

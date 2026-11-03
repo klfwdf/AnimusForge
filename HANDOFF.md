@@ -1,5 +1,10 @@
 ## 2026-11-04 打包切换 LZMA2 / 16 MiB 字典
 
+## 2026-11-04 待提交改动已审查，本地已提交，远端同步待完成
+
+产品 `d0d8035578`；保留营地/自由镜头改动，修复复仇共享源码直接依赖AF与落点全场Agent扫描，补齐针对性测试。双API/Bootstrap与双接缝构建通过；208/87/9/24条专项、6例源码回归和65条接线资源通过；实机/旧档及完整独立复仇构建未验。用户已授权后续普通合并、编译、部署和推送；不强推、不打发布包。详细证据、已知旧夹具/范围图边界及回滚见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#pending-changes-review-sync-20261104)和[范围图](docs/architecture/af-framework-code-scope.md#pending-changes-review-sync-20261104)。
+
+
 OFFLINE_VERIFIED / RELEASE_NOT_RUN / LIVE_NOT_RUN。产品提交 `0ce766dc76`；本地检查点 `b825cb1846`。共享 7Z 编码改为 LZMA2、level 9、16 MiB 字典、fb273，保留双语规范命名、单模块双实现、回读哈希和事务。同步根 AGENTS、入口摘要及输出案例。新增 7Z 契约在 PowerShell 7 / Windows PowerShell 5.1 各通过 58 项，既有 ZIP 投影/事务 95 项通过。无正式打包、版本递增、双 API 重编译、部署、push 或实机；21 个 Unicode 人物文件名的 Windows 解压兼容问题未修复，完整解压仍建议独立 7-Zip。既有工作区与本文件改动保留，仅本任务新增段落提交。
 
 详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#packaging-lzma2-16m-20261104)；[代码范围图](docs/architecture/af-framework-code-scope.md)的运行时职责边界本轮不变。回滚只对产品提交做 focused inverse commit。
@@ -8,15 +13,93 @@ OFFLINE_VERIFIED / RELEASE_NOT_RUN / LIVE_NOT_RUN。产品提交 `0ce766dc76`；
 
 OFFLINE_VERIFIED / LIVE_NOT_RUN。产品提交 `e77048cf38`，检查点 `39d4fb3071`。返还未确认时保留会话与队伍，记录转移中的英雄 ID 并支持读档重试；正常调走、被俘或死亡会结束已失效的返还记录。信使战败补俘核对实际所属部队和名册，派遣部分失败进入返还恢复，返程会话不启动出站预生成。50 项生产方法故障回放、182 项派遣生命周期检查、三组链路检查、存档分块回放和契约通过；1.3.15、1.4.6、Bootstrap 与双接缝构建通过。实机和玩家旧档仍待验，截图根因尚未实证。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#courier-party-recovery-20261104)及[代码范围](docs/architecture/af-framework-code-scope.md#courier-party-recovery-20261104)。本轮构建产物位于 `bin/Debug/single_module_artifacts/`，回滚采用产品提交的聚焦逆向提交。
 
+## 2026-11-03 AF 1.8.0 / Bannerlord 1.5.6 专用包
+
+BUILT / CN_ONLY_PACKAGED / LIVE_NOT_RUN。1.5.6 Release、专用 Bootstrap、Coup 接缝与离线兼容回放通过。按最新指示只交付 CN，使用含 bekko INT8 模型的 AnimusForge_v1.8.0_CN_1103_1820.7z，8473 个文件逐条回读哈希匹配。1816 为缺模型的历史产物。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bannerlord156-package-20261103)，证据在 `artifacts/bannerlord156-package-20261103/`。
+
 ## 2026-11-03 TTS取消同步解除口型
 
 DEPLOYED / HASH_VERIFIED / LIVE_NOT_RUN。修复说话NPC死亡后口型未解除、声音被清理导致原生崩溃的链路；死亡/删除/受击、取消事件、对话结束及Mission结束同步取消音频和口型，旧请求不能影响新播放。17项fixture与双API/Bootstrap构建通过；完整TTS回归103 PASS/1个既有音色备用接口FAIL。已用当前修复源码重建并部署；Bootstrap、1.3、1.4安装DLL哈希均匹配，模块仅声明Bootstrap。部署日志`.tmp/tts-death-build-deploy-20261103.log`；实机复测未运行。旧生成Stage已移至`.tmp/tts-death-stale-stage-20261103/`保留。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-death-cancel-lipsync-20261103)及[代码图](docs/architecture/af-framework-code-scope.md#tts-death-cancel-lipsync-20261103)。
+
+## 2026-11-02 量化bekko双语7Z及正式极限打包入口
+
+EXTREME_7Z_DEFAULT_COMMITTED / QUANTIZED_CN_EN_PAIR_CREATED / VALIDATION_DISABLED_BY_USER / NOT_DEPLOYED。脚本提交d05b98e27c，空检查点79d1535ae0；默认7z、LZMA/512MiB/fb273/bt4/mc1000000/lc4/lp2/pb0/实体/2线程，并支持-OnnxModelDir显式携带bekko。沿用前次1.8内容与精简清单，仅替换包内量化模型三文件，实际调用新共享编码器：一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1102_2324.7z为179,779,548字节（171.45MiB），EN同名179,312,926字节（171.01MiB）。两次编码exit0，旧2222双包保留；游戏和原模型未改。完整正式构建/投影/归档回读/哈希门禁未运行，不声称已验收；没有实机、部署、push或重新编译DLL。详情见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#quantized-bekko-extreme-7z-package-20261102)及.tmp/package-int8-extreme-20261102/232148/delivery.json。
+
+---
+## 2026-11-02 bekko INT8量化候选与固定48问对比
+
+CANDIDATE_CREATED / ORIGINAL_PRESERVED / LOCAL_COMPARISON_COMPLETE / NOT_DEPLOYED。按用户“做”授权，仅在.tmp/worldbook-bekko-quantization-20261102/生成候选。52个浮点常量MatMul动态INT8逐通道量化，模型199,300,251→124,972,807字节（190.07→119.18MiB，减少37.29%）；实际转换7.75秒。沿用游戏ORT1.18与真实生产嵌入代码，两轮固定48问均推理成功：原/候选Top1=42/41、Top3=45/46、Top5=48/48；不能声称完全无损。第二轮未缓存嵌入P50=14.9524→8.9351ms。候选candidate-int8/ONNX/bekko/及REPORT.md、comparison.json在任务目录；原模型与发行包保持，未替换、部署、打包、push、实机或哈希校验。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#worldbook-bekko-quantization-20261102)。
+
+---
+## 2026-11-02 原始bekko世界书检索基线
+
+BASELINE_EXECUTED / NO_QUANTIZATION / NO_PRODUCT_CHANGE。按用户“自己测世界书跑一组数据”的新授权，只执行这组本地检索基线，不延伸为其他测试/哈希/实机授权。CN/EN《卡拉迪亚编年史》各337文件，按ID合并后335/337规则、1070/1062种子；12主题×两种问法×两语言=48问。原模型实际推理全部成功，Top1=42/48、Top3=45/48、Top5=48/48；纯描述问句Top1=18/24，未命中文本缓存嵌入P50=9.7637ms、P95=14.9641ms（i5-13500HX、4线程、.NET8独立程序）。这不是游戏最终过滤/知识注入/LLM验收，也不代表真实玩家准确率。固定输入、逐条排名及报告在.tmp/worldbook-bekko-baseline-20261102/；未量化、替换模型、修改产品、部署、打包、push或做哈希。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#worldbook-bekko-baseline-20261102)。
+
+---
+## 2026-11-02 外交插画瘦身与激进7Z（更新前条交付）
+
+后续四个高上下文/模型分块候选已完成：CN最多再小148,738字节，两个EN候选均比2222大，因此未替换发行双包，最新仍231.05/230.39MiB。候选和实际结果留在.tmp/diplomacy-png-slim-20261102/context-split-222954/delivery.json；本轮无产品内容改动或测试/校验/哈希。完整数据及中断恢复见下方主台账链接。
+
+产品提交仍2dc2f04600，检查点af3ded5f1。外交18张插画1116x372、底板保留1254x1254，19张减少71.50%，已同步源和截图安装目录；包内排除中英低配编年史与PDB，源书/符号保留。用户继续要求压缩后，沿用同一输入清单，按bekko浮点权重的四字节位置调整无损编码，选LZMA/lc4/lp2/pb0、512MiB字典、mc1000000、实体。最新一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1102_2222.7z为242,271,749字节（231.05MiB），EN同名为241,581,510字节（230.39MiB），比2208再少约6.50/6.72MiB。三次候选压缩均exit0，双包成对保存，旧2208及其他包保留；模型精度、图片和包内容本轮未再修改。旧ZIP未更新。原图备份.tmp/diplomacy-png-slim-20261102/220050/；本次记录.tmp/diplomacy-png-slim-20261102/aligned-7z-221253/delivery.json。无测试/校验/门禁/哈希/解压回读/实机，未重新编译、部署DLL或push。详细状态见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-image-slim-extreme-7z-20261102)。
+
+---
+## 2026-11-02 PDB排除与1.8.0大字典压缩交付
+
+PACKAGE_RULES_COMMITTED / LEAN_ZIP_PAIR / MAXIMUM_7Z_PAIR / VALIDATION_DISABLED_BY_USER。规则2cb99b15a6，检查点55eb363c7；未来玩家包排除PDB，本地构建/Stage符号保留。当前包已排除3份PDB和155301c335清理的26张旧图，完整保留bekko、双实现、运行库、现用素材及世界书。
+
+最新一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1102_2145.7z为285,857,581字节、EN为285,423,359字节，分别约272.61/272.20MiB；同批精简ZIP为314,951,670/312,145,972字节。7z使用LZMA2 level9、512MiB字典、fb273、bt4、mc10000、实体、2线程，两次命令exit0。原ZIP/7z保留回退。本轮无测试/门禁/哈希比较/实机，未新编译、部署或push；不声称正式门禁或模型运行通过。见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#client-package-pdb-prune-maximum-20261102)及.tmp/package-prune-20261102/delivery.json。源码回滚只聚焦逆向2cb99b15a6，不回退他人或原图片清理。
+
+---
+## 2026-11-02 删除26张闲置UI方案图
+
+SOURCE_COMMITTED / INSTALLED_UNUSED_ASSETS_REMOVED / VALIDATION_DISABLED_BY_USER / NOT_REPACKAGED。产品155301c335，检查点305903fb3。删除extensions/AnimusForge.DialogueUI/GUI/SpriteParts中无sprite注册且无生产消费者的26张PNG、content-map对应条目，以及截图安装目录的26张同名副本；单套减少28,002,682字节（26.71MiB），根PNG从67保留41。现有加载器仍用的图片、功能目录、DLL和双语资源保持；未运行测试/校验/哈希或实机，未编译/push。旧ZIP与7z尚未重打，仍含这些图。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#unused-dialogue-sprite-cleanup-20261102)与.tmp/sprite-cleanup-20261102/cleanup.json；回滚聚焦逆向本次提交并仅恢复清单图片，不回退他人改动。
+
+---
+## 2026-11-02 1.8.0 高压缩7z替代包
+
+COMPRESSED_CN_EN / ORIGINAL_ZIPS_RETAINED / VALIDATION_DISABLED_BY_USER。新增AnimusForge_v1.8.0_CN_1102_2129.7z（317,563,090字节）与EN同时间包（317,122,626字节），位于一键编译覆盖推送/packages/，分别较原ZIP缩小9.17%/8.43%。完整保留bekko及其他内容，原1102_2120双ZIP保留用于回退。使用LZMA2 level9实体压缩，因空闲内存仅约472MiB而用16MiB字典，不称绝对最小体积；无产品源码改动、部署或push，未运行测试或哈希验证。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-180-bekko-7z-20261102)及.tmp/package-1.8.0-ultra-1102_2129/delivery.json。
+
+---
+## 2026-11-02 1.8.0 双语安装包（内含 bekko）
+
+SOURCE_VERSION_COMMITTED / DUAL_PRODUCTION_BUILT / PACKAGED_CN_EN / VALIDATION_DISABLED_BY_USER / NOT_DEPLOYED / VERSION_COMMIT_NOT_PUSHED。版本提交 b3b39f2333，本次检查点 d94b23cea；模型和设备设置退役产品 51d5d94f43 已在前序推送。按用户要求，两包均直接包含 ONNX/bekko 的 model.onnx、tokenizer.json、config.json；不包含旧嵌入模型、重排器或 vectors 缓存。
+
+实际产物：一键编译覆盖推送/packages/AnimusForge_v1.8.0_CN_1102_2120.zip（349,626,035 字节）及 AnimusForge_v1.8.0_EN_1102_2120.zip（346,306,046 字节）。1.3/1.4 生产编译各 406 警告、0 错误，Bootstrap 0 警告、0 错误，三者 exit0；打包最终 exit0。按用户要求未做测试、门禁、哈希比较、ZIP 回读或游戏验收。本轮没有部署或推送版本提交，其他作者改动保留。详细状态见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-180-bekko-20261102)和[范围记录](docs/architecture/af-framework-code-scope.md#release-180-bekko-20261102)。当前工作树构建不等于只含版本提交。回滚仅聚焦撤销版本提交，原版本字节保留 .tmp/package-1.8.0-bekko-20261102/*.before；旧包保留。
+
+---
+## 2026-11-02 bekko 模型交付与 CPU/GPU 设置退役
+
+SOURCE_COMMITTED / LFS_UPLOADED / PUSHED / NOT_COMPILED_OR_DEPLOYED / VALIDATION_DISABLED_BY_USER。产品提交 51d5d94f43，修改前检查点 5caf0c74f。bekko 三文件纳入源码，其中 model.onnx 与 tokenizer.json 采用 Git LFS；不包含 vectors 缓存。旧嵌入模型回退与重排器初始化退役，MCM、终端及 CN/EN 资源的 CPU/GPU 设置接线一并移除。安装目录六个旧根模型文件已删除，bekko 和向量缓存保留。
+
+实际命令结果：git lfs push origin main 返回 exit0（2/2，234 MB）；git push origin main:main 返回 exit0，远端 main 从 08fbf3c186 更新至 51d5d94f43。没有强推。本次没有新编译或部署 DLL；游戏中设置是否消失不作安装后核验。按用户要求不运行测试、门禁、离线校验、哈希比较或实机。详见[交付说明](docs/bekko-model-delivery-20261102.md)、[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bekko-model-delivery-20261102)、[源码范围](docs/architecture/af-framework-code-scope.md#bekko-model-delivery-20261102)。源码回滚使用聚焦逆向提交，保留其他作者改动；已删旧模型无自动恢复。三份共享记录保留本地其他作者内容，不整体提交。
+
+---
+## 2026-11-02 终端底栏移除、行刑人员瞬移与非刑场杀俘结算
+
+SOURCE_COMMITTED / PRODUCTION_COMPILED / DEPLOYED / VALIDATION_DISABLED_BY_USER。最终df503155a2；终端575e0abd2f、入场0e5feac4d2、直接杀俘9341c84bf2及范围修正df503155a2共同构成当前交付。用户最终明确：仅没上刑场、在营地被直接砍死的俘虏不走原版处决惩罚；正式刑场处决保持原有ExecutionRelationScope/ApplyByExecution。9341中扩大到刑场的分支已由df503撤回，不应部署其孤立中间态。
+
+终端移除截图整组底部入口开关与提示，删除对应VM命令/属性及CN/EN文案；原入口功能和MCM配置owner保留，用户明确删除的底栏项不回填终端自动覆盖。现有行刑人员及犯人直接瞬移到刑场标记，观众从营地分批步行到场，最多16人、每次既有维护仅2次寻路，观众不成为建场/行刑等待门槛；下一位仍复用刑场与原人员。营地直接杀俘仅由OnCampPrisonerRemoved处理，保留受保护刑场受刑者排除、真实施害者、伤员状态和roster清理，以Murdered死亡标记/原生死亡清理绕过原版处决关系与荣誉分支。
+
+最终1.3/1.4生产编译各403警告/0错误；Bootstrap复用本轮刚完成生产编译的未变动产物（0警告/0错误）。安装exit0，实际替换6项DLL/build.json及终端prefab、CN/EN语言文件，共9项。按用户要求未运行测试、门禁、哈希、安装后核验或游戏；未声称实机通过。候选bin/Debug/terminal_camp_direct_kill_20261102；过程.tmp/terminal-camp-direct-kill-20261102；[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-camp-direct-kill-20261102)、[源码范围](docs/architecture/af-framework-code-scope.md#terminal-camp-direct-kill-20261102)。完整重启游戏并重新进入营地后加载。回滚基线80c311d26；仅对本任务提交做成组逆向，不单独撤回df503而恢复错误扩大范围，不重置其他作者改动。共享文档继续保留其他作者内容，未整体提交。
+
+## 2026-11-02 营地刑台占地、失败清理与全部贵族俘虏
+
+SOURCE_COMMITTED / PRODUCTION_COMPILED / DEPLOYED / VALIDATION_DISABLED_BY_USER。产品75cdcbb36c，空检查点67f0c36fd。移除贵族俘虏三人上限，初始化时按全部存活贵族扩展围栏、槽位、外围边界；普通俘虏填剩余槽位。部署面板按当前场内真实Agent刷新并在提交前确认，不生成处决替身。刑台改测实际启用碰撞的台面、木盖、楼梯和立柱，不重复测量预设中的自动刑台；异会话/未曾发布几何的失败清理不再重采地面，旋转包围盒空角不采样。
+
+1.3/1.4生产编译各405警告/0错误，Bootstrap 0警告/0错误；安装脚本exit0，已替换游戏六文件。按用户要求未运行测试、门禁、哈希或安装后核验，未启动游戏。真实日志显示约33×30米占地重复测量、选定贵族不在场后取消；清理路径存在同步大范围采样，但没有卡死线程栈，不能宣称它是卡死唯一原因或实机已修复。新的人口布局需完整重启并重新进入营地加载。候选bin/Debug/field_camp_footprint_nobles_20261102；过程.tmp/field-camp-footprint-nobles-20261102；[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-footprint-nobles-20261102)、[源码范围](docs/architecture/af-framework-code-scope.md#field-camp-footprint-nobles-20261102)。聚焦回滚仅revert 75cdcbb36c；旧候选field_camp_review_fixes_20261102保留，没有安装自动回滚。其他作者改动保留，三份共享文档不整体纳入本次产品提交。
 
 ## 2026-11-02 外交请求原案前置（本任务）
 
 SOURCE_COMMITTED / TARGETED_REPLAY_PASS / DUAL_BUILD_PASS / NOT_DEPLOYED。产品9dd4028e1e，检查点7c0c4ca4d。六类结构化外交请求在最终副本中前置原案、后置摘要/实时资料/修正；字段值、来源顺序、CN/EN原文、system、存储提示词和冻结链均保持，原压缩门槛不变。
 
 新增97项、真实23请求71项、既有591项断言PASS；6组重复前缀增长，准入审核74→21304字符。1.3/1.4/Bootstrap编译exit0；双语26表PASS，全仓语言门保留原DiplomacySponsorReceiptRules四条失败。真实provider缓存命中、实机及旧档未验；未部署/打包/push。候选bin/Debug/diplomacy_prefix_order_20261102；证据.tmp/diplomacy-prefix-order-20261102/verification.json。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-stable-case-prefix-20261102)和[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-stable-case-prefix-20261102)。回滚只聚焦revert产品9dd4028e1e，保留其他作者内容。
+
+---
+## 2026-11-02 刑场审查四项修复（当前）
+
+CODE_COMMITTED / BUILT / BINARIES_INSTALLED / VALIDATION_DISABLED_BY_USER。产品cc588b61d9，检查点e113a7bea，前序已安装82df6b7fb8。营地借用人员不再被队伍待命清掉入场命令；已在目标点的工作人员直接复位；楼梯入口复用真实踏面采样并跨下一位缓存；宿主消费Ready的同次调用补收新进入占地者，空地仍直接生成，不等待无关居民或观众。
+
+1.3/1.4/Bootstrap生产编译均exit0，六项DLL/build.json逐项Installed、覆盖exit0。未做校验、离线测试、门禁、哈希、安装后核验或实机。见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-review-entry-fixes-20261102)及[范围图](docs/architecture/af-framework-code-scope.md#field-camp-review-entry-fixes-20261102)。候选bin/Debug/field_camp_review_fixes_20261102；过程.tmp/field-camp-review-fixes-20261102。回滚仅聚焦revert cc588b61d9，前序候选bin/Debug/field_camp_empty_site_20261102保留；无安装自动回滚。完整重启游戏后加载。
 
 ---
 ## 2026-11-02 俘虏状态重复注入修复（本任务）
@@ -27,7 +110,65 @@ SOURCE_FIXED / TARGETED_REPLAY_PASSED / DUAL_BUILD_PASSED / NOT_DEPLOYED。产�
 
 ---
 
-## 2026-11-02 营地从自动退场基线重修（当前）
+## 2026-11-02 空地部署被清场误判拖住（历史，已由上方替代）
+
+CODE_COMMITTED / BUILT / BINARIES_INSTALLED / VALIDATION_DISABLED_BY_USER。产品82df6b7fb8，修改前检查点8b0c3c2ce，前序f0c1c3c7dc。修复旋转道具按世界轴矩形误扩大占地，以及把全营47人持续纳入清场的门槛；只记录确认时实际占地人员，无占用直接生成，不等无关居民。保留原刑场/工作人员连续复用与从营地借人。
+
+1.3/1.4/Bootstrap生产编译均exit0；三DLL及三份build.json覆盖逐项Installed、命令exit0。未执行校验、离线测试、门禁、哈希、安装后核验或实机。候选bin/Debug/field_camp_empty_site_20261102，过程.tmp/field-camp-empty-site-20261102。见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-empty-site-20261102)和[范围图](docs/architecture/af-framework-code-scope.md#field-camp-empty-site-20261102)。回滚聚焦revert 82df6b7fb8，前序f0c1c3c7dc候选仍保留；无安装自动回滚，完整重启游戏后加载。
+
+---
+## 2026-11-02 连续处决复用刑场与原营地人员（历史，已由上方替代）
+
+CODE_COMMITTED / BUILT / BINARIES_INSTALLED / VALIDATION_DISABLED_BY_USER。产品f0c1c3c7dc（主体669cc5625e），修改前检查点b2397318df，前序e7f08e7092。下一位保留实际刑场、原刽子手、护卫和待命点；工作人员步行复位→安排原居民围观→对应现有俘虏走入。全部活工作人员从现有营地借用，结束整个刑场才归还。此前生活、围栏、占地让位和F对话修复一并交付。
+
+1.3、1.4、Bootstrap生产编译均exit0；六项DLL/build.json逐项返回Installed，覆盖命令exit0。不校验、不离线测试、不验哈希、不安装后核验、不启动实机；不声称游戏功能已验收。详情见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-persistent-ceremony-20261102)与[源码范围](docs/architecture/af-framework-code-scope.md#field-camp-persistent-ceremony-20261102)。候选bin/Debug/field_camp_persistent_ceremony_20261102，过程.tmp/field-camp-persistent-ceremony-20261102；源码回滚聚焦依次revert f0c1c3c7dc、669cc5625e，原e7f08候选保留于bin/Debug/field_camp_life_ceremony_20261102，无安装自动回滚。完整重启游戏后加载。
+
+---
+## 2026-11-02 营地生活、刑场/F对话与围栏修复（历史，已由上方替代）
+
+CODE_COMMITTED / BUILT / BINARIES_INSTALLED / VALIDATION_DISABLED_BY_USER。产品e7f08e7092（主体730cdedbd7），检查点7a2d891dc，前序已安装85940f4b6e。真实道具占地就近让位→生成刑场→原营地人员围观，不等全体就位。修复悬空坐姿、日常/回营撞墙、全局仪式F对话锁及围栏长轴/原点拼接。野外场景、城镇人物生命周期、无自动退营、B键部署保留。
+
+[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-life-ceremony-20261102)。仅生产编译交付，不校验/离线测试/验哈希/实机。候选bin/Debug/field_camp_life_ceremony_20261102；过程.tmp/field-camp-life-ceremony-20261102。源码按序聚焦revert e7f08e7092、730cdedbd7，无安装自动回滚。
+
+---
+
+## 2026-11-02 选址不理想也继续生成（历史，已由上方替代）
+
+CODE_COMMITTED / BUILT / BINARIES_INSTALLED / VALIDATION_DISABLED_BY_USER。产品85940f4b6e，前序5cebbfdcba。恢复最佳可用地块兜底及累计坏点评分；不理想地块仍继续布置，帐篷先正常拟合再尝试起伏地形。移除全营缓存对全部NPC生成的门槛，居民/俘虏和玩家可在营地附近有界寻找实际落点。仍保留单体水面/身体/实体限制、野外地图、城镇人物生命周期、无自动退出和B键手动刑场。
+
+遵守本会话不校验、不离线测试、不检查哈希的要求；生产编译结果不当作实机成功。[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-best-effort-20261102)。交付候选bin/Debug/field_camp_best_effort_20261102；过程.tmp/field-camp-best-effort-20261102；源码回滚聚焦revert 85940f4b6e，保留其他作者内容，无安装自动回滚。
+
+实际交付：1.3、1.4、Bootstrap三次生产编译均exit0；原子替换三DLL及对应三份build.json，六项逐项返回Installed，覆盖命令exit0。build.json的Sha256为空且ValidationStatus=DisabledByUser，没有复制旧Passed门禁或旧哈希。未执行安装后校验、离线测试、哈希检查或实机启动，未结束游戏/启动器、修改一键脚本或生成部署备份。实际营地出现、人物行为、帐篷入口及B键刑场仍未实机确认；完整重新启动游戏/启动器后才加载本轮候选。
+
+---
+
+## 2026-11-02 再次空营地：选址候选修复（历史，已由上方替代）
+
+CODE_COMMITTED / BUILT / BINARIES_INSTALLED / VALIDATION_DISABLED_BY_USER。候选5cebbfdcba；用户最新截图推翻上轮营地可用性结论。17:55:23日志为1900/1900粗筛拒绝，帐篷及NPC阶段未启动，旧日志未记录具体粗筛拒绝条件。
+
+已将整营高差/坡度从硬否决改为排序，在接受地块前复用真实预制体尺寸及单顶帐篷地面拟合，保留边界/水面/导航/障碍和通道限制；补充拒绝原因计数。仅初始化有界运行，未改野外地图、城镇入场/人物生命周期、无自动退营或B键手动刑场。
+
+本会话继续禁止校验、离线测试及哈希检查；仅生成双实现/Bootstrap交付候选，不将编译等同实机通过。[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-site-ranking-20261102)。产物bin/Debug/field_camp_site_ranking_20261102，过程.tmp/field-camp-site-ranking-20261102。源码回滚聚焦revert 5cebbfdcba（前序e14d2b863e），保留其他作者内容；无自动安装回滚。
+
+交付结果：dotnet生产编译1.3、1.4及Bootstrap均返回exit0；未执行原脚本的离线门禁/测试/哈希。首次File.Copy覆盖被启动器占用的Bootstrap拒绝，未返回任何Installed；随后C# File.Replace(source,destination,null)原子替换三DLL及三份build.json，六项逐项返回Installed，命令exit0。未结束启动器或游戏，没有生成部署备份或安装完成标记，也未在覆盖后追加校验。构建诊断build.json保留原身份/API/引用版本，Sha256置null并明确ValidationStatus=DisabledByUser，不复制旧Passed门禁或旧候选哈希冒充本轮结果。完整重启启动器/游戏后才会加载新候选；实际营地出现、人物及B键成功均未确认。
+
+---
+
+## 2026-11-02 空营地修复与城镇生命周期复用（历史，已由上方替代）
+
+CODE_COMMITTED / BINARIES_INSTALLED / TEMP_CLEANUP_COMPLETED / VALIDATION_DISABLED_BY_USER。产品 e14d2b863ecd7868e54ab4e6b866cf0c8a05610e；修改前检查点 b88c58dfa5。本条替代下方64d6f069b0的当前可交付结论：用户实机已证实该版本仍有无营地、9顶帐篷但无人等故障。
+
+已修入口单条直线失败废弃全营缓存、初始64候选失败遗漏其他场地；保留地形/身体净空限制，增加有界就近出生。保留野外地图，接入原生城镇视图、玩家入场事件、队伍及LocationCharacter人物生命周期；隔离定居点专属天气/通道/禁行区和越界退场，刑场保持玩家B键确认。
+
+原脚本曾在删除游戏目录 .af2-replaced-3983a8462ea74f1fa6907bc68beab0a7.tmp 时访问被拒，无自动回滚；首次直接替换因PowerShell空路径参数失败，下一次被自动审批拒绝。用户随后明确要求重新审批，重试已获执行：Bootstrap、1.3实现、1.4实现及各自build.json六项均由实际写入命令返回Installed；上述旧临时文件最初删除被拒；用户随后明确重新授权，提权删除命令已返回exit0，清理完成，未追加校验、离线测试或哈希检查。未关闭游戏或启动器。没有重新运行原脚本、测试、校验或哈希检查，不将原脚本exit1写成成功。实际写入清单位于.tmp/field-camp-empty-scene-20261102/manual-cover-files.txt。
+
+用户最新明确要求：本会话不再进行校验、离线测试或哈希检查，后续继续时保持此会话约束；不扩展为其他会话或全局设置。此前已经产生的记录保留，但不得据此声称实机进营/F/B键已通过。本轮停止后续核验。
+
+[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-empty-scene-town-lifecycle-20261102)。源码提交可聚焦revert e14d2b863e，不能hard reset其他改动；游戏目录无自动安装回滚。构建产物位于bin/Debug/single_module_artifacts，过程记录位于.tmp/field-camp-empty-scene-20261102。
+
+---
+
+## 2026-11-02 营地从自动退场基线重修（历史，已由上方替代）
 
 **DEPLOYED / OFFLINE_VERIFIED / NATIVE_NOT_RUN**。按用户“从那段开始的改动，全部重新修”，先聚焦撤销四轮后续修复至 b53736e44（相关路径等同591f9ad4d6），再提交新产品 64d6f069b0。本条替代下方不退出、帐篷与刑场路线的当前结论，不把旧00f2d17b9d无回执候选当成功部署。
 
@@ -69,14 +210,6 @@ C# 72/105/121 项、源码契约65+6项、双语26表通过；9007项内容映�
 
 ---
 
-## 2026-11-02 三部历史世界书对照权游补全（源内容完成，未部署）
-
-**SOURCE_DELIVERED / TARGET_OFFLINE_PASS / LIVE_NOT_RUN**。已定位Claude会话 `cab6b663-8b2a-4189-a53d-c6b66c249264`并续接最新三书目标。权游只读提炼18维；AD1259、东欧1259、燃烬帝国六个中英源包已按实际联网正文补缺、纠正时点并接真实英文消费映射。8256个JSON，固定人设5964文件、知识1128对、国家116对六段综述；源内容终稿`5e67a4eff5`，全部产品切片见本轮`delivery-commits.json`。
-
-六包结构、三目标4128对身份映射、真实英文selector及15792次角色投影PASS；全库布匿战争1422个既有问题未改，不能称全仓通过。未构建、Stage、打包、部署、push、实机/真实模型或旧档验证。人物与史料、共享角色束等边界、消费者证据和聚焦回滚见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#worldbook-18-dimension-review-20261102)与[18维对照报告](docs/worldbook-content-comparison-20261102.md)。
-
-最终证据 `.tmp/worldbook-continuation-20261102/`，前期联网正文 `.tmp/worldbook-review-20261102/`；完整续接前备份 `continuation-start.zip`。退役战略接口未复活；源事件空表不清旧档，Week0综述档案正常。回滚只针对具名切片并核终稿哈希，不重置共享main或覆盖其他作者。
-
 ## 2026-11-02 营地审查三项修复（源码，未构建部署）
 
 本地产品 `e386527d47`：修复有俘虏时决斗把全营设为敌队、堵路人物永久跳过维护、观众回营与集合/解散抢目标。仅改两个营地生产文件并新增离线源码回归检查，沿用原批次与队伍owner，没有新增UI/设置/存档身份。
@@ -88,6 +221,16 @@ C# 72/105/121 项、源码契约65+6项、双语26表通过；9007项内容映�
 本地产品 `175a6e0cc7`，接续 Claude 会话 `f0b1388c-f505-4503-bd09-7b9ff1272b3a`。帐篷/地形净空、原生HUD/F、步行围观准备、取消保场、日常/闲聊占用、处决评论候选、全部俘虏伤亡与处决TTS补丁已收口；本轮另补注视避让仪式移动、清旧限速、营地士兵身份中英Prompt和视图命名空间。按原批准计划只做本地源码与离线检查，不构建、部署、打包、push或调用模型。
 
 65项源码/资源契约、26张双语表与diff检查PASS；26个C#文件无新增解析错误。全仓语言门仍报外交原有4处中文常量。C#执行harness、双API/Bootstrap/独立Vengeance构建、实机/真实TTS/旧档全部NOT_RUN；不能视为游戏内九项通过。[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-nine-fixes-20261102) / [代码范围与恢复](docs/architecture/af-framework-code-scope.md#field-camp-nine-fixes-20261102)。证据及before位于 `.tmp/field-camp-nine-fixes-20261102/`；回滚仅聚焦产品提交，不重置共享main或覆盖其他会话dirty。
+
+## 2026-11-02 三部历史世界书对照权游补全（源内容完成，未部署）
+
+**SOURCE_DELIVERED / TARGET_OFFLINE_PASS / LIVE_NOT_RUN**。已定位Claude会话 `cab6b663-8b2a-4189-a53d-c6b66c249264`并续接最新三书目标。权游只读提炼18维；AD1259、东欧1259、燃烬帝国六个中英源包已按实际联网正文补缺、纠正时点并接真实英文消费映射。8256个JSON，固定人设5964文件、知识1128对、国家116对六段综述；源内容终稿`5e67a4eff5`，全部产品切片见本轮`delivery-commits.json`。
+
+六包结构、三目标4128对身份映射、真实英文selector及15792次角色投影PASS；全库布匿战争1422个既有问题未改，不能称全仓通过。未构建、Stage、打包、部署、push、实机/真实模型或旧档验证。人物与史料、共享角色束等边界、消费者证据和聚焦回滚见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#worldbook-18-dimension-review-20261102)与[18维对照报告](docs/worldbook-content-comparison-20261102.md)。
+
+最终证据 `.tmp/worldbook-continuation-20261102/`，前期联网正文 `.tmp/worldbook-review-20261102/`；完整续接前备份 `continuation-start.zip`。退役战略接口未复活；源事件空表不清旧档，Week0综述档案正常。回滚只针对具名切片并核终稿哈希，不重置共享main或覆盖其他作者。
+
+编号卡整理补充：燃烬帝国 187 对中英卡改为各自关键词文件名，保留 JSON RuleId 和正文；content-map 与英文身份映射已同步。专项414对映射检查通过。产品提交 3634343e53；PlayerExports 旧契约固定3,139条与改名前基线8,540条不符，未部署、未改游戏目录。详见整理记录（docs/worldbook-numbered-rule-cleanup-20261102.md）。
 
 ## 2026-11-02 全部现有功能改动编译部署（CN）
 
@@ -220,91 +363,21 @@ C# 72/105/121 项、源码契约65+6项、双语26表通过；9007项内容映�
 
 ---
 
-# 未部署：闲聊不再隔空对话/坐着的人被拉走，接力旁观者视线分散（2026-11-01）
+# 未部署：修复场景喊话犯罪池持续补满（2026-10-31）
 
-用户截图：闲聊时坐着的一方隔着几张桌和墙边站着的人对话，随后坐着的起身走过去、站着的坐下。原因两处：(1) 坐着的发起者+站着的同伴时让同伴走过来，但同伴走到一半，闲聊仍从第一句开始（`mover==null` 判定混用），且两人可相距 12m；(2) 说完话的“恢复自主”`RestoreAgentAutonomy`/`ReleaseAgentFromSceneConversationLocks`/`ResetStaringBehavior` 对坐着的人也 `DisableScriptedMovement`+清导航目标，椅子被释放，AI 重新找位，于是坐着的起身、站着的抢座。修复：闲聊只允许站着的发起者走向同伴，坐着的发起者只能和 ≤4m 的坐着同伴原地聊；无人移动时须 ≤4m 才开聊；正在使用物体的人在释放/恢复时只清视线不清移动与导航。接力旁观者视线：被回应者看说话者，其余参与者每句约 50% 看说话者、50% 看玩家；MCM 说明 CN/EN 同步。干净 worktree 套用后 Release 双API+Bootstrap、Coup、注册冒烟 PASS。未部署、未实机。回滚：逆提交本条对应提交。
-
----
-
-# 未部署：兼容表瘦身，删除 1148 个未用键（2026-11-01）
-
-在 19 张兼容表中，同时从中文表和对应的 `.en.json` 删除 1148 个未用键，共 2296 行。只删整行，其余字节不变。删除后逐表核对：解析结果必须恰好等于“原数据减去被删的键”。
-
-判定为“仍在使用”、予以保留的键：
-- 键名以标识符或字面量出现在运行时 C#、测试、工具或脚本中。
-- 有拼接或插值字面量是它的前缀或后缀，共约 250 个动态前缀。例如 `AF_DIP_Source_`、`AF_REC_Bulletin_`。
-- 所在表被按前缀枚举：AdapterPromptCapture 的 `Project_`/`Alias_Project_`、PolicyCoreManagement 的 `diagnostic_`、Economy 提示投影用到的键。
-- 元数据键，如 `$schema`、`_comment`。
-
-未瘦身：LegacySettingsPrompts、McmPromptSourceCompatibility、TerminalCategories、EconomyDisplaySources。这些表整体用于识别旧值。
-脚本与备份：`scratch/l10n-slim/`（`scan.py`/`verify.py`/`apply.py`，删除清单 `final.json`，原文件在 `backup/`）。
-
-验证：
-- 校验器与 `l10n_gate.py` 通过。
-- 隔离 worktree 编译 1.4 和 1.3 均通过。
-- 真实 DLL 回放在中英两种模式下均通过：消息/历史 170 项、游戏语言快照 22 项。
-- 435 项模块测试与基线对比无回归，4 项从失败变为通过；所有测试日志中没有缺键异常。
-
-未部署、未实机。CN/EN 双包仍等世界书映射修复。回滚：逆提交本条，或用 `scratch/l10n-slim/backup/` 恢复。
+产品提交 `eccff17d58` + `ea90dc7182`，8文件已聚焦合入当前main。延迟犯罪池每派系最多100，离场一次性结算至原生上限，不保留溢出反复补满；原版刑罚/付款/ExMachina赦免正常完成及玩家相关停战清对应池，保留自然下降/普通和平的原版语义；新增刑罚补丁已接通实际启动注册。专项回归、双API/Bootstrap/双接缝、实际DLL账本与启动/原生方法挂接、双语门禁均通过。未部署、实机或加载修改玩家存档；详细边界见[唯一台账与代码范围图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-taunt-crime-settlement-20261031)。证据与仅本项回滚补丁：`artifacts/scene-taunt-crime-20261031/integration/forward.patch`（反向应用，先check；不整体恢复其他改动）。
 
 ---
 
-# 未部署：l10n 复查修复与第 4 步进度（2026-11-01）
+# 未部署：YJ Gemini 四路统一开启 low（2026-10-31）
 
-复查了第 2 步的 184 个 `.cs` 文件，找到 3 个缺陷和 1 个性能问题，已全部修复：
-- 静态字段 `SiegeAmbientReactionProfile.DefaultSettlementName` 由已翻译的键初始化，会冻结首次访问时的语言，改为属性。
-- 政策“民兵”指标的匹配改为读中文原值，英文由字面量 `militia` 兜底。
-- 历史里的库存摘要头改为中英两版都能识别（新增 `PromptComposerTexts.Editions`）。
-- 新增 `BilingualTextTable.Regexes`：按键和选项把每个语言版本的正则只编译一次。信使、场景群呼、社交 UI 的匹配改用它。
-
-同轮另有两个提交：`cdfb85a77` 把 TTS 内置音色名改为 UI 文本；`05edc0f0b` 把服务端中文性别词移进 `LlmSourceTexts`，`l10n_gate.py` 改为先解码 `\u` 再检查。
-
-验证：
-- 隔离 worktree 中正式统一构建（`build_single_module.ps1 -Stage`，1.3/1.4/Bootstrap）成功，未动游戏目录。
-- 1.3 和 1.4 正式 DLL 的真实回放在中英两种模式下均通过，其中消息/历史 170 项、游戏语言快照 22 项。
-- `l10n_gate.py` 通过。相关 160 项测试与基线对比无回归。
-
-阻塞：EN 包未产出。`english-worldbook-identity-map.json` 有 177 条映射的文件名与磁盘不符（映射用下划线，文件名是空格），来自 10-30 布匿世界书提交 `f260631f6`，不是本次引入。另一会话正在改世界书，按用户决定等它完成后再打 CN/EN 双包。
-未做：兼容表瘦身。约 2386/10930 个键没有字面引用，但存在拼接键名，需要逐键确认后单独处理。
-未部署、未实机。回滚：逆提交本条及 `05edc0f0b`、`cdfb85a77`、`707ba8444`。
+用户最终决定“全部low”：主API、前处理、后处理、周报/事件的YJ Gemini引导均为开启+low，取消3.7-high特例；本条替代此前前后关闭建议及3.7默认high结论。产品提交 `14e49132df`，已聚焦应用到当前main工作区并保留既有dirty。隔离双API/Bootstrap/双接缝通过，真实DLL设置至请求组装两版各257项通过。无运行文本变更；未迁移玩家值、部署、实机、正式打包或推送。[唯一台账与代码范围图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#yj-all-low-20261031)。证据及仅本项回滚补丁：`work/api-test-20261031/yj-all-low/forward.patch`（反向应用，先check），不整体恢复共享文件。
 
 ---
 
-# 未部署：C# 组装的事实、历史和标签改为随游戏语言（2026-10-31，四步中的第 2 步）
+# 未部署：全局移除 minimal 思考档位（2026-10-31）
 
-承接第 1 步（`df5361e91`）。26 张兼容表都有了英文版 `X.en.json`，键完全相同；`"="` 表示语言无关、两种语言都用中文原值，例如匹配词、原版中文名、旧存档值、协议标记。新组装的文本按写入时的游戏语言生成；匹配旧文本、模型回复的地方中英都认。已有存档不改写。
-- 英文版共 26 张：Adapter Record/Scene/PromptCapture、Prompt Compatibility/Retrieval、ConversationRuntime、LlmSourceTexts、MemorySourceTexts、WeeklyMaterial、WorldBulletin、Coup、Economy、Social、Taunt、Duel、WorldMap、KingdomCivilWar、DiplomacyMisc、DiplomacyPrompt、Policy 三张、Siege/Castle、Illustrator、Knowledge。已登记进 `content-map.json`（`compatibility`）；嵌入的表在 `AnimusForge.csproj` 里加了 `<base>.en.json` LogicalName。
-- 不需要英文版的 4 张表已在校验器里登记原因：LegacySettingsPrompts、McmPromptSourceCompatibility（旧 MCM 默认值和已存选项值）、TerminalCategories（路由 id）、EconomyDisplaySources（UI 投影匹配）。
-- 约 190 个 C# 文件改动：
-  - 拼句时写死的中文标点改为跟随语言，读取器新增 `Period/Colon/Comma/...`。
-  - 英文片段两侧补空格，句末统一过 `Tidy`。
-  - 匹配改为 `Is/Variants/Source/EqualsRaw/ContainsRaw`，中英都认。
-  - 会冻结首次语言的静态缓存，改成 `PromptLanguageValue` 或同时持有中英两份。
-  - 英文 AFEF 事实使用 `[AFEF PLAYER_ACTION]`/`[AFEF NPC_ACTION]`，所有读取器本来就认这两种写法。
-  - 旧的 `[AFEF内战事实]` 投影成当前语言的标签（新增 `LlmSourceTexts.CivilWarFactLabel`）。
-  - 外交契约标记 000–006 写入时用当前语言，读取时中英都认。
-- 运行时 C# 中文字面量为 0；只用于匹配的旧中文词表改用 `\u` 转义。
-- 测试代码同步：
-  - 真实 DLL 回放测试改为模拟游戏语言（`AF_TEST_GAME_LANGUAGE`），并接入第 3 步的 `GameLanguageRequestChecks`。
-  - 审计测试改为按游戏语言判断语言；民变标签、外交标记的断言按语言判断。
-  - 反射调用支持可选参数和 `out` 参数。
-  - SettlementStay 的假环境补上 `PromptComposerTexts` 桩；J17 源码契约改为跟随拆出的 `RenderCategory`。
-
-验证：
-- 隔离 worktree（`artifacts/l10n-step1-build`）编译主工程 1.4 和 1.3 均通过（Debug，未产出 Bootstrap）。
-- `tools/localization/l10n_gate.py` 全部通过：26 张表齐全、全部登记，运行时中文字面量 0。
-- 真实 DLL 回放（`run_actual_message_assembly.py`，候选 `artifacts/l10n-candidate/1.4`）zh-CN 和 en 两种模式都通过：消息与历史 170 项、运行时语言/UI 280 项、终端设置 5204 项、请求审计 43 项、游戏语言请求快照 22 项。快照测试在英文/繁體中文/简体中文/Deutsch 之间切换，确认约 17 个真实组装入口在英文下不含汉字，切换后不重启即生效。
-- 模块测试按区域与 HEAD 基线（`artifacts/l10n-baseline`）对比：周报/经济/社交/世界地图/决斗/嘲讽/政变/插画/攻城后续 93 项，Prompt/Memory/GameAdapter/content 137 项，Conversation/Llm/Memory/Vengeance 196 项，Diplomacy/Kingdom 47 项。没有回归；另有 5 项从失败变为通过。其余失败项在 HEAD 上同样失败，原因是缺参数、缺候选 DLL、依赖旧测试框架。
-- `TtsRequestLifetimeRegressionTests` 的 `/audio/voices` 404 回退测试在 HEAD 上同样失败。
-
-已知限制：
-- 英文语序靠逐片段拼接，个别句子较生硬，需要英文实机抽查周报、政策和外交历史。
-- 部分旧中文记录的投影只覆盖已知模板，未知模板原样透传。
-- 外交日期仍按中文语法写入（对应键是 `"="`）。
-- `WorldDiplomacyRoundLifecycle.SmokeTests` 和 `DiplomacyFixedModeContractTests` 有只适用于中文的断言，或引用了不存在的提交，在 HEAD 上同样失败。
-
-未完成：第 4 步（兼容表瘦身、双版本单模块编译、CN/EN 双包、整体审查）。未打包、未部署、未实机。
-回滚：逆提交本条对应提交。
+四路 API 的MCM/终端统一五档 low/medium/high/xhigh/max，旧minimal字符串/索引5转low，YJ引导默认low；已知YJ3.7/3.8-high关闭时省略控制字段以避免400，使用上游默认值，仍可能思考。产品提交 `46e6480aaf`（隔离分支），10文件聚焦合入当前main工作区并通过逐字节逆向重放保护原dirty。隔离双API/Bootstrap/双接缝通过，真实设置/终端/request专项两版各184项通过，中英文资源接线通过。全仓双语门禁有既存缺口；未实机、部署、推送或重构建其他dirty。[唯一台账与代码范围图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#global-minimal-removal-20261031)。回滚补丁 `work/api-test-20261031/minimal-integration/forward.patch` 仅反向应用本项，先check；不整体恢复共享文件。
 
 ---
 
@@ -314,62 +387,9 @@ C# 72/105/121 项、源码契约65+6项、双语26表通过；9007项内容映�
 
 ---
 
-# 未部署：固定提示词改为随游戏语言选择，CN/EN 包只区分可改提示词（2026-10-31，四步中的第 1 步）
+# 未部署：TTS 可关闭等待后处理情绪（2026-10-31）
 
-用户决定（2026-10-31）：游戏语言为简体或繁体中文时，固定提示词、事实和历史用中文，其他语言一律用英文；事实和历史按写入时的游戏语言生成；授权修改 `package_localization.ps1` 和 skill/AGENTS 的语言来源规则（规则文本在第 4 步更新）。
-- 新增 `src/AF.Foundation.Runtime/Localization/PromptLanguage.cs`。`PromptLanguage.IsChinese` 读宿主注入的游戏语言，只在语言 id 变化时重新判定。`PromptLanguageFile<T>` 和 `PromptLanguageValue<T>` 让每种语言各加载一次。英文读取 `X.en.json`，缺少时退回 `X.json`。
-- 宿主 `GamePromptLanguageSource`（在 `OnSubModuleLoad` 最先安装）：通过 `LocalizedTextManager.GetSubtitleExtensionOfLanguage` 判断，zh-HANS/zh-HANT 为中文。监听 `ManagedOptions.OnManagedOptionChanged(Language)`，切换后重新发布 `AIConfigHandler.ReloadConfig()`。
-- 改为双语加载的读取器共 31 个：25 个 `XxxPromptTexts`/`PromptComposerTexts`/`AdapterPromptCapture` 等，外加 Duel、Encounter、KingdomCivilWar、Illustrator、PolicyCoreManagement 和 `PromptConfigurationLoader`（RuleBehavior、ActionPostprocess、Preprocess、Proactive、RpItem、ExecutionRule）。
-- 启动时把提示词缓存进静态字段的地方共 67 处，都改为按语言缓存：Policy 效果模块描述符和目录快照、Illustrator 导演/风格提示词、经济信任等级、恋爱/耐心等级、快报写作要求。
-- 场景动作提示词包（Core）同时加载两份 XML，由宿主注入语言选择器。GCCZ 城镇提示词按游戏语言选 zh-CN/en。
-- `content-map.json`：38 对固定提示词标为 `bilingual-prompt`，新增 `.en` 目标，两包都携带。删除不再读取的 `ModuleData/GcczTownPrompt.json`。
-- `package_localization.ps1`：`bilingual-prompt` 两包共享，并对每一对执行变量/协议契约检查和英文无中文检查。只有 CustomPrompts、`McmPromptDefaults`、世界书仍按包替换。
-- 嵌入模型仍跟包（世界书）走：`McmPromptDefaults.json` 新增 `ContentEdition`，`AnimusForgeModelStore` 改读它。
-- 测试：新增 `tests/AF.Foundation.Runtime/PromptLanguageContractTests`（18 项），25 个测试 csproj 补链接 `PromptLanguage.cs`，`LocalizedPackageContractTests` 和 `ScenePromptPackageContractTests` 的断言更新为新契约。
-
-验证：
-- 在隔离 worktree（`artifacts/l10n-step1-build`）编译主工程 1.3、1.4 各通过（Debug，未用一键脚本，未产出 Bootstrap）。
-- 测试通过：PromptLanguage 契约 18 项、PromptConfiguration 39 项、CivilWar 406 项、ConversationCache 164 项、IntradayContext 26 项、LocalizedPackage 95 项、ContentLayout、StageWhitelist、ScenePromptPackage 271 项。
-- 真实仓库 38 对固定提示词契约全部通过。
-- 以下测试在 HEAD 上同样失败，与本次无关：Composition、ResidualLocalization、Retrieval、Economy PromptProjection、DataPaths、BattleSpeechBilingual、DiplomacyCommon、DiplomacyPackaged、LocalizationResource。
-
-未完成：第 2 步。C# 用中文兼容表 `Raw`/`PcapCompat` 拼句的地方（约 5900 处）仍输出中文，英文游戏下事实和历史仍会混入中文。
-未打包、未部署、未实机（需看：切换游戏语言后下一次请求的固定提示词语言、MCM/终端默认值、场景动作目录）。
-回滚：逆提交本条对应提交。
-
----
-
-# 未部署：SceneActions 桥接签名恢复（2026-10-31）
-
-`SceneActions.log` 自 10-29 起每次启动 `initialization failed closed: NPC queued-reply publication signature drifted`，自然动作/手势/战场喊话桥全部关闭。原因：AF `b8164a72e`（10-18）给 `EnqueueSpeechLineWithOptions`（16→17）和 `ShowNpcSpeechOutput`（6→8）追加了可选本地 TTS 参数，桥接 `AfCompatV130` 的 `IsExpectedQueuedReplyMethod`/`IsExpectedShownReplyMethod` 未同步；两处反射调用 `ShowNpcSpeechOutput` 同步补两个 null。StaticVerifier 的同名契约同步，`--bridge-only` 可用 `AF_SCENE_PROMPT_CORPUS` 指向 `SceneActionPromptTexts.xml` 以离线安装桥。验证：在 HEAD 干净 worktree 套用本次改动，Release 双API+Bootstrap、Coup 门禁、注册冒烟 PASS；新 1.3/1.4 DLL `--bridge-only` 各 4/4 PASS（含真实 Harmony 安装/卸载），已部署旧 DLL 同测仍报原错误。主工作区当前被他人未跟踪的 `scratch/decomp/ChangeKingdomAction.cs` 编译阻塞（未处理）。未部署、未实机。证据 `artifacts/fix-sceneactions-bridge-20261031/`。回滚：逆提交本条对应提交。
-
----
-
-# 未编译未部署：场景对话不再把坐着的人拉起来罚站（2026-10-31）
-
-用户截图：接力/喊话时坐着的镇民被拉起站立。原因是注视保持（`AddAgentToStareList`、多人移动抑制）对每个参与者都 `SetScriptedPosition` 当前位置并限速0，坐着的人因此离开椅子；这是 10-08 以来的既有行为，本轮框选18人的接力把它放大。修复：正在使用物体（坐/靠/弹奏）的人只转视线，不设脚本位置、不限速；站着的人照旧原地定住。另查到 SceneActions 自 10-29 起每次启动 fail-closed（`EnqueueSpeechLineWithOptions` 签名漂移），与本问题无关，未处理。未编译、未实机。回滚：逆提交本条对应提交。
-
----
-
-# 未部署：内战分离派诉求改为携封地脱离王国（2026-10-31）
-
-用户纠正：自治诉求不是另立新王国，而是像原版那样家族带着封地脱离王国。撤回 3ddbdf5a2 的“和平建国”方案（18487185c 为中途误提交的部分文件，本提交补齐）。
-- `CivilWarEffects.cs` GrantPrivilegesEffect（autonomy 的兑现效果）：不再加关系/影响力，改为派系内仍在本国的家族（除王室）逐个脱离王国，保留封地，成为独立家族；未离开则按可重试失败下周再试，已离开的不重复处理。
-- 原版 `ApplyByLeaveKingdom` 会把封地交给国王（反编译 ChangeKingdomAction 确认），所以宿主新增 `MyBehavior.LeaveKingdomKeepingFiefsForExternal`：用保留封地的 LeaveWithRebellion 离开，期间压住世界快报“叛乱”记录，随后立即与原王国及其敌国安静议和（含玩家家族），日志 `[autonomy_leave]`。
-- 文案 CN/EN：诉求“准许本派携封地脱离王国”、结果“{A}等家族携封地脱离王国”；提示词投影新增 `_legacy` 模板，旧存档里的“承认本派封地自治/封地特权”仍能投影。
-
-验证：CivilWarLifecycle.ContractTests 全部通过（406 检查，含新增：开战前接受自治→派系家族离国且保留封地）。未编译 1.3/1.4 主工程、未部署、未实机（需看：离国后是否真的无战争、NPC 族 AI 是否随即投靠他国、王国百科/快报显示）。
-
----
-
-# 未部署：内战分离派诉求改为和平独立（2026-10-31）
-
-用户要求“自治派诉求就应该是独立出去”。原先未开战时国王接受 autonomy 诉求只执行 GrantPrivileges（关系+8、加影响力），派系随即解散，玩家看不到效果。
-- `KingdomCivilWarOwner.Actions.cs` Concede：诉求战争目标为 Secede 且尚未开战时，不再发特权，改为标记 `PeacefulSecession` 并走原有建国流程（同战争上限/玩家王国免疫检查，受阻返回 SecessionBlocked）；结果为 AwaitingKingdom。
-- `KingdomCivilWarOwner.cs` OnRebelKingdomCreated：PeacefulSecession 时跳过内战爆发惩罚，直接以 rebels_secede 结算（议和+承认独立）。建国失败时清除标记。AI 裁决与玩家国王接受把 AwaitingKingdom 视为已兑现。
-- 诉求文案 CN/EN 改为“准许本派携封地脱离王国独立”；新增 KW_Raw_168/169 与 Notice_SecessionAccepted/SecessionBlocked 双语。开战后的 autonomy 让步路径未改（原本即承认独立）。
-
-验证：CivilWarLifecycle.ContractTests 全部通过（407 检查，含新增和平独立 2 条）。未编译 1.3/1.4 主工程、未部署、未实机。
+MCM/终端“语音合成”新增“等待后处理判断语音情绪”（默认开）。关闭后自由对话及场景语音直接用清理后的正文、普通语气请求 TTS，不等待情绪或朗读译文；动作后处理照常，沿用已有防重复标记。源码独立提交 `b6e411cc0`（并发共享 index 已分离，提交仅含本次八个文件）。隔离候选双 API/Bootstrap 与原门禁通过，实际 MCM/终端 1.3/CN 873 项、1.4/EN+visibility 1210 项及语音行为17项通过；主工作区有既有 scratch 语法阻塞，旧文本 fixture 缺 DialogueHistoryLedger 未通过。未部署/真实服务/实机。详见[唯一台账与代码证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-emotion-wait-20261031)，回滚仅用 `artifacts/tts-emotion-wait-20261031/rollback-tts-emotion-wait.patch` 的 focused inverse；本条与台账保留为未提交文档以避免共享 index 并发混入。
 
 ---
 
@@ -396,27 +416,15 @@ C# 72/105/121 项、源码契约65+6项、双语26表通过；9007项内容映�
 
 ---
 
-# 未编译未部署：场景自主互动允许坐着与无名NPC（2026-10-31）
+# 待退出游戏完成覆盖：ReplyTool 0.1.3 生图兼容修复（2026-10-30）
 
-按用户“允许坐着，允许无名npc”：候选不再要求 Hero（儿童、俘虏、敌对、带路/传唤/跟随中仍排除），评分同条件下有名人物优先；坐着的人也可参与，站着的一方走过去，两人都坐着时须相距 ≤5m 原地开聊，坐着的人主动找玩家时须 ≤5m 且坐在原位开口。同对冷却对无名NPC按场景内 agent 计。无名NPC不写持久摘要（与原规则一致，只有名人物写）。MCM 总开关说明 CN/EN 同步。未编译、未实机。回滚：逆提交本条对应提交。
-
----
-
-# 当前安装：CN 场景闲聊 + 布匿世界书刷新（2026-10-30，未实机）
-
-按用户“带着其他改动提交编译部署 / 部署CN”：提交 `f260631f6` 收入他人已完成的布匿CN/EN世界书改名重生成（1055增/1038删/1503改）、`docs/` 下两份世界书指南，并让 content-map 跟随改名（删428条失效、增435条）；随后 Release 双API+Bootstrap 编译、Coup门禁与注册冒烟 PASS，原部署流程更新1306项，4832项安装与Stage一致（仅保留玩家 CustomPrompts 两个文件）。DLL 1.3 `2207d810…` / 1.4 `57c7fa49…` 含本轮场景闲聊代码。未实机、未provider、未EN包；世界书身份映射校验1422项既有差异未处理。回执 `artifacts/deploy-scene-ambient-20261030/`，旧Stage在其 `previous-project-stage`。8个src/UI文件仅换行差异、根目录重复的 `世界书指导.md` 与 `scratch/`、`work/` 未提交。
+最新拒绝为HTTP200/content_filter；此前两次HTTP400是生图不支持自定义工具。产品 `f1bea7909` 移除生图工具声明/选择参数，保留已完成输入历史与参考图，文本工具保持。双API各230断言；当前实际生图配置单次方块测试HTTP200/stop，AF解码1024图通过，未重发被拒请求。CN/EN包 `v0.1.3_*_1030_2351` 已备好。CN部署前三个文本/清单文件已更新，但旧0.1.2 DLL被运行中的Singleplayer PID29080锁定（WinError5），部署未完成，未自动回滚/关闭游戏；需要保存退出后重跑allowlist覆盖并核对5文件。部署脚本已补目标文件独占预检。详情、代码证据、旧结论修正、失败现场和回滚点见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reply-tool-image-compat-20261030)与 `extensions/AnimusForge.ReplyTool/artifacts/gemini-image-compat-20261030/`。此条替代上一条已部署0.1.2对当前安装状态的描述；其他交接保留。
 
 ---
 
-# 未编译未部署：场景接力说话对象/互相注视 + 场景自主闲聊（2026-10-30）
+# 已部署CN：ReplyTool 0.1.2 Gemini生图接入（2026-10-30）
 
-两期按 grill-me 共识一起实现，未编译、未跑测试、未实机。
-- 第一期（接力细化）：接力历史写入说话对象（首轮=玩家，之后=上一位发言者），旁听者记忆显示“（对你）/（对某人）”，Prompt 残留历史按对象选 `residual_heard_speech_to_you`/`residual_heard_target_speech`；发言时说话者看对象、其他参与者看说话者（只改 SetLookAgent，会面场景不动）；可选预取只预热下一位（≤2人）记忆，台词仍轮到时生成。MCM：互相注视默认开、预取默认关。
-- 第二期（自主闲聊，总开关默认关）：玩家空闲且在和平定居点（复用嘲讽冲突白名单，排除处决/监狱/港口/小巷），每5秒探测一次；70% NPC↔NPC（最多4句、仅文本、无后处理/动作）、30% Hero 主动走近玩家开场；全局/同对/每场景上限、玩家插话按 epoch 打断、离开20m或战斗即停；每人一条本地摘要（玩家在场追加“旁听”），不写 AFEF；消息栏“（闲聊）”标签，语音开关。设置同时进入终端 Scene 分类。
-- 新文件：`ShoutBehavior.SceneAmbient.cs`、`ShoutBehavior.SceneAmbientChat.cs`、`ShoutBehavior.SceneRelayPresentation.cs`、`DuelSettings.SceneAmbient.cs`；CN/EN 文案在 ConversationRuntimePrompts、AdapterPromptCapture、PromptComposerTexts、afconv_ui_strings、af_ui_strings。
-- 已验证：JSON/XML 可解析、CN/EN 键对齐；只读审查修正了 `SceneTauntMissionBehavior.TryCaptureScenePeaceConflictFacts` 调用（此前他人构建日志中的 SceneAmbient CS0117 即此处）并补处决场景排除、预取说明改为与实现一致。
-- 未验证：1.3/1.4/Bootstrap 编译；ChannelCutoverBoundary、SceneImmediateLifecycle、SceneSpeechEffectsRuntime 的源码逐字/哈希审查在 HEAD 上已失败，本轮又加偏差，未重建投影；实机注视、走近、闲聊与 provider 输出均未看。
-- 回滚：逆提交本条对应的单个本地提交。
+独立子模组新增Gemini兼容chat生图输入包装，参考图原位置保留，输出交AF现有base64/URL解析链路。产品 `c6978b588`，双API各230项通过；一次真实带图请求HTTP200，AF解码1024方图通过，0重试。base64另经本地真实AF专项验证，未承诺上游固定base64。CN已部署，CN/EN双包 `v0.1.2_*_1030_2325` 位于 `extensions/AnimusForge.ReplyTool/artifacts/packages/`；AF三DLL未变。游戏UI/画廊及抗截断效果未验。回滚取消子模组勾选或旧0.1.1包，源码仅逆提交本次产品。详见[唯一台账与代码证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reply-tool-image-integration-20261030)；证据 `extensions/AnimusForge.ReplyTool/artifacts/gemini-image-integration-20261030/` 与部署收据。其他交接内容保留。
 
 ---
 
@@ -521,6 +529,42 @@ C# 72/105/121 项、源码契约65+6项、双语26表通过；9007项内容映�
 # 未部署：大地图就地扎营 第1步（2026-10-30）
 
 按 `docs/designs/field-camp-v1.md` 第1步落地：新增 `src/AF.GameAdapter.Bannerlord/FieldCamp/`（FieldCampBehavior 状态机+存档键 `_afFieldCamp_*_v1` 7个、营地菜单与等待菜单、规则、快捷键 Z、每部队独立大地图营帐实体）、`DuelSettings.FieldCamp.cs`（MCM 组“19. 就地扎营”8项）；终端新增“就地扎营”节点；旧检阅在扎营期间互斥；中英各41条字符串。休整收益：伤员按原版恢复速率额外 (倍率-1)×、士气每小时+1至70，覆盖整个军团；遭遇/进城立即结束营地。频率：HourlyTick 结算，帧 tick 仅 O(1) 检查与场景引用比较。验证：1.3/1.4 隔离目录 dotnet build 均 0 错误（FieldCamp 无警告），TerminalLiveSettings 1.4 PASS 1185 / 1.3 PASS 1129。未部署、未实机；大地图营帐缩放与预制体在 1.3 上未实测。
+
+---
+
+# 已打包：ReplyTool 0.1.1 独立CN/EN ZIP（2026-10-30，本地未上传）
+
+按用户“打包”，复用已验证Stage，生成 `AnimusForge_ReplyTool_v0.1.1_CN_1030_1220.zip` / `AnimusForge_ReplyTool_v0.1.1_EN_1030_1220.zip`，位于 `extensions/AnimusForge.ReplyTool/artifacts/packages/`。每包5个白名单文件、CRC/逐条目字节/语言资源和同DLL均校验通过，不含内部测试/图片/Key或AF主DLL；公开build-info准确保留未实机/长文本边界。运行时代码2e1741a4e不变，新独立打包脚本提交1bebe603。没有额外部署、模型调用、推送或上传。包只含文本输入/输出包装，未接Gemini生图链路。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reply-tool-package-20261030)。
+
+---
+
+# Gemini 生图探针：出图通过，输出工具未使用（2026-10-30）
+
+按用户指定Key做Gemini生图测试，当前主API模型目录鉴权通过；真实gemini-3.1-flash-image带ReplyTool输入/输出包装请求HTTP200，9.894秒，返回1张1024×1024 JPEG，实查内容正确。但tool_calls为空、finish=stop，说明不能认定output_reply机制在图像输出生效；Google模型页也标注不支持function calling。只发1次生图，无普通对照/重试。Key仅在内存和认证头使用，未保存或改写现有配置；产品/部署未变，游戏图片传输尚未接入该包装。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reply-tool-gemini-image-probe-20261030)。图片与报告在extensions/AnimusForge.ReplyTool/artifacts/gemini-image-probe-20261030/。
+
+---
+
+# 当前安装：ReplyTool CN 0.1.1 补齐输入包装（2026-10-30，未长文本/游戏验收）
+
+按用户指出输入包装遗漏补齐，产品提交 `2e1741a4e` 只改独立子模组：最新 user 文本搬到ID配对的 `read_user_input` 已完成调用/结果，再强制 `output_reply`；旧历史/system、图片、AF数据和主DLL不变。CN/EN资源接通；双API构建与实际AF两版DLL各188断言通过。当前API流式/非流式各1次均确认输入包装、HTTP200、输出工具与正文恢复正确。已将CN0.1.1的5文件部署，AF Bootstrap/两实现hash不变；新日志 `request_prepared;input_wrapped=True/False;stream=True/False` 无正文/Key。此条替代下方0.1.0输出单向包装的产品/安装状态；需新游戏进程加载，未验游戏链路与长文本截断率。证据与回滚见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reply-tool-inputwrap-20261030)。
+
+---
+
+# ReplyTool 真实 API 短请求验证通过（2026-10-30，未游戏链路验收）
+
+按用户“用我配置的api打一下测试”，读取当前MCM主owner配置，以 `gemini-3.8-flash-high` 各发送一次非流式/流式合成短请求，直接使用已安装子模组DLL的请求加工与正文恢复代码。两次HTTP200，原始上游均返回 `output_reply` 的 `tool_calls` 且没有普通正文，结束原因 `tool_calls`，均准确还原 `AF_REPLY_TOOL_OK`；耗时5.254s/35.575s，合计2请求、无重试。Key仅在内存/认证头使用，报告不含凭据；未改配置、AF或子模组文件。流式在探针中先缓冲以观察原协议，不能替代真实游戏增量时序/完整对话效果验收。此条替代下方“未真实provider调用”的验证状态，保留未实机边界。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reply-tool-live-provider-probe-20261030)；报告 `extensions/AnimusForge.ReplyTool/artifacts/live-api-probe-20261030/result.json`。
+
+---
+
+# 当前安装：ReplyTool 独立子模组 CN（2026-10-30，未实机）
+
+按用户“部署CN”授权，仅安装 `Modules/AnimusForge.ReplyTool` 的5个已验证 CN Stage 文件。5/5安装hash与Stage一致，AF Bootstrap/1.3/1.4 DLL 前后hash不变；源码与宿主/前置hash匹配，复用双API构建及每版157实际DLL离线断言。未修改启动器选择，需要勾选子模组并排在AF后；未启动游戏或调用真实provider。此条替代下方“ReplyTool未部署”的安装状态，不替代其实机边界。[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-reply-tool-cn-20261030)；收据 `extensions/AnimusForge.ReplyTool/artifacts/deploy-cn-20261030/receipt.json`。回滚：启动器停用该子模组，不覆盖AF。
+
+---
+
+# 独立子模组：ReplyTool 工具承载回复（2026-10-30，离线验证，未部署）
+
+用户最终选择依赖模型工具，要求不改 AF。产品提交 `824676d21` 仅新增 `extensions/AnimusForge.ReplyTool/`：Harmony 包装共享发送委托，为 Gemini 的 OpenAI 兼容聊天请求注入 `output_reply(content)`，流式/非流式还原正文，无自动重试或续写。双 API 引用构建通过且 DLL 相同；已安装 AF 两版 DLL 各 157 条实际传输/接线断言通过，宿主哈希未变。CN/EN 独立 Stage 已生成；真实 provider/实机/部署/打包/push 未执行。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reply-tool-submodule-20261030)与子模组 README。回滚：启动器停用子模组；源码聚焦 revert `824676d21`。
 
 ---
 
@@ -735,10 +779,29 @@ C# 72/105/121 项、源码契约65+6项、双语26表通过；9007项内容映�
 
 产品967fd59cc，检查点9576aa700。自动事件通知仅在空闲大地图出现；对话、场景、菜单与其他窗口期间保留未读，显示后被打断则收起待重试。Esc/知晓均可确认关闭，焦点变化不再搁置已收到的关闭请求；终端手动预览保留。旧版对话拦截回归复现失败；修复后112项生命周期与586项既有展示/资源检查通过，最终双API/Bootstrap/seam通过。**OFFLINE_VERIFIED / NOT_DEPLOYED / NOT_PUSHED / LIVE_NOT_RUN**。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-event-map-only-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#diplomacy-event-map-only-20261029)。
 
+# 当前安装：AF1.7.0 CN / API1.3与1.4（2026-10-29）
+
+- 按用户要求忽略1.5.6，仅编译并部署1.3/1.4和普通Bootstrap及CN资源；既有1.5保持。Release编译成功，更新4815文件、按原规则跳过10个玩家文件；未额外校验/哈希核对或实机，未打包/push。[部署记录与恢复边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-cn1314-20261029)。证据artifacts/deploy-cn1314-20261029/，源码de9cfa722、意图检查点8254c4be6。
+
+---
+
+# 已合并远端main（2026-10-29）
+
+- 远端5a2558130已合入本地main，合并提交de9cfa722；源码版本随远端为1.7.0，原两份文档未提交内容已恢复。未编译/部署/打包/push，游戏安装不变。[合并记录与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merge-origin-20261029)。
+
+---
+
 <a id="vassal-diplomacy-buttons-20261029"></a>
 ## 封臣原版外交按钮已对齐 — 2026-10-29
 
 产品 59b902c3d，检查点43a0ee216。封臣与君主在AI外交开启时统一禁用原版外交提议按钮、显示既有双语说明并拦截点击；君主专用宣言和后台外交规则不变。双API/Bootstrap/seam通过；实际DLL原生VM 1.3专项158项、1.4合集259项通过，1.3旧整页检查受本地地图UI引用不匹配影响，未计通过。**OFFLINE_VERIFIED / NOT_DEPLOYED / LIVE_NOT_RUN**。前次部署不包含本次修复。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#vassal-diplomacy-buttons-20261029)与[代码范围](docs/architecture/af-framework-code-scope.md#vassal-diplomacy-buttons-20261029)。
+
+
+---
+
+# 源码已推送：AF1.6.6 / 游戏1.5.6特别版（2026-10-28）
+
+- 远端origin/main已更新至1ca66348c，仅发布本次源码和参考树，本地交接历史/脏改动保留。未重编译或执行校验；CN部署和双包保持。[推送记录与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-af166-bannerlord156-20261028)。
 
 ---
 
@@ -754,6 +817,193 @@ C# 72/105/121 项、源码契约65+6项、双语26表通过；9007项内容映�
 
 ---
 
+# public_manual 更新日志（2026-10-28，LOCAL_UPDATED）
+
+- 新增从v1.6.3升级至v1.6.6的45条中英公告，默认展开并同步最新版本入口；未发布、未浏览器视觉验证。[台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#manual-release-166-20261028)。手册仍按原规则忽略，不强制提交。
+
+---
+
+# v1.6.6 公告扩写（2026-10-28）
+
+- 以 10 月 23 日 10:29 v1.6.5 双包为基线扩写玩家说明，另同步 v1.6.3 升级版；未重新校验 ZIP。[台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-166-notes-expanded-20261028)。
+
+---
+
+# 当前交付：v1.6.6 编译与未校验双包（2026-10-28）
+
+- Release 双 API、Bootstrap、Coup 和注册检查以及干净 Stage 通过；用户要求停止后中断 ZIP 校验，两个标准名称 ZIP 为未完成门禁的候选，不声称哈希或完整性通过。未部署、推送或实机。[台账、公告与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#package-1-6-6-20261028)。
+
+---
+
+# 当前候选：U v5本地语音启动识别修复（2026-10-28，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- U包为v5，当前安装AF只接受v2pro，故选择后在启动Python前拒绝。提交b71d625a9已修复U-only v5准入并补持久状态日志。44项运行时fixture、30项安装包哈希、双API/Bootstrap和注册门禁通过；真实模型/播放未验，未覆盖游戏。[台账、产物和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-u-v5-20261028)。
+
+---
+
+# 当前安装：终端与王国栏位交换（2026-10-28，DEPLOYED / LIVE_NOT_RUN）
+
+- 终端最右带弧形收尾、王国移到其左侧；关闭终端入口时王国恢复原版收尾。定稿图标不变。提交cbf8f1bca。双API/Bootstrap与注册检查通过，顺序开关回放10项、图标尺寸16项通过；10文件已定向安装并逐项验证，未实机。[证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-mapbar-order-20261028)。
+
+---
+
+# 当前安装：定稿终端图标（2026-10-28，DEPLOYED / LIVE_NOT_RUN）
+
+- 内置生图定稿已整理为128×128透明PNG并单文件覆盖游戏Modules/AnimusForge；项目提交ac3cefe67。16项尺寸测试、源/Stage/安装哈希通过，DLL未改。需重启游戏刷新缓存；未实机验证。[台账、目标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-icon-approved-deploy-20261028)。此条取代此前图标候选未部署状态。
+
+---
+
+# 当前交付：终端地图栏图标第二版（2026-10-28，SOURCE_VERIFIED / LIVE_NOT_RUN）
+
+- 依据截图对比重画更简洁的灰白锤砧，替代第一版；提交 `03e03c2be`。16 项尺寸测试和透明度、映射、加载器、哈希核对通过；模拟对比非游戏截图，未实机、构建或部署。[台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-icon-redraw-v2-20261028)。
+
+---
+
+# 当前交付：终端地图栏图标重画（2026-10-28，SOURCE_VERIFIED / LIVE_NOT_RUN）
+
+- 锤砧图标依用户截图方向改为灰褐旧铁风格，128×128 RGBA，资源路径不变；提交 `50dcf446d`。16 项尺寸测试及资源映射/哈希核对通过；完整 J15 内容测试在内置世界书清单断言失败。未构建、部署或实机验证。
+- [台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-icon-redraw-20261028)。
+
+---
+
+# 当前源码发布：场景前缀及本会话修复（2026-10-27，PUSHED_VERIFIED）
+
+- 已普通推送origin/main至1ffac68d9，仅新增1提交/52文件；场景缓存、导演/生图API和社交修复已发布，本地检查点/私密日志及其他脏改动保留。
+- 干净副本双API、缓存CN/EN各151、实际DLL四组各47、结识10项通过；未验真实缓存token/计费、实机或旧档。原EN部署保持，本次未再部署。[唯一台账、来源和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-runtime-fixes-20261027)；收据artifacts/push-runtime-fixes-20261027/receipt.json。
+
+---
+
+# 当前安装：场景固定前缀修复 EN（2026-10-27，DEPLOYED / LIVE_NOT_RUN）
+
+- 已覆盖双API实现、Bootstrap、PDB/build元数据及EN提示词，共10文件；沿用API配置和玩家自定义提示词。按用户要求跳过哈希与门禁，无部署备份/自动回滚。
+- 双API、CN/EN缓存各151项及实际DLL四组各47项通过；未实机、未验证中转实际缓存token/计费。[唯一台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-scene-prefix-en-20261027)；收据artifacts/deploy-scene-prefix-en-20261027/receipt.json。下方未部署记录为历史状态。
+
+---
+
+# 当前交付：场景喊话公共固定前缀（2026-10-27，SOURCE_AND_OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 五条场景路径统一公共system，当前NPC稳定资料前置，动态动作/任务/状态后置且只发最新版；场景缓存按NPC隔离，保留原一对一入口、历史/事实与规则语义。CN/EN三键已接入。
+- 双API编译及CN/EN缓存各151项通过，实际DLL双API×双语四组各47项通过。未部署、未请求中转、未验实际缓存token/费用；按用户要求跳过哈希和全仓/Stage门禁。
+- [唯一台账、代码范围与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-prefix-freeze-20261027)；证据及修改前原件artifacts/scene-prefix-freeze-20261027/。下方旧交付仅为历史记录。
+
+---
+
+## 2026-10-27 配偶结识修复与归国和平排查
+
+配偶/家族/同伴误触初次结识已修，专项10项与双版本编译通过；未部署。第三方战争在归国核心模拟中保持，内战400项通过，但截图现场停战源未复现，外交生产逻辑未改，需原玩家日志/存档继续。[主台账与证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#proactive-family-acquaintance-20261027)。
+
+---
+
+## 2026-10-27 EN Gemini Chat 尺寸映射已复制
+
+按用户要求跳过哈希和门禁，直接覆盖双实现、Bootstrap与双语说明共11文件；保留原EN内容和游戏保存的旧密钥/地址，未实机。[范围和未验证项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-en-gemini-chat-size-20261027)。
+
+---
+
+## 2026-10-27 旧密钥复核
+
+旧游戏密钥＋Chat Google扩展再次返回1376×768；新密钥同字段已返回2752×1536。映射不按密钥硬编码；旧密钥实际2K能力需站方确认。未部署/改保存设置。[台账与收据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gemini-chat-old-key-confirm-20261027)。
+
+---
+
+## 2026-10-27 Chat 2K 已实测成功
+
+同一新测试密钥＋/v1/chat/completions＋extra_body.google.image_config（2K、16:9）返回2752×1536；替代此前聊天只能1K的概括。d9d7a70cb已有对应实现，无需强切原生。未部署或保存凭据。[台账与证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gemini-chat-2k-targeted-20261027)。
+
+---
+
+## 2026-10-27 替换测试凭据后的 Gemini 结果
+
+原生 API 三项均实际输出 2752×1536；聊天三项仍1376×768。已确认新测试密钥＋原生 imageSize=2K 可行；未保存凭据/改游戏设置或部署。[证据与台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gemini-game-config-new-key-20261027)。
+
+---
+
+## 2026-10-27 Gemini 批量实测
+
+6 次当前配置对照未复现 2K：3 种聊天字段均返回 1376×768，原生接口未返回可用图（Bearer 两项 parts 为空）。未改源码/设置或部署。[证据与台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gemini-game-config-batch-20261027)。
+
+---
+
+## 2026-10-27 Gemini 当前配置实测结果
+
+一次真实聊天接口测试 HTTP 200，但 2K 请求实际仍返回 1376×768；Google 扩展在当前站点未生效，不能宣称该站点 2K 已修复。源码未新部署、设置未改。[台账与收据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gemini-game-config-live-20261027)。
+
+---
+
+## 2026-10-27 Gemini 生图尺寸映射
+
+已接入 Gemini 3 原生与聊天 Google 扩展的分辨率映射，保留原设置和参考图；双版本构建和各 177 项离线专项通过，未部署/真实服务测试。[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gemini-image-size-20261027)。
+
+---
+
+## 2026-10-27 OpenRouter 图片协议
+
+OpenRouter 专用图片接口和模型拉取已本地接入，尺寸映射为分辨率档位及比例并保留参考图。双版本构建和 3 组离线专项通过；未实机/真实服务/部署。[台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#openrouter-images-20261027)。
+
+---
+
+## 2026-10-27 EN 生图设置部署
+
+已部署生图设置排序及导演参考篇幅隐藏；双 API / Bootstrap、9 项更新及 9189 项保护核验通过。未实机；无部署备份或自动回滚。[台账与证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-en-image-settings-20261027)。
+
+---
+
+## 2026-10-27 生图设置整理
+
+生图 API 按配置流程排序；导演参考篇幅从 MCM 与终端隐藏，原值仍保留。双版本构建与两组专项通过；实机未验证、未部署。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#image-api-order-20261027)。
+
+---
+
+# 当前安装：EN 口头外交宣言循环修复（2026-10-27，DEPLOYED / LIVE_NOT_RUN）
+
+- 用户授权 EN 部署；单模块含 Bootstrap 与 1.3/1.4，候选 3521 项，更新 11 项，9189 项受保护内容核验通过。沿用此前布匿世界书排除；未实机、旧档或真实 API。[台账与收据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-en-oral-threat-20261027)。
+
+---
+
+# 当前源码：口头外交宣言威胁快照循环修复（2026-10-27，OFFLINE_VERIFIED / DEPLOYED_EN）
+
+- 口头宣言刷新同步威胁快照，防止旧快照导致成功结果反复丢弃和重复调用；请求期间状态变化仍拒绝旧结果。专项回放342断言、双API与Bootstrap构建通过；完整外交套件另一项归档路由断言失败，未实机/部署。[台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-threat-refresh-20261027)。
+
+---
+
+# 当前源码：导演API独立分组与模型拉取（2026-10-27，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- MCM API页和终端AI页分别独立列出导演API，新增使用导演地址/Key的模型拉取与下拉；保留手动输入和原owner/JSON/preset。只点击时请求，配置变化丢弃过期结果。
+- 双API/Bootstrap/双Coup构建通过，双API×CN/EN专项各152项及1.4终端/MCM 1149项通过；未实机/真实服务/部署/打包/push。已安装EN仍为上一轮版本。[台账、源码范围和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#director-model-fetch-20261027)；证据artifacts/director-model-fetch-20261027/，检查点codex/checkpoint-director-fetch-20261027。
+
+---
+
+# 当前安装：EN 导演门禁与独立API（2026-10-27，DEPLOYED / LIVE_NOT_RUN）
+
+- 按用户要求部署EN，单模块Bootstrap＋1.3/1.4；3521候选文件、90更新，9222既有文件受保护，哈希回读通过。导演API设置与门禁收缩已进入部署产物。
+- 完整EN投影在布匿世界书133项失败后，沿用此前排除该世界书的部署范围；已有玩家导出保留，源码不删。未实机/旧档/provider，未打包或推送；无部署备份及自动回滚。[唯一台账与证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-en-director-20261027)。
+
+---
+
+# 当前源码：导演门禁收缩与独立API（2026-10-27，OFFLINE_VERIFIED / NOT_DEPLOYED）
+
+- 已取消盾牌/旗帜/黑背景、叙事复述及四段字数导致的正文替换；保留空回复/接口/截断失败和原预算、取景参考、取消边界。艺术偏好与身份事实仍留在Prompt。
+- MCM原生API页与终端同步开放独立导演API开关、地址、Key、模型；默认主API，开启后独立配置，不混用密钥。CN/EN文案及原JSON/preset/owner接线完成。
+- 原统一双API/Bootstrap/双Coup通过；最终双API×CN/EN真实DLL专项各127通过，未实机/真实provider/部署/打包/push。[唯一台账与源码/回滚范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#director-api-relax-20261027)；证据artifacts/director-api-relax-20261027/，检查点codex/checkpoint-director-api-20261027。其他作者已有改动保持。
+
+---
+
+# 最新源码推送：原版目录与双语布匿世界书（2026-10-26，PUSHED_VERIFIED）
+
+- main已普通推送并独立核实为749816fbb166a1a8883b84148cc5ecb0eb672f53；仅1个新增提交，无本地专用历史。原版1.5.5保留、旧1.5.4删除，CN/EN世界书各1272 JSON与身份映射已发布，测试桥保持不跟踪。
+- 数据/真实映射和pre-push通过；未新增实机/旧档/生产包或部署。主工作区已有改动保留，本地main仍含旧历史，不可直接推送。[唯一台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#push-source-tracking-20261026)；证据`.git/push-source-tracking-20261026/receipt.json`。
+
+---
+
+# 当前同步：拉取合并与指定跟踪（2026-10-26，LOCAL_MERGED / BRIDGE_OUTPUT_DELETE_BLOCKED）
+
+- origin/main `714380ba7`已合入本地main，合并提交`d781182c`；原有未提交工作已恢复，其他源码/素材保持未提交，无push/部署/打包。
+- 原版1.5.5共8201文件已跟踪，旧1.5.4共8192文件删除；新增跟踪CN/EN布匿世界书各1272 JSON和映射，清除239条悬空content-map记录。测试桥34个源码文件删除并取消跟踪，剩余忽略运行产物的目录删除两次被自动审批拒绝（用户已授权），尚未完成清空。
+- 双API/Bootstrap/双Coup、缓存CN/EN各148、编辑器146/排版1930、2544 JSON与1272真实英文路径解析通过；未实机/旧档/provider/生产包验证。[唯一台账、范围和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#pull-merge-source-tracking-20261026)；原字节与证据`.git/af-pull-merge-20261026-233513/`，stash `35b6158e9`。
+
+---
+
+# 当前长文本编辑器修复（2026-10-26，离线通过 / 实机未验 / 未部署）
 
 - 按玩家1.6.5反馈和用户推送main授权，基于远端ba3a47e1a完成产品提交17a1950c6：局部排版优化、6万字符截断提醒、中英字数栏及保存回调异常保护。保持原关闭/焦点/业务保存流程，不改其他玩法和版本号。
 - 最终回归146项、排版新旧对照1930项、中英资源/真实绑定及原统一双API/Bootstrap/Coup构建通过。玩家原始闪退及游戏视觉未复现，不等于所有闪退已排除；未打包或部署。
@@ -4182,6 +4432,8 @@ Apolytea同意命令自己的队伍巡逻 Diathma 三天；provider真实输出 
 - [唯一主台账与命令/风险](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af-bilateral-direct-20261030) / [准确代码范围](docs/architecture/af-framework-code-scope.md#af-bilateral-direct-20261030)。源/DLL SHA 与日志在 `artifacts/bilateral-direct-20261030/verification.json`。父会话已完成独立审查，无本次剩余须修问题；下一步仍需新任务授权；保留原有 dirty 文档，仅选择性提交本项追加段落，无新发布授权。
 
 - 2026-10-30 后续部署已完成，更新本项此前“部署 NOT_RUN”：原统一 Debug 双 API/Bootstrap 与门禁通过，目标为 Steam 的 `Modules/AnimusForge`，更新 11 文件；4825 项安装核对通过（4822 同 SHA、3 项保留自定义），39 个既有配置/提示词 SHA 不变。详见主台账同节“部署补记”和 `artifacts/bilateral-direct-20261030-deploy/deployment-verification.json`。实机/真实模型/旧档、打包、push 仍未验或未执行。
+- 2026-11-02 燃烬帝国编号卡整理已按用户要求部署到 F 盘游戏模块：仅改名187条；安装414条与源包文件名/SHA完全一致。未启动游戏；现有Debug Stage仍旧，正式打包前需刷新。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#worldbook-numbered-rule-cleanup-deploy-20261102)与[整理/部署记录](docs/worldbook-numbered-rule-cleanup-20261102.md)。
+- 2026-11-02 三本世界书已独立打包，每个ZIP含CN/EN两套导入目录；8256 JSON、1128对规则映射及解压SHA复核PASS。输出 outputs/worldbooks_20261102_212056/；AD1259仅保留导出时间元数据差异，未实机或逐条史实认证。[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#worldbooks-standalone-packaging-20261102-212056)。
 
 
 ---
@@ -4221,3 +4473,43 @@ Apolytea同意命令自己的队伍巡逻 Diathma 三天；provider真实输出 
 ## 2026-11-03 1.8.0修复已构建、打包、部署及推送
 
 此条替代上文人设/首次对话索引“未构建部署”状态。双API及Bootstrap编译0错误；1.8.0_CN/EN_1103_0049极限7Z已生成（171.47/171.03MiB），含量化bekko；435个受管理文件已部署游戏。人设eae418f4bc、索引379d24a12c和移除远端当前树旧bekko的65bb09ee45已推送origin/main；本地模型/玩家数据/向量缓存保留，Git/LFS历史未清理。无测试、门禁、归档回读、哈希或修复后实机验收。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-180-persona-index-delivery-20261103)与[交付记录](docs/releases/AnimusForge_1.8.0_交付记录_20261103.md)。本机证据.tmp/package-180-persona-index-20261103-004209/；回滚聚焦本任务提交及人设/索引before快照，不覆盖其他作者dirty，部署无自动回滚。
+
+
+---
+## 2026-11-03 官网累计公告1.6.6→1.8.0（本地未发布）
+
+public_manual/index.html新增14主题66条双语累计公告，涵盖1.7外交重做、1.8营地刑场/人设/世界书/检索及最新建库修复；首页与日志入口更新1.8.0，历史公告保留。独立中英稿位于docs/releases/AnimusForge_1.8.0_自1.6.6累计更新_20261103_zh-CN.md与_en.md。未校验/测试/哈希/浏览器预览、未推送发布。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#website-cumulative-166-180-20261103)；检查点8c149013c，官网原字节快照.tmp/website-release-166-180-20261103/index.before.html，聚焦逆向本轮差异。
+
+
+---
+## 2026-11-03 官网安装与扎营指南补充（本地未发布）
+
+当前安装页改为1.8完整7Z内置bekko三文件，删除另下旧ONNX/重排器的现行要求，纠正检索/语音混淆，补首次建库与更新保留说明。新增独立扎营导航及CN/EN操作卡，包含Z键条件、休整巡视、营地报事、B键刑场与设置；路线图状态及玩法计数同步。未测试/校验/哈希/预览、未推送发布。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#website-bundled-onnx-camp-guide-20261103)；原页快照.tmp/website-install-camp-20261103/index.before.html，回退仅逆向本次差异。
+
+
+---
+## 2026-11-03 营地近期修复审查与同伴安排（源码，未部署）
+
+审查并修正误放在清场HoldCeremonyActor的归位处理、俘虏对话解除AI暂停漏口、普通住民喊话后通用巡逻恢复、报事追出营地与B键输入穿透。同伴进场从入场位走向职务/营内活动点，健康可用同伴优先通用报事，纠纷优先当事人；报事Prompt中英同步。安全归位按维护批次最多2人、17候选，失败保留owner并延后重试。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-review-companion-positions-20261103)。10文件清单与审查前快照.tmp/camp-review-companions-20261103/，checkpoint04a5478c45。只回读源码差异，按用户要求未测试/构建/哈希/实机，未部署/打包/推送。回退聚焦本轮差异，保护前轮及其他作者dirty。
+
+
+---
+## 2026-11-03 营地审查修复已部署1.8.0
+
+按用户部署指令，双API与Bootstrap编译0错误，8文件已写入游戏Modules/AnimusForge，含本轮同伴安排/报事、俘虏AI、B键、越界和卡墙恢复代码及双语报事Prompt。未测试/哈希/验证门禁/修复后实机；未打包推送，旧0049两包尚不含本轮修复。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-review-deployment-20261103)及.tmp/deploy-camp-review-20261103_135554/delivery.json。源码回滚按审查快照聚焦逆向，部署无自动回滚，旧构建仍在bin/Debug/release_180_persona_index_20261103_004209。
+
+
+## 2026-11-03 营地装备与移动后续（未部署）
+源码改为玩家/同伴/士兵/军团领主战斗装，俘虏保留常服；活动占位预约、短走停留、出生错位、同伴可达岗位、观众营内目标及有界寻路一起调整。仅源码回读，按用户要求不跑校验/离线测试/哈希，未编译部署打包推送。观众确有越界目标入口，但未确认截图人物身份。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-spacing-outfit-20261103)。检查点2ac303866；本轮原字节及focused patch：`.tmp/camp-spacing-outfit-20261103/`。保留上轮和其他作者dirty，禁止整文件还原。
+
+
+## 2026-11-03 14:28 营地装备与移动已部署
+用户授权后，1.8.0双API及Bootstrap编译成功，8文件已覆盖游戏统一AnimusForge模块。1.3/1.4各0错误406警告，Bootstrap0错误0警告；包含上一条营地装备、间距、同伴可达岗位和观众有界寻路。未测试/校验/哈希/实机/打包/推送。回执`.tmp/deploy-camp-spacing-20261103_142645/deployment-result.json` SUCCESS；详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-spacing-outfit-deployment-20261103)，最新指针`.tmp/deploy-camp-spacing-latest.json`。
+
+
+## 2026-11-03 场景生图自由视角（源码未部署）
+用户要求取景仅像摄影模式一样进入自由视角。MissionScreenshotCapture移除整状态disable，改原版引擎暂停并保留正常Mission渲染路径；暂停/IsInPhotoMode/镜头/UI退出恢复，不改场景实体可见性。旧代码IdleTick与原版摄影模式差异已确认，截图缺失根因和修复效果尚未实机证实。未编译/测试/校验/哈希/部署/打包/推送。回滚4019f1cac及`.tmp/mission-photo-free-camera-20261103/`；[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#mission-photo-free-camera-20261103)。
+
+
+## 2026-11-03 玩家启动/新档失败调查（未确诊）
+玩家完整AF包但缺版本/异常堆栈；源码确认发行前已有MCM内部接口硬失败及Bootstrap ONNX程序集路径拒绝，另有战役注册/XML/ONNX预热候选。未认定具体根因，不归咎缺文件，不盲改启动或移除依赖保护。仅源码/交付记录阅读，未测试校验哈希构建部署；[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-startup-crash-triage-20261103)及`.tmp/player-startup-crash-triage-20261103/findings.md`。
