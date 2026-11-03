@@ -1,3 +1,7 @@
+## 2026-11-04 营地居民活动、围栏寻路、决斗隔离与导航栏收尾
+
+产品 `08e297c3d3`，检查点 `44d77811f`。居民分配失败单独恢复，健康无动作人员转循环巡游，实际围栏段计入含人物净空的禁行网格，原生导航组由营地移动owner接管，卡住仅重规划且不传送。营地决斗复用双独立队伍并恢复，开打检查双方落点及路线。导航栏王国中间按钮改用平直背景，终端保留收尾。双API/Bootstrap仅编译完成，测试/校验/实机未运行。本轮未部署、打包或push。见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-life-fence-duel-20261104)及[代码范围](docs/architecture/af-framework-code-scope.md#camp-life-fence-duel-20261104)。
+
 ## 2026-11-04 网吧重解析路径兼容与 INT8 CN 重包
 
 玩家弹窗确认 OnSubModuleLoad 抛出 storage crosses a reparse point，日志容错修复后已可见真实错误。产品提交 `f41ec80df4`，允许已验证模块之上的Steam/游戏安装目录映射，模组本身及内部数据路径继续拒绝重解析点，错误附具体路径。此前0342包选错原始模型，已将仓库默认bekko替换为既有INT8版，模型124972807字节，原始版备份在本地任务目录。双API及Bootstrap仅编译完成，按用户要求未运行测试/校验/冒烟。新CN包0351用于复测，详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#mapped-game-int8-cn-20261104)。

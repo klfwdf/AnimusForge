@@ -1,3 +1,14 @@
+<a id="camp-life-fence-duel-20261104"></a>
+## 2026-11-04 营地居民、围栏与决斗职责
+
+源码08e297c3d3，一基行号。FieldCampAgentHandler.SpawnResident原生回调失败后仍交回已生成Agent。FieldCampMissionLogic.cs第435行Track包装单人失败，第452行起TrackAssignedResident处理岗位和活动登记，OnMissionTick第163行接入AdvanceCampWalks。People.SpawnArmyLords给健康领主交谈/散步职责。
+
+FieldCampMissionLogic.Life.cs第305行AdvanceCampWalks每帧最多20名距离推进，第334行UpkeepBatchOfAgents批次活动/失败隔离，第486行CampMovementBehaviorGroup管理日常移动owner，第519行TryNearbyStroll按既有两次预算先检验可达路线，第693行RecoverBlockedCampWalk重规划且无传送。Execution.cs第620行FinishCeremonyReturn将未完成居民归还营地owner，清理流程保留剧情身份。
+
+FieldCampProps.cs第24行FenceObstacle及第652行登记真实成功围栏段，第665行Measure读取宽度。FieldCampSite.cs第602行InitializeGroundCache、第668行起栅格化含人物净空的围栏禁行区域，RefreshGroundObstacles保留FenceBlocked，TryBuildGroundedRoute支持缓存范围内外侧居民经入口返回。
+
+Grounds.cs第27行GetDuelTeams复用专属队伍，第41行PlaceDuelists检查落点/路线并登记决斗持有者。DuelBehavior.cs第7114行TryInitializeFormalDuelTeams接入营地队伍和关系快照，第7375行起拒绝不可用擂台，第7451行调用隔离，第8227行附近RestoreState恢复玩家队伍。content/modules/AF.Module.WarStats/GUI/Brushes/AFTerminalMapBarBrushes.xml第5行将kingdom改用中间段，终端保持最后收尾。实际API仅编译1.3/1.4/Bootstrap完成，行为与视觉实机未验。命令/日志及回滚见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#camp-life-fence-duel-20261104)。
+
 <a id="mapped-game-int8-cn-20261104"></a>
 ## 2026-11-04 网吧上级安装目录映射兼容
 
