@@ -4219,3 +4219,10 @@ Apolytea同意命令自己的队伍巡逻 Diathma 三天；provider真实输出 
 ## 2026-11-03 1.8.0修复已构建、打包、部署及推送
 
 此条替代上文人设/首次对话索引“未构建部署”状态。双API及Bootstrap编译0错误；1.8.0_CN/EN_1103_0049极限7Z已生成（171.47/171.03MiB），含量化bekko；435个受管理文件已部署游戏。人设eae418f4bc、索引379d24a12c和移除远端当前树旧bekko的65bb09ee45已推送origin/main；本地模型/玩家数据/向量缓存保留，Git/LFS历史未清理。无测试、门禁、归档回读、哈希或修复后实机验收。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-180-persona-index-delivery-20261103)与[交付记录](docs/releases/AnimusForge_1.8.0_交付记录_20261103.md)。本机证据.tmp/package-180-persona-index-20261103-004209/；回滚聚焦本任务提交及人设/索引before快照，不覆盖其他作者dirty，部署无自动回滚。
+
+
+## 2026-11-04 — DIP-PLANNING-20261104 外交重复规划修复
+
+`main` 产品/测试提交 `ad725bc08`（检查点 `4e0237a9f`，合并基线 `67707d801`）：统一 CN/EN 提议证据标准、完整请求预算与精确重复引用、具体候选纠错、跨候选/读档的六次失败上限；超长输入立即暂停，审核耗尽保留原稿。双 API/Bootstrap 构建与相关离线回放通过。真实 provider、实机/玩家存档仍未验；未推送、部署或打包。全仓双语门禁有五个已核实的既存英文资源缺项，本次受影响提示词配对和真实双语消费者已通过。
+
+详细证据：[主台账 DIP-PLANNING-20261104](docs/animusforge-refactoring-and-repository-reorganization-plan.md#dip-planning-20261104--重复外交规划修复源码与离线验证完成)；[已核实代码范围](docs/architecture/af-framework-code-scope.md#2026-11-04--diplomacy-planning-retry-and-evidence-repair-ad725bc08)。开工已有文档改动与未跟踪目录保持原状；此条只交接本次修复，不发出发布/推送授权。

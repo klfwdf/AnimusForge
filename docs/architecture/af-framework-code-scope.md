@@ -2755,3 +2755,20 @@ Player docs live under `docs/tts/`; `.agents/skills/af-gptsovits-guides/` mainta
 | `content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts{,.en}.json` / Bilateral_*、OralArrangementHeader、CountryAdmissionOral；Prompt/RuleBehaviorPrompts{,.en}.json / diplomacy | 955–961、519、10；对应 diplomacy 段 | 原真实 lazy reader/内容映射，CN/EN 成对资源与实际消费者；关闭模式六标签原条件保留，不强制模型输出语言 |
 | `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/BilateralReplay.cs`；CountryAdmissionReplay / Entrances；NativeDiplomacyFallbackReplay；PromptMemoryReplay | 1–245；对应新增分支；本次差异 | 执行/异常/原案/重载/legacy 与完整事件 host 离线验证；机械回执受控，非实机证明 |
 | `tests/content/J15ContentContractTests/DiplomacyBilateralContractTests.py` | 全文件 | 7 key 配对、协议/变量、真实 reader、native 模式隔离；不冒充全历史语料门禁 |
+
+
+## 2026-11-04 — Diplomacy planning retry and evidence repair (ad725bc08)
+
+This entry covers only the authorized repeated-planning repair, on merged base `67707d801` with intent checkpoint `4e0237a9f`. Earlier architecture records retain their original scope; this is not a framework migration or release authorization.
+
+| Owner / source | Verified one-based lines and symbols | Covered responsibility |
+| --- | --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Recovery.cs` | 11–75: `PlanningFailureLimit`, `PlanningRecoveryHeld`, `HoldTechnicalRequestCore`; 158–285: `TryResumeTechnicalRequest` | Persisted six-failure planning allowance; immediate deterministic-budget hold; candidate/reload cannot refill it; existing metadata/configuration/explicit recovery conditions. |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DraftRepair.cs`; `WorldDiplomacyOrchestration.StructureSelection.cs` in the same directory | 136–145: `RetryConceptAudit`; 40–59: `RejectStoryCandidate` | Inner audit errors and direct story rejection consume the task allowance; exhausted audit retains its draft. |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.EventPlanning.cs` | 114–145: `PrepareMaterialSelection`; 184–198: comparison shape rejection; 461–533: `PrepareEventConceptRequest` / `BuildExpansionRequest` | Separate candidate IDs from country registry; exact count/ID correction; assemble the expansion envelope before supplemental retrieval. |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.MaterialSupply.cs` | 324–384: `SupplementExpansionSources`; 427–569: `FinishMaterialRequest` | Full-envelope headroom, mandatory source preservation, exact duplicate trigger reference, audit fields counted before trimming. |
+| `src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyWorkRecords.cs` | 104–106: `PlanningFailureAttempts` | Additive bounded integer in existing WorldDiplomacyJob JSON; old saves default to zero; existing strict chunk container and save keys unchanged. |
+| `content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json` and `.en.json` | 970: `PlanningEvidenceContract`; consumer `FinishMaterialRequest` above | Shared distinction between proposed NPC actions, established facts and player-confirmed undertakings; actual game-language reader tested in both languages. |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/PlanningRepairReplay.cs` | 43–179: `Run` and scenario methods | Controlled production-owner replay: comparison, admission, cumulative recovery/reload, same-draft audit, lossless duplicate projection, full-envelope supplementation. |
+
+Uncovered: actual provider semantic compliance, live-game/actual player-save acceptance, Stage, packaging, deployment and push. Existing transport retry and daily request rules are not redesigned. Detailed results are in the main ledger's `DIP-PLANNING-20261104` entry.

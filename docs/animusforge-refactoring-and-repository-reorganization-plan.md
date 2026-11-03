@@ -13619,3 +13619,28 @@ BUILT / PACKAGED / DEPLOYED / SOURCE_PUSHED / USER_SKIPPED_VALIDATION。用户�
 源码eae418f4bc（人设）、379d24a12c（索引）与65bb09ee45（移除远端当前树旧bekko/LFS路径）已推送origin/main；本地模型和游戏量化模型保留，未清Git历史或远端历史LFS对象。本次构建输入包含工作区既有dirty，Git提交不收纳其他作者无关改动。未测试/校验门禁/离线模型实验/哈希/归档回读/修复后游戏接受，不以旧DLL00:33成功代替新修复实机验收。
 
 完整产物、编译/部署证据与回滚界限见docs/releases/AnimusForge_1.8.0_交付记录_20261103.md及本机.tmp/package-180-persona-index-20261103-004209/delivery.json。人设与索引源图仍见.tmp/runtime-log-analysis-20261103/persona-code-map.json、.tmp/first-dialogue-knowledge-index-20261103/source-map.json；修改前检查点a8f2e9d8ee/4a5cde59d，原字节快照各before/；旧模型移除前7844a6d42f。聚焦逆向本任务提交，不还原共享大文档旧快照、不改他人dirty；游戏需人工重部署旧构建才能回退。
+
+
+## DIP-PLANNING-20261104 — 重复外交规划修复（源码与离线验证完成）
+
+授权：用户“好那你修吧”，承接统一生成/审核标准、完整请求预算、具体纠错、整任务有限重试的已讨论方案。实际工作区为本仓库 `main`；合并基线 `67707d801` 已包含本地 1.7.1 减少资料量修复，实施前空检查点 `4e0237a9f`，产品与测试提交 `ad725bc08`。开工已有四份文档改动与原有未跟踪目录均保留，不纳入产品提交。
+
+本次完成：
+
+- CN/EN 同一 `PlanningEvidenceContract` 接入候选生成、主体识别/审核和正文生成/审核。NPC 新提议不再被要求举证“已经发出/收到”；身份、动机、权限、行动对象仍需依据，已发生事实、玩家同意和执行结果仍不能虚构。
+- 扩展前先组装完整请求，补充资料只使用扣除提示词、触发资料、历史、身份等之后的余量，保持 28k 软预算与 32k 发送门槛。审核字段提前计入预算；只把触发资料内完全重复的公开全文改为同请求内引用，保留完整正文、上下文和存储原文。必需资料超长时立即保留任务并暂停，不重选候选。
+- 候选比较明确给出候选 ID 列表，错误反馈含应有条数和有效 ID，避免继续把国家清单当候选。格式纠错复用现有候选/审核草稿；审核自身三次纠错耗尽后保留原稿。
+- `planningFailureAttempts` 在同一任务内累计，最多六次；换候选、阶段成功和读档不重置。正常成功步骤不计失败，现有每天请求限额保持。相关任务版本/配置变化、显式恢复或既有一次性迁移才可重开有限恢复；相同超长输入不会因时间流逝反复尝试。
+
+验证与证据：
+
+- 新增 `--planning-repair`：CN/EN 真实资源 reader 与生产规划 owner 共 38 条断言通过；覆盖玩家日志中“多余国家评估”“补资料溢出”“候选切换重置重试”等失败形状。模型判断为受控返回，不能视为真实 provider 语义验收。
+- 既有专项通过：`--scoped-world` 13、`--country-admission` 5940、`--bound-matters` 6196、`--structure-selection` 134、`--declaration-stalls` 64、`--prefix-ordering` 97；其中范围测试仍覆盖 56 国、旧全世界快照迁移与冻结复用，绑定事项覆盖完整玩家事件生命周期。断言有交叉，不汇总为独立场景数量。
+- `PersistenceChunkReplayTests` 与 `validate_persistence_profile_config.py --chunk-contract-only` 通过。新增的是既有 JSON 内整数，不新增 `.sav` 键、不改变严格分块与坏块处理。
+- 使用原 `scripts/build/build_single_module.ps1`，仅构建：双实现（引用 1.3.15 / 1.4.6）与 Bootstrap 均零错误，双 coup seam 与 registration smoke 通过；构建含原有编译告警及无法访问 NuGet 漏洞索引告警。未 Stage、覆盖游戏或打包。
+- 本次提示词两份表 key/协议引用一致，实际 CN/EN 消费者通过。全仓 `l10n_gate.py` / `check_bilingual_tables.py` 仍失败：`DiplomacyMiscCompatibility.en.json` 一项、`LlmSourceTexts.en.json` 四项英文 key 缺失，逐项与检查点内容比对确认预先存在且相关文件未变；运行内容源码汉字扫描为零。本次未扩大修改这些旧缺项，不宣称全仓双语门禁通过。
+- 本地证据：`artifacts/diplomacy-planning-repair-20261104/verification.json`，含源码/DLL SHA256、测试结果、基线缺项和未验项。已核实入口与行号见 [代码范围图：2026-11-04 条目](architecture/af-framework-code-scope.md#2026-11-04--diplomacy-planning-retry-and-evidence-repair-ad725bc08)。
+
+性能：预算组装、完整记录筛选和精确去重仅在请求准备边界执行；每次协作捕获一个已准入国家，保留既有世界查询缓存；暂停任务沿用 30 秒轻量元数据探测，无新增 Tick IO、全世界扫描或后台游戏对象读取。作用域只限规划，未改事件执行/发布规则。
+
+未验：真实模型是否稳定遵守新语义、实机及该玩家存档验收。未授权/未执行：push、部署、正式打包。回滚用针对 `ad725bc08` 的聚焦 inverse commit，不回滚开工已有改动。此前日志调查的重复 API/准备记录不等于已有重复事件发布；本次不据此声称修复了已发生的重复执行。
