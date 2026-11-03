@@ -93,6 +93,8 @@ internal static class Program
     private static int Main(string[] args)
     {
         SmokeLocalizationEnvironment.Initialize();
+        if (args.Contains("--planning-repair")) { PlanningRepairReplay.Run(); Console.WriteLine("PASS planning repair assertions=" + Test.Assertions); return 0; }
+        if (args.Contains("--scoped-world")) { ScopedWorldReplay.Run(); Console.WriteLine("PASS scoped world assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--prefix-ordering"))
         { try { PrefixOrderingReplay.Run(); Console.WriteLine("PASS prefix ordering assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--prefix-ordering-log"))

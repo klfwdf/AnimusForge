@@ -14,8 +14,10 @@ internal static class DiplomacySponsorReceiptRules
         if (kind != "afef_player" || string.IsNullOrEmpty(text) || text.Length > 3000
             || string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(rulerName)) return null;
         string p = Regex.Escape(playerName), n = Regex.Escape(rulerName);
-        string cn = string.Format(DiplomacyReplyTextRules.SponsorReceiptChinesePattern, p, n);
-        string en = string.Format(DiplomacyReplyTextRules.SponsorReceiptEnglishPattern, p, n);
+        string cn = string.Format(System.Globalization.CultureInfo.InvariantCulture,
+            DiplomacyReplyTextRules.SponsorReceiptChinesePattern, p, n);
+        string en = string.Format(System.Globalization.CultureInfo.InvariantCulture,
+            DiplomacyReplyTextRules.SponsorReceiptEnglishPattern, p, n);
         var match = Regex.Match(text.Trim(), cn, RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(30));
         if (!match.Success) match = Regex.Match(text.Trim(), en, RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(30));
         if (!match.Success || !int.TryParse(match.Groups["gold"].Value, out int gold)) return null;

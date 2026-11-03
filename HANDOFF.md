@@ -88,6 +88,18 @@ SOURCE_COMMITTED / PRODUCTION_COMPILED / DEPLOYED / VALIDATION_DISABLED_BY_USER�
 
 1.3/1.4生产编译各405警告/0错误，Bootstrap 0警告/0错误；安装脚本exit0，已替换游戏六文件。按用户要求未运行测试、门禁、哈希或安装后核验，未启动游戏。真实日志显示约33×30米占地重复测量、选定贵族不在场后取消；清理路径存在同步大范围采样，但没有卡死线程栈，不能宣称它是卡死唯一原因或实机已修复。新的人口布局需完整重启并重新进入营地加载。候选bin/Debug/field_camp_footprint_nobles_20261102；过程.tmp/field-camp-footprint-nobles-20261102；[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#field-camp-footprint-nobles-20261102)、[源码范围](docs/architecture/af-framework-code-scope.md#field-camp-footprint-nobles-20261102)。聚焦回滚仅revert 75cdcbb36c；旧候选field_camp_review_fixes_20261102保留，没有安装自动回滚。其他作者改动保留，三份共享文档不整体纳入本次产品提交。
 
+<a id="merge-origin-local-171-20261103"></a>
+## 2026-11-03 最新远端 1.8 与本地 1.7.1 合并
+
+用户授权拉取并合并，随后再讨论外交修复。远端 `2822ba2f4`，本地原 HEAD `f6c75c96e`，检查点 `313b616c2`；版本保留 1.8.0，本地按事件查询世界资料和远端请求排序均保留。双 API/Bootstrap/双 seam 通过；外交 scoped 13、prefix 97、语音双语/缓存 187 项通过。未打包、部署、push 或实机验证，外交累计重试与审核问题尚未修复。四份开工 dirty 文档独立备份并于合并提交后恢复；详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merge-origin-local-171-20261103)与[代码范围](docs/architecture/af-framework-code-scope.md#merge-origin-local-171-20261103)。
+
+<a id="package-1.7.0-20261031"></a>
+## 2026-10-31 最新本地 1.7.0 CN/EN 玩家包已生成
+
+用户要求以本地最新版打包。基线 `39af2c3cb`，检查点 `4208dc4fa`，发行接线修复 `0dd9ba107`；已通过原脚本生成 `一键编译覆盖推送/packages/AnimusForge_v1.7.0_CN_1031_1730.zip` 与对应 EN 包，安装说明和 SHA256 同目录。原有安装包、未提交资料保留。
+
+**PACKAGED_OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED**。双 API、Bootstrap、seam/注册、完整双语投影和正式 ZIP 校验通过；本次补齐付款凭据兼容资源及内置音色 UI 接线，未改外交权限、金额规则或音色 ID。说客 CN/EN 各 168、音色 187、匹配表达式等价 24 项通过。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#package-1.7.0-20261031)和[代码范围](docs/architecture/af-framework-code-scope.md#package-1.7.0-20261031)。本条替代之前“尚未包含合并后代码的旧 1.7.0 包”状态，不改变历史部署、实机或远端状态。
+
 ## 2026-11-02 外交请求原案前置（本任务）
 
 SOURCE_COMMITTED / TARGETED_REPLAY_PASS / DUAL_BUILD_PASS / NOT_DEPLOYED。产品9dd4028e1e，检查点7c0c4ca4d。六类结构化外交请求在最终副本中前置原案、后置摘要/实时资料/修正；字段值、来源顺序、CN/EN原文、system、存储提示词和冻结链均保持，原压缩门槛不变。
@@ -4513,3 +4525,14 @@ public_manual/index.html新增14主题66条双语累计公告，涵盖1.7外交�
 
 ## 2026-11-03 玩家启动/新档失败调查（未确诊）
 玩家完整AF包但缺版本/异常堆栈；源码确认发行前已有MCM内部接口硬失败及Bootstrap ONNX程序集路径拒绝，另有战役注册/XML/ONNX预热候选。未认定具体根因，不归咎缺文件，不盲改启动或移除依赖保护。仅源码/交付记录阅读，未测试校验哈希构建部署；[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-startup-crash-triage-20261103)及`.tmp/player-startup-crash-triage-20261103/findings.md`。
+
+## 2026-11-04 — DIP-PLANNING-20261104 外交重复规划修复
+
+`main` 产品/测试提交 `ad725bc08`（检查点 `4e0237a9f`，合并基线 `67707d801`）：统一 CN/EN 提议证据标准、完整请求预算与精确重复引用、具体候选纠错、跨候选/读档的六次失败上限；超长输入立即暂停，审核耗尽保留原稿。双 API/Bootstrap 构建与相关离线回放通过。真实 provider、实机/玩家存档仍未验；未推送、部署或打包。全仓双语门禁有五个已核实的既存英文资源缺项，本次受影响提示词配对和真实双语消费者已通过。
+
+详细证据：[主台账 DIP-PLANNING-20261104](docs/animusforge-refactoring-and-repository-reorganization-plan.md#dip-planning-20261104--重复外交规划修复源码与离线验证完成)；[已核实代码范围](docs/architecture/af-framework-code-scope.md#2026-11-04--diplomacy-planning-retry-and-evidence-repair-ad725bc08)。开工已有文档改动与未跟踪目录保持原状；此条只交接本次修复，不发出发布/推送授权。
+
+
+## 2026-11-04 — 外交修复已推送并部署中文默认内容
+
+用户明确授权“部署并推送”，随后确认“先部署到游戏里吧反正，我玩的是中文版没有英文版的副本”。产品提交 `79b9ea39d` 已推送并核实远端；已将同源双 API/Bootstrap 与中文默认内容安装到现有游戏 AnimusForge 模块，安装后文件哈希和既有设置保护检查通过。完整 CN 投影通过；EN 世界书 311 个文件契约差异仍未修复，按本次明确授权仅部署中文默认内容，未制作双语发行包。未启动实机或验收玩家存档。详细状态见主台账 `DIP-DELIVERY-20261104`、代码图及 `artifacts/diplomacy-deploy-push-20261104/verification.json`。原有 dirty 文档和未跟踪资料保留；旧 Stage 保留于该证据目录的 `previous-stage/`。

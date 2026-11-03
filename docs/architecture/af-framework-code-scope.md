@@ -128,6 +128,28 @@
 
 未覆盖实机卡死线程、实际大贵族roster完整到场、地形/建场/交互体验；用户要求未运行测试/校验/哈希。双实现与Bootstrap仅完成生产编译，六文件覆盖命令成功，不视作实机验收。原来借用现有人员、楼梯入场、复用刑场/刽子手和活俘虏对话职责保留。
 
+<a id="merge-origin-local-171-20261103"></a>
+## 2026-11-03 远端 1.8 与本地 1.7.1 合并范围
+
+基线、合并父修订、验证及未覆盖项见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#merge-origin-local-171-20261103)。保留来源：本地 `2020d2758` scoped world、远端 `9dd4028e1e` prefix ordering；未新增外交行为。
+
+- `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.WorldQuery.cs`：CapturePlanningWorld/RefreshPlanningWorld，查询与冻结证据保持本地实现；EventPlanning/MaterialSupply/Recovery 与开工源码一致。
+- 同目录 `DiplomacyRequestProjection.cs`、`WorldDiplomacyLlmMessageApplication.cs`：OrderForStablePrefix/BuildLlmMessageArray 保持远端请求副本排序。
+- `src/modules/AF.Module.Llm/Tts/OpenAiTtsVoiceCatalog.cs`：OpenAiTtsVoice.DisplayName/UsesBuiltInLabel、Build、ReadGender、EnsureCacheLoaded/WriteCache，整合远端显示名称与本地来源缓存保护；仅现有 catalog 构建/读取边界，无新增 Tick 扫描或 IO。
+- `tests/modules/AF.Module.Llm/OpenAiVoiceLocalizationTests/` 补齐真实双语 reader 依赖及新 UI key；外交 smoke Program 同时保留两侧入口。核心、公有 API、存档身份无本次新增设计。
+
+<a id="package-1.7.0-20261031"></a>
+## 2026-10-31 1.7.0 打包接线修复范围
+
+产品 `0dd9ba107`，检查点 `4208dc4fa`；[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#package-1.7.0-20261031)记录双包与证据状态。
+
+| 已核对源码 | 符号/责任 | 覆盖与边界 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Diplomacy/Domain/DiplomacySponsorReceiptRules.cs:11-28`；`content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json:279` | `Read` / `SponsorReceipt_GoldCnPattern` | 原付款匹配外置；动态姓名仍先 Escape；24 组逐字等价、CN/EN 说客回放覆盖，未改金额或权限 |
+| `src/modules/AF.Module.Llm/Tts/OpenAiTtsVoiceCatalog.cs:14-30,80-103,254-295,323-335,352-397` | `Label` / `BuiltInVoices` / `Parse` / `Build` / `ParseGender` / cache | 固定名称在显示边界随 UI 投影；models fallback 和缓存保留固定来源，动态服务名称保留；网络与音频未实测 |
+| `content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json:266-269`；`content/modules/AF.Module.Llm/ModuleData/Languages/afllm_ui_strings.xml:211-222` 及 CN 同名对照表 | 兼容 reader 与原生 UI 注册 | 原 content-map、嵌入逻辑名、原生 TextObject 真实接线；无 Tick IO/扫描 |
+| `tests/modules/AF.Module.Llm/OpenAiVoiceLocalizationTests/Program.cs:1-99` | 真实 catalog 与原生语言切换回归 | 187 项：12 名称、性别、provider 原文、models、随机池、情绪、缓存；路径/日志/tone enum 为隔离叶 |
+
 <a id="diplomacy-stable-case-prefix-20261102"></a>
 ## 2026-11-02 外交请求原案与动态尾部顺序
 
@@ -2989,3 +3011,24 @@ Player docs live under `docs/tts/`; `.agents/skills/af-gptsovits-guides/` mainta
 | `extensions/AnimusForge.Illustrator/src/Engine/MissionScreenshotCapture.cs:59-110` / `MissionScreenshotCapture / Restore` | 引擎暂停和摄影mode保留正常渲染；Restore在291-292恢复原状态 |
 
 覆盖生产双API编译及针对性fixture/源码/资源契约；不覆盖真实GPU、原生AI/输入、独立RichExecutions整工程、旧档或全仓发行门禁。
+
+## 2026-11-04 — Diplomacy planning retry and evidence repair (ad725bc08)
+
+This entry covers only the authorized repeated-planning repair, on merged base `67707d801` with intent checkpoint `4e0237a9f`. Earlier architecture records retain their original scope; this is not a framework migration or release authorization.
+
+| Owner / source | Verified one-based lines and symbols | Covered responsibility |
+| --- | --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Recovery.cs` | 11–75: `PlanningFailureLimit`, `PlanningRecoveryHeld`, `HoldTechnicalRequestCore`; 158–285: `TryResumeTechnicalRequest` | Persisted six-failure planning allowance; immediate deterministic-budget hold; candidate/reload cannot refill it; existing metadata/configuration/explicit recovery conditions. |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DraftRepair.cs`; `WorldDiplomacyOrchestration.StructureSelection.cs` in the same directory | 136–145: `RetryConceptAudit`; 40–59: `RejectStoryCandidate` | Inner audit errors and direct story rejection consume the task allowance; exhausted audit retains its draft. |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.EventPlanning.cs` | 114–145: `PrepareMaterialSelection`; 184–198: comparison shape rejection; 461–533: `PrepareEventConceptRequest` / `BuildExpansionRequest` | Separate candidate IDs from country registry; exact count/ID correction; assemble the expansion envelope before supplemental retrieval. |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.MaterialSupply.cs` | 324–384: `SupplementExpansionSources`; 427–569: `FinishMaterialRequest` | Full-envelope headroom, mandatory source preservation, exact duplicate trigger reference, audit fields counted before trimming. |
+| `src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyWorkRecords.cs` | 104–106: `PlanningFailureAttempts` | Additive bounded integer in existing WorldDiplomacyJob JSON; old saves default to zero; existing strict chunk container and save keys unchanged. |
+| `content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json` and `.en.json` | 970: `PlanningEvidenceContract`; consumer `FinishMaterialRequest` above | Shared distinction between proposed NPC actions, established facts and player-confirmed undertakings; actual game-language reader tested in both languages. |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/PlanningRepairReplay.cs` | 43–179: `Run` and scenario methods | Controlled production-owner replay: comparison, admission, cumulative recovery/reload, same-draft audit, lossless duplicate projection, full-envelope supplementation. |
+
+Uncovered: actual provider semantic compliance, live-game/actual player-save acceptance, Stage, packaging, deployment and push. Existing transport retry and daily request rules are not redesigned. Detailed results are in the main ledger's `DIP-PLANNING-20261104` entry.
+
+
+## 2026-11-04 — 外交交付门禁补项与中文部署
+
+外交生产范围继续引用 `ad725bc08` 的上方代码图。交付合并 `822e29a82` 保留远端 TTS owner；`35210b37d` 仅补两个英文兼容表的五个不变量项；`79b9ea39d` 仅修正 content/modules/AF.Module.Onboarding/PlayerExports/english-worldbook-identity-map.json 的 354 条 heroes.en_file 路径，中文键、HeroId 与正文不变。完整 CN 投影通过，EN 的 311 个文件契约差异未修。用户明确选择中文默认部署后，复用 scripts/build/deploy_module.ps1 的原 Invoke-ManagedStageDeployment，未修改原部署脚本；实际安装及保护文件哈希验证通过。覆盖安装交付，不覆盖实机、真实模型或玩家存档验收。详见主台账 DIP-DELIVERY-20261104 及本地 verification.json。

@@ -220,5 +220,17 @@
     <string id="AF_GPT_UI_LiteGuideLanguageBody" text="Speech output language accepts Chinese, Cantonese, English or Japanese, including their Chinese names. Blank/auto follows the reply. All four providers share it: matching text is kept; otherwise postprocessing privately translates speech without changing subtitles or history. Typing the Chinese word for Japanese selects a language code, not spoken content. Failed or missing translation stays text-only.&#10;Local tone uses the existing postprocessed MOOD, not gameplay action tags: JOY/DELIGHTED maps to happy, ANNOYED to angry, otherwise neutral; sad is available for manual audition.&#10;Keep one stable ID per character and put emotional references in emotion_variants; do not split Sparkle into four characters. Missing tones use the base reference. An angry reference helps but does not guarantee acting quality. Invented cute/flirty categories are not supported by the current automatic tag mapping." />
     <string id="AF_GPT_UI_LiteGuideTroubleshoot" text="L guide 8 - Troubleshooting and updates" />
     <string id="AF_GPT_UI_LiteGuideTroubleshootBody" text="No audio: check speech enabled, selected provider, runtime ready state, primary target, encyclopedia voice, combat restrictions and valid postprocessed translation when a language is forced. Bad reference paths/hashes, duplicate IDs or missing model files are rejected; AF does not silently switch to a paid API.&#10;Refresh or restart after adding packs. Re-extract an incomplete package; never replace it while running. If language selection reports an old runtime, update the matching L package instead of editing runtime.json to bypass verification.&#10;Errors: Logs/TTS; temporary cache: Cache/TTS. Report the error, AF/package version, GPU and reproduction steps after redacting API keys, tokens and private dialogue.&#10;Merge only the intended add-on; retain custom voices, character IDs, settings and other mods. Use trusted executable packages. The supplied share link does not establish redistribution rights for every recording. U requires a separate hardware and compatibility guide when released." />
+    <string id="AF_LLM_UI_OpenAiVoice_male-clear" text="Jing Yuan - Bright young male" />
+    <string id="AF_LLM_UI_OpenAiVoice_male-gentle" text="Dan Heng - Gentle young male" />
+    <string id="AF_LLM_UI_OpenAiVoice_male-steady" text="Welt - Steady older male" />
+    <string id="AF_LLM_UI_OpenAiVoice_male-deep" text="Gepard - Deep heroic male" />
+    <string id="AF_LLM_UI_OpenAiVoice_male-senior" text="Sampo - Smooth middle-aged male" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-clear" text="March 7th - Bright young female" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-gentle" text="Firefly - Gentle young female" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-steady" text="Himeko - Mature female" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-firm" text="Serval - Confident female" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-senior" text="Bronya - Composed young female" />
+    <string id="AF_LLM_UI_OpenAiVoice_female-sparkle" text="Sparkle - Playful theatrical female" />
+    <string id="AF_LLM_UI_OpenAiVoice_zh_default" text="Default Chinese female voice" />
   </strings>
 </base>

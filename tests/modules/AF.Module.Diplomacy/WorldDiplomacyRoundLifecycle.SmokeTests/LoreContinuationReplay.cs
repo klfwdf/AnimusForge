@@ -118,8 +118,12 @@ internal static partial class MaterialCountryThirdReplay
         var sent = JObject.Parse(job.UserPrompt);
         Test.True(((JArray)sent["sources"]!).Any(x => (string)x["source_kind"]! == "world_book_account"),
             "large campaign world cannot starve lore in the actual final request");
-        Test.True(job.UserPrompt.Contains("town_sample_incomplete") && job.UserPrompt.Contains(root.Body),
-            "bounded structured world explicitly reports omitted towns and keeps the complete declaration");
+        var worldSource = ((JArray)sent["sources"]!).OfType<JObject>().Single(x => (string)x["key"]! == "world:current");
+        var worldRows = JArray.Parse((string)worldSource["text"]!);
+        Test.True(worldRows.Count > 0 && worldRows.OfType<JObject>().All(x =>
+                ((JArray)x["towns"]!).Count == 8 || (bool?)x["town_sample_incomplete"] == true)
+            && job.UserPrompt.Contains(root.Body),
+            "scoped world retains all fitting towns, labels any omitted towns and keeps the complete declaration");
         Test.True(JArray.Parse(job.EventMaterialSnapshot).Any(x => (string)x["source_kind"]! == "world_book_account"),
             "final clipping retains the frozen lore used by the independent audit");
         CountryAdmissionReplay.FreezeFixture(o, job, new[] { "p", "a" }, prepareConcept: false);

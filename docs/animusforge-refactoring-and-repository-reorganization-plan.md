@@ -252,6 +252,34 @@ SOURCE_COMMITTED / PRODUCTION_COMPILED / DEPLOYED / VALIDATION_DISABLED_BY_USER�
 
 用户明确禁用本会话校验/离线测试/验证哈希，故未运行任何测试、门禁、哈希、安装后读回或实机自动化。未确认实际贵族总数到齐、地形适配、建场成功、围观/对话及卡死消失，不将生产编译称游戏验收。需重启游戏后重新进入营地应用新人口布局。没有打包、push或升版本。聚焦回滚用75cdcbb36c的逆向提交，保留其他作者改动；先前候选bin/Debug/field_camp_review_fixes_20261102保留。
 
+<a id="merge-origin-local-171-20261103"></a>
+## 2026-11-03 拉取最新远端并合并本地 1.7.1
+
+MERGED_LOCAL / TARGETED_TESTS_PASS / DUAL_BUILD_PASS / NOT_PUSHED / NOT_DEPLOYED / NOT_PACKAGED / LIVE_NOT_RUN。
+
+授权范围仅同步合并，不继续修改本次讨论的外交机制。共同基线 `39af2c3cb`，原本地 `f6c75c96e`，检查点 `313b616c2`，远端 `2822ba2f426bc3eb13dc6627067f15512462549e`。以正常双亲合并保留双方历史；网络缓慢时按需获取 Git blob，未截断提交历史。版本取远端 1.8.0。8 个冲突文件：模块 XML/AssemblyInfo 取新版本；三份共享记录保留双方条目；LlmSourceTexts 合并键；语音 catalog 保留远端 DisplayName/名称/性别词表和本地内置来源/缓存标识；外交测试入口同时保留 scoped-world 与 prefix-ordering。语音本地 fixture 同步远端 reader 依赖与 UI key。
+
+验证：原 build_single_module.ps1，不带 Stage/Deploy；引用 1.3.15.110062、1.4.6.115628，两实现及 Bootstrap 编译和双 coup seam 成功。存在编译警告和 NuGet 漏洞服务连接警告，无编译错误。新编译外交 fixture 的 --scoped-world 13 项、--prefix-ordering 97 项通过；真实语音 catalog 双语/缓存 187 项通过；冲突资源 JSON 无重键、XML 可解析，本地四份 scoped-world 生产文件与检查点一致。未运行全仓/实机/真实模型、发行与部署门禁；不宣称此次同步解决了外交反复调用。
+
+证据与回退：`artifacts/merge-origin-20261103/` 保存开工四份 dirty 的原字节、SHA256、patch、冲突快照和构建/测试日志。原未跟踪路径不纳入提交。合并后恢复四份 dirty，仍保持未提交。回退只能针对本次合并聚焦 inverse/revert，不 hard reset、不覆盖这些 dirty。代码定位见[代码范围](architecture/af-framework-code-scope.md#merge-origin-local-171-20261103)。
+
+<a id="package-1.7.0-20261031"></a>
+## 2026-10-31 本地最新 1.7.0 正式双包
+
+目标为本地最新源码制作玩家安装包；范围包含原统一双版本构建、干净 Stage、CN/EN 全量投影、ZIP 校验与安装说明，不部署、不 push、不调用真实模型、不读取玩家存档。开始基线 `main@39af2c3cb`，检查点 `4208dc4fa`，产品修复 `0dd9ba107`。原四份 dirty 文档与四类 untracked 资料保持，未把它们纳入提交。
+
+首次发行前置检查拒绝两处新增硬编码。对照实际 reader 后，`DiplomacySponsorReceiptRules.Read` 的中文付款回执正则按原值放入既有 `DiplomacyMiscCompatibility.json`，原 p/n 均仍经过 Regex.Escape；英文路径和资格不变。OpenAI 内置 12 个音色名称在 UI 边界使用原生 TextObject 和 CN/EN 表；四个服务端性别别名放入既有嵌入 `LlmSourceTexts.json`。远端动态音色名称原样保留，固定标签来源随缓存保存，旧缓存兼容；ID、随机性别池和情绪变体不变。资源复用原 content-map/嵌入/语言注册；兼容词 Lazy 缓存一次，UI 仅显示时投影，不新增 Tick 工作。未修改构建/打包脚本或绕过门禁。
+
+最终命令沿原入口：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/package_mod.ps1 -ModuleDir bin/Debug/single_module_stage/AnimusForge -BannerlordRoot "E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -WorkshopContentDir "E:/SteamLibrary/steamapps/workshop/content/261550" -Configuration Debug -Build -Version v1.7.0 -ExcludeOnnx`。原一键默认 Debug 配置；显式锁定 1.7.0，不递增为 1.7.1。
+
+验证：实际 1.3 引用 `v1.3.15.110062`、1.4 引用 `v1.4.6.115628`；两实现、Bootstrap、dual coup seam、managed registration 通过。音色新回归使用真实 catalog/嵌入 reader/TaleWorlds TextObject，187 项；磁盘定位、日志及 tone enum 为隔离叶，未连接语音服务。说客生产回放中文和英文各 168 项；24 组动态姓名替换证明旧新中文正则完全等价。原未提交内容、版本源码和旧包 SHA256 保全通过。已有编译警告及 NuGet 漏洞索引不可达 NU1900 保留，不当作零警告。
+
+完整 Stage 4,825 文件通过；原源码/DLL 语言门禁、全部 CN/EN 投影、Bootstrap-only XML、DLL allowlist、双实现 markers/hashes、无 ONNX 和双包事务通过。独立 ZIP CRC、唯一模块根、版本、双包相同 DLL、UI 双表和新增兼容资源核对通过。产物：`一键编译覆盖推送/packages/AnimusForge_v1.7.0_CN_1031_1730.zip`、`AnimusForge_v1.7.0_EN_1031_1730.zip`，旁附安装说明及 SHA256。本包无独立模型和前置 MOD；首次安装按说明准备，升级沿用既有模型。
+
+本地证据 `artifacts/package-1.7.0-20261031/receipt.json` 绑定两包 SHA256、DLL 哈希、产品修订；`package-final.log` 为完整最终构建/打包日志，`preservation.json` 为保全/等价结果，定向日志记录各测试。原旧 Stage 完整保存在本地证据目录 `previous-stage/`，新 Stage 按原规则重新建立；不删除原有输出。源码坐标见[代码范围](architecture/af-framework-code-scope.md#package-1.7.0-20261031)，不重复全表。
+
+状态 **PACKAGED_OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED**。本轮未运行游戏、真实 API/语音、旧档或外部 MOD 组合验收；离线构建和包验证不代替这些边界。此前源码范围有效回归沿用，不宣称历史英文全套断言或 TTS 静态格式检查已修复。本条仅取代当前最新源码“未打包”的状态；旧包及历史部署记录保留。
+
 <a id="diplomacy-stable-case-prefix-20261102"></a>
 ## 2026-11-02 外交请求原案前置与动态字段后置（本任务）
 
@@ -853,6 +881,7 @@ NOT_RUN：修改后的C#接续/语音harness执行、AF双API与Bootstrap、独�
 - 回滚：本功能独立提交 `b6e411cc0`；以 focused inverse commit 撤销该提交，保留当前同文件用户改动。可参考 `artifacts/tts-emotion-wait-20261031/rollback-tts-emotion-wait.patch` ；补丁在当前 dirty 文件应用前仍需人工合并。`before/` 保留六个产品文件修改前实际字节，不应整文件覆盖用户现有内容。台账/HANDOFF 本条保留为未提交文档，避免共享 index 的并发提交再次混入他人变更。
 
 ---
+
 
 <a id="persona-editable-example-20261030"></a>
 ## 可编辑人物设定示例与扩展人设总开关 — 2026-10-30
@@ -14630,3 +14659,40 @@ INVESTIGATED / NO_PRODUCT_CHANGE / NO_PLAYER_CRASH_EVIDENCE。用户报告部分
 - 回滚：产品按 `d0d8035578` 聚焦逆提交，原字节在上述before目录；不reset或覆盖其他作者工作。纯换行改动不混入功能提交，原文件与临时输出保留。部署无自动Recovery备份/自动回滚，后续现场以成功回执为准。
 
 代码定位与覆盖边界见 [范围图审查条目](architecture/af-framework-code-scope.md#pending-changes-review-sync-20261104)。后续合并、部署和推送结果追加本条，不改写历史当时状态。
+
+## DIP-PLANNING-20261104 — 重复外交规划修复（源码与离线验证完成）
+
+授权：用户“好那你修吧”，承接统一生成/审核标准、完整请求预算、具体纠错、整任务有限重试的已讨论方案。实际工作区为本仓库 `main`；合并基线 `67707d801` 已包含本地 1.7.1 减少资料量修复，实施前空检查点 `4e0237a9f`，产品与测试提交 `ad725bc08`。开工已有四份文档改动与原有未跟踪目录均保留，不纳入产品提交。
+
+本次完成：
+
+- CN/EN 同一 `PlanningEvidenceContract` 接入候选生成、主体识别/审核和正文生成/审核。NPC 新提议不再被要求举证“已经发出/收到”；身份、动机、权限、行动对象仍需依据，已发生事实、玩家同意和执行结果仍不能虚构。
+- 扩展前先组装完整请求，补充资料只使用扣除提示词、触发资料、历史、身份等之后的余量，保持 28k 软预算与 32k 发送门槛。审核字段提前计入预算；只把触发资料内完全重复的公开全文改为同请求内引用，保留完整正文、上下文和存储原文。必需资料超长时立即保留任务并暂停，不重选候选。
+- 候选比较明确给出候选 ID 列表，错误反馈含应有条数和有效 ID，避免继续把国家清单当候选。格式纠错复用现有候选/审核草稿；审核自身三次纠错耗尽后保留原稿。
+- `planningFailureAttempts` 在同一任务内累计，最多六次；换候选、阶段成功和读档不重置。正常成功步骤不计失败，现有每天请求限额保持。相关任务版本/配置变化、显式恢复或既有一次性迁移才可重开有限恢复；相同超长输入不会因时间流逝反复尝试。
+
+验证与证据：
+
+- 新增 `--planning-repair`：CN/EN 真实资源 reader 与生产规划 owner 共 38 条断言通过；覆盖玩家日志中“多余国家评估”“补资料溢出”“候选切换重置重试”等失败形状。模型判断为受控返回，不能视为真实 provider 语义验收。
+- 既有专项通过：`--scoped-world` 13、`--country-admission` 5940、`--bound-matters` 6196、`--structure-selection` 134、`--declaration-stalls` 64、`--prefix-ordering` 97；其中范围测试仍覆盖 56 国、旧全世界快照迁移与冻结复用，绑定事项覆盖完整玩家事件生命周期。断言有交叉，不汇总为独立场景数量。
+- `PersistenceChunkReplayTests` 与 `validate_persistence_profile_config.py --chunk-contract-only` 通过。新增的是既有 JSON 内整数，不新增 `.sav` 键、不改变严格分块与坏块处理。
+- 使用原 `scripts/build/build_single_module.ps1`，仅构建：双实现（引用 1.3.15 / 1.4.6）与 Bootstrap 均零错误，双 coup seam 与 registration smoke 通过；构建含原有编译告警及无法访问 NuGet 漏洞索引告警。未 Stage、覆盖游戏或打包。
+- 本次提示词两份表 key/协议引用一致，实际 CN/EN 消费者通过。全仓 `l10n_gate.py` / `check_bilingual_tables.py` 仍失败：`DiplomacyMiscCompatibility.en.json` 一项、`LlmSourceTexts.en.json` 四项英文 key 缺失，逐项与检查点内容比对确认预先存在且相关文件未变；运行内容源码汉字扫描为零。本次未扩大修改这些旧缺项，不宣称全仓双语门禁通过。
+- 本地证据：`artifacts/diplomacy-planning-repair-20261104/verification.json`，含源码/DLL SHA256、测试结果、基线缺项和未验项。已核实入口与行号见 [代码范围图：2026-11-04 条目](architecture/af-framework-code-scope.md#2026-11-04--diplomacy-planning-retry-and-evidence-repair-ad725bc08)。
+
+性能：预算组装、完整记录筛选和精确去重仅在请求准备边界执行；每次协作捕获一个已准入国家，保留既有世界查询缓存；暂停任务沿用 30 秒轻量元数据探测，无新增 Tick IO、全世界扫描或后台游戏对象读取。作用域只限规划，未改事件执行/发布规则。
+
+未验：真实模型是否稳定遵守新语义、实机及该玩家存档验收。未授权/未执行：push、部署、正式打包。回滚用针对 `ad725bc08` 的聚焦 inverse commit，不回滚开工已有改动。此前日志调查的重复 API/准备记录不等于已有重复事件发布；本次不据此声称修复了已发生的重复执行。
+
+
+## DIP-DELIVERY-20261104 — 推送与中文默认部署完成
+
+本条更新 DIP-PLANNING-20261104 的交付状态。用户要求“部署并推送”，并在获知 EN 世界书校验失败后明确授权“先部署到游戏里吧反正，我玩的是中文版没有英文版的副本”。该选择仅覆盖这次中文默认部署，不修改全局发布门禁、不授权扩大英文世界书修复。
+
+已合并远端 TTS 清理 `14b33b8b1` 至 `822e29a82`；保留外交实现 `ad725bc08` 与按需查询修复 `2020d2758`。`35210b37d` 补五个英文兼容表不变量项；`79b9ea39d` 仅按唯一 HeroId 校正布匿世界书 354 条 en_file 路径，世界书正文和身份不变。产品已普通推送 origin/main，并以 ls-remote 核实 `79b9ea39d0ffb6e5a59f90365db9793ca9e53895`。无强推。原有四份 dirty 文档经 stash 保存/恢复和内容比较保全，未跟踪资料未改。
+
+双 API（1.3.15/1.4.6 引用）与 Bootstrap 零编译错误，双 coup seam/registration 通过；TTS 清理 17 + host wiring、音色 187、外交 CN/EN 38 通过；l10n 门禁 26 表/2106 运行文件零失败。原脚本完成 8997 文件干净 Stage/current artifact 校验，完整 CN 投影 8472 文件通过。EN 投影仍有 311 个文件契约差异，示例为布匿 Profiles/规则字段集合；此数量不等于已证实的运行故障数量，未声称 EN 校验通过。
+
+实际部署：复用已验证 Stage，通过临时调用器加载并执行未修改的 deploy_module.ps1 原部署 owner；仅按用户明确例外检查 CN 投影收据，保留当前产物、模块身份、路径、玩家文件、哈希/并发修改及同卷替换保护。目标为 E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge；不创建 Recovery 备份或自动回滚，不改游戏原版 DLL。安装后核对全部 Stage 文件与保护文件，双实现 DLL 和 Bootstrap 哈希已记录在 verification.json。现有配置和自定义提示词保留，较新玩家导出按原规则保留。
+
+本地证据：artifacts/diplomacy-deploy-push-20261104/verification.json；旧 Stage 原样保留于 previous-stage/。本次未启动游戏、未调用真实 provider、未验收玩家存档、未制作发行包；构建与文件安装验收不能代替实机外交行为验收。

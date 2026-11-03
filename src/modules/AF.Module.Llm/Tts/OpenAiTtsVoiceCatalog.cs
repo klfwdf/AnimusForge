@@ -15,6 +15,7 @@ internal sealed class OpenAiTtsVoice
 {
     internal OpenAiTtsVoice(string id, string name, int gender, string uiTextId = null) { Id = id; Name = name ?? ""; Gender = gender; _uiTextId = uiTextId; }
     private readonly string _uiTextId;
+    internal bool UsesBuiltInLabel => _uiTextId != null;
     internal string Id { get; }
     /// <summary>Server-provided display name, possibly empty.</summary>
     internal string Name { get; }
@@ -252,6 +253,7 @@ internal sealed class OpenAiTtsVoiceCatalog
                     raw.Add(Tuple.Create(property.Name, Str(entry["display_name"]) ?? Str(entry["label"]) ?? Str(entry["name"]) ?? "", ParseGender(Str(entry["gender"]))));
             }
         }
+        var builtInLabels = new HashSet<string>(StringComparer.Ordinal);
         if (fromModels)
         {
             raw.RemoveAll(item => !IsVoiceModelId(item.Item1));
@@ -259,13 +261,17 @@ internal sealed class OpenAiTtsVoiceCatalog
             for (int i = 0; i < raw.Count; i++)
             {
                 var known = BuiltIn.Value.Get(raw[i].Item1?.Trim());
-                if (known != null && known.Name.Length != 0) raw[i] = Tuple.Create(raw[i].Item1, known.Name, raw[i].Item3);
+                if (known != null && known.Name.Length != 0)
+                {
+                    raw[i] = Tuple.Create(raw[i].Item1, known.Name, raw[i].Item3);
+                    builtInLabels.Add(known.Id);
+                }
             }
         }
-        return Build(endpoint, raw);
+        return Build(endpoint, raw, builtInLabels);
     }
 
-    private static OpenAiTtsVoiceCatalog Build(string endpoint, List<Tuple<string, string, int>> raw)
+    private static OpenAiTtsVoiceCatalog Build(string endpoint, List<Tuple<string, string, int>> raw, HashSet<string> builtInLabels = null)
     {
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (var item in raw) if (IsSafeId(item.Item1)) ids.Add(item.Item1.Trim());
@@ -281,7 +287,9 @@ internal sealed class OpenAiTtsVoiceCatalog
             if (byId.ContainsKey(id)) continue;
             string name = CleanLabel(item.Item2);
             int gender = item.Item3 != 0 ? item.Item3 : InferGender(id);
-            var voice = new OpenAiTtsVoice(id, name == id ? "" : name, gender, BuiltInUiTextId(id, name));
+            var voice = new OpenAiTtsVoice(id, name == id ? "" : name, gender,
+                endpoint == "builtin" || (builtInLabels?.Contains(id) == true && BuiltIn.Value.Get(id)?.Name == name)
+                    ? BuiltInUiTextId(id, name) : null);
             voices.Add(voice); byId.Add(id, voice);
         }
         foreach (var variant in variants) if (byId.TryGetValue(variant.Item1, out var voice)) voice.MarkVariant(variant.Item2);
@@ -369,16 +377,18 @@ internal sealed class OpenAiTtsVoiceCatalog
                 string endpoint = Str(document["endpoint"]);
                 if (endpoint == null || !(document["voices"] is JArray items)) return;
                 var raw = new List<Tuple<string, string, int>>();
+                var builtInLabels = new HashSet<string>(StringComparer.Ordinal);
                 foreach (JToken item in items)
                 {
                     if (raw.Count >= MaxVoices || !(item is JObject entry)) continue;
                     string id = Str(entry["id"]);
                     int gender = entry["gender"]?.Type == JTokenType.Integer ? (int)entry["gender"] : 0;
                     raw.Add(Tuple.Create(id, Str(entry["name"]) ?? "", gender is 1 or 2 ? gender : 0));
+                    if (id != null && entry["builtInLabel"]?.Type == JTokenType.Boolean && (bool)entry["builtInLabel"]) builtInLabels.Add(id);
                     foreach (string suffix in new[] { "happy", "angry", "sad" })
                         if (id != null && entry[suffix]?.Type == JTokenType.Boolean && (bool)entry[suffix]) raw.Add(Tuple.Create(id + "_" + suffix, "", 0));
                 }
-                var catalog = Build(endpoint, raw);
+                var catalog = Build(endpoint, raw, builtInLabels);
                 if (catalog.Voices.Count != 0) Volatile.Write(ref _current, catalog);
             }
             catch (Exception ex) { Logger.Log("TtsVoices", "Voice cache ignored: " + ex.GetType().Name); }
@@ -391,7 +401,7 @@ internal sealed class OpenAiTtsVoiceCatalog
         {
             var items = new JArray();
             foreach (var voice in catalog.Voices)
-                items.Add(new JObject { ["id"] = voice.Id, ["name"] = voice.Name, ["gender"] = voice.Gender, ["happy"] = voice.HasHappy, ["angry"] = voice.HasAngry, ["sad"] = voice.HasSad });
+                items.Add(new JObject { ["id"] = voice.Id, ["name"] = voice.Name, ["builtInLabel"] = voice.UsesBuiltInLabel, ["gender"] = voice.Gender, ["happy"] = voice.HasHappy, ["angry"] = voice.HasAngry, ["sad"] = voice.HasSad });
             var document = new JObject { ["endpoint"] = catalog.Endpoint, ["fetchedUtc"] = DateTime.UtcNow.ToString("o"), ["voices"] = items };
             string path = CachePath();
             Directory.CreateDirectory(Path.GetDirectoryName(path));

@@ -102,6 +102,7 @@ public sealed class WorldDiplomacyJob
     [JsonProperty("silenceSourceDocumentId")] public string SilenceSourceDocumentId { get; set; } = "";
     [JsonProperty("suspendedReason")] public string SuspendedReason { get; set; } = "";
     [JsonProperty("technicalRecoveryAttempts")] public int TechnicalRecoveryAttempts { get; set; }
+    [JsonProperty("planningFailureAttempts")] public int PlanningFailureAttempts { get; set; }
     [JsonProperty("recoveryConfiguration")] public string RecoveryConfiguration { get; set; } = "";
     [JsonProperty("recoveryRevision")] public int RecoveryRevision { get; set; }
     [JsonProperty("recoveryKnowledgeRevision")] public int RecoveryKnowledgeRevision { get; set; }

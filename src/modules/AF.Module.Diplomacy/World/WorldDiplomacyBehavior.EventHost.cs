@@ -15,7 +15,7 @@ public sealed partial class WorldDiplomacyBehavior
     private readonly WorldDiplomacyMaterialCaptureQueue _eventMaterialCaptures = new();
     private readonly WorldDiplomacyAsyncEmbeddingCache _historyEmbeddings = new();
 
-    private sealed partial class OrchestrationHost : IDiplomacyEventHost, IDiplomacyEventCalendarHost, IDiplomacyEventMaterialHost, IDiplomacyWorldBookHost, IDiplomacyEventCultureHost, IDiplomacySilenceEffectHost, IDiplomacyPlayerContactHost, IDiplomacyMaterialVersionHost, IDiplomacyNarrativeActorHost, IWorldDiplomacyRealmVoicePreparation
+    private sealed partial class OrchestrationHost : IDiplomacyScopedWorldHost, IDiplomacyEventHost, IDiplomacyEventCalendarHost, IDiplomacyEventMaterialHost, IDiplomacyWorldBookHost, IDiplomacyEventCultureHost, IDiplomacySilenceEffectHost, IDiplomacyPlayerContactHost, IDiplomacyMaterialVersionHost, IDiplomacyNarrativeActorHost, IWorldDiplomacyRealmVoicePreparation
     {
         public (string state, int count, string revision) ReadWorldBookAvailability() =>
             Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>()?.ReadWorldBookAvailability() ?? ("unavailable", 0, "");
@@ -149,6 +149,19 @@ public sealed partial class WorldDiplomacyBehavior
             .Where(x => x.IsTown).Select(x => x.Settlement.StringId).ToList() ?? new List<string>();
         public string EventCulture(string kingdomId) => ResolveKingdom(kingdomId)?.Culture?.StringId ?? "";
         public long EventGeneration => SaveRuntimeGuard.CaptureGeneration();
+        public string CaptureScopedEventWorld(IReadOnlyCollection<string> roots, IReadOnlyCollection<string> candidates, bool discover)
+        {
+            // Resolve once per query, not once for every potential relation pair.
+            var realms = candidates.Distinct(StringComparer.Ordinal).Select(ResolveKingdom)
+                .Where(k => k != null && !k.IsEliminated).ToDictionary(k => k.StringId, StringComparer.Ordinal);
+            var liveRoots = roots.Where(realms.ContainsKey).Distinct(StringComparer.Ordinal).ToList();
+            var scope = discover ? DiplomacyWorldQuery.Select(liveRoots, realms.Keys.ToArray(),
+                (a, b) => FactionManager.IsAtWarAgainstFaction(realms[a], realms[b]),
+                (a, b) => realms[a].Leader?.IsAlive == true && realms[b].Leader?.IsAlive == true
+                    ? realms[a].Leader.GetRelation(realms[b].Leader) : 0) : liveRoots;
+            return CaptureEventWorld(scope);
+        }
+
         public string CaptureEventWorld(IReadOnlyCollection<string> participants)
         {
             _owner.EnsureKingdomBorderCache();
