@@ -49,6 +49,9 @@ LANGUAGE_INVARIANT = {
     'TerminalCategories': 'terminal routing ids',
     # Source patterns that UI projection matches to rewrite stored status lines; never composed into prompts.
     'EconomyDisplaySources': 'UI projection match patterns',
+    # One embedded corpus matches both historical languages; it never renders new text.
+    # DiplomacyReplyTextRules builds whole-line matchers; sponsor rules parse proven AFEF only.
+    'DiplomacyReceiptCompatibility': 'legacy CN/EN receipt identities and parsing patterns',
 }
 
 

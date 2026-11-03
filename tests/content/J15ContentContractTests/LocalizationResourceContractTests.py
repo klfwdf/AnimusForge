@@ -11,7 +11,7 @@ import xml.dom.minidom as DOM
 from pathlib import Path
 
 
-ID = re.compile(r"^[A-Za-z0-9_]+$")
+ID = re.compile(r"^[A-Za-z0-9_-]+$")  # Native loader accepts stable hyphenated voice ids.
 VAR = re.compile(r"\{([A-Za-z][A-Za-z0-9_]*)\}")
 
 
