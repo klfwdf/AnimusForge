@@ -85,6 +85,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
     private int _walkCursor;
     private int _campRouteBudget = 2;
 	private int _woundedSlotsUsed;
+	private int _fireSlotsUsed;
+	private int _workSlotsUsed;
 
 	internal static FieldCampMissionLogic Current => Mission.Current?.GetMissionBehavior<FieldCampMissionLogic>();
 
@@ -387,6 +389,9 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 				}
 			}
 		}
+		// Companions without a role post take the fire and work seats the troops left free.
+		_fireSlotsUsed = fire;
+		_workSlotsUsed = work;
 	}
 
 	private Agent SpawnCharacter(CharacterObject character, PartyBase party, Vec2 local, Vec2 facing, bool civilian)

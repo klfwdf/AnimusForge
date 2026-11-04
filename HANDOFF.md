@@ -1,3 +1,7 @@
+## 2026-11-05 营地闲逛仿城镇路人、同伴岗位动作
+
+参照原版WalkingBehavior/AnimationPoint：闲逛停留由6-14 s改为20-45 s（原版点位多为50-320 s，按2路线/0.5 s预算取折中）；到站后SettleWanderer：2.5 m内有空闲同伴则面对面，自己用说话动作、闲逛的对方用倾听动作并延长停留，干活的对方只转头；否则面朝12 m内最近营火。巡逻点在布局时设朝向（最近营火，否则朝主路）。同伴岗位补WorkKind：斥候新增Lookout张望、工程师Repair、军需官Write（笔和本子）、医生Wash；无巡逻点的同伴先占士兵剩下的营火圈/工位，再退到指挥帐篷前等候位。1.4实现仅编译通过（0错误）；1.3按项目规则只能走一键脚本，未编；未部署、未实机。PropsPlacement 30、GroundRoute 87、Restart 19、review_source_contracts通过。
+
 ## 2026-11-05 外交检索修正
 
 按审查结论修正外交召回：向量门槛0.65改为与周报一致的bekko值0.40；embedding超时/失败降级为词法而不再判宣言失败；记录向量整批提交、已完成的保留，对话渠道不再在调用线程上同步推理，直接用已完成向量；NPC对玩家议程空话题时以议程种子/背景/双方已知公文标题作检索词，检索词限1600字；ID加分改为精确标记匹配；援助完整记录仅限求援国与接受方，第三国只见请求，答复送达后只见状态，费用与付款方不外泄，援助原地改状态时置脏；威胁/事件结果类受保护事实对当事国可召回；世界书多国命中记入known_by_all，按国轮询分配8000预算；文档索引同数量原地替换时重建；预算文档字符上限改为16,000。新增RetrievalFixReplay；--event-memory中检索断言全过，--request-history、--aid-request、--country-admission、--theme-exploration、--player-material-optimization、--event-structure通过；PolicyStyleNoticeReplay、--material-supply/--material-country的NPC novelty断言与DiplomacyModulePortTests的J17绑定门在原HEAD同样失败，非本轮引入。未编译1.3/1.4/Bootstrap，未部署、未实机。

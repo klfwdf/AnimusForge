@@ -48,6 +48,12 @@ public sealed partial class FieldCampMissionLogic
 	private static readonly string[] PickupActions = { "act_pick_up_from_ground" };
 	private static readonly string[] TableActions = { "act_table_top_work", "act_npc_villager_working_while_stand" };
 	private static readonly string[] StandActions = { "act_stand_1", "act_stand_2" };
+	private static readonly string[] LookoutActions = { "act_guard_cautious_look_around_1", "act_guard_normal_look_around_1", "act_guard_idle_look_around" };
+	// Native paired animation points: one side talks, the other listens (hideout set, checked 2026-11-04).
+	private static readonly string[] TalkActions = { "act_talk_to_1", "act_gossip" };
+	private static readonly string[] ListenActions = { "act_listen_1" };
+	private const float PairTalkRadius = 2.5f;
+	private List<Vec3> _campFireWorld;
 	// Idle wanderers and workers stopped away from their station loiter instead of standing in act_none.
 	private static readonly string[] LoiterActions = { "act_gossip", "act_talk_to_1", "act_guard_idle_look_around", "act_listen_1", "act_gossip_2", "act_guard_cautious_look_around_1" };
 
@@ -449,8 +455,10 @@ public sealed partial class FieldCampMissionLogic
     				ApplyPose(entry);
     			}
     			entry.Seated = true;
-                // Wanderers now loiter on arrival; 6-14 s keeps their route demand within the 2-per-batch budget.
-                entry.NextWanderTime = _elapsed + (entry.Activity == Activity.Wander ? MBRandom.RandomFloatRanged(6f, 14f) : MBRandom.RandomFloatRanged(12f, 25f));
+                // Wanderers dwell like native town walkers (which wait 50-320 s per point); 20-45 s keeps
+                // a few dozen wanderers well inside the 2-routes-per-0.5 s budget.
+                entry.NextWanderTime = _elapsed + (entry.Activity == Activity.Wander ? MBRandom.RandomFloatRanged(20f, 45f) : MBRandom.RandomFloatRanged(12f, 25f));
+                if (!_assembled && entry.Activity == Activity.Wander) SettleWanderer(entry);
             }
             catch (Exception ex)
             {
@@ -596,6 +604,91 @@ public sealed partial class FieldCampMissionLogic
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// A wanderer just arrived at a stop. Like native paired animation points: when another idle
+        /// resident stands within 2.5 m, both turn to each other, this one talks and the other listens;
+        /// a working mate only turns his head. Otherwise he faces the nearest fire or comrade instead of
+        /// the camp's default facing. Runs once per arrival (arrivals are capped by the 2-routes-per-0.5 s
+        /// budget): one linear pass over the residents and one over the cached fires.
+        /// </summary>
+        private void SettleWanderer(CampAgent entry)
+        {
+            Agent agent = entry.Agent;
+            CampAgent mate = NearestIdleMate(entry, PairTalkRadius);
+            if (mate != null)
+            {
+                Vec2 between = mate.Agent.Position.AsVec2 - agent.Position.AsVec2;
+                if (between.LengthSquared > 0.01f)
+                {
+                    between = between.Normalized();
+                    agent.LookDirection = new Vec3(between.x, between.y, 0f);
+                    entry.TargetFacing = between;
+                    // Only an idle wanderer leaves his pose; workers keep working and just look over.
+                    mate.Agent.LookDirection = new Vec3(-between.x, -between.y, 0f);
+                    if (mate.Activity == Activity.Wander)
+                    {
+                        mate.TargetFacing = -between;
+                        PlayLoop(mate, ListenActions);
+                        // The listener stays for the talk instead of walking off mid-sentence.
+                        mate.NextWanderTime = Math.Max(mate.NextWanderTime, entry.NextWanderTime);
+                    }
+                }
+                PlayLoop(entry, TalkActions);
+                return;
+            }
+            if (TryNearestFire(agent.Position, 12f, out Vec3 fire))
+            {
+                Vec2 toFire = fire.AsVec2 - agent.Position.AsVec2;
+                if (toFire.LengthSquared > 0.25f)
+                {
+                    toFire = toFire.Normalized();
+                    agent.LookDirection = new Vec3(toFire.x, toFire.y, 0f);
+                    entry.TargetFacing = toFire;
+                }
+            }
+        }
+
+        /// <summary>Loops a clip as the resident's pose so finished-work checks and releases see it.</summary>
+        private void PlayLoop(CampAgent entry, string[] pool)
+        {
+            for (int i = 0; i < pool.Length; i++)
+            {
+                string name = pool[(entry.Agent.Index + entry.PoseVariant + i) % pool.Length];
+                ActionIndexCache action = ResolveAction(name);
+                if (action == ActionIndexCache.act_none) continue;
+                try
+                {
+                    if (entry.Agent.SetActionChannel(0, in action, true))
+                    {
+                        HideHandItems(entry);
+                        entry.PoseAction = action;
+                        return;
+                    }
+                }
+                catch { }
+            }
+        }
+
+        /// <summary>Fire positions are fixed for the mission; converted to world once, then a linear scan of a few dozen.</summary>
+        private bool TryNearestFire(Vec3 from, float radius, out Vec3 fire)
+        {
+            fire = default(Vec3);
+            if (_campFireWorld == null)
+            {
+                _campFireWorld = new List<Vec3>();
+                foreach (FieldCampLayout.Prop prop in _layout.Props)
+                    if (prop.Kind == FieldCampLayout.PropKind.Fire) _campFireWorld.Add(ToWorld(prop.Position));
+            }
+            float best = radius * radius;
+            bool found = false;
+            foreach (Vec3 candidate in _campFireWorld)
+            {
+                float d = candidate.AsVec2.DistanceSquared(from.AsVec2);
+                if (d < best) { best = d; fire = candidate; found = true; }
+            }
+            return found;
         }
 
         private CampAgent NearestIdleMate(CampAgent entry, float radius)
@@ -828,9 +921,10 @@ public sealed partial class FieldCampMissionLogic
         entry.Returning = false;
         entry.MoveBlocked = blocked;
         entry.RouteQueued = false;
-        entry.NextWanderTime = _elapsed + (entry.Activity == Activity.Wander ? MBRandom.RandomFloatRanged(2f, 5f) : MBRandom.RandomFloatRanged(12f, 25f));
+        entry.NextWanderTime = _elapsed + (entry.Activity == Activity.Wander ? MBRandom.RandomFloatRanged(20f, 45f) : MBRandom.RandomFloatRanged(12f, 25f));
         if (!_assembled) ApplyPose(entry);
         if (blocked) entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(1f, 3f);
+        else if (!_assembled && entry.Activity == Activity.Wander) SettleWanderer(entry);
     }
 
 	private void ApplyPose(CampAgent entry)
@@ -929,6 +1023,8 @@ public sealed partial class FieldCampMissionLogic
 				return PickupActions;
 			case FieldCampLayout.WorkKind.Table:
 				return TableActions;
+			case FieldCampLayout.WorkKind.Lookout:
+				return LookoutActions;
 		}
 		switch (entry.Activity)
 		{

@@ -82,18 +82,24 @@ public sealed partial class FieldCampMissionLogic
 			else if (extra < MaxExtraCompanions)
 			{
                 slot = StandbySlot(_standbyUsed++);
+                bool seated = false;
                 while (activitySlotCursor < _layout.WanderSlots.Count)
                 {
                     FieldCampLayout.Slot candidate = _layout.WanderSlots[activitySlotCursor++];
-                    Vec3 desired = ToWorld(candidate.Position);
-                    if (FieldCampSite.TryResolveGroundedPosition(Mission.Scene, desired, 0.4f, out Vec3 grounded)
-                        && IsInsideCamp(grounded) && IsCampPositionAvailable(null, grounded))
+                    if (IsFreeCompanionSeat(candidate))
                     {
                         slot = candidate;
                         slot.Work = FieldCampLayout.WorkKind.Gossip;
+                        seated = true;
                         break;
                     }
                 }
+                // Out of patrol points: a free fire-ring or work seat beats crowding the standby row.
+                while (!seated && _fireSlotsUsed < _layout.FireSlots.Count)
+                    seated = IsFreeCompanionSeat(slot = _layout.FireSlots[_fireSlotsUsed++]);
+                while (!seated && _workSlotsUsed < _layout.WorkSlots.Count)
+                    seated = IsFreeCompanionSeat(slot = _layout.WorkSlots[_workSlotsUsed++]);
+                if (!seated) slot = StandbySlot(_standbyUsed - 1);
 				extra++;
 			}
 			else
@@ -107,6 +113,13 @@ public sealed partial class FieldCampMissionLogic
 				Track(agent, activity, slot.Position, slot.Facing, character.DefaultFormationClass, slot.Work, canLeavePost: !hero.IsWounded, walkToAssignedSlot: !hero.IsWounded);
 			}
 		}
+	}
+
+	/// <summary>Spawn-only: the seat is on grounded camp terrain and nobody stands on or is bound for it.</summary>
+	private bool IsFreeCompanionSeat(FieldCampLayout.Slot slot)
+	{
+		return FieldCampSite.TryResolveGroundedPosition(Mission.Scene, ToWorld(slot.Position), 0.4f, out Vec3 grounded)
+			&& IsInsideCamp(grounded) && IsCampPositionAvailable(null, grounded);
 	}
 
 	/// <summary>Rows of twelve in front of the banner, each 1.4 m further toward the parade ground.</summary>

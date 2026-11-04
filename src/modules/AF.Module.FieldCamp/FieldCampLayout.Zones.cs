@@ -187,7 +187,8 @@ internal sealed partial class FieldCampLayout
 		SetTable(PropKind.Dishes, 6, 0.2f);
 		Work(bench + Inward(sx) * 1.2f, Outward(sx), WorkKind.Table);
 		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.62f, 3.5f), Yaw = 0.8f, Variant = 1 });
-		CompanionSlots["engineer"] = new Slot { Kind = SlotKind.Companion, Position = anvil + new Vec2(-2f, 1.2f), Facing = new Vec2(1f, 0f) };
+		// Role posts need a WorkKind: a companion without one is turned into a wanderer at spawn.
+		CompanionSlots["engineer"] = new Slot { Kind = SlotKind.Companion, Position = anvil + new Vec2(-2f, 1.2f), Facing = new Vec2(1f, 0f), Work = WorkKind.Repair };
 	}
 
 	/// <summary>Left back: piles of provisions sized by the food stock, wagons, the quartermaster's chest.</summary>
@@ -225,7 +226,7 @@ internal sealed partial class FieldCampLayout
 		Props.Add(new Prop { Kind = PropKind.Hearth, Position = oldFire, Yaw = 0.6f, Variant = 0 });
 		Props.Add(new Prop { Kind = PropKind.Ash, Position = oldFire, Yaw = 1.3f, Variant = 0 });
 		Props.Add(new Prop { Kind = PropKind.Gear, Position = Flank(sx, 0.92f, BackZoneTop - 8.5f), Yaw = 0.1f, Variant = 4 });
-		CompanionSlots["quartermaster"] = new Slot { Kind = SlotKind.Companion, Position = Flank(sx, 0.45f, BackZoneTop - 1.2f), Facing = Outward(sx) };
+		CompanionSlots["quartermaster"] = new Slot { Kind = SlotKind.Companion, Position = Flank(sx, 0.45f, BackZoneTop - 1.2f), Facing = Outward(sx), Work = WorkKind.Write };
 	}
 
 	/// <summary>Right back: the surgeon's tent, beds with lying wounded, and ground seats for the rest.</summary>
@@ -251,7 +252,7 @@ internal sealed partial class FieldCampLayout
 		// An orderly washes bandages at the dressing table; water buckets stand beside it.
 		Work(dressing + Inward(sx) * 1.2f, Outward(sx), WorkKind.Wash);
 		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.88f, BackZoneBottom + 4.5f), Yaw = 0.3f, Variant = 3 });
-		CompanionSlots["surgeon"] = new Slot { Kind = SlotKind.Companion, Position = Flank(sx, 0.08f, BackZoneTop - 9.5f), Facing = Outward(sx) };
+		CompanionSlots["surgeon"] = new Slot { Kind = SlotKind.Companion, Position = Flank(sx, 0.08f, BackZoneTop - 9.5f), Facing = Outward(sx), Work = WorkKind.Wash };
 	}
 
 	/// <summary>Fenced pen behind the tent streets; the gap faces the road so a slaughter order can reach it.</summary>
@@ -349,6 +350,22 @@ internal sealed partial class FieldCampLayout
 			WanderSlots.Add(new Slot { Kind = SlotKind.Wander, Position = new Vec2(side * (_zoneInner - 0.5f), MiddleZoneTop + 0.8f) });
 			WanderSlots.Add(new Slot { Kind = SlotKind.Wander, Position = new Vec2(side * (_zoneInner - 0.5f), BackZoneTop + 1f) });
 			WanderSlots.Add(new Slot { Kind = SlotKind.Wander, Position = new Vec2(side * (ParadeHalfWidth - 1f), FrontZoneBottom + 1f) });
+		}
+		// Native town points carry an authored facing; face each patrol point toward its nearest fire
+		// (or the road when none is near) so idle residents never all turn to the same default.
+		for (int i = 0; i < WanderSlots.Count; i++)
+		{
+			Slot slot = WanderSlots[i];
+			Vec2 facing = new Vec2(-slot.Position.x, 0f);
+			float best = 144f;
+			foreach (Prop prop in Props)
+			{
+				if (prop.Kind != PropKind.Fire) continue;
+				float d = prop.Position.DistanceSquared(slot.Position);
+				if (d < best && d > 0.25f) { best = d; facing = prop.Position - slot.Position; }
+			}
+			slot.Facing = facing.LengthSquared > 0.01f ? facing.Normalized() : new Vec2(0f, 1f);
+			WanderSlots[i] = slot;
 		}
 	}
 

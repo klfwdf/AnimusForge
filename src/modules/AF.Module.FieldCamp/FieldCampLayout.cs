@@ -116,7 +116,9 @@ internal sealed partial class FieldCampLayout
 		Wash,
 		Write,
 		Pickup,
-		Table
+		Table,
+		/// <summary>Standing watch and looking around (the scout at the gate).</summary>
+		Lookout
 	}
 
 	internal struct Slot
@@ -398,7 +400,7 @@ internal sealed partial class FieldCampLayout
 			Props.Add(new Prop { Kind = PropKind.Torch, CultureId = home, Position = new Vec2(sx * 11f, 10.5f) });
 			Props.Add(new Prop { Kind = PropKind.Torch, CultureId = home, Position = new Vec2(sx * 4.6f, FirstRowY + 3.2f) });
 		}
-		CompanionSlots["scout"] = new Slot { Kind = SlotKind.Companion, Position = new Vec2(0f, Front - 1.5f), Facing = new Vec2(0f, 1f) };
+		CompanionSlots["scout"] = new Slot { Kind = SlotKind.Companion, Position = new Vec2(0f, Front - 1.5f), Facing = new Vec2(0f, 1f), Work = WorkKind.Lookout };
 		ParadeCenter = new Vec2(0f, Front - 3.5f);
 		ParadeHalfWidth = _zoneInner - 1.5f;
 	}
