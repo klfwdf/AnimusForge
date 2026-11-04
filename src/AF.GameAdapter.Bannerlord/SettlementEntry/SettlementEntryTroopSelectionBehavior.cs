@@ -1648,11 +1648,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-    private static void CoupHallPlayerSpawnPrefix(ref string spawnTag)
+    private static void CoupHallPlayerSpawnPrefix(ref bool civilianEquipment, ref string spawnTag)
     {
-        Mission mission = Mission.Current;
-        if (mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>()?.IsArmedCoupHall == true)
-            spawnTag = "attacker_infantry";
+        SettlementEntryTroopSelectionMissionLogic logic = Mission.Current?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+        if (logic?.IsArmedCoup != true && _pendingMissionEntry?.ArmedCoup != true) return;
+        // Armed coup entry is a battle: the player enters in battle equipment, street and hall alike.
+        civilianEquipment = false;
+        if (logic?.IsArmedCoupHall == true) spawnTag = "attacker_infantry";
     }
 
     private static void CoupHallSceneLayerPrefix(Location location, ref string sceneLevels)
