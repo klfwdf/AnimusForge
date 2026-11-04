@@ -276,6 +276,7 @@ public sealed partial class FieldCampMissionLogic
         move.Agent.Controller = AgentControllerType.AI;
         move.Agent.SetIsAIPaused(false);
         move.Agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+        if (move.Camp != null) ReleasePose(move.Camp);
         move.Agent.SetActionChannel(0, in ActionIndexCache.act_none, true);
         var world = new WorldPosition(Mission.Scene, UIntPtr.Zero, goal, false);
         var flags = Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun

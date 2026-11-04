@@ -90,6 +90,7 @@ public sealed partial class FieldCampMissionLogic
         };
         for (int i = (int)EquipmentIndex.WeaponItemBeginSlot; i < actor.Weapons.Length; i++) actor.Weapons[i] = chosen.Equipment[(EquipmentIndex)i];
         StopCampNavigation(chosen);
+        if (entry != null) ReleasePose(entry);
         chosen.SetActionChannel(0, in ActionIndexCache.act_none, true);
         chosen.SetIsAIPaused(true);
         _campCeremonyRoles.Add(role, actor); _campCeremonyActors.Add(chosen, actor);

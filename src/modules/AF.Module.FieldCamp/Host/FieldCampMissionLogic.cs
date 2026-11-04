@@ -51,6 +51,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal FieldCampLayout.WorkKind Work;
 		internal int PoseVariant;
         internal ActionIndexCache PoseAction = ActionIndexCache.act_none;
+        internal string RightHandItem, LeftHandItem;
+        internal sbyte RightHandBone, LeftHandBone;
 		/// <summary>On a short visit; rests at the destination before returning Home.</summary>
 		internal bool Returning;
 		internal float MoveDeadline;

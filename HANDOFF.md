@@ -1,3 +1,7 @@
+## 2026-11-04 营地罚站与摆设稀少续修
+
+日志15:08-15:11显示54名居民中多人反复“walk stalled”且停在路点0.22-0.34 m外；源码确认旧坐/铁匠/弓手动作不在hideout动作集，空闲巡游者被置act_none原地暂停。到站/拐点半径放宽至0.45 m，在到站半径内不再判停滞，可用动作改为hideout自有片段，巡游者到站改为原地闲聊/张望6-14 s，并给刷马/劈柴/叉草/记账/修理/做饭配原版手持道具，仪式/屠杀接管时收起。六个侧区新增劈柴、叉草、捡拾、写账、洗涤、工作台工位及箱桶篮堆、柴堆和街火柴堆。仅review_source_contracts通过；未编译、未部署、未实机，摆设与通道是否冲突待实机确认。
+
 ## 2026-11-04 营地已发令却卡起点续修已部署
 
 产品c85a0e8b8a，检查点e7a2943c7。现场日志确认多名居民已有路线、GoToTarget但反复卡route=0。省略通道检查通过的冗余源格点，使用纯位置脚本行走/到站设朝向，带净空检查推进近拐点，已完成工作动作短途活动后返岗。1.3/1.4/Bootstrap编译成功，游戏退出后3 DLL/3标记共6项部署SUCCESS，记录.tmp/camp-waypoint-motion-20261104/。跳过测试/哈希/回读/冒烟，实机走动仍待确认，不能宣称根因已实证或完全解决。未打包或push。见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-waypoint-motion-20261104)及[代码范围](docs/architecture/af-framework-code-scope.md#camp-waypoint-motion-20261104)。

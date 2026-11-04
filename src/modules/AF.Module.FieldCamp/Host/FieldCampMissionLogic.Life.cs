@@ -13,8 +13,10 @@ namespace AnimusForge;
 /// <summary>Camp life, assemble/dismiss orders and camp-local coordinates.</summary>
 public sealed partial class FieldCampMissionLogic
 {
-	private const float ArriveDistanceSquared = 0.16f;
-    private const float RouteCornerDistanceSquared = 0.04f;
+	// Native scripted movement stops 0.22-0.34 m short of a goal (2026-11-04 camp log).
+	// A 0.2 m corner radius left residents idle in front of every waypoint until the stall timer fired.
+	private const float ArriveDistanceSquared = 0.2025f;
+    private const float RouteCornerDistanceSquared = 0.2025f;
 	private const float RowSpacing = 1.6f;
 	private const float FileSpacing = 1.3f;
 	private const int MinFilesPerRank = 10;
@@ -25,20 +27,42 @@ public sealed partial class FieldCampMissionLogic
     private int _campCornerPassageBudget;
     private readonly MBList<Agent> _campNearbyAgents = new MBList<Agent>();
 
-	private static readonly string[] SitActions = { "act_sit_idle_on_floor_1", "act_sit_idle_on_floor_2", "act_sit_idle_on_floor_3" };
+	// Every clip below is defined directly in as_human_hideout_bandit (Native action_sets.xml, checked 2026-11-04);
+	// the female set inherits it through base_set.
+	private static readonly string[] SitActions = { "act_sit_beggar_idle", "act_dungeon_prisoner_sitting_ground_cycle" };
 	private static readonly string[] SentryActions = { "act_guard_cautious_look_around_1", "act_guard_normal_look_around_1", "act_stand_1" };
 	// Props use non-usable benches; no seat-height binding exists for these agents.
-	
-	private static readonly string[] CookActions = { "act_bartender_meat", "act_citizen_cleanup_idle" };
-	private static readonly string[] SmithActions = { "act_smithing_machine_anvil_part_2" };
+
+	private static readonly string[] CookActions = { "act_bartender_meat", "act_bartender_bake" };
+	private static readonly string[] SmithActions = { "act_repair_upside", "act_repair" };
 	private static readonly string[] RepairActions = { "act_repair", "act_repair_upside" };
-	private static readonly string[] ArcherActions = { "act_idle_bow_1", "act_idle_bow_2" };
+	private static readonly string[] ArcherActions = { "act_guard_idle_look_around", "act_guard_cautious_look_around_2" };
 	private static readonly string[] LeanActions = { "act_lean_fence_loop", "act_lean_fence_loop2" };
-	private static readonly string[] GossipActions = { "act_gossip", "act_gossip_2" };
+	private static readonly string[] GossipActions = { "act_gossip", "act_gossip_2", "act_talk_to_1", "act_listen_1" };
 	private static readonly string[] LieActions = { "act_dungeon_prisoner_sleep_cycle" };
-	private static readonly string[] GroomActions = { "act_stand_1", "act_stand_2" };
+	private static readonly string[] GroomActions = { "act_npc_horse_grooming" };
+	private static readonly string[] ChopActions = { "act_npc_villager_lumberjack" };
+	private static readonly string[] ShovelActions = { "act_npc_villager_shoveling" };
+	private static readonly string[] WashActions = { "act_npc_villager_cloth_washing" };
+	private static readonly string[] WriteActions = { "act_writer" };
+	private static readonly string[] PickupActions = { "act_pick_up_from_ground" };
+	private static readonly string[] TableActions = { "act_table_top_work", "act_npc_villager_working_while_stand" };
 	private static readonly string[] StandActions = { "act_stand_1", "act_stand_2" };
-	private static readonly string[] CheerActions = { "act_cheer_1", "act_cheer_2" };
+	// Idle wanderers and workers stopped away from their station loiter instead of standing in act_none.
+	private static readonly string[] LoiterActions = { "act_gossip", "act_talk_to_1", "act_guard_idle_look_around", "act_listen_1", "act_gossip_2", "act_guard_cautious_look_around_1" };
+
+	// Right/left hand prefabs that the native animation points attach for these clips.
+	private static readonly Dictionary<string, string[]> HandItems = new Dictionary<string, string[]>(StringComparer.Ordinal)
+	{
+		["act_npc_horse_grooming"] = new[] { "horse_brush", "" },
+		["act_npc_villager_lumberjack"] = new[] { "lumberjack_axe", "" },
+		["act_npc_villager_shoveling"] = new[] { "pitchfork", "" },
+		["act_repair"] = new[] { "hammer_wooden", "" },
+		["act_repair_upside"] = new[] { "hammer_wooden", "" },
+		["act_bartender_meat"] = new[] { "tavernkeeper_spatula", "" },
+		["act_bartender_bake"] = new[] { "tavernkeeper_knife", "" },
+		["act_writer"] = new[] { "pen", "notebook" }
+	};
 
 	/// <summary>
 	/// Camp soldiers use the hideout action set: it is based on the warrior set (so fighting
@@ -385,7 +409,9 @@ public sealed partial class FieldCampMissionLogic
                     entry.RouteIndex++;
                     IssueCampWalk(entry);
                 }
-                if (!entry.Seated && _elapsed >= entry.ProgressAt)
+                // A resident that stopped inside the arrival radius has arrived, not stalled.
+                if (!entry.Seated && _elapsed >= entry.ProgressAt
+                    && agent.Position.AsVec2.DistanceSquared(entry.Target.AsVec2) > ArriveDistanceSquared)
                 {
                     if (agent.Position.AsVec2.DistanceSquared(entry.LastWalkPosition.AsVec2) < 0.04f)
                     { RecoverBlockedCampWalk(entry); continue; }
@@ -422,7 +448,8 @@ public sealed partial class FieldCampMissionLogic
     				ApplyPose(entry);
     			}
     			entry.Seated = true;
-                entry.NextWanderTime = _elapsed + (entry.Activity == Activity.Wander ? MBRandom.RandomFloatRanged(2f, 5f) : MBRandom.RandomFloatRanged(12f, 25f));
+                // Wanderers now loiter on arrival; 6-14 s keeps their route demand within the 2-per-batch budget.
+                entry.NextWanderTime = _elapsed + (entry.Activity == Activity.Wander ? MBRandom.RandomFloatRanged(6f, 14f) : MBRandom.RandomFloatRanged(12f, 25f));
             }
             catch (Exception ex)
             {
@@ -454,7 +481,12 @@ public sealed partial class FieldCampMissionLogic
                 entry.Returning = finishedWork;
                 MoveTo(entry, patrol, entry.HomeFacing, run: false);
             }
-            else LogCampWalkPending(entry, "no reachable stroll destination");
+            else
+            {
+                LogCampWalkPending(entry, "no reachable stroll destination");
+                entry.PoseVariant++;
+                ApplyPose(entry);
+            }
             return;
         }
 		float roll = MBRandom.RandomFloat;
@@ -801,24 +833,27 @@ public sealed partial class FieldCampMissionLogic
     {
         string[] pool = PoseFor(entry);
         if (pool == null) return;
-        if ((pool == StandActions || pool == GroomActions) && !entry.Returning && entry.Activity != Activity.Wounded
+        if (pool == StandActions && !entry.Returning && entry.Activity != Activity.Wounded
             && entry.Activity != Activity.Sentry && (entry.Activity != Activity.Post || entry.CanLeavePost))
         {
+            // Releasing to act_none here paused every wanderer in a bare T-stand until the
+            // stroll budget reached him. Loiter in place, then walk on after a short pause.
             entry.Work = FieldCampLayout.WorkKind.None;
             entry.Activity = Activity.Wander;
-            entry.NextWanderTime = _elapsed + 0.5f;
-            ReleasePose(entry);
-            return;
+            entry.NextWanderTime = Math.Min(entry.NextWanderTime, _elapsed + MBRandom.RandomFloatRanged(2f, 5f));
+            pool = LoiterActions;
         }
         for (int i = 0; i < pool.Length; i++)
         {
-            ActionIndexCache action = ResolveAction(pool[(entry.Agent.Index + entry.PoseVariant + i) % pool.Length]);
+            string name = pool[(entry.Agent.Index + entry.PoseVariant + i) % pool.Length];
+            ActionIndexCache action = ResolveAction(name);
             if (action == ActionIndexCache.act_none) continue;
             try
             {
                 if (entry.Agent.SetActionChannel(0, in action, true))
                 {
                     entry.PoseAction = action;
+                    ShowHandItems(entry, name);
                     return;
                 }
             }
@@ -860,6 +895,18 @@ public sealed partial class FieldCampMissionLogic
 				return GossipActions;
 			case FieldCampLayout.WorkKind.Lie:
 				return LieActions;
+			case FieldCampLayout.WorkKind.Chop:
+				return ChopActions;
+			case FieldCampLayout.WorkKind.Shovel:
+				return ShovelActions;
+			case FieldCampLayout.WorkKind.Wash:
+				return WashActions;
+			case FieldCampLayout.WorkKind.Write:
+				return WriteActions;
+			case FieldCampLayout.WorkKind.Pickup:
+				return PickupActions;
+			case FieldCampLayout.WorkKind.Table:
+				return TableActions;
 		}
 		switch (entry.Activity)
 		{
@@ -902,6 +949,7 @@ public sealed partial class FieldCampMissionLogic
 	private static void ReleasePose(CampAgent entry)
 	{
         entry.PoseAction = ActionIndexCache.act_none;
+        HideHandItems(entry);
 		try
 		{
 			entry.Agent?.SetActionChannel(0, in ActionIndexCache.act_none, true);
@@ -909,6 +957,56 @@ public sealed partial class FieldCampMissionLogic
 		catch
 		{
 		}
+	}
+
+	/// <summary>
+	/// Same mechanism as native AnimationPoint: weapons are sheathed and the clip's tool is
+	/// attached to ItemR/ItemL through AgentNavigator.SetPrefabVisibility, which reuses one
+	/// synched component per bone and prefab. Runs only when a pose starts, never per frame.
+	/// </summary>
+	private static void ShowHandItems(CampAgent entry, string action)
+	{
+		HideHandItems(entry);
+		if (!HandItems.TryGetValue(action, out string[] items)) return;
+		Agent agent = entry.Agent;
+		try
+		{
+			var navigator = agent.GetComponent<CampaignAgentComponent>()?.AgentNavigator;
+			if (navigator == null || agent.AgentVisuals == null) return;
+			agent.TryToSheathWeaponInHand(Agent.HandIndex.OffHand, Agent.WeaponWieldActionType.Instant);
+			agent.TryToSheathWeaponInHand(Agent.HandIndex.MainHand, Agent.WeaponWieldActionType.Instant);
+			for (int hand = 0; hand < 2; hand++)
+			{
+				if (string.IsNullOrEmpty(items[hand])) continue;
+				sbyte bone = agent.AgentVisuals.GetRealBoneIndex(hand == 0 ? HumanBone.ItemR : HumanBone.ItemL);
+				navigator.SetPrefabVisibility(bone, items[hand], true);
+				if (hand == 0) { entry.RightHandItem = items[hand]; entry.RightHandBone = bone; }
+				else { entry.LeftHandItem = items[hand]; entry.LeftHandBone = bone; }
+			}
+		}
+		catch (Exception ex)
+		{
+			HideHandItems(entry);
+			Logger.Log(LogSource, "camp hand item failed agent=" + agent.Index + " action=" + action + " error=" + ex.Message);
+		}
+	}
+
+	private static void HideHandItems(CampAgent entry)
+	{
+		if (entry.RightHandItem == null && entry.LeftHandItem == null) return;
+		try
+		{
+			var navigator = entry.Agent?.GetComponent<CampaignAgentComponent>()?.AgentNavigator;
+			if (navigator != null)
+			{
+				if (entry.RightHandItem != null) navigator.SetPrefabVisibility(entry.RightHandBone, entry.RightHandItem, false);
+				if (entry.LeftHandItem != null) navigator.SetPrefabVisibility(entry.LeftHandBone, entry.LeftHandItem, false);
+			}
+		}
+		catch
+		{
+		}
+		entry.RightHandItem = entry.LeftHandItem = null;
 	}
 
 	private ActionIndexCache ResolveAction(string name)

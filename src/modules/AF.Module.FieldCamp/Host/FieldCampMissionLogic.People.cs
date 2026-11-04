@@ -470,6 +470,9 @@ public sealed partial class FieldCampMissionLogic
 			DropEnvoy(sendHome: false);
 		}
 		MoveToExecutionGround(targets);
+		// Work tools are pose visuals; never carry them into the fight.
+		for (int i = 0; i < attackers.Count; i++)
+			if (_campAgentsByAgent.TryGetValue(attackers[i], out CampAgent attacker)) ReleasePose(attacker);
 		_slaughter = new TroopInspectionPrisonerSlaughterRuntime(Mission, attackers, targets, RestoreAfterSlaughter);
 		if (!_slaughter.TryStart(out reason))
 		{

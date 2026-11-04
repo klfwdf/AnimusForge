@@ -60,6 +60,11 @@ internal sealed partial class FieldCampLayout
 		Props.Add(new Prop { Kind = PropKind.WeaponHeap, Position = Flank(sx, 0.6f, Front - 2f), Yaw = 0.3f, Variant = 0 });
 		Work(Flank(sx, 0.5f, FrontZoneBottom + 1.2f), new Vec2(1f, 0f), WorkKind.Gossip);
 		Work(Flank(sx, 0.5f, FrontZoneBottom + 1.2f) + new Vec2(1.1f, 0f), new Vec2(-1f, 0f), WorkKind.Gossip);
+		// Spent arrows and spare bows below the shooting lanes; a man gathers them up.
+		Vec2 arrows = Flank(sx, 0.78f, FrontZoneBottom + 1.2f);
+		Props.Add(new Prop { Kind = PropKind.WeaponHeap, Position = arrows, Yaw = 0.4f, Variant = 2 });
+		Work(arrows + Inward(sx) * 1.5f, Outward(sx), WorkKind.Pickup);
+		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.15f, Front - 2f), Yaw = 0.3f, Variant = 1 });
 	}
 
 	/// <summary>Right front: two tether lines with real horses, a trough and a hay cart.</summary>
@@ -82,6 +87,13 @@ internal sealed partial class FieldCampLayout
 		Props.Add(new Prop { Kind = PropKind.Woodpile, CultureId = home, Position = Flank(sx, 0.15f, Front - 2.5f), Yaw = 0f, Variant = 2 });
 		Work(Flank(sx, 0.08f, FrontZoneBottom + 5.6f), Outward(sx), WorkKind.Groom);
 		Work(Flank(sx, 0.9f, FrontZoneBottom + 12.6f), Inward(sx), WorkKind.Groom);
+		// Fodder work: pitching hay at the cart, feed sacks beside it, buckets and firewood by the gate end.
+		Vec2 hay = Flank(sx, 0.85f, FrontZoneBottom + 1.5f);
+		Work(hay + Inward(sx) * 1.9f, Outward(sx), WorkKind.Shovel);
+		Props.Add(new Prop { Kind = PropKind.Supply, Position = Flank(sx, 0.5f, FrontZoneBottom + 1.2f), Yaw = 0.7f, Variant = 0 });
+		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.62f, Front - 2.5f), Yaw = 0.2f, Variant = 3 });
+		Vec2 logs = Flank(sx, 0.15f, Front - 2.5f);
+		Work(logs + Inward(sx) * 1.5f, Outward(sx), WorkKind.Chop);
 	}
 
 	/// <summary>Left middle: cooking fires, work tables, provisions and eating benches.</summary>
@@ -106,7 +118,12 @@ internal sealed partial class FieldCampLayout
 		{
 			Props.Add(new Prop { Kind = PropKind.Supply, Position = Flank(sx, 0.78f + (i % 2) * 0.11f, -7f + (i / 2) * 1.6f), Yaw = i * 0.6f, Variant = i });
 		}
-		Props.Add(new Prop { Kind = PropKind.Woodpile, CultureId = home, Position = Flank(sx, 0.1f, -7.2f), Yaw = 0f, Variant = 0 });
+		Vec2 kitchenLogs = Flank(sx, 0.1f, -7.2f);
+		Props.Add(new Prop { Kind = PropKind.Woodpile, CultureId = home, Position = kitchenLogs, Yaw = 0f, Variant = 0 });
+		Work(kitchenLogs + new Vec2(0f, 1.6f), new Vec2(0f, -1f), WorkKind.Chop);
+		// Baskets and a water bucket between the work tables.
+		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.7f, 0.2f), Yaw = 0.4f, Variant = 5 });
+		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.92f, 0.2f), Yaw = 1.1f, Variant = 3 });
 		for (int b = 0; b < 2; b++)
 		{
 			float by = 5.2f + b * 1.6f;
@@ -136,7 +153,14 @@ internal sealed partial class FieldCampLayout
 		Props.Add(new Prop { Kind = PropKind.Cart, Position = cart, Yaw = 0f, Variant = 2 });
 		Work(cart + new Vec2(-1.7f, 0f), new Vec2(1f, 0f), WorkKind.Repair);
 		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.12f, -1.5f), Yaw = 0.5f, Variant = 7 });
-		Props.Add(new Prop { Kind = PropKind.Woodpile, CultureId = home, Position = Flank(sx, 0.85f, -6.5f), Yaw = 0f, Variant = 1 });
+		Vec2 smithyLogs = Flank(sx, 0.85f, -6.5f);
+		Props.Add(new Prop { Kind = PropKind.Woodpile, CultureId = home, Position = smithyLogs, Yaw = 0f, Variant = 1 });
+		Work(smithyLogs + Inward(sx) * 1.6f, Outward(sx), WorkKind.Chop);
+		// A workbench for fitting straps and hafts.
+		Vec2 bench = Flank(sx, 0.62f, -1.5f);
+		Props.Add(new Prop { Kind = PropKind.Table, CultureId = home, Position = bench, Yaw = YawOf(Inward(sx)), Variant = 2 });
+		Work(bench + Inward(sx) * 1.2f, Outward(sx), WorkKind.Table);
+		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.62f, 3.5f), Yaw = 0.8f, Variant = 1 });
 		CompanionSlots["engineer"] = new Slot { Kind = SlotKind.Companion, Position = anvil + new Vec2(-2f, 1.2f), Facing = new Vec2(1f, 0f) };
 	}
 
@@ -157,8 +181,15 @@ internal sealed partial class FieldCampLayout
 				Work(cart + new Vec2(1.7f, 0f), new Vec2(-1f, 0f), WorkKind.Repair);
 			}
 		}
-		Props.Add(new Prop { Kind = PropKind.Chest, CultureId = home, Position = Flank(sx, 0.72f, BackZoneTop - 10f), Yaw = YawOf(Inward(sx)) });
-		Props.Add(new Prop { Kind = PropKind.Woodpile, CultureId = home, Position = Flank(sx, 0.75f, BackZoneBottom + 3f), Yaw = 0f, Variant = 3 });
+		Vec2 ledger = Flank(sx, 0.72f, BackZoneTop - 10f);
+		Props.Add(new Prop { Kind = PropKind.Chest, CultureId = home, Position = ledger, Yaw = YawOf(Inward(sx)) });
+		// The clerk tallies stores at the chest; a porter stacks loose sacks by the piles.
+		Work(ledger + Inward(sx) * 1.1f, Outward(sx), WorkKind.Write);
+		Props.Add(new Prop { Kind = PropKind.Supply, Position = Flank(sx, 0.45f, BackZoneTop - 7.5f), Yaw = 0.9f, Variant = 3 });
+		Work(Flank(sx, 0.45f, BackZoneTop - 6.2f), new Vec2(0f, -1f), WorkKind.Pickup);
+		Vec2 supplyLogs = Flank(sx, 0.75f, BackZoneBottom + 3f);
+		Props.Add(new Prop { Kind = PropKind.Woodpile, CultureId = home, Position = supplyLogs, Yaw = 0f, Variant = 3 });
+		Work(supplyLogs + new Vec2(0f, 1.6f), new Vec2(0f, -1f), WorkKind.Chop);
 		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.5f, BackZoneBottom + 6f), Yaw = 0.9f, Variant = 8 });
 		CompanionSlots["quartermaster"] = new Slot { Kind = SlotKind.Companion, Position = Flank(sx, 0.45f, BackZoneTop - 1.2f), Facing = Outward(sx) };
 	}
@@ -179,8 +210,12 @@ internal sealed partial class FieldCampLayout
 		{
 			WoundedSlots.Add(new Slot { Kind = SlotKind.Wounded, Position = Flank(sx, 0.2f + (i % 3) * 0.17f, BackZoneBottom + 2.5f + (i / 3) * 1.8f), Facing = new Vec2(0f, 1f), Work = WorkKind.Sit });
 		}
-		Props.Add(new Prop { Kind = PropKind.Table, CultureId = home, Position = Flank(sx, 0.88f, BackZoneTop - 12f), Yaw = YawOf(Inward(sx)), Variant = 4 });
+		Vec2 dressing = Flank(sx, 0.88f, BackZoneTop - 12f);
+		Props.Add(new Prop { Kind = PropKind.Table, CultureId = home, Position = dressing, Yaw = YawOf(Inward(sx)), Variant = 4 });
 		Props.Add(new Prop { Kind = PropKind.Chest, CultureId = home, Position = Flank(sx, 0.88f, BackZoneTop - 14.5f), Yaw = YawOf(Inward(sx)) });
+		// An orderly washes bandages at the dressing table; water buckets stand beside it.
+		Work(dressing + Inward(sx) * 1.2f, Outward(sx), WorkKind.Wash);
+		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.88f, BackZoneBottom + 4.5f), Yaw = 0.3f, Variant = 3 });
 		CompanionSlots["surgeon"] = new Slot { Kind = SlotKind.Companion, Position = Flank(sx, 0.08f, BackZoneTop - 9.5f), Facing = Outward(sx) };
 	}
 

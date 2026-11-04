@@ -94,7 +94,13 @@ internal sealed partial class FieldCampLayout
 		Groom,
 		Lean,
 		Gossip,
-		Lie
+		Lie,
+		Chop,
+		Shovel,
+		Wash,
+		Write,
+		Pickup,
+		Table
 	}
 
 	internal struct Slot
@@ -317,7 +323,9 @@ internal sealed partial class FieldCampLayout
 		}
 		FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + new Vec2(0f, 1.6f), Facing = new Vec2(0f, -1f) });
 		FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + new Vec2(0f, -1.6f), Facing = new Vec2(0f, 1f) });
-		float[] columns = { inner, outer };
+		// Firewood or kit up the lane, beyond the 1.6 m fire seats and short of the tent doorway aisles.
+		Props.Add(new Prop { Kind = index % 2 == 0 ? PropKind.Woodpile : PropKind.Clutter, CultureId = culture,
+			Position = fire + new Vec2(0f, 2.5f), Yaw = 0.3f * index, Variant = index });		float[] columns = { inner, outer };
 		for (int c = 0; c < columns.Length; c++)
 		{
 			Props.Add(new Prop { Kind = PropKind.Bedroll, Position = new Vec2(columns[c] - 0.6f, gy), Yaw = 0.05f, Variant = index * 4 + c * 2 });
