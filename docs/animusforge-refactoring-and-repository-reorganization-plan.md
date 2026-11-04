@@ -1,3 +1,7 @@
+<a id="untrack-danmaku-bridge-20261105"></a>
+## 2026-11-05 弹幕桥仅取消跟踪，保留本地文件
+
+UNTRACKED / VERIFIED / NO_DEPLOY。用户以“算了取消跟踪”替代此前删除要求。对 tools/BilibiliDanmakuBridge/ 的3个文件执行 git rm --cached，移除 .gitignore 的该工具例外，由既有 /tools/* 规则忽略；本地源码及 bin/obj/dist 保留，不再尝试物理删除。验证 Git 跟踪列表为空、本地3文件存在、ignore生效；无产品源码变更，无需重编或重新部署，未 push。此前447381dc1a仍为历史源码恢复点，本操作不改写历史。
 <a id="commit-deploy-20261105"></a>
 ## 2026-11-05 现有本地改动提交及统一模块部署
 

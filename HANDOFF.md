@@ -1,3 +1,6 @@
+## 2026-11-05 弹幕桥已取消 Git 跟踪
+
+用户取消物理删除，改为仅取消跟踪。tools/BilibiliDanmakuBridge/ 本地全部文件保留，3个源码/说明文件从Git索引移除，并由既有 /tools/* 忽略规则覆盖；不改游戏部署。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#untrack-danmaku-bridge-20261105)。
 ## 2026-11-05 本地改动已提交并部署
 
 用户授权提交现有改动并部署。源码提交 96edc75fdf、447381dc1a；1.3/1.4/Bootstrap 构建及双 coup seam 门禁通过，独立弹幕桥 Release 构建通过。统一模块部署成功，更新9个受管文件；三份 DLL 回读哈希一致。未推送、未启动游戏，营地闲聊与其他实机行为未验；缓存/输出/ACL恢复资料未提交且保留。详细证据与回滚点见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#commit-deploy-20261105)。

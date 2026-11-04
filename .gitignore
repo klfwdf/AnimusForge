@@ -60,7 +60,6 @@ integrated_tabs_settings_preview.html
 
 # Auxiliary source entries are opt-in; keep this list aligned with scripts/source_delivery.json.
 /tools/*
-!/tools/BilibiliDanmakuBridge/
 !/tools/Coup.RuntimeProbe/
 !/tools/Export-VanillaIssueAudit.ps1
 !/tools/PersistenceIdentityAudit.py
