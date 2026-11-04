@@ -1,3 +1,7 @@
+## 2026-11-05 营地空闲姿势循环重放
+
+排查剩余罚站来源：说话/倾听/张望/哨兵/伤员等空闲动作若不循环，播完后会停成普通站姿直到下次刷新（闲逛20-45 s）。参照原版AnimationPoint每帧重下循环动作，UpkeepBatchOfAgents在0.5 s批次中对已就位、未被挡、非工作完成信号的居民，动作不等于PoseAction时重放PoseAction；劳作动作不重放，其结束仍作为“干完活”信号走Refresh。1.4实现仅编译0错误，review_source_contracts通过；1.3未编、未部署、未实机。
+
 ## 2026-11-05 营地闲逛仿城镇路人、同伴岗位动作
 
 参照原版WalkingBehavior/AnimationPoint：闲逛停留由6-14 s改为20-45 s（原版点位多为50-320 s，按2路线/0.5 s预算取折中）；到站后SettleWanderer：2.5 m内有空闲同伴则面对面，自己用说话动作、闲逛的对方用倾听动作并延长停留，干活的对方只转头；否则面朝12 m内最近营火。巡逻点在布局时设朝向（最近营火，否则朝主路）。同伴岗位补WorkKind：斥候新增Lookout张望、工程师Repair、军需官Write（笔和本子）、医生Wash；无巡逻点的同伴先占士兵剩下的营火圈/工位，再退到指挥帐篷前等候位。1.4实现仅编译通过（0错误）；1.3按项目规则只能走一键脚本，未编；未部署、未实机。PropsPlacement 30、GroundRoute 87、Restart 19、review_source_contracts通过。

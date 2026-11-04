@@ -442,6 +442,17 @@ public sealed partial class FieldCampMissionLogic
     				Refresh(entry);
     				continue;
     			}
+                // Native AnimationPoint re-issues its loop clip every tick. Idle poses (wanderer talk/listen,
+                // sentries, wounded, fixed posts) do the same here at the 0.5 s upkeep; work clips are left
+                // alone because their ending is the "finished work" signal handled above.
+                if (!_assembled && entry.Seated && !entry.MoveBlocked && entry.PoseAction != ActionIndexCache.act_none
+                    && !HasFinishedCampWork(entry) && agent.GetCurrentAction(0) != entry.PoseAction)
+                {
+                    ActionIndexCache pose = entry.PoseAction;
+                    try { agent.SetActionChannel(0, in pose, true); }
+                    catch { }
+                    continue;
+                }
     			if (entry.Seated || agent.Position.AsVec2.DistanceSquared(entry.Target.AsVec2) > ArriveDistanceSquared)
     			{
     				continue;
