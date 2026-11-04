@@ -93,6 +93,7 @@ internal static class Program
     private static int Main(string[] args)
     {
         SmokeLocalizationEnvironment.Initialize();
+        if (args.Contains("--input-limit-removal")) { MaterialCountryThirdReplay.InputLimitRemoval(); MaterialSupplyReplay.InputLimitBudgetRegressions(); RunPreSendGateDecisionTests(); Console.WriteLine("PASS assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--planning-repair")) { PlanningRepairReplay.Run(); Console.WriteLine("PASS planning repair assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--scoped-world")) { ScopedWorldReplay.Run(); Console.WriteLine("PASS scoped world assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--prefix-ordering"))
@@ -9867,9 +9868,8 @@ RunRepairCorrectionAndJobDecisionTests();
 
     static void RunPreSendGateDecisionTests()
     {
-        // DPL-060CX: the input-budget gate passes under limit, fails non-history
-        // jobs outright, rebuilds oversized repair chains, and otherwise defers
-        // generation behind a bounded history-compression target.
+        // Diplomatic requests bypass local token rejection while retaining
+        // their evidence and semantic retry allowances.
         JArray small = new JArray(new JObject { ["role"] = "user", ["content"] = "abc" });
         var underJob = new WorldDiplomacyJob { Kind = "generate" };
         Test.True(WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
@@ -9881,11 +9881,11 @@ RunRepairCorrectionAndJobDecisionTests();
         JArray big = new JArray(new JObject { ["role"] = "user", ["content"] = new string('x', 5000) });
         int failedCalls = 0;
         var analyzeJob = new WorldDiplomacyJob { Kind = "analyze" };
-        Test.True(!WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
+        Test.True(WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
                 analyzeJob, big, 1000, 200, t => t?.Length ?? 0, _ => "", _ => true,
                 (j, e) => failedCalls++, () => { }, _ => { })
-            && failedCalls == 1,
-            "non-generation jobs over budget must fail once without scheduling");
+            && failedCalls == 0,
+            "analysis requests pass without local token rejection");
 
         var repairJob = new WorldDiplomacyJob
         {
@@ -9902,22 +9902,22 @@ RunRepairCorrectionAndJobDecisionTests();
             new WorldDiplomacyLlmMessage { Role = "user", Content = "【MODE=DECLARE】u" }
         };
         int rebuildCalls = 0;
-        Test.True(!WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
+        Test.True(WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
                 repairJob, big, 1000, 200, t => t?.Length ?? 0, _ => "", _ => { rebuildCalls++; return true; },
                 (j, e) => failedCalls++, () => { }, _ => { })
             && rebuildCalls == 0 && repairJob.LlmMessages.Count == 5
             && repairJob.SemanticRepairAttempts == 1,
-            "oversized current repairs fail locally without resetting their retry allowance");
+            "large repairs pass without resetting retry allowance");
 
         var genJob = new WorldDiplomacyJob { Kind = "generate", JobId = "jg", HistoryThroughSequence = 3 };
         int scheduleCalls = 0, genLogs = 0;
-        Test.True(!WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
+        Test.True(WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
                 genJob, big, 5000, 200, t => t?.Length ?? 0, _ => new string('h', 2000),
                 _ => true, (j, e) => failedCalls++, () => scheduleCalls++, _ => genLogs++)
             && !genJob.AwaitingHistoryCompression
             && genJob.InputBudgetHistoryTargetTokens == 0
             && scheduleCalls == 0 && genLogs == 0,
-            "over-budget selected windows fail locally without compacting unrelated archive");
+            "large selected windows pass without compacting unrelated archive");
 
         // DPL-060CX: the canonical-contract gate passes current/absent contracts,
         // rebuilds stale generation contracts, and retires stale non-generation jobs.

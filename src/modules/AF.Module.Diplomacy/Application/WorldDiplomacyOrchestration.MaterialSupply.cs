@@ -551,11 +551,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         AppendStructureObservation(job, size);
         size = Size();
         job.LlmMessages?.Clear();
-        if (size > 32000)
-        {
-            job.RequestPreparationPending = true;
-            SuspendDiplomacyJob(job, "event_required_evidence_budget_exceeded:retain_prior_cases_and_selected_sources");
-        }
+        // Mandatory evidence may exceed retrieval targets. It must still reach
+        // the provider; token estimates no longer suspend diplomatic work.
         _host.Log("diplomacy.input_breakdown job=" + job.JobId + " stage=" + job.EventSelectionStage
             + " system=" + _host.EstimateTokens(job.SystemPrompt)
             + " world=" + _host.EstimateTokens((request["sources"] as JArray)?.OfType<JObject>()
