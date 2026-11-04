@@ -220,6 +220,29 @@ Check(Resolve(scroll, (string)scroll.Attribute("ClipRect")) == Id("AFDialogueInp
 Check(Resolve(scroll, (string)scroll.Attribute("InnerPanel")) == Id("AFDialogueInputEditor"), "input content path resolves");
 Check(Resolve(scroll, (string)scroll.Attribute("VerticalScrollbar")) == Id("AFDialogueInputBar"), "scrollbar path resolves");
 Check((string)Id("AFDialogueInputClip").Attribute("ClipContents") == "true" && (string)Id("AFDialogueInputEditor").Attribute("AutoScrollToCaret") == "true", "long input clips and enables caret scrolling");
+// Both scene styles use the same editor contract; artwork and viewport sizes differ.
+foreach (var scenePrefab in new[] { "AFSceneSessionScroll.xml", "AFSceneSessionFolio.xml" })
+{
+    var sceneXml = XDocument.Load(Path.Combine(root, "extensions/AnimusForge.DialogueUI/GUI/Prefabs", scenePrefab));
+    XElement SceneId(string id) => sceneXml.Descendants().Single(e => (string)e.Attribute("Id") == id);
+    var sceneScroll = SceneId("AFSessionInputScroll");
+    var editor = SceneId("AFSessionInput");
+    Check(Resolve(sceneScroll, (string)sceneScroll.Attribute("ClipRect")) == SceneId("AFSessionInputClip"), scenePrefab + " input clip resolves");
+    Check(Resolve(sceneScroll, (string)sceneScroll.Attribute("InnerPanel")) == editor, scenePrefab + " scroll measures actual editor");
+    var bar = SceneId("AFSessionInputBar");
+    Check(Resolve(sceneScroll, (string)sceneScroll.Attribute("VerticalScrollbar")) == bar && Resolve(bar, (string)bar.Attribute("Handle")) == SceneId("AFSessionInputHandle"), scenePrefab + " bar and handle resolve");
+    Check((string)SceneId("AFSessionInputPlate").Attribute("ClipContents") == "true" && (string)SceneId("AFSessionInputClip").Attribute("ClipContents") == "true", scenePrefab + " plate and text viewport clip overflow");
+    Check((string)editor.Attribute("WidthSizePolicy") == "StretchToParent" && (string)editor.Attribute("HeightSizePolicy") == "CoverChildren" && (string)editor.Attribute("AutoScrollToCaret") == "true", scenePrefab + " wrapped content grows and follows caret");
+    Check((string)sceneScroll.Attribute("MouseScrollAxis") == "Vertical" && (string)sceneScroll.Attribute("AutoHideScrollBars") == "true" && (string)sceneScroll.Attribute("UpdateScrollbarVisibility") == "true" && (string)sceneScroll.Attribute("AutoAdjustScrollbarHandleSize") == "true", scenePrefab + " wheel and overflow-aware thumb enabled");
+    Check((string)editor.Attribute("RealText") == "@InputText" && (string)editor.Attribute("FocusRequestId") == "@InputFocusVersion" && (string)editor.Attribute("Command.TextEntered") == "ExecuteSubmit" && (string)editor.Attribute("SubmitOnEnter") == "true" && (string)editor.Attribute("MaxLength") == "6000", scenePrefab + " input submission and focus contract unchanged");
+    Check(SceneId("AFPlateRewrite").Parent == sceneScroll.Parent && (string)SceneId("AFPlateRewrite").Attribute("Command.Click") == "ExecuteRewrite", scenePrefab + " rewrite stays outside scrolling content");
+    float right = float.Parse((string)sceneScroll.Attribute("MarginRight"), System.Globalization.CultureInfo.InvariantCulture);
+    float barRight = float.Parse((string)bar.Attribute("MarginRight"), System.Globalization.CultureInfo.InvariantCulture);
+    float barWidth = float.Parse((string)bar.Attribute("SuggestedWidth"), System.Globalization.CultureInfo.InvariantCulture);
+    float rewriteRight = float.Parse((string)SceneId("AFPlateRewrite").Attribute("MarginRight"), System.Globalization.CultureInfo.InvariantCulture);
+    float rewriteWidth = float.Parse((string)SceneId("AFPlateRewrite").Attribute("SuggestedWidth"), System.Globalization.CultureInfo.InvariantCulture);
+    Check(right > barRight + barWidth && barRight > rewriteRight + rewriteWidth, scenePrefab + " text, scrollbar and rewrite occupy separate horizontal lanes");
+}
 AudienceDocketReplay.Run(root, Check);
 RewriteUiReplay.Run(root, Check);
 Console.WriteLine($"PASS: {checks} production-linked UI lifecycle, epoch-reader, audience rolling and XML checks; engine/patch dispatch/drawer are doubles, not visual acceptance.");

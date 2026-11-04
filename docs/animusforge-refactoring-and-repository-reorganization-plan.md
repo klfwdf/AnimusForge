@@ -1,7 +1,10 @@
 <a id="scene-input-scroll-20261105"></a>
 ## 2026-11-05 场景喊话输入框滚动及裁剪
 
-ACTIVE。用户截图显示长串数字输入越过卷轴输入框，要求滚动条与文字不越界。限定修改 DialogueUI 两套场景面板 prefab 及现有 lifecycle XML 回归；复用 DevMultilineEditableTextWidget 的换行、CoverChildren 和 AutoScrollToCaret，不改输入/提交/重写协议、不加文案或 Tick 扫描、不部署或 push。退出门：两套视口/内容/滚动条路径真实解析、输入绑定与6000字符限制保留、裁剪和光标跟随启用、现有生命周期回归通过。纯非嵌入 prefab 修改，复用 ead13e9e39 前本会话已通过的双API/Bootstrap构建，验证内容映射及候选投影；视觉和游戏输入验收另列未验。
+OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED。用户截图显示长串数字输入越过卷轴输入框，要求滚动条与文字不越界。限定修改 DialogueUI 两套场景面板 prefab 及现有 lifecycle XML 回归；复用 DevMultilineEditableTextWidget 的换行、CoverChildren 和 AutoScrollToCaret，不改输入/提交/重写协议、不加文案或 Tick 扫描、不部署或 push。退出门：两套视口/内容/滚动条路径真实解析、输入绑定与6000字符限制保留、裁剪和光标跟随启用、现有生命周期回归通过。纯非嵌入 prefab 修改，复用 ead13e9e39 前本会话已通过的双API/Bootstrap构建，验证内容映射及候选投影；视觉和游戏输入验收另列未验。
+实际实现：AFSceneSessionScroll.xml:20–37、AFSceneSessionFolio.xml:133–150 的 AFSessionInputPlate/AFSessionInputClip 双层 ClipContents；AFSessionInputScroll 绑定真实 AFSessionInput 和右侧 AFSessionInputBar/Handle，内容高度 CoverChildren、AutoScrollToCaret=true，溢出时自动显示滚动条。文本区右留60、滚动条右留46且宽6、重写按钮右留6且宽32，水平互不占位；原InputText、InputFocusVersion、ExecuteSubmit、6000上限不变。生产C#未改，不新增Tick IO/扫描/反射；仅复用现有编辑器变更后3帧光标跟随。两样式无新增文案，共享CN/EN UI绑定。
+
+验证：新增 lifecycle Program.cs:223起对两份真实XML执行路径、裁剪、尺寸策略、输入/重写契约及占位检查；修复前缺滚动容器失败，修复后202项PASS（引擎/输入分发为double，非视觉验收）。l10n_gate：26表、2106运行文件，0失败；check_bilingual_tables：26表0失败。MSBuild EmbeddedResource求值确认两prefab非嵌入，content-map各唯一映射、任务内投影SHA256一致；生产源码/工程/嵌入输入未变，复用此前双API/Bootstrap构建，不重复编译。证据work/scene-input-scroll-20261105/，只投影受影响两文件，未组装完整Stage、未部署、未push、未做实机长数字/中文/滚轮拖动/光标视觉验收。聚焦回滚点71e9920cad（产品修改前）。
 <a id="untrack-danmaku-bridge-20261105"></a>
 ## 2026-11-05 弹幕桥仅取消跟踪，保留本地文件
 

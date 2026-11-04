@@ -1,3 +1,6 @@
+## 2026-11-05 场景喊话输入框滚动及防越界
+
+卷轴与侧栏两套场景面板已增加垂直滚动条、裁剪视口和光标自动跟随；输入/提交/重写绑定保持，无新增文案、生产C#或Tick扫描。旧布局新增回归失败，修复后生命周期202项、双语门禁、唯一内容映射与任务内投影哈希通过；复用未变的双API/Bootstrap构建。未部署、未push、未实机，长串文字实际显示及滚轮/拖动仍待游戏验收。证据及回滚点见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-input-scroll-20261105)。
 ## 2026-11-05 弹幕桥已取消 Git 跟踪
 
 用户取消物理删除，改为仅取消跟踪。tools/BilibiliDanmakuBridge/ 本地全部文件保留，3个源码/说明文件从Git索引移除，并由既有 /tools/* 忽略规则覆盖；不改游戏部署。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#untrack-danmaku-bridge-20261105)。
