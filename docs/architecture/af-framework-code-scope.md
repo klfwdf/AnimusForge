@@ -1,3 +1,11 @@
+<a id="camp-life-follow-20261105"></a>
+## 2026-11-05 营地生活及Follow控制权
+
+源码307420633e，一基行号。FieldCampSite.cs 602–721 InitializeGroundCache含Fire安全盘，885–960 TryBuildGroundedRoute严格内界/短连接及1.5m路段。FieldCampLayout.cs 341–378 PlaceStreetFire火圈2.25m与柴堆4.1m；Zones.cs 63–76 PlaceTraining优先4射击岗位。FieldCampProps.cs 262–274登记成功靶/bullseye。
+
+Life.cs 520–583 Refresh交替火边休息/交谈/进食，619–667 TryNearbyStroll先近身候选，846–863 TryCampRoute未知缓存拒绝，882–902 IssueCampWalk短目标/步速，1120–1140 ReleasePose释放两动画通道、速度、工具及训练装备。新增Follow.cs 10–18 CanFollowPlayer/IsFollowingPlayer、20–49 Begin/EndFollowPlayer持有Agent身份并归还Home；Training.cs 12–37实践装备保存恢复，39–68 TryStartCampArchery、72–84 IsCampShootingLaneClear、87–108 UpkeepCampArchery。FieldCampMissionLogic.CampAgent记录FollowingPlayer/Training/临时装备；主upkeep复用20人/0.5s和2–8route预算，移动每帧原批次，不新增全局扫描。
+
+SceneMovementController.cs 4895–4954 StartSceneSummonFollowPlayer、4957–4990 StopSceneSummonFollowPlayer分支接管营地；Prompt/SceneMechanismPromptCaptureAdapter.cs 115–131营地仅Follow/Stop；ShoutBehavior.PlayerDirectActions.cs CapturePlayerDirectActionContext/Unavailable配合相同准入，NativeTurnPrompt/SceneConversationChains及ConversationActionPostprocessOwner保留窄规则，仍不启用营地跨地点guide/summon。跟随不影响其他城镇原行为，不创建新的存档或跨任务身份。覆盖源码/双API编译/纯托管控制权夹具，未覆盖native实机走姿、完整navmesh裁切、箭矢命中/穿行安全、所有坐姿外观。详细证据及未通过的通用手动标签夹具见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#camp-life-follow-20261105)。
 <a id="camp-waypoint-motion-20261104"></a>
 ## 2026-11-04 营地路线实际发令与动作完成
 

@@ -1,3 +1,8 @@
+## 2026-11-05 营地生活、火堆与靶场、跟随修复（未部署）
+
+产品307420633e。居民内界寻路不再因源格边沿漂移解锁围栏外搜索，缓存火盘排除落座/走路，路段缩短；火圈座位外移、乞丐动作移除，活动交错、近身闲逛优先、离岗清理上下身动作/工具/训练冻结。靶场岗位优先安排，实际靶实体原生射击+临时钝箭装备并离岗恢复。营地仅Follow/Stop开窄口，Agent.Main跟随有独立日常控制权交接，停止回岗，不开放跨地点guide/summon。
+
+双API/Bootstrap及双coup seam通过；site40、ownership32、router87、props32、restart19、source65/review11与双语门禁通过。通用手动标签夹具因现有依赖缺失未跑通，修改前副本同样失败；未部署/push/实机，原生围栏绕路、动画、真实箭矢/穿行安全与菜单完整验收仍待确认。不称原生navmesh已裁切或所有坐姿已丰富。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-life-follow-20261105)及[代码范围](docs/architecture/af-framework-code-scope.md#camp-life-follow-20261105)。
 ## 2026-11-05 场景喊话输入框滚动及防越界
 
 卷轴与侧栏两套场景面板已增加垂直滚动条、裁剪视口和光标自动跟随；输入/提交/重写绑定保持，无新增文案、生产C#或Tick扫描。旧布局新增回归失败，修复后生命周期202项、双语门禁、唯一内容映射与任务内投影哈希通过；复用未变的双API/Bootstrap构建。未部署、未push、未实机，长串文字实际显示及滚轮/拖动仍待游戏验收。证据及回滚点见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-input-scroll-20261105)。

@@ -1,7 +1,18 @@
 <a id="camp-life-follow-20261105"></a>
 ## 2026-11-05 营地围栏、火堆落座、生活动作、靶场及跟随修复
 
-ACTIVE。用户连续截图反馈居民绕出围栏卡住、坐火堆、乞丐统一坐姿、罚站、走姿异常、靶场无人射击及营地不能跟随。现场Mod_Logic.txt多次no reachable stroll destination/stalled；源码确认SitActions含beggar、ArcherActions仅张望、AIConfigHandler明确禁营地scene move规则。限定FieldCamp路径/火堆安全及活动owner、实际靶实体、Follow控制权交接、相关Prompt/手动入口过滤和定向回归；不改伤害/队伍、不部署/push。不把源码检查或双API编译称为实机验收。退出门为关联回归和双API/Bootstrap构建，实机路径、射击及动画另列未验。回滚前产品HEAD=4c73dcc986，保留此前喊话UI修复。
+OFFLINE_VERIFIED / BUILT / LIVE_NOT_RUN / NOT_DEPLOYED。用户连续截图反馈居民绕出围栏卡住、坐火堆、乞丐统一坐姿、罚站、走姿异常、靶场无人射击及营地不能跟随。现场Mod_Logic.txt多次no reachable stroll destination/stalled；源码确认SitActions含beggar、ArcherActions仅张望、AIConfigHandler明确禁营地scene move规则。限定FieldCamp路径/火堆安全及活动owner、实际靶实体、Follow控制权交接、相关Prompt/手动入口过滤和定向回归；不改伤害/队伍、不部署/push。不把源码检查或双API编译称为实机验收。退出门为关联回归和双API/Bootstrap构建，实机路径、射击及动画另列未验。回滚前产品HEAD=4c73dcc986，保留此前喊话UI修复。
+产品提交307420633e，意图检查点eff7aeac64，回滚保留此前喊话UI提交4c73dcc986。具体：GroundCache对Fire一次栅格化1.45m安全盘并纳入BaseOpen，避免后续障碍刷新重新开放；stayInsideCamp不再因源格在内沿外就解除全部范围，最多3格短连接回内侧，拒绝无缓存原生长路兜底，输出最长1.5m短路段/最多1024路点，保留原围栏禁行栅格。火圈座位1.6→2.25m、上方柴堆3→4.1m。不是按面索引切割整张原生navmesh，原生绕路/移动碰撞仍需实机确认，不能保证绝无越界。
+
+Life优先近身1.8–4m闲逛候选，仍每0.5秒20人、2–8路线预算；保留失败岗位、严格到岗位才播动作，移除乞丐动画，地面使用兼容休息循环、火边按周期交谈/站立进食/坐地交替并错开动作进度。未无依据把座椅高度酒馆动画套到裸地/非usable木凳；地面坐姿基础clip仍有限，不称所有坐姿已丰富化。离岗清理0/1动作通道、工具、scripted combat及0速冻结，回普通步速。走姿异常根因仅源码针对性修复，尚无实机复验。
+
+靶场4个岗位插到工作列表前部，避免大营地帐篷岗位先耗光展示人数；使用成功创建靶实体/bullseye子节点，原生SetScriptedTargetEntity射击，training_bow+blunt_arrows仅临时Mission装备，离岗恢复原2/3号槽及余弹。站定25–37秒射击轮次后休息/返回；既有批次空间查询检测射线走廊有人则停射/重试，未改任何伤害/敌对规则，不将钝箭等同于零风险。不存在目标、道具、通道时不宣称成功。箭矢实际命中、原生AI在和平Mission射击、穿行安全与装备外观尚未实机验收。
+
+跟随：原营地通用scene move排除保留，只在手动入口与CN/EN原有后处理规则中放行Follow/Stop；场景喊话/原生自由对话两链路注入，同步统一后处理保留过滤。尊重scene_mechanism_actions配置开关，不给信使凭空创建Agent。CampAgent.FollowingPlayer接管后营地walk/upkeep/attention release/使者及刑场挑演员不抢目标，使用既有FollowAgentBehavior跟随Agent.Main；暂停/结束会话恢复跟随，停止交还Home。伤员、俘虏、演练集合、决斗/刑场占用者不放行。生命周期无存档键新增。源文件与符号坐标见[范围图](architecture/af-framework-code-scope.md#camp-life-follow-20261105)。
+
+最终验证：双API引用1.3.15.110062(_deps_auto)、1.4.6.115628(.tmp/build_check/1.4)，原统一构建入口Debug无Deploy，1.3/1.4各407警告0错误，Bootstrap0警告0错误、双coup seam PASS。MSBuild Compile清单新增Follow/Training各恰一次。关联生产代码的site/cache40、follow/training32、router87、props32、restart19断言PASS；source/resource65、review11通过，l10n_gate26表/2108文件0失败，bilingual26表0失败。新手动营地菜单回归已添加，但PlayerDirectActionTests未跑通：修改前eff7aeac64隔离副本同样缺HorseQuestDeliveryOwner/BannerlordApiCompat/PromptComposerTexts/WorldMapSourceTexts.Source，去重错误诊断相同；不削弱测试或用新增独立夹具代替整套通过。
+
+证据work/camp-life-follow-20261105/{build-verified.log,site.log,life-ownership.log,router.log,props.log,restart.log,review-contracts.log,source-contracts.log,l10n.log,bilingual.log,manual-tags.log,manual-baseline.log,compile-items.json,source-sha256.json}。所有native渲染/AI/箭矢行为仍LIVE_NOT_RUN；无完整Stage/正式包/游戏部署/push。性能：无新Tick IO或全场景扫描，火盘初始化局部格，route分段仅寻路时；射击最多4岗位，在原有批次用原生空间索引/复用列表。跟随判定O(1)字典，规则列表在请求捕获/菜单边界读取。修复未覆盖所有军营生活表现或所有原生导航异常，实机反馈需按新日志继续收敛。
 <a id="scene-input-scroll-20261105"></a>
 ## 2026-11-05 场景喊话输入框滚动及裁剪
 
