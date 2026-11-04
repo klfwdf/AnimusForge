@@ -1,3 +1,11 @@
+<a id="commit-deploy-20261105"></a>
+## 2026-11-05 现有本地改动提交及统一模块部署
+
+DEPLOYED / BUILT / LIVE_NOT_RUN。用户本轮明确要求“有就提交，随后部署”，不再调查营地场景闲聊。工作区 F:/AnimusForge-main，main，操作前 HEAD cac22b2174。96edc75fdf 保存已跟踪改动（除 .gitignore、HANDOFF.md 外均为行尾差异）；447381dc1a 提交独立 tools/BilibiliDanmakuBridge 的 csproj、Program.cs、README.md。未纳入 NuGet/Migrations/1、outputs/、work/、.dsh-acl-recovery/ 临时及恢复资料，全部原地保留；未 push。
+
+按现有 scripts/build/build_single_module.ps1 -Configuration Debug -Deploy 执行，无构建/部署流程改动。BannerlordApi=1.3 与 1.4 各 407 警告、0 错误，Bootstrap 0 警告、0 错误，两套最终实现 coup seam registration smoke 均 PASS。独立弹幕桥 Release 构建 0 警告、0 错误。部署通过既有 Stage/路径/受管文件保护，更新 9 个文件，目标 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge；无 Recovery 备份或自动回滚。脚本保留未知安装文件及已有用户配置。
+
+部署后 Bootstrap、versions/1.3/AnimusForge.dll、versions/1.4/AnimusForge.dll 与本地构建产物 SHA-256 完全一致；SubModule.xml Id=AnimusForge，仅加载 AnimusForge.Bootstrap.dll。证据 work/commit-deploy-20261105/build-deploy.log、bridge-build.log、deployed-hashes.json。未启动游戏，未做营地闲聊、存档或其他游戏功能验收，也未验证弹幕桥直播连接。构建与部署门禁不等同于实机验收。源码回滚点 cac22b2174；如需撤销，使用聚焦逆向提交并重新构建部署，不硬重置、不宣称可自动恢复旧部署。
 <a id="camp-waypoint-motion-20261104"></a>
 ## 2026-11-04 营地移动卡起点与工作动作结束续修
 

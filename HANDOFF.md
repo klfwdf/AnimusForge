@@ -1,3 +1,6 @@
+## 2026-11-05 本地改动已提交并部署
+
+用户授权提交现有改动并部署。源码提交 96edc75fdf、447381dc1a；1.3/1.4/Bootstrap 构建及双 coup seam 门禁通过，独立弹幕桥 Release 构建通过。统一模块部署成功，更新9个受管文件；三份 DLL 回读哈希一致。未推送、未启动游戏，营地闲聊与其他实机行为未验；缓存/输出/ACL恢复资料未提交且保留。详细证据与回滚点见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#commit-deploy-20261105)。
 ## 2026-11-05 营地出发名额随人数扩容、到站改为每帧结算
 
 用户担心人多时只有少数人走动。原先每0.5 s只给2人算路线，115人营地起身/回程/干完活需求约4次/秒、恰在上限，400人时超3倍；到站判断只在每0.5 s 20人的批次里，400人时到站后最长约10 s才开始动作。修改：CampRouteBudgetPerBatch按人数每40人+1、2-8条/0.5 s（实测营地规模网格单条路线平均0.29 ms、最坏4.7 ms）；到站逻辑抽为HasArrived/ArriveAtCampTarget，AdvanceCampWalks每帧先结算到站，upkeep批次保留兜底。1.4实现仅编译0错误，review_source_contracts通过；1.3未编、未部署、未实机。
