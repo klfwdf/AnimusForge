@@ -1,3 +1,7 @@
+## 2026-11-04 营火围圈座位
+
+用户要求每个营火围一圈人。PlaceStreetFire的营火座位改为半径1.6 m、45°间隔的6个地面座位（跳过0°/180°两侧长凳方向），相邻座位约1.22 m，距长凳座位≥1.31 m；加上两条长凳4个座位，每个营火共10人。未编译、未部署、未实机。
+
 ## 2026-11-04 营地人员分配补位（营火座位、帐篷口工位、工人回岗）
 
 实机反馈：大部分士兵仍原地罚站。日志（21:00会话，115居民）只有17条walk pending，说明罚站来自分配而非寻路。根因：营火座位FireSlots无WorkKind，TrackAssignedResident把它们全部转为Wander；工人被挡离岗后ApplyPose把Work清为None，工位持续流失；派位循环只试5种case，从case4起的轮次跳过营火。修改：FieldCampLayout营火座位Work=Sit并加两个斜向座位，每顶帐篷口旁加一个坐地/修补工位（每三顶一个修补位配杂物箱）；SpawnTroops派位循环改为6次；ApplyPose对离岗工人保留工位并标记Returning回岗，连续3次失败才放弃；被挡工人在MoveBlocked重试时可回岗。未编译、未部署、未实机。FieldCampContinuation/source_contracts.py与FieldCampRestartTests/contracts.py在HEAD上即失败，非本轮引入；review_source_contracts.py通过。
