@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>BilibiliDanmakuBridge</AssemblyName>
+    <Product>B站弹幕输入桥</Product>
+    <Description>接收 B 站直播弹幕并帮助粘贴到游戏输入框</Description>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+</Project>
