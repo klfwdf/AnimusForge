@@ -51,8 +51,8 @@ internal static partial class MaterialSupplyReplay
         j.EventSelectionStage="expand"; j.SystemPrompt=""; j.SuspendedReason="";
         j.UserPrompt=new JObject{["sources"]=new JArray(new JObject{["key"]="lore:succession",["text"]=new string('x',140000)}),["prior_events"]=stories.DeepClone()}.ToString();
         AuditCall(o,"FinishMaterialRequest",j);
-        Test.True(j.SuspendedReason.Contains("required_evidence_budget_exceeded") && j.RequestPreparationPending
-            && JToken.DeepEquals(JObject.Parse(j.UserPrompt)["prior_events"],stories),"required evidence overflow holds rather than silently erasing dedup evidence: "+j.SuspendedReason+" input="+h.EstimateTokens(j.UserPrompt));
+        Test.True(j.SuspendedReason.Length == 0 && !j.RequestPreparationPending
+            && JToken.DeepEquals(JObject.Parse(j.UserPrompt)["prior_events"],stories),"required evidence overflow remains sendable with dedup evidence intact: "+j.SuspendedReason+" input="+h.EstimateTokens(j.UserPrompt));
 
         StoryCoverage(); ResponseContinuity();
         Console.WriteLine("PASS audit gaps: exact outcome, source-budget preservation, batch identity, evidence-bound diversity and denial-response guards; semantic judgements are controlled fixtures.");

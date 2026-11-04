@@ -70,9 +70,9 @@ internal static class RequestHistoryBudgetReplay
             request, new JArray(new JObject { ["role"] = "user", ["content"] = new string('x', length) }),
             800000, 48000, s => s.Length, _ => throw new Exception("full history budget scan"),
             _ => { rebuilds++; return true; }, (_, _) => failures++, () => compactCalls++, _ => { });
-        Test.True(Fits(job, 31000) && !Fits(job, 40000), "declaration total budget is independent of 800k archive threshold");
+        Test.True(Fits(job, 31000) && Fits(job, 40000), "declaration input is not rejected at the former 32k ceiling");
         var repair = new WorldDiplomacyJob { Kind = "generate", SemanticRepairAttempts = 1 };
-        Test.True(!Fits(repair, 600000) && repair.SemanticRepairAttempts == 1 && rebuilds == 0 && compactCalls == 0, "oversized repair never sends, recompacts or resets retry allowance");
+        Test.True(Fits(repair, 600000) && repair.SemanticRepairAttempts == 1 && rebuilds == 0 && compactCalls == 0, "large repair can send without recompacting or resetting retry allowance");
         var compact = new WorldDiplomacyJob { Kind = "compress" };
         Test.True(Fits(compact, 120000) && !Fits(compact, 140000), "compression retains a separate bounded archive input budget");
         var waiting = new WorldDiplomacyJob { Kind = "generate", JobId = "old-waiting", AwaitingHistoryCompression = true, InputBudgetHistoryTargetTokens = 4000 };

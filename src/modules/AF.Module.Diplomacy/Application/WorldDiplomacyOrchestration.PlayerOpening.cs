@@ -119,7 +119,7 @@ internal sealed partial class WorldDiplomacyOrchestration
     private void FitOptionalEventWorld(WorldDiplomacyJob job)
     {
         const int framingReserve = 512;
-        int limit = WorldDiplomacyRequestHistoryApplication.DeclarationInputLimit;
+        int limit = WorldDiplomacyRequestHistoryApplication.DeclarationContextBudget;
         if (_host.EstimateTokens(job.SystemPrompt) + _host.EstimateTokens(job.UserPrompt) + framingReserve <= limit) return;
         var payload = JObject.Parse(job.UserPrompt);
         string world = (string)payload["world"];

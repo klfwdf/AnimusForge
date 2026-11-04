@@ -87,8 +87,8 @@ internal static class ScopedWorldReplay
         job.RetryAfterUtcTicks = 0; job.NextRecoveryProbeUtcTicks = 0;
         Call(o, "TryResumeTechnicalRequest", job, false);
         Test.True(job.MaterialSearchPass == 0 && job.EventMaterialSnapshot.Length > 0 && h.Reads == reads
-            && job.SuspendedReason.StartsWith("event_required_evidence_budget_exceeded:", StringComparison.Ordinal),
-            "identical oversized scoped input remains held with evidence intact and no paid retry");
+            && job.SuspendedReason.Length == 0,
+            "legacy oversized scoped input resumes with evidence intact and no new capture");
         Console.WriteLine("Scoped world: 56 realms; legacy-source-estimate=" + oldTokens + "; scoped-total-estimate=" + tokens + "; max-scope=" + h.Scopes.Max());
     }
 }

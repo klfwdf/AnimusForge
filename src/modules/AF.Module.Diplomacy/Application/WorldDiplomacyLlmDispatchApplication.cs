@@ -359,6 +359,12 @@ internal static class WorldDiplomacyLlmDispatchApplication
         Action scheduleTokenCompression,
         Action<string> log)
     {
+        if (!WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress"))
+        {
+            job.AwaitingHistoryCompression = false;
+            job.InputBudgetHistoryTargetTokens = 0;
+            return true;
+        }
         long inputTokens = 0L;
         foreach (JToken message in messages)
             inputTokens += WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens((string)message["content"], estimateTokens) + WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens((string)message["role"], estimateTokens) + 4L;
@@ -368,47 +374,8 @@ internal static class WorldDiplomacyLlmDispatchApplication
             job.AwaitingHistoryCompression = false;
             return true;
         }
-        if (job.ForcedIntent == "ended" && job.Kind is "event_boundary" or "event_boundary_audit")
-        {
-            // Only request projections are reduced. Drafts, exact outcomes/terms,
-            // source documents and audit digests remain unchanged.
-            foreach (int excerptLimit in new[] { 800, 300, 0 })
-            {
-                foreach (JObject message in messages.OfType<JObject>().Where(x => (string)x["role"] == "user"))
-                {
-                    if (!WorldDiplomacyEnvelopeJsonRules.TryParseJsonObject((string)message["content"], out var request)
-                        || (string)request["stage"] != "ended") continue;
-                    foreach (var doc in (request["public_documents"] as JArray ?? new()).OfType<JObject>())
-                    {
-                        string body = (string)doc["Body"] ?? "";
-                        if (body.Length <= excerptLimit) continue;
-                        doc["Body"] = body.Substring(0, excerptLimit); doc["body_is_excerpt"] = true;
-                    }
-                    foreach (string field in new[] { "source_material", "setting_and_known_history", "world_book_sources", "world", "narrative_actors" }) request.Remove(field);
-                    request["ending_evidence_contract"] = "excerpt_only;exact_action_receipts_retained;no_new_facts_or_inferred_consent";
-                    string compact = request.ToString(Newtonsoft.Json.Formatting.None);
-                    if ((string)message["content"] == job.UserPrompt) job.UserPrompt = compact;
-                    message["content"] = compact;
-                }
-                inputTokens = messages.Sum(message => (long)WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens((string)message["content"], estimateTokens)
-                    + WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens((string)message["role"], estimateTokens) + 4L);
-                if (inputTokens <= limit)
-                { job.AwaitingHistoryCompression = false; log?.Invoke("diplomacy.ending_context_compacted job=" + job.JobId + " excerpt=" + excerptLimit); return true; }
-            }
-        }
-        if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate"))
-        {
-            // Compressing the saved global archive cannot shrink an already selected
-            // reading window or custom rules. Fail locally, including frozen repairs,
-            // rather than resetting the repair allowance and paying for another draft.
-            job.AwaitingHistoryCompression = false;
-            commitFailedJob?.Invoke(job, "declaration input budget exceeded before send: " + inputTokens + "/" + limit
-                + "; reduce custom prompt/current document; full archive retained");
-            return false;
-        }
-        commitFailedJob?.Invoke(job, (job.Kind is "event_progress" or "event_progress_audit"
-            ? "event_required_input_budget_exceeded: " : "input budget exceeded before send: ") + inputTokens + "/" + limit
-            + "; single archive entry/snapshot or non-history prompt requires reduction");
+        commitFailedJob?.Invoke(job, "input budget exceeded before send: " + inputTokens + "/" + limit
+            + "; compression batch requires reduction");
         return false;
     }
 

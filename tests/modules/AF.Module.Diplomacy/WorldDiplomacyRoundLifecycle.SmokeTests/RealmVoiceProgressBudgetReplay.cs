@@ -53,9 +53,9 @@ internal static partial class MaterialSupplyReplay
         bool fits = WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(job,
             new JArray(new JObject { ["role"] = "system", ["content"] = job.SystemPrompt }, new JObject { ["role"] = "user", ["content"] = job.UserPrompt }),
             32000, 1000, h.EstimateTokens, _ => "", _ => false, (_, reason) => failure = reason, () => {}, _ => {});
-        Test.True(!fits && failure.StartsWith("event_required_input_budget_exceeded:")
+        Test.True(fits && failure.Length == 0
             && ((string)JObject.Parse(job.UserPrompt)["documents"]!).Length == 35000,
-            "oversized required evidence fails explicitly instead of truncating a promise or increasing request limits");
+            "oversized required evidence reaches dispatch without truncating a promise");
 
         var round = o.ResolveRound(job.RoundId);
         job.PrivacyDraft = "{\"outcome\":\"continue\",\"reason\":\"same exact draft\"}";
@@ -66,6 +66,7 @@ internal static partial class MaterialSupplyReplay
         AuditCall(o, "TryResumeTechnicalRequest", job, false);
         Test.True(job.Kind == "event_progress_audit" && job.PrivacyDraft == draft && job.SuspendedReason == "",
             "legacy oversized audit resumes the existing draft, not another paid writer");
+        failure = "event_required_input_budget_exceeded: 40000/32000";
         AuditCall(o, "HoldTechnicalRequest", job, failure);
         int attempts = job.TechnicalRecoveryAttempts;
         for (int i = 0; i < 4; i++)
@@ -73,7 +74,7 @@ internal static partial class MaterialSupplyReplay
             job.RetryAfterUtcTicks = 0; job.NextRecoveryProbeUtcTicks = 0;
             AuditCall(o, "TryResumeTechnicalRequest", job, false);
         }
-        Test.True(job.SuspendedReason == failure && job.TechnicalRecoveryAttempts == attempts && job.PrivacyDraft == draft,
-            "unchanged mandatory input cannot loop through automatic retries or discard its audited draft");
+        Test.True(job.SuspendedReason == "" && job.TechnicalRecoveryAttempts == attempts && job.PrivacyDraft == draft,
+            "retired mandatory-input rejection clears once without discarding its audited draft");
     }
 }

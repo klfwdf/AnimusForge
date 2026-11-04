@@ -13,17 +13,19 @@ namespace AnimusForge;
 internal static class WorldDiplomacyRequestHistoryApplication
 {
     internal static string ContextMarker => DiplomacyMiscPromptTexts.Get("History_ContextMarker", "[Relevant Diplomatic History for this Event]");
-    internal const int DeclarationInputLimit = 32000;
+    // Retrieval sizing only; this is not a request rejection limit.
+    internal const int DeclarationContextBudget = 32000;
     internal const int CompressionInputLimit = 128000;
     internal const int ContextCharacterLimit = 16000;
     private static readonly ConditionalWeakTable<WorldDiplomacyStorage, DocumentIndex> Indexes = new();
     internal static void InvalidateDocumentRouting(WorldDiplomacyStorage storage) => Indexes.Remove(storage);
-    internal static long InputLimit(WorldDiplomacyJob job, long configuredLimit) => Math.Min(configuredLimit,
-        WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress") ? CompressionInputLimit : DeclarationInputLimit);
+    internal static long InputLimit(WorldDiplomacyJob job, long configuredLimit) =>
+        WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress")
+            ? Math.Min(configuredLimit, CompressionInputLimit) : long.MaxValue;
     internal static long WindowBudget(WorldDiplomacyJob job, Func<string, int> estimateTokens)
     {
         long Count(string value) => Math.Max(0, estimateTokens?.Invoke(value ?? "") ?? (value?.Length ?? 0));
-        return Math.Max(0L, Math.Min(16000L, DeclarationInputLimit - Count(job?.SystemPrompt) - Count(job?.UserPrompt) - 4096L));
+        return Math.Max(0L, Math.Min(16000L, DeclarationContextBudget - Count(job?.SystemPrompt) - Count(job?.UserPrompt) - 4096L));
     }
     internal static string Build(WorldDiplomacyStorage storage, WorldDiplomacyJob job, int currentDay,
         long tokenBudget = 16000L, Func<string, int> estimateTokens = null, Func<string, float[]> embed = null)
