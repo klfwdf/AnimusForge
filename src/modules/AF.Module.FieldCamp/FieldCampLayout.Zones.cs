@@ -30,8 +30,9 @@ internal sealed partial class FieldCampLayout
 	}
 
 	/// <summary>
-	/// Puts walk-through dishes/food on the table that was just added. Items sit +-0.25 m along the
-	/// table's local x axis, inside the 0.6 m minimum depth of every pooled table whichever axis is long.
+	/// Puts walk-through dishes/food on the table that was just added, at signed offsets along the
+	/// table's yaw axis. The host re-applies each offset along the measured long side and clamps it
+	/// inside the rim, so the pooled tables' different shapes and pivots never leave items overhanging.
 	/// </summary>
 	private void SetTable(PropKind kind, int variant, params float[] along)
 	{
@@ -66,8 +67,7 @@ internal sealed partial class FieldCampLayout
 		for (int i = 0; i < 4; i++)
 		{
 			float y = FrontZoneBottom + 3.5f + i * 4f;
-			// i % 2 keeps the butts alternating board/target now that the pool's third entry is a clay pot.
-			Props.Add(new Prop { Kind = PropKind.Target, Position = Flank(sx, 0.92f, y), Yaw = YawOf(Inward(sx)), Variant = i % 2 });
+			Props.Add(new Prop { Kind = PropKind.Target, Position = Flank(sx, 0.92f, y), Yaw = YawOf(Inward(sx)), Variant = i });
 			Work(Flank(sx, 0.18f, y), Outward(sx), WorkKind.Archer);
 		}
 		Props.Add(new Prop { Kind = PropKind.TrainingRack, CultureId = home, Position = Flank(sx, 0.35f, Front - 2f), Yaw = 0f });
@@ -79,9 +79,6 @@ internal sealed partial class FieldCampLayout
 		Props.Add(new Prop { Kind = PropKind.WeaponHeap, Position = arrows, Yaw = 0.4f, Variant = 2 });
 		Work(arrows + Inward(sx) * 1.5f, Outward(sx), WorkKind.Pickup);
 		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.15f, Front - 2f), Yaw = 0.3f, Variant = 1 });
-		// Clay practice pots on stakes between the butts (pool falls back to boards when pots are missing).
-		for (int i = 0; i < 2; i++)
-			Props.Add(new Prop { Kind = PropKind.Target, Position = Flank(sx, 0.92f, FrontZoneBottom + 5.5f + i * 8f), Yaw = YawOf(Inward(sx)), Variant = 2 });
 	}
 
 	/// <summary>Right front: two tether lines with real horses, a trough and a hay cart.</summary>
@@ -109,8 +106,9 @@ internal sealed partial class FieldCampLayout
 		Work(hay + Inward(sx) * 1.9f, Outward(sx), WorkKind.Shovel);
 		Props.Add(new Prop { Kind = PropKind.Supply, Position = Flank(sx, 0.5f, FrontZoneBottom + 1.2f), Yaw = 0.7f, Variant = 0 });
 		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.62f, Front - 2.5f), Yaw = 0.2f, Variant = 3 });
-		// Tack and hides in the two palisade corners, >=4.4 m from every tethered horse.
-		Props.Add(new Prop { Kind = PropKind.Gear, Position = Flank(sx, 0.97f, Front - 1.6f), Yaw = 0.3f, Variant = 0 });
+		// Tack and hides along the front palisade: >=4.4 m from every tethered horse and >=2.2 m
+		// from the corner torch, corner sentry and the fodder clutter.
+		Props.Add(new Prop { Kind = PropKind.Gear, Position = Flank(sx, 0.75f, Front - 1.2f), Yaw = 0.3f, Variant = 0 });
 		Props.Add(new Prop { Kind = PropKind.Gear, Position = Flank(sx, 0.4f, Front - 1.5f), Yaw = 1.2f, Variant = 1 });
 		Vec2 logs = Flank(sx, 0.15f, Front - 2.5f);
 		Work(logs + Inward(sx) * 1.5f, Outward(sx), WorkKind.Chop);

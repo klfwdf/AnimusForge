@@ -672,8 +672,11 @@ public sealed partial class FieldCampMissionLogic
             if (!prepared && _campRouteBudget <= 0)
             {
                 bool returnAfterVisit = entry.Returning;
+                // A route-budget deferral is not a failed walk home; do not let it spend a station retry.
+                int homeRetries = entry.HomeRetries;
                 SettleCampAgent(entry, blocked: true);
                 entry.Returning = returnAfterVisit;
+                entry.HomeRetries = homeRetries;
                 entry.RouteQueued = true;
                 entry.NextWanderTime = _elapsed + 0.5f;
                 return;

@@ -52,7 +52,7 @@ internal static class FieldCampProps
 		[FieldCampLayout.PropKind.Fire] = new[] { "burning_campfire", "campfire" },
 		[FieldCampLayout.PropKind.Flag] = new[] { "flag_pole_big", "flagpole_a" },
 		[FieldCampLayout.PropKind.Standard] = new[] { "flagpole_a", "flag_pole_big" },
-		[FieldCampLayout.PropKind.Supply] = new[] { "bd_sack_heap_a", "bd_barrel_heap_a", "crate_a", "bd_sack_heap_b", "crate_b", "bd_barrel_a", "crate_c", "bd_barrel_heap_b", "bd_sack_a", "bd_sack_heap_c", "bd_barrel_e", "bd_barrel_d", "bd_sack_c", "bd_barrel_f", "crate_a_empty" },
+		[FieldCampLayout.PropKind.Supply] = new[] { "bd_sack_heap_a", "bd_barrel_heap_a", "crate_a", "bd_sack_heap_b", "crate_b", "bd_barrel_a", "crate_c", "bd_barrel_heap_b", "bd_sack_a", "bd_sack_heap_c", "bd_barrel_e", "bd_barrel_d", "bd_sack_c", "bd_barrel_f" },
 		[FieldCampLayout.PropKind.Wall] = new[] { "fence_old_a1", "fence_old_a2", "fence_old_b1", "fence_a" },
 		[FieldCampLayout.PropKind.Bed] = new[] { "bed_straw_a", "bed_straw_b", "bed_straw_c", "bed_straw_d" },
 		[FieldCampLayout.PropKind.Rack] = new[] { "weapon_rack_a", "weapon_rack_vlandia_a", "weapon_rack_sturgia_a" },
@@ -66,7 +66,9 @@ internal static class FieldCampProps
 		[FieldCampLayout.PropKind.Cart] = new[] { "bd_cart_a", "bd_cart_b", "bd_cart_heap_a" },
 		[FieldCampLayout.PropKind.Chest] = new[] { "bd_chest_a", "chest_empire_a" },
 		[FieldCampLayout.PropKind.Torch] = new[] { "torch_outdoors_a_burning", "torch_long_a" },
-		[FieldCampLayout.PropKind.Target] = new[] { "archery_practice_target", "bd_target_board", "pot_archery_target_breakable" },
+		// pot_archery_target_breakable is excluded: its DestructableComponent initializes only in OnInit,
+		// which camp spawns (callScriptCallbacks=false) never run, so a hit would touch null state.
+		[FieldCampLayout.PropKind.Target] = new[] { "archery_practice_target", "bd_target_board" },
 		[FieldCampLayout.PropKind.TrainingRack] = new[] { "weapon_rack_a", "weapon_heap_sword_a" },
 		[FieldCampLayout.PropKind.HorseBarrier] = new[] { "horse_barrier_a" },
 		[FieldCampLayout.PropKind.Trough] = new[] { "bd_trough_a" },
@@ -190,7 +192,7 @@ internal static class FieldCampProps
 			var furnitureSizes = new Dictionary<string, BoundingBox>(StringComparer.Ordinal);
 			var doorwayTurns = new Dictionary<string, int>(StringComparer.Ordinal);
 			var furnishingPlans = new Dictionary<int, List<FieldCampLayout.Prop>>();
-			var tableTops = new Dictionary<int, Vec3>();
+			var tableTops = new Dictionary<int, TableTop>();
 			for (int i = 0; i < layout.Props.Count; i++)
 			{
 				FieldCampLayout.Prop item = layout.Props[i];
@@ -243,12 +245,16 @@ internal static class FieldCampProps
 				MatrixFrame frame = FrameFor(scene, campFrame, prop.Position * scale, prop.Yaw, prop.Scale);
 				if (prop.StackOn > 0)
 				{
-					// Rests on the measured top of an earlier table, offset from its mesh centre (artist
-					// pivots are not centred); skipped when that table failed or measured as no table.
-					if (!tableTops.TryGetValue(prop.StackOn, out Vec3 top)) continue;
-					Vec2 along = (prop.Position - layout.Props[prop.StackOn - 1].Position) * scale;
-					Vec3 offset = campFrame.rotation.TransformToParent(new Vec3(along.x, along.y, 0f));
-					frame.origin = top + new Vec3(offset.x, offset.y, 0f);
+					// Rests on the measured top of an earlier table, from its mesh centre (artist pivots are
+					// not centred) along its measured long side, clamped inside the rim; skipped when that
+					// table failed or measured as no table.
+					if (!tableTops.TryGetValue(prop.StackOn, out TableTop top)) continue;
+					FieldCampLayout.Prop table = layout.Props[prop.StackOn - 1];
+					Vec2 layoutOffset = prop.Position - table.Position;
+					// Signed distance along the table's yaw axis, as written by FieldCampLayout.SetTable.
+					float offset = (layoutOffset.x * MathF.Cos(table.Yaw) + layoutOffset.y * MathF.Sin(table.Yaw)) * scale;
+					offset = Math.Max(-top.Reach, Math.Min(top.Reach, offset));
+					frame.origin = top.Centre + top.Along * offset;
 				}
 				GameEntity entity = Spawn(scene, pool, poolKey, prop.Variant, frame, !WalkThrough.Contains(prop.Kind), resolved, failed);
 				if (entity != null)
@@ -680,7 +686,16 @@ internal static class FieldCampProps
 	}
 
 	/// <summary>World height of a placed table's top; set-up only, one bounding-box read per table.</summary>
-	private static void RecordTableTop(GameEntity table, MatrixFrame frame, int anchor, Dictionary<int, Vec3> tops)
+	private struct TableTop
+	{
+		internal Vec3 Centre;
+		/// <summary>World direction of the measured long side.</summary>
+		internal Vec3 Along;
+		/// <summary>Half the long side less a 0.2 m rim, so items never overhang.</summary>
+		internal float Reach;
+	}
+
+	private static void RecordTableTop(GameEntity table, MatrixFrame frame, int anchor, Dictionary<int, TableTop> tops)
 	{
 		try
 		{
@@ -688,7 +703,16 @@ internal static class FieldCampProps
 			float height = box.max.z - box.min.z;
 			// A 0.4-1.3 m top is a real table; anything else (a trunk, a failed measure) carries nothing.
 			if (!box.min.IsValid || !box.max.IsValid || height < 0.4f || height > 1.3f) return;
-			tops[anchor] = frame.TransformToParent(new Vec3((box.min.x + box.max.x) * 0.5f, (box.min.y + box.max.y) * 0.5f, box.max.z));
+			float x = box.max.x - box.min.x, y = box.max.y - box.min.y;
+			Vec3 along = frame.rotation.TransformToParent(x >= y ? new Vec3(1f, 0f, 0f) : new Vec3(0f, 1f, 0f));
+			along.z = 0f;
+			if (along.LengthSquared < 0.0001f) return;
+			tops[anchor] = new TableTop
+			{
+				Centre = frame.TransformToParent(new Vec3((box.min.x + box.max.x) * 0.5f, (box.min.y + box.max.y) * 0.5f, box.max.z)),
+				Along = along.NormalizedCopy(),
+				Reach = Math.Max(0f, Math.Max(x, y) * 0.5f - 0.2f)
+			};
 		}
 		catch (Exception ex)
 		{

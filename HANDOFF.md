@@ -1,3 +1,7 @@
+## 2026-11-04 营地改动审查修复
+
+审查24f1570691..ddf1b01c78营地改动后修复：移除pot_archery_target_breakable（DestructableComponent只在OnInit初始化，营地以callScriptCallbacks=false生成，受击会访问空状态）及其两个靶位，射箭靶Variant恢复为i；移除crate_a_empty（藏身处中常叠放，中位高0.14 m）；马厩前角Gear离角落哨位/火把过近，移到距哨位2.34 m处；街道营火柴堆从2.5 m外移到3 m（原距90°圈座0.9 m）；路线预算排队不再消耗工人回岗重试次数；桌面叠放改为沿实测长边、按带符号偏移并夹在桌沿0.2 m内，避免窄桌悬空；删除FireRingSeats常量改用数组长度。PropsPlacement 30、GroundRoute 87、Restart 19、review_source_contracts通过。未编译游戏DLL、未部署、未实机。
+
 ## 2026-11-04 营地复用原版藏身处摆设
 
 用户要求把藏身处摆设全部加进营地。对比SandBox 15个藏身处场景与营地道具池，逐个核对Native/Prefabs定义、physics shape和场景中相对地面高度，排除悬挂/高处物件（bd_cloth_hanging_rope、bd_wall_baskets_a、bd_rope_sturgia_a、bd_flag_4、weapon_heap_arrow_a等）。新增PropKind Hearth/Rug/Ash/Dishes/Food（穿透）与Gear/Wreck（实体），Prop新增StackOn：叠放物按已放置桌子的实测包围盒顶面中心定位，桌子失败或高度不在0.4-1.3 m时跳过。现有Supply/Bedroll/Woodpile/Clutter/Table/Target池末尾追加同类藏身处预制件。布局：每个街道营火加石圈和两侧地上碗具；厨房两火加石圈、两张工作桌上放食物；铁匠工作台与医疗台放碗具；帐篷口休息位铺毛皮/地毯；马厩两角、铁匠区、后勤区加绳索/车轮/兽皮与破车；后勤区加冷火堆；射箭场加两个陶罐靶。新位置与工位、马位、道具的间距已计算（马位≥4.4 m，其余≥2 m，营火碗具距座位0.97 m）。FieldCampPropsPlacementTests 30项、GroundRoute 87项、Restart 19项通过；FieldCampSiteTests与ContinuationTests编译失败在HEAD上即存在。未编译游戏DLL、未部署、未实机。
