@@ -316,6 +316,9 @@ internal sealed partial class FieldCampLayout
 	}
 
 	/// <summary>A fire in the lane between two tent rows: something cooking, a bench on each side, bedrolls by the tents.</summary>
+	private static readonly float[] FireRingAngles = { 45f, 90f, 135f, 225f, 270f, 315f };
+	private const int FireRingSeats = 6;
+
 	private void PlaceStreetFire(float lane, float gy, float inner, float outer, string culture, int index)
 	{
 		Vec2 fire = new Vec2(lane, gy);
@@ -330,12 +333,14 @@ internal sealed partial class FieldCampLayout
 				BenchSlots.Add(new Slot { Kind = SlotKind.Bench, Position = new Vec2(bx - b * 0.3f, gy + seat * 0.55f), Facing = new Vec2(-b, 0f), Work = WorkKind.Sit });
 			}
 		}
-		// Fire seats need Work=Sit: residents without a WorkKind are converted to wanderers at spawn.
-		FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + new Vec2(0f, 1.6f), Facing = new Vec2(0f, -1f), Work = WorkKind.Sit });
-		FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + new Vec2(0f, -1.6f), Facing = new Vec2(0f, 1f), Work = WorkKind.Sit });
-		// Diagonal seats close the ring; they stay 1.2 m from the fire and clear of the bench seats.
-		for (int d = -1; d <= 1; d += 2)
-			FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + new Vec2(d * 1.2f, d * 1.1f), Facing = new Vec2(-d, -d).Normalized(), Work = WorkKind.Sit });
+		// A ring of ground seats 1.6 m out, every 45 degrees except toward the two benches (0/180):
+		// neighbours are 1.2 m apart. Work=Sit is required, or spawn turns the resident into a wanderer.
+		for (int k = 0; k < FireRingSeats; k++)
+		{
+			float a = FireRingAngles[k] * MathF.PI / 180f;
+			Vec2 offset = new Vec2(MathF.Cos(a), MathF.Sin(a)) * 1.6f;
+			FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + offset, Facing = (-offset).Normalized(), Work = WorkKind.Sit });
+		}
 		// Firewood or kit up the lane, beyond the 1.6 m fire seats and short of the tent doorway aisles.
 		Props.Add(new Prop { Kind = index % 2 == 0 ? PropKind.Woodpile : PropKind.Clutter, CultureId = culture,
 			Position = fire + new Vec2(0f, 2.5f), Yaw = 0.3f * index, Variant = index });		float[] columns = { inner, outer };
