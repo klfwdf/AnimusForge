@@ -160,6 +160,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (!_host.WorldDiplomacyEnabled() || string.IsNullOrEmpty(job.SuspendedReason)
             || IsSpeechReviewJob(job) || !string.IsNullOrEmpty(job.DialogueArrangementId)) return;
         var round = ResolveRound(job.RoundId);
+        if (ResumeRetiredInputLimit(job, round)) return;
         bool planningHeld = PlanningRecoveryHeld(job);
         if (!planningHeld && ResumeRejectedStory(job)) return;
         bool exhaustedDraftRepair = IsAdmissionProtocolFailure(job, job.SuspendedReason)
@@ -343,6 +344,35 @@ internal sealed partial class WorldDiplomacyOrchestration
         }
         MarkEventDirty(round);
         _host.Log("diplomacy.technical_request_resumed job=" + job.JobId + " attempts=" + job.TechnicalRecoveryAttempts + " changed=" + changed);
+    }
+
+    private bool ResumeRetiredInputLimit(WorldDiplomacyJob job, WorldDiplomacyRound round)
+    {
+        string reason = job.SuspendedReason ?? "";
+        if (job.Kind == "compress" || !IsLiveRound(round) || !DiplomacyEventRules.IsEvent(round)
+            || !(reason.StartsWith("event_required_evidence_budget_exceeded:", StringComparison.Ordinal)
+                || reason.StartsWith("event_required_input_budget_exceeded:", StringComparison.Ordinal)
+                || reason.StartsWith("input budget exceeded before send:", StringComparison.Ordinal)
+                || reason.StartsWith("declaration input budget exceeded before send:", StringComparison.Ordinal))) return false;
+        if (round.TechnicalHoldReason is "event_document_execution_uncertain" or "legacy_unverified_work_preserved"
+            || Storage.EventEffects.Any(x => x.EventId == round.RoundId && x.Status is "applying" or "uncertain")) return false;
+        // Consume only the retired local rejection. Keep draft, review stage,
+        // evidence and unrelated failure allowances for normal send revalidation.
+        job.SuspendedReason = "";
+        job.RetryAfterUtcTicks = job.NextRecoveryProbeUtcTicks = 0;
+        job.RequestPreparationPending = job.AwaitingHistoryCompression = false;
+        job.InputBudgetHistoryTargetTokens = 0;
+        if (job.MaterialRepairFeedback == reason) job.MaterialRepairFeedback = "";
+        if (round.TechnicalHoldReason == reason && !Storage.Jobs.Any(x => x.RoundId == round.RoundId
+                && !string.IsNullOrEmpty(x.SuspendedReason)))
+        {
+            AccrueTechnicalPause(round);
+            round.TechnicalHoldStartedHour = -1;
+            round.TechnicalHoldReason = round.TechnicalRequestHoldReason = "";
+        }
+        MarkEventDirty(round);
+        _host.Log("diplomacy.retired_input_limit_resumed job=" + job.JobId + " kind=" + job.Kind);
+        return true;
     }
 
     private void AccrueTechnicalPause(WorldDiplomacyRound round)

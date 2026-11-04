@@ -140,9 +140,9 @@ internal static class PlanningRepairReplay
         o.PrepareSharedRequest(j);
         int reads = h.MaterialReads; string frozen = j.EventMaterialSnapshot;
         for (int n = 0; n < 4; n++) Resume(o, j);
-        Test.True(j.RequestPreparationPending && j.SuspendedReason.StartsWith("event_required_evidence_budget_exceeded:")
-            && j.PlanningFailureAttempts == 1 && j.MaterialSearchPass == 0 && j.EventMaterialSnapshot == frozen && reads == h.MaterialReads,
-            "oversized mandatory trigger stops on first gate without switching candidates or repeated preparation");
+        Test.True(!j.RequestPreparationPending && j.SuspendedReason.Length == 0
+            && j.PlanningFailureAttempts == 0 && j.MaterialSearchPass == 0 && j.EventMaterialSnapshot == frozen && reads == h.MaterialReads,
+            "oversized mandatory trigger remains sendable without switching candidates or repeated preparation");
     }
 
     private static void SupplementalBudget()
@@ -165,8 +165,8 @@ internal static class PlanningRepairReplay
             if (oversizeMandatory)
             {
                 Resume(o, j);
-                Test.True(j.SuspendedReason.StartsWith("event_required_evidence_budget_exceeded:") && h.MaterialReads == reads + 1
-                    && j.EventMaterialSnapshot.Contains("required:a"), "oversized mandatory addition is retained and stops before capturing another country");
+                Test.True(j.SuspendedReason.Length == 0 && j.AdmissionSupplementedCountries.Count == 2
+                    && j.EventMaterialSnapshot.Contains("required:a") && j.EventMaterialSnapshot.Contains("required:b"), "oversized mandatory evidence for both countries is retained and allowed to send");
             }
             else
             {
