@@ -1,19 +1,3 @@
-## 2026-11-05 篡位入场改战斗装备
-
-CoupHallPlayerSpawnPrefix改为同时接收SpawnPlayer的civilianEquipment：武装篡位（mission logic的IsArmedCoup，或logic尚未挂上时_pendingMissionEntry.ArmedCoup）的街道与大厅入场一律civilianEquipment=false，大厅仍改用attacker_infantry出生点；非篡位场景直接返回，原版行为不变。随84f1ff202c之后的一键编译（双实现+coup seam gate）通过，未实机。
-
-## 2026-11-05 篡位放开冲锋、篡位禁闲聊、喊话框屏蔽RTS快捷键
-
-篡位中选中编队后点敌方编队图标崩溃：原版GauntletOrderUIHandler在点敌方图标时取order_movement_charge后直接ExecuteAction不判空，而AF的FilterInterventionVisualOrdersPostfix在SETS/篡位/GCCZ指挥场景中删掉了全部冲锋类指令，取到null（静态链路推断，未实机抓栈）。修改：新增AllowsOffensiveOrdersInArmedCoup（非GCCZ占领且TryGetArmedCoupSceneForExternal为真），篡位时跳过冲锋指令过滤和BlockOffensiveNativeOrderPrefix拦截；GCCZ占领、普通SETS、贵族押送不变。闲聊：IsAmbientPeaceScene只按location白名单（center/lordshall）判和平，篡位不带原版战斗标记被放行；篡位改为不开新闲聊，进行中的非营地闲聊结束（settlement_battle）。普通SETS冲突未改。场景喊话：RTS Camera/Command System的GameKeySequenceAlternative在input为null时读全局Input，绕过弹窗InputRestrictions（L键开RTS菜单）；新增RtsCameraHotkeyInputGuard，对两份内嵌类型的IsKeyDown/IsKeyPressed/IsKeyReleased(IInputContext,int)加prefix，AF文本弹窗打开时返回false，RTS后加载时经AssemblyLoad补装，签名不符只记日志。worktree里CoupHallPlayerSpawnPrefix改战斗装备的改动不是本轮所写，未纳入本提交。1.3（_deps_auto）/1.4实现在.tmp隔离目录编译0错误；CoupHallDeploymentTests夹具在HEAD同样编不过（缺TextObject/SiegeAftermathUiText替身），非本轮引入。未编Bootstrap、未部署、未实机。
-
-## 2026-11-05 外交审查第二轮修复
-
-在合并远端（宣言32k本地拒发已移除）之后修复剩余审查项。补丁：援助接管逐个注册，1.3显式接口实现经接口映射解析，1.3没有的DenyCallToWarAgreement只记日志；原生宣战/议和准入、VoteDeal、宣言入口按目标逐个try，VoteDeal进入时即置已应用，不再在RegisterEvents中叠加补丁；外交开关读取异常改为回原版；永久同盟守卫在外交关闭时全部放行；删除从未注册、已被DeclareWarAction.ApplyInternal覆盖的FactionManager.DeclareWar补丁（同步三处清单）；注册议和近期保护（仅外交开启时）和附庸日志过滤补丁。解析：标签action/move只接受成员名，拒绝数字与逗号组合；别名不能变成立即执行意图（如裸"war"）；分析目标国不存在时不再沿用旧目标；无目标职务不再补默认目标。执行：赔款超出付款方繁荣度上限时拒绝（与对话提示同步改为"上限即系统上限"），提案结盟加灭国与原版同盟数上限检查，口头结盟/贸易交战时拒绝；解盟/取消贸易按设计文档保持单方行为，未加统治者限制。状态机：重开轮次的continue状态也会得到终结状态；政策信号超限保留最新；信号上下文按键去重；协议执行失败的挂起绑定受理公文，旧的无ID挂起在失败状态解除后自动释放；空列表/空任务判空。数据：附庸灭国清理改为按分隔符整词匹配（empire不再命中empire_w），结算日按协议ID清理；玩家附庸增加循环检查；VoteDeal保存失败不再清空存活数据、保存时丢弃已消费交易、强制投票按影响力降级、ShouldBeCancelled无跟踪时直接返回；历史片段原文变化时丢弃旧片段并重新开始而不是永久挂起；地图通知标题/摘要转义花括号；TextRules.Limit不切代理对；王国档案生成已退役，DevUi不再提供无效的重新生成。未改：MigrateResultSettlementStateIfNeeded由远端随旧结算流程一并退役，不接回；兼并中途失败回滚未做。新增AuditRoundTwoReplay（--audit-round-two，11项通过）；--request-history、--aid-request、--country-admission、--theme-exploration、--player-material-optimization、--event-structure、--baseline-restoration、--event-convergence、--history-fragment、--input-limit-removal、--planning-repair、--runtime-maintenance、--lobbyist、--bilateral-direct及口头结盟/贸易/解盟/取消贸易/议和测试通过；全量运行在BoundMatterRecovery、--event-memory末尾PolicyStyleNotice、--material-supply/--material-country、IntentBoundary、DiplomacyModulePortTests的失败点与HEAD基线工作树完全相同；OralDeclareWar与EffectReceipts测试工程在HEAD即编译不过。未编译1.3/1.4/Bootstrap，未部署、未实机。
-
-## 2026-11-05 生图提示词优化（死条目清理、导演/生图规则拆分、正面化、优先级表、画风平衡）
-
-清理：删除无引用的16条Scene_*、Director_1010、Facts_CampaignEra；Conversation_79-84与73-78文本相同，合并MapIdleToPoseDirective/MapActionToPoseDirective为MapAnimationToPoseDirective；ImageClient_857改用Director_983。拆分：生图契约不再拼入导演用的ConversationActionPriority/LocationGrounding/CrowdCountPriority，改为新增的Fidelity_ConversationImageAction/Location/Crowd（只写画面结果，保留截图待机姿势、实测高差、附近人数、围城远景等引用事实标题的约束）；Scene/MapConversationScene参考说明同步；Fidelity_29/70/75改为以导演正文为准。正面化：ImageClient_874/876/892/909/910/916/917/918/921、Fidelity_10/17/58/61/64改为正面表述，负面词尾标题改为“成图质量避免项”；BuiltinNegativePrompt未动。优先级：新增Director_PriorityOrder注入四套导演系统提示词，ImageClient_873去掉“最高优先级”；Director_956/958/959/961删去与ConversationActionPriority/CrowdCountPriority重复的同意即发生、截图定位、人数规则，949删去与Fidelity_57重复的双手下垂句；背盾规则保留。画风：Vivid/Natural补全描述，DefaultCustomStyle去掉masterpiece/8k（已存档玩家值不变）。测试同步：J15 IllustratorNoticeLocalizationContractTests改为约束实际发送的SceneCapture_*键并通过；ReviewRegressionAudit/PromptRoutingAudit/ClientEndpointAudit断言更新但未运行（ReviewRegressionAudit对属性调用GetRawConstantValue，HEAD上已不可运行）。l10n_gate与check_bilingual_tables通过，中英键与占位符一致。LocalizationCardSlice等静态测试在HEAD同样失败，非本轮引入。未编译1.3/1.4/Bootstrap，未部署、未实机对比出图。
-
 ## 2026-11-05 营地出发名额随人数扩容、到站改为每帧结算
 
 用户担心人多时只有少数人走动。原先每0.5 s只给2人算路线，115人营地起身/回程/干完活需求约4次/秒、恰在上限，400人时超3倍；到站判断只在每0.5 s 20人的批次里，400人时到站后最长约10 s才开始动作。修改：CampRouteBudgetPerBatch按人数每40人+1、2-8条/0.5 s（实测营地规模网格单条路线平均0.29 ms、最坏4.7 ms）；到站逻辑抽为HasArrived/ArriveAtCampTarget，AdvanceCampWalks每帧先结算到站，upkeep批次保留兜底。1.4实现仅编译0错误，review_source_contracts通过；1.3未编、未部署、未实机。
@@ -25,10 +9,6 @@ CoupHallPlayerSpawnPrefix改为同时接收SpawnPlayer的civilianEquipment：武
 ## 2026-11-05 营地闲逛仿城镇路人、同伴岗位动作
 
 参照原版WalkingBehavior/AnimationPoint：闲逛停留由6-14 s改为20-45 s（原版点位多为50-320 s，按2路线/0.5 s预算取折中）；到站后SettleWanderer：2.5 m内有空闲同伴则面对面，自己用说话动作、闲逛的对方用倾听动作并延长停留，干活的对方只转头；否则面朝12 m内最近营火。巡逻点在布局时设朝向（最近营火，否则朝主路）。同伴岗位补WorkKind：斥候新增Lookout张望、工程师Repair、军需官Write（笔和本子）、医生Wash；无巡逻点的同伴先占士兵剩下的营火圈/工位，再退到指挥帐篷前等候位。1.4实现仅编译通过（0错误）；1.3按项目规则只能走一键脚本，未编；未部署、未实机。PropsPlacement 30、GroundRoute 87、Restart 19、review_source_contracts通过。
-
-## 2026-11-05 外交检索修正
-
-按审查结论修正外交召回：向量门槛0.65改为与周报一致的bekko值0.40；embedding超时/失败降级为词法而不再判宣言失败；记录向量整批提交、已完成的保留，对话渠道不再在调用线程上同步推理，直接用已完成向量；NPC对玩家议程空话题时以议程种子/背景/双方已知公文标题作检索词，检索词限1600字；ID加分改为精确标记匹配；援助完整记录仅限求援国与接受方，第三国只见请求，答复送达后只见状态，费用与付款方不外泄，援助原地改状态时置脏；威胁/事件结果类受保护事实对当事国可召回；世界书多国命中记入known_by_all，按国轮询分配8000预算；文档索引同数量原地替换时重建；预算文档字符上限改为16,000。新增RetrievalFixReplay；--event-memory中检索断言全过，--request-history、--aid-request、--country-admission、--theme-exploration、--player-material-optimization、--event-structure通过；PolicyStyleNoticeReplay、--material-supply/--material-country的NPC novelty断言与DiplomacyModulePortTests的J17绑定门在原HEAD同样失败，非本轮引入。未编译1.3/1.4/Bootstrap，未部署、未实机。
 
 ## 2026-11-04 营地改动审查修复
 
