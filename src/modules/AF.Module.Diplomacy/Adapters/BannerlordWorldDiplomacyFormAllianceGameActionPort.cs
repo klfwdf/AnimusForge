@@ -89,6 +89,11 @@ public sealed class BannerlordWorldDiplomacyFormAllianceGameActionPort
                 return Receipt(WorldDiplomacyFormAllianceExecutionStatus.AllianceBehaviorUnavailable, command,
                     "diplomacy.form_alliance.behavior_unavailable");
             }
+            if (FactionManager.IsAtWarAgainstFaction(playerKingdom, npcKingdom))
+            {
+                return Receipt(WorldDiplomacyFormAllianceExecutionStatus.RejectedBeforeStart, command,
+                    "diplomacy.form_alliance.at_war");
+            }
             if (alliance.IsAllyWithKingdom(playerKingdom, npcKingdom))
             {
                 return Receipt(WorldDiplomacyFormAllianceExecutionStatus.AlreadyAllied, command,

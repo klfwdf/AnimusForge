@@ -27,17 +27,27 @@ internal static class KingdomDiplomacyDeclarationEntry
 
     internal static void EnsurePatched(Harmony harmony)
     {
-        if (_patched) return;
-        harmony.Patch(AccessTools.Method(typeof(GauntletMovie), nameof(GauntletMovie.Load)),
-            postfix: new HarmonyMethod(typeof(KingdomDiplomacyDeclarationEntry), nameof(MovieLoaded)));
-        foreach (string name in new[] { "OnSetCurrentDiplomacyItem", "RefreshValues" })
-            harmony.Patch(AccessTools.Method(typeof(KingdomDiplomacyVM), name),
-                postfix: new HarmonyMethod(typeof(KingdomDiplomacyDeclarationEntry), nameof(PageRefreshed)));
-        harmony.Patch(AccessTools.Method(typeof(KingdomManagementVM), "OnFinalize"),
-            prefix: new HarmonyMethod(typeof(KingdomDiplomacyDeclarationEntry), nameof(PageFinalized)));
-        harmony.Patch(AccessTools.Method(typeof(GauntletKingdomScreen), "OnFrameTick"),
-            prefix: new HarmonyMethod(typeof(KingdomDiplomacyDeclarationEntry), nameof(KingdomInputAllowed)));
+        if (_patched || harmony == null) return;
+        // One attempt; each hook is independent so a missing target never re-stacks the others.
         _patched = true;
+        Patch(harmony, typeof(GauntletMovie), nameof(GauntletMovie.Load), nameof(MovieLoaded), false);
+        foreach (string name in new[] { "OnSetCurrentDiplomacyItem", "RefreshValues" })
+            Patch(harmony, typeof(KingdomDiplomacyVM), name, nameof(PageRefreshed), false);
+        Patch(harmony, typeof(KingdomManagementVM), "OnFinalize", nameof(PageFinalized), true);
+        Patch(harmony, typeof(GauntletKingdomScreen), "OnFrameTick", nameof(KingdomInputAllowed), true);
+    }
+
+    private static void Patch(Harmony harmony, Type type, string method, string hook, bool prefix)
+    {
+        try
+        {
+            MethodInfo target = AccessTools.Method(type, method);
+            if (target == null) { Logger.Log("DiplomacyDeclarationEntry", "Patch target missing: " + type.Name + "." + method); return; }
+            var patch = new HarmonyMethod(typeof(KingdomDiplomacyDeclarationEntry), hook);
+            if (prefix) harmony.Patch(target, prefix: patch);
+            else harmony.Patch(target, postfix: patch);
+        }
+        catch (Exception ex) { Logger.Log("DiplomacyDeclarationEntry", "Patch failed: " + type.Name + "." + method + ": " + ex.Message); }
     }
 
     private static bool KingdomInputAllowed() => !WorldDiplomacyComposePopup.IsOpen;

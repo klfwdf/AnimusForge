@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -94,10 +95,26 @@ public sealed partial class WorldDiplomacyBehavior
         PatchAidMethod(harmony, typeof(AllianceCampaignBehavior), "DenyCallToWarAgreement", nameof(Patch_Aid_Deny_Prefix));
         PatchAidMethod(harmony, typeof(AcceptCallToWarAgreementDecision), "ApplyChosenOutcome", nameof(Patch_Aid_AcceptOutcome_Prefix));
     }
+    // Each target patches independently: 1.3 implements three proposal hooks as explicit
+    // IAllianceCampaignBehavior members and has no DenyCallToWarAgreement at all.
     private static void PatchAidMethod(Harmony harmony, Type type, string method, string prefix)
     {
-        var target = AccessTools.Method(type, method) ?? throw new InvalidOperationException("aid_patch_target_missing:" + method);
-        harmony.Patch(target, prefix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), prefix));
+        try
+        {
+            var target = ResolveAidTarget(type, method);
+            if (target == null) { Log("aid_patch_target_absent:" + method); return; }
+            harmony.Patch(target, prefix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), prefix));
+        }
+        catch (Exception ex) { Log("aid_patch_failed:" + method + ":" + ex.Message); }
+    }
+    private static MethodInfo ResolveAidTarget(Type type, string method)
+    {
+        var direct = AccessTools.Method(type, method);
+        if (direct != null || !typeof(IAllianceCampaignBehavior).IsAssignableFrom(type)) return direct;
+        var map = type.GetInterfaceMap(typeof(IAllianceCampaignBehavior));
+        for (int i = 0; i < map.InterfaceMethods.Length; i++)
+            if (map.InterfaceMethods[i].Name == method) return map.TargetMethods[i];
+        return null;
     }
     private sealed partial class OrchestrationHost : IDiplomacyAidHost
     {

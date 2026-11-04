@@ -137,6 +137,22 @@ internal static class StartupPatchComposition
 			}
 			try
 			{
+				harmony.CreateClassProcessor(typeof(Patch_Diplomacy_RegisterMakePeaceAction)).Patch();
+			}
+			catch (Exception exRecentPeace)
+			{
+				Logger.LogTrace("SubModule", ">>> Patch_Diplomacy_RegisterMakePeaceAction failed: " + exRecentPeace.Message);
+			}
+			try
+			{
+				harmony.CreateClassProcessor(typeof(Patch_Vassalage_CampaignInformationManager_NewLogEntryAdded)).Patch();
+			}
+			catch (Exception exVassalLog)
+			{
+				Logger.LogTrace("SubModule", ">>> Patch_Vassalage_CampaignInformationManager_NewLogEntryAdded failed: " + exVassalLog.Message);
+			}
+			try
+			{
 				NpcTributeVassalageBehavior.RegisterHarmonyPatches(harmony);
 			}
 			catch (Exception ex6b2)

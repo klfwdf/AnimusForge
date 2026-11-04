@@ -145,13 +145,20 @@ namespace AnimusForge
 			if (s_globalPatchesApplied) return;
 			if (s_globalPatchesInProgress) return;
 			s_globalPatchesInProgress = true;
+			// One attempt per process: a failed hook is logged, never re-stacked by later RegisterEvents.
+			s_globalPatchesApplied = true;
+			void Guard(string name, Action patch)
+			{
+				try { patch(); }
+				catch (Exception ex) { Logger.Log("VoteDeal", "[Harmony] " + name + " patch failed: " + ex.Message); }
+			}
 			try
 			{
 				Harmony harmony = new Harmony("com.AnimusForge.votedeal");
-				harmony.Patch(
+				Guard("BuildShoutPromptContextForExternal", () => harmony.Patch(
 					typeof(MyBehavior).GetMethod("BuildShoutPromptContextForExternal",
 						BindingFlags.Public | BindingFlags.Static),
-					postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_BuildContext_Postfix)));
+					postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_BuildContext_Postfix))));
 
 				// DetermineSupport is abstract → cannot patch base directly.
 				// Enumerate all concrete subclasses and patch each override, like BellumCivile does.
@@ -188,9 +195,9 @@ namespace AnimusForge
 					nameof(KingdomDecision.DetermineSupportOption));
 				if (determineSupportOptionMethod != null)
 				{
-					harmony.Patch(
+					Guard("DetermineSupportOption", () => harmony.Patch(
 						determineSupportOptionMethod,
-						prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_DetermineSupportOption_Prefix)));
+						prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_DetermineSupportOption_Prefix))));
 					Logger.Log("VoteDeal", "[Harmony] KingdomDecision.DetermineSupportOption vote-deal fulfillment hook applied.");
 				}
 				else
@@ -213,9 +220,9 @@ namespace AnimusForge
 				{
 					Logger.Log("VoteDeal", $"[BilateralDiplomacy] AddDecision prefix patch failed: {ex.Message}");
 				}
-				harmony.Patch(
+				Guard("Kingdom.AddDecision delay", () => harmony.Patch(
 					typeof(Kingdom).GetMethod("AddDecision"),
-					postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_AddDecision_Delay_Postfix)));
+					postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_AddDecision_Delay_Postfix))));
 				Logger.Log("VoteDeal", "[Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).");
 
 				try
@@ -257,9 +264,9 @@ namespace AnimusForge
 				MethodInfo needsPlayerResolutionGetter = AccessTools.PropertyGetter(typeof(KingdomDecision), nameof(KingdomDecision.NeedsPlayerResolution));
 				if (needsPlayerResolutionGetter != null)
 				{
-					harmony.Patch(
+					Guard("NeedsPlayerResolution", () => harmony.Patch(
 						needsPlayerResolutionGetter,
-						postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecision_NeedsPlayerResolution_Postfix)));
+						postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecision_NeedsPlayerResolution_Postfix))));
 					Logger.Log("VoteDeal", "[Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.");
 				}
 				else
@@ -290,39 +297,38 @@ namespace AnimusForge
 				}
 
 				// ── Block ForceDecideDecision when TriggerTime is still future ──
-				Type kingdomMgmtVmType = typeof(KingdomManagementVM);
-				if (kingdomMgmtVmType != null)
+				Guard("ForceDecideDecision", () =>
 				{
 					harmony.Patch(
-						kingdomMgmtVmType.GetMethod("ForceDecideDecision", BindingFlags.NonPublic | BindingFlags.Instance),
+						typeof(KingdomManagementVM).GetMethod("ForceDecideDecision", BindingFlags.NonPublic | BindingFlags.Instance),
 						prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_ForceDecideDecision_Block_Prefix)));
 					Logger.Log("VoteDeal", "[Harmony] ForceDecideDecision block patch applied.");
-				}
+				});
 
-				harmony.Patch(
+				Guard("NewMapNoticeAdded", () => harmony.Patch(
 					typeof(CampaignInformationManager).GetMethod(nameof(CampaignInformationManager.NewMapNoticeAdded),
 						BindingFlags.Public | BindingFlags.Instance),
-					prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_NewMapNoticeAdded_SuppressKingdomVoteReminder_Prefix)));
-				harmony.Patch(
+					prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_NewMapNoticeAdded_SuppressKingdomVoteReminder_Prefix))));
+				Guard("KingdomDecisionMapNotification.IsValid", () => harmony.Patch(
 					typeof(KingdomDecisionMapNotification).GetMethod(nameof(KingdomDecisionMapNotification.IsValid),
 						BindingFlags.Public | BindingFlags.Instance),
-					prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecisionMapNotification_IsValid_Prefix)));
-				harmony.Patch(
+					prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecisionMapNotification_IsValid_Prefix))));
+				Guard("KingdomDecisionsVM.HandleDecision", () => harmony.Patch(
 					typeof(KingdomDecisionsVM).GetMethod(nameof(KingdomDecisionsVM.HandleDecision),
 						BindingFlags.Public | BindingFlags.Instance),
-					prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecisionsVM_HandleDecision_SuppressVoteInquiry_Prefix)));
-				harmony.Patch(
+					prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecisionsVM_HandleDecision_SuppressVoteInquiry_Prefix))));
+				Guard("KingdomDecisionsVM.OnFrameTick", () => harmony.Patch(
 					typeof(KingdomDecisionsVM).GetMethod(nameof(KingdomDecisionsVM.OnFrameTick),
 						BindingFlags.Public | BindingFlags.Instance),
-					prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecisionsVM_OnFrameTick_MarkAgendaDecisionsExamined_Prefix)));
+					prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecisionsVM_OnFrameTick_MarkAgendaDecisionsExamined_Prefix))));
 				MethodInfo kingdomVoteNotificationFinalize = AccessTools.Method(
 					typeof(KingdomVoteNotificationItemVM),
 					nameof(KingdomVoteNotificationItemVM.OnFinalize));
 				if (kingdomVoteNotificationFinalize != null)
 				{
-					harmony.Patch(
+					Guard("KingdomVoteNotificationItemVM.OnFinalize", () => harmony.Patch(
 						kingdomVoteNotificationFinalize,
-						postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomVoteNotificationItemVM_OnFinalize_Postfix)));
+						postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomVoteNotificationItemVM_OnFinalize_Postfix))));
 				}
 				Logger.Log("VoteDeal", "[Harmony] Kingdom vote reminders guarded; policy proposals restored with safe listener cleanup.");
 
@@ -336,9 +342,6 @@ namespace AnimusForge
 				{
 					Logger.Log("VoteDeal", $"[Agenda] TabSelection patches failed: {agendaEx.Message}");
 				}
-
-
-				s_globalPatchesApplied = true;
 			}
 			catch (Exception ex)
 			{
@@ -455,6 +458,8 @@ namespace AnimusForge
 				if (dataStore.IsSaving)
 				{
 					CleanupRequiredAgendaVotePromptKeys();
+					// Consumed deals are never read again; dropping them keeps the save bounded.
+					_activeDeals.RemoveAll(d => d == null || d.IsConsumed);
 					_serializedDeals.Clear();
 					for (int i = 0; i < _activeDeals.Count; i++)
 					{
@@ -581,9 +586,11 @@ namespace AnimusForge
 					CleanupRequiredAgendaVotePromptKeys();
 				}
 			}
-			catch (Exception ex)
+			catch (Exception ex) when (!(ex is CampaignSaveChunkHelper.PersistenceIntegrityException))
 			{
 				Logger.Log("VoteDeal", $"[SyncData Error] {ex.Message}");
+				// A failed save must not wipe the live session's deals; only a failed load resets.
+				if (dataStore == null || dataStore.IsSaving) return;
 				_activeDeals = new List<VoteDealRecord>();
 				_serializedDeals = new Dictionary<string, string>();
 				_bilateralDiplomacyRecords = new List<BilateralDiplomacyRecord>();
@@ -1422,7 +1429,11 @@ namespace AnimusForge
 			try
 			{
 				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
-				if (behavior?.IsDialogueProposedDecision(__instance) == true)
+				// Polled every frame by the kingdom UI: skip key rendering when nothing is tracked.
+				if (behavior == null
+					|| ((behavior._dialogueProposalDecisionKeys == null || behavior._dialogueProposalDecisionKeys.Count == 0)
+						&& (behavior._bilateralDiplomacyRecords == null || behavior._bilateralDiplomacyRecords.Count == 0))) return true;
+				if (behavior.IsDialogueProposedDecision(__instance))
 				{
 					__result = !IsDialogueProposedDecisionHardValid(__instance, out string hardFailureReason);
 					if (__result)
@@ -1432,7 +1443,7 @@ namespace AnimusForge
 					}
 					return false;
 				}
-				if (behavior?.FindCounterpartRecordForDecision(__instance) == null) return true;
+				if (behavior.FindCounterpartRecordForDecision(__instance) == null) return true;
 
 				__result = !IsBilateralCounterpartDecisionStillHardValid(__instance);
 				return false;
@@ -2944,6 +2955,18 @@ namespace AnimusForge
 			}
 		}
 
+		// Same affordability step vanilla applies after scoring: a promise never charges
+		// influence the clan does not have (StayNeutral costs nothing).
+		private static Supporter.SupportWeights AffordableSupportWeight(KingdomDecision decision, Clan clan, Supporter.SupportWeights weight)
+		{
+			while (weight >= Supporter.SupportWeights.SlightlyFavor && clan != null
+				&& clan.Influence < decision.GetInfluenceCostOfSupport(clan, weight))
+			{
+				weight--;
+			}
+			return weight;
+		}
+
 		private static Supporter.SupportWeights GetForcedVoteDealSupportWeight(int supportWeightValue)
 		{
 			Supporter.SupportWeights weight = (Supporter.SupportWeights)supportWeightValue;
@@ -3402,7 +3425,7 @@ namespace AnimusForge
 						outcome != null && behavior.TryGetDialogueProposalSupport(__instance, clan, outcome, out _, out bool promised) && promised);
 					if (dialoguePromisedOutcome != null && behavior.TryGetDialogueProposalSupport(__instance, clan, dialoguePromisedOutcome, out int dialogueWeight, out _))
 					{
-						supportWeightOfSelectedOutcome = GetForcedVoteDealSupportWeight(dialogueWeight);
+						supportWeightOfSelectedOutcome = AffordableSupportWeight(__instance, clan, GetForcedVoteDealSupportWeight(dialogueWeight));
 						__result = dialoguePromisedOutcome;
 						Logger.Log("ProposeAgenda", "Forced proposer support decision=" + GetSafeDecisionTitle(__instance) + " clan=" + clan.StringId + " weight=" + supportWeightOfSelectedOutcome);
 						return false;
@@ -3430,7 +3453,7 @@ namespace AnimusForge
 					return true;
 				}
 
-				supportWeightOfSelectedOutcome = GetForcedVoteDealSupportWeight(deal.SupportWeightValue);
+				supportWeightOfSelectedOutcome = AffordableSupportWeight(__instance, clan, GetForcedVoteDealSupportWeight(deal.SupportWeightValue));
 				__result = promisedOutcome;
 				Logger.Log("VoteDeal", $"[VoteFulfillment] Forced promised vote. deal={deal.DealId} clan={clan.StringId} decision={GetSafeDecisionTitle(__instance)} option={promisedOutcome.GetDecisionTitle()} weight={supportWeightOfSelectedOutcome}");
 				return false;

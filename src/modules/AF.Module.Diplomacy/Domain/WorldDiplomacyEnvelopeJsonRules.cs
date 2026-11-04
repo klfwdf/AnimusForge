@@ -184,7 +184,8 @@ public static class WorldDiplomacyEnvelopeJsonRules
         {
             string legacyIntent = ReadString(json, "author_intent.intent", "intent", "author_intent");
             string legacyTargetId = ReadString(json, "primary_target_kingdom_id", "target_kingdom_id", "target");
-            if (string.IsNullOrWhiteSpace(legacyTargetId)) legacyTargetId = job?.TargetKingdomId ?? "";
+            // An untargeted statement stays untargeted; only targeted jobs inherit their addressee.
+            if (string.IsNullOrWhiteSpace(legacyTargetId) && job?.AllowUntargeted != true) legacyTargetId = job?.TargetKingdomId ?? "";
             JObject legacyAction = new JObject
             {
                 ["target_kingdom_id"] = legacyTargetId,

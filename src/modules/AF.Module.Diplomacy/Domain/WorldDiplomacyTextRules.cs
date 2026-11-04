@@ -140,7 +140,11 @@ public static class WorldDiplomacyTextRules
 	public static string Limit(string value, int maxChars)
 	{
 		string text = value ?? "";
-		return text.Length <= maxChars ? text : text.Substring(0, Math.Max(0, maxChars));
+		if (text.Length <= maxChars) return text;
+		int length = Math.Max(0, maxChars);
+		// Never leave a lone high surrogate (emoji, rare CJK) at the cut.
+		if (length > 0 && char.IsHighSurrogate(text[length - 1])) length--;
+		return text.Substring(0, length);
 	}
 
 	public static string DescribePeacePressure(float pressure)

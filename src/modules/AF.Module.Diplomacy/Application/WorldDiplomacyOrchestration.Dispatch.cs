@@ -33,7 +33,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             && ResolveDocument(owningRound.RootDocumentId)?.PlayerReplyRoutingPending == true) return false;
         if (owningRound != null && RequestLeases.ContainsSpeech(owningRound.RoundId)) return false;
         if (owningRound != null && (job.Kind == "generate" || IsPrivacyPipelineJob(job))
-            && (EventHost != null && IsPlayerDeclarationOpening(owningRound) || Storage.Jobs.Any(x => x.RoundId == owningRound.RoundId && x.ForcedIntent == "started"
+            && (EventHost != null && IsPlayerDeclarationOpening(owningRound) || Storage.Jobs.Any(x => x != null && x.RoundId == owningRound.RoundId && x.ForcedIntent == "started"
                 && x.Kind is "event_boundary" or "event_boundary_audit"))
             && !EventBoundaryComplete(owningRound, "started")) return false;
         if (owningRound != null && !DiplomacyEventRules.Matches(owningRound, job)) return false;

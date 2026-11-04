@@ -382,7 +382,7 @@ internal sealed partial class WorldDiplomacyOrchestration
                 }
                 continue; // Rebuilt from all pending sources at actual send.
             }
-            if (Storage.Jobs.Count(x => x.SchedulingOwner == round.SchedulingOwner) >= _host.MaxPendingJobs()) return; // Obligation persists; no eviction.
+            if (Storage.Jobs.Count(x => x != null && x.SchedulingOwner == round.SchedulingOwner) >= _host.MaxPendingJobs()) return; // Obligation persists; no eviction.
             // The existing priority reply completes in this event, without
             // cancelling a scheduled hop or moving the ordinary relay cursor.
             EnqueueGeneration(receiver, ResolveDialogueParty(source.AuthorKingdomId), null, true, source,
@@ -455,7 +455,7 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private bool ValidatePlayerResponseCoverage(WorldDiplomacyJob job, Newtonsoft.Json.Linq.JObject json)
     {
-        if (job.PlayerResponseSourceIds?.Count == 0) return true;
+        if (job.PlayerResponseSourceIds is null or { Count: 0 }) return true;
         var covered = ReadStringList(json, "answered_player_document_ids");
         return job.PlayerResponseSourceIds.All(id => covered.Contains(id, StringComparer.OrdinalIgnoreCase));
     }

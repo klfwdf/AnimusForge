@@ -70,6 +70,17 @@ internal static class PermanentAllianceGuard
 	[ThreadStatic]
 	private static Stack<BreakAuthorization> _authorizationStack;
 
+	// Permanent alliances are an AF world-diplomacy rule; with the feature off every
+	// guarded native path (expiry, implicit cancellation, war on an ally) is vanilla.
+	private static bool GuardActive
+	{
+		get
+		{
+			try { return DuelSettings.GetSettings()?.EnableWorldDiplomacy == true; }
+			catch { return false; }
+		}
+	}
+
 	internal static void RegisterHarmonyPatches(Harmony harmony)
 	{
 		if (harmony == null || _patchRegistrationAttempted) return;
@@ -147,7 +158,7 @@ internal static class PermanentAllianceGuard
 		IFaction second,
 		DeclareWarAction.DeclareWarDetail detail)
 	{
-		if (first is not Kingdom firstKingdom || second is not Kingdom secondKingdom) return true;
+		if (!GuardActive || first is not Kingdom firstKingdom || second is not Kingdom secondKingdom) return true;
 		IAllianceCampaignBehavior alliances = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
 		if (alliances?.IsAllyWithKingdom(firstKingdom, secondKingdom) != true) return true;
 		if (detail == DeclareWarAction.DeclareWarDetail.CausedByKingdomDecision
@@ -299,7 +310,7 @@ internal static class PermanentAllianceGuard
 	{
 		private static void Prefix(AllianceCampaignBehavior __instance, Clan clan)
 		{
-			if (clan?.Kingdom == null || clan.Kingdom.RulingClan != clan) return;
+			if (!GuardActive || clan?.Kingdom == null || clan.Kingdom.RulingClan != clan) return;
 			RefreshAllAllianceEndTimes(__instance);
 		}
 	}
@@ -309,7 +320,7 @@ internal static class PermanentAllianceGuard
 	{
 		private static void Postfix(AllianceCampaignBehavior __instance, Kingdom proposerKingdom, Kingdom receiverKingdom)
 		{
-			RefreshAllianceEndTime(__instance, proposerKingdom, receiverKingdom);
+			if (GuardActive) RefreshAllianceEndTime(__instance, proposerKingdom, receiverKingdom);
 		}
 	}
 
@@ -318,7 +329,7 @@ internal static class PermanentAllianceGuard
 	{
 		private static bool Prefix(AllianceCampaignBehavior __instance, Kingdom kingdom1, Kingdom kingdom2)
 		{
-			if (kingdom1 == null || kingdom2 == null) return true;
+			if (!GuardActive || kingdom1 == null || kingdom2 == null) return true;
 			if (kingdom1.IsEliminated || kingdom2.IsEliminated) return true;
 			if (FactionManager.IsAtWarAgainstFaction(kingdom1, kingdom2)) return true;
 			if (__instance?.IsAllyWithKingdom(kingdom1, kingdom2) != true) return true;
@@ -343,7 +354,7 @@ internal static class PermanentAllianceGuard
 			out AuthorizationScope __state)
 		{
 			__state = default;
-			if (__instance == null
+			if (!GuardActive || __instance == null
 				|| chosenOutcome is not DeclareWarDecision.DeclareWarDecisionOutcome outcome
 				|| !outcome.ShouldWarBeDeclared) return;
 			Kingdom decisionKingdom = __instance.Kingdom;

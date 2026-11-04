@@ -49,7 +49,13 @@ internal static class WorldDiplomacyHistoryFragmentApplication
                 TargetTokens = (int)Math.Max(256, Math.Min(12000, inputBudget / 3)) };
         }
         if (Original(storage, work) == null || Hash(Original(storage, work)) != work.OriginalHash)
-        { Hold(storage, "fragment_original_source_changed"); return true; }
+        {
+            // The canonical source moved on (committed elsewhere or replaced); the partial
+            // pieces describe text that no longer exists. Drop them; the live archive is
+            // untouched and the next scheduling pass re-measures it from scratch.
+            storage.HistoryFragmentWork = null;
+            return TryQueue(storage, system, inputBudget, throughSequence, estimate, newId, day, priority, maximumJobs, outputLimit, localize);
+        }
         if (Hash(work.SourceText) != work.SourceHash || work.Offset < 0 || work.Offset >= work.SourceText.Length
             || work.PendingLength < 0 || work.PendingLength > work.SourceText.Length - work.Offset)
         { Hold(storage, "fragment_progress_invalid"); return true; }
@@ -116,7 +122,7 @@ internal static class WorldDiplomacyHistoryFragmentApplication
             || work.PendingLength > work.SourceText.Length - work.Offset)
         { Hold(storage, "fragment_progress_invalid"); return true; }
         string original = Original(storage, work);
-        if (original == null || Hash(original) != work.OriginalHash) { Hold(storage, "fragment_original_source_changed"); return true; }
+        if (original == null || Hash(original) != work.OriginalHash) { storage.HistoryFragmentWork = null; return true; }
         JObject json = WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(raw);
         if (json.Value<string>("source_hash") != work.SourceHash || json.Value<int?>("offset") != work.Offset
             || json.Value<int?>("length") != work.PendingLength || work.Offset != job.CompressionFragmentOffset

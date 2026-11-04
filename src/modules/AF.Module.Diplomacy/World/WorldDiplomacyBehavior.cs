@@ -215,8 +215,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		_patchesApplied = true;
 		Harmony patcher = harmony ?? new Harmony("com.AnimusForge.world_diplomacy");
-        RegisterEventNativeAdmission(patcher);
-            RegisterAidTakeover(patcher);
+		try { RegisterEventNativeAdmission(patcher); }
+		catch (Exception ex) { Log("native war/peace admission patches failed: " + ex.Message); }
+		RegisterAidTakeover(patcher);
 		try
 		{
 			MethodInfo addDecision = AccessTools.Method(typeof(Kingdom), nameof(Kingdom.AddDecision), new[]
@@ -1777,7 +1778,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
-			return true;
+			// Unreadable settings fall back to native diplomacy, never to AF takeover.
+			return false;
 		}
 	}
 	private static bool AreMapNotificationsEnabled()

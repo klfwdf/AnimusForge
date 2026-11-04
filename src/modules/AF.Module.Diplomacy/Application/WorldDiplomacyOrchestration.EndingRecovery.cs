@@ -40,6 +40,14 @@ internal sealed partial class WorldDiplomacyOrchestration
             // Only the agreement owner can resolve its failed/partial receipt.
             // Observing that resolution is safe; executing its batch here is not.
             string prefix = "agreement_execution_failed:";
+            if (!state.TechnicalFailure.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                // Legacy/unbound hold: once the owner no longer reports a failed or partial
+                // agreement, release it and let convergence re-evaluate the current offers.
+                if (!round.PendingOffers.Any(x => x.Status is "execution_failed" or "partially_executed"))
+                    ClearEndingExecutionHold(round);
+                return;
+            }
             var receipt = state.TechnicalFailure.StartsWith(prefix, StringComparison.Ordinal)
                 ? ResolveDocument(state.TechnicalFailure.Substring(prefix.Length)) : null;
             var accepted = receipt?.Actions?.Where(x => x.Intent.StartsWith("accept_", StringComparison.Ordinal)).ToList();

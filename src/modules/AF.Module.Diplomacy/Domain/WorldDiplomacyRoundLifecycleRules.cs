@@ -283,7 +283,10 @@ public static class WorldDiplomacyRoundLifecycleRules
         {
             return WorldDiplomacyClosedRoundStatus.Aborted;
         }
-        if (!IsActiveRoundState(currentRoundStatus))
+        // A reopened round carries "continue" (PlayerLifecycle reopen); it is just as
+        // unsettled as "active" and must still receive a terminal status.
+        if (!IsActiveRoundState(currentRoundStatus)
+            && !string.Equals(currentRoundStatus, "continue", StringComparison.OrdinalIgnoreCase))
         {
             return WorldDiplomacyClosedRoundStatus.KeepCurrent;
         }
@@ -2567,9 +2570,12 @@ public static class WorldDiplomacyRoundLifecycleRules
             .Where(x => x != null
                 && !string.IsNullOrWhiteSpace(x.SignalKey)
                 && day - x.PublishedDay <= retentionDays)
-            .OrderBy(x => x.PublishedDay)
+            // Over the cap, keep the newest signals; the oldest are closest to expiry anyway.
+            .OrderByDescending(x => x.PublishedDay)
             .ThenBy(x => x.SignalKey, StringComparer.OrdinalIgnoreCase)
             .Take(maxPending)
+            .OrderBy(x => x.PublishedDay)
+            .ThenBy(x => x.SignalKey, StringComparer.OrdinalIgnoreCase)
             .ToList();
     }
 
@@ -4325,7 +4331,8 @@ public static class WorldDiplomacyRoundLifecycleRules
             }
             round.ExternalSignalKeys ??= new List<string>();
             round.AttachedPolicySignals ??= new List<WorldDiplomacyPolicySignal>();
-            if (!round.ExternalSignalKeys.Contains(signal.SignalKey, StringComparer.OrdinalIgnoreCase))
+            bool newlyAttached = !round.ExternalSignalKeys.Contains(signal.SignalKey, StringComparer.OrdinalIgnoreCase);
+            if (newlyAttached)
             {
                 round.ExternalSignalKeys.Add(signal.SignalKey);
             }
@@ -4335,7 +4342,8 @@ public static class WorldDiplomacyRoundLifecycleRules
                 round.AttachedPolicySignals.Add(ClonePolicySignalRecord(signal));
             }
             string context = WorldDiplomacyPromptContractRules.BuildPolicySignalContext(signal);
-            if (!string.IsNullOrWhiteSpace(context) && (round.ExternalOpeningContext ?? "").IndexOf(signal.SignalKey, StringComparison.OrdinalIgnoreCase) < 0)
+            // Key membership, not a substring of prose, decides whether the context was already added.
+            if (!string.IsNullOrWhiteSpace(context) && newlyAttached)
             {
                 round.ExternalOpeningContext = string.Join("\n", new[] { round.ExternalOpeningContext, context }.Where(text => !string.IsNullOrWhiteSpace(text))).Trim();
             }

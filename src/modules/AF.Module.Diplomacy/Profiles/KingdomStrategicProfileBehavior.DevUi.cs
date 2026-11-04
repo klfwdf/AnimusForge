@@ -141,7 +141,9 @@ public sealed partial class KingdomStrategicProfileBehavior
 			new InquiryElement("export", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportOne", "Export this kingdom"), null),
 			new InquiryElement("import", DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportOne", "Import this kingdom"), null)
 		};
-		if (CanRegenerateFoundingProfile(kingdom, profile))
+		// Founding generation is retired (no tick/session listener drains the queue), so
+		// offering "regenerate" would queue work that never runs.
+		if (FoundingGenerationActive && CanRegenerateFoundingProfile(kingdom, profile))
 		{
 			string generationLabel = string.Equals(profile.GenerationState, "running", StringComparison.OrdinalIgnoreCase)
 				? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_FoundingRunning", "LLM founding profile is being generated…")
@@ -296,6 +298,12 @@ public sealed partial class KingdomStrategicProfileBehavior
 	private void RegenerateFoundingProfile(Kingdom kingdom)
 	{
 		KingdomStrategicProfileRecord profile = EnsureProfile(kingdom, runtimeFounded: false);
+		if (!FoundingGenerationActive)
+		{
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_RegenerateUnavailable", "This kingdom does not have a regenerable dynamic founding profile.")));
+			OpenKingdomDetail(kingdom);
+			return;
+		}
 		if (kingdom?.IsEliminated == true)
 		{
 			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_RegenerateEliminated", "The eliminated kingdom keeps its current profile; no LLM regeneration will be requested.")));
@@ -320,6 +328,8 @@ public sealed partial class KingdomStrategicProfileBehavior
 		}
 		OpenKingdomDetail(kingdom);
 	}
+
+	private static readonly bool FoundingGenerationActive = false;
 
 	private static bool CanRegenerateFoundingProfile(Kingdom kingdom, KingdomStrategicProfileRecord profile)
 	{

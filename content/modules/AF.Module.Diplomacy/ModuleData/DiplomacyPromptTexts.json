@@ -494,7 +494,7 @@
   "AF_DIP_WarKills": "  你方击杀：{0}，敌方击杀：{1}",
   "AF_DIP_WarConquests": "  你方占城：{0}城{1}堡",
   "AF_DIP_WarStrength": "- 你方总战力：{0:F0}，敌方总战力：{1:F0}",
-  "AF_DIP_WarTribute": "- 敌方繁荣度：{0:F0}，参考贡金范围 0 ~ {1} 第纳尔/天（仅供谈判参考，不是系统上限；双方可商定任意非负整数金额）",
+  "AF_DIP_WarTribute": "- 敌方繁荣度：{0:F0}，参考贡金范围 0 ~ {1} 第纳尔/天（敌方付款时上限即系统上限；双方可在上限内商定任意非负整数金额，超出付款方上限的条款会被拒绝执行）",
   "AF_DIP_WarMultipleFronts": "- 多线作战：同时与 {0} 个敌人交战（总战力 {1:F0}）",
   "AF_DIP_NpcKingdomIdentity": "  你的王国ID：{0}（{1}）",
   "AF_DIP_PlayerKingdomIdentity": "  玩家王国ID：{0}（{1}）",

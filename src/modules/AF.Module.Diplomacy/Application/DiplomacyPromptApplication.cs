@@ -147,7 +147,7 @@ internal static class DiplomacyPromptApplication
         sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarKills", "  Your kills: {0}; enemy kills: {1}"), war.OwnKills, war.EnemyKills));
         sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarConquests", "  Your conquests: {0} towns, {1} castles"), war.Towns, war.Castles));
         sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarStrength", "- Your total strength: {0:F0}; enemy total strength: {1:F0}"), war.OwnStrength, war.EnemyStrength));
-        sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarTribute", "- Enemy prosperity: {0:F0}; reference tribute range 0 ~ {1} denars/day (a negotiating reference, not a system limit; both parties may agree to any nonnegative integer amount)"), war.EnemyProsperity, (int)(war.EnemyProsperity*0.15f*0.35f)));
+        sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarTribute", "- Enemy prosperity: {0:F0}; reference tribute range 0 ~ {1} denars/day (the upper bound is the system limit when the enemy pays; any nonnegative integer within it may be agreed, and terms above the payer's limit are refused)"), war.EnemyProsperity, (int)(war.EnemyProsperity*0.15f*0.35f)));
         int count = 0; float strength = 0;
         foreach (var other in wars) if (other.Listed && other.Id != war.Id) { count++; strength += other.EnemyStrength; }
         if (count > 0) sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarMultipleFronts", "- Multiple fronts: at war with {0} other enemies (combined strength {1:F0})"), count, strength));

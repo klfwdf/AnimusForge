@@ -94,6 +94,7 @@ internal static class Program
     {
         SmokeLocalizationEnvironment.Initialize();
         if (args.Contains("--input-limit-removal")) { MaterialCountryThirdReplay.InputLimitRemoval(); MaterialSupplyReplay.InputLimitBudgetRegressions(); RunPreSendGateDecisionTests(); Console.WriteLine("PASS assertions=" + Test.Assertions); return 0; }
+        if (args.Contains("--audit-round-two")) { try { AuditRoundTwoReplay.Run(); Console.WriteLine("PASS audit round two assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--planning-repair")) { PlanningRepairReplay.Run(); Console.WriteLine("PASS planning repair assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--scoped-world")) { ScopedWorldReplay.Run(); Console.WriteLine("PASS scoped world assertions=" + Test.Assertions); return 0; }
         if (args.Contains("--prefix-ordering"))
@@ -541,6 +542,7 @@ RunRepairCorrectionAndJobDecisionTests();
         EventBoundaryReplay.Run();
         EventMemoryReplay.Run();
         RetrievalFixReplay.Run();
+        AuditRoundTwoReplay.Run();
         AidRequestReplay.Run();
         EventSettingsReplay.Run();
         EventRetirementReplay.Run();

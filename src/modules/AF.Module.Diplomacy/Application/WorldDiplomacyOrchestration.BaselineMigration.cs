@@ -11,19 +11,19 @@ internal sealed partial class WorldDiplomacyOrchestration
     // a second scheduler. Published documents and execution receipts stay intact.
     private void RestoreEventBaselineAfterLoad()
     {
-        var rounds = GetLiveRounds().Where(x => x.EventConvergence?.IssueVersion == 1).ToList();
+        var rounds = GetLiveRounds().Where(x => x?.EventConvergence?.IssueVersion == 1).ToList();
         if (rounds.Count == 0) return;
         var documents = Storage.Documents.Where(x => x != null).ToLookup(x => x.RoundId);
         foreach (var round in rounds)
         {
             var state = round.EventConvergence;
-            var jobs = Storage.Jobs.Where(x => x.RoundId == round.RoundId).ToList();
+            var jobs = Storage.Jobs.Where(x => x != null && x.RoundId == round.RoundId).ToList();
             if (jobs.Any(x => x.IsRunning)) continue;
             var records = documents[round.RoundId].ToList();
-            bool stagedEnding = Storage.EventAnnouncements.Any(x => x.EventId == round.RoundId && x.Stage == "ended");
+            bool stagedEnding = Storage.EventAnnouncements.Any(x => x != null && x.EventId == round.RoundId && x.Stage == "ended");
             bool executionHold = !string.IsNullOrEmpty(state.TechnicalFailure)
                 || records.Any(x => x.EventExecutionPending)
-                || Storage.EventEffects.Any(x => x.EventId == round.RoundId && x.Status is "applying" or "uncertain");
+                || Storage.EventEffects.Any(x => x != null && x.EventId == round.RoundId && x.Status is "applying" or "uncertain");
             foreach (var job in jobs)
             {
                 bool unpublished = !records.Any(x => x.DocumentId == job.DocumentId);

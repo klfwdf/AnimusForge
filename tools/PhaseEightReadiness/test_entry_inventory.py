@@ -122,7 +122,6 @@ EXPANDED_ENTRIES['world-simulation-worldmap'] = EXPANDED_ENTRIES.get('world-simu
     'src/modules/AF.Module.Diplomacy/Annexation/KingdomAnnexationDiagnosticLog.cs',
     'src/modules/AF.Module.Diplomacy/Direct/DiplomacyPeaceTermsService.cs',
     'src/modules/AF.Module.Diplomacy/Guards/DiplomacyRecentPeaceGuard.cs',
-    'src/modules/AF.Module.Diplomacy/Guards/Patch_Diplomacy_GuardFactionManagerDeclareWar.cs',
     'src/modules/AF.Module.Diplomacy/Guards/Patch_Diplomacy_RegisterMakePeaceAction.cs',
     'src/modules/AF.Module.Diplomacy/Guards/PermanentAllianceGuard.cs',
     'src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.DevUi.cs',

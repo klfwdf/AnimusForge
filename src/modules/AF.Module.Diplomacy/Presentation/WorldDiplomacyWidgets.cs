@@ -55,11 +55,16 @@ internal sealed class WorldDiplomacyMapNotification : InformationData
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public WorldDiplomacyMapNotification(string documentId, string title, string description)
-		: base(new TextObject(string.IsNullOrWhiteSpace(description) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_NoticeDescription", "Click to view the diplomatic declaration.") : description))
+		: base(Literal(string.IsNullOrWhiteSpace(description) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_NoticeDescription", "Click to view the diplomatic declaration.") : description))
 	{
 		DocumentId = (documentId ?? "").Trim();
-		_titleText = new TextObject(string.IsNullOrWhiteSpace(title) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_NoticeTitle", "New diplomatic declaration") : title);
+		_titleText = Literal(string.IsNullOrWhiteSpace(title) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_NoticeTitle", "New diplomatic declaration") : title);
 	}
+
+	// Titles/summaries are LLM-authored. TextObject parses braces as markup ({=id},
+	// {VARIABLE}, {?}) even inside variables, so neutralize them to full-width forms.
+	private static TextObject Literal(string value)
+		=> new TextObject("{=!}" + (value ?? "").Replace('{', '｛').Replace('}', '｝'));
 
 	public override bool IsValid()
 	{

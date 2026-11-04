@@ -84,7 +84,7 @@ internal static class HistoryFragmentReplay
         Test.True(failure.HistoryFragmentWork.Offset==advanced,"late duplicate audit cannot cover a range twice");
         failure.CanonicalHistory.DeltaEntries[0].Text+=" New source evidence.";
         failure.Jobs.Clear(); WorldDiplomacyHistoryFragmentApplication.TryQueue(failure,"system",20000,1,s=>s.Length,x=>x,1,80,24,4096,DiplomacyPromptTexts.Get);
-        Test.True(DiplomacyCompressionBudget.Held(failure) && failure.CompressionHoldReason=="fragment_original_source_changed" && failure.CanonicalHistory.DeltaEntries[0].Text.EndsWith("New source evidence."),"changed original stops old fragment work and preserves new evidence");
+        Test.True(!DiplomacyCompressionBudget.Held(failure) && failure.HistoryFragmentWork?.SourceText.EndsWith("New source evidence.")==true && failure.CanonicalHistory.DeltaEntries[0].Text.EndsWith("New source evidence."),"changed original drops stale fragment work, restarts from the new source and preserves new evidence");
 
         var changedDraft=Storage(); writer=Queue(changedDraft); Commit(changedDraft,writer,Result(writer)); audit=Queue(changedDraft);
         changedDraft.HistoryFragmentWork.PendingSummary="An unaudited replacement"; rejected=false;

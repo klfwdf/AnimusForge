@@ -39,8 +39,8 @@ public sealed class DialogueTagPayload
             fields.Add(key, value);
         }
         string Get(string key) => fields.TryGetValue(key, out string value) ? value : "";
-        if (!Enum.TryParse(Get("action"), true, out DialogueDiplomaticAction action) || !Enum.IsDefined(typeof(DialogueDiplomaticAction), action)
-            || !Enum.TryParse(Get("move"), true, out DialogueDiplomaticMove move) || !Enum.IsDefined(typeof(DialogueDiplomaticMove), move)
+        if (!TryParseName(Get("action"), out DialogueDiplomaticAction action)
+            || !TryParseName(Get("move"), out DialogueDiplomaticMove move)
             || string.IsNullOrWhiteSpace(Get("target"))) return false;
         int tribute = 0, days = 0;
         int sponsor = 0;
@@ -67,5 +67,15 @@ public sealed class DialogueTagPayload
             Terms = new DialogueDiplomaticTerms(Get("receiving"), Get("joining"), Get("payer"), Get("receiver"), tribute, days,
                 Get("cession_from"), Get("cession_to"), Get("settlement")) };
         return true;
+    }
+
+    // Enum.TryParse also accepts "3" and "Peace,Trade"; a tag value must be exactly one member name.
+    private static bool TryParseName<T>(string value, out T result) where T : struct, Enum
+    {
+        foreach (T candidate in (T[])Enum.GetValues(typeof(T)))
+            if (string.Equals(candidate.ToString(), value, StringComparison.OrdinalIgnoreCase))
+            { result = candidate; return true; }
+        result = default;
+        return false;
     }
 }

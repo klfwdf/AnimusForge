@@ -3916,34 +3916,63 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				: DiplomacyMiscPromptTexts.Get("Vassalage_SuzerainEliminated", "Suzerain kingdom has been eliminated");
 			CustomPolicyBehavior.OnVassalRelationshipEndedForExternal(vassalId, reason);
 		}
-		foreach (string noticeId in _pendingInfoNotices.Keys.Where((string x) => (x ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0 || (_pendingInfoNotices[x] ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0).ToList())
+		// Keys are delimiter-joined kingdom ids ("info:kind:a:b:..", "a|b", "suz->vas");
+		// match whole tokens only so "empire" never clears "empire_w"/"empire_s" records.
+		// Info values are notice prose/JSON and are not consulted.
+		foreach (string noticeId in _pendingInfoNotices.Keys.Where((string x) => ContainsKingdomIdToken(x, id)).ToList())
 		{
 			RemovePendingInfoNotice(noticeId);
 		}
-		foreach (string noticeId in _pendingProtectionNotices.Keys.Where((string x) => (x ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0).ToList())
+		foreach (string noticeId in _pendingProtectionNotices.Keys.Where((string x) => ContainsKingdomIdToken(x, id)).ToList())
 		{
 			RemovePendingProtectionNotice(noticeId);
 		}
-		foreach (string noticeId in _pendingNpcTributaryVassalageNotices.Keys.Where((string x) => (x ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0 || (_pendingNpcTributaryVassalageNotices[x] ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0).ToList())
+		foreach (string noticeId in _pendingNpcTributaryVassalageNotices.Keys.Where((string x) => ContainsKingdomIdToken(x, id) || ContainsKingdomIdToken(_pendingNpcTributaryVassalageNotices[x], id)).ToList())
 		{
 			RemovePendingNpcTributaryVassalageNotice(noticeId);
 		}
-		foreach (string noticeId in _pendingTributaryPaymentNotices.Keys.Where((string x) => (x ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0).ToList())
+		foreach (string noticeId in _pendingTributaryPaymentNotices.Keys.Where((string x) => ContainsKingdomIdToken(x, id)).ToList())
 		{
 			RemovePendingTributaryPaymentNotice(noticeId);
 		}
-		foreach (string pendingKey in _pendingDiplomacySyncs.Keys.Where((string x) => (x ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0).ToList())
+		foreach (string pendingKey in _pendingDiplomacySyncs.Keys.Where((string x) => ContainsKingdomIdToken(x, id)).ToList())
 		{
 			_pendingDiplomacySyncs.Remove(pendingKey);
 		}
-		foreach (string protectedKey in _protectedTributaryWars.Keys.Where((string x) => (x ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0 || (_protectedTributaryWars[x] ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0).ToList())
+		foreach (string protectedKey in _protectedTributaryWars.Keys.Where((string x) => ContainsKingdomIdToken(x, id) || ContainsKingdomIdToken(_protectedTributaryWars[x], id)).ToList())
 		{
 			_protectedTributaryWars.Remove(protectedKey);
 		}
 		_garrisonObedienceValues.Remove(id);
 		_garrisonObedienceStorage.Remove(id);
-		_tributaryPaymentLastSettlementDays.Remove(id);
-		_tributaryPaymentLastSettlementDayStorage.Remove(id);
+		// Settlement days are keyed by agreement id (suzerain->vassal); drop every agreement involving the realm.
+		foreach (string agreementKey in _tributaryPaymentLastSettlementDays.Keys.Where((string x) => ContainsKingdomIdToken(x, id)).ToList())
+		{
+			_tributaryPaymentLastSettlementDays.Remove(agreementKey);
+		}
+		foreach (string agreementKey in _tributaryPaymentLastSettlementDayStorage.Keys.Where((string x) => ContainsKingdomIdToken(x, id)).ToList())
+		{
+			_tributaryPaymentLastSettlementDayStorage.Remove(agreementKey);
+		}
+	}
+
+	private static readonly char[] KingdomIdTokenSeparators = { ':', '|', ';', '=', ',', ' ' };
+
+	internal static bool ContainsKingdomIdToken(string key, string kingdomId)
+	{
+		if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(kingdomId)) return false;
+		foreach (string part in key.Split(KingdomIdTokenSeparators, StringSplitOptions.RemoveEmptyEntries))
+		{
+			int arrow = part.IndexOf("->", StringComparison.Ordinal);
+			if (arrow < 0)
+			{
+				if (string.Equals(part, kingdomId, StringComparison.OrdinalIgnoreCase)) return true;
+				continue;
+			}
+			if (string.Equals(part.Substring(0, arrow), kingdomId, StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(part.Substring(arrow + 2), kingdomId, StringComparison.OrdinalIgnoreCase)) return true;
+		}
+		return false;
 	}
 
 	private void OnMapNoticeRemoved(InformationData data)
@@ -4057,6 +4086,20 @@ statusText = string.Format(DiplomacyMiscPromptTexts.Get("Vassalage_AcknowledgedS
 				["reason"] = "existing_agreement",
 				["existingAgreementId"] = existing.AgreementId,
 				["existingSuzerain"] = VassalageDiagnosticLog.DescribeKingdom(existing.ResolveSuzerain()),
+				["targetKingdom"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
+				["statusText"] = statusText
+			});
+			return false;
+		}
+		// The player's realm may itself be a subject of the target (directly or up a chain).
+		if (WouldCreateVassalageCycle(playerKingdom.StringId, targetKingdom.StringId, out string cycleChain))
+		{
+			statusText = DiplomacyMiscPromptTexts.Get("Vassalage_CycleRejected", "Vassalage treaty not signed: your kingdom is already a subject within the target kingdom's hierarchy.");
+			VassalageDiagnosticLog.Event("agreement.create.reject", new Dictionary<string, object>
+			{
+				["reason"] = "vassalage_cycle",
+				["cycleChain"] = cycleChain,
+				["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(playerKingdom),
 				["targetKingdom"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
 				["statusText"] = statusText
 			});

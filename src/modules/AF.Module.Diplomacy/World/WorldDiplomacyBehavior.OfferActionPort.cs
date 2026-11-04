@@ -68,10 +68,16 @@ public sealed partial class WorldDiplomacyBehavior
         {
             Kingdom proposer = ResolveKingdom(proposerId);
             Kingdom target = ResolveKingdom(targetId);
+            if (proposer == null || target == null || proposer == target || proposer.IsEliminated || target.IsEliminated)
+                return new(false, DiplomacyMiscPromptTexts.Get("Offer_AllianceInvalidParties", "Alliance not executed: a party kingdom no longer exists"));
             if (FactionManager.IsAtWarAgainstFaction(proposer, target)) return new(false, DiplomacyMiscPromptTexts.Get("Offer_AllianceStillAtWar", "Alliance not executed: factions are still at war"));
             IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
             if (alliance == null) return new(false, DiplomacyMiscPromptTexts.Get("Offer_AllianceSystemUnavailable", "Alliance not executed: alliance system is unavailable"));
             if (alliance.IsAllyWithKingdom(proposer, target)) return new(false, DiplomacyMiscPromptTexts.Get("Offer_AllianceAlreadyAllied", "Alliance not executed: factions are already allied"));
+            // Same native cap the vote-deal path enforces.
+            int maximum = Campaign.Current.Models.AllianceModel.MaxNumberOfAlliances;
+            if (proposer.AlliedKingdoms.Count >= maximum || target.AlliedKingdoms.Count >= maximum)
+                return new(false, DiplomacyMiscPromptTexts.Get("Offer_AllianceLimitReached", "Alliance not executed: a party already has the maximum number of alliances"));
             DiplomacyEffectReadback result = DiplomacyEffectReadback.Execute(
                 () => WorldDiplomacyBehavior.RunDiplomaticAction("world_diplomacy_alliance", () => alliance.StartAlliance(proposer, target)),
                 () => alliance.IsAllyWithKingdom(proposer, target));

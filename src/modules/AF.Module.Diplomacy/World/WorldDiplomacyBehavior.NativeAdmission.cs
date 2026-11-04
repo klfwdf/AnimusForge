@@ -71,17 +71,24 @@ public sealed partial class WorldDiplomacyBehavior
 
     private static void RegisterEventNativeAdmission(Harmony harmony)
     {
-        var war = AccessTools.Method(typeof(DeclareWarAction), "ApplyInternal");
-        var peace = AccessTools.Method(typeof(MakePeaceAction), "ApplyInternal");
-        if (war == null || peace == null) throw new InvalidOperationException("diplomacy_native_action_targets_missing");
+        // Independent targets: a missing score hook must not leave war/peace admission unpatched.
+        PatchNativeAdmission(harmony, typeof(DeclareWarAction), "ApplyInternal", nameof(Patch_EventWar_Prefix), true);
+        PatchNativeAdmission(harmony, typeof(MakePeaceAction), "ApplyInternal", nameof(Patch_EventPeace_Prefix), true);
         var model = typeof(TaleWorlds.CampaignSystem.GameComponents.DefaultDiplomacyModel);
         foreach (string method in new[] { "GetScoreOfDeclaringPeace", "GetScoreOfDeclaringPeaceForClan" })
+            PatchNativeAdmission(harmony, model, method, nameof(Patch_EventPeaceScore_Postfix), false);
+    }
+
+    private static void PatchNativeAdmission(Harmony harmony, Type type, string method, string patch, bool prefix)
+    {
+        try
         {
-            var score = AccessTools.Method(model, method);
-            if (score == null) throw new InvalidOperationException("diplomacy_peace_score_target_missing");
-            harmony.Patch(score, postfix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_EventPeaceScore_Postfix)));
+            var target = AccessTools.Method(type, method);
+            if (target == null) { Log("native_admission_target_missing:" + type.Name + "." + method); return; }
+            var hook = new HarmonyMethod(typeof(WorldDiplomacyBehavior), patch);
+            if (prefix) harmony.Patch(target, prefix: hook);
+            else harmony.Patch(target, postfix: hook);
         }
-        harmony.Patch(war, prefix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_EventWar_Prefix)));
-        harmony.Patch(peace, prefix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_EventPeace_Prefix)));
+        catch (Exception ex) { Log("native_admission_patch_failed:" + type.Name + "." + method + ":" + ex.Message); }
     }
 }

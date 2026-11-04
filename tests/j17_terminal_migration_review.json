@@ -69191,7 +69191,6 @@
         "src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyWarPressureRules.cs",
         "src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyWorldProfileRules.cs",
         "src/modules/AF.Module.Diplomacy/Guards/DiplomacyRecentPeaceGuard.cs",
-        "src/modules/AF.Module.Diplomacy/Guards/Patch_Diplomacy_GuardFactionManagerDeclareWar.cs",
         "src/modules/AF.Module.Diplomacy/Guards/Patch_Diplomacy_RegisterMakePeaceAction.cs",
         "src/modules/AF.Module.Diplomacy/Guards/PermanentAllianceGuard.cs",
         "src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyActivityRecords.cs",

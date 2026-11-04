@@ -403,7 +403,8 @@ public static class WorldDiplomacyGenerationValidationRules
                 reason = "semantic_envelope_incomplete";
                 return true;
             }
-            string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "author_intent.intent", "intent", "author_intent"));
+            string rawIntent = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "author_intent.intent", "intent", "author_intent");
+            string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(rawIntent);
             string commitment = WorldDiplomacyIntentVocabulary.NormalizeCommitment(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "author_intent.commitment", "commitment"));
             if (string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "author_intent.commitment", "commitment")))
                 commitment = WorldDiplomacyIntentVocabulary.DefaultCommitmentForIntent(intent);
@@ -413,7 +414,11 @@ public static class WorldDiplomacyGenerationValidationRules
                 generatedIntentEnvelope["commitment"] = commitment;
             }
             WorldDiplomacyRound owningRound = resolveRound?.Invoke(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(job.RoundId, job.ExchangeId));
-            if (!WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent) || !WorldDiplomacyIntentVocabulary.IsSupportedCommitment(commitment))
+            // Aliases may soften wording into proposals, never into an immediately executed act
+            // (e.g. a bare "war" must not become declare_war): those need their canonical name.
+            bool aliasedImmediate = WorldDiplomacyIntentVocabulary.IsImmediateIntent(intent)
+                && WorldDiplomacyIntentVocabulary.NormalizeToken(rawIntent) != intent;
+            if (aliasedImmediate || !WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent) || !WorldDiplomacyIntentVocabulary.IsSupportedCommitment(commitment))
             {
                 reason = "unsupported_intent_or_commitment";
                 return true;

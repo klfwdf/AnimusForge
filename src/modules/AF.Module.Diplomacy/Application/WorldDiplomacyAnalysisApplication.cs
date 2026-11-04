@@ -275,6 +275,19 @@ internal static class WorldDiplomacyAnalysisApplication
                 targetId = document.TargetKingdomId;
             }
             string canonicalTargetId = resolveKingdomCanonicalId?.Invoke(targetId);
+            // An extracted target that names no live kingdom must not reach terms/execution
+            // with the stale document target silently standing in for it.
+            if (resolveKingdomCanonicalId != null && !string.IsNullOrWhiteSpace(targetId) && string.IsNullOrWhiteSpace(canonicalTargetId))
+            {
+                if (!document.IsPlayerAuthored)
+                {
+                    document.AnalysisStatus = "no_action";
+                    suppressInvalid(document, "analysis_target_kingdom_not_found");
+                    return;
+                }
+                MarkPlayerAnalysisFailed(document, log);
+                return;
+            }
             if (!string.IsNullOrWhiteSpace(canonicalTargetId) && !string.Equals(canonicalTargetId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase))
             {
                 document.TargetKingdomId = canonicalTargetId;

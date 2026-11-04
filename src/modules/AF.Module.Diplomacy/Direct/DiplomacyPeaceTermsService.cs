@@ -23,9 +23,8 @@ internal static class DiplomacyPeaceTermsService
 				? context.CalculatedTribute
 				: 0;
 		}
-		// An explicitly negotiated amount is authoritative. The prosperity-based
-		// calculation is only for "auto" terms and must not silently rewrite a
-		// concrete amount that the player and NPC already accepted.
+		// An explicitly negotiated amount is never silently rewritten; ApplyPeace
+		// rejects it instead when it exceeds what the payer's fiefs can support.
 		return int.TryParse(token, out int parsed) && parsed >= 0 ? parsed : -1;
 	}
 
@@ -35,9 +34,11 @@ internal static class DiplomacyPeaceTermsService
 		{
 			return 0;
 		}
-		int maximum = (int)(payer.Fiefs.Sum(x => x?.Prosperity ?? 0f) * 0.15f * 0.35f);
-		return (MBMath.ClampInt(requestedAmount, 0, Math.Max(0, maximum)) / 10) * 10;
+		return (MBMath.ClampInt(requestedAmount, 0, MaximumDailyTribute(payer)) / 10) * 10;
 	}
+
+	internal static int MaximumDailyTribute(Kingdom payer) =>
+		payer == null ? 0 : Math.Max(0, (int)(payer.Fiefs.Sum(x => x?.Prosperity ?? 0f) * 0.15f * 0.35f));
 
 	public static int ResolveDurationDays(string durationToken, bool hasTribute)
 	{
@@ -60,6 +61,12 @@ internal static class DiplomacyPeaceTermsService
             return new(true, false, false, 0, 0, false, DiplomacyMiscPromptTexts.Get("PeaceTerms_NotAtWar", "Both sides are no longer at war"));
         if (requestedDailyTribute < 0)
             return new(true, false, false, 0, 0, false, DiplomacyMiscPromptTexts.Get("PeaceTerms_DailyTributeNegative", "Daily tribute cannot be negative"));
+        // Every channel (oral tag, offer, vote, admission) converges here; an amount the
+        // payer cannot sustain is refused rather than executed or quietly reduced.
+        int maximum = MaximumDailyTribute(payer);
+        if (requestedDailyTribute > maximum)
+            return new(true, false, false, 0, 0, false, string.Format(DiplomacyMiscPromptTexts.Get("PeaceTerms_DailyTributeExceedsCapacity",
+                "Daily tribute {0} exceeds what the paying kingdom can support ({1} denars/day)"), requestedDailyTribute, maximum));
         int days = ResolveDurationDays(requestedDurationDays.ToString(), requestedDailyTribute > 0);
         string diagnostic = "";
         try

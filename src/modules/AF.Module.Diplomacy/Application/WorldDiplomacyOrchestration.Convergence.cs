@@ -288,8 +288,17 @@ internal sealed partial class WorldDiplomacyOrchestration
             QueueEndingDecision(round, offer.TargetKingdomId, offer.ProposerKingdomId, ResolveDocument(offer.SourceDocumentId));
             return true;
         }
-        if (round.PendingOffers.Any(x => x.Status is "execution_failed" or "partially_executed"))
-        { HoldEndingExecution(round, "agreement_execution_failed"); return true; }
+        var failedOffer = round.PendingOffers.FirstOrDefault(x => x.Status is "execution_failed" or "partially_executed");
+        if (failedOffer != null)
+        {
+            // Bind the hold to the acceptance receipt so recovery can observe its resolution.
+            var receipt = Storage.Documents.LastOrDefault(d => d.RoundId == round.RoundId && d.Actions != null
+                && d.Actions.Any(a => a.Intent.StartsWith("accept_", StringComparison.Ordinal)
+                    && a.RespondingToOfferDocumentId == failedOffer.SourceDocumentId
+                    && a.RespondingToOfferActionId == failedOffer.SourceActionId));
+            HoldEndingExecution(round, receipt != null ? "agreement_execution_failed:" + receipt.DocumentId : "agreement_execution_failed");
+            return true;
+        }
         // Necessary answers and their delivery finish, without introducing new
         // countries or extra last-word speeches.
         if (ScheduleUnexpressedPosition(round) || EventHasPendingWork(round)

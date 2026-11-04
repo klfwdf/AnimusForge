@@ -87,6 +87,11 @@ public sealed class BannerlordWorldDiplomacyMakeTradeGameActionPort
                 return Receipt(WorldDiplomacyMakeTradeExecutionStatus.TradeBehaviorUnavailable, command, 0,
                     "diplomacy.make_trade.behavior_unavailable");
             }
+            if (FactionManager.IsAtWarAgainstFaction(playerKingdom, npcKingdom))
+            {
+                return Receipt(WorldDiplomacyMakeTradeExecutionStatus.RejectedBeforeStart, command, 0,
+                    "diplomacy.make_trade.at_war");
+            }
             if (ReadTradeState(trade, playerKingdom, npcKingdom))
             {
                 return Receipt(WorldDiplomacyMakeTradeExecutionStatus.AlreadyTrading, command, 0,
