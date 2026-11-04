@@ -1,3 +1,7 @@
+## 2026-11-04 营地站姿循环续修部署完成
+
+用户授权部署，5614cf726d对应双实现/Bootstrap及标记、导航栏画刷7文件替换成功。游戏已退出后执行，记录.tmp/camp-idle-routing-20261104/deployment-result.json。按要求跳过测试/哈希/回读/冒烟，实机待观察。本条取代下方同任务“未部署”状态，未打包或push。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-idle-routing-20261104-deployed)。
+
 ## 2026-11-04 营地站姿循环与王国间距续修
 
 产品5614cf726d，检查点c3bc06cee。站姿占位工作转巡游、预算不足统一排队、巡游出生点释放占位、中途路点连续行走，失败日志10秒节流；王国图标XOffset归零。1.3/1.4/Bootstrap编译完成，按用户要求跳过测试/校验/冒烟/实机。产物bin/Debug/camp-idle-routing-20261104/。游戏进程14324运行，本轮尚未部署、打包或push，运行结果与视觉待确认。上一轮e04c54c0c0已推送。见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-idle-routing-20261104)及[代码范围](docs/architecture/af-framework-code-scope.md#camp-idle-routing-20261104)。

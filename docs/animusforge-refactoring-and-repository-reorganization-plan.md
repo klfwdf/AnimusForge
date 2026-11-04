@@ -1,3 +1,8 @@
+<a id="camp-idle-routing-20261104-deployed"></a>
+## 2026-11-04 营地站姿循环续修已部署
+
+用户“部署2”按继续部署本轮5614cf726d修复执行。执行前游戏进程已退出，复用上一轮具名文件部署脚本及正式入口路径保护，实际替换Bootstrap、1.3、1.4共3 DLL、对应3构建标记及导航栏画刷，共7文件，deployment-result.json记录SUCCESS。目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，候选与记录.tmp/camp-idle-routing-20261104/。标记Sha256=null、ValidationStatus=DisabledByUser、SourceCommit=5614cf726d，删除不属于当前候选的旧CoupSeamGate通过证据。继续跳过测试、哈希、部署后回读、冒烟及实机。编译沿用本条上游双API/Bootstrap成功结果。未打包或push。本条取代上游“尚未部署”状态，源码回滚仍对5614cf726d聚焦逆向后重新编译覆盖。
+
 <a id="camp-idle-routing-20261104"></a>
 ## 2026-11-04 营地站姿循环与王国图标偏移续修
 
