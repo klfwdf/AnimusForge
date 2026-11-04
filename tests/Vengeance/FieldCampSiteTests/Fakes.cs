@@ -49,7 +49,7 @@ namespace AnimusForge
     internal static class Logger{internal static readonly List<string> Lines=new();internal static void Log(string s,string text)=>Lines.Add(text);}
     internal sealed class FieldCampLayout
     {
-        internal enum PropKind{Tent}
+        internal enum PropKind{Tent,Fire}
         internal struct Prop{internal PropKind Kind;internal Vec2 Position;}
         internal struct Slot{internal Vec2 Position;}
         internal float HalfX=36.75f,Back=-34,Front=30;internal Vec2 PlayerStart=new Vec2(0,12);
@@ -61,8 +61,10 @@ namespace AnimusForge
 {
     internal static class FieldCampProps
     {
+        internal struct FenceObstacle { internal Vec3 From, To; internal float HalfWidth; }
+        internal static readonly List<FenceObstacle> FenceObstacles = new();
         // These site cases have no tent assets; do not pretend to validate native prefab support.
         internal static bool CanSupportTents(TaleWorlds.Engine.Scene scene, FieldCampLayout layout, MatrixFrame frame, Dictionary<string, TaleWorlds.Engine.BoundingBox> measured)
-        { if (layout.Props.Count != 0) throw new NotSupportedException("Tent geometry needs the prop-placement harness/native assets."); return true; }
+        { if (layout.Props.Any(p => p.Kind == FieldCampLayout.PropKind.Tent)) throw new NotSupportedException("Tent geometry needs the prop-placement harness/native assets."); return true; }
     }
 }

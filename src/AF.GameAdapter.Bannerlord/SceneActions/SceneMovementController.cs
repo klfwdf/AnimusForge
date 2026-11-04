@@ -4451,10 +4451,11 @@ internal sealed class SceneMovementController
 		{
 			return IsPrisonBreakRescuePrisonerAgent(agent);
 		}
-		return CanAgentParticipateInSceneSpeech(agent) && agent != Agent.Main;
-	}
+		return CanAgentParticipateInSceneSpeech(agent) && agent != Agent.Main
+            && (FieldCampMissionLogic.Current == null || FieldCampMissionLogic.Current.CanFollowPlayer(agent));
+    }
 
-	internal bool TryConsumeSceneFollowStopTag(NpcDataPacket npc, Agent agent, ref string content)
+    internal bool TryConsumeSceneFollowStopTag(NpcDataPacket npc, Agent agent, ref string content)
 	{
 		if (string.IsNullOrWhiteSpace(content) || npc == null)
 		{
@@ -4903,6 +4904,29 @@ internal sealed class SceneMovementController
 			InvalidateSceneCommandFollowerCache();
 			return;
 		}
+        FieldCampMissionLogic camp = FieldCampMissionLogic.Current;
+        if (camp != null)
+        {
+            if (!camp.BeginFollowPlayer(agent)) return;
+            _ports.CancelAutonomyRestore(agent.Index);
+            _ports.DetachStareAgent(agent.Index);
+            _ports.RemoveAttentionRelease(agent.Index);
+            _ports.RemoveSceneMovementSuppressionAgents(new[] { agent.Index });
+            _ports.ReleaseAgentFromSceneConversationLocks(agent);
+            _ports.RemoveInteractionSession(agent.Index);
+            _ports.CancelInteractionTimeoutArm(agent.Index);
+            _transientSceneFollowAgentIndices.Add(agent.Index);
+            bool enabled = TryEnableVanillaSceneFollowBehavior(agent, Agent.Main);
+            if (!enabled)
+            {
+                _transientSceneFollowAgentIndices.Remove(agent.Index);
+                camp.EndFollowPlayer(agent);
+            }
+            InvalidateSceneCommandFollowerCache();
+            Logger.Log("SceneFollow", "camp start agent=" + agent.Index + " behaviorEnabled=" + enabled);
+            return;
+        }
+
 		try
 		{
 			CancelSceneTemporaryCommandStateForFollow(agent);
@@ -4945,6 +4969,17 @@ internal sealed class SceneMovementController
 			}
 			return;
 		}
+        FieldCampMissionLogic camp = FieldCampMissionLogic.Current;
+        if (camp?.IsFollowingPlayer(agent) == true)
+        {
+            _transientSceneFollowAgentIndices.Remove(agent.Index);
+            _sceneFollowReturnStates.Remove(agent.Index);
+            TryDisableVanillaSceneFollowBehavior(agent, restoreDailyBehaviors: false);
+            camp.EndFollowPlayer(agent);
+            if (invalidateFollowerCache) InvalidateSceneCommandFollowerCache();
+            return;
+        }
+
 		try
 		{
 			bool wasTransient = _transientSceneFollowAgentIndices.Remove(agent.Index);

@@ -35,6 +35,8 @@ public partial class ShoutBehavior
         if (LordEncounterBehavior.IsEncounterMeetingMissionActive || MeetingBattleRuntime.IsMeetingActive
             || mission.GetMissionBehavior<MeetingBattleLockMissionBehavior>() != null)
             return PlayerDirectActionContext.WorldMap;
+        // Camp follow has an explicit daily-life handoff; lead/summon remain excluded.
+        if (FieldCampMissionLogic.Current != null) return PlayerDirectActionContext.Scene;
         return AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission()
             ? PlayerDirectActionContext.Restricted : PlayerDirectActionContext.Scene;
     }
@@ -145,7 +147,10 @@ public partial class ShoutBehavior
                     return reward != null && hero != null && hero != Hero.MainHero && Clan.PlayerClan != null && MobileParty.MainParty != null
                         ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_052", "An existing hero, player clan and player party are required. Promoting ordinary NPCs is outside this feature's scope.");
                 case PlayerDirectActionKind.Follow: case PlayerDirectActionKind.StopFollow:
-                    return context == PlayerDirectActionContext.Scene && agent != null && agent != Agent.Main ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_053", "A valid NPC Agent in the current scene is required. The original movement tag restrictions still apply.");
+                    return context == PlayerDirectActionContext.Scene && agent != null && agent != Agent.Main
+                        && (FieldCampMissionLogic.Current == null
+                            || (kind == PlayerDirectActionKind.Follow ? FieldCampMissionLogic.Current.CanFollowPlayer(agent)
+                                : FieldCampMissionLogic.Current.IsFollowingPlayer(agent))) ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_053", "A valid NPC Agent in the current scene is required. The original movement tag restrictions still apply.");
                 case PlayerDirectActionKind.LordsHall:
                     return settlement?.IsTown == true && mission != null && CampaignMission.Current?.Location?.StringId == "center"
                         && LocationComplex.Current?.GetLocationWithId("lordshall") != null && campaign.GameMenuManager != null

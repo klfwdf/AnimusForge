@@ -26,6 +26,7 @@ internal static class FieldCampProps
         internal Vec3 From, To;
         internal float HalfWidth;
     }
+    internal static readonly List<GameEntity> ArcheryTargets = new List<GameEntity>();
     internal static readonly List<FenceObstacle> FenceObstacles = new List<FenceObstacle>();
     internal static int PlacedTentCount { get; private set; }
     internal static int RequestedTentCount { get; private set; }
@@ -33,6 +34,7 @@ internal static class FieldCampProps
     {
         PlacedTentCount = RequestedTentCount = 0;
         FenceObstacles.Clear();
+        ArcheryTargets.Clear();
     }
 		private const float FencePiece = 2.9f;
 		private const BodyFlags ClearanceExcludeFlags = BodyFlags.CommonCollisionExcludeFlagsForAgent & ~BodyFlags.DoNotCollideWithRaycast;
@@ -259,8 +261,18 @@ internal static class FieldCampProps
 				GameEntity entity = Spawn(scene, pool, poolKey, prop.Variant, frame, !WalkThrough.Contains(prop.Kind), resolved, failed);
 				if (entity != null)
 				{
-					placed++;
-					if (prop.Kind == FieldCampLayout.PropKind.Table) RecordTableTop(entity, frame, i + 1, tableTops);
+                    placed++;
+                    if (prop.Kind == FieldCampLayout.PropKind.Target)
+                    {
+                        GameEntity aim = entity;
+                        for (int child = 0; child < entity.ChildCount; child++)
+                        {
+                            GameEntity part = entity.GetChild(child);
+                            if (part.Name == "bullseye") { aim = part; break; }
+                        }
+                        ArcheryTargets.Add(aim);
+                    }
+                    if (prop.Kind == FieldCampLayout.PropKind.Table) RecordTableTop(entity, frame, i + 1, tableTops);
 				}
 			}
 			return placed;

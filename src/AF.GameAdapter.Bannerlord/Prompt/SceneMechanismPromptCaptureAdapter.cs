@@ -112,6 +112,21 @@ internal sealed class SceneMechanismPromptCaptureAdapter
 
 		}
 
+        FieldCampMissionLogic camp = FieldCampMissionLogic.Current;
+        if (camp != null && includeGenericRules)
+        {
+            Agent actor = num >= 0 ? Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == num) : null;
+            bool following = camp.IsFollowingPlayer(actor);
+            if (!AIConfigHandler.GetConfiguredEnabledGuardrailRuleIdsForExternal().Contains("scene_mechanism_actions", StringComparer.OrdinalIgnoreCase)) return list;
+            foreach (PostprocessRuleEntry rule in AIConfigHandler.GetGuardrailRulePostprocessRules("scene_mechanism_actions") ?? new List<PostprocessRuleEntry>())
+            {
+                string tag = (rule?.Tag ?? "").Trim();
+                if ((!following && camp.CanFollowPlayer(actor) && string.Equals(tag, "[ACTION:SCENE_FOLLOW_PLAYER]", StringComparison.OrdinalIgnoreCase))
+                    || (following && string.Equals(tag, "[ACTION:SCENE_STOP_FOLLOW]", StringComparison.OrdinalIgnoreCase)))
+                    AddSceneMechanismPostprocessRule(list, hashSet, tag, rule.Description);
+            }
+            return list;
+        }
 		if (!includeGenericRules || AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
 
 		{

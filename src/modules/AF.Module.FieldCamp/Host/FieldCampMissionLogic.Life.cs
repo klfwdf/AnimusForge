@@ -29,14 +29,17 @@ public sealed partial class FieldCampMissionLogic
 
 	// Every clip below is defined directly in as_human_hideout_bandit (Native action_sets.xml, checked 2026-11-04);
 	// the female set inherits it through base_set.
-	private static readonly string[] SitActions = { "act_sit_beggar_idle", "act_dungeon_prisoner_sitting_ground_cycle" };
+	// Ground-compatible resting clip only; never use begging gestures for healthy soldiers.
+    private static readonly string[] EatStandingActions = { "act_eating" };
+    private static readonly string[] SitActions = { "act_dungeon_prisoner_sitting_ground_cycle" };
+    // Tavern chair/eating clips require a seat-height StandingPoint and must not run on bare terrain.
 	private static readonly string[] SentryActions = { "act_guard_cautious_look_around_1", "act_guard_normal_look_around_1", "act_stand_1" };
 	// Props use non-usable benches; no seat-height binding exists for these agents.
 
 	private static readonly string[] CookActions = { "act_bartender_meat", "act_bartender_bake" };
 	private static readonly string[] SmithActions = { "act_repair_upside", "act_repair" };
 	private static readonly string[] RepairActions = { "act_repair", "act_repair_upside" };
-	private static readonly string[] ArcherActions = { "act_guard_idle_look_around", "act_guard_cautious_look_around_2" };
+
 	private static readonly string[] LeanActions = { "act_lean_fence_loop", "act_lean_fence_loop2" };
 	private static readonly string[] GossipActions = { "act_gossip", "act_gossip_2", "act_talk_to_1", "act_listen_1" };
 	private static readonly string[] LieActions = { "act_dungeon_prisoner_sleep_cycle" };
@@ -109,7 +112,7 @@ public sealed partial class FieldCampMissionLogic
 		for (int i = 0; i < _agents.Count; i++)
 		{
 			CampAgent entry = _agents[i];
-			if (entry.Activity == Activity.Wounded || entry.Activity == Activity.Post)
+			if (entry.FollowingPlayer || entry.Activity == Activity.Wounded || entry.Activity == Activity.Post)
 			{
 				continue;
 			}
@@ -132,7 +135,8 @@ public sealed partial class FieldCampMissionLogic
 		for (int i = 0; i < _agents.Count; i++)
 		{
 			CampAgent entry = _agents[i];
-			entry.Target = entry.Home;
+            if (entry.FollowingPlayer) continue;
+            entry.Target = entry.Home;
 			entry.TargetFacing = entry.HomeFacing;
 			entry.Seated = false;
 			entry.Returning = false;
@@ -153,7 +157,7 @@ public sealed partial class FieldCampMissionLogic
 		for (int i = 0; i < _agents.Count; i++)
 		{
 			CampAgent entry = _agents[i];
-			if (entry.Activity == Activity.Wounded || entry.Activity == Activity.Post)
+			if (entry.FollowingPlayer || entry.Activity == Activity.Wounded || entry.Activity == Activity.Post)
 			{
 				continue;
 			}
@@ -232,7 +236,7 @@ public sealed partial class FieldCampMissionLogic
 	// Scene interaction owns these agents until its original owner releases them.
 	internal bool IsSceneConversationHeld(Agent agent) => agent != null && _sceneConversationAgents.Contains(agent);
 
-	internal bool IsCampAgentBusyForConversation(Agent agent) => agent == null || IsSceneConversationHeld(agent) ||
+	internal bool IsCampAgentBusyForConversation(Agent agent) => agent == null || IsFollowingPlayer(agent) || IsSceneConversationHeld(agent) ||
 		_envoy?.Agent == agent || IsDuelist(agent) || SlaughterBusy || IsCeremonyAgentHeld(agent);
 
 	internal bool IsCampAgentSeated(Agent agent)
@@ -253,7 +257,7 @@ public sealed partial class FieldCampMissionLogic
             return true;
         }
         if (!_campAgentsByAgent.TryGetValue(agent, out CampAgent entry)) return false;
-        if (IsCampAgentBusyForConversation(agent)) return true;
+        if (entry.FollowingPlayer || IsCampAgentBusyForConversation(agent)) return true;
         entry.Returning = false;
         MoveTo(entry, _assembled ? entry.Target : entry.Home,
             _assembled ? entry.TargetFacing : entry.HomeFacing, run: false);
@@ -300,14 +304,22 @@ public sealed partial class FieldCampMissionLogic
 		if (agent == null || !_sceneConversationAgents.Remove(agent) || !agent.IsActive() ||
 			!ReferenceEquals(Mission.Current, Mission) || Mission.IsMissionEnding || SlaughterBusy || IsDuelist(agent) || IsCeremonyAgentHeld(agent)) return;
 			if (agent.IsUsingGameObject || agent.CurrentlyUsedGameObject != null) return;
-			StopCampNavigation(agent);
-			if (_envoy?.Agent == agent)
+            if (IsFollowingPlayer(agent))
+            {
+                TryPrepareCampNavigation(agent);
+                agent.SetIsAIPaused(false);
+                SceneMovementController.TryEnableVanillaSceneFollowBehavior(agent, Agent.Main);
+                return;
+            }
+            StopCampNavigation(agent);
+            if (_envoy?.Agent == agent)
 		{
 			_envoyNavigationActive = false;
 			return;
 		}
 		if (_campAgentsByAgent.TryGetValue(agent, out CampAgent entry))
-		{
+        {
+            if (entry.FollowingPlayer) return;
 			entry.Target = entry.Home;
 			entry.TargetFacing = entry.HomeFacing;
 			entry.Returning = false;
@@ -343,7 +355,7 @@ public sealed partial class FieldCampMissionLogic
             _walkCursor = (_walkCursor + 1) % count;
             CampAgent entry = _agents[_walkCursor];
             Agent agent = entry.Agent;
-            if (entry.Seated || entry.MoveBlocked || agent == null || !agent.IsActive()
+            if (entry.FollowingPlayer || entry.Seated || entry.MoveBlocked || agent == null || !agent.IsActive()
                 || IsDuelist(agent) || IsEnvoy(entry) || IsSceneConversationHeld(agent)
                 || _campCeremonyActors.ContainsKey(agent) || _ceremonyMoved.Contains(entry)) continue;
             try
@@ -389,6 +401,8 @@ public sealed partial class FieldCampMissionLogic
 			}
             try
             {
+                if (entry.FollowingPlayer) continue;
+                if (entry.Training) { UpkeepCampArchery(entry); continue; }
                 if (!IsInsideCamp(agent.Position) && entry.Seated && !entry.MoveBlocked)
                 {
                     RecoverBlockedCampWalk(entry);
@@ -452,7 +466,7 @@ public sealed partial class FieldCampMissionLogic
                     && !HasFinishedCampWork(entry) && agent.GetCurrentAction(0) != entry.PoseAction)
                 {
                     ActionIndexCache pose = entry.PoseAction;
-                    try { agent.SetActionChannel(0, in pose, true); }
+                    try { agent.SetActionChannel(0, in pose, true, AnimFlags.anf_lock_movement); }
                     catch { }
                     continue;
                 }
@@ -525,7 +539,16 @@ public sealed partial class FieldCampMissionLogic
             }
             return;
         }
-		float roll = MBRandom.RandomFloat;
+        if (entry.Activity == Activity.Fire && entry.Seated && !entry.Returning)
+        {
+            entry.PoseVariant++;
+            if (entry.PoseVariant % 4 == 0) PlayLoop(entry, TalkActions);
+            else if (entry.PoseVariant % 4 == 1) PlayLoop(entry, EatStandingActions);
+            else ApplyPose(entry);
+            entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(18f, 40f);
+            if (entry.PoseVariant % 4 != 0) return;
+        }
+        float roll = MBRandom.RandomFloat;
 		if (entry.Activity == Activity.Sentry || (entry.Activity == Activity.Post && !entry.CanLeavePost) || roll < 0.35f)
 		{
 			entry.PoseVariant++;
@@ -553,8 +576,8 @@ public sealed partial class FieldCampMissionLogic
 			entry.Agent.LookDirection = new Vec3(between.x, between.y, 0f);
 			mate.Agent.LookDirection = new Vec3(-between.x, -between.y, 0f);
 		}
-		PlayOnce(entry.Agent, entry.Work == FieldCampLayout.WorkKind.Sit || entry.Work == FieldCampLayout.WorkKind.Eat ? SitActions : GossipActions, entry.PoseVariant);
-		PlayOnce(mate.Agent, mate.Work == FieldCampLayout.WorkKind.Sit || mate.Work == FieldCampLayout.WorkKind.Eat ? SitActions : GossipActions, mate.PoseVariant + 1);
+		PlayLoop(entry, entry.Work == FieldCampLayout.WorkKind.Sit || entry.Work == FieldCampLayout.WorkKind.Eat || entry.Work == FieldCampLayout.WorkKind.Lie ? PoseFor(entry) : GossipActions);
+		PlayLoop(mate, mate.Work == FieldCampLayout.WorkKind.Sit || mate.Work == FieldCampLayout.WorkKind.Eat || mate.Work == FieldCampLayout.WorkKind.Lie ? PoseFor(mate) : GossipActions);
 		mate.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(12f, 28f);
 	}
 
@@ -598,6 +621,23 @@ public sealed partial class FieldCampMissionLogic
 			target = entry.Home;
             if (_campStrollBudget <= 0 || _campRouteBudget <= 0) return false;
             _campStrollBudget--;
+            // Dense layouts need nearby choices rather than only distant layout slots.
+            for (int i = 0; i < 6; i++)
+            {
+                float angle = MBRandom.RandomFloat * MathF.PI * 2f;
+                float distance = MBRandom.RandomFloatRanged(1.8f, 4f);
+                Vec3 candidate = entry.Agent.Position + new Vec3(MathF.Cos(angle) * distance, MathF.Sin(angle) * distance, 0f);
+                if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) <= 144f &&
+                    FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target) &&
+                    IsInsideCamp(target) && !IsReservedCeremonyPosition(target)
+                    && IsCampPositionAvailable(entry.Agent, target, 0.8f))
+                {
+                    _campRouteBudget--;
+                    if (TryCampRoute(entry.Agent.Position, target, out Vec3[] route))
+                    { entry.Route = route; entry.RoutePrepared = true; return true; }
+                    if (_campRouteBudget <= 0) return false;
+                }
+            }
 			int count = _layout.WanderSlots.Count;
 			int start = count > 0 ? MBRandom.RandomInt(count) : 0;
 			for (int i = 0; i < Math.Min(count, 12); i++)
@@ -613,23 +653,6 @@ public sealed partial class FieldCampMissionLogic
                 { entry.Route = route; entry.RoutePrepared = true; return true; }
                 if (_campRouteBudget <= 0) return false;
 			}
-            // Dense layouts need nearby choices rather than only distant layout slots.
-            for (int i = 0; i < 6; i++)
-            {
-                float angle = MBRandom.RandomFloat * MathF.PI * 2f;
-                float distance = MBRandom.RandomFloatRanged(2.5f, 5f);
-                Vec3 candidate = entry.Agent.Position + new Vec3(MathF.Cos(angle) * distance, MathF.Sin(angle) * distance, 0f);
-                if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) <= 144f &&
-                    FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target) &&
-                    IsInsideCamp(target) && !IsReservedCeremonyPosition(target)
-                    && IsCampPositionAvailable(entry.Agent, target, 0.8f))
-                {
-                    _campRouteBudget--;
-                    if (TryCampRoute(entry.Agent.Position, target, out Vec3[] route))
-                    { entry.Route = route; entry.RoutePrepared = true; return true; }
-                    if (_campRouteBudget <= 0) return false;
-                }
-            }
             return false;
         }
 
@@ -687,7 +710,7 @@ public sealed partial class FieldCampMissionLogic
                 if (action == ActionIndexCache.act_none) continue;
                 try
                 {
-                    if (entry.Agent.SetActionChannel(0, in action, true))
+                    if (entry.Agent.SetActionChannel(0, in action, true, AnimFlags.anf_lock_movement, startProgress: ((entry.Agent.Index * 17 + entry.PoseVariant * 7) % 53) / 100f))
                     {
                         HideHandItems(entry);
                         entry.PoseAction = action;
@@ -726,7 +749,7 @@ public sealed partial class FieldCampMissionLogic
 		for (int i = 0; i < _agents.Count; i++)
 		{
 			CampAgent other = _agents[i];
-			if (other == entry || !other.Seated || other.Agent == null || !other.Agent.IsActive()
+			if (other == entry || other.Training || other.FollowingPlayer || !other.Seated || other.Agent == null || !other.Agent.IsActive()
 				|| IsSceneConversationHeld(other.Agent) || IsEnvoy(other) || IsDuelist(other.Agent)
 					|| _campCeremonyActors.ContainsKey(other.Agent)
                     || (_ceremonyMoved.Count > 0 && _ceremonyMoved.Contains(other))
@@ -753,7 +776,7 @@ public sealed partial class FieldCampMissionLogic
 		}
 		try
 		{
-			agent.SetActionChannel(0, in action, true);
+			agent.SetActionChannel(0, in action, true, AnimFlags.anf_lock_movement);
 		}
 		catch
 		{
@@ -832,8 +855,8 @@ public sealed partial class FieldCampMissionLogic
                 if (!IsInsideCamp(route[i])) { route = Array.Empty<Vec3>(); return false; }
             return true;
         }
-        if (covered || !HasCeremonyWalkPath(from, target)) return false;
-        return true;
+        // Unknown/uncovered floor cannot authorize a long native detour through the fence.
+        return false;
     }
 
     private bool HasFinishedCampWork(CampAgent entry)
@@ -863,14 +886,14 @@ public sealed partial class FieldCampMissionLogic
             && entry.Agent.Position.AsVec2.DistanceSquared(entry.Route[entry.RouteIndex].AsVec2) <= RouteCornerDistanceSquared)
             entry.RouteIndex++;
         Vec3 goal = entry.RouteIndex < entry.Route.Length ? entry.Route[entry.RouteIndex] : entry.Target;
-        StopCampNavigation(entry.Agent);
         entry.Agent.Controller = AgentControllerType.AI;
         entry.Agent.SetIsAIPaused(false);
-        entry.Agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+        entry.Agent.SetMaximumSpeedLimit(entry.Run ? -1f : 1.5f, isMultiplier: false);
         entry.LastWalkPosition = entry.Agent.Position;
         entry.ProgressAt = _elapsed + 4f;
         var world = new WorldPosition(Mission.Scene, UIntPtr.Zero, goal, false);
-        var flags = Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.NeverSlowDown;
+        var flags = Agent.AIScriptedFrameFlags.NoAttack;
+        if (entry.RouteIndex + 1 < entry.Route.Length) flags |= Agent.AIScriptedFrameFlags.NeverSlowDown;
         if (!entry.Run) flags |= Agent.AIScriptedFrameFlags.DoNotRun;
         // Camp routes own position progression. Apply the final facing only after arrival.
         entry.Agent.SetScriptedPosition(ref world, false, flags);
@@ -956,12 +979,15 @@ public sealed partial class FieldCampMissionLogic
 
 	private void ApplyPose(CampAgent entry)
     {
+        if (entry.Work == FieldCampLayout.WorkKind.Archer && !entry.Returning
+            && entry.Agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) <= ArriveDistanceSquared
+            && TryStartCampArchery(entry)) return;
         string[] pool = PoseFor(entry);
         if (pool == null) return;
         bool awayFromStation = entry.Work != FieldCampLayout.WorkKind.None
-            && entry.Agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) > 2.25f;
+            && entry.Agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) > ArriveDistanceSquared;
         if (!awayFromStation) entry.HomeRetries = 0;
-        else if (pool == StandActions && !entry.Returning && ++entry.HomeRetries > 3) awayFromStation = false;
+
         if (pool == StandActions && awayFromStation && entry.Returning)
         {
             // On a planned visit: loiter for the visit's own timer, then walk home.
@@ -993,7 +1019,7 @@ public sealed partial class FieldCampMissionLogic
             if (action == ActionIndexCache.act_none) continue;
             try
             {
-                if (entry.Agent.SetActionChannel(0, in action, true))
+                if (entry.Agent.SetActionChannel(0, in action, true, AnimFlags.anf_lock_movement, startProgress: ((entry.Agent.Index * 17 + entry.PoseVariant * 7) % 53) / 100f))
                 {
                     entry.PoseAction = action;
                     ShowHandItems(entry, name);
@@ -1014,14 +1040,14 @@ public sealed partial class FieldCampMissionLogic
 	private static string[] PoseFor(CampAgent entry)
 	{
         // A temporary stop after a blocked return is not the original work station.
-        if (entry.Agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) > 2.25f)
+        if (entry.Agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) > ArriveDistanceSquared)
             return StandActions;
         switch (entry.Work)
 		{
 			case FieldCampLayout.WorkKind.Sit:
-				return SitActions;
+                return SitActions;
 			case FieldCampLayout.WorkKind.Eat:
-				return SitActions;
+                return SitActions;
 			case FieldCampLayout.WorkKind.Cook:
 				return CookActions;
 			case FieldCampLayout.WorkKind.Smith:
@@ -1029,7 +1055,7 @@ public sealed partial class FieldCampMissionLogic
 			case FieldCampLayout.WorkKind.Repair:
 				return RepairActions;
 			case FieldCampLayout.WorkKind.Archer:
-				return WieldBow(entry.Agent) ? ArcherActions : StandActions;
+				return LookoutActions;
 			case FieldCampLayout.WorkKind.Groom:
 				return GroomActions;
 			case FieldCampLayout.WorkKind.Lean:
@@ -1094,10 +1120,17 @@ public sealed partial class FieldCampMissionLogic
 	private static void ReleasePose(CampAgent entry)
 	{
         entry.PoseAction = ActionIndexCache.act_none;
+        entry.Training = false;
         HideHandItems(entry);
-		try
-		{
-			entry.Agent?.SetActionChannel(0, in ActionIndexCache.act_none, true);
+        RestoreCampPracticeEquipment(entry);
+        try
+        {
+            entry.Agent?.DisableScriptedCombatMovement();
+            entry.Agent?.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+            entry.Agent?.TryToSheathWeaponInHand(Agent.HandIndex.MainHand, Agent.WeaponWieldActionType.Instant);
+            entry.Agent?.TryToSheathWeaponInHand(Agent.HandIndex.OffHand, Agent.WeaponWieldActionType.Instant);
+            entry.Agent?.SetActionChannel(0, in ActionIndexCache.act_none, true, blendInPeriod: 0f, blendOutPeriodToNoAnim: 0f);
+            entry.Agent?.SetActionChannel(1, in ActionIndexCache.act_none, true, blendInPeriod: 0f, blendOutPeriodToNoAnim: 0f);
 		}
 		catch
 		{

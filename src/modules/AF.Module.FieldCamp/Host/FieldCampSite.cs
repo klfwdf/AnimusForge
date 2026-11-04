@@ -661,6 +661,26 @@ internal static class FieldCampSite
 					}
 				}
 			}
+            // Fire particles/logs are walk-through visuals, but never a legal human floor.
+            // Rasterize their safety discs once; spawn, routes and later obstacle refresh share it.
+            foreach (FieldCampLayout.Prop prop in layout.Props)
+            {
+                if (prop.Kind != FieldCampLayout.PropKind.Fire) continue;
+                Vec2 centre = prop.Position * scale;
+                const float fireRadius = 1.45f;
+                int left = Math.Max(0, (int)Math.Floor((centre.x - fireRadius - cache.MinX) / GroundStep));
+                int right = Math.Min(cache.Width - 1, (int)Math.Ceiling((centre.x + fireRadius - cache.MinX) / GroundStep));
+                int bottom = Math.Max(0, (int)Math.Floor((centre.y - fireRadius - cache.MinY) / GroundStep));
+                int top = Math.Min(cache.Height - 1, (int)Math.Ceiling((centre.y + fireRadius - cache.MinY) / GroundStep));
+                for (int y = bottom; y <= top; y++)
+                    for (int x = left; x <= right; x++)
+                    {
+                        int cell = y * cache.Width + x;
+                        Vec2 point = new Vec2(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep);
+                        if (point.DistanceSquared(centre) <= fireRadius * fireRadius && cache.Open[cell])
+                        { cache.Open[cell] = false; open--; }
+                    }
+            }
 			cache.BaseOpen = (bool[])cache.Open.Clone();
             cache.FenceBlocked = new bool[cache.Open.Length];
             // Rasterize only accepted fence pieces, once after placement. Include actor
@@ -877,8 +897,9 @@ internal static class FieldCampSite
             Vec3 endLocal = cache.Frame.TransformToLocal(end);
             int goal = (int)Math.Round((endLocal.y - cache.MinY) / GroundStep) * cache.Width
                 + (int)Math.Round((endLocal.x - cache.MinX) / GroundStep);
-            bool constrainToCamp = stayInsideCamp && sx >= cache.CampMinX && sx <= cache.CampMaxX
-                && sy >= cache.CampMinY && sy <= cache.CampMaxY;
+            // A resident may drift a fraction of a cell outside the inner margin. Never
+            // switch his entire search to the outside grid; allow only a short connector back in.
+            bool constrainToCamp = stayInsideCamp;
             int[] corners = null;
             for (int radius = 0; radius <= 3 && corners == null; radius++)
                 for (int dy = -radius; dy <= radius && corners == null; dy++)
@@ -887,6 +908,7 @@ internal static class FieldCampSite
                         if (Math.Abs(dx) != radius && Math.Abs(dy) != radius) continue;
                         int x = sx + dx, y = sy + dy;
                         if (x < 0 || y < 0 || x >= cache.Width || y >= cache.Height) continue;
+                        if (constrainToCamp && (x < cache.CampMinX || x > cache.CampMaxX || y < cache.CampMinY || y > cache.CampMaxY)) continue;
                         if (!cache.Router.IsTraversable(y * cache.Width + x)) continue;
                         Vec3 start = cache.Frame.TransformToParent(new Vec3(cache.MinX + x * GroundStep, cache.MinY + y * GroundStep, 0f));
                         start.z = cache.Heights[y * cache.Width + x] + 0.04f;
@@ -917,6 +939,20 @@ internal static class FieldCampSite
                 var forwardRoute = new Vec3[route.Length - 1];
                 Array.Copy(route, 1, forwardRoute, 0, forwardRoute.Length);
                 route = forwardRoute;
+            }
+            if (stayInsideCamp && route.Length > 0)
+            {
+                var steps = new List<Vec3>(route.Length * 2);
+                Vec3 previous = from;
+                foreach (Vec3 corner in route)
+                {
+                    int segments = Math.Max(1, (int)Math.Ceiling(previous.AsVec2.Distance(corner.AsVec2) / 1.5f));
+                    if (steps.Count + segments > 1024) { route = Array.Empty<Vec3>(); return false; }
+                    for (int j = 1; j <= segments; j++)
+                        steps.Add(previous + (corner - previous) * ((float)j / segments));
+                    previous = corner;
+                }
+                route = steps.ToArray();
             }
             return true;
         }

@@ -745,10 +745,12 @@ internal sealed partial class SceneConversationSessionRuntime
 					vanillaIssueRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vanilla_issue");
 					heroJoinPartyRuleInjected = kingdomServiceRuleInjected;
 					genericSceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
+                    genericSceneMechanismRuleInjected = genericSceneMechanismRuleInjected
+                        || (FieldCampMissionLogic.Current != null && CanUseSceneMechanismPostprocessForSpeaker(currentSpeaker.AgentIndex));
 					noblePrisonerExecutionRuleInjected = firstTurn
 						&& HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "noble_prisoner_execution");
 					if (!CanUseSceneMechanismPostprocessForSpeaker(currentSpeaker.AgentIndex)
-						|| (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission() && !firstTurn))
+						|| (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission() && FieldCampMissionLogic.Current == null && !firstTurn))
 					{
 						genericSceneMechanismRuleInjected = false;
 					}

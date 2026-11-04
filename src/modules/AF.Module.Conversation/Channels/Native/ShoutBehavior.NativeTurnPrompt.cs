@@ -161,10 +161,12 @@ namespace AnimusForge;
             vanillaIssueRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vanilla_issue");
             bool heroJoinPartyRuleInjected = kingdomServiceRuleInjected;
             genericSceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
+            genericSceneMechanismRuleInjected = genericSceneMechanismRuleInjected
+                || (FieldCampMissionLogic.Current != null && CanUseSceneMechanismPostprocessForSpeaker(nativeTargetAgentIndex));
             noblePrisonerExecutionRuleInjected = shouldRecordPlayerInput
                 && HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "noble_prisoner_execution");
             if (!CanUseSceneMechanismPostprocessForSpeaker(nativeTargetAgentIndex)
-                || (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission() && !shouldRecordPlayerInput))
+                || (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission() && FieldCampMissionLogic.Current == null && !shouldRecordPlayerInput))
             {
                 genericSceneMechanismRuleInjected = false;
             }

@@ -69,7 +69,7 @@ public sealed partial class FieldCampMissionLogic
             for (int i = 0; i < _agents.Count; i++)
             {
                 CampAgent candidate = _agents[i]; Agent agent = candidate.Agent;
-                if (agent == null || !agent.IsActive() || agent.Character?.IsHero != false ||
+                if (candidate.FollowingPlayer || agent == null || !agent.IsActive() || agent.Character?.IsHero != false ||
                     _campCeremonyActors.ContainsKey(agent) || IsSceneConversationHeld(agent) || IsDuelist(agent) ||
                     candidate.Activity == Activity.Wounded || candidate.Activity == Activity.Sentry || candidate.Activity == Activity.Post) continue;
                 float score = agent.Position.AsVec2.DistanceSquared(_ceremonyOrigin.AsVec2);

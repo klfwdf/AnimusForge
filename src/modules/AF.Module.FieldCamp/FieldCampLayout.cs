@@ -356,17 +356,17 @@ internal sealed partial class FieldCampLayout
 				BenchSlots.Add(new Slot { Kind = SlotKind.Bench, Position = new Vec2(bx - b * 0.3f, gy + seat * 0.55f), Facing = new Vec2(-b, 0f), Work = WorkKind.Sit });
 			}
 		}
-		// A ring of ground seats 1.6 m out, every 45 degrees except toward the two benches (0/180):
-		// neighbours are 1.2 m apart. Work=Sit is required, or spawn turns the resident into a wanderer.
+		// A ring of ground seats 2.25 m out, every 45 degrees except toward the two benches (0/180):
+		// neighbours are at least 1.7 m apart. Work=Sit is required, or spawn turns the resident into a wanderer.
 		for (int k = 0; k < FireRingAngles.Length; k++)
 		{
 			float a = FireRingAngles[k] * MathF.PI / 180f;
-			Vec2 offset = new Vec2(MathF.Cos(a), MathF.Sin(a)) * 1.6f;
+			Vec2 offset = new Vec2(MathF.Cos(a), MathF.Sin(a)) * 2.25f;
 			FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + offset, Facing = (-offset).Normalized(), Work = WorkKind.Sit });
 		}
-		// Firewood or kit up the lane: 1.4 m beyond the 90-degree ring seat, >=3.1 m from the tent-mouth stations.
+		// Firewood stays beyond the widened seat ring, not under the north-side resident.
 		Props.Add(new Prop { Kind = index % 2 == 0 ? PropKind.Woodpile : PropKind.Clutter, CultureId = culture,
-			Position = fire + new Vec2(0f, 3f), Yaw = 0.3f * index, Variant = index });		float[] columns = { inner, outer };
+			Position = fire + new Vec2(0f, 4.1f), Yaw = 0.3f * index, Variant = index });		float[] columns = { inner, outer };
 		for (int c = 0; c < columns.Length; c++)
 		{
 			Props.Add(new Prop { Kind = PropKind.Bedroll, Position = new Vec2(columns[c] - 0.6f, gy), Yaw = 0.05f, Variant = index * 4 + c * 2 });

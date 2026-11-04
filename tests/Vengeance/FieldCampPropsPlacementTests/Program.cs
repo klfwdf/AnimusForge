@@ -63,6 +63,9 @@ static class Program
         Check(FieldCampProps.PlacedTentCount==1&&FieldCampProps.RequestedTentCount==2,"rejected trial does not claim both tents were placed");
         s=SceneWith("tent_vlandia_a",Box(2.5f,2.7f));l=Layout();s.MissingRoof=true;l.Props.Add(new(){Kind=FieldCampLayout.PropKind.Chest,TentAnchor=1});GameEntity.Prefabs["bd_chest_a"]=Box(0.2f,0.2f,0.5f);Place(s,l);
         Check(LiveTents(s).Count==1&&!s.Entities.Any(e=>!e.Removed&&e.Name=="bd_chest_a"),"furnishing support failure does not discard an accessible grounded tent");
+        s=SceneWith("archery_practice_target",Box(0.5f,0.5f,1.7f));l=new FieldCampLayout();l.Props.Add(new(){Kind=FieldCampLayout.PropKind.Target,Position=new Vec2(6f,7f)});Place(s,l);
+        Check(FieldCampProps.ArcheryTargets.Count==1 && s.Entities.Contains(FieldCampProps.ArcheryTargets[0]),"training target registry contains actual accepted entity, not guessed coordinates");
+        FieldCampProps.ResetPlacementCounts();Check(FieldCampProps.ArcheryTargets.Count==0,"training targets never leak to the next mission");
         Console.WriteLine($"PASS {checks} production tent placement assertions (real Library math; fake native scene/prefab queries)");
     }
     static int Main() {try {Run();return 0;}catch(Exception e){Console.Error.WriteLine(e.Message);return 1;}}

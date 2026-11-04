@@ -18,6 +18,8 @@ internal static class Integration
         check(RewardSystemBehavior.Instance.TransferGold(ordinaryGiver,ordinaryReceiver,10,true)==5 && ordinaryReceiver.Gold==5,"forceComplete still NPC-to-player only");
         check(RewardSystemBehavior.Instance.TransferGold(null,Hero.MainHero,10,true)==0,"normal gold invalid giver unchanged");
         void Reset() {
+            FieldCampMissionLogic.Current = null;
+            AIConfigHandler.Restricted = false;
             MyBehavior.DeveloperEnabled = true;
             Campaign.Current=new(); Mission.Current=new(){Mode=TaleWorlds.Core.MissionMode.StartUp}; Settlement.CurrentSettlement=new(){IsTown=true};
             ShoutBehavior.Target=new(); ShoutBehavior.TargetCharacter=new(){HeroObject=ShoutBehavior.Target};
@@ -26,6 +28,19 @@ internal static class Integration
         }
         void Select(object id) {var m=(MultiSelectionInquiryData)InformationManager.Popup;m.AffirmativeAction(new(){m.Elements.Single(e=>Equals(e.Identifier,id))});}
         void StartMoney() { check(ShoutBehavior.OpenNativePlayerDirectActions(()=>{}),"native direct without API setup"); Select(PlayerDirectActionKind.Gold); }
+        Reset(); AIConfigHandler.Restricted = true; FieldCampMissionLogic.Current = new();
+        check(ShoutBehavior.OpenNativePlayerDirectActions(()=>{}), "camp opens native manual actions despite generic scene-move exclusion");
+        var campMenu=(MultiSelectionInquiryData)InformationManager.Popup;
+        check(campMenu.Elements.Single(x=>Equals(x.Identifier,PlayerDirectActionKind.Follow)).IsEnabled, "healthy camp resident can follow");
+        check(!campMenu.Elements.Single(x=>Equals(x.Identifier,PlayerDirectActionKind.StopFollow)).IsEnabled, "camp stop only available to actual follower");
+        FieldCampMissionLogic.Current.Eligible=false;
+        check(ShoutBehavior.OpenNativePlayerDirectActions(()=>{}), "camp menu reopens for unavailable actor");
+        campMenu=(MultiSelectionInquiryData)InformationManager.Popup;
+        check(!campMenu.Elements.Single(x=>Equals(x.Identifier,PlayerDirectActionKind.Follow)).IsEnabled, "wounded/busy camp actor remains excluded");
+        FieldCampMissionLogic.Current.Following=true;
+        check(ShoutBehavior.OpenNativePlayerDirectActions(()=>{}), "camp follower menu opens");
+        campMenu=(MultiSelectionInquiryData)InformationManager.Popup;
+        check(campMenu.Elements.Single(x=>Equals(x.Identifier,PlayerDirectActionKind.StopFollow)).IsEnabled, "camp follower can stop even when new follow admission is unavailable");
         Reset(); StartMoney(); var money=(TextInquiryData)InformationManager.Popup; money.AffirmativeAction("100000");
         check(ShoutBehavior.CurrentInstance._nativeGameEffects.Tags.Single()=="[ACTION:GIVE_ASSET:GOLD:100000]","normal executor receives exact tag only");
         foreach (var mutation in new Action[]{()=>MyBehavior.DeveloperEnabled=false,()=>Campaign.Current=new(),()=>Mission.Current=new(),()=>Campaign.Current.ConversationManager.ActiveToken++,

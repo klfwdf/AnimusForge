@@ -98,6 +98,66 @@ class CampReviewSourceContracts(unittest.TestCase):
         cls.people = read(CAMP / "FieldCampMissionLogic.People.cs")
         cls.duel = read(ROOT / "src/modules/AF.Module.Duel/Host/DuelBehavior.cs")
 
+    def test_camp_follower_exclusively_owns_movement(self):
+        follow = read(CAMP / "FieldCampMissionLogic.Follow.cs")
+        self.assertIn("entry.FollowingPlayer = true;", block(follow, "internal bool BeginFollowPlayer("))
+        self.assertIn("if (entry.FollowingPlayer) continue;", block(self.life, "private void UpkeepBatchOfAgents("))
+        self.assertIn("entry.FollowingPlayer || entry.Seated", block(self.life, "private void AdvanceCampWalks("))
+        release = block(self.life, "internal void ReleaseSceneConversation(")
+        self.assertLess(release.index("if (IsFollowingPlayer(agent))"), release.index("StopCampNavigation(agent);"))
+        self.assertIn("SceneMovementController.TryEnableVanillaSceneFollowBehavior", release)
+        self.assertIn("entry.FollowingPlayer || IsCampAgentBusyForConversation", block(self.life, "internal bool RestoreCampAttentionOwner("))
+
+    def test_camp_only_admits_follow_rules_not_all_scene_movement(self):
+        config = read(ROOT / "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs")
+        self.assertIn("mission.GetMissionBehavior<FieldCampMissionLogic>() != null", block(config, "private static bool ShouldExcludeSceneMoveRuleForMission("))
+        capture = read(ROOT / "src/AF.GameAdapter.Bannerlord/Prompt/SceneMechanismPromptCaptureAdapter.cs")
+        camp_branch = block(capture, "if (camp != null && includeGenericRules)")
+        self.assertIn("SCENE_FOLLOW_PLAYER", camp_branch)
+        self.assertIn("SCENE_STOP_FOLLOW", camp_branch)
+        self.assertNotIn("SCENE_GUIDE", camp_branch)
+        self.assertNotIn("SCENE_SUMMON", camp_branch)
+        self.assertIn("return list;", camp_branch)
+        post = read(ROOT / "src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs")
+        self.assertIn("!campFollowRuleAvailable", post)
+        self.assertIn("campFollowRuleAvailable &&", post)
+        manual = read(ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PlayerDirectActions.cs")
+        self.assertIn("if (FieldCampMissionLogic.Current != null) return PlayerDirectActionContext.Scene;", manual)
+        self.assertIn("FieldCampMissionLogic.Current.CanFollowPlayer(agent)", manual)
+
+    def test_walking_clears_both_pose_channels_and_combat_owner(self):
+        release = block(self.life, "private static void ReleasePose(")
+        self.assertIn("DisableScriptedCombatMovement", release)
+        self.assertIn("SetMaximumSpeedLimit(-1f", release)
+        self.assertIn("SetActionChannel(0, in ActionIndexCache.act_none", release)
+        self.assertIn("SetActionChannel(1, in ActionIndexCache.act_none", release)
+        self.assertIn("blendOutPeriodToNoAnim: 0f", release)
+        self.assertIn("ReleasePose(entry);", block(self.life, "private void MoveTo("))
+        self.assertNotIn('"act_sit_beggar_idle"', self.life)
+        self.assertIn("AnimFlags.anf_lock_movement", block(self.life, "private void ApplyPose("))
+        self.assertIn("startProgress:", block(self.life, "private void PlayLoop("))
+
+    def test_short_routes_fail_closed_and_keep_budget(self):
+        route = block(self.life, "private bool TryCampRoute(")
+        self.assertIn("stayInsideCamp: true", route)
+        self.assertNotIn("HasCeremonyWalkPath", route)
+        stroll = block(self.life, "private bool TryNearbyStroll(")
+        self.assertLess(stroll.index("for (int i = 0; i < 6; i++)"), stroll.index("int count = _layout.WanderSlots.Count;"))
+        self.assertIn("_campRouteBudget--", stroll)
+
+    def test_training_uses_placed_entity_not_idle_archer_clip(self):
+        training = read(CAMP / "FieldCampMissionLogic.Training.cs")
+        props = read(CAMP / "FieldCampProps.cs")
+        self.assertIn("ArcheryTargets.Add(aim)", props)
+        self.assertIn("ArcheryTargets.Clear();", props)
+        self.assertIn("SetScriptedTargetEntity(target.WeakEntity", training)
+        self.assertIn("UpkeepCampArchery(entry)", block(self.life, "private void UpkeepBatchOfAgents("))
+        main = read(CAMP / "FieldCampMissionLogic.cs")
+        self.assertIn("walkToAssignedSlot: s.Work == FieldCampLayout.WorkKind.Archer", main)
+        zones = read(ROOT / "src/modules/AF.Module.FieldCamp/FieldCampLayout.Zones.cs")
+        self.assertIn("WorkSlots.Insert(i,", block(zones, "private void PlaceTraining("))
+        self.assertNotIn("private static readonly string[] ArcherActions", self.life)
+
     def test_duel_captive_team_handoff(self):
         duel_handoff(self.grounds, self.duel, self.people)
 

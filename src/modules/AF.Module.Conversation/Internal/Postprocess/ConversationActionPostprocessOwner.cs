@@ -441,6 +441,10 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 			});
 		}
 		bool excludeSceneMoveRule = AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission();
+        bool campFollowRuleAvailable = FieldCampMissionLogic.Current != null
+            && (sceneMechanismRules ?? new List<PostprocessRuleEntry>()).Any(rule =>
+                string.Equals((rule?.Tag ?? "").Trim(), "[ACTION:SCENE_FOLLOW_PLAYER]", StringComparison.OrdinalIgnoreCase)
+                || string.Equals((rule?.Tag ?? "").Trim(), "[ACTION:SCENE_STOP_FOLLOW]", StringComparison.OrdinalIgnoreCase));
 		bool inspectionSlaughterRuleAvailable = (sceneMechanismRules ?? new List<PostprocessRuleEntry>())
 			.Any(rule => string.Equals(
 				(rule?.Tag ?? "").Trim(),
@@ -455,7 +459,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 		{
 			text = StripSceneMechanismActionTagsForScene(text);
 		}
-		if (excludeSceneMoveRule && !inspectionSlaughterRuleAvailable && !noblePrisonerExecutionRuleAvailable)
+		if (excludeSceneMoveRule && !campFollowRuleAvailable && !inspectionSlaughterRuleAvailable && !noblePrisonerExecutionRuleAvailable)
 		{
 			sceneMechanismRuleInjected = false;
 			sceneMechanismRules = null;
@@ -469,9 +473,11 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 				.Where(rule =>
 				{
 					string tag = (rule?.Tag ?? "").Trim();
-					return string.Equals(
-						tag,
-						TroopInspectionPrisonerSlaughterProfile.ActionTag,
+                    return (campFollowRuleAvailable && (string.Equals(tag, "[ACTION:SCENE_FOLLOW_PLAYER]", StringComparison.OrdinalIgnoreCase)
+                            || string.Equals(tag, "[ACTION:SCENE_STOP_FOLLOW]", StringComparison.OrdinalIgnoreCase)))
+                        || string.Equals(
+                        tag,
+                        TroopInspectionPrisonerSlaughterProfile.ActionTag,
 						StringComparison.OrdinalIgnoreCase)
 						|| string.Equals(
 							tag,
@@ -985,6 +991,8 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 			vanillaIssueRuleInjected = vanillaIssueRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "vanilla_issue");
 			heroJoinPartyRuleInjected = heroJoinPartyRuleInjected || kingdomServiceRuleInjected;
 			sceneMechanismRuleInjected = sceneMechanismRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "scene_mechanism_actions");
+            sceneMechanismRuleInjected = sceneMechanismRuleInjected
+                || (FieldCampMissionLogic.Current != null && CanUseSceneMechanismPostprocessForSpeaker(targetAgentIndex));
 			partyTransferRuleInjected = partyTransferRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "party_transfer");
 			voteDealRuleInjected = voteDealRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "kingdom_agenda");
 			bool royalPostprocessEligible = AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(targetHero ?? targetCharacter?.HeroObject);
@@ -1080,10 +1088,13 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 				if (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
 				{
 					mechanismRules = mechanismRules
-						.Where(rule => string.Equals(
-							(rule?.Tag ?? "").Trim(),
-							TroopInspectionPrisonerSlaughterProfile.ActionTag,
-							StringComparison.OrdinalIgnoreCase))
+                        .Where(rule => string.Equals(
+                            (rule?.Tag ?? "").Trim(),
+                            TroopInspectionPrisonerSlaughterProfile.ActionTag,
+                            StringComparison.OrdinalIgnoreCase)
+                            || (FieldCampMissionLogic.Current != null &&
+                                (string.Equals((rule?.Tag ?? "").Trim(), "[ACTION:SCENE_FOLLOW_PLAYER]", StringComparison.OrdinalIgnoreCase)
+                                || string.Equals((rule?.Tag ?? "").Trim(), "[ACTION:SCENE_STOP_FOLLOW]", StringComparison.OrdinalIgnoreCase))))
 						.ToList();
 				}
 			}
@@ -2021,7 +2032,11 @@ internal static List<PostprocessRuleEntry> BuildSiegeSurrenderPostprocessRulesFo
 internal static bool CanUseSceneMechanismPostprocessForSpeaker(int speakerAgentIndex)
 	{
 		return !AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission()
-			|| NoblePrisonerEscortBehavior.IsEscortedAgent(speakerAgentIndex)
+            || (FieldCampMissionLogic.Current != null
+                && AIConfigHandler.GetConfiguredEnabledGuardrailRuleIdsForExternal().Contains("scene_mechanism_actions", StringComparer.OrdinalIgnoreCase)
+                && Mission.Current?.Agents?.Any(agent => agent != null && agent.Index == speakerAgentIndex
+                && (FieldCampMissionLogic.Current.CanFollowPlayer(agent) || FieldCampMissionLogic.Current.IsFollowingPlayer(agent))) == true)
+            || NoblePrisonerEscortBehavior.IsEscortedAgent(speakerAgentIndex)
 			|| TroopInspectionBehavior.CanOfferPrisonerSlaughterActionForExternal(
 				speakerAgentIndex,
 				out _,

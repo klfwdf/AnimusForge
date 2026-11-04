@@ -380,7 +380,8 @@ public static class AIConfigHandler
 			return false;
 		}
 		// The field camp has no LocationCharacters and its camp life re-issues agent moves:
-		// lead/summon/follow would fight it, so camp orders use their own tags instead.
+		// lead/summon remain excluded. Follow/stop use the camp's explicit ownership handoff
+        // and a narrow capability filter at the prompt/action boundary.
 		if (mission.GetMissionBehavior<FieldCampMissionLogic>() != null)
 		{
 			return true;

@@ -143,3 +143,14 @@ namespace AnimusForge
     internal static class PlayerEncounterCompat { internal static bool Battle; internal static bool HasBattleOrEncounteredBattle()=>Battle; internal static bool HasCampaignBattleResult()=>false; }
 }
 namespace AnimusForge.Refactor.Adapters { internal static class PromptRuleCaptureBannerlordAdapter { internal static bool ShouldExcludeWorldMapCommandRuleForTarget(Hero h,CharacterObject c,int i)=>h?.IsNotable==true; } }
+
+namespace AnimusForge
+{
+    internal sealed class FieldCampMissionLogic
+    {
+        internal static FieldCampMissionLogic Current;
+        internal bool Eligible=true, Following;
+        internal bool CanFollowPlayer(TaleWorlds.MountAndBlade.Agent agent)=>Eligible && agent != null;
+        internal bool IsFollowingPlayer(TaleWorlds.MountAndBlade.Agent agent)=>Following && agent != null;
+    }
+}

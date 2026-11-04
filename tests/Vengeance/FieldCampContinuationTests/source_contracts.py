@@ -178,7 +178,7 @@ for method in ['HoldAgentInPlaceUnlessSeated', 'ReleaseAgentFromSceneConversatio
     body = attention.split(('private static void ' if method == 'HoldAgentInPlaceUnlessSeated' else 'internal void ') + method, 1)[1]
     check('IsCampCeremonyMovementOwned(' in body.split('\n\tinternal ', 1)[0], method + ' preserves ceremony movement')
 walk = execution.split('private void IssueCeremonyWalk(', 1)[1].split('private void TickCeremonyPreparation(', 1)[0]
-check(walk.index('SetMaximumSpeedLimit(-1f') < walk.index('SetScriptedPositionAndDirection'),
+check(walk.index('SetMaximumSpeedLimit(-1f') < walk.index('SetScriptedPosition(ref world'),
       'ceremony clears old conversation speed freeze before issuing walk')
 check('request.VenueName?.ToString()' in identity and 'request.IsFieldCamp' in identity and
       '"scene_execution_role_camp_crowd"' in identity, 'camp name and soldier role reach real prompt consumer')

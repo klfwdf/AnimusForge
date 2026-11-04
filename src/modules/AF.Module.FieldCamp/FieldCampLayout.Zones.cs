@@ -68,7 +68,9 @@ internal sealed partial class FieldCampLayout
 		{
 			float y = FrontZoneBottom + 3.5f + i * 4f;
 			Props.Add(new Prop { Kind = PropKind.Target, Position = Flank(sx, 0.92f, y), Yaw = YawOf(Inward(sx)), Variant = i });
-			Work(Flank(sx, 0.18f, y), Outward(sx), WorkKind.Archer);
+			// Reserve the four training lanes before tent-mouth work slots consume the
+            // display-agent budget. Otherwise a large tent plan never staffs the range.
+            WorkSlots.Insert(i, new Slot { Kind = SlotKind.Work, Position = Flank(sx, 0.18f, y), Facing = Outward(sx), Work = WorkKind.Archer });
 		}
 		Props.Add(new Prop { Kind = PropKind.TrainingRack, CultureId = home, Position = Flank(sx, 0.35f, Front - 2f), Yaw = 0f });
 		Props.Add(new Prop { Kind = PropKind.WeaponHeap, Position = Flank(sx, 0.6f, Front - 2f), Yaw = 0.3f, Variant = 0 });

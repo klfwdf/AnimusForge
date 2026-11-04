@@ -29,6 +29,22 @@ static class Program
         Check(FieldCampSite.TryFindNearbyGroundedPosition(scene,new Vec3(0,18,0),.35f,2,out var spawn)&&spawn.AsVec2.Distance(new Vec2(0,18))<=2.01f,"nearby spawn retains body clearance and bounded distance");
         Check(!FieldCampSite.TryFindNearbyGroundedPosition(scene,new Vec3(0,18,0),.35f,0,out _),"zero search cannot ignore collisions");
         Check(!FieldCampSite.TryFindNearbyGroundedPosition(scene,new Vec3(0,18,0),.35f,float.NaN,out _),"invalid search budget rejected");
+        // An inner-margin start rounds onto an outside cache cell. Old code disabled all bounds.
+        scene=new Scene();m=Use(scene);
+        FieldCampSite.InitializeGroundCache(scene,MatrixFrame.Identity,layout,1);
+        Check(FieldCampSite.TryBuildGroundedRoute(scene,new Vec3(35.9f,5,0),new Vec3(25,5,0),out route,out covered,stayInsideCamp:true),"margin-drift start can take a short connector back inside");
+        Check(route.All(p=>Math.Abs(p.x)<layout.HalfX-.8f && p.y>layout.Back+.8f && p.y<layout.Front-.8f),"all issued resident route goals stay inside the fence margin");
+        Vec3 previous=new Vec3(35.9f,5,0);
+        foreach(var point in route){Check(previous.AsVec2.Distance(point.AsVec2)<=1.51f,"native route legs cannot choose a distant outside detour");previous=point;}
+        Check(!FieldCampSite.TryBuildGroundedRoute(scene,new Vec3(10,5,0),new Vec3(36.2f,5,0),out _,out _,stayInsideCamp:true),"inside resident cannot request an outside-margin goal");
+        layout.Props.Add(new FieldCampLayout.Prop{Kind=FieldCampLayout.PropKind.Fire,Position=new Vec2(10,5)});
+        FieldCampSite.InitializeGroundCache(scene,MatrixFrame.Identity,layout,1);
+        Check(!FieldCampSite.TryResolveGroundedPosition(scene,new Vec3(10,5,0),.4f,out _),"walk-through fire visual is still forbidden for spawn/seat");
+        Check(!FieldCampSite.TryValidateGroundedPassage(scene,new Vec3(7,5,0),new Vec3(13,5,0),.15f),"direct walking through fire core is blocked");
+        Check(FieldCampSite.TryResolveGroundedPosition(scene,new Vec3(12.25f,5,0),.4f,out _),"rest ring outside fire disc retains actor clearance");
+        Check(FieldCampSite.TryBuildGroundedRoute(scene,new Vec3(7,5,0),new Vec3(13,5,0),out route,out _,stayInsideCamp:true),"resident may route around fire rather than losing the whole connected camp");
+        Check(route.All(p=>p.AsVec2.Distance(new Vec2(10,5))>1.44f),"every short route waypoint stays clear of flames");
+        layout.Props.Clear();
         scene=new Scene{Blocked=p=>p.y>21&&p.y<24};m=Use(scene);
         FieldCampSite.InitializeGroundCache(scene,MatrixFrame.Identity,layout,1);
         Check(FieldCampSite.TryResolveGroundedPosition(scene,new Vec3(10,5,0),.35f,out _),"disconnected gate does not suppress independent safe residents");

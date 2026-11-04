@@ -253,7 +253,7 @@ public sealed partial class FieldCampMissionLogic
 		{
 			CampAgent entry = _agents[i];
 			Agent agent = entry.Agent;
-			if (agent == null || agent == Agent.Main || !agent.IsActive() || entry.Activity == Activity.Wounded || IsDuelist(agent)
+			if (entry.FollowingPlayer || agent == null || agent == Agent.Main || !agent.IsActive() || entry.Activity == Activity.Wounded || IsDuelist(agent)
                     || IsCeremonyAgentHeld(agent)
 					|| IsSceneConversationHeld(agent) || _ceremonyMoved.Contains(entry)
 				|| !(agent.Character is CharacterObject character)

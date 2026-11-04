@@ -51,12 +51,18 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal FieldCampLayout.WorkKind Work;
 		internal int PoseVariant;
         internal ActionIndexCache PoseAction = ActionIndexCache.act_none;
-        /// <summary>Consecutive failed walks back to the work station; three give the station up.</summary>
+        /// <summary>Consecutive failed walks back to the work station; route-budget deferrals do not consume a retry.</summary>
         internal int HomeRetries;
         internal string RightHandItem, LeftHandItem;
         internal sbyte RightHandBone, LeftHandBone;
 		/// <summary>On a short visit; rests at the destination before returning Home.</summary>
 		internal bool Returning;
+        internal bool FollowingPlayer;
+        internal bool Training;
+        internal bool PracticeEquipmentHeld;
+        internal MissionWeapon PreviousPracticeWeapon, PreviousPracticeAmmo;
+        internal GameEntity TrainingTarget;
+        internal float NextTrainingTime;
 		internal float MoveDeadline;
 		internal bool MoveBlocked;
         internal bool RouteQueued;
@@ -385,7 +391,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 				Agent agent = SpawnCharacter(group.Character, group.Party.Party, s.Position, s.Facing, civilian: false);
 				if (agent != null)
 				{
-					Track(agent, activity, s.Position, s.Facing, troopClass, s.Work);
+					Track(agent, activity, s.Position, s.Facing, troopClass, s.Work,
+                        walkToAssignedSlot: s.Work == FieldCampLayout.WorkKind.Archer);
 				}
 			}
 		}
@@ -517,7 +524,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 			Target = home,
 			TroopClass = troopClass,
             Work = work,
-            NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(1f, 4f)
+            NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(8f, 25f)
 		};
 		entry.TargetFacing = entry.HomeFacing;
 			_agents.Add(entry);
