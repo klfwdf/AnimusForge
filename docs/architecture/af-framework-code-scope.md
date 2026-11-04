@@ -1,3 +1,8 @@
+<a id="camp-waypoint-motion-20261104"></a>
+## 2026-11-04 营地路线实际发令与动作完成
+
+源码c85a0e8b8a，一基行号。FieldCampSite.cs约第911–920行TryBuildGroundedRoute仅在缓存通道确认可走后省略近源格点。FieldCampMissionLogic.cs第53行CampAgent.PoseAction记录工作动作。Life.cs第306行AdvanceCampWalks每帧20人/2缓存通道，第406行Upkeep分批动作完成检测，第683行HasFinishedCampWork、第691行CanAdvanceCampCorner，约第705–720行IssueCampWalk纯位置脚本指令，约第735–748行失败日志补充原生状态，第814–827行ApplyPose记录动作，第904行ReleasePose清理。Execution.cs约第271–286行IssueCeremonyWalk复用纯位置，第289–298行HoldCeremonyActor到站设朝向，第318、568、688行三个路线推进消费者复用拐点通道检查。覆盖巡游/返岗/刑场移动，实机行走未验，不覆盖其他场景AI或整场景原生navmesh重建。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#camp-waypoint-motion-20261104)。
+
 <a id="camp-idle-routing-20261104"></a>
 ## 2026-11-04 营地巡游和导航图标续修
 

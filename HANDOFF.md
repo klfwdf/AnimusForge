@@ -1,3 +1,7 @@
+## 2026-11-04 营地已发令却卡起点续修已部署
+
+产品c85a0e8b8a，检查点e7a2943c7。现场日志确认多名居民已有路线、GoToTarget但反复卡route=0。省略通道检查通过的冗余源格点，使用纯位置脚本行走/到站设朝向，带净空检查推进近拐点，已完成工作动作短途活动后返岗。1.3/1.4/Bootstrap编译成功，游戏退出后3 DLL/3标记共6项部署SUCCESS，记录.tmp/camp-waypoint-motion-20261104/。跳过测试/哈希/回读/冒烟，实机走动仍待确认，不能宣称根因已实证或完全解决。未打包或push。见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-waypoint-motion-20261104)及[代码范围](docs/architecture/af-framework-code-scope.md#camp-waypoint-motion-20261104)。
+
 ## 2026-11-04 营地站姿循环续修部署完成
 
 用户授权部署，5614cf726d对应双实现/Bootstrap及标记、导航栏画刷7文件替换成功。游戏已退出后执行，记录.tmp/camp-idle-routing-20261104/deployment-result.json。按要求跳过测试/哈希/回读/冒烟，实机待观察。本条取代下方同任务“未部署”状态，未打包或push。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-idle-routing-20261104-deployed)。

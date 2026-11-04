@@ -1,3 +1,14 @@
+<a id="camp-waypoint-motion-20261104"></a>
+## 2026-11-04 营地移动卡起点与工作动作结束续修
+
+DEPLOYED / BUILT / VALIDATION_DISABLED_BY_USER / LIVE_NOT_RUN。用户在5614cf726d部署后继续反馈罚站，本条取代此前“站姿占位转巡游”足以解决现场的假设。检查点e7a2943c7，产品c85a0e8b8a。实际14:03:56和14:07场景初始化成功，14:04–14:10多名居民route=0/2、0/3、1/4且navigator=GoToTarget后反复stalled，证明路线已交付但移动未落实。日志尚未记录当时具体waypoint/原生flags，因此起点短修正及朝向/到点交互是源码针对性修复，不能宣称实机根因完全确认。
+
+FieldCampSite.TryBuildGroundedRoute原首元素包含BFS起点，即已站立网格，当前0.2米AF路点条件可要求0.2–0.35米微移。现在仅在实际位置到下一段通过既有缓存通道检查时移除近0.5米源格点。Life和Execution移动改Agent.SetScriptedPosition位置目标并NeverSlowDown，到站由owner设置朝向，取消navigator的0.15米三维位置/朝向完成门。拐点0.8米内仅在实际位置到下一点缓存通道通过时推进，保留精确0.2米直接到点分支，防止绕角穿墙。AdvanceCampWalks仍每帧最多20人，额外通道预算2次/帧，每次既有MaxPassageSteps上限，无新Tick反射/IO/场景扫描。寻路预算2次/0.5秒保持。没有碰撞传送。
+
+CampAgent.PoseAction记录实际设置的工作动作，Life.HasFinishedCampWork按既有0.5秒20人分批检测动作结束，普通工作人员和可离岗Post结束后请求短途活动再返岗；哨兵、伤员、固定Post保持职责。失败诊断继续10秒节流，补实际waypoint、nativeTarget、scripted flags、paused、velocity、action index、AllowAiTicking，能够区分未下发/暂停/落点/动画问题。
+
+最终源码1.3/1.4各exit0、407警告0错误，Bootstrap exit0、0警告0错误。日志和构建脚本.tmp/camp-waypoint-motion-20261104/，候选bin/Debug/camp-waypoint-motion-20261104/。编译含当前工作区其他作者未提交源码，仅提交本任务4具名文件。沿连续修复及前序部署授权，在游戏退出后复用现有路径保护及具名文件原子替换，覆盖3 DLL与3标记共6文件，deployment-result.json SUCCESS，标记SourceCommit=c85a0e8b8a、Sha256=null、ValidationStatus=DisabledByUser。用户数据目录不在部署计划内。无新包或push。遵用户要求跳过测试、哈希、回读、冒烟及实机，NPC实际走动/所有工作动作和围栏转角仍待确认。回滚以c85a0e8b8a聚焦逆向后编译覆盖，保留其他作者内容。源码证据见[代码范围](architecture/af-framework-code-scope.md#camp-waypoint-motion-20261104)。
+
 <a id="camp-idle-routing-20261104-deployed"></a>
 ## 2026-11-04 营地站姿循环续修已部署
 
