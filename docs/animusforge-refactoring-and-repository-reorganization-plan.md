@@ -1,3 +1,7 @@
+<a id="camp-life-follow-20261105"></a>
+## 2026-11-05 营地围栏、火堆落座、生活动作、靶场及跟随修复
+
+ACTIVE。用户连续截图反馈居民绕出围栏卡住、坐火堆、乞丐统一坐姿、罚站、走姿异常、靶场无人射击及营地不能跟随。现场Mod_Logic.txt多次no reachable stroll destination/stalled；源码确认SitActions含beggar、ArcherActions仅张望、AIConfigHandler明确禁营地scene move规则。限定FieldCamp路径/火堆安全及活动owner、实际靶实体、Follow控制权交接、相关Prompt/手动入口过滤和定向回归；不改伤害/队伍、不部署/push。不把源码检查或双API编译称为实机验收。退出门为关联回归和双API/Bootstrap构建，实机路径、射击及动画另列未验。回滚前产品HEAD=4c73dcc986，保留此前喊话UI修复。
 <a id="scene-input-scroll-20261105"></a>
 ## 2026-11-05 场景喊话输入框滚动及裁剪
 
