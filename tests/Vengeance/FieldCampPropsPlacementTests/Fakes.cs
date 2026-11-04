@@ -63,8 +63,8 @@ namespace AnimusForge
     internal static class Logger { internal static List<string> Lines=new();internal static void Log(string source,string line)=>Lines.Add(line); }
     internal sealed class FieldCampLayout
     {
-        internal enum PropKind { Tent, Fire, Flag, Supply, Rack, Bedroll, Spit, Cauldron, Bench, Woodpile, Clutter, Cart, Chest, Torch, Target, TrainingRack, HorseBarrier, Trough, HayCart, Standard, Wall, Table, Anvil, WeaponHeap, Bed, ExecutionBlock, Gallows, Bag }
-        internal struct Prop { internal PropKind Kind;internal string CultureId;internal Vec2 Position,End;internal float Yaw,Scale;internal int Variant,TentAnchor; }
+        internal enum PropKind { Tent, Fire, Flag, Supply, Rack, Bedroll, Spit, Cauldron, Bench, Woodpile, Clutter, Cart, Chest, Torch, Target, TrainingRack, HorseBarrier, Trough, HayCart, Standard, Wall, Table, Anvil, WeaponHeap, Bed, ExecutionBlock, Gallows, Bag, Hearth, Rug, Ash, Dishes, Food, Gear, Wreck }
+        internal struct Prop { internal PropKind Kind;internal string CultureId;internal Vec2 Position,End;internal float Yaw,Scale;internal int Variant,TentAnchor,StackOn; }
         internal readonly List<Prop> Props=new();
     }
 }

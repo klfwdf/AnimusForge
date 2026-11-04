@@ -29,6 +29,19 @@ internal sealed partial class FieldCampLayout
 		WorkSlots.Add(new Slot { Kind = SlotKind.Work, Position = position, Facing = facing, Work = work });
 	}
 
+	/// <summary>
+	/// Puts walk-through dishes/food on the table that was just added. Items sit +-0.25 m along the
+	/// table's local x axis, inside the 0.6 m minimum depth of every pooled table whichever axis is long.
+	/// </summary>
+	private void SetTable(PropKind kind, int variant, params float[] along)
+	{
+		int table = Props.Count;
+		Prop top = Props[table - 1];
+		Vec2 axis = new Vec2(MathF.Cos(top.Yaw), MathF.Sin(top.Yaw));
+		for (int i = 0; i < along.Length; i++)
+			Props.Add(new Prop { Kind = kind, Position = top.Position + axis * along[i], Yaw = top.Yaw + i * 0.7f, Variant = variant + i, StackOn = table });
+	}
+
 	/// <summary>The player's tent at the end of the road, with banners, a war table and a chest.</summary>
 	private void PlaceCommand(string home)
 	{
@@ -53,7 +66,8 @@ internal sealed partial class FieldCampLayout
 		for (int i = 0; i < 4; i++)
 		{
 			float y = FrontZoneBottom + 3.5f + i * 4f;
-			Props.Add(new Prop { Kind = PropKind.Target, Position = Flank(sx, 0.92f, y), Yaw = YawOf(Inward(sx)), Variant = i });
+			// i % 2 keeps the butts alternating board/target now that the pool's third entry is a clay pot.
+			Props.Add(new Prop { Kind = PropKind.Target, Position = Flank(sx, 0.92f, y), Yaw = YawOf(Inward(sx)), Variant = i % 2 });
 			Work(Flank(sx, 0.18f, y), Outward(sx), WorkKind.Archer);
 		}
 		Props.Add(new Prop { Kind = PropKind.TrainingRack, CultureId = home, Position = Flank(sx, 0.35f, Front - 2f), Yaw = 0f });
@@ -65,6 +79,9 @@ internal sealed partial class FieldCampLayout
 		Props.Add(new Prop { Kind = PropKind.WeaponHeap, Position = arrows, Yaw = 0.4f, Variant = 2 });
 		Work(arrows + Inward(sx) * 1.5f, Outward(sx), WorkKind.Pickup);
 		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.15f, Front - 2f), Yaw = 0.3f, Variant = 1 });
+		// Clay practice pots on stakes between the butts (pool falls back to boards when pots are missing).
+		for (int i = 0; i < 2; i++)
+			Props.Add(new Prop { Kind = PropKind.Target, Position = Flank(sx, 0.92f, FrontZoneBottom + 5.5f + i * 8f), Yaw = YawOf(Inward(sx)), Variant = 2 });
 	}
 
 	/// <summary>Right front: two tether lines with real horses, a trough and a hay cart.</summary>
@@ -92,6 +109,9 @@ internal sealed partial class FieldCampLayout
 		Work(hay + Inward(sx) * 1.9f, Outward(sx), WorkKind.Shovel);
 		Props.Add(new Prop { Kind = PropKind.Supply, Position = Flank(sx, 0.5f, FrontZoneBottom + 1.2f), Yaw = 0.7f, Variant = 0 });
 		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.62f, Front - 2.5f), Yaw = 0.2f, Variant = 3 });
+		// Tack and hides in the two palisade corners, >=4.4 m from every tethered horse.
+		Props.Add(new Prop { Kind = PropKind.Gear, Position = Flank(sx, 0.97f, Front - 1.6f), Yaw = 0.3f, Variant = 0 });
+		Props.Add(new Prop { Kind = PropKind.Gear, Position = Flank(sx, 0.4f, Front - 1.5f), Yaw = 1.2f, Variant = 1 });
 		Vec2 logs = Flank(sx, 0.15f, Front - 2.5f);
 		Work(logs + Inward(sx) * 1.5f, Outward(sx), WorkKind.Chop);
 	}
@@ -102,8 +122,10 @@ internal sealed partial class FieldCampLayout
 		const float sx = -1f;
 		Vec2 stew = Flank(sx, 0.4f, 1.5f);
 		Vec2 roast = Flank(sx, 0.4f, -4f);
+		Props.Add(new Prop { Kind = PropKind.Hearth, Position = stew, Variant = 1 });
 		Props.Add(new Prop { Kind = PropKind.Fire, Position = stew });
 		Props.Add(new Prop { Kind = PropKind.Cauldron, CultureId = home, Position = stew, Variant = 1 });
+		Props.Add(new Prop { Kind = PropKind.Hearth, Position = roast, Variant = 2 });
 		Props.Add(new Prop { Kind = PropKind.Fire, Position = roast });
 		Props.Add(new Prop { Kind = PropKind.Spit, Position = roast, Yaw = MathF.PI * 0.5f, Variant = 1 });
 		Work(stew + new Vec2(1.4f, 0f), new Vec2(-1f, 0f), WorkKind.Cook);
@@ -112,6 +134,7 @@ internal sealed partial class FieldCampLayout
 		{
 			Vec2 table = Flank(sx, 0.86f, 2.5f - i * 4.5f);
 			Props.Add(new Prop { Kind = PropKind.Table, CultureId = home, Position = table, Yaw = YawOf(Inward(sx)), Variant = 1 + i });
+			SetTable(PropKind.Food, i * 2, -0.25f, 0.25f);
 			Work(table + new Vec2(1.3f, 0f), new Vec2(-1f, 0f), WorkKind.Cook);
 		}
 		for (int i = 0; i < 4; i++)
@@ -153,12 +176,17 @@ internal sealed partial class FieldCampLayout
 		Props.Add(new Prop { Kind = PropKind.Cart, Position = cart, Yaw = 0f, Variant = 2 });
 		Work(cart + new Vec2(-1.7f, 0f), new Vec2(1f, 0f), WorkKind.Repair);
 		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.12f, -1.5f), Yaw = 0.5f, Variant = 7 });
+		// Spare wheels and a stripped wreck waiting for the repair crew, behind the cart.
+		// Wreck >=3 m from the repair, chop and smith stations; gear 2 m below the smithy woodpile.
+		Props.Add(new Prop { Kind = PropKind.Wreck, Position = Flank(sx, 0.45f, -8.4f), Yaw = 0.2f, Variant = 0 });
+		Props.Add(new Prop { Kind = PropKind.Gear, Position = Flank(sx, 0.85f, -8.6f), Yaw = 0.4f, Variant = 2 });
 		Vec2 smithyLogs = Flank(sx, 0.85f, -6.5f);
 		Props.Add(new Prop { Kind = PropKind.Woodpile, CultureId = home, Position = smithyLogs, Yaw = 0f, Variant = 1 });
 		Work(smithyLogs + Inward(sx) * 1.6f, Outward(sx), WorkKind.Chop);
 		// A workbench for fitting straps and hafts.
 		Vec2 bench = Flank(sx, 0.62f, -1.5f);
 		Props.Add(new Prop { Kind = PropKind.Table, CultureId = home, Position = bench, Yaw = YawOf(Inward(sx)), Variant = 2 });
+		SetTable(PropKind.Dishes, 6, 0.2f);
 		Work(bench + Inward(sx) * 1.2f, Outward(sx), WorkKind.Table);
 		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.62f, 3.5f), Yaw = 0.8f, Variant = 1 });
 		CompanionSlots["engineer"] = new Slot { Kind = SlotKind.Companion, Position = anvil + new Vec2(-2f, 1.2f), Facing = new Vec2(1f, 0f) };
@@ -191,6 +219,14 @@ internal sealed partial class FieldCampLayout
 		Props.Add(new Prop { Kind = PropKind.Woodpile, CultureId = home, Position = supplyLogs, Yaw = 0f, Variant = 3 });
 		Work(supplyLogs + new Vec2(0f, 1.6f), new Vec2(0f, -1f), WorkKind.Chop);
 		Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = home, Position = Flank(sx, 0.5f, BackZoneBottom + 6f), Yaw = 0.9f, Variant = 8 });
+		// Cart parts and rope by the palisade, a broken wagon cannibalised for spares.
+		Props.Add(new Prop { Kind = PropKind.Wreck, Position = Flank(sx, 0.85f, BackZoneBottom + 8.5f), Yaw = 0.5f, Variant = 2 });
+		Props.Add(new Prop { Kind = PropKind.Gear, Position = Flank(sx, 0.2f, BackZoneBottom + 6f), Yaw = 0.8f, Variant = 3 });
+		// A cold fire pit: stone ring with burnt logs, >=3.5 m from the gear, woodpile and chop station.
+		Vec2 oldFire = Flank(sx, 0.25f, BackZoneBottom + 2.5f);
+		Props.Add(new Prop { Kind = PropKind.Hearth, Position = oldFire, Yaw = 0.6f, Variant = 0 });
+		Props.Add(new Prop { Kind = PropKind.Ash, Position = oldFire, Yaw = 1.3f, Variant = 0 });
+		Props.Add(new Prop { Kind = PropKind.Gear, Position = Flank(sx, 0.92f, BackZoneTop - 8.5f), Yaw = 0.1f, Variant = 4 });
 		CompanionSlots["quartermaster"] = new Slot { Kind = SlotKind.Companion, Position = Flank(sx, 0.45f, BackZoneTop - 1.2f), Facing = Outward(sx) };
 	}
 
@@ -212,6 +248,7 @@ internal sealed partial class FieldCampLayout
 		}
 		Vec2 dressing = Flank(sx, 0.88f, BackZoneTop - 12f);
 		Props.Add(new Prop { Kind = PropKind.Table, CultureId = home, Position = dressing, Yaw = YawOf(Inward(sx)), Variant = 4 });
+		SetTable(PropKind.Dishes, 4, -0.2f, 0.2f);
 		Props.Add(new Prop { Kind = PropKind.Chest, CultureId = home, Position = Flank(sx, 0.88f, BackZoneTop - 14.5f), Yaw = YawOf(Inward(sx)) });
 		// An orderly washes bandages at the dressing table; water buckets stand beside it.
 		Work(dressing + Inward(sx) * 1.2f, Outward(sx), WorkKind.Wash);

@@ -50,7 +50,21 @@ internal sealed partial class FieldCampLayout
 		Bed,
 		ExecutionBlock,
 			Gallows,
-			Bag
+			Bag,
+		/// <summary>Stone ring under a fire (walk-through).</summary>
+		Hearth,
+		/// <summary>Fur or carpet on the ground (walk-through).</summary>
+		Rug,
+		/// <summary>Burnt-out logs of an old fire (walk-through).</summary>
+		Ash,
+		/// <summary>Bowls, plates and cups on the ground or a table (walk-through).</summary>
+		Dishes,
+		/// <summary>Bread, ham, vegetables and cutting boards; normally stacked on a table (walk-through).</summary>
+		Food,
+		/// <summary>Rope coils, hides, cart wheels and poles (solid).</summary>
+		Gear,
+		/// <summary>Broken carts and cart parts (solid).</summary>
+		Wreck
 	}
 
 	internal struct Prop
@@ -65,6 +79,8 @@ internal sealed partial class FieldCampLayout
 			internal float Scale;
 			/// <summary>One-based index of the tent prop; Position/Yaw are in its doorway-local frame.</summary>
 			internal int TentAnchor;
+		/// <summary>One-based index of an earlier standalone prop (a table); this prop rests on its measured top.</summary>
+		internal int StackOn;
 	}
 
 	internal enum SlotKind
@@ -292,6 +308,8 @@ internal sealed partial class FieldCampLayout
 							// The mended kit 0.9 m toward the lane: >=1.1 m from the street-fire seats, and
 							// facing tents never both mend, so the lane keeps a walkway of about 1.1 m.
 							if (mending) Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = culture, Position = mouth + toLane * 0.9f, Yaw = 0.4f * placed, Variant = placed });
+							// The resting man sits on a fur or carpet (walk-through).
+							else Props.Add(new Prop { Kind = PropKind.Rug, Position = mouth, Yaw = YawOf(toLane), Variant = placed });
 							if (tentsForParty == 0)
 							{
 								Props.Add(new Prop { Kind = PropKind.Standard, CultureId = culture, Position = pos + toLane * 1.8f + new Vec2(0f, -3.1f) });
@@ -322,7 +340,11 @@ internal sealed partial class FieldCampLayout
 	private void PlaceStreetFire(float lane, float gy, float inner, float outer, string culture, int index)
 	{
 		Vec2 fire = new Vec2(lane, gy);
+		Props.Add(new Prop { Kind = PropKind.Hearth, Position = fire, Yaw = 0.9f * index, Variant = index });
 		Props.Add(new Prop { Kind = PropKind.Fire, Position = fire });
+		// Bowls and cups on the ground in front of each bench, inside the 1.6 m seat ring (walk-through).
+		Props.Add(new Prop { Kind = PropKind.Dishes, Position = fire + new Vec2(1.4f, 0.2f), Yaw = 0.5f * index, Variant = index * 2 });
+		Props.Add(new Prop { Kind = PropKind.Dishes, Position = fire + new Vec2(-1.4f, -0.2f), Yaw = -0.5f * index, Variant = index * 2 + 1 });
 		Props.Add(new Prop { Kind = index % 2 == 0 ? PropKind.Spit : PropKind.Cauldron, CultureId = culture, Position = fire, Variant = index });
 		for (int b = -1; b <= 1; b += 2)
 		{

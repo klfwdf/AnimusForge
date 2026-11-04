@@ -1,3 +1,7 @@
+## 2026-11-04 营地复用原版藏身处摆设
+
+用户要求把藏身处摆设全部加进营地。对比SandBox 15个藏身处场景与营地道具池，逐个核对Native/Prefabs定义、physics shape和场景中相对地面高度，排除悬挂/高处物件（bd_cloth_hanging_rope、bd_wall_baskets_a、bd_rope_sturgia_a、bd_flag_4、weapon_heap_arrow_a等）。新增PropKind Hearth/Rug/Ash/Dishes/Food（穿透）与Gear/Wreck（实体），Prop新增StackOn：叠放物按已放置桌子的实测包围盒顶面中心定位，桌子失败或高度不在0.4-1.3 m时跳过。现有Supply/Bedroll/Woodpile/Clutter/Table/Target池末尾追加同类藏身处预制件。布局：每个街道营火加石圈和两侧地上碗具；厨房两火加石圈、两张工作桌上放食物；铁匠工作台与医疗台放碗具；帐篷口休息位铺毛皮/地毯；马厩两角、铁匠区、后勤区加绳索/车轮/兽皮与破车；后勤区加冷火堆；射箭场加两个陶罐靶。新位置与工位、马位、道具的间距已计算（马位≥4.4 m，其余≥2 m，营火碗具距座位0.97 m）。FieldCampPropsPlacementTests 30项、GroundRoute 87项、Restart 19项通过；FieldCampSiteTests与ContinuationTests编译失败在HEAD上即存在。未编译游戏DLL、未部署、未实机。
+
 ## 2026-11-04 营火围圈座位
 
 用户要求每个营火围一圈人。PlaceStreetFire的营火座位改为半径1.6 m、45°间隔的6个地面座位（跳过0°/180°两侧长凳方向），相邻座位约1.22 m，距长凳座位≥1.31 m；加上两条长凳4个座位，每个营火共10人。未编译、未部署、未实机。

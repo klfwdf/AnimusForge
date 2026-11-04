@@ -52,30 +52,38 @@ internal static class FieldCampProps
 		[FieldCampLayout.PropKind.Fire] = new[] { "burning_campfire", "campfire" },
 		[FieldCampLayout.PropKind.Flag] = new[] { "flag_pole_big", "flagpole_a" },
 		[FieldCampLayout.PropKind.Standard] = new[] { "flagpole_a", "flag_pole_big" },
-		[FieldCampLayout.PropKind.Supply] = new[] { "bd_sack_heap_a", "bd_barrel_heap_a", "crate_a", "bd_sack_heap_b", "crate_b", "bd_barrel_a", "crate_c", "bd_barrel_heap_b", "bd_sack_a" },
+		[FieldCampLayout.PropKind.Supply] = new[] { "bd_sack_heap_a", "bd_barrel_heap_a", "crate_a", "bd_sack_heap_b", "crate_b", "bd_barrel_a", "crate_c", "bd_barrel_heap_b", "bd_sack_a", "bd_sack_heap_c", "bd_barrel_e", "bd_barrel_d", "bd_sack_c", "bd_barrel_f", "crate_a_empty" },
 		[FieldCampLayout.PropKind.Wall] = new[] { "fence_old_a1", "fence_old_a2", "fence_old_b1", "fence_a" },
 		[FieldCampLayout.PropKind.Bed] = new[] { "bed_straw_a", "bed_straw_b", "bed_straw_c", "bed_straw_d" },
 		[FieldCampLayout.PropKind.Rack] = new[] { "weapon_rack_a", "weapon_rack_vlandia_a", "weapon_rack_sturgia_a" },
 		[FieldCampLayout.PropKind.WeaponHeap] = new[] { "weapon_heap_sword_a", "weapon_heap_axe_a", "weapon_heap_bow_a", "weapon_heap_crossbow_a" },
-		[FieldCampLayout.PropKind.Bedroll] = new[] { "bed_ground_a", "bed_ground_b", "bed_ground_c", "bed_ground_d", "bed_ground_e" },
+		[FieldCampLayout.PropKind.Bedroll] = new[] { "bed_ground_a", "bed_ground_b", "bed_ground_c", "bed_ground_d", "bed_ground_e", "bed_convolute_g", "bed_convolute_e" },
 		[FieldCampLayout.PropKind.Spit] = new[] { "bd_roasting_spit_a", "bd_roasting_spit_b" },
 		[FieldCampLayout.PropKind.Cauldron] = new[] { "bd_cauldron_sturgia", "foods_cauldron_stew", "cooking_pot" },
 		[FieldCampLayout.PropKind.Bench] = new[] { "log_bench_default_a_unsittable", "log_bench_pine_a_unsittable", "log_bench_beech_a_unsittable" },
-		[FieldCampLayout.PropKind.Woodpile] = new[] { "bd_wood_heap_a", "bd_stacked_wood", "bd_log_and_axe", "bd_wood_heap_b" },
-		[FieldCampLayout.PropKind.Clutter] = new[] { "crate_a", "bd_barrel_a", "bd_sack_a", "bd_bucket_a", "bd_chest_a", "foods_basket_a", "bd_basket_heap_a" },
+		[FieldCampLayout.PropKind.Woodpile] = new[] { "bd_wood_heap_a", "bd_stacked_wood", "bd_log_and_axe", "bd_wood_heap_b", "bd_wood_heap_e", "bd_wood_heap_f" },
+		[FieldCampLayout.PropKind.Clutter] = new[] { "crate_a", "bd_barrel_a", "bd_sack_a", "bd_bucket_a", "bd_chest_a", "foods_basket_a", "bd_basket_heap_a", "bd_bucket_b", "bd_barrel_c", "bd_empty_sack", "bd_chest_c", "kitchen_cauldron" },
 		[FieldCampLayout.PropKind.Cart] = new[] { "bd_cart_a", "bd_cart_b", "bd_cart_heap_a" },
 		[FieldCampLayout.PropKind.Chest] = new[] { "bd_chest_a", "chest_empire_a" },
 		[FieldCampLayout.PropKind.Torch] = new[] { "torch_outdoors_a_burning", "torch_long_a" },
-		[FieldCampLayout.PropKind.Target] = new[] { "archery_practice_target", "bd_target_board" },
+		[FieldCampLayout.PropKind.Target] = new[] { "archery_practice_target", "bd_target_board", "pot_archery_target_breakable" },
 		[FieldCampLayout.PropKind.TrainingRack] = new[] { "weapon_rack_a", "weapon_heap_sword_a" },
 		[FieldCampLayout.PropKind.HorseBarrier] = new[] { "horse_barrier_a" },
 		[FieldCampLayout.PropKind.Trough] = new[] { "bd_trough_a" },
 		[FieldCampLayout.PropKind.HayCart] = new[] { "bd_hay_cart_a", "bd_cart_a" },
-		[FieldCampLayout.PropKind.Table] = new[] { "bd_table_kitchen_a", "bd_table_a", "bd_table_trunk_a" },
+		[FieldCampLayout.PropKind.Table] = new[] { "bd_table_kitchen_a", "bd_table_a", "bd_table_trunk_a", "bd_table_b", "bd_table_c" },
 		[FieldCampLayout.PropKind.Anvil] = new[] { "bd_anvil", "bd_smithy_anvil" },
 		[FieldCampLayout.PropKind.ExecutionBlock] = new[] { "bd_log_and_axe", "bd_wood_heap_a" },
 		[FieldCampLayout.PropKind.Gallows] = new[] { "gallows" },
-		[FieldCampLayout.PropKind.Bag] = new[] { "bd_sack_a", "bd_sack_b" }
+		[FieldCampLayout.PropKind.Bag] = new[] { "bd_sack_a", "bd_sack_b" },
+		// Native prefabs used by the SandBox hideout scenes (checked 2026-11-04 in Native/Prefabs).
+		[FieldCampLayout.PropKind.Hearth] = new[] { "fire_stones_steppe", "fire_stones_battania", "fire_stones_desert" },
+		[FieldCampLayout.PropKind.Rug] = new[] { "mat_fur_b", "mat_carpet_h", "mat_carpet_i", "mat_carpet_e" },
+		[FieldCampLayout.PropKind.Ash] = new[] { "burned_wood_b", "burned_wood_e" },
+		[FieldCampLayout.PropKind.Dishes] = new[] { "kitchen_bowl_c", "kitchen_bowl_stew_b", "kitchen_plate_a", "mead_cup_wooden_a", "kitchen_bowl_b_four", "mead_cup_wooden_c", "kitchen_mug_a" },
+		[FieldCampLayout.PropKind.Food] = new[] { "kitchen_cutting_food_bread", "foods_cured_ham_leg", "foods_bread_piece", "kitchen_cutting_food_fish", "foods_carrots_a", "kitchen_chopping_board_a", "foods_cabbage_a", "kitchen_basket_a" },
+		[FieldCampLayout.PropKind.Gear] = new[] { "bd_rope_c", "merchandise_hides_b", "bd_cart_wheel_a", "bd_rope_a", "bd_cart_wheel_b", "bd_rope_b" },
+		[FieldCampLayout.PropKind.Wreck] = new[] { "bd_cartbroken_a", "bd_cartbroken_b", "bd_cart_heap_b", "bd_cartbroken_c", "bd_cart_heap_c", "bd_cartbroken_d", "bd_cart_heap_d" }
 	};
 
 	/// <summary>Culture overrides; any kind not listed falls back to <see cref="Neutral"/>.</summary>
@@ -131,7 +139,12 @@ internal static class FieldCampProps
 		FieldCampLayout.PropKind.Torch,
 		FieldCampLayout.PropKind.Spit,
 		FieldCampLayout.PropKind.Cauldron,
-		FieldCampLayout.PropKind.Bed
+		FieldCampLayout.PropKind.Bed,
+		FieldCampLayout.PropKind.Hearth,
+		FieldCampLayout.PropKind.Rug,
+		FieldCampLayout.PropKind.Ash,
+		FieldCampLayout.PropKind.Dishes,
+		FieldCampLayout.PropKind.Food
 	};
 
 	/// <param name="scale">Must be 1: spacing is never compressed independently of solid prop footprints.</param>
@@ -177,6 +190,7 @@ internal static class FieldCampProps
 			var furnitureSizes = new Dictionary<string, BoundingBox>(StringComparer.Ordinal);
 			var doorwayTurns = new Dictionary<string, int>(StringComparer.Ordinal);
 			var furnishingPlans = new Dictionary<int, List<FieldCampLayout.Prop>>();
+			var tableTops = new Dictionary<int, Vec3>();
 			for (int i = 0; i < layout.Props.Count; i++)
 			{
 				FieldCampLayout.Prop item = layout.Props[i];
@@ -227,10 +241,20 @@ internal static class FieldCampProps
 					continue;
 				}
 				MatrixFrame frame = FrameFor(scene, campFrame, prop.Position * scale, prop.Yaw, prop.Scale);
+				if (prop.StackOn > 0)
+				{
+					// Rests on the measured top of an earlier table, offset from its mesh centre (artist
+					// pivots are not centred); skipped when that table failed or measured as no table.
+					if (!tableTops.TryGetValue(prop.StackOn, out Vec3 top)) continue;
+					Vec2 along = (prop.Position - layout.Props[prop.StackOn - 1].Position) * scale;
+					Vec3 offset = campFrame.rotation.TransformToParent(new Vec3(along.x, along.y, 0f));
+					frame.origin = top + new Vec3(offset.x, offset.y, 0f);
+				}
 				GameEntity entity = Spawn(scene, pool, poolKey, prop.Variant, frame, !WalkThrough.Contains(prop.Kind), resolved, failed);
 				if (entity != null)
 				{
 					placed++;
+					if (prop.Kind == FieldCampLayout.PropKind.Table) RecordTableTop(entity, frame, i + 1, tableTops);
 				}
 			}
 			return placed;
@@ -653,6 +677,23 @@ internal static class FieldCampProps
             }
         }
 		return placed;
+	}
+
+	/// <summary>World height of a placed table's top; set-up only, one bounding-box read per table.</summary>
+	private static void RecordTableTop(GameEntity table, MatrixFrame frame, int anchor, Dictionary<int, Vec3> tops)
+	{
+		try
+		{
+			BoundingBox box = table.GetLocalBoundingBox();
+			float height = box.max.z - box.min.z;
+			// A 0.4-1.3 m top is a real table; anything else (a trunk, a failed measure) carries nothing.
+			if (!box.min.IsValid || !box.max.IsValid || height < 0.4f || height > 1.3f) return;
+			tops[anchor] = frame.TransformToParent(new Vec3((box.min.x + box.max.x) * 0.5f, (box.min.y + box.max.y) * 0.5f, box.max.z));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(LogSource, "table top measure failed " + table.Name + ": " + ex.Message);
+		}
 	}
 
 	private static PieceSize Measure(GameEntity entity)
