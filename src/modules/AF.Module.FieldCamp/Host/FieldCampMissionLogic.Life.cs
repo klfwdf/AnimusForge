@@ -332,8 +332,8 @@ public sealed partial class FieldCampMissionLogic
 
 	// ---------- camp life ----------
 
-    // At most 20 residents and two cached corner-corridor checks per frame.
-    // Route construction stays in upkeep; reached corners advance independently.
+    // At most 20 residents and two cached corner-corridor checks per frame. Route construction
+    // stays in upkeep; reached corners advance and arrivals settle here (one distance test each).
     private void AdvanceCampWalks()
     {
         _campCornerPassageBudget = 2;
@@ -346,9 +346,12 @@ public sealed partial class FieldCampMissionLogic
             if (entry.Seated || entry.MoveBlocked || agent == null || !agent.IsActive()
                 || IsDuelist(agent) || IsEnvoy(entry) || IsSceneConversationHeld(agent)
                 || _campCeremonyActors.ContainsKey(agent) || _ceremonyMoved.Contains(entry)) continue;
-            if (!CanAdvanceCampCorner(agent, entry.Route, entry.RouteIndex)) continue;
             try
             {
+                // Settle arrivals here, not only in the 20-per-0.5 s upkeep: at 400 residents that
+                // left a walker idling at his stop for up to 10 s before his pose started.
+                if (HasArrived(entry)) { ArriveAtCampTarget(entry); continue; }
+                if (!CanAdvanceCampCorner(agent, entry.Route, entry.RouteIndex)) continue;
                 entry.RouteIndex++;
                 IssueCampWalk(entry);
             }
@@ -370,8 +373,8 @@ public sealed partial class FieldCampMissionLogic
 		{
 			return;
 		}
-		_campRouteBudget = 2;
-        _campStrollBudget = 2;
+		_campRouteBudget = CampRouteBudgetPerBatch();
+        _campStrollBudget = _campRouteBudget;
         int batch = Math.Min(UpkeepBatch, count);
 		for (int n = 0; n < batch; n++)
 		{
@@ -453,23 +456,8 @@ public sealed partial class FieldCampMissionLogic
                     catch { }
                     continue;
                 }
-    			if (entry.Seated || agent.Position.AsVec2.DistanceSquared(entry.Target.AsVec2) > ArriveDistanceSquared)
-    			{
-    				continue;
-    			}
-    			// Arrived: release the movement goal before applying an idle animation.
-                StopCampNavigation(agent);
-                agent.SetIsAIPaused(true);
-    			agent.LookDirection = new Vec3(entry.TargetFacing.x, entry.TargetFacing.y, 0f);
-    			if (!_assembled)
-    			{
-    				ApplyPose(entry);
-    			}
-    			entry.Seated = true;
-                // Wanderers dwell like native town walkers (which wait 50-320 s per point); 20-45 s keeps
-                // a few dozen wanderers well inside the 2-routes-per-0.5 s budget.
-                entry.NextWanderTime = _elapsed + (entry.Activity == Activity.Wander ? MBRandom.RandomFloatRanged(20f, 45f) : MBRandom.RandomFloatRanged(12f, 25f));
-                if (!_assembled && entry.Activity == Activity.Wander) SettleWanderer(entry);
+                // Per-frame AdvanceCampWalks normally settles arrivals; this is the fallback for walkers it skipped.
+    			if (!entry.Seated && HasArrived(entry)) ArriveAtCampTarget(entry);
             }
             catch (Exception ex)
             {
@@ -481,6 +469,34 @@ public sealed partial class FieldCampMissionLogic
             }
 		}
 	}
+
+    /// <summary>Same arrival test the upkeep always used: within the arrival radius of the final target.</summary>
+    private static bool HasArrived(CampAgent entry) =>
+        entry.Agent.Position.AsVec2.DistanceSquared(entry.Target.AsVec2) <= ArriveDistanceSquared;
+
+    private void ArriveAtCampTarget(CampAgent entry)
+    {
+        Agent agent = entry.Agent;
+        // Arrived: release the movement goal before applying an idle animation.
+        StopCampNavigation(agent);
+        agent.SetIsAIPaused(true);
+        agent.LookDirection = new Vec3(entry.TargetFacing.x, entry.TargetFacing.y, 0f);
+        if (!_assembled)
+        {
+            ApplyPose(entry);
+        }
+        entry.Seated = true;
+        // Wanderers dwell like native town walkers (which wait 50-320 s per point); 20-45 s keeps
+        // their route demand well inside the scaled per-batch budget.
+        entry.NextWanderTime = _elapsed + (entry.Activity == Activity.Wander ? MBRandom.RandomFloatRanged(20f, 45f) : MBRandom.RandomFloatRanged(12f, 25f));
+        if (!_assembled && entry.Activity == Activity.Wander) SettleWanderer(entry);
+    }
+
+    /// <summary>
+    /// Routes per 0.5 s upkeep: 2 for up to 40 residents, then one more per 40, at most 8. A route
+    /// averaged 0.29 ms (worst 4.7 ms) on a 25840-cell camp grid (2026-11-05 bench), so 8 stay near 2.3 ms.
+    /// </summary>
+    private int CampRouteBudgetPerBatch() => Math.Max(2, Math.Min(8, (_agents.Count + 39) / 40 + 1));
 
 	/// <summary>
 	/// Camp life (every 25-55 s per agent, in the 0.5 s upkeep batch): a seated or working
@@ -621,7 +637,7 @@ public sealed partial class FieldCampMissionLogic
         /// A wanderer just arrived at a stop. Like native paired animation points: when another idle
         /// resident stands within 2.5 m, both turn to each other, this one talks and the other listens;
         /// a working mate only turns his head. Otherwise he faces the nearest fire or comrade instead of
-        /// the camp's default facing. Runs once per arrival (arrivals are capped by the 2-routes-per-0.5 s
+        /// the camp's default facing. Runs once per arrival (arrivals are capped by the 2-8-routes-per-0.5 s
         /// budget): one linear pass over the residents and one over the cached fires.
         /// </summary>
         private void SettleWanderer(CampAgent entry)
