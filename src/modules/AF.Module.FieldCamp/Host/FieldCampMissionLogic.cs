@@ -50,6 +50,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal float NextWanderTime;
 		internal FieldCampLayout.WorkKind Work;
 		internal int PoseVariant;
+        internal ActionIndexCache PoseAction = ActionIndexCache.act_none;
 		/// <summary>On a short visit; rests at the destination before returning Home.</summary>
 		internal bool Returning;
 		internal float MoveDeadline;

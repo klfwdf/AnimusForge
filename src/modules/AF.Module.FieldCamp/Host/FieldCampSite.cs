@@ -908,6 +908,16 @@ internal static class FieldCampSite
                     cache.MinY + cell / cache.Width * GroundStep, 0f));
                 route[i].z = cache.Heights[cell] + 0.04f;
             }
+            // The first BFS cell describes where the actor already is. Requiring an
+            // engine movement of 0.2-0.35 m to its centre can leave the actor idle.
+            // Omit it only when the actual position has a clear connector to the next leg.
+            if (route.Length > 1 && from.AsVec2.DistanceSquared(route[0].AsVec2) <= 0.25f
+                && TryValidateGroundedPassage(scene, from, route[1], 0.15f))
+            {
+                var forwardRoute = new Vec3[route.Length - 1];
+                Array.Copy(route, 1, forwardRoute, 0, forwardRoute.Length);
+                route = forwardRoute;
+            }
             return true;
         }
 
