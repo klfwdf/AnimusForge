@@ -1,3 +1,7 @@
+<a id="scene-input-scroll-20261105"></a>
+## 2026-11-05 场景喊话输入框滚动及裁剪
+
+ACTIVE。用户截图显示长串数字输入越过卷轴输入框，要求滚动条与文字不越界。限定修改 DialogueUI 两套场景面板 prefab 及现有 lifecycle XML 回归；复用 DevMultilineEditableTextWidget 的换行、CoverChildren 和 AutoScrollToCaret，不改输入/提交/重写协议、不加文案或 Tick 扫描、不部署或 push。退出门：两套视口/内容/滚动条路径真实解析、输入绑定与6000字符限制保留、裁剪和光标跟随启用、现有生命周期回归通过。纯非嵌入 prefab 修改，复用 ead13e9e39 前本会话已通过的双API/Bootstrap构建，验证内容映射及候选投影；视觉和游戏输入验收另列未验。
 <a id="untrack-danmaku-bridge-20261105"></a>
 ## 2026-11-05 弹幕桥仅取消跟踪，保留本地文件
 
