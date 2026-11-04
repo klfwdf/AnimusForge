@@ -127,16 +127,19 @@ def main():
         assert sorted(re.findall(r'\{([0-9]+)\}', prompts_cn[key])) == sorted(re.findall(r'\{([0-9]+)\}', prompts_en[key])), key
     # Source-driven semantic clauses, not a no-Han or updated snapshot claim.
     constraints = {
-        'Scene_PanoramaNote': ['360', '180', 'six 90', 'forward, backward, left, right, up, and down', 'not six rooms', 'left and right edges meet', 'top is upward', 'bottom downward', 'poles', 'hairstyles', 'clothing', 'poses', 'identity reference', 'normal perspective'],
-        'Scene_Nearby30mSummary': ['30-meter', 'six 90', '360 degrees horizontally', '180 degrees vertically', 'does not mean all geometry is covered', 'only the environment'],
+        'SceneCapture_PanoramaDescription': ['360', '180', 'six 90', 'forward, backward, left, right, up and down', 'not six rooms'],
+        'SceneCapture_PanoramaOrientation': ['left and right edges meet', 'top is up', 'bottom is down', 'poles'],
+        'SceneCapture_PanoramaScope': ['hairstyles', 'clothing', 'poses', 'identity reference'],
+        'SceneCapture_PanoramaFinalView': ['normal perspective'],
+        'SceneCapture_NearbyCoverage': ['30 meters', 'six 90', '360 degrees horizontally', '180 degrees vertically', 'does not mean that all geometry is covered', 'only the environment'],
         'Panorama_MissingGeo': ['actual resource files', 'placements', 'live damage', 'scripted or dynamic variants', 'not walls or ground'],
         'Panorama_Lighting': ['three', 'shadowless', 'fixed exposure', 'sunlight disabled', 'shadow caches', 'particles', 'physics components', 'does not represent actual lighting'],
         'Panorama_TerrainOmitted': ['heightfield', 'blended terrain materials', 'water surfaces', 'floating geometry', 'flat ground', 'interior'],
         'Scene_ScreenshotRefNote': ['most recent two dialogue turns', 'standing poses', 'gestures', 'facing', 'gaze', 'gallery artwork', 'interface content'],
-        'Scene_NoLiveScreenshot': ['fill lighting', 'absence of people', 'actual site'],
-        'Scene_PlayerEyeOffset': ['zero additional offset'],
-        'Scene_CameraFallbackOffset': ['fallback has been recorded'],
-        'Scene_NearbyObjectsBudgetExceeded': ['no incomplete copy'],
+        'SceneCapture_CalibrationUnavailable': ['added lighting', 'absence of people', 'actual scene'],
+        'SceneCapture_PlayerEye': ['zero additional viewpoint offset'],
+        'SceneCapture_CameraFallback': ['records the fallback'],
+        'SceneCapture_BudgetNoPanorama': ['no incomplete copy'],
     }
     for key, terms in constraints.items():
         assert prompts_cn[key] and all(term.lower() in prompts_en[key].lower() for term in terms), key

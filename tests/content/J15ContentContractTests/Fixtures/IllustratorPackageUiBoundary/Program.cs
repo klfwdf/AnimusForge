@@ -33,10 +33,10 @@ internal static class Program
                 IllustratorText.Format("Card_PortraitCacheTitle", hero),
                 IllustratorText.Format("Card_ConversationCacheTitle", cachePartner),
                 IllustratorText.Get("Card_ConversationReferenceReuse"),
-                IllustratorText.Get("Scene_PanoramaNote")};
+                IllustratorText.Get("SceneCapture_PanoramaDescription")};
         }).GetAwaiter().GetResult();
         Check(values[0] == package["Hero_319"] && values[1] == package["Conversation_31"] && values[2] == package["Side_Player"], "worker names follow package, not UI");
-        Check(values[5] == package["Card_ConversationReferenceReuse"] && values[6] == package["Scene_PanoramaNote"], "worker facts follow package");
+        Check(values[5] == package["Card_ConversationReferenceReuse"] && values[6] == package["SceneCapture_PanoramaDescription"], "worker facts follow package");
         string heroTitle = IllustratorUiText.ProjectKnownDefaultTitle(values[3], "encyclopedia");
         string partnerTitle = IllustratorUiText.ProjectKnownDefaultTitle(values[4], "conversation");
         Check(heroTitle == Ui["AF_ILL_UI_PORTRAIT_TITLE"].Replace("{HERO}", Ui["AF_ILL_UI_DEFAULT_HERO_NAME"]), "hero metadata projects to independent UI language");

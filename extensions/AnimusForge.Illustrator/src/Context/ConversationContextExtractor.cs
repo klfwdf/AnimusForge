@@ -392,12 +392,12 @@ namespace AnimusForge.Illustrator.Context
                 if (partnerAgent != null)
                 {
                     string actionName = partnerAgent.GetCurrentAction(0).GetName() ?? string.Empty;
-                    basePose = MapActionToPoseDirective(actionName);
+                    basePose = MapAnimationToPoseDirective(actionName);
                 }
                 else if (partnerChar != null)
                 {
                     string idleName = Helpers.CharacterHelper.GetStandingBodyIdle(partnerChar, MobileParty.MainParty?.Party);
-                    basePose = MapIdleToPoseDirective(idleName);
+                    basePose = MapAnimationToPoseDirective(idleName);
                 }
             }
             catch (Exception ex)
@@ -621,7 +621,7 @@ namespace AnimusForge.Illustrator.Context
             return $"{name}：" + (!hasAgent ? IllustratorText.Get("Conversation_70") : mounted ? IllustratorText.Get("Conversation_71") : IllustratorText.Get("Conversation_72"));
         }
 
-        private static string MapActionToPoseDirective(string actionName)
+        private static string MapAnimationToPoseDirective(string actionName)
         {
             if (string.IsNullOrWhiteSpace(actionName)) return string.Empty;
             if (actionName.IndexOf("closed", StringComparison.OrdinalIgnoreCase) >= 0 || actionName.IndexOf("cross", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -647,36 +647,6 @@ namespace AnimusForge.Illustrator.Context
             if (actionName.IndexOf("weary", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return IllustratorText.Get("Conversation_78");
-            }
-            return string.Empty;
-        }
-
-        private static string MapIdleToPoseDirective(string idleName)
-        {
-            if (string.IsNullOrWhiteSpace(idleName)) return string.Empty;
-            if (idleName.IndexOf("closed", StringComparison.OrdinalIgnoreCase) >= 0 || idleName.IndexOf("cross", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return IllustratorText.Get("Conversation_79");
-            }
-            if (idleName.IndexOf("hip", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return IllustratorText.Get("Conversation_80");
-            }
-            if (idleName.IndexOf("aggressive", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return IllustratorText.Get("Conversation_81");
-            }
-            if (idleName.IndexOf("warrior", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return IllustratorText.Get("Conversation_82");
-            }
-            if (idleName.IndexOf("demure", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return IllustratorText.Get("Conversation_83");
-            }
-            if (idleName.IndexOf("weary", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return IllustratorText.Get("Conversation_84");
             }
             return string.Empty;
         }

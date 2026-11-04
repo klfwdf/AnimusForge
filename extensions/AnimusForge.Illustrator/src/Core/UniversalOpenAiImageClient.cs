@@ -81,7 +81,7 @@ namespace AnimusForge.Illustrator.Core
             System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> single = null;
             if (!string.IsNullOrWhiteSpace(inputBase64Image))
             {
-                single = new[] { new IllustrationReferenceImage(inputBase64Image, IllustratorText.Get("ImageClient_857"), IllustrationReferenceKind.Scene) };
+                single = new[] { new IllustrationReferenceImage(inputBase64Image, IllustratorText.Get("Director_983"), IllustrationReferenceKind.Scene) };
             }
             return GenerateImageAsync(prompt, single, options, cancellationToken);
         }

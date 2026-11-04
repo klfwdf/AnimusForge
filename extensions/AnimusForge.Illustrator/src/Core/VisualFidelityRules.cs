@@ -225,7 +225,7 @@
                 case IllustrationReferenceKind.Emblem:
                     return IllustratorText.Get("Fidelity_64");
                 case IllustrationReferenceKind.Scene:
-                    return IllustratorText.Get("Fidelity_65") + ConversationActionPriority;
+                    return IllustratorText.Get("Fidelity_65") + IllustratorText.Get("Fidelity_ConversationImageAction");
                 case IllustrationReferenceKind.ScenePanorama:
                     return IllustratorText.Get("Fidelity_66") + EnvironmentGeometryPriority;
                 case IllustrationReferenceKind.PairedScenePerspective:
@@ -235,7 +235,7 @@
                 case IllustrationReferenceKind.SceneViews:
                     return IllustratorText.Get("Fidelity_69");
                 case IllustrationReferenceKind.MapConversationScene:
-                    return IllustratorText.Get("Fidelity_70") + ConversationActionPriority;
+                    return IllustratorText.Get("Fidelity_70") + IllustratorText.Get("Fidelity_ConversationImageAction");
                 case IllustrationReferenceKind.EventCharacter:
                     return IllustratorText.Get("Fidelity_71");
                 case IllustrationReferenceKind.EventEmblem:
@@ -245,6 +245,14 @@
             }
         }
 
+        // Image-model half of the conversation rules. The painter receives the director body,
+        // screenshots and identity references but no dialogue or crowd scan, so it only gets
+        // the visual consequences; the selection rules stay in the director system prompt.
+        private static readonly PromptLanguageValue<string> ConversationImageGroundingByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Fidelity_ConversationImageAction") +
+            IllustratorText.Get("Fidelity_ConversationImageLocation") +
+            IllustratorText.Get("Fidelity_ConversationImageCrowd"));
+        internal static string ConversationImageGrounding => ConversationImageGroundingByLanguage.Value;
+
         // Sent verbatim to the image model after the director body. Keep it positive:
         // prohibited elements (text, collage, extra limbs, ...) travel in the negative
         // channel, which diffusion endpoints receive as a separate negative_prompt field.
@@ -253,7 +261,7 @@
             string poseRule = isSinglePortrait
                 ? IllustratorText.Get("Fidelity_74")
                 : isConversation
-                    ? IllustratorText.Get("Fidelity_75") + ConversationActionPriority + "\n" + ConversationLocationGrounding + "\n" + ConversationCrowdCountPriority + "\n"
+                    ? IllustratorText.Get("Fidelity_75") + ConversationImageGrounding + "\n"
                     : isWeeklyReport
                         ? IllustratorText.Get("Fidelity_76")
                         : IllustratorText.Get("Fidelity_77");

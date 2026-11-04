@@ -330,7 +330,7 @@ public static class PromptRoutingAudit
                 Check(handler.Images.Count == 3 && handler.Images[0] == "reference_0.png", "Edits sends all reference files in order");
                 Check(!handler.Fields.ContainsKey("mask"), "identity redraw does not synthesize a repair mask");
                 string editPrompt = handler.Fields["prompt"];
-                Check(editPrompt.Contains("整幅重新绘制") && editPrompt.Contains("不是保留人物像素的换背景"), "Edits explicitly requests full figure repaint");
+                Check(editPrompt.Contains("整幅重新绘制") && editPrompt.Contains("人物与环境全部重新绘制"), "Edits explicitly requests full figure repaint");
                 Check(editPrompt.Contains("人物身份参考：") && editPrompt.Contains("纹章样图：") && editPrompt.Contains("现场参考："), "Edits reference roles remain distinct despite label keywords");
                 Check(editPrompt.Contains(valid) && editPrompt.Contains("光源") && editPrompt.Contains("衣褶"), "Edits retains director composition and unified figure lighting");
                 Check(editPrompt.Contains("若文字概括与可见外观冲突，保留参考图外观") && editPrompt.Contains("披肩轮廓"), "Edits uses the same appearance precedence as Chat");

@@ -1,3 +1,7 @@
+## 2026-11-05 生图提示词优化（死条目清理、导演/生图规则拆分、正面化、优先级表、画风平衡）
+
+清理：删除无引用的16条Scene_*、Director_1010、Facts_CampaignEra；Conversation_79-84与73-78文本相同，合并MapIdleToPoseDirective/MapActionToPoseDirective为MapAnimationToPoseDirective；ImageClient_857改用Director_983。拆分：生图契约不再拼入导演用的ConversationActionPriority/LocationGrounding/CrowdCountPriority，改为新增的Fidelity_ConversationImageAction/Location/Crowd（只写画面结果，保留截图待机姿势、实测高差、附近人数、围城远景等引用事实标题的约束）；Scene/MapConversationScene参考说明同步；Fidelity_29/70/75改为以导演正文为准。正面化：ImageClient_874/876/892/909/910/916/917/918/921、Fidelity_10/17/58/61/64改为正面表述，负面词尾标题改为“成图质量避免项”；BuiltinNegativePrompt未动。优先级：新增Director_PriorityOrder注入四套导演系统提示词，ImageClient_873去掉“最高优先级”；Director_956/958/959/961删去与ConversationActionPriority/CrowdCountPriority重复的同意即发生、截图定位、人数规则，949删去与Fidelity_57重复的双手下垂句；背盾规则保留。画风：Vivid/Natural补全描述，DefaultCustomStyle去掉masterpiece/8k（已存档玩家值不变）。测试同步：J15 IllustratorNoticeLocalizationContractTests改为约束实际发送的SceneCapture_*键并通过；ReviewRegressionAudit/PromptRoutingAudit/ClientEndpointAudit断言更新但未运行（ReviewRegressionAudit对属性调用GetRawConstantValue，HEAD上已不可运行）。l10n_gate与check_bilingual_tables通过，中英键与占位符一致。LocalizationCardSlice等静态测试在HEAD同样失败，非本轮引入。未编译1.3/1.4/Bootstrap，未部署、未实机对比出图。
+
 ## 2026-11-05 营地出发名额随人数扩容、到站改为每帧结算
 
 用户担心人多时只有少数人走动。原先每0.5 s只给2人算路线，115人营地起身/回程/干完活需求约4次/秒、恰在上限，400人时超3倍；到站判断只在每0.5 s 20人的批次里，400人时到站后最长约10 s才开始动作。修改：CampRouteBudgetPerBatch按人数每40人+1、2-8条/0.5 s（实测营地规模网格单条路线平均0.29 ms、最坏4.7 ms）；到站逻辑抽为HasArrived/ArriveAtCampTarget，AdvanceCampWalks每帧先结算到站，upkeep批次保留兜底。1.4实现仅编译0错误，review_source_contracts通过；1.3未编、未部署、未实机。

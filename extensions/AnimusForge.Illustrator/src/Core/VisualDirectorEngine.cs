@@ -96,9 +96,10 @@ namespace AnimusForge.Illustrator.Core
     public static class VisualDirectorEngine
     {
         private static readonly TimeSpan DirectorRequestTimeout = TimeSpan.FromSeconds(240);
-        private static readonly PromptLanguageValue<string> EncyclopediaSystemPromptByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("EncyclopediaDirectorSystem"));
+        private static readonly PromptLanguageValue<string> EncyclopediaSystemPromptByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("EncyclopediaDirectorSystem") + "\n" + IllustratorText.Get("Director_PriorityOrder"));
         private static string EncyclopediaSystemPrompt => EncyclopediaSystemPromptByLanguage.Value;
         private static readonly PromptLanguageValue<string> SystemPromptByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Director_940") +
+            IllustratorText.Get("Director_PriorityOrder") +
             IllustratorText.Get("Director_941") +
             IllustratorText.Get("Director_942") +
             IllustratorText.Get("Director_943") +
@@ -118,6 +119,7 @@ namespace AnimusForge.Illustrator.Core
         private static string SystemPrompt => SystemPromptByLanguage.Value;
 
         private static readonly PromptLanguageValue<string> ConversationSystemPromptByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Director_955") +
+            IllustratorText.Get("Director_PriorityOrder") +
             IllustratorText.Get("Director_956") +
             VisualFidelityRules.ConversationActionPriority + "\n" +
             VisualFidelityRules.EnvironmentGeometryPriority + "\n" +
@@ -139,6 +141,7 @@ namespace AnimusForge.Illustrator.Core
         // Weekly reports have their own event-led director contract. They never receive
         // the portrait/set-design or current-conversation restrictions above.
         private static readonly PromptLanguageValue<string> WeeklyReportSystemPromptByLanguage = new PromptLanguageValue<string>(() => IllustratorText.Get("Director_966") +
+            IllustratorText.Get("Director_PriorityOrder") +
             IllustratorText.Get("Director_967") +
             IllustratorText.Get("Director_968") +
             IllustratorText.Get("Director_969") +
