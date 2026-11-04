@@ -283,9 +283,18 @@ internal sealed partial class FieldCampLayout
 							Props.Add(new Prop { Kind = PropKind.Bedroll, CultureId = culture, Position = new Vec2(-0.55f, -0.15f), TentAnchor = tentAnchor, Variant = placed });
 							Props.Add(new Prop { Kind = PropKind.Chest, CultureId = culture, Position = new Vec2(0.58f, -0.5f), TentAnchor = tentAnchor });
 							Props.Add(new Prop { Kind = PropKind.Bag, CultureId = culture, Position = new Vec2(0.58f, 0.3f), TentAnchor = tentAnchor, Variant = 0 });
-						if (tentsForParty == 0)
-						{
-							Props.Add(new Prop { Kind = PropKind.Standard, CultureId = culture, Position = pos + toLane * 1.8f + new Vec2(0f, -3.1f) });
+							// One man beside each tent mouth, 1.6 m off the door axis so the entrance aisle stays clear:
+							// most rest on the ground, every third mends kit.
+							Vec2 mouth = pos + toLane * 3.1f + new Vec2(0f, 1.6f);
+							bool mending = placed % 3 == 0;
+							WorkSlots.Add(new Slot { Kind = SlotKind.Work, Position = mouth, Facing = toLane,
+								Work = mending ? WorkKind.Repair : WorkKind.Sit });
+							// The mended kit 0.9 m toward the lane: >=1.1 m from the street-fire seats, and
+							// facing tents never both mend, so the lane keeps a walkway of about 1.1 m.
+							if (mending) Props.Add(new Prop { Kind = PropKind.Clutter, CultureId = culture, Position = mouth + toLane * 0.9f, Yaw = 0.4f * placed, Variant = placed });
+							if (tentsForParty == 0)
+							{
+								Props.Add(new Prop { Kind = PropKind.Standard, CultureId = culture, Position = pos + toLane * 1.8f + new Vec2(0f, -3.1f) });
 							if (partyIndex > 0)
 							{
 								LordSlots[party] = new Slot { Kind = SlotKind.Lord, Position = pos + toLane * 3f, Facing = toLane };
@@ -321,8 +330,12 @@ internal sealed partial class FieldCampLayout
 				BenchSlots.Add(new Slot { Kind = SlotKind.Bench, Position = new Vec2(bx - b * 0.3f, gy + seat * 0.55f), Facing = new Vec2(-b, 0f), Work = WorkKind.Sit });
 			}
 		}
-		FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + new Vec2(0f, 1.6f), Facing = new Vec2(0f, -1f) });
-		FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + new Vec2(0f, -1.6f), Facing = new Vec2(0f, 1f) });
+		// Fire seats need Work=Sit: residents without a WorkKind are converted to wanderers at spawn.
+		FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + new Vec2(0f, 1.6f), Facing = new Vec2(0f, -1f), Work = WorkKind.Sit });
+		FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + new Vec2(0f, -1.6f), Facing = new Vec2(0f, 1f), Work = WorkKind.Sit });
+		// Diagonal seats close the ring; they stay 1.2 m from the fire and clear of the bench seats.
+		for (int d = -1; d <= 1; d += 2)
+			FireSlots.Add(new Slot { Kind = SlotKind.Fire, Position = fire + new Vec2(d * 1.2f, d * 1.1f), Facing = new Vec2(-d, -d).Normalized(), Work = WorkKind.Sit });
 		// Firewood or kit up the lane, beyond the 1.6 m fire seats and short of the tent doorway aisles.
 		Props.Add(new Prop { Kind = index % 2 == 0 ? PropKind.Woodpile : PropKind.Clutter, CultureId = culture,
 			Position = fire + new Vec2(0f, 2.5f), Yaw = 0.3f * index, Variant = index });		float[] columns = { inner, outer };

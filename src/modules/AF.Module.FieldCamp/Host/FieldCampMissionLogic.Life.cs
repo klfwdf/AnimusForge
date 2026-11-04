@@ -390,7 +390,8 @@ public sealed partial class FieldCampMissionLogic
                     if (_elapsed < entry.NextWanderTime) continue;
                     if (entry.RouteQueued || _assembled)
                         MoveTo(entry, entry.Target, entry.TargetFacing, run: entry.Run);
-                    else if (entry.CanLeavePost && agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) > ArriveDistanceSquared)
+                    // A blocked worker still owning his station retries home before camp life resumes.
+                    else if ((entry.CanLeavePost || entry.Returning) && agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) > ArriveDistanceSquared)
                         MoveTo(entry, entry.Home, entry.HomeFacing, run: false);
                     else
                     {
@@ -833,7 +834,25 @@ public sealed partial class FieldCampMissionLogic
     {
         string[] pool = PoseFor(entry);
         if (pool == null) return;
-        if (pool == StandActions && !entry.Returning && entry.Activity != Activity.Wounded
+        bool awayFromStation = entry.Work != FieldCampLayout.WorkKind.None
+            && entry.Agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2) > 2.25f;
+        if (!awayFromStation) entry.HomeRetries = 0;
+        else if (pool == StandActions && !entry.Returning && ++entry.HomeRetries > 3) awayFromStation = false;
+        if (pool == StandActions && awayFromStation && entry.Returning)
+        {
+            // On a planned visit: loiter for the visit's own timer, then walk home.
+            pool = LoiterActions;
+        }
+        else if (pool == StandActions && awayFromStation && entry.Activity != Activity.Wounded
+            && entry.Activity != Activity.Sentry && (entry.Activity != Activity.Post || entry.CanLeavePost))
+        {
+            // A worker stopped short of his station (blocked return, stall) keeps the station
+            // and retries the walk home; converting him to a wanderer drained every work post.
+            entry.Returning = true;
+            entry.NextWanderTime = Math.Min(entry.NextWanderTime, _elapsed + MBRandom.RandomFloatRanged(3f, 6f));
+            pool = LoiterActions;
+        }
+        else if (pool == StandActions && !entry.Returning && entry.Activity != Activity.Wounded
             && entry.Activity != Activity.Sentry && (entry.Activity != Activity.Post || entry.CanLeavePost))
         {
             // Releasing to act_none here paused every wanderer in a bare T-stand until the

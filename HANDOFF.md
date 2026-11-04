@@ -1,3 +1,7 @@
+## 2026-11-04 营地人员分配补位（营火座位、帐篷口工位、工人回岗）
+
+实机反馈：大部分士兵仍原地罚站。日志（21:00会话，115居民）只有17条walk pending，说明罚站来自分配而非寻路。根因：营火座位FireSlots无WorkKind，TrackAssignedResident把它们全部转为Wander；工人被挡离岗后ApplyPose把Work清为None，工位持续流失；派位循环只试5种case，从case4起的轮次跳过营火。修改：FieldCampLayout营火座位Work=Sit并加两个斜向座位，每顶帐篷口旁加一个坐地/修补工位（每三顶一个修补位配杂物箱）；SpawnTroops派位循环改为6次；ApplyPose对离岗工人保留工位并标记Returning回岗，连续3次失败才放弃；被挡工人在MoveBlocked重试时可回岗。未编译、未部署、未实机。FieldCampContinuation/source_contracts.py与FieldCampRestartTests/contracts.py在HEAD上即失败，非本轮引入；review_source_contracts.py通过。
+
 ## 2026-11-04 营地罚站与摆设续修已部署
 
 用户授权部署，a90bc74ff5对应1.3/1.4双实现及Bootstrap编译成功（coup seam门禁与注册冒烟通过），部署SUCCESS，受管文件10项。首次因03:13旧Stage与06:23导航栏画刷不一致被拦，旧Stage移至artifacts/deploy-backups/AnimusForge/20261104-203829-stale-stage/；第二次因启动器占用旧Bootstrap中止，用户关闭启动器后重跑成功，残留.af2-replaced旧Bootstrap移入同一备份。回读三个DLL哈希与产物一致。未实机、未打包或push，营地罚站与摆设效果待实机确认。

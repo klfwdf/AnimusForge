@@ -51,6 +51,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal FieldCampLayout.WorkKind Work;
 		internal int PoseVariant;
         internal ActionIndexCache PoseAction = ActionIndexCache.act_none;
+        /// <summary>Consecutive failed walks back to the work station; three give the station up.</summary>
+        internal int HomeRetries;
         internal string RightHandItem, LeftHandItem;
         internal sbyte RightHandBone, LeftHandBone;
 		/// <summary>On a short visit; rests at the destination before returning Home.</summary>
@@ -319,7 +321,8 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 				FieldCampLayout.Slot s = default(FieldCampLayout.Slot);
 				Activity activity = Activity.Wander;
 				bool found = false;
-				for (int attempt = 0; attempt < 5 && !found; attempt++)
+				// Six attempts cover all six deal cases; with five, a deal starting at case 4 skipped the fire seats.
+				for (int attempt = 0; attempt < 6 && !found; attempt++)
 				{
 					switch ((dealt + attempt) % 6)
 					{
