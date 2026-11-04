@@ -425,6 +425,7 @@ internal sealed partial class WorldDiplomacyOrchestration
                         kind = (string)row["source_kind"], heroes = row["hero_ids"] })),
                     ["hero_ids"] = row["hero_ids"]?.DeepClone(),
                     ["previously_used"] = (bool?)row["previously_used"] == true };
+                if (row["known_by_all"] is JArray knowers && knowers.Count > 1) selectedRow["known_by_all"] = knowers.DeepClone();
                 if (key == "world:current")
                     foreach (string field in new[] { "query_version", "query_roots", "query_detail", "scope_incomplete" })
                         if (row[field] != null) selectedRow[field] = row[field].DeepClone();
@@ -735,7 +736,7 @@ internal sealed partial class WorldDiplomacyOrchestration
                     if (keys.Values<string>().Contains(key) && stories.Count == 1
                         && stories[0]["basis_keys"] is JArray basis && basis.Count > 0 && basis.Count <= 16
                         && basis.All(x => x.Type == JTokenType.String && sources.TryGetValue((string)x, out var evidenceRow)
-                            && ((string)evidenceRow["known_by"] == "public" || parties.Any(p => p.KingdomId == (string)evidenceRow["known_by"])))) continue;
+                            && ((string)evidenceRow["known_by"] == "public" || parties.Any(p => IsKnownBy(evidenceRow, p.KingdomId))))) continue;
                     reason = "event_concept_invalid:participants[" + party.KingdomId + "].source_keys:" + key
                         + ";adopted_reference_requires_unique_adopted_npc_story_with_supplied_known_basis_keys;existing_facts_must_keep_supplied_keys";
                     return false;
@@ -781,7 +782,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             string id = (string)key;
             bool adopted = id.StartsWith("adopted:", StringComparison.Ordinal) && id.Length > 8;
             if (!adopted && (!sources.TryGetValue(id, out var record)
-                || ((string)record["known_by"] != "public" && !parties.Any(x => x.KingdomId == (string)record["known_by"]))))
+                || ((string)record["known_by"] != "public" && !parties.Any(x => IsKnownBy(record, x.KingdomId)))))
             { reason = "event_material_source_not_supplied_or_known:key=" + id
                 + ";known_by=" + (sources.TryGetValue(id, out var failedSource) ? (string)failedSource["known_by"] : "not_supplied")
                 + ";participants=" + string.Join(",", parties.Select(x => x.KingdomId)); return false; }
@@ -807,6 +808,7 @@ internal sealed partial class WorldDiplomacyOrchestration
                 Kind = kind, SubjectKingdomId = subject, Source = source, Text = text, Public = true,
                 KnownKingdomIds = sources.TryGetValue(source, out var sourceRecord)
                     ? (string)sourceRecord["known_by"] == "public" ? parties.Select(x => x.KingdomId).ToList()
+                        : sourceRecord["known_by_all"] is JArray knowers && knowers.Count > 0 ? knowers.Values<string>().ToList()
                         : new List<string> { (string)sourceRecord["known_by"] }
                     : new List<string> { subject } });
         }

@@ -279,6 +279,8 @@ namespace AnimusForge
     }
     internal sealed class WorldDiplomacyBehavior
     {
+        internal static float[] EmbedSharedMemory(string text) => null;
+        internal static float[] EmbedSharedMemoryQuery(string text) => null;
         internal static void ApplyExternalPrestigeDelta(string kingdomId, int delta, string reason) => Recording.Call("prestige", kingdomId, delta, reason);
         internal static bool TryCaptureMemory(string heroId, string kingdom, out WorldDiplomacyMemorySnapshot snapshot)
         { snapshot = default; Recording.Call("memory", heroId, kingdom); return true; }
@@ -389,6 +391,7 @@ namespace AnimusForge
     // Wiring boundary only; actual memory selection is exercised by PromptMemoryReplay.
     internal readonly struct WorldDiplomacyMemorySnapshot { }
     internal interface IWorldDiplomacySemanticSource { float[] Embed(string text); }
+    internal interface IWorldDiplomacyQuerySemanticSource { float[] EmbedQuery(string text); }
     public sealed class OnnxEmbeddingEngine
     {
         public static OnnxEmbeddingEngine Instance => null;

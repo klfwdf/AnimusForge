@@ -1,3 +1,7 @@
+## 2026-11-05 外交检索修正
+
+按审查结论修正外交召回：向量门槛0.65改为与周报一致的bekko值0.40；embedding超时/失败降级为词法而不再判宣言失败；记录向量整批提交、已完成的保留，对话渠道不再在调用线程上同步推理，直接用已完成向量；NPC对玩家议程空话题时以议程种子/背景/双方已知公文标题作检索词，检索词限1600字；ID加分改为精确标记匹配；援助完整记录仅限求援国与接受方，第三国只见请求，答复送达后只见状态，费用与付款方不外泄，援助原地改状态时置脏；威胁/事件结果类受保护事实对当事国可召回；世界书多国命中记入known_by_all，按国轮询分配8000预算；文档索引同数量原地替换时重建；预算文档字符上限改为16,000。新增RetrievalFixReplay；--event-memory中检索断言全过，--request-history、--aid-request、--country-admission、--theme-exploration、--player-material-optimization、--event-structure通过；PolicyStyleNoticeReplay、--material-supply/--material-country的NPC novelty断言与DiplomacyModulePortTests的J17绑定门在原HEAD同样失败，非本轮引入。未编译1.3/1.4/Bootstrap，未部署、未实机。
+
 ## 2026-11-04 营地改动审查修复
 
 审查24f1570691..ddf1b01c78营地改动后修复：移除pot_archery_target_breakable（DestructableComponent只在OnInit初始化，营地以callScriptCallbacks=false生成，受击会访问空状态）及其两个靶位，射箭靶Variant恢复为i；移除crate_a_empty（藏身处中常叠放，中位高0.14 m）；马厩前角Gear离角落哨位/火把过近，移到距哨位2.34 m处；街道营火柴堆从2.5 m外移到3 m（原距90°圈座0.9 m）；路线预算排队不再消耗工人回岗重试次数；桌面叠放改为沿实测长边、按带符号偏移并夹在桌沿0.2 m内，避免窄桌悬空；删除FireRingSeats常量改用数组长度。PropsPlacement 30、GroundRoute 87、Restart 19、review_source_contracts通过。未编译游戏DLL、未部署、未实机。

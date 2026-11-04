@@ -57,6 +57,7 @@ internal sealed partial class WorldDiplomacyOrchestration
                 && prior.MaterialFingerprint != AidMaterialFingerprint(calling, called, enemy);
             // A changed world permits a new request, never new consent. Keep the
             // refused version and do not revive a fulfilled or accepted promise.
+            WorldDiplomacyMemoryApplication.InvalidateRecords(Storage);
             if (!changed) return prior;
         }
         var item = new DiplomacyAidRequest { Id = _host.NewId("aid"), Identity = identity, CallingKingdomId = calling,
@@ -79,7 +80,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         foreach (var item in _pendingAid.Where(x => x.CallingKingdomId == calling && x.CalledKingdomId == called
             && x.EnemyKingdomId == enemy && x.Status == "requested"))
         { item.Status = "rejected"; item.Reason = "explicit_native_refusal";
-            item.MaterialFingerprint = AidMaterialFingerprint(calling, called, enemy); }
+            item.MaterialFingerprint = AidMaterialFingerprint(calling, called, enemy);
+            WorldDiplomacyMemoryApplication.InvalidateRecords(Storage); }
     }
     private void MaintainAidRequests()
     {
@@ -95,7 +97,8 @@ internal sealed partial class WorldDiplomacyOrchestration
             if (_host.PartiesAtWar(item.CalledKingdomId, item.EnemyKingdomId)) { FulfillAid(item); continue; }
             if (!_host.PartiesAtWar(item.CallingKingdomId, item.EnemyKingdomId)
                 || _host.IsEliminatedParty(item.CalledKingdomId) || _host.IsEliminatedParty(item.EnemyKingdomId))
-            { item.Status = "obsolete"; item.Reason = "underlying_war_or_party_no_longer_exists"; continue; }
+            { item.Status = "obsolete"; item.Reason = "underlying_war_or_party_no_longer_exists";
+                WorldDiplomacyMemoryApplication.InvalidateRecords(Storage); continue; }
             var round = ResolveRound(item.RoundId);
             if (round == null)
             {
@@ -136,6 +139,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             "CALLER", _host.PartyNameOrEmpty(item.CallingKingdomId), "ALLY", _host.PartyNameOrEmpty(item.CalledKingdomId), "ENEMY", _host.PartyNameOrEmpty(item.EnemyKingdomId));
         document.Intent = "statement"; document.RequiresResponse = true;
         item.RequestDocumentId = document.DocumentId;
+        WorldDiplomacyMemoryApplication.InvalidateRecords(Storage);
         if (string.IsNullOrEmpty(round.RootDocumentId)) round.RootDocumentId = document.DocumentId;
         ProcessAnalyzedDocument(document, "statement", WorldDiplomacyIntentVocabulary.DefaultCommitmentForIntent("statement"), true, "neutral", 1);
     }
@@ -147,6 +151,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             "CALLER", _host.PartyNameOrEmpty(item.CallingKingdomId), "ALLY", _host.PartyNameOrEmpty(item.CalledKingdomId), "ENEMY", _host.PartyNameOrEmpty(item.EnemyKingdomId));
         document.Intent = "declare_war"; document.SourceDocumentId = item.RequestDocumentId;
         item.AnswerDocumentId = document.DocumentId;
+        WorldDiplomacyMemoryApplication.InvalidateRecords(Storage);
         document.AidDecisions.Add(new() { RequestId = item.Id, Decision = "accept" });
         ProcessAnalyzedDocument(document, "declare_war", WorldDiplomacyIntentVocabulary.DefaultCommitmentForIntent("declare_war"), false, "firm", 1);
     }
@@ -196,6 +201,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             item.AnswerDocumentId = document.DocumentId;
             item.Status = decision.Decision == "accept" ? "accepted" : decision.Decision == "reject" ? "rejected" : "conditional";
             if (decision.Decision == "accept") item.AcceptedRulerId = document.AuthorRulerId;
+            WorldDiplomacyMemoryApplication.InvalidateRecords(Storage);
             if (_host.PartiesAtWar(item.CalledKingdomId, item.EnemyKingdomId)) FulfillAid(item);
         }
     }
@@ -205,6 +211,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         // separate-peace agreement as a side effect of the new request.
         if (!_host.PartiesAtWar(item.CalledKingdomId, item.EnemyKingdomId)) return;
         item.Status = "fulfilled"; item.Reason = "actual_war_started";
+        WorldDiplomacyMemoryApplication.InvalidateRecords(Storage);
         if (item.LegacyCostState == "pending" && _host is IDiplomacyAidHost port)
         {
             item.LegacyCostState = "applying";
@@ -216,7 +223,8 @@ internal sealed partial class WorldDiplomacyOrchestration
     {
         foreach (var item in Storage.AidRequests.Where(x => x.RoundId == round.RoundId && x.Status is "requested" or "conditional"))
         { item.Status = "closed_unresolved"; item.Reason = round.CloseReason;
-            item.MaterialFingerprint = AidMaterialFingerprint(item.CallingKingdomId, item.CalledKingdomId, item.EnemyKingdomId); }
+            item.MaterialFingerprint = AidMaterialFingerprint(item.CallingKingdomId, item.CalledKingdomId, item.EnemyKingdomId);
+            WorldDiplomacyMemoryApplication.InvalidateRecords(Storage); }
     }
     private string BuildAidContext(WorldDiplomacyRound round, string actor)
     {

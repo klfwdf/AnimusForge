@@ -14,6 +14,35 @@ public sealed partial class WorldDiplomacyBehavior
 {
     private readonly WorldDiplomacyMaterialCaptureQueue _eventMaterialCaptures = new();
     private readonly WorldDiplomacyAsyncEmbeddingCache _historyEmbeddings = new();
+    // Shared conversation memory may be built on the game thread (scene/free talk) or a
+    // courier worker. Its own lock-guarded cache only starts bounded workers and never
+    // waits; the main-thread request cache above is not shared across threads.
+    private static readonly object SharedMemoryEmbeddingLock = new();
+    private static readonly WorldDiplomacyAsyncEmbeddingCache SharedMemoryEmbeddings = new();
+    private static System.Threading.Tasks.Task<bool> _sharedMemoryEmbeddingInitialization;
+    internal static float[] EmbedSharedMemory(string text)
+    {
+        var engine = OnnxEmbeddingEngine.Instance;
+        if (engine == null) return null;
+        lock (SharedMemoryEmbeddingLock)
+        {
+            var initialization = _sharedMemoryEmbeddingInitialization ??= engine.InitializeAsync(AnimusForgeModulePaths.GetCurrentModuleRoot());
+            return SharedMemoryEmbeddings.Get(text, SaveRuntimeGuard.CaptureGeneration(), engine,
+                input => initialization.GetAwaiter().GetResult() && engine.TryGetEmbedding(input, out var vector) ? vector : null);
+        }
+    }
+    // One short inference per player message once the model is loaded; never a cold
+    // load or a record batch on the caller. Before that, recall is lexical.
+    internal static float[] EmbedSharedMemoryQuery(string text)
+    {
+        var engine = OnnxEmbeddingEngine.Instance;
+        System.Threading.Tasks.Task<bool> initialization;
+        lock (SharedMemoryEmbeddingLock)
+            initialization = _sharedMemoryEmbeddingInitialization ??= engine?.InitializeAsync(AnimusForgeModulePaths.GetCurrentModuleRoot());
+        if (initialization == null || !initialization.IsCompleted || initialization.Status != System.Threading.Tasks.TaskStatus.RanToCompletion
+            || !initialization.Result) return null;
+        return engine.TryGetEmbedding(text, out var vector) ? vector : null;
+    }
 
     private sealed partial class OrchestrationHost : IDiplomacyScopedWorldHost, IDiplomacyEventHost, IDiplomacyEventCalendarHost, IDiplomacyEventMaterialHost, IDiplomacyWorldBookHost, IDiplomacyEventCultureHost, IDiplomacySilenceEffectHost, IDiplomacyPlayerContactHost, IDiplomacyMaterialVersionHost, IDiplomacyNarrativeActorHost, IWorldDiplomacyRealmVoicePreparation
     {
@@ -53,6 +82,9 @@ public sealed partial class WorldDiplomacyBehavior
         {
             var result = new List<object>();
             var seen = new HashSet<string>(StringComparer.Ordinal);
+            // A world-book account retrieved for several realms is one record known by
+            // all of them; the first retriever stays in known_by for existing consumers.
+            var loreKnowers = new Dictionary<string, List<string>>(StringComparer.Ordinal);
             var library = KnowledgeLibraryBehavior.Instance;
             long captureVersion = library?.GetRuleDataVersionForExternal() ?? 0;
             bool themed = WorldDiplomacyOrchestration.IsThematicResearchTopic(topic);
@@ -116,8 +148,13 @@ public sealed partial class WorldDiplomacyBehavior
                     {
                         if (string.IsNullOrWhiteSpace(lore)) continue;
                         string key = "lore:" + AnimusForge.Refactor.Domain.WorldDiplomacyPromptContractRules.StablePromptHash(lore);
-                        if (!seen.Add(key)) continue;
-                        result.Add(new { key, known_by = kingdom.StringId, source_kind = "world_book_account",
+                        if (!seen.Add(key))
+                        {
+                            if (loreKnowers.TryGetValue(key, out var knownBy) && !knownBy.Contains(kingdom.StringId)) knownBy.Add(kingdom.StringId);
+                            continue;
+                        }
+                        var knowers = new List<string> { kingdom.StringId }; loreKnowers[key] = knowers;
+                        result.Add(new { key, known_by = kingdom.StringId, known_by_all = knowers, source_kind = "world_book_account",
                             previously_used = excludedKeys.Contains(key), query = cue, topic_query = !string.IsNullOrWhiteSpace(topic) && cue == topic, text = lore,
                             hero_ids = selected.Select(h => h.StringId).Append(ruler.StringId).ToList() });
                     }

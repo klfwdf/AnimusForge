@@ -235,7 +235,7 @@ internal static class Program
         if (args.Length == 1 && args[0] == "--aid-request")
         { try { AidRequestReplay.Run(); Console.WriteLine("PASS AidRequestReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Length == 1 && args[0] == "--event-memory")
-        { try { EventMemoryReplay.Run(); PolicyStyleNoticeReplay.Run(); Console.WriteLine("PASS EventMemoryReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        { try { EventMemoryReplay.Run(); RetrievalFixReplay.Run(); PolicyStyleNoticeReplay.Run(); Console.WriteLine("PASS EventMemoryReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Length == 1 && args[0] == "--event-boundary")
         { try { EventBoundaryReplay.Run(); Console.WriteLine("PASS EventBoundaryReplay assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Length == 1 && args[0] == "--event-commitment")
@@ -539,6 +539,7 @@ RunRepairCorrectionAndJobDecisionTests();
         EventCommitmentReplay.Run();
         EventBoundaryReplay.Run();
         EventMemoryReplay.Run();
+        RetrievalFixReplay.Run();
         AidRequestReplay.Run();
         EventSettingsReplay.Run();
         EventRetirementReplay.Run();

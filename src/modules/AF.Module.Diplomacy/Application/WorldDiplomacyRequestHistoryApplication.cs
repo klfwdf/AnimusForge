@@ -58,7 +58,7 @@ internal static class WorldDiplomacyRequestHistoryApplication
         var round = WorldDiplomacyLiveRoundRules.Live(storage).Concat(storage.CompletedRounds ?? new())
             .FirstOrDefault(x => x?.RoundId == roundId);
         var source = index.Find(job.SourceDocumentId);
-        string query = (round?.RoundTopic ?? "") + " " + (Knows(source) ? source.Title + " " + source.Body : "");
+        string query = BuildRecallQuery(storage, job, round, Knows(source) ? source : null, Knows);
         // No topic means no historical filler. Never use the system rules as a query.
         if (!string.IsNullOrWhiteSpace(query))
         {
@@ -69,21 +69,57 @@ internal static class WorldDiplomacyRequestHistoryApplication
         }
         return text.ToString();
     }
+    internal const int RecallQueryCharacterLimit = 1600;
+    // The event topic and the delivered source define the subject. An NPC agenda
+    // opened toward the player has neither yet, so its live round falls back to its
+    // own seed and then to the titles of the pair's latest known documents. Without
+    // a live round there is still no subject and no filler.
+    internal static string BuildRecallQuery(WorldDiplomacyStorage storage, WorldDiplomacyJob job,
+        WorldDiplomacyRound round, WorldDiplomacyDocument knownSource, Func<WorldDiplomacyDocument, bool> knows)
+    {
+        string query = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round?.RoundTopic) + " "
+            + (knownSource == null ? "" : knownSource.Title + " " + knownSource.Body);
+        if (string.IsNullOrWhiteSpace(query) && round != null)
+            query = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round.TopicSeedContext, round.EventBackground);
+        if (string.IsNullOrWhiteSpace(query) && round != null && !string.IsNullOrEmpty(job.AuthorKingdomId)
+            && !string.IsNullOrEmpty(job.TargetKingdomId))
+        {
+            var titles = new List<string>();
+            for (int i = (storage.Documents?.Count ?? 0) - 1; i >= 0 && titles.Count < 3; i--)
+            {
+                var d = storage.Documents[i];
+                if (d == null || !knows(d) || string.IsNullOrWhiteSpace(d.Title)) continue;
+                bool pair = (d.AuthorKingdomId == job.AuthorKingdomId && d.TargetKingdomId == job.TargetKingdomId)
+                    || (d.AuthorKingdomId == job.TargetKingdomId && d.TargetKingdomId == job.AuthorKingdomId);
+                if (pair) titles.Add(d.Title);
+            }
+            query = string.Join(" ", titles);
+        }
+        query = query.Trim();
+        if (query.Length <= RecallQueryCharacterLimit) return query;
+        int length = RecallQueryCharacterLimit;
+        if (char.IsHighSurrogate(query[length - 1])) length--;
+        return query.Substring(0, length);
+    }
     private sealed class DocumentIndex
     {
         private List<WorldDiplomacyDocument> _documents;
+        private WorldDiplomacyDocument _last;
         private int _count;
         private readonly Dictionary<string, WorldDiplomacyDocument> _byId = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, List<WorldDiplomacyDocument>> _byRound = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, HashSet<string>> _own = new(StringComparer.OrdinalIgnoreCase);
         internal void Update(List<WorldDiplomacyDocument> documents)
         {
-            if (!ReferenceEquals(_documents, documents) || (documents?.Count ?? 0) < _count)
-            { _documents = documents; _count = 0; _byId.Clear(); _byRound.Clear(); _own.Clear(); }
+            // Append-only growth is consumed incrementally. A replaced list, a shorter
+            // list, or an in-place replacement of the last indexed slot rebuilds.
+            if (!ReferenceEquals(_documents, documents) || (documents?.Count ?? 0) < _count
+                || (_count > 0 && !ReferenceEquals(documents[_count - 1], _last)))
+            { _documents = documents; _count = 0; _last = null; _byId.Clear(); _byRound.Clear(); _own.Clear(); }
             if (documents == null) return;
             for (; _count < documents.Count; _count++)
             {
-                var d = documents[_count]; if (d == null || string.IsNullOrEmpty(d.DocumentId)) continue;
+                var d = _last = documents[_count]; if (d == null || string.IsNullOrEmpty(d.DocumentId)) continue;
                 _byId[d.DocumentId] = d;
                 if (!string.IsNullOrEmpty(d.AuthorKingdomId))
                 {

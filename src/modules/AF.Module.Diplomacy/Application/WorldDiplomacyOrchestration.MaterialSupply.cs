@@ -131,7 +131,7 @@ internal sealed partial class WorldDiplomacyOrchestration
                 var rows = JArray.Parse(raw);
                 foreach (string country in countries)
                 {
-                    var complete = new JArray(rows.OfType<JObject>().Where(x => (string)x["known_by"] == country).Select(x => x.DeepClone()));
+                    var complete = new JArray(rows.OfType<JObject>().Where(x => IsKnownBy(x, country)).Select(x => x.DeepClone()));
                     if (complete.Count == 0) continue;
                     if (cache.Rows.Count >= 18) cache.Rows.Clear();
                     cache.Rows[CacheKey(country)] = new CompletedPlanningCapture { Version = MaterialInvestigationVersion(country), Rows = complete };
@@ -347,7 +347,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         JArray extra;
         try { extra = JArray.Parse(raw); }
         catch (JsonException) { SuspendDiplomacyJob(job, "event_material_invalid:admission_sources"); return false; }
-        var rows = extra.OfType<JObject>().Where(x => (string)x["known_by"] == country
+        var rows = extra.OfType<JObject>().Where(x => IsKnownBy(x, country)
             && !string.IsNullOrWhiteSpace((string)x["key"]) && ((string)x["key"]).Length <= 300
             && !string.IsNullOrWhiteSpace((string)x["text"])).ToList();
         if (rows.Count == 0)

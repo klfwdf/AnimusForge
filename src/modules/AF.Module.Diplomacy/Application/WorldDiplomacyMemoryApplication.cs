@@ -28,11 +28,21 @@ internal interface IWorldDiplomacySemanticSource
 {
     float[] Embed(string text);
 }
+// Optional: one query vector computed inline when the model is already loaded,
+// while record vectors keep warming through the asynchronous cache.
+internal interface IWorldDiplomacyQuerySemanticSource
+{
+    float[] EmbedQuery(string text);
+}
 internal static class WorldDiplomacyMemoryApplication
 {
     // Shared by courier, free conversation and scene shout. Index construction is
     // mutation-driven at a request boundary, never a frame or day archive scan.
     private static readonly ConditionalWeakTable<WorldDiplomacyStorage, Index> Indexes = new();
+    // Same calibration as WorldNewsRecallPolicy.SemanticOnlyMinCosine: bekko-a25m
+    // cosine scores run lower than bge, so 0.65 discarded most real matches.
+    internal const double SemanticMinCosine = 0.40;
+    internal const int EmbeddingInputChars = 1400;
     private sealed class Row
     {
         internal string Id, EventId, Search, OwnerKingdom, OwnerRuler;
@@ -206,12 +216,24 @@ internal static class WorldDiplomacyMemoryApplication
             foreach (var aid in storage.AidRequests.Where(x => x != null))
             {
                 ByEvent.TryGetValue(aid.RoundId ?? "", out var round);
+                string aidSearch = DiplomacyPromptTexts.Get("Memory_AidTopic", "Allied military aid and requests to join a war") + " " + round?.RoundTopic
+                    + " " + aid.CallingKingdomId + " " + aid.CalledKingdomId + " " + aid.EnemyKingdomId;
+                // Only the calling realm and the accepting ruler see the complete live record.
                 Add(new Row { Id = "aid:" + aid.Id, EventId = aid.RoundId, Day = aid.Day,
                     OwnerKingdom = aid.CallingKingdomId, OwnerRuler = aid.AcceptedRulerId,
-                    Sources = string.IsNullOrEmpty(aid.RequestDocumentId) ? null : new[] { aid.RequestDocumentId },
-                    Search = DiplomacyPromptTexts.Get("Memory_AidTopic", "Allied military aid and requests to join a war") + " " + round?.RoundTopic
-                        + " " + aid.CallingKingdomId + " " + aid.CalledKingdomId + " " + aid.EnemyKingdomId,
-                    Render = () => JsonConvert.SerializeObject(new { current_aid = aid }) });
+                    Search = aidSearch, Render = () => JsonConvert.SerializeObject(new { current_aid = aid }) });
+                // Other readers learn only what delivered documents disclose: the request,
+                // then the answer's status. Cost, payer and acceptor stay with the parties.
+                if (!string.IsNullOrEmpty(aid.RequestDocumentId))
+                    Add(new Row { Id = "aid-request:" + aid.Id, EventId = aid.RoundId, Day = aid.Day,
+                        Sources = new[] { aid.RequestDocumentId }, Search = aidSearch,
+                        Render = () => JsonConvert.SerializeObject(new { aid_request = aid.Id, aid.CallingKingdomId,
+                            aid.CalledKingdomId, aid.EnemyKingdomId, request_document = aid.RequestDocumentId, aid.Day }) });
+                if (!string.IsNullOrEmpty(aid.RequestDocumentId) && !string.IsNullOrEmpty(aid.AnswerDocumentId))
+                    Add(new Row { Id = "aid-answer:" + aid.Id, EventId = aid.RoundId, Day = aid.Day,
+                        Sources = new[] { aid.RequestDocumentId, aid.AnswerDocumentId }, Search = aidSearch,
+                        Render = () => JsonConvert.SerializeObject(new { aid_answer = aid.Id, aid.CallingKingdomId,
+                            aid.CalledKingdomId, aid.EnemyKingdomId, answer_document = aid.AnswerDocumentId, status = aid.Status }) });
             }
             foreach (var item in storage.DialogueArrangements.Where(x => x != null))
             {
@@ -225,9 +247,16 @@ internal static class WorldDiplomacyMemoryApplication
             foreach (var fact in storage.CanonicalHistory?.Snapshot?.ProtectedFacts ?? new())
             {
                 if (fact == null || string.IsNullOrEmpty(fact.SourceId)) continue;
+                var sources = new[] { fact.SourceId, fact.RelatedSourceId }.Where(x => !string.IsNullOrEmpty(x)).ToArray();
                 Add(new Row { Id = "protected:" + fact.Sequence + ":" + fact.SourceId,
-                    Sources = new[] { fact.SourceId, fact.RelatedSourceId }.Where(x => !string.IsNullOrEmpty(x)).ToArray(),
-                    Search = fact.Text, Render = () => JsonConvert.SerializeObject(new { protected_fact = fact }) });
+                    Sources = sources, Search = fact.Text, Render = () => JsonConvert.SerializeObject(new { protected_fact = fact }) });
+                // Threat and event-effect results carry a threat or boundary id, never a
+                // delivered document id; their own parties still know the confirmed result.
+                if (!ByDocument.ContainsKey(fact.SourceId))
+                    foreach (string party in new[] { fact.AuthorKingdomId }.Concat(fact.TargetKingdomIds ?? new())
+                        .Where(x => !string.IsNullOrEmpty(x)).Distinct(StringComparer.Ordinal))
+                        Add(new Row { Id = "protected:" + fact.Sequence + ":" + fact.SourceId + ":" + party,
+                            OwnerKingdom = party, Search = fact.Text, Render = () => JsonConvert.SerializeObject(new { protected_fact = fact }) });
             }
             HistoryRevision = storage.CanonicalHistory?.Revision ?? 0;
             foreach (string id in _metadataIds) if (!_collecting.Contains(id)) Remove(id);
@@ -238,6 +267,21 @@ internal static class WorldDiplomacyMemoryApplication
     }
     private static readonly HashSet<string> Stop = new(DiplomacyCompatibilityTexts.Get("Memory_LexicalStopWords").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries), StringComparer.OrdinalIgnoreCase);
     private static readonly Regex Words = new(@"[A-Za-z0-9_]+|[\p{IsCJKUnifiedIdeographs}]+", RegexOptions.Compiled);
+    private static readonly Regex Ids = new(@"[A-Za-z0-9_:.\-]+", RegexOptions.Compiled);
+    internal static string ClipEmbeddingInput(string text)
+    {
+        text ??= "";
+        if (text.Length <= EmbeddingInputChars) return text;
+        int length = EmbeddingInputChars;
+        if (char.IsHighSurrogate(text[length - 1])) length--;
+        return text.Substring(0, length);
+    }
+    private static HashSet<string> IdTokens(string text)
+    {
+        var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (Match match in Ids.Matches(text ?? "")) result.Add(match.Value.TrimEnd('.', ':', '-'));
+        return result;
+    }
     private static HashSet<string> Tokens(string text)
     {
         var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -281,9 +325,12 @@ internal static class WorldDiplomacyMemoryApplication
     {
         if (string.IsNullOrWhiteSpace(input) || !source.TryCapture(heroId, kingdomOverride, out var snapshot)) return "";
         Func<string, float[]> embed = source is IWorldDiplomacySemanticSource semantic ? semantic.Embed : null;
-        return Build(snapshot, input, source.FormatDate, 7000, embed);
+        Func<string, float[]> embedQuery = source is IWorldDiplomacyQuerySemanticSource querySource ? querySource.EmbedQuery : null;
+        // A live conversation cannot wait for vectors. It ranks with the vectors already
+        // completed now; the rest of the batch keeps warming for a later turn.
+        return Build(snapshot, input, source.FormatDate, 7000, embed, embedQuery: embedQuery, partialVectors: true);
     }
-    internal static string Build(WorldDiplomacyMemorySnapshot snapshot, string query, Func<int, string> date, int maximumChars = 7000, Func<string, float[]> embed = null, ISet<string> excludedDocuments = null, bool deferInitialIndex = false)
+    internal static string Build(WorldDiplomacyMemorySnapshot snapshot, string query, Func<int, string> date, int maximumChars = 7000, Func<string, float[]> embed = null, ISet<string> excludedDocuments = null, bool deferInitialIndex = false, Func<string, float[]> embedQuery = null, bool partialVectors = false)
     {
         var storage = snapshot.Storage;
         if (storage == null || string.IsNullOrWhiteSpace(query) || maximumChars < 256) return "";
@@ -316,8 +363,12 @@ internal static class WorldDiplomacyMemoryApplication
         {
             try
             {
-                float[] queryVector = embed(query);
-                if (queryVector?.Length > 0)
+                // Long queries are bounded like record text; the model reads only its window anyway.
+                bool pending = false;
+                float[] queryVector = null;
+                try { queryVector = (embedQuery ?? embed)(ClipEmbeddingInput(query)); }
+                catch (WorldDiplomacyPreparationPendingException) { pending = true; }
+                if (pending || queryVector?.Length > 0)
                 {
                     int generated = 0, examined = 0, originalCursor = index.VectorCursor;
                     var prepared = new List<(Row Row, string Text, float[] Vector)>();
@@ -330,27 +381,38 @@ internal static class WorldDiplomacyMemoryApplication
                         if (index.Vectors.TryGetValue(row.Id, out var cached) && cached.Text == text) continue;
                         generated++;
                         // Embedding input is bounded; the archived record is never truncated.
+                        // Submit the whole batch before yielding so the async cache fills all
+                        // its inference slots; its completed results are reused on retry.
                         try
                         {
-                            float[] vector = embed(text.Length > 1400 ? text.Substring(0, 1400) : text);
+                            float[] vector = embed(ClipEmbeddingInput(text));
                             if (vector?.Length > 0) prepared.Add((row, text, vector));
                         }
-                        catch (WorldDiplomacyPreparationException) { index.VectorCursor = originalCursor; throw; }
+                        catch (WorldDiplomacyPreparationPendingException) { pending = true; }
+                        // A timed-out or failed record keeps lexical-only relevance until its
+                        // text changes; an empty vector never passes the cosine threshold.
+                        catch { prepared.Add((row, text, Array.Empty<float>())); }
                     }
-                    // Retry the same at-most-24 batch. Publishing a partial batch
-                    // would advance the cursor and silently change relevance.
+                    // Retry the same at-most-24 batch. Advancing past an incomplete batch
+                    // would silently change relevance. A request yields; a live
+                    // conversation ranks with the completed vectors only.
+                    if (pending) index.VectorCursor = originalCursor;
+                    if (pending && !partialVectors) throw new WorldDiplomacyPreparationPendingException();
                     foreach (var item in prepared) index.Vectors[item.Row.Id] = (item.Text, item.Vector);
+                    if (queryVector?.Length > 0)
                     foreach (var row in index.Rows)
                     {
                         if (!Visible(row) || !index.Vectors.TryGetValue(row.Id, out var cached) || cached.Text != row.Search) continue;
                         double similarity = Cosine(queryVector, cached.Vector);
-                        if (similarity < 0.65) continue;
+                        if (similarity < SemanticMinCosine) continue;
                         scores.TryGetValue(row, out double lexical);
                         scores[row] = lexical + similarity * 2;
                     }
                 }
             }
-            catch (WorldDiplomacyPreparationException) { throw; }
+            // Only an unfinished preparation yields. A timed-out or failed vector
+            // degrades to lexical recall instead of failing the whole request.
+            catch (WorldDiplomacyPreparationPendingException) { throw; }
             catch { /* Keep lexical retrieval available when local inference fails. */ }
         }
         // Preserve relative relevance within personal evidence. Recency breaks ties
@@ -361,9 +423,11 @@ internal static class WorldDiplomacyMemoryApplication
             if(scores.Count==0)
                 foreach(var row in own.OrderByDescending(x=>x.Day).Take(1)) scores[row]=0.1;
         }
+        // Exact identifier tokens only: "doc_1" must not boost "doc_12".
+        var queryIds = IdTokens(query);
         foreach(var row in scores.Keys.ToList())
-            if(query.IndexOf(row.Id,StringComparison.OrdinalIgnoreCase)>=0
-                || (row.Sources??Array.Empty<string>()).Any(x=>!string.IsNullOrEmpty(x)&&query.IndexOf(x,StringComparison.OrdinalIgnoreCase)>=0))
+            if(queryIds.Contains(row.Id)
+                || (row.Sources??Array.Empty<string>()).Any(x=>!string.IsNullOrEmpty(x)&&queryIds.Contains(x)))
                 scores[row]+=20;
         if (scores.Count == 0) return "";
         var selected = scores.OrderByDescending(x => x.Value).ThenByDescending(x => x.Key.Day).ThenBy(x => x.Key.Id, StringComparer.Ordinal).Select(x => x.Key).Take(12).ToList();

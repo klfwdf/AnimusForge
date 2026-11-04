@@ -17,15 +17,14 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
         try { return Presentation?.Standing(kingdomId) ?? ""; }
         catch { return ""; }
     }
-    private sealed class MemorySource : IWorldDiplomacyMemorySource, IWorldDiplomacySemanticSource
+    private sealed class MemorySource : IWorldDiplomacyMemorySource, IWorldDiplomacySemanticSource, IWorldDiplomacyQuerySemanticSource
     {
         public bool TryCapture(string heroId, string kingdomOverride, out WorldDiplomacyMemorySnapshot snapshot)
             => WorldDiplomacyBehavior.TryCaptureMemory(heroId, kingdomOverride, out snapshot);
-        public float[] Embed(string text)
-        {
-            var engine = OnnxEmbeddingEngine.Instance;
-            return engine != null && engine.IsAvailable && engine.TryGetEmbedding(text, out var vector) ? vector : null;
-        }
+        // Shared conversation memory never runs model inference on its caller.
+        // It reuses the diplomacy async cache; an unfinished vector yields lexical recall now.
+        public float[] Embed(string text) => WorldDiplomacyBehavior.EmbedSharedMemory(text);
+        public float[] EmbedQuery(string text) => WorldDiplomacyBehavior.EmbedSharedMemoryQuery(text);
         public string FormatDate(int day) => WorldDiplomacyBehavior.FormatDateForProactive(day);
     }
     private static readonly IWorldDiplomacyMemorySource Memory = new MemorySource();

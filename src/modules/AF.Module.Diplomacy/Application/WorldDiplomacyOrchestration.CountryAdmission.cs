@@ -136,6 +136,8 @@ internal sealed partial class WorldDiplomacyOrchestration
             string key = (string)source["key"], knownBy = (string)source["known_by"];
             foreach (string hero in (source["hero_ids"] as JArray)?.Values<string>() ?? Enumerable.Empty<string>()) Add("hero", hero, key);
             if (!string.IsNullOrEmpty(knownBy) && knownBy != "public") Add("kingdom", knownBy, key);
+            foreach (string other in (source["known_by_all"] as JArray)?.Values<string>() ?? Enumerable.Empty<string>())
+                if (other != "public") Add("kingdom", other, key);
             if (key != "world:current" || (string)source["source_kind"] != "current_world") continue;
             JArray world;
             try { world = JArray.Parse((string)source["text"] ?? "[]"); }

@@ -79,6 +79,11 @@ internal sealed partial class WorldDiplomacyOrchestration
     private static bool HasWorldBookEvidence(JArray sources) => sources.OfType<JObject>()
         .Any(x => (string)x["source_kind"] == "world_book_account" && !string.IsNullOrWhiteSpace((string)x["text"]));
 
+    // known_by names the first realm that retrieved a record; known_by_all lists
+    // every realm whose own retrieval returned the same world-book account.
+    private static bool IsKnownBy(JObject row, string country) => (string)row["known_by"] == country
+        || (row["known_by_all"] as JArray)?.Values<string>().Contains(country) == true;
+
     private static JArray ReadEventLore(WorldDiplomacyRound round, string author = null)
     {
         if (string.IsNullOrEmpty(round?.EventLoreEvidence)) return new JArray();
@@ -86,7 +91,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         {
             var sources = SelectWorldBookEvidence(JArray.Parse(round.EventLoreEvidence));
             return author == null ? sources : new JArray(sources.OfType<JObject>()
-                .Where(x => (string)x["known_by"] == "public" || (string)x["known_by"] == author).Select(x => x.DeepClone()));
+                .Where(x => (string)x["known_by"] == "public" || IsKnownBy(x, author)).Select(x => x.DeepClone()));
         }
         catch (JsonException) { return new JArray(); }
     }
@@ -145,8 +150,14 @@ internal sealed partial class WorldDiplomacyOrchestration
         catch (JsonException) { SuspendDiplomacyJob(job, "event_material_snapshot_invalid"); return false; }
         int budget = 8000;
         var selected = new JArray();
-        foreach (var row in captured.OfType<JObject>().Where(x => (string)x["source_kind"] == "world_book_account")
-            .OrderByDescending(x => (bool?)x["topic_query"] == true))
+        // Topic matches first, then alternate realms by their own retrieval order so
+        // the first realm's accounts cannot consume the whole shared budget.
+        var lore = captured.OfType<JObject>().Where(x => (string)x["source_kind"] == "world_book_account")
+            .Select((row, order) => (row, order, topic: (bool?)row["topic_query"] == true)).ToList();
+        var ranked = lore.GroupBy(x => ((string)x.row["known_by"] ?? "", x.topic))
+            .SelectMany(g => g.OrderBy(x => x.order).Select((x, rank) => (x.row, x.order, x.topic, rank)))
+            .OrderByDescending(x => x.topic).ThenBy(x => x.rank).ThenBy(x => x.order).Select(x => x.row);
+        foreach (var row in ranked)
         {
             int cost = _host.EstimateTokens(row.ToString(Formatting.None));
             if (cost > budget) continue;

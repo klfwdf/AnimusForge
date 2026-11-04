@@ -14,9 +14,12 @@ internal sealed partial class WorldDiplomacyOrchestration
         string history = WorldDiplomacyRequestHistoryApplication.Build(Storage, job, _host.CurrentDay(),
             WorldDiplomacyRequestHistoryApplication.WindowBudget(job, _host.EstimateTokens), _host.EstimateTokens, EmbedHistory);
         var round = ResolveRound(job.RoundId);
+        // An NPC agenda toward the player starts without a public topic; its own
+        // seed is the ruler's subject for personal recall.
+        string topic = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round?.RoundTopic, round?.TopicSeedContext);
         string personal = _host is IWorldDiplomacyPersonalRecall recall
-            ? recall.PersonalMemory(job.PersonalMemoryRulerId, round?.RoundTopic, _host.PartyNameOrEmpty(job.TargetKingdomId), history)
-            : DialogueHost?.PersonalMemory(job.PersonalMemoryRulerId, round?.RoundTopic, _host.PartyNameOrEmpty(job.TargetKingdomId));
+            ? recall.PersonalMemory(job.PersonalMemoryRulerId, topic, _host.PartyNameOrEmpty(job.TargetKingdomId), history)
+            : DialogueHost?.PersonalMemory(job.PersonalMemoryRulerId, topic, _host.PartyNameOrEmpty(job.TargetKingdomId));
         var budget = new RequestRecallBudget(new[] { RequestRecallBudget.WrapDiplomacy(history), RequestRecallBudget.WrapPersonal(personal) });
         return string.Join("\n", budget.FinishSections());
     }
