@@ -206,6 +206,7 @@ public partial class ShoutBehavior
         // The exact camp behavior is the allowlist. It has no settlement Location;
         // execution still wins above, and camp acquisition arbitrates duel/slaughter/crowd.
         if (FieldCampMissionLogic.Current != null) return true;
+        if (IsAmbientBattleSettlementScene(mission)) return false;
         try
         {
             if (!SceneTauntMissionBehavior.TryCaptureScenePeaceConflictFacts(Settlement.CurrentSettlement, out ScenePeaceConflictContext facts)
@@ -223,6 +224,11 @@ public partial class ShoutBehavior
             return false;
         }
     }
+
+    // Armed coup street/hall run on peace locations (center/lordshall) without native battle markers,
+    // so the location allowlist alone admits them. One mission-behavior lookup per probe/session tick.
+    private static bool IsAmbientBattleSettlementScene(Mission mission)
+        => SettlementEntryTroopSelectionBehavior.TryGetArmedCoupSceneForExternal(mission, out _);
 
     private bool IsAmbientPlayerBusy()
         => _ambientCampTransfer != null || _isProcessingShout || _isWaitingForScenePostprocessGate || _shoutHotkeyChargeActive
@@ -520,6 +526,11 @@ public partial class ShoutBehavior
         if (ExecutionSceneConflictBridge.IsSceneControlled(session.Mission))
         {
             EndAmbientSession("ceremony", applyCooldown: true);
+            return;
+        }
+        if (session.Camp == null && IsAmbientBattleSettlementScene(session.Mission))
+        {
+            EndAmbientSession("settlement_battle", applyCooldown: true);
             return;
         }
         Agent target = session.TargetsPlayer ? Agent.Main : session.Partner;

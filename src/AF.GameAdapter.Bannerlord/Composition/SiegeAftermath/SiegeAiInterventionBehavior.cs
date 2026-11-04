@@ -16214,7 +16214,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!IsSpecialCommandOrderSceneActive(Mission.Current))
+				if (!IsSpecialCommandOrderSceneActive(Mission.Current) || AllowsOffensiveOrdersInArmedCoup(Mission.Current))
 				{
 					return;
 				}
@@ -16230,7 +16230,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!IsSpecialCommandOrderSceneActive(Mission.Current))
+				if (!IsSpecialCommandOrderSceneActive(Mission.Current) || AllowsOffensiveOrdersInArmedCoup(Mission.Current))
 				{
 					return true;
 				}
@@ -16369,6 +16369,21 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			try
 			{
 				return NoblePrisonerEscortBehavior.ShouldInjectOrderViewsForExternal(mission ?? Mission.Current);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		// An armed coup is a real battle: charge, advance and the native enemy-marker charge shortcut stay available.
+		// GCCZ occupation keeps its offensive-order ban; ordinary SETS conflicts are unchanged.
+		private static bool AllowsOffensiveOrdersInArmedCoup(Mission mission)
+		{
+			try
+			{
+				return !SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal()
+					&& SettlementEntryTroopSelectionBehavior.TryGetArmedCoupSceneForExternal(mission ?? Mission.Current, out _);
 			}
 			catch
 			{

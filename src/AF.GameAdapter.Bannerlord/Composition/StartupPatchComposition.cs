@@ -541,6 +541,14 @@ internal static class StartupPatchComposition
 			}
 			try
 			{
+				RtsCameraHotkeyInputGuard.EnsurePatched(harmony);
+			}
+			catch (Exception exRtsHotkeyGuard)
+			{
+				Logger.LogTrace("SubModule", ">>> RTS Camera hotkey guard init failed: " + exRtsHotkeyGuard.Message);
+			}
+			try
+			{
 				CourierDeliveryBehavior.RegisterHarmonyPatches(harmony);
 			}
 			catch (Exception ex18d)
