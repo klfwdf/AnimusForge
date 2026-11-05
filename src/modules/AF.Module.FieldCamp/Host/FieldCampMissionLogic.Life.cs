@@ -27,51 +27,6 @@ public sealed partial class FieldCampMissionLogic
     private int _campCornerPassageBudget;
     private readonly MBList<Agent> _campNearbyAgents = new MBList<Agent>();
 
-	// Every clip below is defined directly in as_human_hideout_bandit (Native action_sets.xml, checked 2026-11-04);
-	// the female set inherits it through base_set.
-	// Ground-compatible resting clip only; never use begging gestures for healthy soldiers.
-    private static readonly string[] EatStandingActions = { "act_eating" };
-    private static readonly string[] SitActions = { "act_dungeon_prisoner_sitting_ground_cycle" };
-    // Tavern chair/eating clips require a seat-height StandingPoint and must not run on bare terrain.
-	private static readonly string[] SentryActions = { "act_guard_cautious_look_around_1", "act_guard_normal_look_around_1", "act_stand_1" };
-	// Props use non-usable benches; no seat-height binding exists for these agents.
-
-	private static readonly string[] CookActions = { "act_bartender_meat", "act_bartender_bake" };
-	private static readonly string[] SmithActions = { "act_repair_upside", "act_repair" };
-	private static readonly string[] RepairActions = { "act_repair", "act_repair_upside" };
-
-	private static readonly string[] LeanActions = { "act_lean_fence_loop", "act_lean_fence_loop2" };
-	private static readonly string[] GossipActions = { "act_gossip", "act_gossip_2", "act_talk_to_1", "act_listen_1" };
-	private static readonly string[] LieActions = { "act_dungeon_prisoner_sleep_cycle" };
-	private static readonly string[] GroomActions = { "act_npc_horse_grooming" };
-	private static readonly string[] ChopActions = { "act_npc_villager_lumberjack" };
-	private static readonly string[] ShovelActions = { "act_npc_villager_shoveling" };
-	private static readonly string[] WashActions = { "act_npc_villager_cloth_washing" };
-	private static readonly string[] WriteActions = { "act_writer" };
-	private static readonly string[] PickupActions = { "act_pick_up_from_ground" };
-	private static readonly string[] TableActions = { "act_table_top_work", "act_npc_villager_working_while_stand" };
-	private static readonly string[] StandActions = { "act_stand_1", "act_stand_2" };
-	private static readonly string[] LookoutActions = { "act_guard_cautious_look_around_1", "act_guard_normal_look_around_1", "act_guard_idle_look_around" };
-	// Native paired animation points: one side talks, the other listens (hideout set, checked 2026-11-04).
-	private static readonly string[] TalkActions = { "act_talk_to_1", "act_gossip" };
-	private static readonly string[] ListenActions = { "act_listen_1" };
-	private const float PairTalkRadius = 2.5f;
-	private List<Vec3> _campFireWorld;
-	// Idle wanderers and workers stopped away from their station loiter instead of standing in act_none.
-	private static readonly string[] LoiterActions = { "act_gossip", "act_talk_to_1", "act_guard_idle_look_around", "act_listen_1", "act_gossip_2", "act_guard_cautious_look_around_1" };
-
-	// Right/left hand prefabs that the native animation points attach for these clips.
-	private static readonly Dictionary<string, string[]> HandItems = new Dictionary<string, string[]>(StringComparer.Ordinal)
-	{
-		["act_npc_horse_grooming"] = new[] { "horse_brush", "" },
-		["act_npc_villager_lumberjack"] = new[] { "lumberjack_axe", "" },
-		["act_npc_villager_shoveling"] = new[] { "pitchfork", "" },
-		["act_repair"] = new[] { "hammer_wooden", "" },
-		["act_repair_upside"] = new[] { "hammer_wooden", "" },
-		["act_bartender_meat"] = new[] { "tavernkeeper_spatula", "" },
-		["act_bartender_bake"] = new[] { "tavernkeeper_knife", "" },
-		["act_writer"] = new[] { "pen", "notebook" }
-	};
 
 	/// <summary>
 	/// Camp soldiers use the hideout action set: it is based on the warrior set (so fighting
@@ -241,7 +196,8 @@ public sealed partial class FieldCampMissionLogic
 
 	internal bool IsCampAgentSeated(Agent agent)
 	{
-		if (agent == null || !_campAgentsByAgent.TryGetValue(agent, out CampAgent entry) || !entry.Seated) return false;
+		if (agent == null || !_campAgentsByAgent.TryGetValue(agent, out CampAgent entry) || !entry.Seated
+            || entry.RestPose == CampRestPose.None || entry.PoseTransition == CampPoseTransition.Exit) return false;
 		return entry.Work == FieldCampLayout.WorkKind.Sit || entry.Work == FieldCampLayout.WorkKind.Eat ||
 			entry.Work == FieldCampLayout.WorkKind.Lie || entry.Activity == Activity.Fire || entry.Activity == Activity.Wounded;
 	}
@@ -280,13 +236,14 @@ public sealed partial class FieldCampMissionLogic
             if (!TryPrepareCampNavigation(agent)) return false;
 			if (!agent.IsUsingGameObject && agent.CurrentlyUsedGameObject == null)
 			{
-				if (campAgent != null)
+                bool keepRestPose = campAgent != null && HoldCampRestForConversation(campAgent);
+				if (campAgent != null && !keepRestPose)
 				{
 					ReleasePose(campAgent);
 					campAgent.Seated = false;
 				}
 				StopCampNavigation(agent);
-				if (_prisoners.Contains(agent)) agent.SetIsAIPaused(true);
+				if (keepRestPose || _prisoners.Contains(agent)) agent.SetIsAIPaused(true);
 			}
 			_sceneConversationAgents.Add(agent);
 			return true;
@@ -342,6 +299,9 @@ public sealed partial class FieldCampMissionLogic
 		ReleaseSceneConversation(agent);
 	}
 
+	private const float PairTalkRadius = 2.5f;
+	private List<Vec3> _campFireWorld;
+
 	// ---------- camp life ----------
 
     // At most 20 residents and two cached corner-corridor checks per frame. Route construction
@@ -355,11 +315,13 @@ public sealed partial class FieldCampMissionLogic
             _walkCursor = (_walkCursor + 1) % count;
             CampAgent entry = _agents[_walkCursor];
             Agent agent = entry.Agent;
-            if (entry.FollowingPlayer || entry.Seated || entry.MoveBlocked || agent == null || !agent.IsActive()
+            if (entry.FollowingPlayer || agent == null || !agent.IsActive()
                 || IsDuelist(agent) || IsEnvoy(entry) || IsSceneConversationHeld(agent)
                 || _campCeremonyActors.ContainsKey(agent) || _ceremonyMoved.Contains(entry)) continue;
             try
             {
+                // Pose transitions share this existing 20-agent frame budget; never scan the whole camp.
+                if (AdvanceCampPoseTransition(entry) || entry.Seated || entry.MoveBlocked) continue;
                 // Settle arrivals here, not only in the 20-per-0.5 s upkeep: at 400 residents that
                 // left a walker idling at his stop for up to 10 s before his pose started.
                 if (HasArrived(entry)) { ArriveAtCampTarget(entry); continue; }
@@ -401,7 +363,7 @@ public sealed partial class FieldCampMissionLogic
 			}
             try
             {
-                if (entry.FollowingPlayer) continue;
+                if (entry.FollowingPlayer || entry.PoseTransition != CampPoseTransition.None) continue;
                 if (entry.Training) { UpkeepCampArchery(entry); continue; }
                 if (!IsInsideCamp(agent.Position) && entry.Seated && !entry.MoveBlocked)
                 {
@@ -459,15 +421,12 @@ public sealed partial class FieldCampMissionLogic
     				Refresh(entry);
     				continue;
     			}
-                // Native AnimationPoint re-issues its loop clip every tick. Idle poses (wanderer talk/listen,
-                // sentries, wounded, fixed posts) do the same here at the 0.5 s upkeep; work clips are left
-                // alone because their ending is the "finished work" signal handled above.
+                // A native alternative is still the requested pose, not a dropped/finished action.
+                // Recover only a genuinely lost hold; one-shot work keeps its completion signal above.
                 if (!_assembled && entry.Seated && !entry.MoveBlocked && entry.PoseAction != ActionIndexCache.act_none
-                    && !HasFinishedCampWork(entry) && agent.GetCurrentAction(0) != entry.PoseAction)
+                    && !HasFinishedCampWork(entry) && !IsCampPosePlaying(entry))
                 {
-                    ActionIndexCache pose = entry.PoseAction;
-                    try { agent.SetActionChannel(0, in pose, true, AnimFlags.anf_lock_movement); }
-                    catch { }
+                    StartCampPoseHold(entry, entry.PoseAction, 0f);
                     continue;
                 }
                 // Per-frame AdvanceCampWalks normally settles arrivals; this is the fallback for walkers it skipped.
@@ -539,15 +498,7 @@ public sealed partial class FieldCampMissionLogic
             }
             return;
         }
-        if (entry.Activity == Activity.Fire && entry.Seated && !entry.Returning)
-        {
-            entry.PoseVariant++;
-            if (entry.PoseVariant % 4 == 0) PlayLoop(entry, TalkActions);
-            else if (entry.PoseVariant % 4 == 1) PlayLoop(entry, EatStandingActions);
-            else ApplyPose(entry);
-            entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(18f, 40f);
-            if (entry.PoseVariant % 4 != 0) return;
-        }
+        if (RefreshCampGroundRest(entry)) return;
         float roll = MBRandom.RandomFloat;
 		if (entry.Activity == Activity.Sentry || (entry.Activity == Activity.Post && !entry.CanLeavePost) || roll < 0.35f)
 		{
@@ -700,26 +651,8 @@ public sealed partial class FieldCampMissionLogic
             }
         }
 
-        /// <summary>Loops a clip as the resident's pose so finished-work checks and releases see it.</summary>
-        private void PlayLoop(CampAgent entry, string[] pool)
-        {
-            for (int i = 0; i < pool.Length; i++)
-            {
-                string name = pool[(entry.Agent.Index + entry.PoseVariant + i) % pool.Length];
-                ActionIndexCache action = ResolveAction(name);
-                if (action == ActionIndexCache.act_none) continue;
-                try
-                {
-                    if (entry.Agent.SetActionChannel(0, in action, true, AnimFlags.anf_lock_movement, startProgress: ((entry.Agent.Index * 17 + entry.PoseVariant * 7) % 53) / 100f))
-                    {
-                        HideHandItems(entry);
-                        entry.PoseAction = action;
-                        return;
-                    }
-                }
-                catch { }
-            }
-        }
+        /// <summary>Starts a verified ambient hold without restarting its native alternatives.</summary>
+        private void PlayLoop(CampAgent entry, string[] pool) => TryPlayCampPose(entry, pool);
 
         /// <summary>Fire positions are fixed for the mission; converted to world once, then a linear scan of a few dozen.</summary>
         private bool TryNearestFire(Vec3 from, float radius, out Vec3 fire)
@@ -795,7 +728,10 @@ public sealed partial class FieldCampMissionLogic
         if (agent == null || !agent.IsActive()) return;
         try
         {
-            ReleasePose(entry);
+            // Only a ground rest waits for a usable route before releasing. Non-resting workers
+            // (especially active archers) still release tools/training immediately as before.
+            bool heldGroundPose = entry.RestPose != CampRestPose.None;
+            if (!heldGroundPose) ReleasePose(entry);
             StopCampNavigation(agent);
             entry.Target = target;
             entry.TargetFacing = facing;
@@ -834,6 +770,8 @@ public sealed partial class FieldCampMissionLogic
             entry.Route = route;
             entry.Seated = false;
             entry.MoveDeadline = _elapsed + Math.Max(30f, agent.Position.AsVec2.Distance(target.AsVec2) * 3f);
+            if (TryBeginCampPoseExit(entry)) return;
+            if (heldGroundPose) ReleasePose(entry);
             IssueCampWalk(entry);
         }
         catch (Exception ex)
@@ -864,7 +802,7 @@ public sealed partial class FieldCampMissionLogic
         return !entry.Returning && entry.Work != FieldCampLayout.WorkKind.None
             && (entry.Activity == Activity.Work || (entry.Activity == Activity.Post && entry.CanLeavePost))
             && entry.PoseAction != ActionIndexCache.act_none
-            && entry.Agent.GetCurrentAction(0) != entry.PoseAction;
+            && entry.PoseTransition == CampPoseTransition.None && !IsCampPosePlaying(entry);
     }
 
     private bool CanAdvanceCampCorner(Agent agent, Vec3[] route, int index)
@@ -1012,22 +950,7 @@ public sealed partial class FieldCampMissionLogic
             entry.NextWanderTime = Math.Min(entry.NextWanderTime, _elapsed + MBRandom.RandomFloatRanged(2f, 5f));
             pool = LoiterActions;
         }
-        for (int i = 0; i < pool.Length; i++)
-        {
-            string name = pool[(entry.Agent.Index + entry.PoseVariant + i) % pool.Length];
-            ActionIndexCache action = ResolveAction(name);
-            if (action == ActionIndexCache.act_none) continue;
-            try
-            {
-                if (entry.Agent.SetActionChannel(0, in action, true, AnimFlags.anf_lock_movement, startProgress: ((entry.Agent.Index * 17 + entry.PoseVariant * 7) % 53) / 100f))
-                {
-                    entry.PoseAction = action;
-                    ShowHandItems(entry, name);
-                    return;
-                }
-            }
-            catch { }
-        }
+        if (TryPlayCampPose(entry, pool)) return;
         if (entry.Activity != Activity.Wounded && entry.Activity != Activity.Sentry
             && (entry.Activity != Activity.Post || entry.CanLeavePost))
         {
@@ -1120,6 +1043,9 @@ public sealed partial class FieldCampMissionLogic
 	private static void ReleasePose(CampAgent entry)
 	{
         entry.PoseAction = ActionIndexCache.act_none;
+        entry.RestPose = CampRestPose.None;
+        entry.PoseTransition = CampPoseTransition.None;
+        entry.TransitionAction = ActionIndexCache.act_none;
         entry.Training = false;
         HideHandItems(entry);
         RestoreCampPracticeEquipment(entry);

@@ -517,7 +517,8 @@ internal sealed class SceneAttentionController
 	// object-using) agents only turn their gaze and keep using the object.
 	private static void HoldAgentInPlaceUnlessSeated(Agent agent)
 	{
-		if (IsAgentUsingSceneObject(agent) || IsCampCeremonyMovementOwned(agent))
+		if (IsAgentUsingSceneObject(agent) || IsCampCeremonyMovementOwned(agent)
+            || FieldCampMissionLogic.Current?.IsCampAgentSeated(agent) == true)
 		{
 			return;
 		}

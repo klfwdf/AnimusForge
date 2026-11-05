@@ -18,7 +18,6 @@ public sealed class SceneSessionVM : ViewModel
     private readonly Dictionary<int, SceneParticipantVM> _rows = new();
     private string _inputText = "", _status = "", _addressee = "", _audienceTitle = "", _audienceStats = "", _collapsedText = "";
     private bool _isCollapsed, _isHidden, _isBusy, _isHistoryOpen;
-    private int _historySignature;
     private Action _pending;
     private bool _released;
     private readonly Action _openDirectActions;
@@ -320,12 +319,37 @@ public sealed class SceneSessionVM : ViewModel
     private void RefreshHistory(bool force)
     {
         List<ScenePresentationHistoryLine> lines = ShoutBehavior.GetScenePresentationHistoryForExternal(IsHistoryOpen ? DrawerLines : StreamLines);
-        int signature = lines.Count;
-        if (lines.Count > 0) signature = unchecked(signature * 31 + (lines[0].Text?.GetHashCode() ?? 0) * 17 + (lines[lines.Count - 1].Text?.GetHashCode() ?? 0));
-        if (!force && signature == _historySignature) return;
-        _historySignature = signature;
-        HistoryLines.Clear();
-        foreach (var line in lines) HistoryLines.Add(new SceneHistoryLineVM(line));
+        bool changed = false;
+        // Keep native widgets for unchanged rows. In the usual reply path only the new line is
+        // added; a full 40/200-row window drops its expired prefix rather than recreating all text.
+        int expired = 0;
+        if (lines.Count > 0)
+        {
+            while (expired < HistoryLines.Count && !HistoryLines[expired].Matches(lines[0])) expired++;
+            // No overlap means replacement, handled by the suffix update below.
+            if (expired == HistoryLines.Count) expired = 0;
+        }
+        for (int i = 0; i < expired; i++)
+        {
+            HistoryLines[0].OnFinalize();
+            HistoryLines.RemoveAt(0);
+            changed = true;
+        }
+        int common = 0;
+        while (common < lines.Count && common < HistoryLines.Count && HistoryLines[common].Matches(lines[common])) common++;
+        for (int i = HistoryLines.Count - 1; i >= common; i--)
+        {
+            HistoryLines[i].OnFinalize();
+            HistoryLines.RemoveAt(i);
+            changed = true;
+        }
+        for (int i = common; i < lines.Count; i++)
+        {
+            HistoryLines.Add(new SceneHistoryLineVM(lines[i]));
+            changed = true;
+        }
+        if (force) foreach (SceneHistoryLineVM row in HistoryLines) row.RefreshStyle();
+        if (!changed && !force) return;
         HistoryScrollVersion++;
         OnPropertyChanged(nameof(HistoryScrollVersion));
     }
@@ -414,6 +438,11 @@ public sealed class SceneHistoryLineVM : ViewModel
         IsFact = line?.Kind == "fact";
         IsNpc = !IsPlayer && !IsFact;
     }
+
+    internal bool Matches(ScenePresentationHistoryLine line) => Speaker == (line?.Speaker ?? "")
+        && Text == (line?.Text ?? "") && IsPlayer == (line?.Kind == "player") && IsFact == (line?.Kind == "fact");
+
+    internal void RefreshStyle() => OnPropertyChanged(nameof(FontSize));
 
     [DataSourceProperty] public string Speaker { get; }
     [DataSourceProperty] public string Text { get; }

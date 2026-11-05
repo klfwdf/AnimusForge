@@ -66,7 +66,31 @@ static class Program
         s=SceneWith("archery_practice_target",Box(0.5f,0.5f,1.7f));l=new FieldCampLayout();l.Props.Add(new(){Kind=FieldCampLayout.PropKind.Target,Position=new Vec2(6f,7f)});Place(s,l);
         Check(FieldCampProps.ArcheryTargets.Count==1 && s.Entities.Contains(FieldCampProps.ArcheryTargets[0]),"training target registry contains actual accepted entity, not guessed coordinates");
         FieldCampProps.ResetPlacementCounts();Check(FieldCampProps.ArcheryTargets.Count==0,"training targets never leak to the next mission");
-        Console.WriteLine($"PASS {checks} production tent placement assertions (real Library math; fake native scene/prefab queries)");
+        s=SceneWith("bd_roasting_spit_a",Box(1.5f,0.35f,1.8f));
+        var chicken=new BoundingBox {min=new Vec3(0.2f,-0.1f,-0.2f),max=new Vec3(0.8f,0.2f,0.3f)};
+        GameEntity.Prefabs["foods_chicken_roast"]=chicken;
+        l=new FieldCampLayout();l.Props.Add(new(){Kind=FieldCampLayout.PropKind.Spit,Position=new Vec2(4f,7f),Yaw=1.1f,Scale=1.2f});Place(s,l);
+        var rack=s.Entities.Single(e=>!e.Removed&&e.Name=="bd_roasting_spit_a");
+        var roast=s.Entities.Single(e=>!e.Removed&&e.Name=="foods_chicken_roast");
+        Vec3 wanted=rack.Frame.TransformToParent(new Vec3(0f,0f,1.8f*0.85f));
+        Vec3 actual=roast.Frame.TransformToParent((chicken.min+chicken.max)*0.5f);
+        Check(actual.DistanceSquared(wanted)<0.0001f,"food centre follows measured upper spit region, including rotated/scaled rack and offset artist pivot");
+        Check(roast.Frame.rotation.s.Length<=1.2f*1.25f+0.001f,"food fits central rack span rather than filling or overflowing it");
+        Check(!roast.PhysicsEnabled && !rack.PhysicsEnabled,"decorative food adds no obstacle and preserves existing walk-through rack policy");
+        Check(s.Entities.Count(e=>!e.Removed&&e.Name.StartsWith("foods_"))==1,"one successful rack receives exactly one roast");
+        s=SceneWith("foods_chicken_roast",chicken);Place(s,l);
+        Check(!s.Entities.Any(e=>!e.Removed&&e.Name=="foods_chicken_roast"),"failed rack never leaves floating food over fire");
+        s=SceneWith("bd_roasting_spit_b",Box(0.3f,1.4f,1.7f));
+        GameEntity.Prefabs["foods_Cooked ribs"]=chicken;
+        l=new FieldCampLayout();l.Props.Add(new(){Kind=FieldCampLayout.PropKind.Spit,Variant=1});
+        l.Props.Add(new(){Kind=FieldCampLayout.PropKind.Spit,Variant=1,Position=new Vec2(4f,0f)});Place(s,l);
+        Check(s.Entities.Count(e=>!e.Removed&&e.Name=="foods_Cooked ribs")==2,"missing preferred food falls back to another valid cooked-food prefab for each rack");
+        Check(s.Entities.Count(e=>e.Removed&&e.Name=="foods_Cooked ribs")==1,"successful food bounds measured once, not once per rack");
+        roast=s.Entities.First(e=>!e.Removed&&e.Name=="foods_Cooked ribs");
+        Check(Math.Abs(roast.Frame.rotation.s.y)>0.1f,"food long axis follows Y-long rack instead of always lying across its crossbar");
+        s=SceneWith("bd_roasting_spit_a",Box(1.5f,0.35f,1.8f));Place(s,l);
+        Check(s.Entities.Count(e=>!e.Removed&&e.Name=="bd_roasting_spit_a")==2,"unavailable food preserves usable empty rack and does not fail camp setup");
+        Console.WriteLine($"PASS {checks} production tent/roast placement assertions (real Library math; fake native scene/prefab queries)");
     }
     static int Main() {try {Run();return 0;}catch(Exception e){Console.Error.WriteLine(e.Message);return 1;}}
 }

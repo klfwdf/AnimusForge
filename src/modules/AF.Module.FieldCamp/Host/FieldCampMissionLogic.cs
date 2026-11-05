@@ -51,6 +51,10 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal FieldCampLayout.WorkKind Work;
 		internal int PoseVariant;
         internal ActionIndexCache PoseAction = ActionIndexCache.act_none;
+        internal CampRestPose RestPose;
+        internal CampPoseTransition PoseTransition;
+        internal ActionIndexCache TransitionAction = ActionIndexCache.act_none;
+        internal float PoseTransitionStartedAt, PoseTransitionDeadline;
         /// <summary>Consecutive failed walks back to the work station; route-budget deferrals do not consume a retry.</summary>
         internal int HomeRetries;
         internal string RightHandItem, LeftHandItem;

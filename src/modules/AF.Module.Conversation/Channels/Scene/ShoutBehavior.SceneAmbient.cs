@@ -306,7 +306,8 @@ public partial class ShoutBehavior
 
     private static bool IsAgentUsingObject(Agent agent)
     {
-        try { return agent.IsUsingGameObject || agent.CurrentlyUsedGameObject != null; }
+        try { return FieldCampMissionLogic.Current?.IsCampAgentSeated(agent) == true
+            || agent.IsUsingGameObject || agent.CurrentlyUsedGameObject != null; }
         catch { return true; }
     }
 
@@ -467,8 +468,8 @@ public partial class ShoutBehavior
         };
         if (session.Camp != null)
         {
-            // Acquisition clears only the camp's synthetic pose/scripted frame and prepares its
-            // navigator. Actual usable seats retain their original never-force-stand rule.
+            // Acquisition prepares the navigator but retains ground sitting/sleeping cycles.
+            // Both camp ground rests and native usable seats keep their never-force-stand rule.
             session.InitiatorWasCampSeated = session.Camp.IsCampAgentSeated(initiator);
             if (!session.Camp.TryAcquireSceneConversation(initiator)) return false;
             session.InitiatorAcquired = true;

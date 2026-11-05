@@ -48,6 +48,10 @@ internal static class FieldCampProps
         internal Vec3 PivotToGroundCentre;
 	}
 
+    // Native cooked-food prefabs, not inventory items or a new gameplay resource. Bounds are
+    // cached with the other setup measurements; no per-frame food spawning/updates.
+    private static readonly string[] RoastFoods = { "foods_chicken_roast", "foods_Cooked mutton", "foods_Cooked ribs" };
+
 	private static readonly Dictionary<FieldCampLayout.PropKind, string[]> Neutral = new Dictionary<FieldCampLayout.PropKind, string[]>
 	{
 		[FieldCampLayout.PropKind.Tent] = new[] { "tent_vlandia_a", "tent_vlandia_b", "village_tent_c" },
@@ -273,6 +277,7 @@ internal static class FieldCampProps
                         ArcheryTargets.Add(aim);
                     }
                     if (prop.Kind == FieldCampLayout.PropKind.Table) RecordTableTop(entity, frame, i + 1, tableTops);
+                    if (prop.Kind == FieldCampLayout.PropKind.Spit && PlaceRoastFood(scene, entity, frame, prop.Variant, furnitureSizes)) placed++;
 				}
 			}
 			return placed;
@@ -696,6 +701,45 @@ internal static class FieldCampProps
         }
 		return placed;
 	}
+
+    /// <summary>One hanging roast per successful spit, fitted to both meshes, setup only.</summary>
+    private static bool PlaceRoastFood(Scene scene, GameEntity spit, MatrixFrame spitFrame, int variant,
+        Dictionary<string, BoundingBox> measured)
+    {
+        try
+        {
+            BoundingBox rack = spit.GetLocalBoundingBox();
+            if (!rack.min.IsValid || !rack.max.IsValid) return false;
+            float rackX = rack.max.x - rack.min.x, rackY = rack.max.y - rack.min.y;
+            float height = rack.max.z - rack.min.z, span = Math.Max(rackX, rackY);
+            if (height <= 0.2f || span <= 0.3f) return false;
+            // Centre of the upper crossbar region, not terrain height or an artist's arbitrary pivot.
+            Vec3 rod = new Vec3((rack.min.x + rack.max.x) * 0.5f,
+                (rack.min.y + rack.max.y) * 0.5f, rack.max.z - height * 0.15f);
+            for (int i = 0; i < RoastFoods.Length; i++)
+            {
+                string prefab = RoastFoods[(variant % RoastFoods.Length + RoastFoods.Length + i) % RoastFoods.Length];
+                if (!TryMeasureTent(scene, prefab, measured, out BoundingBox food)) continue;
+                float foodX = food.max.x - food.min.x, foodY = food.max.y - food.min.y;
+                float foodSpan = Math.Max(foodX, foodY);
+                if (foodSpan <= 0.01f) continue;
+                float fit = Math.Min(1.25f, Math.Min(0.7f, span * 0.4f) / foodSpan);
+                MatrixFrame frame = spitFrame;
+                if ((rackY > rackX) != (foodY > foodX)) frame.rotation.RotateAboutUp(MathF.PI * 0.5f);
+                frame.rotation.ApplyScaleLocal(fit);
+                Vec3 centre = (food.min + food.max) * 0.5f;
+                frame.origin = spitFrame.TransformToParent(rod) - frame.rotation.TransformToParent(centre);
+                // Decorative food must not add another body over the fire or change camp routing.
+                if (TrySpawn(scene, prefab, frame, false) != null) return true;
+            }
+            Logger.Log(LogSource, "roast food unavailable spit=" + spit.Name);
+        }
+        catch (Exception ex)
+        {
+            Logger.Log(LogSource, "roast food placement failed spit=" + spit.Name + " error=" + ex.Message);
+        }
+        return false;
+    }
 
 	/// <summary>World height of a placed table's top; set-up only, one bounding-box read per table.</summary>
 	private struct TableTop

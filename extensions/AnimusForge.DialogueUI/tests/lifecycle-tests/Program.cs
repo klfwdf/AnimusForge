@@ -245,5 +245,6 @@ foreach (var scenePrefab in new[] { "AFSceneSessionScroll.xml", "AFSceneSessionF
 }
 AudienceDocketReplay.Run(root, Check);
 RewriteUiReplay.Run(root, Check);
+SceneHistoryIncrementalReplay.Run(Check);
 Console.WriteLine($"PASS: {checks} production-linked UI lifecycle, epoch-reader, audience rolling and XML checks; engine/patch dispatch/drawer are doubles, not visual acceptance.");
 class FakeMovie : IGauntletMovie { }

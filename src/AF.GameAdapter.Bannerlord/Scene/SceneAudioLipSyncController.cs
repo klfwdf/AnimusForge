@@ -1369,9 +1369,11 @@ internal sealed class SceneAudioLipSyncController
 			string defaultFaceIdle = "";
 			try
 			{
-				Type type = AppDomain.CurrentDomain.GetAssemblies().Select((Assembly a) => a?.GetType("TaleWorlds.CampaignSystem.CharacterHelper", throwOnError: false) ?? a?.GetType("TaleWorlds.CampaignSystem.Helpers.CharacterHelper", throwOnError: false)).FirstOrDefault((Type t) => t != null);
-				MethodInfo methodInfo = type?.GetMethod("GetDefaultFaceIdle", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[1] { typeof(CharacterObject) }, null);
-				defaultFaceIdle = (methodInfo?.Invoke(null, new object[1] { agent.Character as CharacterObject }) as string) ?? "";
+                // Helpers.CharacterHelper is the same public API in both supported source lines.
+                // This runs for each streamed audio chunk on the mission thread: do not scan all
+                // loaded assemblies or allocate reflection argument arrays at every speech onset.
+                if (agent.Character is CharacterObject character)
+                    defaultFaceIdle = global::Helpers.CharacterHelper.GetDefaultFaceIdle(character) ?? "";
 			}
 			catch
 			{
