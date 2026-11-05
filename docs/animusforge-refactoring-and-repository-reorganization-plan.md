@@ -1,3 +1,8 @@
+<a id="camp-pose-roast-20261105"></a>
+## 2026-11-05 营地连续坐姿、原生动作变体与烤架食物
+
+ACTIVE。基线 main / 1f3f9052bd；已跟踪文件干净，现有未跟踪的 NuGet/outputs/.dsh-acl-recovery 等保留，不纳入本任务。用户要求替换突兀动作、检查真实变体、烤架加食物，并避免坐着突然站起又坐下。源码确认火边 Refresh 强制切换站立交谈/进食、动作维持只比较编号而忽略原生 alternative_group。限定营地 Life/姿态过渡及 Props 初始化、针对性测试；不改对话、存档、伤害、构建脚本，不部署、打包或推送。涉及文件为 src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic{,.Life,.Poses}.cs、FieldCampProps.cs 和相关测试。退出门：真实生产姿态/摆放回归、已有生活控制权/路由契约、双 API 编译；原生标志/素材存在核对不替代实机动画与烤肉位置验收。无新增玩家可见文本或设置；CN/EN 包使用同一场景逻辑与原版模型。
+
 <a id="camp-life-follow-deploy-20261105"></a>
 ## 2026-11-05 营地生活与跟随、场景输入框修复已部署
 
