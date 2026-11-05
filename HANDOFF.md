@@ -1,3 +1,7 @@
+## 2026-11-05 连续坐姿、烤架食物与发言卡顿修复部署完成
+
+用户授权后，游戏/启动器退出且三DLL解除占用。按未改动的一键脚本构建部署2939fba1f3（含产品6079ac7ac2与信使c6107d5eaa）：双API各407警告0错误、Bootstrap0/0，双seam/注册smoke通过，更新9受管文件。3DLL+3marker+模块声明+2布局回读hash一致，Bootstrap-only，替换临时文件无残留。保留玩家数据策略，无Recovery自动备份。此条取代下方相关未部署状态；未实机、打包或push，姿态/烤肉位置/发言帧耗时/信使要人排除实机仍待验。证据work/camp-pose-roast-deploy-20261105/；详细版本、边界和回滚见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-pose-roast-speech-deploy-20261105)。
+
 ## 2026-11-05 连续坐姿、烤架食物与喊话发言卡顿（未部署）
 
 产品6079ac7ac2（检查点e74552bbf3/189ebf9685）。营地坐地不再定时切站立吃饭/交谈；真正走动先起身，闲聊接管/注视/接近保留坐姿；原生同组变体不误判重播，talk/listen候选5/4种、地面坐姿仍一基础循环。烤架附原版熟食。喊话历史增量维护40/200行，口型去掉每分段程序集扫描。AF双API407警告0错误、Bootstrap0/0；pose34/props41/owner32/routes87/UI213及关联契约/双语门禁PASS。实际UI已同编AF，旧独立工程因host内部接口不可见失败，不改变交付入口。近期卡顿无有效慢段实证；实机动画/横杆对齐/帧时间未验。未部署、打包、push。并行信使修复保留。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-speech-hitch-20261105)、[代码范围](docs/architecture/af-framework-code-scope.md#camp-pose-roast-and-speech-hitch-20261105)；日志与源码/产物hash在work/camp-pose-roast-20261105/。回滚仅逆向本轮产品提交，不硬重置。

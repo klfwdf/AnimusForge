@@ -1,3 +1,14 @@
+<a id="camp-pose-roast-speech-deploy-20261105"></a>
+## 2026-11-05 连续坐姿、烤架食物与发言卡顿修复已部署
+
+DEPLOYED / READBACK_VERIFIED / LIVE_NOT_RUN / NOT_PUSHED。用户再次授权“部署”，先前启动器PID512及Bootstrap/1.4占用已经解除，未强制结束游戏或启动器。源码HEAD=2939fba1f3，产品6079ac7ac2；同时包含当前main中c6107d5eaa信使要人排除修复。本条取代[姿态/发言修复](#scene-speech-hitch-20261105)、[营地/烤架](#camp-pose-roast-20261105)和[信使要人排除](#notable-proactive-courier-20261105)各自的“未部署”状态，不把离线测试或部署当作实机结果。
+
+使用未改动的scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug -Deploy。1.3/1.4各407警告0错误、Bootstrap0警告0错误；原流程验证BuildInfo并写入准确参考v1.3.15.110062/v1.4.6.115628，双coup seam与managed registration smoke通过（不含真实游戏/存档/native action/LLM）。干净Stage/目标路径/玩家目录保护门禁通过；部署目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，原脚本报告success、更新9个受管文件。
+
+回读3DLL、3build marker、SubModule.xml及AFSceneSessionScroll/Folio两布局共9项：候选/源码→Stage→已安装SHA256一致，两个实现marker的API、SHA及CoupSeamGate候选印章匹配。模块Id/Name为AnimusForge且仅加载AnimusForge.Bootstrap.dll；根bin及两个version目录无.af2-*替换残留。沿用原脚本玩家配置/用户Prompt/日志/缓存/导出保护，未创建Modules/.AnimusForge.Recovery或自动回滚备份；installed-before.json只是6个具名文件的部署前hash，不是文件备份。
+
+证据work/camp-pose-roast-deploy-20261105/{source-commit.txt,installed-before.json,build-deploy.log,verify-deployment.ps1,deployment-result.json}。本轮无产品代码/构建脚本变更，未启动游戏、未push/打包。坐下/起身/闲聊接管观感、原生循环flags、烤肉横杆位置、发言前后帧耗时及信使实际要人排除仍待实机。产品代码图仍见[本轮范围](architecture/af-framework-code-scope.md#camp-pose-roast-and-speech-hitch-20261105)。如撤销本轮姿态/烤架/卡顿代码，只聚焦逆向6079ac7ac2后重新双版本构建部署，保留信使修复及更早喊话输入滚动；不硬重置、不声称有自动安装恢复。
+
 <a id="notable-proactive-courier-20261105"></a>
 ## 2026-11-05 要人不再主动来信及来信素材定位（未部署）
 
