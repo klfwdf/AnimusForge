@@ -1,3 +1,8 @@
+<a id="scene-speech-hitch-20261105"></a>
+## 2026-11-05 场景发言瞬时卡顿定向修复
+
+ACTIVE。用户补充“有人讲话就会卡一下”。源码确认 SceneSessionVM.RefreshHistory 每次追加回复 Clear 后重建40/200行，SceneAudioLipSyncController.PrepareAgentForTrueLipSyncIfPossible 每个语音分段扫描全部程序集且旧候选未覆盖实际 Helpers.CharacterHelper 名称。限定历史UI增量更新与经双版本原版源码确认的直接API调用；不改三渠道Prompt/历史写入、语音提供方、口型安全门或主线程归属。最近14:45–14:49日志未记录对应有效慢段，旧01:00–04:00慢段不作为此次根因实证；这两处为可证实的开销，不能声称已解释全部卡顿。涉及 extensions/AnimusForge.DialogueUI/src/Scene/SceneSessionVM.cs、src/AF.GameAdapter.Bannerlord/Scene/SceneAudioLipSyncController.cs、既有UI回归。退出门：增量更新身份/内容/滚动窗口/重写场景回归、AF及DialogueUI双版本编译。尚在验证的营地动作/烤架切片保留，不部署或推送。
+
 <a id="camp-pose-roast-20261105"></a>
 ## 2026-11-05 营地连续坐姿、原生动作变体与烤架食物
 
