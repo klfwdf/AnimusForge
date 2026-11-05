@@ -1,3 +1,21 @@
+<a id="camp-pose-roast-and-speech-hitch-20261105"></a>
+## 2026-11-05 连续坐姿／烤架食物／发言卡顿范围
+
+基线1f3f9052bd，意图检查点e74552bbf3、189ebf9685；本轮产品提交6079ac7ac2。实际编译边界为AnimusForge.csproj:290（DialogueUI与AF同DLL）。
+
+| 源码（1基行号） | 实际责任与消费者 |
+| --- | --- |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Poses.cs:67–150` / `GetCampPoseClip`, `TryPlayCampPose`, `StartCampPoseHold` | 按mission/action-set缓存原生clip metadata，循环环境动作过滤、真实talk/listen变体与alternative同组识别；唯一地面Sit循环不冒充多姿态 |
+| 同文件`:175–221` / `AdvanceCampPoseTransition`, `HoldCampRestForConversation`, `RefreshCampGroundRest` | 坐下/起身/睡醒一次性过渡，长休息与真正离岗，闲聊接管保留地面姿态；复用原20人/frame预算 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic.Life.cs:197–203,227–256,309–341,479–533,725–782,1043–1064` | 实际坐姿判断、会话接管、帧调度与upkeep入口、路径成功后才起身；外部owner仍清理0/1通道、工具与训练 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneAmbient.cs:307–312` / `IsAgentUsingObject` | 环境闲聊选人/接近阶段把营地坐地者当作固定坐姿，不下发起身移动 |
+| `src/AF.GameAdapter.Bannerlord/Scene/SceneAttentionController.cs:518–528` / `HoldAgentInPlaceUnlessSeated` | 注视控制只让坐地者看向对方，不写会迫使其起身的scripted position；原usable/ceremony保护保留 |
+| `src/modules/AF.Module.FieldCamp/Host/FieldCampProps.cs:280,706–742` / `PlaceRoastFood` | 成功烤架附加一个原版熟食，测量/变体/回退仅初始化；按rack/food bounds、yaw/scale拟合，装饰物不加阻挡 |
+| `extensions/AnimusForge.DialogueUI/src/Scene/SceneSessionVM.cs:319–355,442–446` / `RefreshHistory`, `Matches` | 追加/滚动窗口保留原行VM与控件，按Speaker/Text/Kind比较；重写、清空及样式刷新兼容 |
+| `src/AF.GameAdapter.Bannerlord/Scene/SceneAudioLipSyncController.cs:1361–1394` / `PrepareAgentForTrueLipSyncIfPossible` | 每分段口型使用1.3/1.4相同的Helpers.CharacterHelper.GetDefaultFaceIdle，移除错误命名候选的全程序集扫描；原安全门/高通道清理保持 |
+
+生产链接fake回归及source wiring覆盖如主台账；真实原生动画flags、姿态观感/食物位置、发言帧耗时未验。没有存档、Prompt、API资格、语音提供方或设置变化。哈希/符号/候选DLL在work/camp-pose-roast-20261105/{source-evidence,verification,assets-audit}.json；未部署/push。
+
 <a id="camp-life-follow-20261105"></a>
 ## 2026-11-05 营地生活及Follow控制权
 

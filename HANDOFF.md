@@ -1,3 +1,7 @@
+## 2026-11-05 连续坐姿、烤架食物与喊话发言卡顿（未部署）
+
+产品6079ac7ac2（检查点e74552bbf3/189ebf9685）。营地坐地不再定时切站立吃饭/交谈；真正走动先起身，闲聊接管/注视/接近保留坐姿；原生同组变体不误判重播，talk/listen候选5/4种、地面坐姿仍一基础循环。烤架附原版熟食。喊话历史增量维护40/200行，口型去掉每分段程序集扫描。AF双API407警告0错误、Bootstrap0/0；pose34/props41/owner32/routes87/UI213及关联契约/双语门禁PASS。实际UI已同编AF，旧独立工程因host内部接口不可见失败，不改变交付入口。近期卡顿无有效慢段实证；实机动画/横杆对齐/帧时间未验。未部署、打包、push。并行信使修复保留。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-speech-hitch-20261105)、[代码范围](docs/architecture/af-framework-code-scope.md#camp-pose-roast-and-speech-hitch-20261105)；日志与源码/产物hash在work/camp-pose-roast-20261105/。回滚仅逆向本轮产品提交，不硬重置。
+
 ## 2026-11-05 禁止要人主动来信（未部署）
 
 产品 `c6107d5eaa`，测试行尾保留 `f6ec17923e`：候选资格与创建队伍前均按 `Hero.IsNotable` 拒绝要人，测试模式同样有效；正常回信、外部预写信及旧在途不改。已定位关系/近况、NPC事件、玩家经历和需求等素材及实际 Prompt 消费链。定向源码契约与双语门禁通过；原始 dirty 工作区因原有 Poses 的 MBRandom 未定义而构建失败，隔离三个野营文件/未跟踪 Poses 后双API、Bootstrap和双seam通过，不冒充全部在改野营通过。无打包/部署/push/实机。详细源码版本、行号、隔离边界、日志与回滚见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#notable-proactive-courier-20261105)。

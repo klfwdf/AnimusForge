@@ -32,10 +32,22 @@
 <a id="scene-speech-hitch-20261105"></a>
 ## 2026-11-05 场景发言瞬时卡顿定向修复
 
+OFFLINE_VERIFIED / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED。产品提交6079ac7ac2；实现与验证已完成，原ACTIVE说明保留作范围记录。营地删除火边坐/站立进食/交谈的定时交替；保留当前同组动作、过滤非循环环境clip，talk/listen候选5/4种，单一地面坐姿明确不称多变体。原生cycle仅用于坐地/睡眠hold；坐下/起身/醒来使用对应一次性过渡，不对过渡强行循环。路径预算不足/目标已到不清坐姿；真正离岗路线成功后才起身；外部跟随/行刑/对话控制权仍能清通道/装备。环境闲聊接近、接管与注视三个消费者同查营地坐姿，避免自动清pose或scripted position强迫站起。
+
+烤架成功生成后按包围盒上部横杆区域放置一个原版foods_chicken_roast/foods_Cooked mutton/foods_Cooked ribs，自动拟合长轴/缩放与偏轴pivot；候选缺失回退、无架不生成食物。只在初始化测量并缓存，不新增Tick模型加载/扫描/IO或食物库存玩法；装饰物保留walk-through。
+
+喊话UI更新改为保留公共前缀/滚动重叠行，只增删变化部分，完整Speaker/Text/Kind比较取代首尾hash；200行追加只创建一行，不改变历史写入或删减内容。口型每音频分段的GetAssemblies扫描改为已核实的global::Helpers.CharacterHelper.GetDefaultFaceIdle直接调用，保留原口型安全门与主线程。近期日志无对应有效慢段，不能把旧慢日志或源码开销直接称为用户本次卡顿主因；SoundEvent/StartRhubarb原生调用仍在合法主线程，不盲目挪到后台。
+
+验证：FieldCampPoseTests 34生产链接断言、PropsPlacement 41、LifeOwnership 32、GroundRoute 87、DialogueUI lifecycle 213、Continuation源码65/review11、pose wiring18均PASS；原版hideout动作36个与熟食3个存在核对通过；l10n_gate与check_bilingual_tables均26表PASS。AF 1.3/1.4各407警告0错误，Bootstrap0/0；使用原有_deps_auto与.tmp/build_check/1.4引用根，DLL版本元数据仅1.0.0.0，未新增准确补丁版本验证承诺。初始漏using与静态测试旧坐标断言已修并重跑。另试旧独立DialogueUI csproj两线各7个既有内部host接口不可见错误；当前实际交付在AnimusForge.csproj:290同DLL编译，两线均PASS，不扩大公开API、不改构建流程。
+
+证据work/camp-pose-roast-20261105/含build.ps1、三构建日志、pose/prop/UI/ownership/route/source/l10n日志、verification.json（source/DLL SHA256）、assets-audit.json及source-evidence.json。代码图见[本轮范围](architecture/af-framework-code-scope.md#camp-pose-roast-and-speech-hitch-20261105)。实机帧时间/动作自然度/烤肉横杆位置、确切原生flags仍NOT_RUN；未部署/打包/push。并行信使提交c6107d5eaa及其文档与其他未跟踪内容保留，不纳入或回滚。回滚使用本轮产品聚焦逆向提交，保留1f3f9052bd前喊话滚动UI及并行信使修复，不硬重置。
+
 ACTIVE。用户补充“有人讲话就会卡一下”。源码确认 SceneSessionVM.RefreshHistory 每次追加回复 Clear 后重建40/200行，SceneAudioLipSyncController.PrepareAgentForTrueLipSyncIfPossible 每个语音分段扫描全部程序集且旧候选未覆盖实际 Helpers.CharacterHelper 名称。限定历史UI增量更新与经双版本原版源码确认的直接API调用；不改三渠道Prompt/历史写入、语音提供方、口型安全门或主线程归属。最近14:45–14:49日志未记录对应有效慢段，旧01:00–04:00慢段不作为此次根因实证；这两处为可证实的开销，不能声称已解释全部卡顿。涉及 extensions/AnimusForge.DialogueUI/src/Scene/SceneSessionVM.cs、src/AF.GameAdapter.Bannerlord/Scene/SceneAudioLipSyncController.cs、既有UI回归。退出门：增量更新身份/内容/滚动窗口/重写场景回归、AF及DialogueUI双版本编译。尚在验证的营地动作/烤架切片保留，不部署或推送。
 
 <a id="camp-pose-roast-20261105"></a>
 ## 2026-11-05 营地连续坐姿、原生动作变体与烤架食物
+
+OFFLINE_VERIFIED；实现、证据与未验项统一见[本轮收尾](#scene-speech-hitch-20261105)，取代以下ACTIVE状态。
 
 ACTIVE。基线 main / 1f3f9052bd；已跟踪文件干净，现有未跟踪的 NuGet/outputs/.dsh-acl-recovery 等保留，不纳入本任务。用户要求替换突兀动作、检查真实变体、烤架加食物，并避免坐着突然站起又坐下。源码确认火边 Refresh 强制切换站立交谈/进食、动作维持只比较编号而忽略原生 alternative_group。限定营地 Life/姿态过渡及 Props 初始化、针对性测试；不改对话、存档、伤害、构建脚本，不部署、打包或推送。涉及文件为 src/modules/AF.Module.FieldCamp/Host/FieldCampMissionLogic{,.Life,.Poses}.cs、FieldCampProps.cs 和相关测试。退出门：真实生产姿态/摆放回归、已有生活控制权/路由契约、双 API 编译；原生标志/素材存在核对不替代实机动画与烤肉位置验收。无新增玩家可见文本或设置；CN/EN 包使用同一场景逻辑与原版模型。
 
