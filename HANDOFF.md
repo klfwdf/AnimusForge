@@ -1,3 +1,7 @@
+## 2026-11-05 禁止要人主动来信（未部署）
+
+产品 `c6107d5eaa`，测试行尾保留 `f6ec17923e`：候选资格与创建队伍前均按 `Hero.IsNotable` 拒绝要人，测试模式同样有效；正常回信、外部预写信及旧在途不改。已定位关系/近况、NPC事件、玩家经历和需求等素材及实际 Prompt 消费链。定向源码契约与双语门禁通过；原始 dirty 工作区因原有 Poses 的 MBRandom 未定义而构建失败，隔离三个野营文件/未跟踪 Poses 后双API、Bootstrap和双seam通过，不冒充全部在改野营通过。无打包/部署/push/实机。详细源码版本、行号、隔离边界、日志与回滚见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#notable-proactive-courier-20261105)。
+
 ## 2026-11-05 营地修复与喊话输入框已部署
 
 按用户授权，307420633e营地生活/跟随/靶场修复及4c73dcc986输入框滚动/裁剪修复已部署。双API、Bootstrap及双coup seam通过；旧Stage布局不一致首次被门禁拦下，原地安装未改，旧项目Stage安全保留后用既有脚本重建并部署成功，更新11文件。回读3DLL+2布局SHA256与候选/源码一致，模块仅加载Bootstrap。未启动游戏、未push，无自动回滚备份；实际围栏移动、动画、射击、跟随及UI仍未实机验收。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-life-follow-deploy-20261105)。

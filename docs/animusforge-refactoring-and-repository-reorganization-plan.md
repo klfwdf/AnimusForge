@@ -1,3 +1,34 @@
+<a id="notable-proactive-courier-20261105"></a>
+## 2026-11-05 要人不再主动来信及来信素材定位（未部署）
+
+- 用户要求：定位 NPC 来信，禁止要人主动来信，并说明当前素材。工作区 `F:/AnimusForge-main`、分支 `main`；意图检查点 `0127d9bc0`，产品提交 `c6107d5eaa`，测试原行尾保留提交 `f6ec17923e`。仅提交具名文件，保留原有野营及期间其他作者 UI/音频改动。
+- 改动：`IsNpcInitiatedLetterSenderEligible` 在角色有效性检查后，以 `Hero.IsNotable` 拒绝要人，技术原因 `notable_sender`；`TryCreateNpcInitiatedLetterSession` 在创建信使队伍前复验。测试模式不绕过。没有改玩家主动寄信后的正常回信、外交专用入口、外部预写信、已在途会话、存档身份、设置或 Prompt/双语内容。
+- 性能：新增两次 O(1) 属性判断；候选检查在关系/记忆/地点等工作前退出。沿用既有按游戏小时启动、目标 45 Tick、每帧最多 16 人及 1ms 预算的增量扫描；完整需求只为抽中并通过概率判断的一位 NPC 计算，无新增扫描/反射/IO/配置副本。
+
+### 代码证据与覆盖边界
+
+以下源码以产品提交 `c6107d5eaa` 为准；测试最终状态为 `f6ec17923e`。素材链路只读定位，未改写素材。
+
+| 源码（一基行号） | 符号 / 实际职责 | 覆盖与未覆盖 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs:260-286` | `IsNpcInitiatedLetterSenderEligible`，真实扫描候选资格 | 要人提前拒绝；其他角色仍沿用原资格/亲密度/概率 |
+| `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs:794-814` | `TryCreateNpcInitiatedLetterSession`，真实主动入站会话创建 | 创建队伍前复验；不取消旧在途、不限制正常回信或外部预写信 |
+| `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs:370-459,535-553` | `BuildNpcInitiatedLetterMotives` / `PickWeightedNpcLetterMotive` | 问候、近况、情感、NPC 最新未投递事件、玩家近期/历史经历、真实需求及外交；动机疲劳加权，经历与其他动机并存时先 50% 分组抽选 |
+| `src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs:308-383` | `BuildLetterNeedSnapshots`，需求资格与事实快照 | 粮食/资金/兵力/俘虏/士气/坐骑/负重、家族、感情、政治、领地、外交等按真实条件提供，并非全部同时可用 |
+| `src/modules/AF.Module.Social/Proactive/PlayerNotorietyBehavior.Experience.cs:23-76` | `CaptureExperience`，按观察者知识捕获玩家经历 | 近期缓存看最近 10 个游戏日最多 16 条，选首条可提供记录；另可提供已知的重大经历总结，不允许任意 NPC 全知 |
+| `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs:61-80` | `BuildInboundNpcLetterMessages`，调用真实主 Prompt 组装 owner | 补人物角色、历史/长期记忆、最多 6 条 NPC 近期事实、身份/亲属关系、地点、日期、命中规则等生成模型请求；不是固定信件全文库 |
+
+### 验证与限制
+
+- 新增源码契约回归在未改生产源码时失败于缺失 `if (hero.IsNotable)`，修改后通过。`python tests/modules/AF.Module.Conversation/CourierProactiveLetterTests/run.py` 通过候选提前拒绝、测试模式不可绕过、创建前复验及原 Tick/分批/活跃入站门禁；这是源码契约检查，不是游戏运行行为测试。
+- `python tests/modules/AF.Module.Conversation/CourierSessionCreationTests/run.py`：outboundPublish=1、inboundGenerated=2、inboundPrewritten=1、activeSenderGuard=1 全部通过，保留原收发入口。
+- `python tools/localization/l10n_gate.py`、`python tools/localization/check_bilingual_tables.py` 均 exit 0；26 表 missing_english=0/failures=0，运行路径 2109 文件固定汉字字面量 0；本次没有修改玩家文案或资源。
+- 原始当前工作区运行既有 `scripts/build/build_single_module.ps1`（无 Stage/Deploy）在 1.3 阶段失败：已有未跟踪 `FieldCampMissionLogic.Poses.cs:193,196` 的 `MBRandom` 未定义。没有擅改该文件，不能宣称完整 dirty 工作区通过。
+- 隔离验证复用同一构建入口，仅通过本次子进程的 `CustomAfterMicrosoftCommonTargets` 替换编译输入：三个已修改野营文件使用 `0127d9bc0` 内容、排除未跟踪 Poses，其他源码及本次来信修复不变。临时 targets 最终通过显式 Compile 元数据筛选，并回读 `compile-items.txt` 确认；没有还原工作区源码、没有修改构建脚本。最终双 API 各 407 警告/0 错误，Bootstrap 0 警告/0 错误，双 Coup seam 通过，exit 0。这是隔离源码构建，不覆盖本机全部在改野营行为的验收。
+- 原始失败日志 `.tmp/notable-courier-20261105/build.log`；最终隔离日志 `build-isolated-final.log`、双语日志及 Compile 清单位于同目录。临时隔离输入及 targets 在 `work/notable-courier-20261105/`，仅本次子进程使用、环境属性已清除。构建候选在 `bin/Debug/single_module_artifacts/`，**含隔离野营基线，不作为完整 dirty 工作区可部署产物**。
+- 未正式打包、未 Stage、未部署、未 push；未启动游戏/调用真实模型。NPC 实际来信、正常回信、已在途信件及帧耗时均 LIVE/PERFORMANCE=NOT-RUN。
+- 回滚：对产品提交 `c6107d5eaa` 做聚焦逆向，必要时同回测试行尾提交 `f6ec17923e`；不 hard reset，不还原野营、UI/音频及其他作者改动。意图检查点 `0127d9bc0`。
+
 <a id="scene-speech-hitch-20261105"></a>
 ## 2026-11-05 场景发言瞬时卡顿定向修复
 
