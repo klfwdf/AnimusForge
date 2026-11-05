@@ -277,6 +277,11 @@ public sealed partial class CourierDeliveryBehavior
 			reason = "invalid_or_underage";
 			return false;
 		}
+		if (hero.IsNotable)
+		{
+			reason = "notable_sender";
+			return false;
+		}
 		if (hero.IsPrisoner || hero.IsFugitive || hero.PartyBelongedToAsPrisoner != null)
 		{
 			reason = "unavailable";

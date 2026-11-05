@@ -802,6 +802,11 @@ public sealed partial class CourierDeliveryBehavior
 				status = "sender_unavailable";
 				return false;
 			}
+			if (sender.IsNotable)
+			{
+				status = "notable_sender";
+				return false;
+			}
 			if (HasAnyActiveNpcInitiatedInboundCourier() || HasActiveInboundCourierFromSender(sender))
 			{
 				status = "active_inbound_exists";
