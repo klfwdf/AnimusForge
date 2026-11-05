@@ -1,3 +1,13 @@
+<a id="camp-life-follow-deploy-20261105"></a>
+## 2026-11-05 营地生活与跟随、场景输入框修复已部署
+
+DEPLOYED / BUILT / LIVE_NOT_RUN。用户本轮明确授权“部署”。工作区F:/AnimusForge-main，main，部署源码HEAD=cdd65b07d2；包含营地产品307420633e及喊话输入框4c73dcc986。此条取代[营地修复](#camp-life-follow-20261105)与[输入框修复](#scene-input-scroll-20261105)当时尚未部署的状态，不改变其专项测试或实机边界。
+
+使用未改动的scripts/build/build_single_module.ps1 -Configuration Debug -Deploy。1.3/1.4各407警告0错误、Bootstrap0警告0错误，双coup seam registration smoke PASS。首次在Reset-ProjectStageDirectory的既有清洁Stage门禁被旧GUI/Prefabs/AFSceneSessionFolio.xml拦下；三个DLL、两份布局及SubModule.xml共6个具名已安装文件与部署前哈希一致，游戏尚未写入。核实绝对路径、根边界、ancestor及子项无reparse后，用PowerShell Move-Item保留旧项目Stage至work/camp-life-follow-deploy-20261105/stale-stage/AnimusForge。未放宽门禁、未修改构建脚本。
+
+复用刚构建并通过门禁的三份DLL，调用原scripts/build/deploy_module.ps1，重建干净Stage并成功更新11个受管文件。目标F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge。回读Bootstrap、1.3、1.4共3DLL及AFSceneSessionScroll/Folio共2布局，源/候选、Stage、已安装SHA256全部一致；SubModule.xml保持AnimusForge身份且仅加载AnimusForge.Bootstrap.dll。沿用已有配置/未知文件保护，不创建Modules/.AnimusForge.Recovery或自动回滚备份；保留的旧Stage只是项目输出，不是完整游戏安装备份。
+
+本轮无产品代码变化、未启动游戏、未push/打包；营地围栏路径、火边座位/走姿、射击穿行安全、跟随及喊话滚动条视觉仍需实机验收，通用手动标签夹具的既有缺依赖结果不因部署变为通过。证据work/camp-life-follow-deploy-20261105/{source-commit.txt,build-deploy.log,deploy-clean-stage.log,installed-before.json,candidates.json,deployment-result.json}。若撤销营地产品，以307420633e作聚焦逆向提交再双版本构建部署，保留此前喊话UI及其他作者改动；不硬重置、不声称能自动恢复旧安装。
 <a id="camp-life-follow-20261105"></a>
 ## 2026-11-05 营地围栏、火堆落座、生活动作、靶场及跟随修复
 
