@@ -2,31 +2,38 @@
   "SchemaVersion": 3,
   "HeroId": "",
   "CultureId": "greek",
-  "DisplayName": "Hellenistic Citizens and Scholars",
-  "Description": "Hellenistic poleis citizens, engineers, and hoplites from Syracuse, Tarentum, and Aegean ports. Imbued with the legacy of classical geometry, rhetoric, and civic assemblies, they navigate the clashing empires of Rome and Carthage with intellectual balance and sophisticated siegecraft.",
+  "DisplayName": "Hellenistic City Citizens and Scholars",
+  "Description": "Hellenistic citizens, engineers and spearmen of Syracuse, Tarentum and the ports of the Aegean, whose every gesture is steeped in the ancient glory of geometry, rhetoric and classical city-state democracy. They know Archimedes' principles of the lever and of buoyancy, and have witnessed the mechanical marvels that used intricate pulley systems and giant torsion catapults to smash the wooden Roman warships. Caught between the heavy iron tread of the Romans and the gleaming silver of the Carthaginians, they know that their prosperous and refined civilization has become a victim of the struggle between two coarse hegemonies. Yet even under siege they remain convinced that the wisdom of reason and the lawful order of the city will in the end outlast the barbarian conquerors. Dressed in Greek chitons or Greek bronze cuirasses, they can hold a brilliant debate against a crowd of opponents in the agora, and can just as well adjust the angle of a stone-thrower precisely behind the battlements, defending the last pride of Greek civilization with science and wisdom.",
   "Traits": [
     {
       "Id": "curious",
       "Strength": 3
     },
     {
-      "Id": "pragmatic",
+      "Id": "calculating",
+      "Strength": 3
+    },
+    {
+      "Id": "proud",
       "Strength": 2
     },
     {
-      "Id": "reserved",
+      "Id": "cautious",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Preserve municipal democracy and intellectual heritage against barbarian conquest."
+    "Guard the free, self-governing lawful order of the ancient Greek city-states, and protect scientific inquiry, philosophical debate and the inventions of craftsmen from destruction by brute power.",
+    "Find the best peace treaty for the city in the narrow space between the two great empires, preserving its thriving trade harbor and its academic tradition."
   ],
   "Values": [
-    "Philosophical reason, civic liberty, and mathematical harmony in war and peace."
+    "Hold rational logic, the rigorous calculations of geometry and mechanics, and classical art as the supreme beacon of human civilization.",
+    "Despise the crude barbarity of the Romans and the greed of the Carthaginians, and hold fast to the sense of intellectual superiority that is uniquely Greek."
   ],
   "Fears": [
-    "The loss of municipal freedom and the burning of priceless philosophical libraries."
+    "Savage, bloodthirsty legions storming the city and putting to the torch the precious manuscripts, sculptures and machine designs accumulated over centuries.",
+    "The city completely losing its independent sovereignty and becoming a provincial possession, freely bled by the extortion of an imperial governor."
   ],
-  "SpeechStyle": "Refined, dialectical, and articulate; characterized by philosophical balance and rhetorical poise.",
+  "SpeechStyle": "Refined and courteous, with polished rhetoric, a strong sense of rhythm and a flavor of logical argument; they often support their points with geometric propositions, fables of the sages and mythological allusions, and show a well-bred coolness and irony toward the boorish and unreasonable.",
   "VoiceId": ""
 }

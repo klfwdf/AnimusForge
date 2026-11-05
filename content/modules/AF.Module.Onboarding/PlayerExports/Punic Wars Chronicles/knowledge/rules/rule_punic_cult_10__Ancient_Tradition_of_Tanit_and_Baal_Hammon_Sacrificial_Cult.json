@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_cult_10",
-  "Name": "Ancient Tradition of Tanit and Baal Hammon Sacrificial Cult",
-  "Keywords": [
-    "rule_punic_cult_10",
-    "Sacred Code of Tanit and Baal Hammon Sacrificial Cult",
-    "Civic Rites Tanit and Baal Hammon Sacrificial Cult",
-    "Ancestral Law Tanit and Baal Hammon Sacrificial Cult"
-  ],
+  "Name": "The Minting of the Roman Denarius and Wartime Financial Reform against Inflation",
+  "Category": "economy",
+  "Priority": 87,
   "RagShortTexts": [
-    "The institutional tradition of Tanit and Baal Hammon Sacrificial Cult defined social..."
+    "In 211 BC, after Cannae had drained the treasury, Rome issued the new pure-silver denarius",
+    "One denarius was fixed at ten bronze asses, weighed about 4.5 grams and was 95 percent fine",
+    "The obverse showed the helmeted goddess Roma and the reverse the Dioscuri on horseback, laying the foundation of the Mediterranean's hard currency"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "By the seventh year of the war (211 BC), enormous overseas expenses and the loss of Campania had set off runaway inflation in Rome. The old, heavy cast bronze coin, the 'heavy as' (Aes Grave), had already been reduced in weight and devalued several times, and commercial credit was on the verge of collapse. Against this background, the Senate boldly carried out a monetary reform that marked an epoch in classical financial history: the minting of the standard silver coin called the 'denarius' (Denarius, literally 'containing ten'). One denarius weighed about 4.5 grams and was of very high fineness, 95 percent pure silver. On the obverse it bore the goddess of the city of Rome (Roma) wearing a winged war helmet, with the decimal mark 'X'; on the reverse, the majestic figures of the twin guardian gods Castor and Pollux charging on horseback with spears. With its stable fineness, the denarius quickly restored the confidence of merchants at home and abroad. It not only supported the huge logistical spending of the great counteroffensive in the later war, but also became the undisputed standard hard currency of the whole Mediterranean for the following four centuries.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The social order of antiquity was rooted in Tanit and Baal Hammon Sacrificial Cult. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+      "Content": "Cast the dignity of the Republic in pure silver! The goddess Roma on the denarius watches every silversmith, and any crooked dealer who mixes in lead or tin will be thrown from the Tarpeian Rock!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
-          "lord",
-          "notable"
+          "soldier",
+          "warrior"
         ]
       },
-      "Content": "Without Tanit and Baal Hammon Sacrificial Cult, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
+      "Content": "Those shabby copper coins, light as leaves, have finally been swept onto the rubbish heap. Only now that we have full-weight silver denarii do we dare to sell grain and leather to the legions on credit."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "peasant",
-          "villager"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "From childhood our elders taught us to revere Tanit and Baal Hammon Sacrificial Cult. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+      "Content": "That the Romans, with the fires of war all around them, could still squeeze pure silver out of an empty treasury to recast their money, this power of fiscal self-healing built on strict law sends a chill to the bone."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "paper money printing",
+    "central bank discount rate",
+    "modern gold standard",
+    "International Monetary Fund"
+  ],
+  "Keywords": [
+    "Roman denarius",
+    "211 BC coinage reform",
+    "aes grave",
+    "Roman inflation",
+    "Dioscuri coin"
+  ]
 }

@@ -1,42 +1,109 @@
 {
   "Id": "rule_punic_24",
-  "Name": "Punic War Campaign Operation 24",
-  "Keywords": [
-    "rule_punic_24",
-    "Punic Operation 24",
-    "Strategic Campaign 24",
-    "Mediterranean Theater 24"
+  "Name": "Scipio's Surprise Attack on New Carthage and the Seizure of a Strategic Hub",
+  "Description": "In 209 BC the twenty-five-year-old Scipio, exploiting the dispersal of the three Carthaginian armies, led twenty-five thousand men to take New Carthage by surprise, wading across at low tide, and captured a vast treasury, arsenals and hostages.",
+  "Tags": [
+    "Battle of New Carthage",
+    "Scipio Africanus",
+    "Fall of the Carthaginian capital",
+    "Wading assault",
+    "Spoils of war",
+    "Scipio's restraint"
   ],
+  "Category": "Military",
+  "DefaultPriority": 88,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 24 concerning Mediterranean operations during the Second Punic War."
+    "In 209 BC the 25-year-old Scipio, with brilliant foresight, took New Carthage by surprise and captured it.",
+    "Using the secret that the lagoon became shallow at ebb tide, five hundred legionary volunteers waded across, climbed ladders and broke into the city.",
+    "This battle seized Carthage's chief treasury and shipyards in Iberia, together with several hundred tribal hostages."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 24 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 92,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 24, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "This was not only a military victory but the sacred protection of Neptune, king of the sea, over General Scipio! While the fighting at the main gate was at its height, the ebbing sea in the northern lagoon dropped to knee depth, and five hundred Roman heroes waded across like ghosts, climbed their ladders and mounted the wholly unguarded citadel! Carthage's treasury in Spain, eighteen quinqueremes, tens of thousands of fine suits of armor, and the tribal hostages that held the whole peninsula in check all fell into our hands! With this single blow Scipio completely turned the tide!"
     },
     {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This is unforgivable negligence and disgrace! New Carthage was immensely strong, yet its garrison commander Mago actually believed that the northern lagoon was an absolutely impassable barrier! All three armies were less than ten days' march from the capital, yet because they distrusted one another and answered to no one, they stood by and watched as a Roman fledgling hollowed out the heart of the empire in Spain at one stroke! The treasury is gone, the shipyards burned, even the tribal hostages have been bought over by the Romans; on this day the foundations of our rule in Spain completely collapsed!"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 24 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Scipio won not only with the edge of his sword but with his spirit and his statecraft! After New Carthage fell, the wives and daughters of the tribes whom the Carthaginians had kept locked in the inner palace as hostages were not only left untouched by Scipio but treated with honor and returned by him in person; he even gave back Prince Allucius's betrothed and the rich ransom in full! Faced with such a commander, who would still serve the Carthaginians, who used the sons of the tribes like slaves? The gates of Spain have opened to Rome!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 209 BC the young Roman propraetor Publius Cornelius Scipio launched a surprise attack on New Carthage (modern Cartagena), the Carthaginian capital in Spain. Taking advantage of the low tide in the lagoon, Scipio sent a storming party over the lightly defended northern wall while a frontal assault pressed from outside, and the city fell to attack from both within and without. This battle seized great Carthaginian wealth, weapons workshops and hostages, and completely reversed the course of the war in Iberia."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Scipio's Surprise Attack on New Carthage",
+    "Capture of New Carthage",
+    "Wading across the lagoon at low tide",
+    "Carthaginian treasury and arsenals in Spain",
+    "Scipio's restraint toward hostages"
+  ]
 }

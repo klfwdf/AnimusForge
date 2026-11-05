@@ -1,42 +1,39 @@
 {
   "Id": "rule_punic_02",
-  "Name": "Hannibal Crossing the Alps with War Elephants",
   "Keywords": [
-    "rule_punic_02",
-    "Hannibal Crossing Alps",
-    "Alpine Elephant March",
-    "Rock Blasting with Vinegar",
-    "Surus Elephant"
+    "Hannibal's Crossing of the Alps and the War Elephant Expedition",
+    "Crossing the Alps",
+    "Surus the North African war elephant",
+    "Junction in the Po Valley",
+    "Cisalpine Gallic uprising"
   ],
   "RagShortTexts": [
-    "In autumn 218 BC, Hannibal led thirty-eight thousand men and thirty-seven elephants over..."
+    "In autumn 218 BC Hannibal led tens of thousands of infantry and cavalry with 37 North African war elephants across the Rhone and miraculously over the Alpine passes into Italy."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In autumn 218 BC, Hannibal accomplished one of history's greatest logistical feats by marching an army of 38,000 veteran infantry, 8,000 cavalry, and 37 war elephants across the snowbound Alpine passes. Harassed constantly by mountain tribes, battling treacherous ice and deadly avalanches, Hannibal used fire and sour vinegar to shatter blocking boulders. Though nearly half the army perished, his sudden descent into the Po Valley caught Rome entirely unprepared."
+      "Content": "In the autumn of 218 BC, with a daring that shook the Mediterranean, Hannibal led fifty thousand infantry, nine thousand cavalry and thirty-seven North African war elephants across the Rhone. Avoiding the Roman legions guarding the coast, he struck straight into the steep and trackless Alps. During half a month of marching through frozen heights, the expedition endured raging blizzards, collapsing precipices, ambushes by mountain tribes, and the desperate expedient of heating rocks with fire and pouring vinegar on them to clear a path. When it reached the Po Valley, only twenty thousand infantry, six thousand cavalry and a few elephants remained (including Hannibal's own mount, \"Surus\"). Yet this exhausted army that had survived a hundred deaths at once won the eager support of the Cisalpine Gallic tribes (the Insubres and the Boii), long oppressed by Rome. Tens of thousands of Gallic warriors joined its ranks, and the Carthaginian army drove like a dagger straight into the heart of Roman Italy."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "Freezing winds cut through boiled leather like iron daggers! Pack mules and screaming elephants slipped over precipices into the abyss. We burned pine logs and poured vinegar to crack boulders just to carve a goat trail!"
+      "Content": "When the consul Publius Scipio hurried back from Massalia and heard that Hannibal had trampled the Alpine snows with his terrifying foreign war elephants and appeared in the Po Valley, all Rome was struck with dread. To the Romans, the mountains were a natural rampart granted by the gods to the Apennine land, yet this treaty-breaking Carthaginian fiend had broken through that barrier with man-eating war beasts and savage Gallic barbarians. The Senate at once ordered the highest state of mobilization and urgently commanded the consul Sempronius, who was in Sicily preparing an expedition to Africa, to march north at full speed, vowing to annihilate these foreign invaders on the banks of the Po."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "empire_w"
         ]
       },
-      "Content": "By traversing what Rome deemed an insurmountable natural barrier, Hannibal struck at the Republic's very doorstep, demonstrating that neither Alpine blizzards nor barbarian ambushes could stay Barcid vengeance."
+      "Content": "For the Cisalpine Gauls of the Po Valley, Hannibal's feat of crossing the snowy mountains was a miracle, a manifestation of the sacred war god Esus! For years the Romans had built the fortresses of Cremona and Placentia on the plain, seized the ancestral fields of the tribes, and even flayed captives for public display. The moment the Carthaginian army and its mountain-like war elephants broke out of the snow, war drums thundered among the peaks. The young warriors of the Insubres and the Boii drew their ancestral long swords and rushed to join the Barcid army, vowing to burn the Roman colonial fortresses to the ground!"
     }
   ],
   "TextMappings": []

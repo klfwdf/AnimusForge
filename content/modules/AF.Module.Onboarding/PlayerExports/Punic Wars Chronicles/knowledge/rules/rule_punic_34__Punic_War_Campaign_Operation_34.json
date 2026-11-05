@@ -1,42 +1,109 @@
 {
   "Id": "rule_punic_34",
-  "Name": "Punic War Campaign Operation 34",
-  "Keywords": [
-    "rule_punic_34",
-    "Punic Operation 34",
-    "Strategic Campaign 34",
-    "Mediterranean Theater 34"
+  "Name": "The Morning-Mist Ambush at Lake Trasimene and the Destruction of the Consular Army",
+  "Description": "In June 217 BC, Hannibal laid an ambush against the hills along the long, narrow defile on the north shore of Lake Trasimene. Using the thick morning mist, he enclosed on three sides the army of the consul Flaminius, which was pursuing blindly, and destroyed 30,000 Roman troops within two hours.",
+  "Tags": [
+    "Battle of Lake Trasimene",
+    "Hannibal",
+    "Death of Flaminius",
+    "Morning-mist ambush",
+    "Slaughter on the lakeshore",
+    "Rome in shock"
   ],
+  "Category": "Military",
+  "DefaultPriority": 88,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 34 concerning Mediterranean operations during the Second Punic War."
+    "At the Battle of Lake Trasimene in June 217 BC, Hannibal used the thick morning mist to encircle the Roman army perfectly.",
+    "He sealed the 30,000-strong Roman army in a narrow corridor several miles long between steep hills to the north and the lake to the south.",
+    "The consul Flaminius was killed in the chaos, the whole army collapsed, and more than ten thousand men were driven into the lake and drowned."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 34 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 92,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 34, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "Lake Trasimene is the supreme summit of ambush warfare in antiquity! Hannibal deliberately set Etruscan estates ablaze to goad Flaminius into a furious pursuit. At dawn a milk-white fog rose from the valley and the lake so thick you could not see your own hand, and the Roman legions filed one after another into the narrow passage pinned between cliff and lake. When the horn sounded that the enemy's rear had entered the defile, our light and heavy infantry and cavalry hidden in the wooded slopes all fell upon them at once as if heaven and earth were collapsing! In two hours, a full 30,000 Roman troops never had a chance to form a line; the whole army was killed or surrendered, and the lake was dyed scarlet with blood!"
     },
     {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 34 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "That was the darkest morning in the history of the Republic! The consul Flaminius, blinded by rage, poured his whole army into the defile without even sending out scouts! War cries rose all around in the fog, logs and stones rained down from overhead, and a Gallic horseman's lance pierced the consul's throat! Fifteen thousand brave citizen soldiers fell in their own blood, and many more leapt in despair into the deep lake, where their heavy armor dragged them to the bottom! When the praetor announced in the Forum, 'We have been defeated in a great battle', all Rome dissolved into wailing and weeping!"
+    },
+    {
+      "Priority": 82,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At Lake Trasimene the hatred of the Gauls was washed clean! Our warrior Ducarius recognized at a glance the consul Flaminius, the man who had once drenched our Gallic tribes in blood. Ducarius spurred his horse to a gallop, his lance flicked his guards aside like lightning and drove straight into the consul's chest! We cut off the consul's head and threw the Roman eagle standards into the lake to feed the fish!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In June 217 BC, Hannibal used the valley fog to lay an ambush in the hills on the north shore of Lake Trasimene. The consul Flaminius pursued blindly into the narrow corridor and was enclosed by the whole Carthaginian army charging down from the wooded hills. Of the 30,000-strong Roman army, 15,000 were killed or wounded and 15,000 were captured in this battle, and the consul Flaminius fell in action. The Roman Senate then urgently appointed Fabius as wartime dictator."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battle of Lake Trasimene",
+    "Trasimene morning fog ambush 217 BC",
+    "death of consul Flaminius",
+    "Ducarius kills Flaminius"
+  ]
 }

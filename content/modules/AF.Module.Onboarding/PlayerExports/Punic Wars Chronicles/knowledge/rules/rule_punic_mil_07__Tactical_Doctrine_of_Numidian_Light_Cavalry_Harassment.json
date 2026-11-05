@@ -1,42 +1,53 @@
 {
   "Id": "rule_punic_mil_07",
-  "Name": "Tactical Doctrine of Numidian Light Cavalry Harassment",
-  "Keywords": [
-    "rule_punic_mil_07",
-    "Doctrine of Numidian Light Cavalry Harassment",
-    "Combat Mastery Numidian Light Cavalry Harassment",
-    "Tactical Formations Numidian Light Cavalry Harassment"
-  ],
+  "Name": "The Naval Legacy of the Corvus Boarding Bridge and the Close Fighting of Rams",
+  "Category": "military",
+  "Priority": 87,
   "RagShortTexts": [
-    "The tactical doctrine of Numidian Light Cavalry Harassment governed battlefield formations..."
+    "In the First Punic War Rome invented the corvus boarding bridge, forcibly turning naval battle into hand-to-hand fighting on deck",
+    "In the Second Punic War the bridge was abandoned because it risked sinking ships in rough seas, and Rome returned to ramming tactics handled by sailors",
+    "The bronze ram of a quinquereme struck at full speed to tear open the waterline and keel of an enemy ship"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The mechanics of naval warfare went through a dramatic evolution over the two Punic Wars. In the First Punic War, the Romans, inexperienced at sea, invented the 'raven' boarding bridge (Corvus): a rotating bridge was mounted upright on the bow of a warship, with a heavy iron beak at its end. When it struck an enemy ship, the iron beak smashed through the enemy deck and locked it fast, and Roman heavy infantry then swarmed across to fight hand to hand. But the tall bridge raised the ship's center of gravity too high, and in storms it caused several mass capsizings and sinkings of hundreds of Roman warships. By the Second Punic War, Rome had abandoned the corvus completely and relied instead on well-trained sailors, sturdy hulls and the heavy bronze three-pronged ram (Ram/Rostra) below the waterline. The focus of naval battle returned to the classic close-fighting mechanics of the ram: full-speed broadside impacts that tore open keels, and sweeping strokes that sheared off an enemy ship's oars and left it crippled.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The development of Numidian Light Cavalry Harassment exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+      "Content": "Even without the corvus, Roman warriors are invincible once their feet touch the sea! The moment the ram bites through the enemy keel is the moment the short sword reaps enemy heads."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of Numidian Light Cavalry Harassment became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "The sea belongs to true sailors again! Without those clumsy wooden bridges getting in the way, with the light turning of our quinqueremes and our skilled rowers we can leave the Romans behind in wind and waves."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Mastery of Numidian Light Cavalry Harassment separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "The bronze ram cast on the bow weighs hundreds of pounds, and the impact of a full-speed charge is enough to snap a trireme in two at the waist. Naval battle has always been a brutal contest of wood, stone and metal."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "naval gun duel",
+    "torpedo boat",
+    "steam engine room",
+    "modern armored cruiser"
+  ],
+  "Keywords": [
+    "corvus",
+    "boarding bridge",
+    "naval ram",
+    "rostrum",
+    "quinquereme ramming tactics"
+  ]
 }

@@ -1,42 +1,51 @@
 {
   "Id": "rule_punic_city_16",
-  "Name": "Metropolis of Cumae Sibyl Citadel",
-  "Keywords": [
-    "rule_punic_city_16",
-    "Urban Center Cumae Sibyl Citadel",
-    "Citadel of Cumae Sibyl Citadel",
-    "Harbor of Cumae Sibyl Citadel"
-  ],
+  "Name": "Leptis Magna, Coastal Bastion of Eastern North Africa: The Saharan Trade Route",
+  "Category": "geography",
+  "Priority": 84,
   "RagShortTexts": [
-    "The fortified urban center of Cumae Sibyl Citadel served as a vital strategic, naval, and..."
+    "Leptis Magna holds a deep-water harbor on the Gulf of Greater Syrtis that leads straight into the depths of the Sahara",
+    "It monopolizes the export of gold, ivory and rare beasts from inner Africa and is an important source of Carthage's foreign trade revenue",
+    "Secure in the southeast, it read the course of the Punic wars shrewdly and preserved its merchants' autonomous privileges"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Leptis Magna (town_carthage_lepqi, near modern Khoms in Libya) lies on the western shore of the Gulf of Greater Syrtis, and it is the eastern trading gateway founded by the Phoenicians in the seventh century BC. The city sits on a natural harbor at the mouth of the Wadi Lebda, backed by vast wastelands, and is the most important terminus where the trans-Saharan camel caravans crossing the desert reach the Mediterranean. A steady stream of gold, ivory and ebony from inner Africa, together with the fierce North African leopards and elephants that the gladiatorial arenas badly needed, was all shipped out from here. Because it lay far from the main battlefields in Italy and Iberia, Leptis Magna kept up a relatively peaceful prosperity during the Second Punic War, paid its war taxes to Carthage on schedule, and at the end of the war shrewdly went over to the victor to preserve the city's autonomous trading rights.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Cumae Sibyl Citadel represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+      "Content": "The docks of Leptis Magna always carry the scent of exotic spices. Whether war rages or peace returns, the gold caravans of the Sahara never stop."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Behind the stone towers of Cumae Sibyl Citadel, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+      "Content": "This rich harbor on a distant eastern sea has shown Rome the endless treasures of inner Africa. The Senate is glad to accept its tribute and goodwill."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Possession of Cumae Sibyl Citadel anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "We cross the long, scorching desert to bring ivory to Leptis Magna, and the white-robed Phoenicians gild it, but the storms deep in the desert have never belonged to any king."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Libyan oil",
+    "Ottoman Tripoli",
+    "Second World War North African oil fields",
+    "Zurich Canal"
+  ],
+  "Keywords": [
+    "Leptis Magna",
+    "trans-Saharan trade",
+    "Greater Syrtis",
+    "Libyan Phoenician port"
+  ]
 }

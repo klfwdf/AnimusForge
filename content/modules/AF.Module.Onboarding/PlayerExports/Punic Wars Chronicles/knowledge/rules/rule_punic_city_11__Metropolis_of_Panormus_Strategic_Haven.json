@@ -1,42 +1,51 @@
 {
   "Id": "rule_punic_city_11",
-  "Name": "Metropolis of Panormus Strategic Haven",
-  "Keywords": [
-    "rule_punic_city_11",
-    "Urban Center Panormus Strategic Haven",
-    "Citadel of Panormus Strategic Haven",
-    "Harbor of Panormus Strategic Haven"
-  ],
+  "Name": "Outposts on the Po: The Latin Colonial Iron Walls of Placentia and Cremona",
+  "Category": "geography",
+  "Priority": 84,
   "RagShortTexts": [
-    "The fortified urban center of Panormus Strategic Haven served as a vital strategic, naval,..."
+    "In 218 BC Rome hastily founded the colonial fortresses of Placentia and Cremona on the two banks of the Po",
+    "Each received six thousand households of armed Latin colonists to control the Po plain and the Gallic Boii",
+    "After the defeat at the Trebia, the two isolated forts stood firm under siege by Hannibal and his Gallic allies"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In 218 BC, on the eve of the renewed Punic war, the Roman Senate, seeking to cow the rebellious Boii and Insubres of Cisalpine Gaul once and for all, hastily founded two large military colonial fortresses on the north and south banks of the middle Po: Cremona (village_rome_cremona) on the north bank and Placentia (village_wre_placentia) on the south bank. The Senate moved twelve thousand households of fully armed Latin citizens there from all over Italy and granted each good farmland and weapons. After Hannibal crossed the Alps and routed the Roman consul at the Trebia, the Gallic barbarians defected en masse; yet these two fortresses, with their strong earth-and-timber ditches, stone watchtowers and the colonists' will to fight to the death, held out for years through furious sieges, bitter cold and famine, and remained the only iron wedge of Rome in Cisalpine Gaul that was never torn out.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Panormus Strategic Haven represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+      "Content": "In one hand we hold the plowshare, in the other the short sword! No matter how the Gallic wolves howl or how Hannibal's war elephants stamp the ground, the colonial fortresses on both banks of the Po will belong to Rome forever!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "Behind the stone towers of Panormus Strategic Haven, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+      "Content": "The Roman robbers seized our ancestral pastures and built stone pens on them! The waters of the Trebia have already run red, and one day we will raze these two hateful forts to the ground!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Possession of Panormus Strategic Haven anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "The fortresses on both banks of the Po are like two thorns that cannot be pulled out, lodged between the supply roads running north and south, forcing us to detour across the marshes of the Apennines."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Lombard League",
+    "medieval duchy",
+    "modern Milan canals",
+    "steam locomotive"
+  ],
+  "Keywords": [
+    "Placentia",
+    "Cremona",
+    "Latin colonies on the Po",
+    "Cisalpine Gaul"
+  ]
 }

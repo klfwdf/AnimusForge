@@ -1,42 +1,55 @@
 {
   "Id": "rule_punic_82",
-  "Name": "Punic War Campaign Operation 82",
-  "Keywords": [
-    "rule_punic_82",
-    "Punic Operation 82",
-    "Strategic Campaign 82",
-    "Mediterranean Theater 82"
-  ],
+  "Name": "The Shadow of Child Sacrifice at the Altars of Moloch and Melqart",
+  "Category": "culture",
+  "Priority": 87,
   "RagShortTexts": [
-    "Strategic campaign doctrine 82 concerning Mediterranean operations during the Second Punic War."
+    "Legends of child sacrifice at the Tophet sanctuary of Carthage and in the rites of the fire god Moloch",
+    "Roman and Greek historians accused Carthage of throwing young children into the arms of a red-hot bronze statue in times of national crisis",
+    "Archaeology confirms the custom of urn burial of burned bones, while the shadow of child sacrifice hung over the city when its survival was at stake"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In the Salammbo district of the city of Carthage lay the ancient and gloomy sanctuary of the Tophet. Roman and Greek writings widely record that when the city faced destruction, Carthaginian nobles, following the oracles of Moloch and Baal Hammon, would place their own children in the sloping arms of a red-hot bronze statue of the god and let them slide into the roaring fire, while flutes and drums played together to drown out the cries, in order to pray for the gods' protection. Although most modern archaeologists lean toward the view that the Tophet was mainly a cremation cemetery for infants who died young, in the terrifying years of the Second Punic War when the Roman army besieged North Africa, the panic-stricken citizens and priests of the city really did stir up an extreme mood to revive harsh holy rites to please the gods. This dark and cruel religious rite became the deepest psychological image behind Rome's charges of Carthaginian barbarism in the classical world.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 82 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "Baal gave the city its wealth and the sea. On the edge of annihilation, only by offering the purest lives can we bring down fire from heaven to destroy Scipio's ships!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 82, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The nobles hold their own children tight, yet they snatch babies from the homes of the poor and push them into the statue's arms. The thick smoke before the temple has blackened the sky. Do the gods truly crave the smell of burning flesh and bone?"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 82 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Throwing their own children into a bronze furnace to roast alive! If such a den of demons, defying the laws of heaven and humanity, is not razed to the ground, how can the justice of the gods and the order of the world ever be at peace!"
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Aztecs",
+    "Black Mass",
+    "Satanism",
+    "Modern cult organization"
+  ],
+  "Keywords": [
+    "Tophet",
+    "child sacrifice",
+    "Moloch",
+    "Baal Hammon",
+    "Melqart",
+    "Salammbo",
+    "bronze statue",
+    "Carthaginian religion"
+  ]
 }

@@ -1,42 +1,106 @@
 {
   "Id": "rule_punic_43",
-  "Name": "Punic War Campaign Operation 43",
-  "Keywords": [
-    "rule_punic_43",
-    "Punic Operation 43",
-    "Strategic Campaign 43",
-    "Mediterranean Theater 43"
+  "Name": "Marcellus Besieges the Fortress of Syracuse by Land and Sea",
+  "Description": "In autumn 214 BC the Roman consul Marcellus, commanding sixty quinqueremes and land legions tens of thousands strong, launched a simultaneous assault on the strong city of Syracuse by land and sea, trying to force his way in with giant sambuca siege bridges and battering rams.",
+  "Tags": [
+    "Siege of Syracuse",
+    "Marcellus",
+    "Sambuca siege ladder",
+    "Quinqueremes",
+    "Encirclement by land and sea",
+    "Decisive struggle for Sicily"
   ],
+  "Category": "Military",
+  "DefaultPriority": 85,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 43 concerning Mediterranean operations during the Second Punic War."
+    "In autumn 214 BC Marcellus launched a general assault on Syracuse with sixty quinqueremes and tens of thousands of land troops.",
+    "Warships lashed together in pairs carried giant siege bridges called 'sambucas' in an attempt to scale the sea walls.",
+    "On land, Appius Claudius, the consul commanding the army, led the main body in frontal pressure with battering rams and great ballistae."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 43 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This was the most magnificent surge of the Roman engineering corps! Sixty huge warships advanced side by side; eight pairs of quinqueremes were lashed firmly together, and between each pair rose a 'sambuca' siege ladder many fathoms high, shaped like a giant harp, bearing straight down on the sea wall of Achradina in Syracuse! The decks bristled with javelin men and archers, while behind them Appius on land pushed forward battering rams weighing tons with overwhelming force. General Marcellus stood at the prow of his flagship, vowing that the most arrogant Greek harbor in the Mediterranean would be ground to dust beneath the blows of the legions!"
     },
     {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Romans came howling at us with their clumsy, brutish bridges and warships, imagining that with numbers and rough timber they could conquer the wisdom of Archimedes! Old Archimedes had long since placed deadly machines at every loophole and every stretch of battlement on the walls. The great Roman ships on the sea thought themselves unbreakable floating fortresses, never knowing that before geometry and lever machines they were nothing but a crowd of foolish sacrifices delivered to our door, waiting to be sunk by hurled stones and flipped over by iron claws!"
+    },
+    {
+      "Priority": 78,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "soldier",
-          "warrior"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 43, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "Roman warships covered the sea and blotted out the sky, and the drummers' beat made the stones on the shore tremble. The towering bridges pushed forward on two warships lashed together made you gasp. But before the Roman ships could even reach the shore, a ghostly shrieking came from the walls, and those enormous machines no one had ever seen began spitting iron and stone, and in an instant columns of bloody spray and white foam burst high above the sea!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 43 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In autumn 214 BC, the Roman commander Marcellus led sixty quinqueremes and the main land army in a combined advance by land and sea to besiege Syracuse. Roman engineers built giant twin-ship siege ladders called 'sambucas' to try to storm the sea walls, while on land large battering rams were pushed forward. Syracuse resisted stubbornly behind the advanced mechanical defenses directed by the scholar Archimedes, and the campaign turned into a long siege of attrition."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Siege of Syracuse 214 BC",
+    "Marcellus assault by land and sea",
+    "sambuca siege ladder",
+    "Appius Claudius at Syracuse"
+  ]
 }

@@ -1,42 +1,40 @@
 {
   "Id": "rule_punic_09",
-  "Name": "Iberian Silver Mines and Falcata Swordsmen",
   "Keywords": [
-    "rule_punic_09",
-    "Sierra Morena Mines",
-    "Castulo Silver",
-    "Falcata Vanguard",
-    "Barcid Treasury"
+    "Struggle for Iberian Silver and the Falcata Swordsmen",
+    "Silver mines of Carthago Nova",
+    "Falcata curved sword",
+    "Falcata swordsman guard",
+    "Devotio death-oath creed",
+    "Battle of the Upper Baetis"
   ],
   "RagShortTexts": [
-    "The rich silver mines of Sierra Morena funded Hannibal's war chest and hired fierce Iberian..."
+    "The rich silver veins of the Iberian Peninsula were the lifeline of Carthage's war funds, and the Celtiberian warriors wielding the curved falcata were famed across Europe."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The true foundation of Barcid power lay in the mineral wealth of southern Hispania, particularly the rich silver mines of Castulo and Carthago Nova. Generating hundreds of silver talents annually, these revenues allowed the Barcids to hire tens of thousands of ferocious Celtiberian swordsmen, Balearic slingers, and Lusitanian skirmishers. Armed with curved falcata shortswords capable of cleaving helmets, Iberian warriors formed the lethal vanguard of Punic assault formations."
+      "Content": "During the Second Punic War the Iberian Peninsula was a life-and-death theater that decided both sides' logistical depth and the quality of their recruits. Hamilcar Barca founded New Carthage (Cartagena) here and vigorously worked the rich silver mines of the Sierra Morena, producing several thousand talents of silver a day and providing ample, steady pay for Carthage's expeditionary army in Italy. The peninsula also abounded in pure, high-quality iron ore, from which the local Celtiberian warriors forged the razor-sharp \"falcata\" (Falcata), an inward-curving sword for cutting and thrusting, as well as double-edged straight swords. These weapons cut through iron like mud; the Roman army was so impressed that it copied and adopted them wholesale as the famous \"Spanish sword\" (Gladius Hispaniensis). Tribal warriors kept the ancient creed of the \"devotio\" (Devotio), sworn to fight for their chief to the last man. In 211 BC the elder Scipio and his elder brother Gnaeus were separated and destroyed by the army of Hasdrubal Barca at the Battle of the Upper Baetis; both were killed, and Rome's foothold in Spain came close to total collapse."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "Those Spanish mountain fighters don't give a damn about formation! They charge with curved falcata blades that chop straight through bronze cheek-guards and sever limbs in a single blow!"
+      "Content": "For the Republic of Carthage, Iberia was the imperial lifeblood and sacred granary that the Barcid family had forged with the toil of two generations. It was thanks to Spain's endless silver, the hardy Balearic slingers and the elite Iberian sword-bearing guards that Hannibal was able to campaign deep in the heart of Italy with an isolated army for more than ten years without his army losing heart. Hasdrubal Barca labored hard to build up his position here: he not only annihilated the legions of the Scipio brothers at the Upper Baetis, avenging his family, but also fiercely defended the financial lifeline that kept the whole Punic war front running."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "merchant",
-          "artisan"
+        "KingdomIds": [
+          "vlandia"
         ]
       },
-      "Content": "Every ounce of silver minted into Hannibal's war coins came from the deep shafts of Sierra Morena. Control those mines, and you starve the Punic war machine of its very lifeblood."
+      "Content": "In the eyes of the native Iberian tribes (such as the Ilergetes and the Celtiberian peoples), the foreign Carthaginians and Romans were nothing but a pack of greedy, bloodsucking jackals fighting over mines and blood! The Barcids seized the mines and forced the tribes to hand over royal hostages, while the Romans lured the tribes into fighting for them with hypocritical lies of liberation. Gripping their ancestral falcatas, the tribal warriors knew that in this bloody struggle between two foreign empires no outsider deserved their trust. Only the steel short swords in their hands and the poisoned javelins of the mountain ambush were the sole support for defending the land of their forefathers and the dignity of their freedom!"
     }
   ],
   "TextMappings": []

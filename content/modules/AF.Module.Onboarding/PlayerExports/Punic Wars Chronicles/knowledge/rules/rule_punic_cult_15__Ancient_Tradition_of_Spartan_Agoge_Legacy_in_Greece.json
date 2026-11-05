@@ -1,42 +1,53 @@
 {
   "Id": "rule_punic_cult_15",
-  "Name": "Ancient Tradition of Spartan Agoge Legacy in Greece",
-  "Keywords": [
-    "rule_punic_cult_15",
-    "Sacred Code of Spartan Agoge Legacy in Greece",
-    "Civic Rites Spartan Agoge Legacy in Greece",
-    "Ancestral Law Spartan Agoge Legacy in Greece"
-  ],
+  "Name": "The Roman Saturnalia: The Carnival of Slave-Master Reversal and the Brief Grace of Equality",
+  "Category": "culture",
+  "Priority": 85,
   "RagShortTexts": [
-    "The institutional tradition of Spartan Agoge Legacy in Greece defined social hierarchy,..."
+    "Every December at the winter solstice, Rome held the sacred week-long carnival festival of the Saturnalia",
+    "The ranks of master and slave were briefly reversed; masters cooked and set out banquets themselves, serving their slaves food and fine wine",
+    "Executions and corporal punishment were strictly forbidden and public gambling was allowed, releasing the social anger pent up by the war"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The 'Saturnalia' (Saturnalia) was the wildest of ancient Rome's yearly festivals, the winter-solstice holy festival most eagerly awaited by plebeians and slaves (usually lasting a week from 17 December). The festival commemorated the mythical golden age under the rule of the farming god Saturn, when the human world knew neither class oppression nor any division of private property. During this week the whole city of Rome entered a complete reversal of order: all court trials stopped, the public schools closed, and the execution of criminals was strictly forbidden; street dice gambling, normally strictly prohibited, became fully legal. Most striking of all was the master-slave reversal ritual inside clan households: noble masters who were haughty on ordinary days changed into plebeian everyday clothes, cooked roast meat and fine wine with their own hands, and respectfully served the banquet to their own farm slaves and household slaves, and even allowed the slaves to mock and ridicule their masters' faults to their faces without any punishment of the whip. This carnival effectively vented the enormous resentment and risk of riot that had built up among the lower ranks of Roman society in the brutal years of war.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The social order of antiquity was rooted in Spartan Agoge Legacy in Greece. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+      "Content": "Only for these seven days of the year can we take off our collars, get roaring drunk, sit in ivory chairs and boss around the estate stewards who are so fierce on ordinary days! May the golden age of Saturn never end!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Pour the slaves a cup of sweet wine and let them babble a little; it does no harm. This is the ancient wisdom our ancestors left us: if an oak cask is not unstoppered to breathe from time to time, it will burst to pieces in the fire of war."
+    },
+    {
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Without Spartan Agoge Legacy in Greece, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "peasant",
-          "villager"
-        ]
-      },
-      "Content": "From childhood our elders taught us to revere Spartan Agoge Legacy in Greece. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+      "Content": "On ordinary days the Romans' military law is as harsh and cold as iron, yet at the Saturnalia they let slaves dance in the slippers of nobles. This coexistence of civilized shrewdness and barbarity is the secret weapon with which they conquered the Mediterranean."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Christmas and Santa Claus",
+    "Brazilian carnival samba",
+    "modern trade union right to leave",
+    "Marxist theory of class struggle"
+  ],
+  "Keywords": [
+    "Saturnalia",
+    "Saturn festival",
+    "master-slave role reversal",
+    "Roman winter solstice festival",
+    "Roman slaves"
+  ]
 }

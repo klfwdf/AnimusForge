@@ -1,42 +1,39 @@
 {
   "Id": "rule_punic_03",
-  "Name": "Battle of Lake Trasimene Morning Mist Ambush",
   "Keywords": [
-    "rule_punic_03",
+    "Morning Mist Ambush at Lake Trasimene",
     "Battle of Lake Trasimene",
-    "Flaminius Defeat",
-    "Trasimene Morning Mist",
-    "Cortona Defile Trap"
+    "Death of the consul Flaminius",
+    "Morning mist ambush tactics",
+    "Great Roman rout"
   ],
   "RagShortTexts": [
-    "In 217 BC, Hannibal trapped Flaminius's 30,000 legionaries against Lake Trasimene in dense..."
+    "In 217 BC Hannibal used the morning mist on the shore of Lake Trasimene to lay a tight ambush, destroying thirty thousand Roman legionaries and killing the consul Flaminius."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In the spring of 217 BC, Hannibal baited Consul Gaius Flaminius into a narrow defile between the steep hills of Cortona and the shore of Lake Trasimene. Concealing his Celtic infantry and Numidian cavalry in the wooded heights under heavy dawn fog, Hannibal closed both ends of the pass as the marching Roman column entered. Blinded by mist and unable to deploy into manipular lines, over 15,000 Romans including Flaminius were slaughtered or drowned, throwing Rome into total panic."
+      "Content": "In the spring of 217 BC Hannibal led his army south through the Tuscan marshes into Etruria, deliberately burning estates along the way to lure the newly elected Roman consul Gaius Flaminius into a reckless advance. Hannibal concealed his troops in the wooded hills above a narrow defile on the northern shore of Lake Trasimene. At dawn a thick mist that blotted out the sky lay over the lake, and Flaminius's legions blundered into the long trap before they could form battle lines. The trumpets sounded the charge: Gallic warriors swept down on the flank, while Spanish infantry and Numidian cavalry sealed the entrance and the line of retreat. In less than three hours fifteen thousand Roman soldiers lay dead on the lakeshore or drowned among the reeds; the consul Flaminius was beheaded by a Gallic horseman, and the six thousand men of the vanguard were all taken prisoner. When the news reached Rome, a praetor announced to the terrified crowd in the Forum only one grim sentence: \"We have been defeated in a great battle.\""
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "The morning fog was thick as sheep's wool! We were marching in column when suddenly wild battle cries echoed from the ridges. Before we could uncase our shields, Gallic broadswords were hacking us into the lake mud!"
+      "Content": "Lake Trasimene is a wound of blood and tears that Rome will never forget. The consul Flaminius, a man of the popular faction, was arrogant and conceited; he not only scorned the Senate but before setting out openly ignored the evil omen of the sacred chickens refusing their feed. Because of this blind rush for glory, two entire elite Roman legions were driven into a death trap by the Carthaginians' base trick of the morning mist, and thousands of young soldiers were herded into the lake and drowned before they could even draw their short swords. The battle shocked the Senate and forced Rome to declare a state of emergency throughout its territory and to name the veteran Fabius dictator, to keep the city from falling into irreversible ruin."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "Flaminius paid for his populist arrogance with his life and two consular legions. Never march into an unreconnoitered defile when facing the master of tactical deception."
+      "Content": "The Battle of Lake Trasimene is Hannibal's masterpiece of war, in which he mastered both the fine details of the terrain and the mind of the enemy commander. Hannibal saw at a glance the impatient, rash character of Flaminius the popular politician, and used the dense lake mist and the narrow pass between hills and water to set a perfect trap. When the order to strike was given, Carthage's warriors of many peoples fell upon the enemy like soldiers sent from heaven and cut the heavy, crowded Roman formation into several pieces. This battle not only won a glorious victory, destroying more than twenty thousand enemies at minimal cost, but also shattered Rome's defensive line in the northern Apennines and threw open the rich southern lands on the road to Rome."
     }
   ],
   "TextMappings": []

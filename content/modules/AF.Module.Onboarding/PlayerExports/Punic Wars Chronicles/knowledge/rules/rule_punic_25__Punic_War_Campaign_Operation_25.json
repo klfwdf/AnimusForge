@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_25",
-  "Name": "Punic War Campaign Operation 25",
-  "Keywords": [
-    "rule_punic_25",
-    "Punic Operation 25",
-    "Strategic Campaign 25",
-    "Mediterranean Theater 25"
+  "Name": "Battle of Baecula and Hasdrubal's Breakout over the Pyrenees",
+  "Description": "In 208 BC Scipio broke Hasdrubal's army, which held the heights at Baecula, with a pincer attack on both wings, but Hasdrubal preserved his elephants, baggage and veteran core and resolutely crossed the Pyrenees into Gaul to march on Italy.",
+  "Tags": [
+    "Battle of Baecula",
+    "Scipio Africanus",
+    "Hasdrubal Barca",
+    "Attack on both wings",
+    "Pyrenees",
+    "Tactical victory and strategic breakout"
   ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 25 concerning Mediterranean operations during the Second Punic War."
+    "In 208 BC Scipio broke Hasdrubal's line on the heights at Baecula by advancing separately and striking together on both wings.",
+    "Although tactically defeated, Hasdrubal successfully covered the escape of his elite veterans, war elephants and war chest from the battlefield.",
+    "Hasdrubal then crossed the Pyrenees and set out on the long march to reinforce Hannibal in Italy."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 25 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The heights of Baecula were as steep as a wall, and Hasdrubal believed that holding such strong ground made him perfectly safe. But General Scipio showed extraordinary tactical maneuver: with light infantry he pinned the enemy in front, while elite legionaries on the left and right wings raced up the valleys to complete the envelopment, destroying eight thousand of the enemy at a stroke! Seeing this victory, the tribes of Spain one after another submitted to Rome and honored Scipio as the sole overlord of the whole land!"
     },
     {
-      "Priority": 1,
+      "Priority": 87,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The world sees only that Scipio took the camp at Baecula, but does not know that our commander Hasdrubal carried out a great strategic withdrawal! When he saw that the front position could not be held, he decisively abandoned the native auxiliaries, who were apt to scatter, and withdrew intact all his war elephants, his war chest and his most effective core of veterans, swiftly breaking contact and crossing the Pyrenees! He had at last broken free of the Spanish quagmire and was striding toward the Italian homeland where Hannibal was!"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "soldier",
-          "warrior"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 25, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "On the steep slopes of Baecula, the Roman heavy infantry forced their way up step by step with short swords and shields against rolling logs and boulders! The Carthaginian light infantry's javelins rattled off the big Roman shields, but when the Roman main force came round by the mountain paths on both sides, the Carthaginians on the hilltop broke and fled. Still, Hasdrubal pulled out really fast; by the time we stormed into his camp, the valuable gold, silver and elephants had all long gone."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 25 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In 208 BC Scipio defeated the army of Hasdrubal Barca, which held the heights at Baecula. Scipio won a tactical victory with mobile envelopment on both wings, but Hasdrubal successfully withdrew his core forces, war elephants and baggage, then entered Gaul by the western end of the Pyrenees and began his strategic march on Italy to join his elder brother Hannibal."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battle of Baecula and Hasdrubal's Breakout",
+    "Battle of Baecula",
+    "Scipio's pincer attack on the heights",
+    "Hasdrubal crosses the Pyrenees",
+    "Hasdrubal's march to Italy"
+  ]
 }

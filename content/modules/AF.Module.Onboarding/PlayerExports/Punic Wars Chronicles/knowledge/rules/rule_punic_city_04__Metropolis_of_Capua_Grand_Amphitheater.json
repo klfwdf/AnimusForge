@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_city_04",
-  "Name": "Metropolis of Capua Grand Amphitheater",
-  "Keywords": [
-    "rule_punic_city_04",
-    "Urban Center Capua Grand Amphitheater",
-    "Citadel of Capua Grand Amphitheater",
-    "Harbor of Capua Grand Amphitheater"
-  ],
+  "Name": "Gadir at the Pillars of Hercules: Ancient Phoenician City and the Silver Sea Route",
+  "Category": "geography",
+  "Priority": 86,
   "RagShortTexts": [
-    "The fortified urban center of Capua Grand Amphitheater served as a vital strategic, naval,..."
+    "Gadir is the oldest Phoenician colony in the western Mediterranean and directly controls the strait leading to the Atlantic",
+    "The ever-burning sacred fire of the temple of Melqart witnessed Hannibal's oath before his campaign and the rites of the Barca family",
+    "It is an unsinkable floating trading island that ships Andalusian minerals and Atlantic tin"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Gadir (town_carthage_gadir, modern Cadiz) was founded by Phoenicians from Tyre in the eleventh century BC and is the oldest continuously inhabited city in Western Europe. It lies on a long, narrow chain of sandy islands off the mouth of the Guadalquivir, facing the surging currents of the Atlantic across the water, and guards the vital western gate of the Pillars of Hercules (the Strait of Gibraltar). The city's temple of Melqart was famous for its twin bronze pillars and a sacred fire that had not gone out for a thousand years, and it was here that Hannibal swore to overthrow Rome before setting out on his march north. Gadir was not only the export port for the rich silver and olive oil of Andalusia, but also a strategic hub linking the sea route to the tin mines of Britain. Near the end of the war Mago, commander at Gadir, abandoned the city and withdrew, and the city at once concluded a treaty of peace and alliance with Rome.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "The incense smoke of the temple of Melqart protects the bloodline of seafarers. Setting sail from Gadir, the purple sails of Phoenicia can reach the ocean at the end of the world and the tin islands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "Uprooting Gadir cuts Carthage's last foothold in Iberia for good. The silver of Spain will now be escorted to the treasury by Roman quinqueremes instead."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Capua Grand Amphitheater represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "Behind the stone towers of Capua Grand Amphitheater, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Possession of Capua Grand Amphitheater anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "We are merchants, not guardians of any creed. Whether the purple banner or the eagle standard flies over the walls, as long as the Atlantic tides keep flowing, the altar of Melqart will always be offered silver coins."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Voyages of Columbus",
+    "Age of Discovery",
+    "Steam cruiser",
+    "Suez Canal"
+  ],
+  "Keywords": [
+    "Gadir",
+    "Gades",
+    "Cadiz",
+    "Pillars of Hercules",
+    "temple of Melqart",
+    "Phoenician colony",
+    "silver route",
+    "Atlantic tin route"
+  ]
 }

@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_cult_12",
-  "Name": "Ancient Tradition of Numidian Tribal Council Alliances",
-  "Keywords": [
-    "rule_punic_cult_12",
-    "Sacred Code of Numidian Tribal Council Alliances",
-    "Civic Rites Numidian Tribal Council Alliances",
-    "Ancestral Law Numidian Tribal Council Alliances"
-  ],
+  "Name": "The Wheat-Ear Rites of the Temple of Demeter and the Agrarian Mysteries of Sicily",
+  "Category": "culture",
+  "Priority": 84,
   "RagShortTexts": [
-    "The institutional tradition of Numidian Tribal Council Alliances defined social hierarchy,..."
+    "The Enna highlands of Sicily are the sanctuary where the myth of Demeter, goddess of agriculture, and Persephone began",
+    "Greek and Sicel farmers across the island held the golden wheat-ear mysteries to pray for rich harvests and to be spared the ravages of war",
+    "After conquering the whole island, the Roman consul Marcellus offered a golden crown in awe of the sacred authority of the harvest goddess"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The heart of Sicily lies on the steep inland highland of Enna, which in the mythology of the whole Mediterranean was revered as the sacred place where Persephone, the beloved daughter of the agricultural goddess Demeter (Demeter) and queen of the underworld, was carried off into the underworld by the lord of the dead. On the clifftop of Enna stands the grand and ancient great temple of Demeter, which houses a marble statue said to have been brought to life by the goddess's own hand and the sacred relic of an unfading golden ear of wheat. Every autumn, farmers, sailors and even the barbarian Sicels from all over the island gathered here to hold the sacred secret initiation mysteries (Thesmophoria), reenacting with nighttime torch processions the goddess's anguished search for her daughter, and praying that the goddess would spare them drought, locusts and the trampling of war. Even during the most violent and bloody sieges, the commanders of every warring side did not dare to violate the temple of Enna in the slightest; after sacking Syracuse, Marcellus deliberately sent envoys to Enna to offer the goddess a crown of pure gold in atonement for the slaughter.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The social order of antiquity was rooted in Numidian Tribal Council Alliances. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+      "Content": "The rolling waves of wheat are the breath of the Earth Mother. When the iron boots of the legions trample the fields, the goddess will surely call back the bitter cold from the underworld. Only by devoutly sacrificing to the golden wheat ear will the earth grant full harvests next year."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "General Marcellus may be famous throughout Sicily, but before the great temple of Demeter even he must lay down his sword. To revere the Earth Mother who governs the grain is a law of heaven that the Roman legions cannot defy."
+    },
+    {
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Without Numidian Tribal Council Alliances, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "peasant",
-          "villager"
-        ]
-      },
-      "Content": "From childhood our elders taught us to revere Numidian Tribal Council Alliances. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+      "Content": "The barbarians have attacked and killed ten thousand times, and ten different banners have flown over the city walls, yet the sacred fire on the cliffs of Enna has never gone out. The grace of the gods stands above all the illusory ambitions of consuls and suffetes."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Catholic Eucharist",
+    "Protestant Reformation",
+    "materialist atheism",
+    "modern monastery"
+  ],
+  "Keywords": [
+    "Demeter",
+    "Enna",
+    "Persephone",
+    "Thesmophoria",
+    "Sicilian agrarian cult"
+  ]
 }

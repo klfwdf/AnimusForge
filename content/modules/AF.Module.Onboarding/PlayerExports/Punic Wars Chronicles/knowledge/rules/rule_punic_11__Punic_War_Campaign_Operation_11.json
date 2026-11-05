@@ -1,41 +1,39 @@
 {
   "Id": "rule_punic_11",
-  "Name": "Punic War Campaign Operation 11",
   "Keywords": [
-    "rule_punic_11",
-    "Punic Operation 11",
-    "Strategic Campaign 11",
-    "Mediterranean Theater 11"
+    "Battle of the Metaurus and the Head of Hasdrubal",
+    "Battle of the Metaurus",
+    "Death of Hasdrubal Barca",
+    "Claudius Nero's long forced march",
+    "Lament for the fate of Carthage"
   ],
   "RagShortTexts": [
-    "Strategic campaign doctrine 11 concerning Mediterranean operations during the Second Punic War."
+    "At the Battle of the Metaurus in 207 BC, the combined armies of the Roman consuls killed Hasdrubal Barca, who had crossed the mountains to reinforce his brother, and hurled his head into Hannibal's camp to break the enemy's spirit."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 11 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "In 207 BC Hasdrubal Barca led a great army across the Alps for the second time, coming down into Italy with ample siege equipment and Gallic reinforcements, intending to join his elder brother Hannibal and strike straight at Rome. Hasdrubal sent mounted messengers to contact his brother, but the letter was unluckily intercepted by a Roman patrol. The consul Gaius Claudius Nero, stationed in the south, made an astonishing decision: concealing his move from Hannibal facing him, he took only elite cavalry and in six days marched day and night several hundred miles north to join secretly with the legions of the northern consul, Livius Salinator. Hasdrubal noticed that two consular trumpet calls sounded in the Roman camp and realized he was caught in a trap. He retreated at night along the Metaurus, but lost his way when his guides fled. At dawn the battle broke out; amid the rout Hasdrubal resolutely spurred his horse into the dense Roman ranks of short swords and fell fighting. Claudius Nero cut off his head, hurried back south, and threw the bloody head right in front of the outposts of Hannibal's camp. Gazing at his own brother's face, Hannibal sighed in overwhelming grief: \"Here I see the fate of Carthage.\" This battle extinguished Hannibal's last hope of receiving any reinforcement by land."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 11, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The Battle of the Metaurus is a legendary masterstroke in which Roman commanders, in a desperate situation, showed the highest strategic coordination and bold daring. The consul Claudius Nero ran the immense risk of leaving the southern front exposed and, under Hannibal's very nose, carried out an incredible march of hundreds of miles. This battle not only wiped out Hasdrubal's army and removed the blade hanging over Rome's northern frontier, but with the head thrown into the enemy camp it dealt the overbearing Hannibal the cruelest and most crushing psychological blow. From that moment the whole city of Rome embraced and wept to the ringing of the Senate's bells, and everyone knew that after fourteen years of the nightmare of annihilation, the Republic had at last endured to the dawn of victory!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 11 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "For the soldiers of Carthage, the Metaurus was an utter national tragedy of blood and tears. Hasdrubal crossed the snowy mountains through countless hardships, and the armies of the two brothers were about to unite on the soil of the Apennines, yet through a messenger's failure and the cruel play of fate he died on the riverbank. Looking at the bloody, mangled head of his brother, savagely cut off by the Romans, Hannibal was pierced to the heart. He had lost not only the closest comrade and brother of his life but also Carthage's last chance to win the war. From then on Hannibal was forced to withdraw into the narrow mountains of Bruttium and, like a wounded lion, could only wait in despair for the final collapse of the situation at home."
     }
   ],
   "TextMappings": []

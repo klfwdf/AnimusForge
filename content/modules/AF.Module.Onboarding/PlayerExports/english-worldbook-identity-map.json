@@ -14498,6 +14498,12 @@
         "event_data/EventRecords.json": "event_data/EventRecords.json",
         "kingdom_profiles/KingdomProfiles.json": "kingdom_profiles/KingdomProfiles.json",
         "unnamed_persona/UnnamedNpcProfiles.json": "unnamed_persona/UnnamedNpcProfiles.json",
+        "unnamed_persona/aserai__迦太基商贾与雇佣兵.json": "unnamed_persona/aserai__Carthaginian_Merchants_and_Mercenaries.json",
+        "unnamed_persona/battania__凯尔特狂战士与部族长老.json": "unnamed_persona/battania__Celtic_Warriors_and_Tribal_Elders.json",
+        "unnamed_persona/empire__罗马公民与军团步兵.json": "unnamed_persona/empire__Roman_Citizens_and_Legionaries.json",
+        "unnamed_persona/greek__希腊化城邦公民与学者.json": "unnamed_persona/greek__Hellenistic_Citizens_and_Scholars.json",
+        "unnamed_persona/numidian__努米底亚游牧民与轻骑兵.json": "unnamed_persona/numidian__Numidian_Nomads_and_Light_Cavalry.json",
+        "unnamed_persona/vlandia__伊比利亚剑士与部族猎手.json": "unnamed_persona/vlandia__Iberian_Swordsmen_and_Tribal_Hunters.json",
         "voice_mapping/VoiceMapping.json": "voice_mapping/VoiceMapping.json"
       },
       "heroes": {

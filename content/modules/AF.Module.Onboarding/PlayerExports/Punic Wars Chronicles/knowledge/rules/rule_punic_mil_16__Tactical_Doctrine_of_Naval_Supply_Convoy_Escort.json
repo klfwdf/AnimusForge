@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_mil_16",
-  "Name": "Tactical Doctrine of Naval Supply Convoy Escort",
-  "Keywords": [
-    "rule_punic_mil_16",
-    "Doctrine of Naval Supply Convoy Escort",
-    "Combat Mastery Naval Supply Convoy Escort",
-    "Tactical Formations Naval Supply Convoy Escort"
-  ],
+  "Name": "Mortise-and-Tenon Assembly of Prefabricated Punic Warships and the Mediterranean Shipbuilding Industry",
+  "Category": "military",
+  "Priority": 87,
   "RagShortTexts": [
-    "The tactical doctrine of Naval Supply Convoy Escort governed battlefield formations and..."
+    "Carthage had the most advanced modular shipbuilding industry in the Mediterranean, with every timber beam carved with a numbered mark",
+    "Its shipyards could rapidly assemble dozens of large quinqueremes on a production line within a few dozen days",
+    "Rome captured a stranded Punic warship and copied its assembly marks to found shipyards of its own"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Carthage's ability to maintain its supremacy in the Mediterranean for centuries rested on its highly modern, modular shipbuilding assembly line. On the keel timbers of Punic shipwrecks excavated in Tunisia and at Marsala, archaeologists have found, astonishingly, large numbers of Phoenician letter marks and assembly guide signs carved in advance by craftsmen with chisels. Carthaginian craftsmen prefabricated keels, ribs and hull planks in the inland forests to uniform, standardized specifications, with every timber beam marked with its order of installation and the position of its mortises and tenons. Once these reached the shipsheds of the circular naval harbor, it took only a gathering of skilled carpenters to assemble dozens of excellent quinqueremes on a production line within a few dozen days. Early in the First Punic War, Rome used a stranded and captured Carthaginian warship as its standard model, copied its plank numbering and the geometry of its mortise-and-tenon joints exactly, and within two months miraculously built a great fleet of one hundred ships, breaking the Phoenicians' monopoly on shipbuilding engineering.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The development of Naval Supply Convoy Escort exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+      "Content": "Every cedar beam is carved with secret marks in the ancient letters of Tyre. As long as the slipways of the shipsheds remain, Carthage can send a hundred black-winged warships sliding smoothly into the sea before the tide comes in!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of Naval Supply Convoy Escort became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "We took apart the enemy's warship and understood the symbols the barbarians had carved on its planks. Roman hands can build the finest quinqueremes just as well, and with them we will seize the whole sea!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Mastery of Naval Supply Convoy Escort separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "Assembling great ships from standard prefabricated parts is a marvel of classical engineering. By turning complex geometry into simple letters in a carpenter's hands, the shipbuilding workshops of Carthage led the world."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "steam shipyard",
+    "electric welding of steel plates",
+    "diesel engine",
+    "modern Fordist industrial assembly line"
+  ],
+  "Keywords": [
+    "Punic shipbuilding",
+    "prefabricated warships",
+    "mortise and tenon joints",
+    "Marsala Punic ship",
+    "Roman fleet copied from Carthage"
+  ]
 }

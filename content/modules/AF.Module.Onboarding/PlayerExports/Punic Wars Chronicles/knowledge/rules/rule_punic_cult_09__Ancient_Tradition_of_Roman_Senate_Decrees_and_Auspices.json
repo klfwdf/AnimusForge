@@ -1,42 +1,53 @@
 {
   "Id": "rule_punic_cult_09",
-  "Name": "Ancient Tradition of Roman Senate Decrees and Auspices",
-  "Keywords": [
-    "rule_punic_cult_09",
-    "Sacred Code of Roman Senate Decrees and Auspices",
-    "Civic Rites Roman Senate Decrees and Auspices",
-    "Ancestral Law Roman Senate Decrees and Auspices"
-  ],
+  "Name": "Sea Shipments of Sicilian Durum Wheat and Rome's Wartime Fixed-Price Grain Rations",
+  "Category": "economy",
+  "Priority": 87,
   "RagShortTexts": [
-    "The institutional tradition of Roman Senate Decrees and Auspices defined social hierarchy,..."
+    "Durum wheat from the fertile volcanic plains of Sicily was the lifeline of the Roman state's survival",
+    "In wartime the Po plain and Campania were reduced to scorched earth, and Rome depended entirely on Sicilian shipping fleets for grain",
+    "Dictators and praetors imposed wartime grain price controls, suppressed the black market and guarded against famine riots in the city"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Grain supply was Rome's most fragile weak point in the Second Punic War, deciding its life or death. As Hannibal set fire to vast wheat fields in the Po plain and Campania, agriculture in Italy itself almost failed entirely. The rations of hundreds of thousands of refugees in the city of Rome and of the legions at the front depended almost wholly on the fine, high-gluten 'durum wheat' (Triticum durum) grown around Catania in Sicily and on the slopes of Mount Etna. The Roman governor of Sicily used warships to escort the 'grain fleet' (Classis Frumentaria), made up of hundreds of large, round-hulled grain merchant ships, forcing its way across the Strait of Messina in the face of the blockade and interception of Carthaginian warships. To prevent grain dealers from profiteering from the national crisis, Roman praetors enforced strict wartime price-control and rationing laws, selling flour to the poor at a single low fixed price of four asses per modius, and with the state's credit secured the last line of defense against domestic riots.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The social order of antiquity was rooted in Roman Senate Decrees and Auspices. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+      "Content": "Grain is life! If the Sicilian grain fleet fails to enter the Tiber for even a single day, the starving will smash the gates of Rome. We would rather build ten fewer warships than fail to protect the keels of the grain ships!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "We plow, reap and thresh, filling leather sacks with golden grain, and the Roman governor's tax collectors come with guards and take it all. To feed Rome's legions, the cellars of Sicilian farmers have been emptied."
+    },
+    {
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Without Roman Senate Decrees and Auspices, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "peasant",
-          "villager"
-        ]
-      },
-      "Content": "From childhood our elders taught us to revere Roman Senate Decrees and Auspices. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+      "Content": "If Bomilcar's fleet only cut the Messina channel, the Romans on their seven hills would starve until they traded children to eat. Instead we leave our warships idle in port and watch the enemy's grain ships come ashore every day!"
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "United Nations World Food Programme",
+    "combine harvester",
+    "chemical fertilizers and pesticides",
+    "modern futures exchange"
+  ],
+  "Keywords": [
+    "Sicilian grain",
+    "durum wheat",
+    "Roman grain supply",
+    "grain fleet",
+    "wartime price controls"
+  ]
 }

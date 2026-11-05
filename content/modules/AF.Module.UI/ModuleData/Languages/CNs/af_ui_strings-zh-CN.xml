@@ -3368,9 +3368,9 @@ HeroNPC 人物设定、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Ambient_Enabled" text="启用场景自主互动" />
   <string id="AF_MCM_Ambient_Enabled_Hint" text="你在和平的酒馆、领主大厅、城镇或村庄场景中空闲时，附近的人物（有名有姓或普通 NPC）可能彼此交谈，或走过来和你说话；坐着的人离得够近时会坐在原位说话。每句台词都会调用一次模型。默认关闭。" />
   <string id="AF_MCM_Ambient_IdleSeconds" text="触发自主互动前的玩家空闲时间（秒）" />
-  <string id="AF_MCM_Ambient_IdleSeconds_Hint" text="在这段时间内你没有喊话、对话或打开菜单。默认 20。" />
+  <string id="AF_MCM_Ambient_IdleSeconds_Hint" text="在这段时间内你没有喊话、对话或打开菜单。在你的营地内减半。默认 20。" />
   <string id="AF_MCM_Ambient_Cooldown" text="两次自主互动的间隔（秒）" />
-  <string id="AF_MCM_Ambient_Cooldown_Hint" text="一次自主互动结束后，至少间隔这么久才会开始下一次。默认 120。" />
+  <string id="AF_MCM_Ambient_Cooldown_Hint" text="一次自主互动结束后，至少间隔这么久才会开始下一次。在你的营地内减半。默认 120。" />
   <string id="AF_MCM_Ambient_PairCooldown" text="同一对人物冷却（现实分钟）" />
   <string id="AF_MCM_Ambient_PairCooldown_Hint" text="同样两个人物在这段时间内不会再次自主闲聊。默认 10。" />
   <string id="AF_MCM_Ambient_MaxPerScene" text="每个场景最多自主互动次数" />

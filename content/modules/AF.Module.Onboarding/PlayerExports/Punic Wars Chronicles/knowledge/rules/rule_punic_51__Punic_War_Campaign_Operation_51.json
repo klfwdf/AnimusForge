@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_51",
-  "Name": "Punic War Campaign Operation 51",
-  "Keywords": [
-    "rule_punic_51",
-    "Punic Operation 51",
-    "Strategic Campaign 51",
-    "Mediterranean Theater 51"
+  "Name": "Hampsicora's Great Uprising of the Sardinian Tribes Against Rome",
+  "Description": "In 215 BC Hampsicora, a wealthy merchant and great tribal leader of Sardinia, seized the moment when Rome was mired in the crisis after Cannae, made contact with Carthage and launched an island-wide uprising against Rome's harsh taxes and tyranny, setting the island ablaze with war.",
+  "Tags": [
+    "Sardinian revolt",
+    "Hampsicora",
+    "Cornus",
+    "Resistance to Roman taxes",
+    "Island guerrilla war",
+    "Carthaginian expedition"
   ],
+  "Category": "History",
+  "DefaultPriority": 80,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 51 concerning Mediterranean operations during the Second Punic War."
+    "In 215 BC the Sardinian magnate Hampsicora joined with the native tribes of the whole island in an armed uprising against Rome.",
+    "Exploiting Rome's weakness after the disaster at Cannae, when its forces were stretched thin, he secretly sent envoys to the Carthaginian Senate asking for help.",
+    "The rebels took the broad mountain forests of the interior and cut the grain supply line of the Roman garrison based at the naval harbor of Caralis."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 51 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 51, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 51 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "For twenty years the Roman governors have sucked every grain of wheat out of Sardinia like vampires! After the First Punic War the Romans broke the ceasefire treaty, shamelessly extorted and seized our island, and now their eighty thousand legionaries have all been chopped to pieces by Hannibal at Cannae. The hour of revenge, when the gods show their power, has come at last! Lord Hampsicora raised his arm and called, and the mountain hunters and herdsmen of the whole island all took up their javelins! The Carthaginian warships have already sailed into the open sea, and the Sardinians will never be serfs to the Romans!"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sardinia is Rome's inseparable granary at sea and its southern gateway! Those barbarous islanders have dared, while the Republic faces national disaster, to let the wolf in and secretly deal with Carthage! The Senate has already sent the iron-willed veteran Manlius Torquatus, and the ships of the newly raised legion have already landed! For foreign traitors who dare to rebel, Rome has only one rule: put down the revolt with the sword and kill without mercy!"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sardinia was always territory the Romans extorted and seized from us by taking advantage of our distress after the First Punic War! Hampsicora's uprising is righteous, and the Senate at once sent Hasdrubal the Bald across the strait with sixty warships and more than ten thousand picked troops! If only we recover Sardinia and Corsica, Carthage can turn the Ligurian Sea into a dead sea for Rome and cut every link between the Roman homeland and the Spanish front!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 215 BC, the Sardinian local leader Hampsicora took advantage of Rome's depleted state after the Battle of Cannae to launch an island-wide uprising, and contacted Carthage to send troops in support. The rebels swept through the mountain forests of the Sardinian interior, and the Roman Senate urgently called on the former consul Titus Manlius Torquatus to lead an army of twenty thousand to Sardinia to crush the revolt."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Hampsicora revolt",
+    "Sardinian uprising 215 BC",
+    "Sardinia rebels against Rome",
+    "Carthaginian expedition to Sardinia"
+  ]
 }

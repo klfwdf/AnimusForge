@@ -1,42 +1,109 @@
 {
   "Id": "rule_punic_26",
-  "Name": "Punic War Campaign Operation 26",
-  "Keywords": [
-    "rule_punic_26",
-    "Punic Operation 26",
-    "Strategic Campaign 26",
-    "Mediterranean Theater 26"
+  "Name": "Decisive Battle of Ilipa and the Final End of Carthaginian Power",
+  "Description": "In 206 BC at the Battle of Ilipa, Scipio shattered the seventy-thousand-strong army of Mago and Hasdrubal Gisco with a brilliant change of formation, destroying the enemy's main force with fewer men and ending Carthage's century-long dominion in Iberia.",
+  "Tags": [
+    "Battle of Ilipa",
+    "Scipio Africanus",
+    "Hasdrubal Gisco",
+    "Mago Barca",
+    "Tactical deception",
+    "End of the war in Spain"
   ],
+  "Category": "Military",
+  "DefaultPriority": 90,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 26 concerning Mediterranean operations during the Second Punic War."
+    "In 206 BC at Ilipa, Scipio completely destroyed the Carthaginian main army with a masterful reversal of his usual formation.",
+    "The elite Roman infantry, placed on the wings, drove forward rapidly to encircle and outflank the weak allied wings of the Carthaginians.",
+    "This battle completely ended a full century of Carthaginian military and colonial supremacy in Iberia."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 26 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 95,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 26, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The Battle of Ilipa is a miracle in the history of the art of war! For several mornings in a row General Scipio drew up his army with the Romans in the center and the Spaniards on the flanks, offering battle but not fighting, so that the enemy fell into a fixed expectation. On the morning of the decisive battle the general had his men eat before dawn, then suddenly moved his elite Roman veterans to the wings and held the Spanish allies in the center, advancing behind them! When the hungry enemy came out to form up, the weak Carthaginian wings were crushed by our elites like dry wood, and the war elephants, struck hard, turned back in panic and trampled their own center! Seventy thousand enemies vanished like smoke, and Spain belongs to Rome forever!"
     },
     {
-      "Priority": 1,
+      "Priority": 92,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Heaven has destroyed Carthage! Gisco and Mago had gathered all the seventy thousand foot and horse and thirty-two war elephants that could be scraped together on the peninsula, far outnumbering the Roman army! But that cursed downpour and Scipio's demonic tactics completely threw our ranks into disorder. The soldiers fought back and forth under the blazing sun without having eaten breakfast, and the elephants, under the blows of the Roman javelin men, went completely mad and broke up our own center. Seventy thousand were slaughtered; Gisco fled to Gadir, Mago took ship and sailed south, and the Spanish empire that Hamilcar and the house of Barca had spent decades building turned to nothing on that day!"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 26 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "On the great plain of Ilipa, heaven and earth trembled with the cries of the elephants and the neighing of the horses! Tribal princes such as Allucius led us horsemen to cover the flanks, and we saw with our own eyes the Roman ranks sweep away both wings with terrifying discipline. After that battle no Carthaginian banner was ever seen again on the plains of Spain, but in the heart of every chief there was a trembling: the old master had fled, and a new master of iron and blood had taken the throne!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 206 BC Scipio fought a decisive battle against the combined Carthaginian army at Ilipa in Spain (near modern Seville). On the morning of the battle Scipio suddenly reversed the deployment of his legions, placing the elite Roman legions on the wings and the allies in the center with orders to delay contact, then encircled and routed the entire Carthaginian army with a pincer attack on both wings. This battle marked the final end of Carthaginian rule on the Iberian Peninsula."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Decisive Battle of Ilipa and the End of Carthaginian Power",
+    "Battle of Ilipa",
+    "Scipio's reversed deployment",
+    "Defeat of Hasdrubal Gisco and Mago",
+    "End of Carthaginian Spain"
+  ]
 }

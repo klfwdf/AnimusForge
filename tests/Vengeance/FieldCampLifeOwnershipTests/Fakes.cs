@@ -92,6 +92,7 @@ namespace AnimusForge
         private bool IsSceneConversationHeld(Agent a)=>Conversation;
         private void ReleasePose(CampAgent e){Releases++;e.Training=false;RestoreCampPracticeEquipment(e);e.Agent.Events.Add("release");}
         private void StopCampNavigation(Agent a){Stops++;}
+        private void HoldCampAgentStill(Agent a,Vec2 facing){StopCampNavigation(a);a.SetIsAIPaused(true);}
         private bool TryPrepareCampNavigation(Agent a)=>NavigationAvailable;
         private void RestoreCampAttentionOwner(Agent a){Restores++;}
         private static bool WieldBow(Agent a)=>false;

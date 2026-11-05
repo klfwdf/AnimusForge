@@ -1,42 +1,39 @@
 {
   "Id": "rule_punic_10",
-  "Name": "Scipio's Assault on Carthago Nova",
   "Keywords": [
-    "rule_punic_10",
-    "Assault on Carthago Nova",
-    "Scipio Africanus Iberia",
-    "Tidal Lagoon Crossing",
-    "Neptune Guidance"
+    "Surprise Attack on New Carthage and Scipio's Wading Assault",
+    "Surprise attack on New Carthage",
+    "Scipio Africanus in Spain",
+    "Wading through the ebbing lagoon",
+    "Scipio's continence and the returned bride"
   ],
   "RagShortTexts": [
-    "In 209 BC, Scipio Africanus captured Carthage's Iberian capital by wading through an ebbed..."
+    "In 209 BC the 24-year-old Scipio, having gauged the depth of the lagoon at ebb tide, waded across to take New Carthage by surprise, and won the hearts of the Spanish tribes with his generosity and clemency."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 209 BC, twenty-five-year-old Publius Cornelius Scipio executed a masterstroke by launching a surprise assault on Carthago Nova (Cartagena), the administrative and logistical capital of Punic Iberia. Learning from fishermen that the northern lagoon became shallow at low tide, Scipio led five hundred legionaries wading waist-deep through the water while claiming the god Neptune guided his steps. Scaling the unguarded sea walls, the Romans opened the gates, capturing immense stores of silver, artillery, and highborn hostages."
+      "Content": "In 209 BC Publius Cornelius Scipio (later known as Scipio Africanus), only twenty-four years old, took up command in Spain as proconsul at a moment of crisis and changed the course of the war with an astonishing strategic surprise. Bypassing the three Carthaginian armies scattered across the Iberian interior, he struck like lightning at New Carthage (Cartagena), Carthage's nerve center and main supply depot in Europe. From local fishermen Scipio learned that the shallow lagoon on the north side dropped sharply in the afternoon under the ebb and the sea wind. So while a frontal assault drew the defenders' attention, he personally led five hundred picked men with scaling ladders on foot through the knee-deep lagoon, and climbed the lightly defended northern wall by surprise to take the city. In this one stroke Rome captured the silver war chest Carthage had accumulated over decades, its shipyards, a huge store of siege catapults, and more than three hundred Iberian noble hostages. Presented with a beautiful Celtiberian bride among the hostages, Scipio not only left her untouched but returned her unharmed to her betrothed, Allucius, and gave back the large ransom as a wedding gift. This incomparable gentlemanly clemency and great strategic talent drove powerful tribal chiefs such as Indibilis and Mandonius over to Rome, shattering the foundations of Barcid rule on the peninsula."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "The general told us Neptune had promised to drain the lagoon! We waded through the mud at low tide right under their noses, threw our scaling ladders against the battlements, and took the citadel before they even sounded the horn!"
+      "Content": "In the hearts of Roman citizens, the fall of New Carthage was a miracle that Neptune, god of the sea, revealed to Scipio in person in a dream! After his father and uncle had died in blood in Spain, the young Scipio not only washed away the bitter disgrace of the house of the Cornelii but also conquered the wild tribes of Spain with the highest aristocratic virtue of old Rome (Clementia). Faced with countless gold and silver he was not greedy; faced with a peerless beauty he was not lustful, and he raised the civilized good faith of the Romans to a height that drew the admiration of the gods. From this battle on, the Roman legions not only won back Spain but also proclaimed to the whole Mediterranean: a new god of war of Rome has come!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "In a single week, young Scipio stripped Carthage of its primary naval harbor, its Iberian treasury, and its hostage leverage over native tribes. It was the strategic turning point of the western war."
+      "Content": "The loss of New Carthage was the deadliest disaster Carthage suffered in the Second Punic War. Because the three Carthaginian commanders, Hasdrubal Barca, Mago and Hasdrubal Gisco, distrusted one another and divided their forces too widely, this capital fortress, which held the treasury of the whole European empire, all the reserves of military pay, the finest workshops and the most important tribal hostages, was cleverly taken in only a few days by the young Scipio wading through the water. The loss of New Carthage not only caused the Iberian tribes to defect and rebel swiftly, but also completely cut the sea routes and silver supply that Hannibal urgently needed in Italy, reducing Carthage's more than ten years of glorious expansion in Europe to nothing."
     }
   ],
   "TextMappings": []

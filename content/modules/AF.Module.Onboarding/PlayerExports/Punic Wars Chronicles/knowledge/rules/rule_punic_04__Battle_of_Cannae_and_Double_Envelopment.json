@@ -1,42 +1,40 @@
 {
   "Id": "rule_punic_04",
-  "Name": "Battle of Cannae and Double Envelopment",
   "Keywords": [
-    "rule_punic_04",
+    "Double Envelopment at Cannae and the Roman Death Oath",
     "Battle of Cannae",
-    "Cannae Double Envelopment",
-    "Barcid Crescent Formation",
-    "Consul Paullus Martyrdom"
+    "Double envelopment tactics",
+    "Destruction of eighty thousand Roman legionaries",
+    "Death of the consul Paullus",
+    "Young Scipio's oath at sword point"
   ],
   "RagShortTexts": [
-    "At Cannae (216 BC), Hannibal enveloped and destroyed eighty thousand Romans in the greatest..."
+    "At the Battle of Cannae in 216 BC, Hannibal with fifty thousand men executed the classic double envelopment, encircling and annihilating nearly eighty thousand men of the main Roman army."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "On August 2, 216 BC, on the dust-choked plain of Cannae beside the Aufidus River, Hannibal executed the quintessential double envelopment. Placing his weaker Celtic and Iberian infantry in an outward convex crescent while holding veteran African heavy infantry in reserve on the flanks, Hannibal allowed his center to slowly yield under consular pressure. As the Roman mass pushed forward into a concave trap, Hasdrubal's heavy cavalry routed the Roman wings and slammed into the rear, annihilating over 70,000 Romans including Consul Paullus."
+      "Content": "On 2 August 216 BC the most famous battle of encirclement and annihilation in ancient military history was fought on the plain of Cannae. Rome had assembled an army of eight full-strength legions, larger than any since the city's founding (more than eighty-six thousand men), commanded by the consuls Varro and Paullus. Hannibal met it skillfully with fifty thousand men: he arranged his weaker Gallic and Spanish infantry in an outward-bulging \"crescent center\" as bait, concealed his elite Libyan heavy infantry on both wings, and deployed heavy cavalry and Numidian light cavalry on the flanks. Once battle was joined, the Gallic center, taking the full force of the attack, fell back in a planned fighting withdrawal, so that the bulge flattened and sank into an inward-facing crescent. The Roman army surged and crowded into the gap, the Libyan elites on both sides closed like great iron gates and pinned the flanks, and the Carthaginian cavalry, having swept the enemy wings away, completed the encirclement from the rear. Crushed together, nearly eighty thousand Roman legionaries were slaughtered within the narrow ring; the consul Paullus, eighty senators and more than twenty thousand equites fell. In this desperate hour the twenty-year-old young Scipio, in the camp of the survivors, drew his sword and raised it to the sky, forcing every officer to swear never to abandon Rome, and so stemmed the tide of collapse."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "We were squeezed so tight we couldn't even draw our shortswords! Dust blinded our eyes, and from every side came the whistling javelins and slashing Iberian blades. It wasn't a battle; it was a slaughterhouse."
+      "Content": "Cannae is a day that bleeds forever for Rome. Every household put on mourning, and the Senate even ordered for a time that women not weep in public for more than thirty days. Faced with catastrophe, the Romans fell into extreme panic, and following the instructions of the Sibylline Books the Senate, in a very rare rite, buried alive a Gallic man and woman and a Greek man and woman in the Forum Boarium to appease the wrath of the gods. Yet Rome was not broken! The Senate flatly refused to receive the envoys of the prisoners whom Hannibal sent to ask for ransom, declared that slaves and criminals would be pardoned and enlisted, and even enrolled boys of sixteen in new legions. The whole city held fast to one conviction: Rome could be gravely wounded, but it would never make peace, never kneel to Hannibal, and would fight to the last man!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "Seventy thousand citizens, eighty senators, and Consul Paullus fallen in a single afternoon. Rome's martial aristocracy was decimated, yet in that darkest hour the Republic resolved to die rather than surrender."
+      "Content": "The Battle of Cannae is the unsurpassable crown of Hannibal's military career. Defeating a superior force, and on an entirely flat and open plain carrying out a perfect double envelopment and destruction of a regular army nearly twice his own size, is a miracle unmatched in military history! After the battle, the solid gold signet rings stripped from the fingers of fallen Roman senators and noble equites filled three great measures. Yet after the victory, because he lacked heavy siege engines and his elite troops were exhausted, Hannibal did not adopt the bold proposal of his cavalry commander Maharbal to march at once on Rome. This gave the Roman Senate a chance to catch its breath and regroup, and it became a historical regret over which countless Carthaginian soldiers would later sigh in sorrow."
     }
   ],
   "TextMappings": []

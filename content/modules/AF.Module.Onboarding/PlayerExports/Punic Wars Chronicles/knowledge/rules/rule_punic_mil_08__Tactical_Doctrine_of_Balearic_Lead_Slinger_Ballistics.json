@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_mil_08",
-  "Name": "Tactical Doctrine of Balearic Lead Slinger Ballistics",
-  "Keywords": [
-    "rule_punic_mil_08",
-    "Doctrine of Balearic Lead Slinger Ballistics",
-    "Combat Mastery Balearic Lead Slinger Ballistics",
-    "Tactical Formations Balearic Lead Slinger Ballistics"
-  ],
+  "Name": "Carthaginian Mercenary Contracts, Sacred Oaths and the System of Combined Arms",
+  "Category": "military",
+  "Priority": 88,
   "RagShortTexts": [
-    "The tactical doctrine of Balearic Lead Slinger Ballistics governed battlefield formations..."
+    "Carthage recruited elite mercenaries of many different Mediterranean peoples through commercial contracts and temple oaths",
+    "Libyan phalanx spears, Iberian heavy short swords, Gallic berserkers and Balearic slingers",
+    "The Barcid family relied on the extraordinary personal charisma of its commanders to fuse these diverse foreign peoples into one"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The Carthaginian army was in essence a diverse, multi-arm coalition bound together by commercial mercenary contracts and forged from the elite of the whole Mediterranean. Its battle order was extremely complex and complementary: the core line was formed by Libyan and Punic heavy infantry in iron armor, leveling five-meter sarissa pikes; the shock center consisted of ferocious Gallic and Celtic mercenaries swinging heavy swords bare-chested; the mobile cutting edge was the Iberian veterans armed with leaf-shaped short swords and javelins; the forward screen relied on deadly Balearic slingers and Gallic archers; and the decisive blows on the wings depended on the wind-swift Numidian light cavalry and Spanish heavy cavalry in breastplates. The soldiers of these peoples did not share a language and had very different customs, and only their oaths sworn through sacred priests to their own gods, together with the extraordinary personal prestige of Hannibal himself, who shared their hardships and won battle after battle, held them together with astonishing cohesion.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The development of Balearic Lead Slinger Ballistics exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+      "Content": "Only a Barcid commander could smelt the lone courage of ten peoples into a divine sword that cuts iron like mud! Every arm of the army is an indispensable weapon on the game board."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of Balearic Lead Slinger Ballistics became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "We do not care about the Carthaginian council, but we will follow Hannibal to the death! He eats the same black bread as we do and sleeps on the same grass, and his banner is our creed!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Mastery of Balearic Lead Slinger Ballistics separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "A motley crowd of greedy barbarians thrown together by money. Cut off the source of their treasury and shatter their legend, and this patched-together rabble will surely fall apart."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Swiss mercenary regiments",
+    "modern Foreign Legion organization",
+    "musket square",
+    "international labor law"
+  ],
+  "Keywords": [
+    "Carthaginian mercenaries",
+    "Hannibal's army composition",
+    "combined arms",
+    "mercenary oaths",
+    "Libyan infantry"
+  ]
 }

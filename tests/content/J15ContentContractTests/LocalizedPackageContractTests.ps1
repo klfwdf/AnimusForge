@@ -34,6 +34,9 @@ foreach ($name in @('Get-FullPathSafe', 'Parse-Version', 'Get-VersionedSubModule
 }
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+function Get-FileSha256([string]$LiteralPath) {
+    return (Get-FileHash -LiteralPath $LiteralPath -Algorithm SHA256).Hash
+}
 $root = Join-Path $RunRoot 'project'
 $stage = Join-Path $root 'stage/AnimusForge'
 $han = -join ([char[]](0x4e2d, 0x6587))
@@ -202,7 +205,7 @@ $writer = (Get-Command Write-AnimusForgeProjectedZip).ScriptBlock
 function Assert-AnimusForgeCleanStage { param($ProjectRoot, $StageModuleDir, [switch]$RequireCurrentArtifacts) }
 function Assert-AnimusForgeEnglishRuntimeSource { param($ProjectRoot) }
 function Assert-AnimusForgeEnglishRuntimeDll { param($DllPath) }
-function Assert-ZipLayout { param($ZipPath, $ExpectedVersion, $CustomPromptsMustBeAbsent) }
+function Assert-ZipLayout { param($ZipPath, $PayloadDirectory, $ExpectedVersion, $CustomPromptsMustBeAbsent) }
 function Get-AnimusForgePackageProjection {
     param($ProjectRoot, $StageModuleDir, $Language, $PackageVersion)
     if ($Language -eq 'CN') { return $cn } else { return $en }
@@ -212,6 +215,12 @@ function Write-AnimusForgeProjectedZip {
     param($ZipPath, $Projection)
     if ($script:failEnglish -and $ZipPath.Contains('.EN.')) { throw 'injected second archive failure' }
     & $writer -ZipPath $ZipPath -Projection $Projection
+}
+# Production packages always carry a selected bekko payload. Keep transaction
+# tests small and independent from the repository's real model.
+$OnnxModelDir = Join-Path $RunRoot 'bekko-fixture'
+foreach ($name in @('model.onnx', 'tokenizer.json', 'config.json')) {
+    FixtureText (Join-Path $OnnxModelDir $name) 'tiny model fixture'
 }
 $OutputDir = Join-Path $RunRoot 'transaction-success'
 $PackageLabel = ''
@@ -243,4 +252,27 @@ $OutputDir = Join-Path $RunRoot 'transaction-failure'
 $script:failEnglish = $true
 Reject { Write-ZipFromModule -ModulePath $stage -PackageVersion v1.5.6 -ProjectRoot $root -AutoDetected $false } 'Failure writing EN must reject the pair.' 'injected second archive failure'
 Check ((Get-ChildItem -LiteralPath $OutputDir -File -Force).Count -eq 0) 'Second archive failure must clean up both candidates.'
-Write-Output "PASS localized ZIP projection checks=$checks; source/Stage preserved; missing/escaped/runtime Chinese rejected; no product build"
+. (Join-Path $ProjectRoot 'scripts/build/package_sevenzip.ps1')
+$sevenWriter = (Get-Command Write-AnimusForgeProjectedSevenZip).ScriptBlock
+function Write-AnimusForgeProjectedZip { throw 'ZIP writer must not run in direct 7z mode.' }
+function Assert-AnimusForgeProjectedZip { throw 'ZIP validation must not run in direct 7z mode.' }
+function Write-AnimusForgeProjectedSevenZip {
+    param($ArchivePath, $Projection, $ValidatePayload)
+    if ($script:failEnglish -and $ArchivePath.Contains('.EN.')) { throw 'injected direct second archive failure' }
+    & $sevenWriter -ArchivePath $ArchivePath -Projection $Projection -ValidatePayload $ValidatePayload
+}
+$ArchiveFormat = '7z'
+$script:failEnglish = $false
+$OutputDir = Join-Path $RunRoot 'direct-transaction-success'
+$direct = @(Write-ZipFromModule -ModulePath $stage -PackageVersion v1.5.6 -ProjectRoot $root -AutoDetected $false)
+Check ($direct.Count -eq 2 -and $direct[0].EndsWith('_CN_1007_0802.7z') -and $direct[1].EndsWith('_EN_1007_0802.7z')) 'Default direct flow publishes a canonical 7z pair without calling ZIP helpers.'
+Check (@(Get-ChildItem -LiteralPath $OutputDir -File -Force).Count -eq 2) 'Direct success leaves only its two final archives.'
+$directHashes = @((Get-FileHash $direct[0]).Hash, (Get-FileHash $direct[1]).Hash)
+$directAgain = @(Write-ZipFromModule -ModulePath $stage -PackageVersion v1.5.6 -ProjectRoot $root -AutoDetected $false)
+Check ($directAgain[0].EndsWith('_CN_1007_0802_1.7z') -and $directAgain[1].EndsWith('_EN_1007_0802_1.7z')) 'Direct pair shares the next collision suffix.'
+Check ((Get-FileHash $direct[0]).Hash -ceq $directHashes[0] -and (Get-FileHash $direct[1]).Hash -ceq $directHashes[1]) 'Direct collision preserves old archives.'
+$OutputDir = Join-Path $RunRoot 'direct-transaction-failure'
+$script:failEnglish = $true
+Reject { Write-ZipFromModule -ModulePath $stage -PackageVersion v1.5.6 -ProjectRoot $root -AutoDetected $false } 'Direct second-language failure rejects the pair.' 'injected direct second archive failure'
+Check (@(Get-ChildItem -LiteralPath $OutputDir -File -Force).Count -eq 0) 'Direct second-language failure cleans both temporary archives.'
+Write-Output "PASS localized ZIP and direct-7Z projection checks=$checks; source/Stage preserved; missing/escaped/runtime Chinese rejected; no product build"

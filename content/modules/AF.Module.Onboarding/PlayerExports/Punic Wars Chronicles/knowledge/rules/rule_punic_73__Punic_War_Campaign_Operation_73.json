@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_73",
-  "Name": "Punic War Campaign Operation 73",
-  "Keywords": [
-    "rule_punic_73",
-    "Punic Operation 73",
-    "Strategic Campaign 73",
-    "Mediterranean Theater 73"
-  ],
+  "Name": "Greeks and Gauls Buried Alive in the Forum Boarium to Appease the Wrath of the Gods",
+  "Category": "culture",
+  "Priority": 88,
   "RagShortTexts": [
-    "Strategic campaign doctrine 73 concerning Mediterranean operations during the Second Punic War."
+    "In 216 BC, after the disaster at Cannae, the Roman Senate had the Sibylline Books consulted",
+    "A Gallic man and woman and a Greek man and woman were buried alive in an underground stone chamber in the Forum Boarium",
+    "An extremely rare human sacrifice was offered to appease the raging gods in exchange for the survival of the city"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In 216 BC, after the disaster at Cannae, the whole city of Rome fell into a panic of impending doom. On the Senate's orders, the college of ten priests consulted the sacred Sibylline Books and concluded that the gods were sending down their punishment and that the city must perform an ancient and harsh sacrifice of atonement. Beneath the Forum Boarium, workmen hastily cut out a windowless stone chamber. The consuls and the priestly college led a Gallic man and woman and a Greek man and woman, richly dressed, down into the pit, sealed it with stone slabs and buried them alive, with a little food and water, as an offering to the gods of the underworld and the Earth Mother. This extremely rare human sacrifice, contrary to Rome's everyday law, showed the frenzy and resolve with which Rome, at the brink of destruction, would pay any price to beg the gods for forgiveness.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "This was a holy rite of the darkest hour, done because there was no other way. When eighty thousand citizens lay in their own blood, only by offering foreign victims to the gods of the underworld, as the Sibylline oracle commanded, could the great wrath of Jupiter be appeased."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 73 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "The Romans usually boast of their civilization and rule of law, yet the moment disaster strikes, they bury innocent Greek commoners alive beneath a market. Their savage, bloodthirsty nature is laid bare!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 73, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 73 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The Romans accuse us of worshiping Baal, yet they themselves bury foreign men and women alive beneath their forum. Fear has torn off their hypocritical mask."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Inca human sacrifice",
+    "Black magic",
+    "Medieval witchcraft",
+    "Modern cult"
+  ],
+  "Keywords": [
+    "Forum Boarium",
+    "human sacrifice",
+    "buried alive",
+    "Sibylline Books",
+    "216 BC",
+    "after Cannae",
+    "Gauls and Greeks",
+    "Roman religion"
+  ]
 }

@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_mil_13",
-  "Name": "Tactical Doctrine of Roman Castrametation Standards",
-  "Keywords": [
-    "rule_punic_mil_13",
-    "Doctrine of Roman Castrametation Standards",
-    "Combat Mastery Roman Castrametation Standards",
-    "Tactical Formations Roman Castrametation Standards"
-  ],
+  "Name": "The Roman Census of Property Classes and the Line of Citizen Eligibility for Military Service",
+  "Category": "military",
+  "Priority": 86,
   "RagShortTexts": [
-    "The tactical doctrine of Roman Castrametation Standards governed battlefield formations and..."
+    "The Roman Servian military system divided citizens by movable and immovable property into five strict classes for the levy",
+    "Only free citizens with qualifying property had the right to enlist and fight in armor they provided themselves",
+    "Propertyless poor were originally excluded from the regular army, but after the catastrophe of Cannae the threshold was forced far lower"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The traditional citizen military service system of the Roman Republic was rooted in the property census of the centuries (Census) laid down by the Servian constitution. Every five years the censors assessed the wealth of all citizens and strictly divided them into five great classes: the wealthy of the first class served as heavy cavalry and as the best-armored infantry; the second to fourth classes supplied their own swords and shields, spears, mail and breastplates according to their property; and the fifth class served as slingers and skirmishers. Those whose property fell below the minimum threshold (four thousand asses), the propertyless (Proletarii, meaning those who could contribute only their offspring to the state), were traditionally forbidden to serve, because the Senate firmly believed that only citizens who owned land and lasting property in the city would fight to the death on the battlefield to defend their homes. However, the unprecedented loss of manpower in the Second Punic War forced the Senate to lower the property threshold several times, not only enlisting the poor but also setting the epoch-making precedent of the state buying slaves at public expense to serve as soldiers.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The development of Roman Castrametation Standards exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+      "Content": "We fight for our farmland, our wives and children and our ancestors' graves! The heavy bronze armor we provide ourselves is the symbol of a citizen's dignity; we are not base mercenaries who care only for silver!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of Roman Castrametation Standards became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "They used to look down on us empty-handed poor men, but now that the young noblemen have all died at Cannae, the Senate has finally remembered to put short swords in our hands!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Mastery of Roman Castrametation Standards separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "Rome's system of recruitment is a terrifying giant beast. Even after using up the wealth of five generations of landowners, they can still arm the drifters of the streets into new legions and send them to the front in an endless stream."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Napoleonic universal conscription",
+    "modern social security system",
+    "dictatorship of the proletariat",
+    "personal income tax law"
+  ],
+  "Keywords": [
+    "Roman census",
+    "Servian classes",
+    "proletarii",
+    "property qualification for service",
+    "volones slave soldiers"
+  ]
 }

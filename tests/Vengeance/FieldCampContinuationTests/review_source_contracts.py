@@ -151,8 +151,14 @@ class CampReviewSourceContracts(unittest.TestCase):
         self.assertIn("stayInsideCamp: true", route)
         self.assertNotIn("HasCeremonyWalkPath", route)
         stroll = block(self.life, "private bool TryNearbyStroll(")
-        self.assertLess(stroll.index("for (int i = 0; i < 6; i++)"), stroll.index("int count = _layout.WanderSlots.Count;"))
+        self.assertLess(stroll.index("for (int i = 0; i < 6; i++)"), stroll.index("int[] near = NearWanderSlotsFor(entry);"))
         self.assertIn("_campRouteBudget--", stroll)
+        near = block(self.life, "private int[] NearWanderSlotsFor(")
+        self.assertIn("entry.NearWanderSlots = result;", near)
+        self.assertIn("if (_campWanderWorld == null)", near)
+        refresh = block(self.life, "private void Refresh(")
+        self.assertIn("CountStrollFailure(_strollStage);", refresh)
+        self.assertIn("RandomFloatRanged(8f, 15f)", refresh)
 
     def test_training_uses_placed_entity_not_idle_archer_clip(self):
         training = read(CAMP / "FieldCampMissionLogic.Training.cs")

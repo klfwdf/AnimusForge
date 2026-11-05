@@ -1,42 +1,51 @@
 {
   "Id": "rule_punic_city_10",
-  "Name": "Metropolis of Utica Phoenician Port",
-  "Keywords": [
-    "rule_punic_city_10",
-    "Urban Center Utica Phoenician Port",
-    "Citadel of Utica Phoenician Port",
-    "Harbor of Utica Phoenician Port"
-  ],
+  "Name": "Massalia, Hub of the Gallic Alliance: The Greek Colonial Emporium at the Mouth of the Rhone",
+  "Category": "geography",
+  "Priority": 85,
   "RagShortTexts": [
-    "The fortified urban center of Utica Phoenician Port served as a vital strategic, naval, and..."
+    "Massalia is an independent merchant oligarchy founded by Phocaean Greeks in southern Gaul",
+    "It guards the shipping corridor at the mouth of the Rhone and is Rome's oldest and most loyal maritime ally",
+    "It gave the army of the consul Publius Cornelius Scipio forward intelligence in Gaul and watched Hannibal's river crossing"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Massalia (town_rome_massalia, modern Marseille) was founded around 600 BC by Greek refugees from Phocaea in Asia Minor, and it is the most famous Greek city-state of learning, shipbuilding and trade in the western Mediterranean. The city is built around a fine natural bay embraced on three sides by steep headlands, and it guards the inland Gallic river and land trade routes at the mouth of the Rhone, monopolizing the onward shipment of Gallic tin, amber and wine. As a close friend bound to Rome by a blood alliance from Rome's earliest days, Massalia's oligarchic council of six hundred firmly pursued a pro-Roman course. In 218 BC, when Hannibal led his army over the Pyrenees, it was Massalia's patrolling light cavalry and scouts who first brought the consul Publius Cornelius Scipio the secret intelligence that Hannibal was forcing a crossing of the Rhone, and throughout the war the city remained Rome's steadfast eyes and ears and naval base in the west.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Utica Phoenician Port represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+      "Content": "We lit the light of Athena's wisdom on this wild Gallic headland. Our alliance with Rome has kept us standing for centuries, and every merchant ship at the mouth of the Rhone guards our independence."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Behind the stone towers of Utica Phoenician Port, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+      "Content": "Massalia is Rome's most loyal friend in foreign lands. Without the warnings of Massalia's sailors and scouts, General Publius Cornelius Scipio could never have seen through the barbarian Hannibal's river-crossing ruse."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Possession of Utica Phoenician Port anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "The Greek merchants build high walls on the bay to count their gold, and they have brought the Roman robbers into the hunting grounds of the Gauls. One day the Celtic war axe will split their ivory abacus."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "La Marseillaise",
+    "French Revolution",
+    "steam liner",
+    "modern port of Marseille"
+  ],
+  "Keywords": [
+    "Massalia",
+    "Marseille",
+    "mouth of the Rhone",
+    "Phocaean Greek colony"
+  ]
 }

@@ -1,42 +1,106 @@
 {
   "Id": "rule_punic_40",
-  "Name": "Punic War Campaign Operation 40",
-  "Keywords": [
-    "rule_punic_40",
-    "Punic Operation 40",
-    "Strategic Campaign 40",
-    "Mediterranean Theater 40"
+  "Name": "Nero's Long Forced March to the Metaurus and the Beheading of Hasdrubal",
+  "Description": "In 207 BC, the consul Claudius Nero secretly slipped away from his southern command and marched north day and night. Together with the northern consul he enveloped the army of Hasdrubal Barca on the Metaurus, killed Hasdrubal and threw his head into Hannibal's camp, deciding the final course of the Punic War.",
+  "Tags": [
+    "Battle of the Metaurus",
+    "Claudius Nero",
+    "Death of Hasdrubal",
+    "Forced march of hundreds of miles",
+    "Top-secret intelligence",
+    "Turning point of the war"
   ],
+  "Category": "Military",
+  "DefaultPriority": 90,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 40 concerning Mediterranean operations during the Second Punic War."
+    "At the Battle of the Metaurus in 207 BC, the consul Nero made a long forced march, struck by surprise and killed Hasdrubal.",
+    "After intercepting Hasdrubal's secret letter to Hannibal, Nero deceived the enemy and hurried north with only picked troops to close the trap.",
+    "Hasdrubal's severed head was thrown into Hannibal's camp, marking the final end of Carthage's hopes of victory."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 40 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Priority": 95,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Battle of the Metaurus is the crowning masterpiece of a Roman commander's genius for decision! The consul Nero intercepted Hasdrubal's messengers, left his camp standing under Hannibal's very nose to pin the enemy in place, and personally led seven thousand picked men at a gallop over hundreds of miles, marching day and night! In the Metaurus valley, Nero swung around from behind the cliffs on the right wing, where no breakthrough was possible, and smashed into Hasdrubal's back like a thunderbolt! Hasdrubal spurred his horse into the Roman ranks and died fighting, and Nero carried his head back south and hurled it straight into Hannibal's camp! Gazing at his own brother's head, Hannibal sighed deeply: 'Here I see the fate of Carthage!'"
     },
     {
-      "Priority": 1,
+      "Priority": 92,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This was fate's cruelest mockery of the house of Barca! Hasdrubal had endured every hardship to cross the snowy mountains from Spain, and had he only joined forces with Hannibal's main army, Rome would surely have perished! Curse it, the messengers lost their way and were captured, and worse still came Nero's madman's forced march over such a distance! On the Metaurus, when Hasdrubal heard the trumpets on the other side sound twice and saw that the Roman legions carried the insignia of two consuls, he knew all was lost. He did not flee to save his life but spurred his horse into the thicket of Roman short swords and died fighting for his country. The last savior of the Barcids had fallen, and the flames of war in Italy could never again be carried to Rome!"
+    },
+    {
+      "Priority": 78,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "soldier",
-          "warrior"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 40, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "That morning, a sentry in front of Hannibal's camp picked up a sackcloth bundle thrown down from horseback. When he untied it, what rolled out was a mangled, bloody head: that of Hasdrubal, the very brother who had held Spain for ten years! Hannibal sat in his tent holding that head for a whole day and night without saying a word. From then on the army never launched another real offensive, and only drew back in silence into the mountain corner at the southern tip of Italy."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 40 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In 207 BC, after intercepting the secret letter in which Hasdrubal Barca sought to join his brother Hannibal, the consul Gaius Claudius Nero took the risk of leaving the southern front with seven thousand picked men and marching north to join the consul Salinator on the Metaurus. In the battle, Nero carried out a tactical move around the enemy's flank and struck from behind, utterly destroying the Carthaginian relief army; Hasdrubal was killed. The battle ended once and for all Hannibal's chance of receiving organized reinforcements in Italy from outside his home base, and it became the decisive turning point of the war."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battle of the Metaurus",
+    "Metaurus 207 BC",
+    "Claudius Nero forced march",
+    "Hasdrubal Barca head thrown into camp"
+  ]
 }

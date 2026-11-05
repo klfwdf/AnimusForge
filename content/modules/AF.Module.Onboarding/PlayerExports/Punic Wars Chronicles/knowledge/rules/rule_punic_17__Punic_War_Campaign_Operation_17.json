@@ -1,41 +1,41 @@
 {
   "Id": "rule_punic_17",
-  "Name": "Punic War Campaign Operation 17",
   "Keywords": [
-    "rule_punic_17",
-    "Punic Operation 17",
-    "Strategic Campaign 17",
-    "Mediterranean Theater 17"
+    "Three-Line Manipular Formation of the Roman Legion and the Hastati",
+    "Three-line manipular formation",
+    "Hastati, the young soldiers",
+    "Triarii, the veterans",
+    "Armor-piercing heavy javelin",
+    "Spanish-pattern short sword",
+    "It has come to the triarii"
   ],
   "RagShortTexts": [
-    "Strategic campaign doctrine 17 concerning Mediterranean operations during the Second Punic War."
+    "The legions of the Roman Republic used a checkerboard three-line manipular formation and, relying on the heavy javelin and the Spanish short sword, built a highly mobile and unbreakable infantry battle line."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 17 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "By the time of the Second Punic War the Roman legion had established the \"three-line manipular formation\" (Manipular Legion) famous throughout the classical age. A standard regular legion consisted of four thousand two hundred citizen infantry, divided by age, equipment and experience into four tactical echelons. In front were the swift, lightly equipped javelin skirmishers wearing wolfskin caps, the \"velites\" (Velites). The first line was made up of hot-blooded young citizens, the \"hastati\" (Hastati, the young soldiers). The second line held the \"principes\" (Principes, men in their prime), strong mature men equipped with fine mail armor. The third line consisted of the most experienced, battle-hardened elite, crouching in reserve with heavy long spears, the \"triarii\" (Triarii, the veterans). When battle began, the hastati first hurled two deadly \"armor-piercing heavy javelins\" (Pilum), whose long, thin, untempered iron shanks bent on striking an enemy shield so that it could not be pulled out and the shield had to be thrown away. Then they drew the razor-sharp \"Spanish short sword\" (Gladius Hispaniensis) and closed to stab in hand-to-hand fighting under cover of the broad, curved, oblong wooden shield (Scutum). If the line faltered, the front maniples could withdraw in good order through the gaps left by the checkerboard arrangement (Quincunx) to behind the second line. When the Romans, in desperate straits, sent in the last line of veterans, the famous proverb was born: \"It has come to the triarii\" (Ad triarios redisse), the symbol of the Roman legion's final, last-ditch killing formation."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 17, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "In the marrow of every Roman citizen soldier, the three lines of maniples are an invincible order of steel! The cumbersome Macedonian pike phalanx falls apart the moment it meets uneven ground; the undisciplined Gallic barbarians are exhausted after a few wild charges. Only the Roman legion, at the steady commands of its centurions, can flow like quicksilver, covering one another in turn and re-forming its killing ranks over and over. From the heavy javelin volleys of the hastati to the last stand of the triarii with their long spears, every century is like an unbreakable anvil, and any arrogant foreigner who dares to crash head-on into this shield wall will in the end fall to the cold, merciless thrust of the Spanish short sword!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "hellenic"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 17 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In the eyes of Greek military scholars and drill masters of the Macedonian phalanx, the three-line Roman legion displays an astonishing tactical flexibility. The traditional Greek phalanx is uniform and orderly, but disaster follows once a flank is exposed or a gap opens in the ranks. The Romans, by contrast, cut their army into small maniples like independent pieces on a game board, advancing and retreating at will, and can even, at the height of battle, calmly replace their tired first-line fighters, as easily as closing the fingers of a hand. This tactical system, which completely erases individual frenzy and fuses thousands upon thousands of ordinary men into a moving, meat-grinding fortress, is the cold blade with which Rome gradually brought the classical heroic age of the Hellenistic world to an end."
     }
   ],
   "TextMappings": []

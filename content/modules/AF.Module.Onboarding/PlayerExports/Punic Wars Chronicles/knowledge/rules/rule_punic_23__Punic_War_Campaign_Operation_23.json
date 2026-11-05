@@ -1,42 +1,111 @@
 {
   "Id": "rule_punic_23",
-  "Name": "Punic War Campaign Operation 23",
-  "Keywords": [
-    "rule_punic_23",
-    "Punic Operation 23",
-    "Strategic Campaign 23",
-    "Mediterranean Theater 23"
+  "Name": "Battle of the Upper Baetis and the Heroic Deaths of the Two Scipios",
+  "Description": "In 211 BC three Carthaginian armies, aided by the defection of allied Celtiberian mercenaries, routed the divided Roman forces near Ilorci and Castulo; the elder Scipio brothers were both killed, and Rome's line in Spain nearly collapsed.",
+  "Tags": [
+    "Battle of the Upper Baetis",
+    "Death of the elder Scipio",
+    "Death of Gnaeus",
+    "Celtiberian betrayal",
+    "Masinissa's cavalry",
+    "Roman crisis"
   ],
+  "Category": "Military",
+  "DefaultPriority": 85,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 23 concerning Mediterranean operations during the Second Punic War."
+    "At the Battle of the Upper Baetis in 211 BC the Romans Publius and Gnaeus Scipio were both killed.",
+    "The defection of twenty thousand Celtiberian mercenaries in the middle of the campaign left the main Roman forces surrounded by three armies.",
+    "The young Masinissa led Numidian light cavalry in a deadly pursuit of the Roman infantry in this battle."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 23 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 23, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "This is the darkest, most tragic day of Rome in Spain! The proconsul Publius and the general Gnaeus fought hard on the peninsula for seven years and won many brilliant victories, only to be shamelessly betrayed by twenty thousand Celtiberian mercenaries who had taken Carthaginian gold! Publius, leading from the front, fell pierced by a spear, and a few days later Gnaeus, trapped on a barren hill of scattered rocks, fought until his strength gave out and died. But the blood of the Scipios will never be shed in vain: the young Scipio will surely march over the scorched ground of his fallen elders and wash away this blood feud with his sword!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This was the flawless strategic coordination of our three commanders, Hasdrubal Barca, Mago and Gisco! We precisely exploited the Romans' fatal mistake of dividing their forces to hunt us down, turned the greedy mercenaries with several thousand talents of gold, and added the lightning-fast, deadly flank attack of Prince Masinissa's Numidian cavalry, utterly destroying the Scipio brothers who had run rampant in Spain for seven years! Had that lowly centurion Marcius not gathered the remnants and held out to the death, the Romans would long since have vanished from the peninsula!"
+    },
+    {
+      "Priority": 82,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "numidian"
+        ],
+        "KingdomIds": [
+          "massylii"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 23 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The wild plain beside the upper Baetis was the hunting ground where we Massylian light horsemen showed our full might! The young Prince Masinissa led us whirling and cutting through like a gale, and as the Roman infantry hurriedly changed formation we loosed a storm of javelins; the great Roman general Publius fell surrounded by our horsemen. It was a glorious victory, although no one imagined that a few years later fate would lead us into an entirely different camp."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 211 BC the three Carthaginian commanders Hasdrubal Barca, Mago Barca and Hasdrubal Gisco surrounded the Roman legions, which had divided and pushed deep, in the valley of the upper Baetis. After twenty thousand Celtiberian mercenaries took bribes and left the battlefield, the Roman commanders Publius Scipio and Gnaeus Scipio were killed one after the other, and almost all of Rome's occupied territory in Spain was lost."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battle of the Upper Baetis and the Deaths of the Two Scipios",
+    "Battle of the Upper Baetis",
+    "Deaths of Publius and Gnaeus Scipio",
+    "Celtiberian mercenary betrayal",
+    "Masinissa's Numidian cavalry"
+  ]
 }

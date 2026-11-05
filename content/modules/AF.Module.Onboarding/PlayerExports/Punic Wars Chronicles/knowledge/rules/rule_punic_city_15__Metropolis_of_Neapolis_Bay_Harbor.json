@@ -1,42 +1,50 @@
 {
   "Id": "rule_punic_city_15",
-  "Name": "Metropolis of Neapolis Bay Harbor",
-  "Keywords": [
-    "rule_punic_city_15",
-    "Urban Center Neapolis Bay Harbor",
-    "Citadel of Neapolis Bay Harbor",
-    "Harbor of Neapolis Bay Harbor"
-  ],
+  "Name": "Zama, Granary and Strategic Fortress of North Africa: The Inland Hub",
+  "Category": "geography",
+  "Priority": 86,
   "RagShortTexts": [
-    "The fortified urban center of Neapolis Bay Harbor served as a vital strategic, naval, and..."
+    "The fortress of Zama guards the border between the great inland granary plain southwest of Carthage and the nomad frontier",
+    "A key halting place for Hannibal and Scipio before their decisive battle, with plentiful water and wide, flat ground",
+    "Here two armies totaling eighty thousand fought the final battle that decided two hundred years of Mediterranean supremacy"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Zama (castle_carthage_zama) lies about eighty miles southwest of the city of Carthage, in the transition zone between the inland plains and the plateau of North Africa, and it guards the strategic throat between the grain-producing plains of the Bagradas valley and the dry steppes of inland Numidia. The town is ringed by strong circular ramparts and has sweet, abundant wells, making it an important supply stop and camp for inland caravans and patrolling heavy cavalry. In the autumn of 202 BC, Hannibal encamped and reorganized his army here, and Hannibal and Scipio held their meeting of the two great commanders on a nameless hill west of the town. Zama's open, level red earth provided a wide stage for the decisive battle of more than eighty thousand heavy infantry in total, nearly one hundred war elephants and over ten thousand cavalry on both sides. After the war, the 'Battle of Zama' entered the historical record as the symbol that ended the Punic struggle for supremacy and laid the foundation of Rome's enduring greatness.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "The open plain of Zama witnessed the fall of the war god and the deification of General Scipio! When the Roman infantry and the Numidian cavalry closed around the field, world history turned a new page here."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "The wild grass of Zama has buried sixteen years of Barcid glory. Twenty thousand loyal veterans shed their blood on the yellow sand; this is the deepest lament of the Carthaginian empire."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Neapolis Bay Harbor represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "Behind the stone towers of Neapolis Bay Harbor, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Possession of Neapolis Bay Harbor anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "The earth of Zama trembled under the elephants and the hooves of horses. On our own land we decided the fate of the two masters of the sea, and Masinissa's cavalry won everything!"
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Second World War North African front",
+    "Tunisian Campaign",
+    "Rommel",
+    "jet aircraft"
+  ],
+  "Keywords": [
+    "Zama",
+    "Battle of Zama",
+    "Hannibal and Scipio meeting",
+    "202 BC"
+  ]
 }

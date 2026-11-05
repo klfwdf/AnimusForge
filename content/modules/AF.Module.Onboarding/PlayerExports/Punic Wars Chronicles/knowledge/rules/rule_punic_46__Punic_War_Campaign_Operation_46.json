@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_46",
-  "Name": "Punic War Campaign Operation 46",
-  "Keywords": [
-    "rule_punic_46",
-    "Punic Operation 46",
-    "Strategic Campaign 46",
-    "Mediterranean Theater 46"
+  "Name": "The Legend of Archimedes' Burning Mirrors Setting Sails Alight",
+  "Description": "Classical sources hand down the story that Archimedes used a great many highly polished hexagonal concave bronze mirrors to focus the blazing sun onto the sails of Roman warships approaching the sea wall, setting them instantly alight. It became an everlasting legend of ancient optics and siege defense.",
+  "Tags": [
+    "Archimedes' burning mirrors",
+    "Defense by heat",
+    "Concave bronze mirrors",
+    "Warships on fire",
+    "Optical marvel",
+    "Ancient legend"
   ],
+  "Category": "History",
+  "DefaultPriority": 78,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 46 concerning Mediterranean operations during the Second Punic War."
+    "Later classical sources say Archimedes defended the city with a great many brilliantly polished hexagonal concave bronze reflecting mirrors.",
+    "He organized the city's young men to focus the reflected, blazing Mediterranean sunlight onto the sails of Roman ships approaching the sea wall.",
+    "The dry, oiled sailcloth and rigging smoked and burst into flames under the focused glare, creating the astonishing spectacle of ships burned by the sun."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 46 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 46, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 46 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "This was the perfect union of the divine power of Apollo's blazing sun and the god-like optical art of Archimedes! Hundreds of Syracusan youths lined up behind the battlements in a strict parabolic array, and the great bronze mirrors in their hands, polished spotless, turned all at once, gathering the fiercest noonday sun of the Mediterranean into a spear of light no eye could bear to look at, and drove it straight into the mainsail of the Roman flagship! Within a dozen breaths, the flax sails smeared with pine resin poured out billowing white smoke and leapt into towering flames! Roman sailors jumped screaming into the sea, believing that Apollo himself had sent down divine fire to punish the arrogant invaders!"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Even if this is only a myth embellished by exaggerating Greek men of letters, and perhaps no more than a tale grown up around Archimedes using stone-throwers to hurl pots of burning sulfur and pitch, the terrible pressure of that dazzling glare flashing from the walls of Syracuse was entirely real! The sailors' eyes were seared by the harsh light so they could not aim, and the masts blazed under a baptism of fire arrows and fireballs. In the harbor of Syracuse, any rumor about Archimedes was enough to brand a bottomless fear deep in the hearts of the legionaries."
+    },
+    {
+      "Priority": 72,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The storytellers in the taverns love this part best: old master Archimedes stood on top of a tall tower, flashed a shiny little mirror in his hand, and the big ships out at sea went whoosh and burned themselves to charcoal! Even the gods have no better tricks than that. If the old wizard had lived on forever, the Romans could have brought an army of a million and still never set half a foot inside Syracuse!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Later writers (such as Lucian and Galen) relate that Archimedes invented an array of focusing mirrors that set fire to Roman warships approaching the walls. Modern scholars debate whether concave bronze mirrors truly concentrated enough heat to start fires, or whether the story is a literary exaggeration of hurled pots of burning pitch and sulfur, but the legend has greatly added to Archimedes' fame as the ancient master of mechanical and scientific defense."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Archimedes burning mirrors",
+    "heat ray legend Syracuse",
+    "concave bronze mirrors setting ships on fire",
+    "Lucian and Galen on Archimedes"
+  ]
 }

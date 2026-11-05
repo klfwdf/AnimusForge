@@ -1,42 +1,111 @@
 {
   "Id": "rule_punic_31",
-  "Name": "Punic War Campaign Operation 31",
-  "Keywords": [
-    "rule_punic_31",
-    "Punic Operation 31",
-    "Strategic Campaign 31",
-    "Mediterranean Theater 31"
+  "Name": "The Cavalry Skirmish at the Ticinus and Scipio Rescuing His Father Single-Handed",
+  "Description": "In November 218 BC, Hannibal and the consul Scipio the Elder clashed in an all-cavalry advance-guard battle on the Ticinus, a tributary of the Po. Numidian light horse swept around the flanks and mauled the Roman force, and the seventeen-year-old Scipio, the future Africanus, charged alone into the enemy to save his badly wounded father.",
+  "Tags": [
+    "Battle of the Ticinus",
+    "Scipio the Elder",
+    "Scipio Africanus",
+    "Numidian light cavalry",
+    "Rescuing his father single-handed",
+    "Cavalry envelopment"
   ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 31 concerning Mediterranean operations during the Second Punic War."
+    "In the advance-guard battle on the Ticinus in November 218 BC, Hannibal's cavalry mauled the consul's own Roman troops.",
+    "Saddleless Numidian light horse cut deep around both flanks and threw the Roman javelin men and cavalry line into disorder.",
+    "The seventeen-year-old Scipio, later Africanus, rode alone into the encircling enemy and rescued his badly wounded father, the consul, who had fallen."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 31 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 31, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The first clash at the Ticinus taught the overconfident Romans a cruel lesson! The light javelin men of the consul Publius had not even loosed one volley before they were overrun and trampled by barbarian horses. Yet amid the blood of that defeat, the young Publius, only seventeen, showed a valor that astonished the whole army. When the attendants hung back in fear, the boy rode alone into the ring of enemies and carried his blood-soaked father, the consul, back to camp! On that day the glory of the house of the Scipios blazed like the sun!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Ticinus was the first sword-thrust Hannibal drove into the soil of Italy! Our general placed the Spanish and Gallic heavy horse in the center to meet the Roman knights head-on, and on both wings he loosed the saddleless Numidian riders like phantoms on a gale. Those desert horsemen hurled short spears at full gallop and swiftly closed off the Romans' line of retreat. The consul fled wounded, and the battle not only lifted the whole army's spirits but convinced every Gallic tribe of the Po basin that Roman supremacy was not invincible!"
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "empire_w"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 31 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The fight on the Ticinus shattered the Romans' overweening arrogance on the Po plain! The warriors of the Insubres and the Boii watched the Roman consul, run through and gravely wounded by African horsemen, flee in panic across the great river. We have had enough of Roman legions seizing our pastures and planting their colonial fortresses. If Hannibal can beat the Romans until they scrabble in the dirt for their teeth, then the countless war-blades of Cisalpine Gaul will gladly follow his standard!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In November 218 BC, Hannibal and the Roman consul Publius Cornelius Scipio fought an all-cavalry advance-guard battle on the Ticinus. Hannibal used the Numidian light cavalry to outflank both wings and won a clear victory. The consul was badly wounded, and his son, only seventeen years old (later Scipio Africanus), rode alone into the encircling enemy and rescued his father. The battle prompted the Gallic tribes of the Po basin to go over to Carthage in large numbers."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battle of the Ticinus",
+    "Ticinus cavalry skirmish 218 BC",
+    "young Scipio saves his father",
+    "Numidian cavalry flanking"
+  ]
 }

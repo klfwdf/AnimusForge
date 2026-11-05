@@ -1,41 +1,40 @@
 {
   "Id": "rule_punic_18",
-  "Name": "Punic War Campaign Operation 18",
   "Keywords": [
-    "rule_punic_18",
-    "Punic Operation 18",
-    "Strategic Campaign 18",
-    "Mediterranean Theater 18"
+    "Struggle for Mediterranean Sea Power and Corinthian-Style Warship Technology",
+    "Quinquereme warships",
+    "Absolute Roman command of the sea",
+    "Legacy of the corvus boarding bridge",
+    "Blockade of the Tyrrhenian sea lanes",
+    "Our Sea"
   ],
   "RagShortTexts": [
-    "Strategic campaign doctrine 18 concerning Mediterranean operations during the Second Punic War."
+    "With the absolute command of the sea won in the First Punic War, Rome tightly blockaded the western Mediterranean, forcing Hannibal to march overland across the snowy mountains."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 18 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "Throughout the Second Punic War, control of the sea silently decided the final balance of the strategic situation. The Carthaginians had long been famous for their superb shipbuilding and seamanship, and in the First Punic War they held an absolute traditional advantage in quinqueremes (Quinquereme). Yet the Romans pulled off an astonishing reversal: they rapidly copied a whole fleet using a wrecked Carthaginian ship as their model, and invented the \"raven\" boarding bridge (Corvus) to force sea battles into land battles on deck. After that war they seized the three strategic islands of Sicily, Sardinia and Corsica. By the outbreak of the Second Punic War, the Roman navy held firm command of the Tyrrhenian Sea, the Strait of Messina and the Ligurian waters. It was because the Roman fleet sealed the sea routes like an iron floodgate that Hannibal was forced to give up moving his troops by sea and chose instead the extreme overland march across the Pyrenees and the Alps, at the cost of more than half his army. And it was because of the Roman fleet's patrols day and night that the scattered reinforcements the Council of One Hundred at home hesitantly sent were intercepted and destroyed at sea several times, completely ending any possibility of Hannibal receiving large-scale supply by sea."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 18, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "In the view of Roman consuls and naval centurions, this vast Mediterranean has already become the Republic's sacred and indivisible \"inner sea\" (Mare Nostrum)! The once overbearing Phoenician pirates, who called themselves the proud children of the sea, were smashed to pieces by the iron rams of Roman warships at the naval battle of the Aegates Islands. In this war, it was thanks to the several fleets Rome kept stationed year-round at Lilybaeum in Sicily and at Tarentum that the Roman legions could calmly ferry dozens of full-strength legions across the sea to Spain and to Africa itself, while Hannibal could only gaze helplessly at the sea from the coast of southern Italy and watch Carthaginian merchant ships being sunk or captured one by one by Roman triremes!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 18 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Losing the sea is a deep, bone-piercing humiliation for every Carthaginian sailor! For centuries, from Tyre to Carthage, Phoenician keeled warships measured every wave of the Mediterranean, yet the crude Roman landlubbers took advantage of the chaos to plunder the fine harbors of Sardinia and Sicily that our ancestors had opened. Because of the numb indifference of the old-fashioned faction in the council at home, Carthage failed to rebuild a great regular fleet able to rival Rome, and the ocean became a wall of despair that trapped the expeditionary army to death. If Carthaginian warships could still cross the sea in numbers that blotted out the sky as in the old days, why would Hannibal have needed to suffer the ordeal of the snowy mountains? He could have struck straight at the mouth of the Tiber with a thousand warships, and the war would never have fallen into today's state of shattered lands!"
     }
   ],
   "TextMappings": []

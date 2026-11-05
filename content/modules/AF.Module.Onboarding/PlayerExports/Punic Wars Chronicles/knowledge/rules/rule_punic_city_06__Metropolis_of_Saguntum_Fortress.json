@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_city_06",
-  "Name": "Metropolis of Saguntum Fortress",
-  "Keywords": [
-    "rule_punic_city_06",
-    "Urban Center Saguntum Fortress",
-    "Citadel of Saguntum Fortress",
-    "Harbor of Saguntum Fortress"
-  ],
+  "Name": "Syracuse, Pearl of Magna Graecia: Triple Battlements and the Sea Fortress of Ortygia",
+  "Category": "geography",
+  "Priority": 88,
   "RagShortTexts": [
-    "The fortified urban center of Saguntum Fortress served as a vital strategic, naval, and..."
+    "Syracuse combines the great clifftop fortress of Epipolae with the twin deep, sheltered harbors of the island of Ortygia",
+    "Archimedes' defensive machines, repeating catapults, stone throwers and iron-claw cranes struck fear into the Roman fleet besieging the city",
+    "After two years of bloody fighting, Marcellus used the festival of Artemis to scale the walls with ladders, breach the defenses and sack the city"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Syracuse (town_rome_syracusae) was the largest and most strongly fortified city of the Greek world of Magna Graecia. Relying on the fortress of Euryalos on the heights of Epipolae to the north, the city built a complex system of defensive ditches, stone battlements and hidden passages; the inner city on the island of Ortygia stood like an independent fortress guarding the two deep-water gates of the Great Harbor and the Small Harbor, with fresh springs that never ran dry. Fifty years of rule by the old king Hiero II had piled its grain and fodder as high as mountains. The giant stone throwers designed by Archimedes, catapults of adjustable range, the huge 'Claw of Archimedes' that lifted warships, and mirror devices that reflected sunlight dealt heavy blows again and again to the besieging fleet of the famous Roman general Marcellus. Not until 212 BC, on a night when the whole city was sunk in drunken revelry at the festival of Artemis, did the Romans make a surprise climb over a steep, unwatched stretch of wall and finally capture and plunder this city of learning and wealth.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Saguntum Fortress represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+      "Content": "The genius of Archimedes once smashed Roman ships in midair above the sea! If not for the traitors who let the wolf in and the drunken festival, the battlements of Syracuse would have held firm for ten more years of war!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Behind the stone towers of Saguntum Fortress, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+      "Content": "Mechanical sorcery cannot stop the edge of the Roman short sword! With iron tenacity General Marcellus overran the heights of Epipolae and presented the pearl of Magna Graecia to the Republic!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Possession of Saguntum Fortress anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "Bomilcar's fleet stood by while Syracuse was left alone and then withdrew in haste. Once again Carthage failed its bravest ally at the critical moment."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Sicilian Mafia",
+    "Norman conquest",
+    "Baroque church",
+    "Steam excavator"
+  ],
+  "Keywords": [
+    "Syracuse",
+    "Ortygia",
+    "Epipolae",
+    "Euryalos",
+    "Archimedes",
+    "Claw of Archimedes",
+    "Marcellus",
+    "siege of Syracuse 212 BC"
+  ]
 }

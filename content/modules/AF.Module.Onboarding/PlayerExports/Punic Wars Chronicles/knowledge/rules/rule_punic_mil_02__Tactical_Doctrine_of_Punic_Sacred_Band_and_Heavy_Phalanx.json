@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_mil_02",
-  "Name": "Tactical Doctrine of Punic Sacred Band and Heavy Phalanx",
-  "Keywords": [
-    "rule_punic_mil_02",
-    "Doctrine of Punic Sacred Band and Heavy Phalanx",
-    "Combat Mastery Punic Sacred Band and Heavy Phalanx",
-    "Tactical Formations Punic Sacred Band and Heavy Phalanx"
-  ],
+  "Name": "The Roman Heavy Javelin: Bending to Pin Shields, Falling Weight and the Mechanics of Armor Piercing",
+  "Category": "military",
+  "Priority": 89,
   "RagShortTexts": [
-    "The tactical doctrine of Punic Sacred Band and Heavy Phalanx governed battlefield..."
+    "The Roman heavy javelin weighed two to five kilograms, with a long, slender shank of untempered soft iron and astonishing penetrating power",
+    "After striking an enemy shield, its own weight bent the iron neck so that it stuck fast in the shield and could not be pulled out",
+    "It forced enemy infantry to throw away their heavy shields and stand exposed to the thrusts of the Roman short sword"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The Roman heavy javelin (Pilum) was a masterpiece at the peak of classical cold-weapon mechanical design. It was about two meters long overall, made of a thick wooden shaft joined by a mortise-and-tenon or rivets to a long, slender metal shank about sixty centimeters long. The front end of the shank was a sharp, pyramid-shaped, barbed tempered steel point, while the middle and rear part of the iron neck was deliberately made of untempered soft iron. Thrown within an effective range of fifteen to twenty meters, it carried the falling kinetic energy of its two to five kilograms of total weight and delivered enormous pressure, enough to pierce a barbarian wooden shield outright and drive into the body. Even when it struck only the face of the shield, the forward shift of its center of gravity and the impact torque bent the soft iron neck into a hook that stuck fast in the shield board, so the enemy soldier could not quickly pull it out; the great weight of the javelin dragging on the ground further destroyed the protection of the enemy's shield completely, forcing the enemy to discard it and fight the Roman short-sword infantry unprotected, and the bent javelin could not be picked up and thrown back by the enemy.",
   "Variants": [
     {
       "Priority": 0,
-      "When": null,
-      "Content": "The development of Punic Sacred Band and Heavy Phalanx exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
-    },
-    {
-      "Priority": 1,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of Punic Sacred Band and Heavy Phalanx became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "The javelins fly like locusts darkening the sun! When the soft iron shanks bend and drag down from the barbarians' shields, their battle line has already been stripped of its shell and become lambs for the slaughter of the short sword."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
+      "When": null,
+      "Content": "That heavy iron spear hit my oak shield, and the long shank sagged and bent at once, dragging in the mud and wrenching my wrist! I had to throw away my shield, but what came at me next was already the blades of the Romans."
+    },
+    {
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Mastery of Punic Sacred Band and Heavy Phalanx separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "The Romans stole our throwing spear and, with soft iron, took its treachery to the extreme. Against a rain of javelins that darkens the sky, only skirmishers who leap lightly and run fast can escape its edge."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "rifle bullet",
+    "armor-piercing shell",
+    "gunpowder propulsion",
+    "armor-piercing core"
+  ],
+  "Keywords": [
+    "pilum",
+    "Roman heavy javelin",
+    "soft iron shank",
+    "shield-pinning javelin",
+    "Roman armor piercing"
+  ]
 }

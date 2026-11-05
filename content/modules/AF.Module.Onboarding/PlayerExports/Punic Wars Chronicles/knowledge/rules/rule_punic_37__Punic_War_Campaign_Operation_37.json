@@ -1,42 +1,106 @@
 {
   "Id": "rule_punic_37",
-  "Name": "Punic War Campaign Operation 37",
-  "Keywords": [
-    "rule_punic_37",
-    "Punic Operation 37",
-    "Strategic Campaign 37",
-    "Mediterranean Theater 37"
+  "Name": "The Three Counterstrokes at Nola and Marcellus Breaking the Myth of Invincibility",
+  "Description": "From 216 to 214 BC, the consul Marcellus held the key Campanian town of Nola and three times defeated Hannibal's assaults and the traitors within the walls, killing several thousand of the enemy and, in the desperate days after Cannae, breaking the myth that Hannibal could not be beaten.",
+  "Tags": [
+    "Battles of Nola",
+    "Marcellus",
+    "Sword of Rome",
+    "Defense of Campania",
+    "Breaking the myth of invincibility",
+    "Street-fighting ambush"
   ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 37 concerning Mediterranean operations during the Second Punic War."
+    "From 216 to 214 BC Marcellus three times foiled Hannibal's assaults on and attempts to take the key town of Nola.",
+    "Marcellus ruthlessly purged the pro-Carthaginian traitors in the town and used the narrow ground at the gates for sudden sallies.",
+    "In the shadow of the disaster at Cannae, the counterstrokes at Nola broke the myth that Hannibal was invincible in the field in Italy."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "If Fabius was the shield of Rome, then Marcellus was Rome's iron sword that never bends! In the darkest hour after the massacre at Cannae, when all Italy trembled and surrendered, Marcellus alone stood like a mountain at Nola! He swiftly cut off the heads of the traitors in the town who had gone over to the enemy, and when the enemy grew careless he flung the gates wide and launched a ferocious counter-charge, cutting down more than two thousand Carthaginian picked troops on the spot! The great victory at Nola proved to the whole world that Hannibal was no invincible god: as long as the legions dared to draw their swords, Carthaginians bled and fell dead just the same!"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Marcellus truly was a cunning and ruthless foe. The walls of Nola were high and strong, and the common people inside had already secretly been in contact with us to hand over the town, but Marcellus beheaded every pro-Carthaginian councillor in advance and forced the whole population up onto the walls to man the defenses. Hannibal was unwilling to waste his limited expeditionary veterans beneath a strong fortress, and three times in a row he came away with nothing, so we lost the best chance of quickly taking the whole Campanian plain."
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That hand-to-hand fight in front of the gates of Nola was terrible! The gates suddenly opened and the Roman soldiers came pouring out like madmen, with General Marcellus at their head, covered in blood and swinging a great sword. All the neighbors had been saying that Hannibal never failed to take what he attacked, but that afternoon, for the first time, the Carthaginians going back to camp carried countless dead officers with them. From that day on the common folk of Campania knew this war could still be fought!"
+    },
+    {
       "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 37 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 37, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 37 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "From 216 to 214 BC, the renowned Roman general Marcus Claudius Marcellus held the key Campanian town of Nola and three times successfully withstood Hannibal's sieges and ambushes. Marcellus put down the revolt within the town and launched timely counterattacks from the gates that broke the enemy. In the extreme desperation after the Battle of Cannae, this series of battles greatly lifted Roman morale, and later generations praised it as the fight that broke the myth of Hannibal's invincibility."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battles of Nola",
+    "Marcellus sword of Rome",
+    "Nola 216-214 BC defense",
+    "first check to Hannibal after Cannae"
+  ]
 }

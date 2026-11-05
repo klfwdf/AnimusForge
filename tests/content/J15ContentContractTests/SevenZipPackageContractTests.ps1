@@ -60,17 +60,18 @@ foreach ($language in @('CN', 'EN')) {
         FixtureText (Join-Path $inputDirectory ('AnimusForge/' + $name)) $value
     }
     $projection = @($names | ForEach-Object {
-        [pscustomobject]@{ Target = $_; Hash = (Get-FileHash -LiteralPath (Join-Path $inputDirectory ('AnimusForge/' + $_)) -Algorithm SHA256).Hash }
+        [pscustomobject]@{ Target = $_; SourcePath = (Join-Path $inputDirectory ('AnimusForge/' + $_)); Bytes = $null; Hash = (Get-FileHash -LiteralPath (Join-Path $inputDirectory ('AnimusForge/' + $_)) -Algorithm SHA256).Hash }
     })
-    $zipPath = Join-Path $RunRoot "$language-verified.zip"
-    $zip = [IO.Compression.ZipFile]::Open($zipPath, [IO.Compression.ZipArchiveMode]::Create)
-    try {
-        foreach ($item in $projection) {
-            [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, (Join-Path $inputDirectory ('AnimusForge/' + $item.Target)), ('AnimusForge/' + $item.Target)) | Out-Null
-        }
-    } finally { $zip.Dispose() }
+    $projection[0].Bytes = [IO.File]::ReadAllBytes($projection[0].SourcePath)
     $archive = Join-Path $RunRoot "$language-fixture.7z"
-    Write-AnimusForgeProjectedSevenZip -VerifiedZipPath $zipPath -ArchivePath $archive -Projection $projection
+    $script:PayloadChecks = 0
+    Write-AnimusForgeProjectedSevenZip -ArchivePath $archive -Projection $projection -ValidatePayload {
+        param($directory)
+        Check (Test-Path -LiteralPath (Join-Path $directory 'AnimusForge/SubModule.xml')) 'Layout callback must see the actual payload.'
+        $script:PayloadChecks++
+    }
+    Check ($script:PayloadChecks -eq 2) 'Layout checks must run before encoding and after real 7z extraction.'
+    Check (@(Get-ChildItem -LiteralPath $RunRoot -Recurse -File -Filter '*.zip').Count -eq 0) 'Direct 7z must never create an intermediate ZIP.'
     Check (Test-Path -LiteralPath $archive) "$language must produce a real 7z archive."
     $listing = & $sevenZip l -slt $archive
     Check ($LASTEXITCODE -eq 0) "$language archive listing must succeed."
@@ -86,16 +87,27 @@ foreach ($language in @('CN', 'EN')) {
         Check ((Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash -ceq $item.Hash) "Hash mismatch: $($item.Target)."
     }
     $beforeHash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash
-    Reject { Write-AnimusForgeProjectedSevenZip -VerifiedZipPath $zipPath -ArchivePath $archive -Projection $projection } 'Refusing to overwrite an archive:'
+    Reject { Write-AnimusForgeProjectedSevenZip -ArchivePath $archive -Projection $projection } 'Refusing to overwrite an archive:'
     Check ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ceq $beforeHash) 'An existing archive must remain byte-for-byte unchanged.'
-    $badProjection = @($projection | ForEach-Object { [pscustomobject]@{ Target = $_.Target; Hash = ('0' * 64) } })
-    Reject { Write-AnimusForgeProjectedSevenZip -VerifiedZipPath $zipPath -ArchivePath (Join-Path $RunRoot "$language-rejected.7z") -Projection $badProjection } '7-Zip differs from its localization projection:'
+    $badProjection = @($projection | ForEach-Object { [pscustomobject]@{ Target = $_.Target; SourcePath = $_.SourcePath; Bytes = $_.Bytes; Hash = ('0' * 64) } })
+    Reject { Write-AnimusForgeProjectedSevenZip -ArchivePath (Join-Path $RunRoot "$language-rejected.7z") -Projection $badProjection } 'Payload differs from its localization projection:'
+    Check (-not (Test-Path -LiteralPath (Join-Path $RunRoot "$language-rejected.7z"))) 'An invalid payload must never leave a deliverable archive.'
+    $duplicate = @($projection) + @($projection[0])
+    Reject { Write-AnimusForgeProjectedSevenZip -ArchivePath (Join-Path $RunRoot "$language-duplicate.7z") -Projection $duplicate } 'Duplicate projection target:'
+    $escape = @([pscustomobject]@{ Target='../escape.txt'; SourcePath=$projection[0].SourcePath; Bytes=$null; Hash=$projection[0].Hash })
+    Reject { Write-AnimusForgeProjectedSevenZip -ArchivePath (Join-Path $RunRoot "$language-escape.7z") -Projection $escape } 'invalid path segment'
+    Reject { Write-AnimusForgeProjectedSevenZip -ArchivePath (Join-Path $RunRoot "$language-layout-rejected.7z") -Projection $projection -ValidatePayload { throw 'layout-rejection-fixture' } } 'layout-rejection-fixture'
+    Reject { Write-AnimusForgeProjectedSevenZip -ArchivePath (Join-Path $RunRoot "$language-readback-rejected.7z") -Projection $projection -ValidatePayload { param($directory) if ($directory.EndsWith('readback')) { throw 'readback-rejection-fixture' } } } 'readback-rejection-fixture'
+    Check (-not (Test-Path -LiteralPath (Join-Path $RunRoot "$language-readback-rejected.7z"))) 'A failed readback layout must remove only its new archive.'
+    $competingArchive = Join-Path $RunRoot "$language-competing.7z"
+    Reject { Write-AnimusForgeProjectedSevenZip -ArchivePath $competingArchive -Projection $projection -ValidatePayload { param($directory) [IO.File]::WriteAllText($competingArchive, 'created by another writer') } } 'Refusing to overwrite an archive:'
+    Check ([IO.File]::ReadAllText($competingArchive) -ceq 'created by another writer') 'A racing writer archive must never be deleted.'
     Check (@(Get-ChildItem -LiteralPath $RunRoot -Directory -Filter '.af7z-*').Count -eq 0) 'Private projection work directories must be cleaned after success or failure.'
 }
 Check ((Get-FileHash -LiteralPath (Join-Path $RunRoot 'CN-readback/AnimusForge/ModuleData/fixture.json')).Hash -cne (Get-FileHash -LiteralPath (Join-Path $RunRoot 'EN-readback/AnimusForge/ModuleData/fixture.json')).Hash) 'CN and EN must retain their own projected content.'
 
 # ASCII-only tar probe isolates compression support from the separately tracked Unicode filename issue.
-$tar = Get-Command tar.exe -ErrorAction SilentlyContinue
+$tar = Get-Command (Join-Path $env:SystemRoot 'System32/tar.exe') -ErrorAction SilentlyContinue
 if ($tar) {
     $asciiRoot = Join-Path $RunRoot 'ascii-input'
     FixtureText (Join-Path $asciiRoot 'AnimusForge/fixture.txt') ('ASCII compression compatibility fixture. ' * 100)
@@ -111,4 +123,4 @@ if ($tar) {
 } else {
     Write-Output 'NOT-RUN: Windows tar is unavailable; no cross-decoder claim is made.'
 }
-Write-Output "PASS 7-Zip package contract: checks=$script:Checks; real CN/EN ZIP-to-7Z projection, dual implementation paths, Unicode names, SHA256 readback, no-overwrite, invalid projection rejection. Fixture-only; no release/build/deploy."
+Write-Output "PASS 7-Zip package contract: checks=$script:Checks; real CN/EN direct-7Z projection without intermediate ZIP, dual implementation paths, Unicode names, SHA256 readback, no-overwrite, invalid projection rejection. Fixture-only; no release/build/deploy."

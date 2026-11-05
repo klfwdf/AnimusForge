@@ -1,41 +1,39 @@
 {
   "Id": "rule_punic_12",
-  "Name": "Punic War Campaign Operation 12",
   "Keywords": [
-    "rule_punic_12",
-    "Punic Operation 12",
-    "Strategic Campaign 12",
-    "Mediterranean Theater 12"
+    "Numidian Cavalry Tactics and the Poison Cup of Sophonisba",
+    "Numidian light cavalry",
+    "Sophonisba's suicide by poison",
+    "Defeat and capture of Syphax",
+    "Masinissa's alliance with Scipio"
   ],
   "RagShortTexts": [
-    "Strategic campaign doctrine 12 concerning Mediterranean operations during the Second Punic War."
+    "Numidian saddleless light cavalry dominated the flanks of Mediterranean battlefields with masterful skirmishing tactics, and Sophonisba drank poison and died for her country amid the contest between Scipio and Masinissa."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 12 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "The Numidian light cavalry was the most decisive and deadly arm of the Punic Wars. These North African riders wore no heavy armor and used no saddles, carrying only round hide shields and a few short throwing javelins; with superb horsemanship and the tactic of feigned retreat they caught clumsy infantry formations off guard again and again. Late in the war the two great tribes of North Africa fell into fierce internal strife. Masinissa, prince of the Massylii, had been betrothed to the noblewoman Sophonisba, but Carthage, seeking to win over the more powerful Syphax, king of the Masaesyli, broke faith and married Sophonisba to Syphax instead. Enraged, Masinissa went over to Scipio. In the battle on the Great Plains of the Bagradas, the army of Scipio and Masinissa utterly routed Syphax's forces and took his capital, Cirta. To save his former beloved from disgrace, Masinissa married Sophonisba on the spot, but Scipio sternly ordered that she must be sent to Rome as a spoil of the Roman state to walk in the triumph. To preserve his wife's last dignity and the survival of his own kingdom, Masinissa in tears sent her a golden cup filled with poison. Sophonisba, composed, left her last words, that she would rather die a free queen than live as a Roman slave, and drank it to the dregs. Masinissa then turned all his grief and anger into fighting strength; at the decisive battle of Zama he led his cavalry to crush Hannibal's army from the rear, laying the foundation for his great work of uniting Numidia."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "numidian"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 12, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "In the blood of Numidian warriors, the neighing of warhorses and the survival of the tribe stand above all else! The Carthaginian nobility regarded the Numidians as wilderness savages to be ordered about and trampled at will, and freely used Sophonisba's betrothal to stir up strife among the tribes. Syphax, infatuated with a beauty, blindly dreamed of mastering North Africa and ended up bound in iron chains, while Masinissa, among the wind and frost of the mountains, saw clearly the great tide of the age and with iron patience won the strong support of the Roman legions. That cup of poison was a deep and painful lament for a peerless beauty, and even more the cruel price Numidia paid to escape centuries of vassalage and advance toward an independent, united kingdom!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 12 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The martyrdom of Sophonisba is the most sacred and heroic scene in Carthaginian history. As the daughter of a general's house, she used all her wisdom and devotion to win firm allies for her homeland and save Carthage, on the verge of collapse, in its hour of peril. When she faced the greedy and ugly faces of the Roman conquerors in their victory, she took the poison with her head held high and met death calmly, and with her unmatched pride she shattered the Romans' fantasy of parading Carthaginian nobility through the streets as spoils for their amusement! She is the holy maiden of freedom whom the whole Carthaginian nation will revere forever!"
     }
   ],
   "TextMappings": []

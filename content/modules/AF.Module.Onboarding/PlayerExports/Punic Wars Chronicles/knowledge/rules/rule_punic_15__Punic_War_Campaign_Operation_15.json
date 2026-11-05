@@ -1,41 +1,40 @@
 {
   "Id": "rule_punic_15",
-  "Name": "Punic War Campaign Operation 15",
   "Keywords": [
-    "rule_punic_15",
-    "Punic Operation 15",
-    "Strategic Campaign 15",
-    "Mediterranean Theater 15"
+    "Factional Strife in the Carthaginian Council of One Hundred and Hanno's Obstruction",
+    "Carthaginian Council of One Hundred",
+    "Suffetes, the chief magistrates",
+    "Barcid faction and the faction of Hanno the Great",
+    "Refusal of reinforcements after Cannae",
+    "Custom of crucifying defeated generals"
   ],
   "RagShortTexts": [
-    "Strategic campaign doctrine 15 concerning Mediterranean operations during the Second Punic War."
+    "Carthage was governed jointly by two suffetes and the Council of One Hundred, and the Barcid family's overseas ambitions were long and fatally obstructed by the conservative plutocratic faction of Hanno the Great."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 15 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "On the surface, the constitution of the Republic of Carthage was presided over by two annually elected chief magistrates, the \"suffetes\" (Suffete), and a council of elders, but the body that truly held the power of life and death in the state was the \"Council of One Hundred\" (Court of 104), made up of one hundred and four noble judges serving for life. This body had the fearsome privilege of overseeing defeated generals, even of nailing commanders who had lost a campaign to the cross. During the Second Punic War, Carthaginian domestic politics split sharply into two factions. One was the \"Barcid faction,\" centered on Hamilcar and Hannibal, which argued for crushing Rome completely with the mineral wealth of Iberia and elite mercenaries, and enjoyed the fervent support of the common people and the soldiers overseas. The other was the conservative faction of great landowning plutocrats led by Hanno the Great, which controlled the vast plantations of the North African interior and the power of the treasury, bitterly opposed involvement in the war in Europe, and was deeply wary that the Barcid family might establish a military dictatorship built on its victories. After the great victory at Cannae, it was Hanno's faction that used its veto in the council to cut back and delay the silver, provisions and regular reinforcements sent to Hannibal's expeditionary army, leaving Hannibal trapped in a fatal deadlock in the Apennine peninsula, struggling on alone."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 15, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "For the veterans who followed Hannibal through bloody fighting in Italy, Hanno the Great and his kind in the Carthaginian Council of One Hundred are a pack of utterly shameless parasites and traitors! On the frozen Alps and the plain of Cannae, the soldiers at the front had won for their homeland, with their bones and blood, a once-in-a-thousand-years chance to turn the war around, while these fat-headed oligarchs at home sat on ivory chairs in the cool shade of the temple of Melqart, clicking the beads of their abacuses and clutching the silver of the treasury, refusing to let go. Fearing that a triumphant Hannibal would strip them of their privileges as judges, they would rather watch the opportunity slip away than send a single soldier to Italy! It was this short-sighted, selfish factional strife that strangled the last breath of the Carthaginian empire!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 15 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The Roman Senate saw clearly and early the fatal weakness of Carthage's council politics. Carthage was not a close-knit state of citizens bound by blood, but a transmarine joint-stock trading house of greedy merchants. Hanno the Great and his like feared the Barcid family more than they feared the Roman legions, and this deep-rooted internal strife meant that, for all Hannibal's earth-shaking tactical genius, he could never receive steady strategic support from his homeland. The Romans used this very factional strife to marshal their resources calmly at home, until at last Hannibal, isolated in enemy country with no one to follow him, met bitter defeat on his own African soil."
     }
   ],
   "TextMappings": []

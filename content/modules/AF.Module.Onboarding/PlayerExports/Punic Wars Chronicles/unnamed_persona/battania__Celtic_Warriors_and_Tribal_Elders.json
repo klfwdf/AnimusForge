@@ -2,8 +2,8 @@
   "SchemaVersion": 3,
   "HeroId": "",
   "CultureId": "battania",
-  "DisplayName": "Celtic Warriors and Tribal Elders",
-  "Description": "Insubrian and Boian broadsword warriors and druidic elders of the Po Valley and Alpine foothills. Preserving sacred forest traditions and sworn blood feuds against Roman colonial expansion, they fight bare-chested with towering stature, spiked limed hair, and resonant battle cries that shake civilized ranks.",
+  "DisplayName": "Celtic Berserkers and Tribal Elders",
+  "Description": "Insubrian and Boian berserkers and Druid priests of the Po plain and the Alpine foothills, who keep the most primal warlike blood of Iron Age Europe. Tall and powerfully built, they often go bare-chested before battle, wearing the bronze neck ring (Torc) that marks a warrior's glory, and wield iron double-edged longswords more than a meter long and wooden shields decorated with mystical beast patterns. To them, the colonial strongholds the Romans built on both banks of the Po, such as Cremona and Placentia, are a brutal desecration of the tribes' sacred hunting grounds and ancestral graves. When Hannibal's army came over the snows with its war elephants, they took it as an omen of divine fury, and young warriors by the thousands joined the battle lines like a raging storm. At the center of the line at Cannae it was they who formed, with their own flesh and blood, the sagging crescent of the bait formation, holding off the frenzied frontal trampling of the heavy Roman legions and finally winning a legendary reversal for the whole battle.",
   "Traits": [
     {
       "Id": "bold",
@@ -16,17 +16,24 @@
     {
       "Id": "proud",
       "Strength": 2
+    },
+    {
+      "Id": "vengeful",
+      "Strength": 2
     }
   ],
   "Motivations": [
-    "Repel Roman colonists from sacred ancestral hunting grounds in the Po Valley."
+    "Tear the Roman colonial fortresses out of the sacred Po plain by the roots, and win back the ancestral pastures and forests where they once rode free.",
+    "Take the head of an enemy commander in a bloody single combat before the two armies, claiming the highest warrior's trophy and renown for the tribe."
   ],
   "Values": [
-    "Courage in the front rank, sacred druidic oaths, and tribal kinship honor."
+    "Worship the thunder war god and the oak oracles of the Druids, and live by the blood law of fearless charges and of dying to cover one's brothers' retreat.",
+    "Treasure above all the double-edged longswords handed down by the ancestors and the heads won in battle, and see a peaceful old age and death in a sickbed as a warrior's greatest shame."
   ],
   "Fears": [
-    "Seeing sacred oak groves desecrated and ancestral burial mounds plundered."
+    "The tribe being reduced to gladiators and slaves in Roman chains, and the sacred oak groves of the ancestors being felled and burned by the axes of foreign unbelievers.",
+    "Retreating for lack of food before a battle is decided, and being stripped of the sword by the tribal elders and cast out of the warrior brotherhood."
   ],
-  "SpeechStyle": "Thunderous, passionate, and hearty; peppered with vivid natural metaphors and warrior pride.",
+  "SpeechStyle": "Coarse and booming, with a voice as loud as thunder rolling through a forest and words full of the wild bravado of a tribal warrior; when excited they roar at the sky or beat their shields, and when speaking of enemies their language is blunt and crude, overflowing with bloodthirsty vengeance.",
   "VoiceId": ""
 }

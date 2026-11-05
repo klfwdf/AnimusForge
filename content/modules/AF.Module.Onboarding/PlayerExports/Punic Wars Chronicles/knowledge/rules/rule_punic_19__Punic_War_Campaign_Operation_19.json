@@ -1,42 +1,130 @@
 {
   "Id": "rule_punic_19",
-  "Name": "Punic War Campaign Operation 19",
-  "Keywords": [
-    "rule_punic_19",
-    "Punic Operation 19",
-    "Strategic Campaign 19",
-    "Mediterranean Theater 19"
+  "Name": "Siege of Saguntum and the Collapse of the Ebro Treaty",
+  "Description": "In 219 BC Hannibal besieged Saguntum, a city allied to Rome, for eight months and razed it to the ground, directly igniting the Second Punic War and the Roman embassy's declaration of war.",
+  "Tags": [
+    "Saguntum",
+    "Siege warfare",
+    "Hannibal",
+    "Ebro Treaty",
+    "Outbreak of the Second Punic War",
+    "Roman declaration of war"
   ],
+  "Category": "Military",
+  "DefaultPriority": 85,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 19 concerning Mediterranean operations during the Second Punic War."
+    "In 219 BC Hannibal besieged Saguntum for eight months and took the city.",
+    "The fall of Saguntum marked the complete end of the Ebro Treaty and directly ignited the Second Punic War.",
+    "The Roman envoy Fabius shook out his toga before the Carthaginian Council of One Hundred and declared that war had begun."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 19 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 19, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 19 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Saguntum is a sacred allied city under the protection of the Senate and the People of Rome! Hannibal, disregarding the Ebro Treaty witnessed by the gods, brazenly besieged Saguntum and slaughtered its citizens. This is a trampling of sacred law. When the envoy Fabius shook out his toga in the Carthaginian council and declared war, the gods had already decreed that Carthage was doomed to utter destruction."
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Romans always shamelessly twist treaties! The Ebro Treaty clearly made the river the boundary, with only the lands north of it off limits to us, while Saguntum lies hundreds of miles south of the river and was always within Carthage's sovereign sphere of influence. The Saguntines repeatedly provoked and slaughtered our allies, the Turdetani, and our commander Hannibal marched to put down the disorder in the name of justice. Rome's arrogant declaration of war is nothing but a pretext for greedy expansion."
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Saguntines believed the Romans' sweet words and thought that a paper alliance could truly bring legions from overseas to their rescue! For eight full months of bloody siege, stone shot smashed the walls and the townsfolk threw themselves into the flames in despair, yet not a single Roman warship came! Remember the ashes of Saguntum: a city that relies on the protection of a foreign empire will in the end only be buried as a sacrifice in the struggles of the great powers."
+    },
+    {
+      "Priority": 70,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "mercenary",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those were eight months of hell! Tunnels dug, battering rams, catapults pounding day and night; Hannibal himself was even wounded in the thigh by a javelin at the front. When the walls collapsed, the nobles of Saguntum heaped their gold and silver in the square, set it alight and burned themselves with it, and men and women alike fell on their own swords. The city that was taken was nothing but blackened ruins, but from that moment everyone knew that a tremendous war that would sweep the whole Mediterranean had begun."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 219 BC Hannibal attacked Saguntum, a city allied to Rome on the south bank of the Ebro. After a brutal siege lasting eight months, Saguntum fell and its defenders set fire to themselves. This battle led directly to Rome's formal declaration of war on Carthage, raising the curtain on the seventeen bloody years of the Second Punic War."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Siege of Saguntum and the Collapse of the Ebro Treaty",
+    "Siege of Saguntum",
+    "Ebro Treaty",
+    "Fabius toga declaration of war",
+    "Outbreak of the Second Punic War"
+  ]
 }

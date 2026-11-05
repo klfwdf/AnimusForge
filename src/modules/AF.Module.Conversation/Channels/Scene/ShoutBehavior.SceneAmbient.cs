@@ -167,7 +167,7 @@ public partial class ShoutBehavior
             return;
         }
         if (_ambientIdleSinceMissionTime < 0f) _ambientIdleSinceMissionTime = now;
-        if (now - _ambientIdleSinceMissionTime < settings.AmbientSceneIdleSeconds
+        if (now - _ambientIdleSinceMissionTime < settings.AmbientSceneIdleSeconds * AmbientTimeScale()
             || now < _ambientCooldownUntilMissionTime
             || _ambientSessionsThisMission >= settings.AmbientSceneMaxPerScene
             || ProactiveNpcRequestBehavior.TryPeekPendingSceneOpening(out _, out _, out _)
@@ -197,6 +197,9 @@ public partial class ShoutBehavior
         _lastPresentedFieldCampEnvoy = null;
         _lastPresentedFieldCampEnvoyMission = null;
     }
+
+    // A field camp is a crowd of idle soldiers: ambient idle wait and interval run at half the MCM value there.
+    private static float AmbientTimeScale() => FieldCampMissionLogic.Current != null ? 0.5f : 1f;
 
     // Same peace allowlist as scene taunt conflicts (execution scenes excluded), minus prison/port/alley.
     private static bool IsAmbientPeaceScene()
@@ -1021,7 +1024,7 @@ public partial class ShoutBehavior
         if (applyCooldown && mission != null)
         {
             DuelSettings settings = DuelSettings.LoadedForSceneRuntime();
-            _ambientCooldownUntilMissionTime = mission.CurrentTime + (settings?.AmbientSceneCooldownSeconds ?? 120f);
+            _ambientCooldownUntilMissionTime = mission.CurrentTime + (settings?.AmbientSceneCooldownSeconds ?? 120f) * AmbientTimeScale();
             _ambientIdleSinceMissionTime = mission.CurrentTime;
         }
         Logger.Log("ShoutBehavior", "[Ambient] end reason=" + (reason ?? ""));

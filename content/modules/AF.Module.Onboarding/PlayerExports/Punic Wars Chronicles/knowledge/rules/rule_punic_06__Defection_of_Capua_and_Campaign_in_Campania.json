@@ -1,42 +1,39 @@
 {
   "Id": "rule_punic_06",
-  "Name": "Defection of Capua and Campaign in Campania",
   "Keywords": [
-    "rule_punic_06",
-    "Defection of Capua",
-    "Campania Campaign",
-    "Pacuvius Calavius",
-    "Capua Circumvallation"
+    "Defection of Capua and the Struggle for Campania",
+    "Revolt of Capua",
+    "Hannibal at the gates",
+    "Siege of Capua",
+    "Corrupting luxury of Campania"
   ],
   "RagShortTexts": [
-    "After Cannae, rich Capua defected to Hannibal, triggering years of brutal siege warfare in..."
+    "After Cannae, Capua, the second city of Italy, defected to Hannibal; in 211 BC Rome besieged Capua, and Hannibal's surprise march on Rome to relieve it by diversion failed."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Following the disaster at Cannae, Capua—the second greatest and wealthiest city of Italy—revolted and opened its gates to Hannibal, hoping to supplant Rome as ruler of Italy. While Hannibal wintered his veterans in the luxurious city, Rome responded with ruthless determination, encircling Capua with double siege lines (circumvallation). Despite Hannibal's diversionary march on Rome's gates, Capua was starved into unconditional surrender in 211 BC, its senators executed, and its territory confiscated."
+      "Content": "After the disaster at Cannae in 216 BC, Capua, the second largest and most prosperous city in Italy after Rome, declared its departure from the Roman alliance and opened its gates to Hannibal. Capua's defection set off a chain of revolts among the states of Apulia and Bruttium in southern Italy. Hannibal set up his winter quarters there, but later historians often said that Capua's mild, luxurious hot springs and mellow wine to some extent sapped the fighting edge of the Carthaginian mercenaries hardened by a hundred battles. In 211 BC Rome committed six legions, which built a double ring of inner trenches and outer walls to close Capua in tightly. To relieve the siege, Hannibal made a surprise dash and encamped beneath the gates of Rome itself, creating the panic of \"Hannibal at the gates!\" (Hannibal ad portas!) that made the whole nation tremble. Yet the Roman Senate did not waver; it held the city while ordering the besieging army not to return. Starving and desperate, Capua finally surrendered to Rome, and the Senate took extremely harsh revenge: Capua's councillors were all bound and beheaded, the rest of the citizens were reduced to slavery, and Capua's civic self-government was completely abolished."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "The punishment of Capua was a necessary lesson to all Italian confederates: Rome's vengeance may be delayed by circumstance, but it is absolute, merciless, and inescapable."
+      "Content": "To the Romans, Capua's betrayal was the most unforgivable breach of faith of all the Italian allies! The Capuans held privileges second only to Roman citizens, yet at the moment the Republic suffered the bloody catastrophe of Cannae they kicked it while it was down, hoping that Hannibal would raise them up to lord it over the Romans. Even when Hannibal rode right up to the walls of Rome and hurled a spear at the Colline Gate, the senators calmly carried on auctioning, in the Forum as usual, the very land occupied by Hannibal's camp, and it finally sold at its normal price! This unshakable tenacity utterly crushed the traitors' delusions. The blood and chains that filled Capua are the only fate for those who betray Rome's sacred alliance!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "peasant",
-          "villager"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "The Capuan lords thought Hannibal would crown them kings of Italy! Instead they ended up eating boiled grass behind stone walls, and when the legions broke in, the executioner's axe didn't stop until sunset."
+      "Content": "The fall of Capua was Carthage's most painful strategic turning point in the Italian theater. Capua was Hannibal's strongest and richest allied base in the Apennine peninsula, but because the faction of Hanno the Great at home persistently refused to provide enough troops for sieges and garrisons, Hannibal was trapped in a passive deadlock, unable both to fight in the field and to detach forces to protect every allied city on the coast. Although Hannibal boldly struck at the outskirts of Rome to relieve Capua by diversion, the stubbornness of the Roman legions and the wavering of traitors inside Capua made the relief fail in the end. With Capua lost, Carthage's strategic foothold in southern Italy shrank sharply, and it was left in the predicament of being able to defend only a few coastal strongholds."
     }
   ],
   "TextMappings": []

@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_39",
-  "Name": "Punic War Campaign Operation 39",
-  "Keywords": [
-    "rule_punic_39",
-    "Punic Operation 39",
-    "Strategic Campaign 39",
-    "Mediterranean Theater 39"
+  "Name": "Hannibal at the Gates of Rome and the Bluff Withdrawal",
+  "Description": "In 211 BC, to relieve the siege of Capua, Hannibal led a light-cavalry raid to within three miles of Rome (Hannibal ad portas) and hurled a spear at the Colline Gate, but seeing the whole Roman people under arms and the defense as firm as iron, he feinted and withdrew.",
+  "Tags": [
+    "At the very walls",
+    "Hannibal at the gates",
+    "Colline Gate",
+    "Panic in Rome",
+    "Relieving a siege by threatening the capital",
+    "Auction of the camp ground"
   ],
+  "Category": "History",
+  "DefaultPriority": 85,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 39 concerning Mediterranean operations during the Second Punic War."
+    "In 211 BC, to relieve the siege of Capua, Hannibal led his light cavalry on a long raid that brought him to within three miles of Rome.",
+    "Roman women and children wailed 'Hannibal is at the gates', but the Senate calmly mobilized two new legions for the defense.",
+    "The ground outside the walls where Hannibal had pitched camp was actually auctioned to citizens in the Roman Forum at its full price, showing Rome's unbending spirit."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 39 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 92,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 39, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 39 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "'Hannibal is at the gates!' (Hannibal ad portas!) That cry plunged the whole city of Rome into a suffocating, deathly silence. Women wept before the temples, sweeping the altars with their hair and calling on the gods, but he would never see Romans submit! The consuls quickly raised the young men of the city into two new, fully armed legions, and the catapults and great stones on the Servian Wall stood loaded day and night! What drove the Carthaginians to despair most of all was this: the very plot of land outside the walls where Hannibal had pitched his camp was sold at auction to citizens in the Roman Forum that same day, at its original price without a single coin knocked off! That eternal pride, treating a mighty foe as nothing, doomed Hannibal to pace hopelessly outside the walls forever!"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hannibal rode in person up to the Colline Gate and even hurled the cavalry javelin in his hand in fury against the hard wall! The raid on Rome was meant as a brilliant stroke to relieve a siege by threatening the enemy's capital, in the hope of forcing the legions besieging Capua to rush home to defend it. But those cold-blooded Roman generals would not pull a single soldier out from Capua! Rome's walls were high and its moats deep, its defenses watertight, while we had neither provisions nor heavy siege engines, and Hannibal could only grit his teeth, break camp and withdraw in the foul weather of a raging storm. Capua was finished, and the strategic initiative began to slip completely from our hands!"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobody ever thought they would live to see that one-eyed demon's war banners planted right outside the city gates! The estates across the Tiber were all set on fire, and the bells in the city clanged wildly. But Romans really do have hard bones: the men grabbed short swords and climbed the battlements, and the old women gave all the silver in their homes to make bows and crossbows. Hannibal loitered beneath the walls for a few days, took a look at those walls as tight as an iron barrel, turned his horse around and slunk off."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 211 BC, to rescue besieged Capua, Hannibal tried a feint, leading light picked troops in a thrust that brought him to within three miles of Rome. The whole city stood on guard, the Senate calmly mobilized new troops to man the Servian Wall, and the main Roman army besieging Capua firmly refused to lift the siege. Seeing that Rome's defenses could not be shaken and that there was no hope of relieving Capua, Hannibal made a show of force and then withdrew southward."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Hannibal ad portas",
+    "Hannibal at the gates of Rome 211 BC",
+    "Colline Gate spear",
+    "march on Rome to relieve Capua"
+  ]
 }

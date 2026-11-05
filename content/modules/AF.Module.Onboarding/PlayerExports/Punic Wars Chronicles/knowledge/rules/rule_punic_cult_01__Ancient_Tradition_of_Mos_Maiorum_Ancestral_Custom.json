@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_cult_01",
-  "Name": "Ancient Tradition of Mos Maiorum Ancestral Custom",
-  "Keywords": [
-    "rule_punic_cult_01",
-    "Sacred Code of Mos Maiorum Ancestral Custom",
-    "Civic Rites Mos Maiorum Ancestral Custom",
-    "Ancestral Law Mos Maiorum Ancestral Custom"
-  ],
+  "Name": "The Roman Sacred Chickens: Feeding Auspices and the Law of Omens for Campaigning Legions",
+  "Category": "culture",
+  "Priority": 86,
   "RagShortTexts": [
-    "The institutional tradition of Mos Maiorum Ancestral Custom defined social hierarchy, civic..."
+    "Before a Roman army marched or gave battle, the army's augur had to read good or ill fortune from how the sacred chickens fed",
+    "If the chickens pecked greedily and let grain fall from their beaks it was a great omen; if they kept their beaks shut and refused to eat it was a dire omen",
+    "When the chickens refused to eat, the consul Pulcher threw them into the sea in a rage and soon suffered a crushing defeat"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Before opening a war, fighting a decisive battle or making an important river crossing, a Roman commander had to perform the strict 'chicken auspice' (Tripudium) according to the ancient religious law. The army's chicken-keeper (Pullarius) carried a cage holding the sacred chickens and scattered barley grains in the stillness of dawn. If the chickens squawked and scrambled for the grain, gobbling it down and even dropping chewed grains from their beaks onto the ground, this was called the 'sacred falling of grain' and meant that Jupiter, the chief god, gladly gave his consent, and the whole army at once sounded the charge. If instead the chickens cowered in fright, flapped their wings or refused to eat, it was taken as a dire warning sent by the gods, and the whole army was strictly forbidden to engage. Before the naval battle of Drepana in the First Punic War, the consul Claudius Pulcher saw the chickens refuse to eat, flung the cage into the sea in a fury and shouted, 'Since they will not eat, let them drink their fill!' That same day the main Roman fleet was annihilated, and the episode became a sacred precept that no one in the Roman army dared to violate.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The social order of antiquity was rooted in Mos Maiorum Ancestral Custom. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+      "Content": "What trembles between those wings is the will of Jupiter! Whoever scorns the sacred chickens will meet the gods' overwhelming wrath; Claudius's warships turned to splinters stand as an eternal warning to the arrogant."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
-          "lord",
-          "notable"
+          "soldier",
+          "warrior"
         ]
       },
-      "Content": "Without Mos Maiorum Ancestral Custom, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
+      "Content": "The soldiers stare at the golden chickens in front of the battle line. As soon as they see grain fall from those beaks, every Roman gripping his short sword feels the courage of certain victory blaze up in his heart!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "peasant",
-          "villager"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "From childhood our elders taught us to revere Mos Maiorum Ancestral Custom. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+      "Content": "The Romans think they can read the course of a war by feeding barley to a few little chickens, never knowing that what truly decides a battlefield is the outflanking of Hannibal's cavalry and the blades of his ambushers."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "modern veterinary science",
+    "agnosticism",
+    "atheist materialism",
+    "modern chicken farm"
+  ],
+  "Keywords": [
+    "sacred chickens",
+    "tripudium",
+    "pullarius",
+    "Roman auspices",
+    "Claudius Pulcher at Drepana"
+  ]
 }

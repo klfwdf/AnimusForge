@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_33",
-  "Name": "Punic War Campaign Operation 33",
-  "Keywords": [
-    "rule_punic_33",
-    "Punic Operation 33",
-    "Strategic Campaign 33",
-    "Mediterranean Theater 33"
+  "Name": "The Desperate March Through the Arno Marshes and Hannibal's Lost Eye",
+  "Description": "In spring 217 BC, to avoid the passes held in strength by the Roman consul, Hannibal chose the almost untrodden flooded marshes of the Arno and forced a march of four days and nights, the whole army treading over rotting corpses. A severe inflammation of the eye cost Hannibal his right eye for good.",
+  "Tags": [
+    "Arno marshes",
+    "One-eyed Hannibal",
+    "Strategic surprise",
+    "Apennine mountains",
+    "Breakthrough into Etruria",
+    "Inhuman march"
   ],
+  "Category": "History",
+  "DefaultPriority": 80,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 33 concerning Mediterranean operations during the Second Punic War."
+    "In spring 217 BC Hannibal led his army for four days and three nights across the badly flooded, rotting marshes of the Arno.",
+    "The whole army waded day and night in waist-deep foul water and could only snatch sleep lying on heaps of dead horses, dead mules and even fallen comrades.",
+    "Riding the last surviving elephant of the army, Hannibal permanently lost one eye to a severe eye infection."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 33 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 33, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 33 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "It was a living crossing of hell! The spring flood of the Arno had turned the land for dozens of miles around into a filthy swamp, and for four full days and three nights the soldiers could not find a single inch of dry ground to sit and rest. The Gallic mercenaries in the rear ranks were driven on by Gallic officers with drawn swords, and any man who could walk no further fell into the mud and drowned in an instant. Exhausted fighters could only pile up dead mules, dead warhorses and even the bodies of fallen comrades and doze on top of them above the water. Our general Hannibal rode the one remaining elephant, named 'Surus', and pus and blood ran from his right eye, swollen like an egg, yet he never once stopped to bind it! It was exactly this inhuman harshness and will that carried us around behind the Roman legions!"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The consul Flaminius had blocked every level highway at Arretium, and by every rule of war the Carthaginians could not possibly get around so tight a defensive line. But Hannibal is no mortal who plays by human reason! He actually dared to drive tens of thousands of men into the deadly spring marshes, and even let disease rob him of one of his eyes! That uncanny tactic, scornful of every natural barrier, plunged the consul into a nightmare of strategic helplessness."
+    },
+    {
+      "Priority": 70,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The bogs along the Arno breathe out stinking poisonous vapors all year round, and not even the cowherd boys dare go near them. When that pack of foreign beasts and dark-skinned soldiers crawled out of the swamp, they were hung all over with rotting waterweed and maggots; demons could look no worse! The commander at their head had a filthy rag tied over one bleeding, festering eye, yet his one remaining eye shone with the terrible, hungry glare of a wolf, and wherever they passed, the crops were burned to the ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In spring 217 BC, to get around the mountain passes held in strength by the Roman consul, Hannibal led his army on a perilous crossing of the Arno marshes, badly flooded by the spring waters. The whole army forced its way for four days and nights through waist-deep mud and water among rotting corpses, and great numbers of soldiers and pack animals drowned. Hannibal lost the sight of his right eye to a severe eye infection, but he burst unexpectedly into the plains of Etruria and achieved a great strategic outflanking."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Arno marshes march",
+    "Hannibal loses an eye",
+    "217 BC march into Etruria",
+    "outflanking Flaminius at Arretium"
+  ]
 }

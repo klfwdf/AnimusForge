@@ -1,42 +1,56 @@
 {
   "Id": "rule_punic_80",
-  "Name": "Punic War Campaign Operation 80",
-  "Keywords": [
-    "rule_punic_80",
-    "Punic Operation 80",
-    "Strategic Campaign 80",
-    "Mediterranean Theater 80"
-  ],
+  "Name": "The Oligarchy of Hanno the Great Withholds Pay amid Land and Sea Factional Strife",
+  "Category": "politics",
+  "Priority": 88,
   "RagShortTexts": [
-    "Strategic campaign doctrine 80 concerning Mediterranean operations during the Second Punic War."
+    "In Carthage the peace-minded oligarchic faction led by Hanno the Great dominated the Senate of One Hundred",
+    "Favoring inland North African farms and estates and near-sea trade in the western Mediterranean, it opposed draining the treasury",
+    "It deliberately delayed paying the overseas mercenaries, leaving the defense lines in Sicily and Iberia disconnected"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Throughout the Second Punic War, Carthaginian domestic politics remained sharply split along two tracks. The Barca family, represented by Hannibal, championed overseas expansion, army command and the struggle for mastery of the Mediterranean, while the aristocratic oligarchy led by Hanno the Great had its roots deep in the vast plantations and slave estates of the Tunisian plain in North Africa. Hanno's faction saw the overseas war as a bottomless pit devouring the treasury, and feared that the Barcids, once victorious, would abolish the oligarchy and set up a military dictatorship. So at key moments in the campaigns, the Senate again and again used the tight treasury as an excuse to cut the sailors' rations and withhold the mercenaries' pay, and diverted precious shipbuilding funds to policing the homeland. This deadly factional strife and short-sighted obstruction left Hannibal, fighting alone far away in the Apennine peninsula, without steady supplies, and in the end it ruined the fortunes of the empire.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 80 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "Hanno and his parasites sit counting their coins among their olive trees and wheat fields, and they could not care less that we sleep in the wind and rain in the Apennines! Without the drag from home, we would long ago have planted the purple banner on the Capitoline Hill!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 80, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The treasury is not the Barca family's private purse. If all our wealth is sent to Italy to fight a war that cannot be won, who will defend the plantations of the homeland and the overseas trade routes?"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 80 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "We risk our lives for Carthage, yet they dock our silver every month! Without real gold and silver, don't dream of us standing in front of Roman heavy javelins for the Barca family!"
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Trust (cartel)",
+    "Central bank",
+    "Fiscal deficit ratio",
+    "Company law"
+  ],
+  "Keywords": [
+    "Hanno the Great",
+    "Carthaginian oligarchy",
+    "Barcid faction",
+    "withheld pay",
+    "mercenaries",
+    "Senate of One Hundred",
+    "factional strife",
+    "Tunisian estates"
+  ]
 }

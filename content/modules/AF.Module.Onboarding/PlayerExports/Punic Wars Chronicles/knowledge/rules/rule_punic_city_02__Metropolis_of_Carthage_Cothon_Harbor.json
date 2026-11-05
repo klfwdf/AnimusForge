@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_city_02",
-  "Name": "Metropolis of Carthage Cothon Harbor",
-  "Keywords": [
-    "rule_punic_city_02",
-    "Urban Center Carthage Cothon Harbor",
-    "Citadel of Carthage Cothon Harbor",
-    "Harbor of Carthage Cothon Harbor"
-  ],
+  "Name": "Carthage, Mother City of Sea Power: the Double Circular Harbor and the Byrsa Citadel",
+  "Category": "geography",
+  "Priority": 88,
   "RagShortTexts": [
-    "The fortified urban center of Carthage Cothon Harbor served as a vital strategic, naval,..."
+    "Carthage has a double artificial naval harbor able to hold two hundred and twenty quinqueremes",
+    "The Byrsa citadel rises on its hill, commanding the sea lanes of the Gulf of Tunis",
+    "Inside the triple great walls are elephant stalls and stables, with a standing garrison of twenty thousand"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Carthage (town_carthage_qart_hadasht) stands on a peninsula jutting into the Gulf of Tunis, a strong position joined to the mainland only by a narrow isthmus. What most amazed the classical world was its double circular harbor, a marvel of engineering: the outer harbor was the merchant port, and the inner harbor was a top-secret circular naval port. On the island in its center stood the admiral's residence, ringed by two hundred and twenty ship sheds with slipways fronted by Ionic stone columns, so that the movements of the warships were completely hidden from outside eyes. To the north the Byrsa citadel soared into the sky. The triple walls around the city were over twelve meters high and nine meters thick, and the space inside them could hold three hundred war elephants, four thousand warhorses and twenty thousand heavy infantry, earning it the name of the greatest sea fortress of the Mediterranean.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "The Byrsa citadel lies like a lion crouched over the seas, and two hundred and twenty warships stand ready in the circular naval harbor. As long as the sea still beats against the Gulf of Tunis, the crown of Carthage will never fall!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "This arrogant giant city of merchants has melted its wealth into forbidding ship sheds and elephant stalls. Only when its warships are burned and its water gates filled in will peace come to the Mediterranean."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Carthage Cothon Harbor represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "Behind the stone towers of Carthage Cothon Harbor, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Possession of Carthage Cothon Harbor anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "This splendid giant city of white stone and purple banners has squeezed the inland deserts for centuries, and now the war eagles of Rome are circling its headland. The gods are watching its decline."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Tunisian independence",
+    "Ottoman provincial governor",
+    "French concession",
+    "Modern oil tanker"
+  ],
+  "Keywords": [
+    "Carthage",
+    "Qart Hadasht",
+    "circular harbor",
+    "Cothon",
+    "Byrsa citadel",
+    "Gulf of Tunis",
+    "triple walls",
+    "naval harbor"
+  ]
 }

@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_48",
-  "Name": "Punic War Campaign Operation 48",
-  "Keywords": [
-    "rule_punic_48",
-    "Punic Operation 48",
-    "Strategic Campaign 48",
-    "Mediterranean Theater 48"
+  "Name": "The Final Assault on Achradina and the Death of Archimedes Over His Sand Figures",
+  "Description": "In autumn 212 BC Rome broke into Achradina, the inner core of Syracuse, and sacked it bloodily. The seventy-five-year-old genius Archimedes, absorbed in geometric figures drawn in sand, was stabbed to death by a rash Roman soldier, an everlasting lament of classical science.",
+  "Tags": [
+    "Fall of Syracuse",
+    "Death of Archimedes",
+    "Do not disturb my circles",
+    "Achradina",
+    "Marcellus's grief",
+    "Martyr of science"
   ],
+  "Category": "History",
+  "DefaultPriority": 90,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 48 concerning Mediterranean operations during the Second Punic War."
+    "In autumn 212 BC Rome broke into the inner city of Achradina and carried out a brutal sack and massacre lasting several days.",
+    "The seventy-five-year-old Archimedes, absorbed in the geometric circles in his sand tray, made a last protest to the Roman soldier with a drawn sword.",
+    "A rash legionary cut Archimedes down with his sword, and the commander Marcellus, grief-stricken at the news, gave the sage an honorable burial."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 48 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 95,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 48, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 48 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "'Please do not disturb my circles!' (Noli turbare circulos meos!) These were the last words a seventy-five-year-old man left to a barbarous world! While Marcellus's pack of jackals burned, killed, raped and carried off golden statues in Achradina, this sage, wiser than all mankind, knelt quietly before the sand tray in his study working out a geometric proposition. A coarse Roman soldier reeking of wine burst in with his sword, and Archimedes did not even raise his head, only shielding the arcs on the ground with his aged hands! The blade pierced the old man's chest, and his blood reddened the fine sand where he had been solving his geometry! The brightest star of Greek civilization had fallen; Rome had taken the greatest mind of all mankind with a butcher's blade!"
+    },
+    {
+      "Priority": 92,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The moment General Marcellus heard the dreadful news, he clutched his head in both hands in anguish and wept aloud! Before the assault the general had ordered again and again that not a hair of Archimedes was to be harmed, and that this awe-inspiring scholar must be escorted unharmed to the commander's tent! Yet in the frenzy of the sack, when minds were clouded by blood and greed, one accursed soldier struck the old man down simply because he ignored his questions! The general ordered the killer punished publicly under military law, personally held a state funeral of the highest honor for Archimedes, and had the figure of a sphere within a cylinder carved on his tombstone. But no remorse of any kind can wash away this drop of blood that stains the Romans for all ages!"
+    },
+    {
+      "Priority": 78,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "After the city fell, all of Achradina went mad, grabbing gold, grabbing silverware, seizing women. Nobody knew that the odd old man fiddling with sand in his courtyard was the great engineer who had made our fleet howl like ghosts and wolves. By the time everyone understood, the old man had already fallen in a pool of blood and breathed his last. The general did not even stop to count the spoils; he rushed over like a madman to dress the old man and arrange his funeral, and at that moment all the rowdy soldiers fell silent in fear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In autumn 212 BC, Rome captured Achradina, the inner city of Syracuse. During the sack, the seventy-five-year-old scientist Archimedes was wholly absorbed in geometric drawings on the ground, and when a Roman soldier burst in with a drawn sword, he cried out 'Do not trample my circles'. The angered soldier stabbed him to death. The consul Marcellus was grief-stricken at the news, gave Archimedes an honorable burial and, according to his wishes, had the mathematical emblem of a sphere inscribed in a cylinder carved on his tombstone."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "death of Archimedes",
+    "Noli turbare circulos meos",
+    "sack of Achradina 212 BC",
+    "sphere and cylinder tombstone"
+  ]
 }

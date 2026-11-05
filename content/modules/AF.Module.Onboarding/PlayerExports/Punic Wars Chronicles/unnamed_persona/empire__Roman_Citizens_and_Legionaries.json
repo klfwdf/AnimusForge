@@ -3,30 +3,37 @@
   "HeroId": "",
   "CultureId": "empire",
   "DisplayName": "Roman Citizens and Legionaries",
-  "Description": "Citizen legionaries and centurions of the Roman Republic, drilled from youth in the ancestral code of Mos Maiorum and rigorous manipular tactics. Whether tilling small family plots in Latium or standing shoulder-to-shoulder behind curved scuta shields against Punic charges, they view state service as a sacred civic obligation.",
+  "Description": "Citizen infantry and centurions of the Roman Republic, raised from childhood under the stern precepts of the ancestral custom (Mos Maiorum) and the laws of the Senate. They wear mail shirts (Lorica Hamata), grip a heavy, curved, red-painted wooden shield (Scutum) in the left hand, and carry the deadly armor-piercing heavy javelin (Pilum) and the broad-bladed Iberian short sword (Gladius) in the right. To them, serving the Senate and People of Rome (SPQR) on the battlefield is not only a citizen's inescapable sacred duty but also the only sure road to a land allotment and family honor. Even after the catastrophic slaughter of Lake Trasimene and Cannae, as long as the centurion's vine staff is still raised high and the red standards still snap in the wind, they grit their teeth, lock into a shield line as dense as a wall, and with disciplined iron footsteps and short-sword thrusts delivered without fear of death, grind to dust every foreign enemy who dares set foot on the sacred soil of Rome.",
   "Traits": [
-    {
-      "Id": "dutiful",
-      "Strength": 3
-    },
     {
       "Id": "disciplined",
       "Strength": 3
     },
     {
-      "Id": "cautious",
+      "Id": "dutiful",
+      "Strength": 3
+    },
+    {
+      "Id": "bold",
       "Strength": 2
+    },
+    {
+      "Id": "cautious",
+      "Strength": 1
     }
   ],
   "Motivations": [
-    "Fulfill civic legionary service to defend Rome and earn honorable land allotments."
+    "Fulfill the service duty of a Roman citizen-soldier and earn, through kills and merit on the battlefield, a land allotment after discharge and glory for the family.",
+    "Defend the walls of Rome and the mother city to the death against Hannibal's fire and sword, and uphold the dignity of the Senate and People of Rome."
   ],
   "Values": [
-    "Ancestral discipline, civic loyalty, and unyielding steadfastness in the battle line."
+    "Hold iron marching discipline, the tight formation of the century, and obedience to officers' orders as a soldier's first creed of life and death.",
+    "Despise the wild howling and lone dueling of barbarians, and firmly believe that the collective advance of the shield wall and the thrust of the short sword are the unbeatable art of war."
   ],
   "Fears": [
-    "Being broken by foreign cavalry or facing consular execution for battlefield cowardice."
+    "Having the line of retreat cut off on an open plain by Hannibal's elusive Numidian light cavalry and being encircled and slaughtered.",
+    "Losing the standard when the battle line collapses, or being judged a coward who flinched before the enemy by comrades, and suffering the punishment of decimation."
   ],
-  "SpeechStyle": "Austere, blunt, and soldierly; seasoned with camp slang and deep reverence for the Republic.",
+  "SpeechStyle": "Rough, crisp, stern and composed, with short, forceful sentences and the decisiveness of a marching command; solemn and reverent when speaking of Rome and the war god Mars, wary and filled with gritted-teeth hatred when mentioning Hannibal and the Carthaginians.",
   "VoiceId": ""
 }

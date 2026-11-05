@@ -1,41 +1,40 @@
 {
   "Id": "rule_punic_14",
-  "Name": "Punic War Campaign Operation 14",
   "Keywords": [
-    "rule_punic_14",
-    "Punic Operation 14",
-    "Strategic Campaign 14",
-    "Mediterranean Theater 14"
+    "Power Structure of the Roman Senate and Ancestral Custom",
+    "Senate and People of Rome",
+    "Mos maiorum, the way of the ancestors",
+    "Annually elected consuls",
+    "Dictator in times of emergency",
+    "Tribune's veto"
   ],
   "RagShortTexts": [
-    "Strategic campaign doctrine 14 concerning Mediterranean operations during the Second Punic War."
+    "The Roman Republic made the Senate its center of decision and gave military and civil command to two consuls, sustaining a tight state organization and power of crisis mobilization through the ancient \"way of the ancestors.\""
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 14 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "The foundation of the Roman Republic's constitution rested on the finely balanced partnership of \"the Senate and the People of Rome\" (Senatus Populusque Romanus, SPQR). About three hundred senators serving for life controlled the treasury and finances, foreign treaties and the review of major state policy. Each year the Centuriate Assembly elected two consuls (Consul) of equal power, who each commanded a main army and presided over affairs of state; their term was limited to a single year to prevent one-man rule. In times of extreme emergency, when the state faced destruction, the Senate could authorize the appointment of a dictator (Dictator), who for at most six months held all military and civil power, including the power of life and death. The plebeian order, through the tribunes of the plebs (Tribunus Plebis) elected by the Plebeian Council, exercised a sacred and inviolable \"veto\" (Veto) to protect plebeian rights. The soul running through the whole system was Rome's \"way of the ancestors\" (Mos Maiorum), which stressed absolute devotion to the gods, to parents and to the city (Pietas), dignified seriousness (Gravitas) and keeping one's sworn word (Fides). It was this tight organization, which subordinated the individual to the city's legal tradition, that gave Rome its fearsome resilience, able to mobilize without limit even after repeated devastating blows."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 14, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "In the heart of every Roman citizen, the marble steps of the Senate are the lighthouse of order for the Mediterranean world! The Romans do not, like the monarchies of the East, let one foolish man throw away the realm, nor, like Greek democracy, let a rabble blindly follow and mutiny. The two consuls check each other, the tribunes uphold justice, and the Senate gathers the wisdom of four hundred years of sages. In the darkest hour after Cannae, when the nation had lost its young men, it was the Senate that did not panic for a moment. With the way of the ancestors as its guiding rule, it sold private property to fund the army, punished cowards who deserted, and freed slaves to enlist, and with strict law and unbending dignity it came through the bitterest winter. So long as the senators' togas remain white and the fasces and axes still stand, the freedom and dignity of Rome will never fall!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "greek"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 14 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In the eyes of Greek philosophers and envoys from the East, the Roman senatorial system is a cold, merciless, man-eating machine whose gears mesh with precision. The so-called republic is at bottom nothing but a tool by which a few great oligarchic houses (the Scipios, the Fabii, the Claudii) monopolize the highest priesthoods and the governorships of the provinces. The Romans talk endlessly of \"law\" and the \"way of the ancestors,\" yet in truth they dismiss all human warmth, philosophical inquiry and artistic pursuit as useless, and treat law as a lawful excuse for putting heavy chains on the conquered. It is this cold-blooded machine, fusing collective will into one, that has made the whole of Mediterranean civilization feel an unprecedented suffocation and dread."
     }
   ],
   "TextMappings": []

@@ -1,42 +1,110 @@
 {
   "Id": "rule_punic_49",
-  "Name": "Punic War Campaign Operation 49",
-  "Keywords": [
-    "rule_punic_49",
-    "Punic Operation 49",
-    "Strategic Campaign 49",
-    "Mediterranean Theater 49"
+  "Name": "The Young Men of Tarentum Let the Wolf In and the Ten-Year Iron-and-Blood Standoff at the Citadel",
+  "Description": "In 212 BC the young Tarentine nobles Philemenus and Nicon, disguised as hunters, tricked the guards into opening the gates and led Hannibal's main army into the city by night, seizing the whole harbor city-state. But the Roman remnants fell back to hold the citadel on its isolated headland, beginning a hard standoff that lasted several years.",
+  "Tags": [
+    "Battle of Tarentum",
+    "Hannibal's night attack",
+    "Philemenus",
+    "Democrates",
+    "Standoff at the citadel",
+    "Magna Graecia defects"
   ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 49 concerning Mediterranean operations during the Second Punic War."
+    "In 212 BC the young Tarentine noble Philemenus, using night hunting as a pretext, killed the city guards and let Hannibal's army into the city.",
+    "Hannibal took the prosperous harbor and strictly forbade plundering the Greek civilians, but the Roman remnants held out in the cliff-top citadel.",
+    "The Tarentines dug a huge trench where land met sea and built cross-walls in the streets, beginning a hard siege that lasted several years."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 49 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "tarentum"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 49, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "That was the great night of revenge when the Tarentines washed away their humiliation! The Roman governor not only bled us of our wealth, but cruelly had the young nobles we had sent to Rome as hostages thrown to their deaths in public! The instant Philemenus got the gate opened by pretending to bring in wild boar meat, his short sword pierced the throat of the Roman dog, and Hannibal's ten thousand picked men descended on the marketplace like an army from heaven! Hannibal strictly ordered that no Greek resident's house be touched, only marking houses with a chalk circle as a sign of protection. Apart from that stubborn citadel, stuck on the headland like a bone in the throat, all of Tarentum was free again at last!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 49 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The traitors of Tarentum can never wash away the sin of betrayal! The governor Brutus woke with a start from his drunken sleep, and the surviving legionaries withdrew under a hail of arrows into the citadel fortress set against cliffs above the deep sea! Hannibal threw everything at it for months, rams, tunnels and fire arrows, and the citadel did not budge! The Tarentines even built walls and dug trenches across the streets to cut the citadel off from the city, but as long as the citadel's harbor opened onto the sea, Rome's grain fleets could keep bringing in supplies without end! That nail was driven hard into Hannibal's flank for three whole years!"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Taking the harbor of Tarentum was Hannibal's finest geopolitical victory in southern Italy! At last we had a deep-water naval base able to anchor a hundred warships and connect us directly with Philip V of Macedon and the Carthaginian homeland! Hannibal even had local sailors haul dozens of Greek warships moored in the inner harbor overland through the city streets on giant wooden rollers and out to the open sea, placing the Roman citadel under a double blockade by land and sea! The fruit of victory is already in our grasp!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 212 BC, the young Tarentine nobles Philemenus and Nicon acted as insiders, killed the guards and opened the gates, leading Hannibal's main army in to take the whole city. Hannibal declared Tarentum free once more and spared it from plunder, but the Roman commander withdrew with his remaining troops into the citadel fortress, surrounded by sea on three sides. Hannibal built a long isolating trench and hauled ships overland to the sea to blockade it, and the two sides settled into a hard standoff lasting three years."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "capture of Tarentum 212 BC",
+    "Philemenus and Nicon",
+    "siege of the Tarentine citadel",
+    "ships hauled overland through Tarentum"
+  ]
 }

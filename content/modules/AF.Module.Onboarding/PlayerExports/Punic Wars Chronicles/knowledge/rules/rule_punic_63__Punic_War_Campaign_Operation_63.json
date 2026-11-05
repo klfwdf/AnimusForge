@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_63",
-  "Name": "Punic War Campaign Operation 63",
-  "Keywords": [
-    "rule_punic_63",
-    "Punic Operation 63",
-    "Strategic Campaign 63",
-    "Mediterranean Theater 63"
-  ],
+  "Name": "Scipio's Invasion of North Africa and the Failed Siege of Utica",
+  "Category": "history",
+  "Priority": 88,
   "RagShortTexts": [
-    "Strategic campaign doctrine 63 concerning Mediterranean operations during the Second Punic War."
+    "In 204 BC Scipio crossed from Sicily to invade the North African homeland with four hundred warships",
+    "Utica's strong defenses held out against long assaults, and the Romans had to camp with their backs to the sea and fortify a headland",
+    "Hasdrubal Gisco and Syphax joined forces, nearly one hundred thousand strong, and closed in around Utica"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In 204 BC, after completing rigorous military exercises in Sicily, Scipio led four hundred transports and warships across the Mediterranean straight into North Africa and landed at Castra Cornelia. All Carthage was struck with terror, and alarm bells rang without end. Scipio's first objective was to take Utica, an important town allied to Carthage, in order to gain a deep-water harbor for supply in all weather. But Utica's defenses were impregnable and its garrison resisted stubbornly, while the famous Carthaginian general Hasdrubal Gisco gathered thirty thousand foot and horse and, together with fifty thousand Masaesylian troops led by Syphax, closed in to surround the Romans. Facing an overwhelming disadvantage in numbers and a strong city in his way, Scipio had to break off the assault and build a fortified camp on a narrow headland to pass the hard winter. The two huge allied camps locked the Roman beachhead like giant pincers, and for a time the war sank into a suffocating stalemate.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "The invasion of North Africa is the divine plan that will destroy Hannibal at the root. Though Utica's walls are hard to break, General Scipio keeps strict discipline, his fortified headland stands firm as a rock, and he is quietly watching for a weakness in the barbarians."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "The invaders have walked into a trap of their own making! A hundred thousand brave soldiers have Scipio penned in on a sandy headland. As long as the ring does not loosen, the day his grain runs out and no help comes will be the day the Roman invaders find their grave."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 63 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 63, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 63 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "King Syphax has ridden to Carthage's aid with all the brave men of his people, while the traitor Masinissa has gone over to Rome like a stray dog. The horses of the desert will surely trample these visitors from the sea."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Steam engine",
+    "Artillery",
+    "Arabs",
+    "Turks"
+  ],
+  "Keywords": [
+    "Scipio invasion of Africa",
+    "204 BC",
+    "Utica siege",
+    "Castra Cornelia",
+    "Hasdrubal Gisco",
+    "Syphax",
+    "Roman beachhead",
+    "Scipio Africanus"
+  ]
 }

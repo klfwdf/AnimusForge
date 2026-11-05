@@ -1,42 +1,53 @@
 {
   "Id": "rule_punic_cult_08",
-  "Name": "Ancient Tradition of Iberian Chieftain Hospitality Bond",
-  "Keywords": [
-    "rule_punic_cult_08",
-    "Sacred Code of Iberian Chieftain Hospitality Bond",
-    "Civic Rites Iberian Chieftain Hospitality Bond",
-    "Ancestral Law Iberian Chieftain Hospitality Bond"
-  ],
+  "Name": "Garum Fish-Sauce Fermentation Workshops and the Salty Flow of Mediterranean Gold",
+  "Category": "economy",
+  "Priority": 84,
   "RagShortTexts": [
-    "The institutional tradition of Iberian Chieftain Hospitality Bond defined social hierarchy,..."
+    "Large stone garum fermentation vats were built all along the Mediterranean coast, where mackerel guts were salted and left in the sun",
+    "The savory liquid, rich in glutamate, was poured into two-handled pointed amphorae and sold widely in Rome and in army camps",
+    "Gadir and Malaca on the southern coast of Iberia were centers of top-grade fish sauce and monopolized its trade and profits"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "'Garum' (or Liquamen) was the irreplaceable soul of flavor and a pillar of bulk trade in the classical Mediterranean world. At Gadir, New Carthage and along the coast of southern Italy stood many orderly open-air workshops of large, watertight plastered stone vats. Workers layered the guts, gills and scraps of great quantities of freshly caught mackerel, sardines and tuna with highly concentrated sea salt, added herbs such as oregano and coriander, and left them to ferment under the fierce summer sun for two to three months. Once the fish proteins had been completely broken down and liquefied by their own enzymes, craftsmen pressed tightly woven reed baskets into the vats, and the clear, amber liquid that seeped into the baskets was the finest garum. This liquid was intensely savory; it was poured into specially made two-handled pointed amphorae (Amphora) and shipped everywhere with the grain fleets. It was both an indispensable dipping sauce at the banquets of Roman nobles and a life-saving ration that supplied the salt and protein legionaries needed for long marches.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The social order of antiquity was rooted in Iberian Chieftain Hospitality Bond. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+      "Content": "A dish without garum is like Italy without sunshine! Just a few drops of New Carthage fish sauce in a bitter soup of roasted lentils, and it turns at once into a delicacy fit for the gods!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Mackerel from the sea plus the blazing sun of Andalusia is worth more than a gold mine! Even while the two sides' warships turn the sea upside down, amphorae full of garum still fetch heavy silver coins in the ports on both shores."
+    },
+    {
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Without Iberian Chieftain Hospitality Bond, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "peasant",
-          "villager"
-        ]
-      },
-      "Content": "From childhood our elders taught us to revere Iberian Chieftain Hospitality Bond. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+      "Content": "That pungent, fermented, salty-fishy smell makes you retch at first, but after you have gnawed on dry, hard wheat biscuit for two months, one mouthful of hard bread with garum lets you carry your heavy shield another thirty miles."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "chemically synthesized MSG",
+    "pasteurization",
+    "stainless steel fermentation tank",
+    "modern food additives"
+  ],
+  "Keywords": [
+    "garum",
+    "liquamen",
+    "Roman fish sauce",
+    "amphora trade",
+    "Gadir fish-salting"
+  ]
 }

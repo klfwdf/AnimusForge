@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_70",
-  "Name": "Punic War Campaign Operation 70",
-  "Keywords": [
-    "rule_punic_70",
-    "Punic Operation 70",
-    "Strategic Campaign 70",
-    "Mediterranean Theater 70"
-  ],
+  "Name": "Zama: Open Lanes Panic the Elephants and the Infantry Grind",
+  "Category": "history",
+  "Priority": 95,
   "RagShortTexts": [
-    "Strategic campaign doctrine 70 concerning Mediterranean operations during the Second Punic War."
+    "In 202 BC at Zama, Scipio left lanes between his columns and used trumpets and javelins to drive off the war elephants",
+    "The panicked elephants turned back and trampled the Carthaginian left-wing cavalry, throwing its line into chaos",
+    "In a three-line fight to the death, the Roman lines relieved one another in turn and fought desperately against the Italian veterans"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "When the decisive battle of Zama began, Hannibal sent in eighty war elephants to charge first. Scipio had planned for this: breaking with the traditional checkerboard formation, he drew up the hastati, principes and triarii in straight columns, leaving clear lanes between them. The Roman light infantry blared bronze horns and war drums and hurled heavy javelins to wound the elephants' trunks. Most of the frightened elephants were driven down the lanes between the columns and out of the battle line, and some even turned back and trampled their own left-wing cavalry. But the central infantry battle was extremely savage. Hannibal had drawn up three lines; after his first line of Ligurian and Gallic mercenaries broke, Hannibal took personal command of the third line, the rock-solid legion of veterans from the Italian expedition. Short swords stabbed and shields crashed together, the Roman hastati and principes suffered heavy losses, and for a time the line sank into a stalled, suffocating balance of hand-to-hand fighting.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "The column formation that defeats war elephants is a stroke of matchless genius! Facing the stubborn resistance of Hannibal's elite veterans, the Roman legions did not yield an inch, stabbing through the enemy's chests between their overlapping shields!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "The new elephants, not fully trained, wrecked our cavalry line, but the Italian veterans were still unstoppable! We hacked the Roman shields apart with our short swords, and victory was within arm's reach!"
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 70 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 70, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 70 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The elephants shrieked and stampeded as the earth shook, and the Roman horns were deafening. The infantry in the center has sunk into a sea of blood, and the battle waits for the cavalry to decide it."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Maxim gun",
+    "Tank",
+    "Poison gas",
+    "Howitzer"
+  ],
+  "Keywords": [
+    "Battle of Zama",
+    "202 BC",
+    "war elephants",
+    "open lanes",
+    "Scipio formation",
+    "Italian veterans",
+    "infantry battle",
+    "hastati principes triarii"
+  ]
 }

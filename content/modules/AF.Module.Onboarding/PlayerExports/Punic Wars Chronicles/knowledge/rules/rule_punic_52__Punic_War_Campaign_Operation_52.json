@@ -1,42 +1,106 @@
 {
   "Id": "rule_punic_52",
-  "Name": "Punic War Campaign Operation 52",
-  "Keywords": [
-    "rule_punic_52",
-    "Punic Operation 52",
-    "Strategic Campaign 52",
-    "Mediterranean Theater 52"
+  "Name": "The Battle of Cornus: The Roman Legions Crush the Sardinian Coalition",
+  "Description": "In autumn 215 BC the Roman veteran Manlius Torquatus fought the decisive battle at Cornus against the combined Carthaginian and Sardinian army, killing 12,000 of the enemy in four hours. Hampsicora's son fell in battle, and Hampsicora took his own life with his sword in the middle of the night.",
+  "Tags": [
+    "Battle of Cornus",
+    "Torquatus",
+    "Suicide of Hampsicora",
+    "Capture of Hasdrubal the Bald",
+    "Suppression of Sardinia",
+    "An island stained with blood"
   ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 52 concerning Mediterranean operations during the Second Punic War."
+    "At the Battle of Cornus in autumn 215 BC the Roman veteran Torquatus destroyed the main enemy force with a disciplined battle line.",
+    "In four hours of fierce fighting he killed 12,000 of the enemy and captured alive Hasdrubal the Bald, commander of the Carthaginian expedition.",
+    "The rebel leader Hampsicora, heartbroken at the news that his beloved son had fallen, cut his own throat with his sword at midnight in the wild forest where he was hiding."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "General Torquatus proved that Rome's ancient, stern martial virtue is still unbreakable! Among the olive groves and hills of Cornus, the short-sword formations of the Roman legions moved like walls of bronze and iron, hacking the disorderly islanders and Carthaginian infantry into a tumbling rout! The enemy commander, Hasdrubal 'the Bald', became a prisoner in chains, and twelve thousand were cut down! Hampsicora, fearing punishment for his crimes, slit his own throat in the woods to atone! Sardinia was thoroughly purged and pacified, and every year tens of thousands of tons of wheat are once again shipped on time back to the Roman Forum!"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A fatal tragedy, failing at the very last step! General Hasdrubal's fleet had first been blown off course to the Balearic Islands by a storm, losing months of opportunity, and by the time it reached Sardinia, Hampsicora's son had already rashly engaged the rested Roman legions and been checked. In the decisive battle, the hastily gathered Gallic and native Sardinian infantry broke at the first clash, leaving the Carthaginian veterans exposed to the Roman javelins. The whole army was destroyed and its commander captured, and our grand counteroffensive in the Tyrrhenian Sea was snuffed out completely!"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The earth at Cornus is full of broken javelins stuck in the ground and stinking dead men. Old father Hampsicora used to be the richest and kindest great man on the island, but in fighting the Romans to the death his son died in the chaos of battle, and they never even found all of his body. The old man hid in the woods at night, drew his sword and cut his own throat. The Romans' black-sailed warships have landed again, and the whips in the tax collectors' hands lash harder than ever before."
+    },
+    {
       "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 52 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 52, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 52 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In autumn 215 BC, the Roman general Titus Manlius Torquatus heavily defeated the combined army of Carthage and the Sardinian rebels at the Battle of Cornus in Sardinia. The Roman legions killed more than ten thousand of the enemy and captured the Carthaginian commander Hasdrubal and others. The rebel leader Hampsicora took his own life after hearing that his son had fallen. The battle fully put down the Sardinian resistance and consolidated Roman rule over the islands of the western Mediterranean."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battle of Cornus 215 BC",
+    "Manlius Torquatus in Sardinia",
+    "Hampsicora suicide",
+    "Hasdrubal the Bald captured"
+  ]
 }

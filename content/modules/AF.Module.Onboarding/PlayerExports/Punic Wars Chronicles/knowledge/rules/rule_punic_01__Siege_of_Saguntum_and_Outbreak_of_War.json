@@ -1,42 +1,39 @@
 {
   "Id": "rule_punic_01",
-  "Name": "Siege of Saguntum and Outbreak of War",
   "Keywords": [
-    "rule_punic_01",
+    "Siege of Saguntum and the Irreconcilable Feud",
     "Siege of Saguntum",
-    "Saguntum Fall",
-    "Saguntine Pyre",
-    "Ebro Treaty Boundary"
+    "Fall of Saguntum",
+    "Alliance South of the Ebro",
+    "Casus belli of the Second Punic War"
   ],
   "RagShortTexts": [
-    "In 219 BC, Hannibal captured Saguntum south of the Ebro after eight months of siege,..."
+    "In 219 BC Hannibal attacked Saguntum, south of the Ebro, and took the city after an eight-month bloody siege, igniting the Second Punic War."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "In 219 BC, Hannibal Barca laid siege to the Iberian fortress of Saguntum, a Roman ally south of the Ebro River. Despite desperate appeals to the Roman Senate, no relief legions arrived. After an eight-month siege marked by fierce sapping and famine, the city fell. Surviving Saguntines cast their treasures and themselves into funeral pyres rather than submit. In Rome, Consul Fabius Buteo offered Carthage peace or war; the Suffetes chose war, igniting the Second Punic War."
+      "Content": "In 219 BC the young Carthaginian commander Hannibal led a great army to besiege Saguntum on the eastern coast of the Iberian Peninsula. Although Saguntum lay south of the line drawn by the Ebro Treaty, inside the Carthaginian sphere, it had earlier unilaterally concluded a protective alliance with Rome. The soldiers and citizens of Saguntum held out behind their strong walls for eight full months before the city was finally breached and fell. The Roman Senate took this as proof that Carthage had trampled the limits of the treaty and sent the envoy Fabius to the Carthaginian Council of One Hundred. Before the assembly Fabius gathered up a fold of his toga and declared that he carried in it \"peace or war\"; the Carthaginian elders proudly answered \"give whichever you please\"; Fabius shook out the fold and proclaimed \"then we give you war.\" With that, the Second Punic War, which would last seventeen years, formally began."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "Eight brutal months digging trenches under scorching Iberian sun! When their stone ramparts finally collapsed, those stubborn Saguntines burned their own gold and jumped into the flames before our blades could touch them!"
+      "Content": "In the eyes of Roman citizens and senators, the siege of Saguntum is iron proof of Carthaginian treachery (Punica Fides) and savage ambition. Saguntum was a sacred ally of Rome that placed lofty trust in the Republic. Ignoring repeated stern warnings from Roman envoys, Hannibal brazenly used battering rams to reduce the whole city to rubble; men, women and children alike were slaughtered or sold, and all the gold and silver seized went to pay his private mercenary army. Before Capitoline Jupiter, Rome swore that it would never tolerate such a brutal violation of allied faith, and that the iron short swords of the legions must trample Carthage flat!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "Saguntum was the catalyst of destiny. Hannibal knew well that striking this Roman client would force the Republic's hand, dismantling the fragile Ebro compromise and launching the grand march upon Italy."
+      "Content": "To the Carthaginians, the Saguntum affair was nothing but a vile provocation born of Rome's insatiable greed and long-armed meddling. As early as the time of Hasdrubal, the two powers had expressly fixed the Ebro as their boundary. Saguntum lay hundreds of miles deep south of that river, yet Rome, harboring malice, colluded with it and secretly incited local tribes to raid Carthage's allies. Hannibal's siege and punishment of Saguntum was a resolute act of self-defense, entirely lawful, to uphold Carthage's sphere of influence. When the Roman senator arrogantly shook out his toga before the Council of One Hundred to declare war, the Carthaginian elders, carrying the protection of the god Melqart in their hearts, met this bloody war for the survival of their people without the slightest fear."
     }
   ],
   "TextMappings": []

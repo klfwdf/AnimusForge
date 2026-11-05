@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_38",
-  "Name": "Punic War Campaign Operation 38",
-  "Keywords": [
-    "rule_punic_38",
-    "Punic Operation 38",
-    "Strategic Campaign 38",
-    "Mediterranean Theater 38"
+  "Name": "Capua's Defection, the Luxurious Winter Quarters and Rome's Ruthless Double-Trench Blockade",
+  "Description": "In 216 BC Capua, chief city of Campania and the second great metropolis of Italy, opened its gates and went over to Hannibal. Rome then sealed it off completely with several legions digging a double ring of trenches, and when the city fell in 211 BC its entire nobility was put to death.",
+  "Tags": [
+    "Revolt of Capua",
+    "Hannibal's winter quarters",
+    "Double-trench siege",
+    "Fall of Capua",
+    "Massacre of the councillors",
+    "Punitive reduction to subject status"
   ],
+  "Category": "History",
+  "DefaultPriority": 85,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 38 concerning Mediterranean operations during the Second Punic War."
+    "In 216 BC Capua, the second richest great city in Italy, betrayed its alliance with Rome and went over to Hannibal.",
+    "The Carthaginian army wintered amid the luxury, hot baths and fine wine of Capua and was said to have lost the edge it needed to march on Rome.",
+    "In 211 BC Rome starved Capua into submission behind an inner and outer double trench and executed its councillors in great numbers."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 38 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 38, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 38 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Capua betrayed the Rome that had given it citizenship and boundless prosperity! They thought that by leaning on Hannibal they could carve up the mastery of Italy, the most shameless of fools' dreams! Fulvius and Appius led the legions to dig sixty miles of inner and outer double trenches, the inner to stop any breakout and the outer to hold off Hannibal's relief army! After two years of siege the people were reduced to famine and eating one another, and on the day the city fell the consul refused the Senate's letter of pardon and publicly beheaded fifty-three of Capua's ringleader councillors, sold tens of thousands of inhabitants into slavery and stripped the city of its status as a self-governing community! This is the fate of those who betray Rome, a warning for all ages!"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People foolishly sneer that the hot springs and honeyed wine of Capua sapped the fighting spirit of Hannibal's soldiers, not knowing that Hannibal had to give veterans worn out by three years of continuous campaigning a base where they could rest and regroup! The tragedy is that we lacked heavy siege engines. Faced with the impassable sixty-mile blockade wall the Romans had built, even when Hannibal attacked fiercely and even marched to the very walls of Rome to relieve the siege by threatening the enemy's heart, those iron-hearted Roman legions still clung to Capua and would not let go, and in the end we could only watch as our most loyal allied city was dismembered and butchered by the Roman brutes!"
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Capua's wealth became its own poison! When Hannibal rode into the city on his elephant, the streets were full of perfume, fine wine and flowers; but later on, even the rats and horse hides in the city had all been eaten. On the day the gates opened, the Roman consul sat in the middle of the forum and watched as whips flayed the city's great lords until their skin split open, and then their heads were cut off. The wailing could be heard clearly in the vineyards ten miles away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "After the Battle of Cannae in 216 BC, Capua broke away from Rome and went over to Carthage, and Hannibal took up winter quarters there. In 212 BC Rome concentrated six legions to build a tight inner and outer double trench and besiege Capua. Although Hannibal marched straight at Rome to draw off the besiegers, the Roman siege army held firm and would not withdraw, and in 211 BC it finally took Capua, executed all the rebel councillors and stripped the city entirely of its rights of self-government."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Revolt of Capua",
+    "Siege of Capua 212-211 BC",
+    "delights of Capua winter quarters",
+    "Capua double circumvallation"
+  ]
 }

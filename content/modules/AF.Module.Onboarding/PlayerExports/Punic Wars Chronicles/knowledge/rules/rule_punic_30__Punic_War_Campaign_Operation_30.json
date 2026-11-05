@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_30",
-  "Name": "Punic War Campaign Operation 30",
-  "Keywords": [
-    "rule_punic_30",
-    "Punic Operation 30",
-    "Strategic Campaign 30",
-    "Mediterranean Theater 30"
+  "Name": "The Miracle of the Alps: Blizzard Cliffs and Splitting Rock with Fire and Vinegar",
+  "Description": "In late autumn of 218 BC, after fifteen days of unimaginable cold, avalanches and ambushes by mountain tribesmen, Hannibal forced a path across sheer cliffs by burning great logs against the rock and dousing it with vinegar until it shattered, then broke into the Po Valley with 26,000 surviving troops.",
+  "Tags": [
+    "Crossing of the Alps",
+    "Hannibal",
+    "Fire and vinegar road-breaking",
+    "Alpine ambushes",
+    "Elephants over the mountains",
+    "Breakthrough into the Po Valley"
   ],
+  "Category": "History",
+  "DefaultPriority": 90,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 30 concerning Mediterranean operations during the Second Punic War."
+    "In late autumn of 218 BC Hannibal achieved the military miracle of crossing the Alps in fifteen days.",
+    "Where the cliff path had collapsed, his men felled great trees, burned them against the rock and doused it with vinegar until it crumbled, opening a way through.",
+    "Having lost more than half the army, he led 26,000 hardened veterans and the surviving elephants down into the plains of northern Italy."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 30 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 95,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 30, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 30 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "That was an epic of human will conquering the limits of nature! For fifteen days and nights the blizzards froze our Spanish veterans stiff, and savage mountain tribesmen rolled boulders down from the cliffs, smashing countless horses and mule carts. At the worst point the road was cut clean away by an avalanche, so Hannibal ordered ancient pines felled and heaped upon the great rock, set them roaring with fire, then poured sour vinegar onto the scorching stone, and the boulder cracked and burst apart with a roar! The engineers hammered day and night to carve a narrow track, and the elephants inched past the abyss, slipping at every step. When we stood at the pass and gazed down on the rich Po plain in the sunlight, our general cried out: 'Look, the gates of Rome lie at your feet!'"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Even the senator who hates Hannibal most cannot help shuddering at that astounding madness! Since time immemorial the Alps were the wall of bronze and iron that the gods had granted Italy, and no organized army had ever come out of those storm-swept icy peaks alive with elephants in tow! When his African and Spanish veterans, frozen and gaunt as demons, suddenly appeared on the Po plain, all Rome was gripped by terror, as if a legion of the underworld had descended upon the world of the living!"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old folk say that in the Alpine passes that autumn, black smoke drifted and long-nosed giant beasts gave piercing screams. The hunters in the mountains killed hundreds upon hundreds of straggling mercenaries with rolling logs, but that column was like a giant serpent of iron, bleeding yet impossible to cut in two, and it really did burn and crack a road through the cliff with fire and stone. When they came down, tens of thousands of frozen corpses were left on the glaciers, yet every one of those who survived and walked into the plain had eyes as cold as the icicles on the snowy peaks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In late autumn of 218 BC, Hannibal led his army across the Alps in fifteen days, a barrier long regarded as impassable. Facing snowstorms and bitter cold, the loss of supplies, attacks by mountain tribes, avalanches and broken cliffs, Hannibal used the technique of heating rock with fire and splitting it with vinegar to break open a road. He finally led 20,000 infantry, 6,000 cavalry and a number of elephants down into the Po Valley, carrying the war onto Roman home soil."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Hannibal crossing the Alps",
+    "Alpine crossing 218 BC",
+    "fire and vinegar rock splitting",
+    "elephants in the Alps"
+  ]
 }

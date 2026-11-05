@@ -1,42 +1,55 @@
 {
   "Id": "rule_punic_79",
-  "Name": "Punic War Campaign Operation 79",
-  "Keywords": [
-    "rule_punic_79",
-    "Punic Operation 79",
-    "Strategic Campaign 79",
-    "Mediterranean Theater 79"
-  ],
+  "Name": "Three Pecks of Knights' Gold Rings Before the Carthaginian Council of One Hundred, and a Rebuff",
+  "Category": "politics",
+  "Priority": 90,
   "RagShortTexts": [
-    "Strategic campaign doctrine 79 concerning Mediterranean operations during the Second Punic War."
+    "In 216 BC Mago Barca returned to the Carthaginian Senate under orders, bearing the news of the great victory at Cannae",
+    "In the hall of the Council of One Hundred he poured out three pecks of gold rings stripped from the bodies of Roman knights",
+    "He urged full reinforcement of Italy but met mockery and obstruction from the oligarchic faction of Hanno the Great"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In 216 BC, after the Battle of Cannae, Hannibal's youngest brother Mago Barca returned to Carthage on Hannibal's orders to report the victory to the Council of One Hundred. In the middle of the Senate's assembly hall, Mago had his attendants pour out on the stone steps, before everyone, three full pecks (about one bushel) of pure gold signet rings stripped from the fingers of fallen Roman knights and nobles. The gold glittered and the clash of rings rang out like thunder, and the hall burst into uproar. Mago seized the moment to demand more infantry, cavalry, elephants and money for a final blow. But the faction leader Hanno the Great sneered and attacked him on the spot, asking: 'If Hannibal has truly destroyed the enemy as his report says, why does he still ask the homeland for reinforcements and supplies? If Rome is suing for peace, where are its envoys?' Obstructed by the conservative merchant oligarchs, the reinforcements were delayed again and again, and in the end the chance of a lifetime to crush Rome for good was lost.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 79 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "Those three pecks of gold rings were cast from the corpses of Roman nobles! The soldiers at the front bled to win all of Italy, yet these merchants sitting in ivory chairs cannot bear to part with a single silver coin!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 79, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The madmen of the Barca family only want to pour the city's hard-earned money into the bottomless pit of Italy! What are a few looted rings worth? Rome still has not surrendered, so why should we go bankrupt for his ambition!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 79 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The gods have filled the enemy's council with envy and blindness. The selfishness and infighting of the Carthaginians are the strongest shield protecting the Roman Republic."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Recordings of parliamentary debates",
+    "Capitalist",
+    "Speaker's gavel",
+    "Paper money"
+  ],
+  "Keywords": [
+    "Mago Barca",
+    "gold rings",
+    "Roman knights' rings",
+    "Council of One Hundred",
+    "Hanno the Great",
+    "216 BC",
+    "Carthaginian Senate",
+    "reinforcements denied"
+  ]
 }

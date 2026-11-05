@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_71",
-  "Name": "Punic War Campaign Operation 71",
-  "Keywords": [
-    "rule_punic_71",
-    "Punic Operation 71",
-    "Strategic Campaign 71",
-    "Mediterranean Theater 71"
-  ],
+  "Name": "Masinissa's Light Cavalry Wheels Back to Strike the Rear and Decide the Ages",
+  "Category": "history",
+  "Priority": 95,
   "RagShortTexts": [
-    "Strategic campaign doctrine 71 concerning Mediterranean operations during the Second Punic War."
+    "At the critical moment of Zama, the cavalry of Masinissa and Laelius drove off the enemy horse and returned to the battlefield",
+    "Numidian and Roman cavalry together charged fiercely into the rear of Hannibal's veteran infantry",
+    "More than twenty thousand Carthaginians were killed and twenty thousand captured, while Hannibal broke out in disguise and returned to Hadrumetum"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "When the infantry struggle in the center at Zama sank into a deadlock neither side could break, the moment that decided the fate of the Mediterranean arrived. The six thousand Numidian light horsemen under Masinissa and the Roman heavy cavalry under Laelius, having routed and chased off the enemy cavalry on the wings, turned their horses back decisively and swept like thunder into the back of Hannibal's veteran legion. Like Cannae played out in reverse, the Carthaginian army, attacked front and rear, fell apart in an instant. Hannibal's veterans of a hundred battles, encircled ring upon ring, refused to surrender and died to the last man on the open plain. More than twenty thousand Carthaginians were killed and twenty thousand captured. Hannibal broke out with only a handful of attendants as escort and galloped to Hadrumetum, then went on to the Carthaginian Senate, admitted defeat and urged peace.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "The blood debt of Cannae has been paid in full at Zama! The moment the cavalry wheeled back, the Roman legions let out a roar that shook the heavens, and Scipio at last ended the legend of Hannibal!"
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 71 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "Masinissa's javelins pierced the backs of the veterans! Years of humiliating exile have been washed away today, and the iron hooves of the sons of the desert will live forever in history!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 71, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 71 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The veteran legion shed its last drop of blood, and the hoofbeats behind it announced the end of the empire. General Hannibal did all he could; the goddess Fortune has abandoned Carthage."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Heavy machine gun",
+    "Anti-aircraft gun",
+    "Armored troops",
+    "Satellite navigation"
+  ],
+  "Keywords": [
+    "Zama cavalry",
+    "Masinissa",
+    "Laelius",
+    "Numidian cavalry",
+    "rear attack",
+    "Hannibal defeated",
+    "Cannae reversed",
+    "Hadrumetum"
+  ]
 }

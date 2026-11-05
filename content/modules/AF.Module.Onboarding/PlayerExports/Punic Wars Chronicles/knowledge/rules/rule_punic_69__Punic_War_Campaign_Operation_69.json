@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_69",
-  "Name": "Punic War Campaign Operation 69",
-  "Keywords": [
-    "rule_punic_69",
-    "Punic Operation 69",
-    "Strategic Campaign 69",
-    "Mediterranean Theater 69"
-  ],
+  "Name": "The Legendary Meeting of the Two Great Generals on the Eve of Zama",
+  "Category": "history",
+  "Priority": 94,
   "RagShortTexts": [
-    "Strategic campaign doctrine 69 concerning Mediterranean operations during the Second Punic War."
+    "In 202 BC, on the eve of the Battle of Zama, Hannibal and Scipio rode out alone to meet, each with only an interpreter",
+    "Drawing on his sixteen years of rise and fall, Hannibal urged Scipio to stop while he was ahead and beware the fickleness of fortune",
+    "Scipio flatly refused, pointing out that Carthage had broken faith and torn up the ceasefire, so only the sword could decide the outcome"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In the autumn of 202 BC, on the eve of the decisive battle, Hannibal sent envoys asking to meet Scipio. The two greatest military geniuses of the Mediterranean held the only private meeting in history on a nameless hill between the two armies, each bringing only one interpreter. Hannibal, past forty-five and a veteran of a hundred battles, looked frankly at Scipio, thirty-three and in the prime of his vigor, and urged him to quit while he was ahead. Using the bitter lesson of his own fall from the peak of Cannae to being trapped in his homeland, he warned of the cruelty and fickleness of Fortune, and proposed peace on the condition that Carthage give up all its overseas territory. Scipio gravely refused, pointing out that the two sides had earlier reached a preliminary peace, but after Hannibal's return the Carthaginians had torn up the ceasefire, seized a Roman grain convoy and attacked envoys, and had thus completely lost any credit for peace. The talks broke down, the two generals returned to their camps to ready their armies, and the final battle that would decide the fate of civilizations could no longer be avoided.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "General Scipio stood proudly on the hill, unmoved by the eloquence of an aging god of war. The sin of breaking a sworn treaty can only be washed away with blood and steel!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "Hannibal showed the grace of a civilized and wise man, trying to spare two great cities their last bloodshed, while the arrogant Romans slammed the door of peace shut for good."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 69 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 69, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 69 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The leaders of two lion prides faced each other on the hilltop, and heaven and earth held their breath. We gripped our javelins tight, knowing that when the sun rose tomorrow, the world would have a new master."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Microphone",
+    "Journalist",
+    "Geneva Conventions",
+    "Camera"
+  ],
+  "Keywords": [
+    "Hannibal Scipio meeting",
+    "eve of Zama",
+    "202 BC",
+    "parley before Zama",
+    "interpreters",
+    "broken ceasefire",
+    "Fortune",
+    "peace terms refused"
+  ]
 }

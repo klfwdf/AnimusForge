@@ -1,42 +1,110 @@
 {
   "Id": "rule_punic_58",
-  "Name": "Punic War Campaign Operation 58",
-  "Keywords": [
-    "rule_punic_58",
-    "Punic Operation 58",
-    "Strategic Campaign 58",
-    "Mediterranean Theater 58"
+  "Name": "The Night Raid at Apollonia and the Burning of the Macedonian Fleet",
+  "Description": "In 214 BC, Philip V of Macedon besieged the key Illyrian town of Apollonia with one hundred and twenty light warships. The Roman propraetor Laevinus slipped a picked force ashore by night and struck by surprise, forcing Philip to burn his entire fleet himself and retreat in disorder overland.",
+  "Tags": [
+    "Battle of Apollonia",
+    "Philip V's retreat",
+    "Laevinus",
+    "Burning the fleet",
+    "Illyrian counterstroke",
+    "Night raid breaks the siege"
   ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 58 concerning Mediterranean operations during the Second Punic War."
+    "In 214 BC Philip V led one hundred and twenty light warships down the Aous River to besiege Apollonia.",
+    "The Roman commander Laevinus slipped three thousand picked men into the city unseen by night and launched a surprise attack before dawn.",
+    "Woken from sleep, the Macedonian army collapsed along the whole line, and Philip V had to order all hundred and more of his warships burned to escape."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 58 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Propraetor Laevinus fought an astonishing night raid at Apollonia that struck the Macedonians out of their wits! Three thousand Roman legionaries landed in the dark and, guided by the townsfolk, crept into the city like ghosts. In the deepest darkness before dawn the gates burst open, and trumpets and war cries rang through the river valley together! The arrogant Macedonians had their tents torn down over them by short swords in their sleep, and Philip V, in a panic, fled on horseback without even putting on all his armor! The hundred and twenty warships on the river were set ablaze by their own hands, and the towering flames burned the Aous to cinders! Macedon's dream of empire at sea turned to ash in a single night!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hellenic"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "It was a disgrace of a night raid that can never be washed away! The officers guarding the camp grew careless and failed to post layers of scouts in the dense woods at the river mouth, and the Roman legion that had slipped into the city caught us from inside and out. The river channel was too narrow to weigh anchor and sail, so to keep the one hundred and twenty lembi light warships, built at enormous cost, from falling into enemy hands, His Majesty had no choice but to order with tears that they be burned by our own hands! The whole army abandoned its heavy equipment and marched on foot over steep mountains and rugged paths back to Macedon, and the Romans clamped shut our road west to the sea."
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "soldier",
-          "warrior"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 58, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "That morning the firelight on the riverbank was more dazzling than the sunrise! More than a hundred fine big warships crackled and burned in the river until only black frames were left, and the Macedonian king, bare-chested on his horse, ran faster than a hare. The Roman soldiers chased after him blowing their horns, and the Greeks of Apollonia came out with gongs and drums to haul away the spoils. The spears and bronze helmets dropped on the ground alone filled more than a hundred carts."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 58 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In 214 BC, King Philip V of Macedon besieged Apollonia with a large fleet. The Roman commander Marcus Valerius Laevinus led three thousand picked men into the city by night and launched a surprise attack at dawn that smashed the Macedonian camp. Philip V retreated in haste, was forced to burn his own fleet of more than a hundred warships, and fell back home overland, completely losing his ability to cross the Adriatic and attack Italy."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Apollonia 214 BC",
+    "night raid",
+    "Marcus Valerius Laevinus",
+    "Philip V",
+    "Aous River",
+    "burned fleet",
+    "lembi",
+    "Illyria"
+  ]
 }

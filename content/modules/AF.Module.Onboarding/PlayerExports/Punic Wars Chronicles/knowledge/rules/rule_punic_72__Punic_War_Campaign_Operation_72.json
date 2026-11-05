@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_72",
-  "Name": "Punic War Campaign Operation 72",
-  "Keywords": [
-    "rule_punic_72",
-    "Punic Operation 72",
-    "Strategic Campaign 72",
-    "Mediterranean Theater 72"
-  ],
+  "Name": "The Peace Treaty of 201 BC and the Burning of Five Hundred Warships at Sea",
+  "Category": "history",
+  "Priority": 93,
   "RagShortTexts": [
-    "Strategic campaign doctrine 72 concerning Mediterranean operations during the Second Punic War."
+    "In 201 BC Rome and Carthage formally signed an extremely harsh treaty ending the war",
+    "Carthage surrendered all its war elephants, and five hundred main warships were publicly burned at sea outside the harbor",
+    "An indemnity of ten thousand talents and the loss of the right to make war on its own left it a Roman protectorate and dependent"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In 201 BC, after Hannibal overcame all opposition and persuaded the Council of One Hundred, Carthage formally accepted the peace treaty drafted by Scipio and approved by the Roman Senate. Its terms were extremely harsh: Carthage gave up forever all its territory outside Africa; it returned all of Masinissa's ancestral lands and recognized him, with fixed borders, as an independent major Numidian state; it surrendered all its war elephants and was never again to keep any; it kept only ten light trireme patrol boats, while the other five hundred well-equipped large main warships were publicly set on fire by the Romans on the sea outside the harbor of Carthage, their burning hulls lighting the North African night sky like torches in the sea; it was to pay a huge war indemnity of ten thousand talents in installments over fifty years; and it was strictly forbidden to wage any war inside or outside Africa without the permission of the Roman Senate. With this the Second Punic War came to an end. Carthage lost its standing as a great power for good and became a dependent, and Rome alone dominated the western Mediterranean.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "Five hundred enemy warships have burned to charcoal and ash in the sea wind! The waves are calm again, and from the capes of Gaul to the Atlas Mountains, the whole Mediterranean has become Rome's great lake!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "Watching the warships that carried three hundred years of seafaring glory collapse and sink in the flames, the whole city, young and old, beat their breasts and wept. We have become a fat morsel in the mouth of Masinissa, Rome's watchdog."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 72 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 72, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 72 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Carthage can no longer give us orders. King Masinissa now holds vast pastures and cities, and the Numidians walk tall in their white robes!"
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Treaty of Paris",
+    "Treaty of Versailles",
+    "Modern international law",
+    "Internal-combustion cruiser"
+  ],
+  "Keywords": [
+    "Treaty of 201 BC",
+    "end of Second Punic War",
+    "five hundred warships burned",
+    "ten thousand talents",
+    "Carthage disarmed",
+    "Masinissa",
+    "Scipio peace terms",
+    "war elephants surrendered"
+  ]
 }

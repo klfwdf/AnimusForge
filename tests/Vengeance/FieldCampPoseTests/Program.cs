@@ -48,6 +48,23 @@ namespace AnimusForge
             e=new CampAgent {Activity=Activity.Wounded};camp.TryPlayCampPose(e,SitActions);camp._elapsed+=0.2f;e.Agent.Progress=0.98f;camp.AdvanceCampPoseTransition(e);MBRandom.Roll=0.1f;camp.StrollAvailable=true;
             int moves=camp.Moves;camp.RefreshCampGroundRest(e);check(camp.Moves==moves,"wounded residents do not leave rest as a random variation");
             e.Activity=Activity.Fire;camp.RefreshCampGroundRest(e);check(camp.Moves==moves+1 && e.Returning && e.PoseTransition==CampPoseTransition.Exit,"healthy seated residents may take a real stroll through stand-up transition");
+            e=new CampAgent {Activity=Activity.Fire};camp.TryPlayCampPose(e,SitActions);camp._elapsed+=0.2f;e.Agent.Progress=0.98f;camp.AdvanceCampPoseTransition(e);
+            MBRandom.Roll=0.3f;string before=e.Agent.Current.Name;moves=camp.Moves;camp.RefreshCampGroundRest(e);
+            check(e.Agent.Current.Name=="act_dungeon_prisoner_sitting_ground_standup" && e.PoseTransition==CampPoseTransition.Exit && e.ReseatAfterExit && camp.Moves==moves,"posture change first stands up through the current family's own clip");
+            camp._elapsed+=1f;e.Agent.Progress=0.98f;camp.AdvanceCampPoseTransition(e);
+            check(e.Agent.Current.Name=="act_sit_down_on_floor_1" && e.PoseTransition==CampPoseTransition.Enter && !e.ReseatAfterExit && camp.Walks==walksBefore(camp),"then sits down through another family's entry clip, without walking");
+            camp._elapsed+=1f;e.Agent.Progress=0.98f;camp.AdvanceCampPoseTransition(e);
+            check(e.Agent.Current.Name=="act_sit_idle_on_floor_1" && e.Agent.Current.Name!=before && e.RestPose==CampRestPose.Sit,"new posture loops its own cycle, never blended straight from the old one");
+            sets=e.Agent.Sets;camp.TryPlayCampPose(e,SitActions);check(e.Agent.Sets==sets && e.RestPose==CampRestPose.Sit,"held posture variant is kept, not re-entered through sit-down");
+            camp.TryBeginCampPoseExit(e);check(e.Agent.Current.Name=="act_stand_up_floor_1","each family stands up through its own exit clip");
+            var other=new CampAgent();other.Agent.Index=5;camp.TryPlayCampPose(other,SitActions);
+            check(other.Agent.Current.Name!="act_dungeon_prisoner_sitting_ground","different residents start in different sitting families");
+            // Index 1 picks family (7+0)%4=3 first; a fresh camp so the clip metadata cache is cold.
+            MBActionSet.Missing.Add("act_stand_up_floor_3");var gap=new CampAgent();gap.Agent.Index=1;new FieldCampMissionLogic().TryPlayCampPose(gap,SitActions);
+            check(gap.Agent.Current.Name!="act_sit_down_on_floor_3","a family without its exit clip is never entered");MBActionSet.Missing.Clear();
+            e=new CampAgent {Activity=Activity.Wounded};camp.TryPlayCampPose(e,SitActions);camp._elapsed+=0.2f;e.Agent.Progress=0.98f;camp.AdvanceCampPoseTransition(e);
+            sets=e.Agent.Sets;camp.RefreshCampGroundRest(e);check(e.Agent.Sets==sets,"wounded residents keep their resting clip");
+            check(!GossipActions.SequenceEqual(TalkActions) && !LeanActions.Any(a=>a.Contains("side_wall")),"gossip and talk pools are distinct; leans stay front-facing fence clips");
             MBRandom.Roll=0.8f;
             e=new CampAgent();camp.TryPlayCampPose(e,SitActions);check(HoldCampRestForConversation(e) && e.PoseTransition==CampPoseTransition.None && e.Agent.Current.Name==SitActions[0],"conversation takes over a sitting-down resident without resetting to standing");
             sets=e.Agent.Sets;check(HoldCampRestForConversation(e) && e.Agent.Sets==sets,"conversation acquisition preserves an already seated cycle without restarting it");

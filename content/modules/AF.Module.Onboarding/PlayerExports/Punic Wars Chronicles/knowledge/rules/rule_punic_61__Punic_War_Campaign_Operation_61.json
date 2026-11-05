@@ -1,42 +1,110 @@
 {
   "Id": "rule_punic_61",
-  "Name": "Punic War Campaign Operation 61",
-  "Keywords": [
-    "rule_punic_61",
-    "Punic Operation 61",
-    "Strategic Campaign 61",
-    "Mediterranean Theater 61"
+  "Name": "The Battle of Mantinea and the Duel of Philopoemen, 'the Last of the Greeks'",
+  "Description": "In 207 BC, Philopoemen, general of the Achaean League, met the Spartan tyrant Machanidas at the Battle of Mantinea with his reformed heavy pike phalanx. In single combat before the lines he killed Machanidas with one thrust of his spear, saving the war in southern Greece.",
+  "Tags": [
+    "Battle of Mantinea",
+    "Philopoemen",
+    "The last of the Greeks",
+    "Spartan tyrant killed",
+    "Achaean military reform",
+    "Duel before the lines"
   ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 61 concerning Mediterranean operations during the Second Punic War."
+    "In 207 BC, at the Battle of Mantinea, the Achaean general Philopoemen utterly routed the Spartan army.",
+    "Philopoemen reformed the army on the phalanx model, using improved long spears and heavy shields to counter light-armed mercenaries.",
+    "At the climax of the battle Philopoemen, alone, killed the Spartan tyrant Machanidas with his own heavy spear at the edge of a ditch."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 61 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Priority": 95,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "achaean_league"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "It was the swan song of the classical Greek heroic epic! General Philopoemen threw away the feeble light shields and javelins of the past and re-equipped the whole army with fine heavy breastplates and six-meter sarissa pikes! Before the deep ditch at Mantinea, when the tyrant Machanidas arrogantly spurred his horse across the trench to strike, Philopoemen did not give a single step. Gripping his heavy spear in both hands, he drove it home with all his strength against the momentum of the charging horse! The spear burst straight through the tyrant's breastplate, and he toppled screaming into the mud! The whole Achaean army let out a roar that shook heaven and earth, and four thousand enemies were slain! The Greeks had at last washed away their humiliation with their own blood and heroic spirit, and Polybius called him 'the last brave man of Greece'!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hellenic"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Philopoemen's brilliant beheading strike at Mantinea saved the situation in the whole Peloponnese! The fall of Machanidas broke the backbone of the Spartan rebel forces, and it cost Rome its most savage grip in the east. His Majesty Philip V was then free to concentrate his forces against Thermum, the Aetolian capital, and forced the isolated Aetolians to bend the knee to Macedon and beg for mercy!"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "soldier",
-          "warrior"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 61, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "That whole great battle made your blood boil! Machanidas thought his mercenaries were invincible and chased the fleeing men with his eyes red with slaughter. Who could have guessed that General Philopoemen stood steady as a mountain on the far side of the deep ditch, and rode out alone to meet him? In the instant the two horses crashed together, Philopoemen's spear went in at the tyrant's neck and all the way through, and the blood sprayed three feet high! Once their commander was dead, the thousands of mercenaries left ran about like headless flies and knelt to surrender."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 61 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In 207 BC, Philopoemen, the famous general of the Achaean League, faced the Spartan army at the Battle of Mantinea. With his reformed dense heavy phalanx he halted the Spartan attack, and in a duel in the battle line he killed the Spartan tyrant Machanidas with his own hand. More than eight thousand enemies were killed or captured. For his outstanding generalship and noble martial virtue, Philopoemen was honored by both Roman and Greek historians as 'the last of the Greeks'."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battle of Mantinea 207 BC",
+    "Philopoemen",
+    "last of the Greeks",
+    "Machanidas killed",
+    "Achaean League",
+    "sarissa phalanx",
+    "Polybius",
+    "duel"
+  ]
 }

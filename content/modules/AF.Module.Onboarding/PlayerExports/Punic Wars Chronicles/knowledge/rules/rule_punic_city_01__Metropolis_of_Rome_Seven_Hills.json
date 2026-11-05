@@ -1,42 +1,58 @@
 {
   "Id": "rule_punic_city_01",
-  "Name": "Metropolis of Rome Seven Hills",
-  "Keywords": [
-    "rule_punic_city_01",
-    "Urban Center Rome Seven Hills",
-    "Citadel of Rome Seven Hills",
-    "Harbor of Rome Seven Hills"
-  ],
+  "Name": "Rome, City of Cities: the Defenses of the Seven Hills and the Tiber Harbor",
+  "Category": "geography",
+  "Priority": 88,
   "RagShortTexts": [
-    "The fortified urban center of Rome Seven Hills served as a vital strategic, naval, and..."
+    "The great stone Servian Wall of Rome encircles the seven hills and is impregnable",
+    "Shipping on the Tiber links Rome with its outer port of Ostia, carrying grain, fodder and military supplies",
+    "The Capitoline citadel and the temple of Jupiter are the spiritual center of the Senate and the legions"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Rome (town_V6) sits on seven hills of volcanic tuff beside the Tiber, tightly enclosed by the Servian Wall, built in the fourth century BC and as much as ten meters high. The Capitoline Hill, the final citadel, is crowned by the towering Capitoline Triad temple; the Palatine Hill is home to illustrious noble families; and the plebeian slums of the Subura and its markets link to the cattle market and the Forum. The Tiber runs through the city, and twenty miles downstream lies the port of Ostia, forming the grain route that is the city's lifeline. Even when Hannibal stood three miles outside the Colline Gate, the strong ditches, the high battlements and hundreds of thousands of citizen reserves who would rather die than surrender left even the god of war only able to gaze at the city and sigh.",
   "Variants": [
     {
       "Priority": 0,
-      "When": null,
-      "Content": "The ancient metropolis of Rome Seven Hills represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
-    },
-    {
-      "Priority": 1,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Behind the stone towers of Rome Seven Hills, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+      "Content": "The Servian Wall is built of solid blocks of tuff, and the gods and the spirits of our ancestors protect the seven hills. As long as the soul of Rome does not fall, every barbarian siege will be ground to dust beneath its walls."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Possession of Rome Seven Hills anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "It is a huge fortress piled up from stone and stubborn legions. Without hundreds of heavy battering rams and a complete blockade of its grain routes, storming the seven hills of Rome would see an army of a hundred thousand perish beneath its walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire_s"
+        ]
+      },
+      "Content": "Rome's authority comes from the seven hills by the Tiber. Whenever all Italy was trampled under Hannibal's iron hooves, the Senate's messengers still sent harsh levy orders out from that city of stone."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Vatican",
+    "St. Peter's Basilica",
+    "Medieval Papal States",
+    "Modern railway station"
+  ],
+  "Keywords": [
+    "Rome",
+    "seven hills",
+    "Servian Wall",
+    "Capitoline Hill",
+    "Tiber",
+    "Ostia",
+    "Colline Gate",
+    "Roman city defenses"
+  ]
 }

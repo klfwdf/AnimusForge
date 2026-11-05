@@ -1,42 +1,51 @@
 {
   "Id": "rule_punic_mil_04",
-  "Name": "Tactical Doctrine of Quinquereme Ramming and Boarding",
-  "Keywords": [
-    "rule_punic_mil_04",
-    "Doctrine of Quinquereme Ramming and Boarding",
-    "Combat Mastery Quinquereme Ramming and Boarding",
-    "Tactical Formations Quinquereme Ramming and Boarding"
-  ],
+  "Name": "The Balearic Sling: Three-Range Ballistics and the Tearing Kinetic Energy of Lead Shot",
+  "Category": "military",
+  "Priority": 88,
   "RagShortTexts": [
-    "The tactical doctrine of Quinquereme Ramming and Boarding governed battlefield formations..."
+    "The natives of the Balearic Islands practiced target shooting with slings from childhood, carrying three slings tied at the head, at the waist and in the hand",
+    "Long, medium and short slings flexibly handled different ranges, hurling deadly lozenge-shaped lead bullets",
+    "High-velocity lead shot shattered bones and caused severe internal injuries, far more powerful than ordinary bows"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The Balearic slingers (Funditores) were the deadliest long-range strike troops under Hannibal's command. The islanders were trained strictly by their parents from childhood, and if they could not hit a wooden post with a stone they were not allowed to eat. Each slinger carried three slings woven from animal sinew, rawhide or coarse hemp: a long sling tied at the waist for high-arc suppressing fire at long range beyond one hundred and fifty meters; a short sling wound around the forehead for direct, armor-breaking shots at close range within a few dozen meters; and a medium sling held in the hand, ready at any moment. As missiles, besides carefully chosen pebbles, they used large numbers of lozenge-shaped lead bullets (Glandes) cast in Carthaginian workshops and bearing Punic inscriptions. The instant of release from the high-speed sling gave the lead bullet a very high muzzle velocity and rotational energy. When it struck a man, it did not necessarily pierce heavy armor, but with its terrifying blunt kinetic energy it could crush enemy helmets, break ribs and rupture internal organs, so that a wounded soldier coughed blood and died on the spot.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The development of Quinquereme Ramming and Boarding exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+      "Content": "The leather sling whistles past my ear like the roar of the wind god! Just aim at the red-plumed helmet of a Roman centurion, let go with a flick of the fingers, and the spinning lead shot will smash his nose through his bronze face guard!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of Quinquereme Ramming and Boarding became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "Those island barbarians are naked and wear no armor at all, but the whistling lumps of lead falling on our heads are harder to guard against than arrows; even if you cover yourself with a great shield, the arm holding it will be battered numb and broken."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Mastery of Quinquereme Ramming and Boarding separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "Two thousand Balearic warriors are posted at the front of the battle line. Their flying stones are the best trumpet call for breaking up the orderly Roman charge, and every lead bullet paves the way for the charge of the war elephants."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "musket ball",
+    "gunpowder gunlock",
+    "sniper scope",
+    "modern body armor"
+  ],
+  "Keywords": [
+    "Balearic slingers",
+    "funditores",
+    "sling lead bullets",
+    "glandes",
+    "Hannibal's slingers"
+  ]
 }

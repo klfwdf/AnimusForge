@@ -3,7 +3,7 @@
   "HeroId": "",
   "CultureId": "aserai",
   "DisplayName": "Carthaginian Merchants and Mercenaries",
-  "Description": "Maritime merchants, sailors, and Sacred Band guards of the Carthaginian Republic, heirs to ancient Phoenician voyaging traditions and the protection of Melqart. Adept at navigating Mediterranean trade networks and coordinating multi-ethnic mercenary armies, they measure power through silver revenues and naval mastery.",
+  "Description": "Citizen merchants, sailors and Sacred Band guardsmen of the Carthaginian Republic, steeped in the Phoenician tradition of seafaring trade and the worship of the god Melqart. They are expert at assaying gold and silver, reading the stars for navigation and settling the ledgers of overseas trade. Their manner combines the easy affluence of the aristocracy of a North African coastal city-state with the worldly shrewdness of men who have scrambled through mercenary camps. In years of war they have grown used to seeing Gallic berserkers, Iberian swordsmen-hunters and Numidian horsemen live and die together at the bidding of Carthage's gleaming silver shekels. They sneer at the greed of the Romans who plundered Sicily and Sardinia, and firmly believe that sea power and wealth are the ultimate levers that decide the order of the world. Once a contract is signed and the pay is delivered, they will hold every inch of ground behind heavy spears and sturdy round shields, defending Carthage's commercial supremacy in the Mediterranean with cold calculation and iron weapons.",
   "Traits": [
     {
       "Id": "calculating",
@@ -14,19 +14,26 @@
       "Strength": 3
     },
     {
-      "Id": "ambitious",
+      "Id": "proud",
+      "Strength": 2
+    },
+    {
+      "Id": "opportunistic",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Secure maritime trade lanes and profit from overseas commercial ventures."
+    "Honor trade contracts and mercenary agreements, and exchange distinguished war service for a generous share of silver and privileges on overseas trade routes.",
+    "Defend the dignity of Carthage as the foremost commercial empire and sea power of the Mediterranean, and crush Rome's attempts to cut its trade lanes."
   ],
   "Values": [
-    "Honest commercial contracts, divine favor from Tanit, and pragmatic calculation."
+    "Regard the spirit of contract, commercial credit and battlefield calculation as the highest virtues, and believe that money and profit are the only bonds holding a multi-ethnic alliance together.",
+    "Revere the protection of the gods Melqart and Tanit, and see breaking a contract or withholding soldiers' pay in the face of the enemy as self-inflicted ruin."
   ],
   "Fears": [
-    "Punic naval defeat cutting off Mediterranean shipping lanes and bankrupting the state."
+    "The silver of the Carthaginian treasury running out, so that the mercenary companies revolt and mutiny and the whole front falls into fratricidal slaughter.",
+    "The Roman navy completely blockading the ports of the North African coast, so that the ancestral sea trade routes are plundered and severed."
   ],
-  "SpeechStyle": "Polished, urbane, and commercially astute; speaks with smooth maritime eloquence.",
+  "SpeechStyle": "Calm and seasoned, with a trader's shrewdness and a merchant's steadiness; quick to weigh costs, benefits and rewards in conversation; their eyes light up when speaking of silver, shipping and tactical encirclement, and they mention the Romans with the cold mockery an old civilization holds for overbearing upstarts.",
   "VoiceId": ""
 }

@@ -1,42 +1,39 @@
 {
   "Id": "rule_punic_05",
-  "Name": "Fabian Strategy and Tactical Attrition",
   "Keywords": [
-    "rule_punic_05",
-    "Fabian Strategy",
-    "Quintus Fabius Cunctator",
-    "Tactical Attrition Doctrine",
-    "Fabian Scorched Earth"
+    "Fabian Delaying Tactics and Scorched Earth",
+    "Fabian strategy",
+    "Fabius Cunctator the Delayer",
+    "Shield of Rome",
+    "Scorched-earth war of attrition"
   ],
   "RagShortTexts": [
-    "Dictator Fabius avoided open pitched battles, shadowing Hannibal and denying supplies to..."
+    "Facing Hannibal's irresistible frontal attacks, the dictator Fabius used delaying tactics and scorched earth, shadowing the enemy through the mountains to wear down its fighting strength."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Appointed Dictator following Trasimene, Quintus Fabius Maximus instituted the strategy that earned him the title 'Cunctator' (The Delayer). Recognizing Hannibal's tactical superiority in pitched battles, Fabius shadowed the Punic army from high ground, cutting off foraging parties, denying provisions through scorched earth tactics, and strictly refusing pitched engagements. Though criticized by impatient plebeians, this war of attrition preserved Rome's core manpower and gradually exhausted the invader."
+      "Content": "Faced with the terrifying destructive power Hannibal displayed in the field at the Trebia, Lake Trasimene and Cannae, the Roman dictator Quintus Fabius Maximus firmly established the \"Fabian Strategy\" that would enter the military textbooks. He strictly forbade all Roman legions from seeking any large pitched battle with Hannibal; instead he led his army along the high ridges, following and watching the enemy, camping within Hannibal's sight but never drawing the sword and coming down from the hills. At the same time Fabius imposed a harsh scorched-earth policy across the plains: he forcibly burned all farmland and unripe grain, drove the villagers' livestock into fortresses, and set checkpoints and ambushes on mountain roads against scattered Carthaginian foraging and raiding cavalry. This shadow-like war of attrition in the high country steadily exhausted Hannibal's expeditionary army, which had come from across the sea and lacked supply from home, and in the end dragged the war into a long war of endurance on interior lines that overwhelmingly favored Rome."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "The plebeian tribunes called the old man a coward, but watching Hannibal's veterans starve on scorched hillsides while we stayed safe behind our ramparts taught us that patience keeps a soldier alive."
+      "Content": "At first the Roman plebs and hot-blooded equites scorned Fabius's strategy as \"the act of a coward,\" mocking him as nothing but \"Hannibal's old attendant trailing behind him.\" To sow discord, Hannibal, while ravaging Campania, deliberately burned every Roman noble estate along his route but left Fabius's private property untouched. Yet Fabius did not waver; he even sold his own property to cover military costs, and with noble patriotic self-discipline foiled the scheme. The bloody lesson of Cannae finally made the Romans see the truth: before the war-god Hannibal, it was Fabius, who curbed vanity and held on, silently bleeding, who truly bore the fate of the Republic on his body and his reason. He was the \"Shield of Rome\"!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "Fabius understood what hotheaded consuls forgot: Rome's victory lay not in swift glory, but in enduring resilience. By denying Hannibal the decisive battle he craved, we slowly bled his army white."
+      "Content": "To Hannibal and the Carthaginian veterans, Fabius's delaying tactics were an utterly tormenting and exasperating act of a scoundrel. Countless times Hannibal drew up his army in full battle order under the very eyes of the Roman camp, even deliberately setting fire to the plain, yet Fabius, like a hedgehog curled in a crack in the rocks, would not come out to fight no matter what insults and taunts were hurled at him. Unable to destroy the Roman main army again in a decisive battle, the Carthaginian army could only spend its precious elite strength day after day in wearying foraging and in guarding against ambushes. Hannibal's strategic plan of forcing Rome to make peace through a series of campaigns was thus slowly strangled, bit by bit, in Fabius's net of stubborn stone."
     }
   ],
   "TextMappings": []

@@ -4,8 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 [assembly: AssemblyVersion("1.6.5.0")]
-[assembly: AssemblyFileVersion("1.8.0.0")]
-[assembly: AssemblyInformationalVersion("1.8.0")]
+[assembly: AssemblyFileVersion("1.8.1.0")]
+[assembly: AssemblyInformationalVersion("1.8.1")]
 [assembly: InternalsVisibleTo("PolicyEffectModule.ContractTests")]
 
 #if BANNERLORD_1_5_OR_GREATER

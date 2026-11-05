@@ -1,42 +1,39 @@
 {
   "Id": "rule_punic_08",
-  "Name": "First Macedonian War and Balkan Balance of Power",
   "Keywords": [
-    "rule_punic_08",
-    "First Macedonian War",
-    "Philip V Treaty",
-    "Aetolian League Coalition",
-    "Balkan Naval Front"
+    "First Macedonian War and the Balkan Balance of Power",
+    "Alliance of Philip V and Hannibal",
+    "Aetolian League against Macedon",
+    "Peace of Phoenice",
+    "Roman diplomatic containment in the East"
   ],
   "RagShortTexts": [
-    "King Philip V of Macedon allied with Hannibal in 215 BC; Rome allied with Aetolia to tie..."
+    "In 215 BC Philip V allied with Hannibal, starting the First Macedonian War; Rome joined with the Aetolian League and Pergamon to pin Macedon down in mainland Greece."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Seeking to expand westward into Illyria, King Philip V of Macedon signed a formal mutual-defense pact with Hannibal in 215 BC. Heavily engaged in Italy, Rome could not spare major legions; instead, Roman diplomats allied with the ferocious Aetolian League, Pergamon, and Sparta to wage proxy warfare against Philip in Greece. This ten-year Balkan conflict successfully prevented Philip from ever ferrying phalanxes to reinforce Hannibal in Italy, concluding with the Peace of Phoenice in 205 BC."
+      "Content": "In 215 BC, as the shock waves of Cannae spread across the Aegean, King Philip V of Macedon seized on Rome's perilous position in Italy and sent envoys to conclude a secret offensive and defensive alliance with Hannibal, aiming to drive Rome from its footholds in Illyria on the eastern shore of the Adriatic. This marked the outbreak of the First Macedonian War (214 to 205 BC). Facing the deadly risk of war on both an eastern and a western front, the Roman Senate showed superb diplomatic balancing: Rome avoided committing large numbers of its main legions to the Balkans and instead, with a small fleet combined with lavish diplomacy backed by money, successfully induced the Aetolian League of central Greece, Sparta and King Attalus I of Pergamon in Asia Minor to form an anti-Macedonian encirclement. Philip V was forced to sink into the quagmire of multi-front wars among the city-states of mainland Greece and had no strength at all to send an army across the sea to support Hannibal in Italy. In 205 BC the two sides signed the Peace of Phoenice, and Rome, at very small military cost, removed the deadly threat on its eastern front."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "We sailed small patrol squadrons in the Adriatic, keeping the Macedonian king's transports pinned in his harbors while the Greeks hacked at his northern borders."
+      "Content": "In the view of the Roman Senate, the First Macedonian War is a classic example of Rome prevailing with few against many, using the lever of diplomacy to defeat a combination of foreign powers. Philip V hoped to use Hannibal's fury to lay hands on Italy, and even dreamed of carving up the Adriatic. Yet with only a squadron under Valerius Laevinus and allied troops from mainland Greece, Rome kept Macedon firmly trapped among the mountains and bays at its own doorstep. The war taught Roman officers the tangled old grudges among the Greek city-states and the weaknesses of the Greek phalanx, laying the groundwork for the later complete conquest of the Balkans."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "empire"
         ]
       },
-      "Content": "Our Balkan diplomacy was a triumph of geopolitical balance. With minimal Roman blood spilled, our naval squadrons and Greek allies tied down the Antigonid king, ensuring Hannibal fought alone."
+      "Content": "In the eyes of the Macedonians, this war was full of betrayal by fellow Greeks and the sinister long arm of Roman power. Philip V's intention was to unite the strength of the whole Hellenistic world and keep the barbarous, aggressively expanding hegemony of the western Mediterranean firmly west of the Adriatic. Yet the Aetolian League, a pack of short-sighted robber cities, willingly became the pawns of the Roman legions for petty gains and let the wolf into the house, bringing Roman warships into the Gulf of Corinth. Although Philip V swept the field and forced his opponents to sign a peace, missing the historic chance to cross the sea and join forces with Hannibal like a thunderbolt ultimately set the fate of the eastern Mediterranean on an irreversible path into the abyss of decline."
     }
   ],
   "TextMappings": []

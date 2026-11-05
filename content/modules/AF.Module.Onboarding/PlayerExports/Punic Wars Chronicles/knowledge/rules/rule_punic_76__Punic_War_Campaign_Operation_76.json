@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_76",
-  "Name": "Punic War Campaign Operation 76",
-  "Keywords": [
-    "rule_punic_76",
-    "Punic Operation 76",
-    "Strategic Campaign 76",
-    "Mediterranean Theater 76"
-  ],
+  "Name": "Eight Thousand Slave Soldiers Take the Oath: the Legion That Earned Its Freedom",
+  "Category": "military",
+  "Priority": 89,
   "RagShortTexts": [
-    "Strategic campaign doctrine 76 concerning Mediterranean operations during the Second Punic War."
+    "After the disaster at Cannae, the Roman Senate broke a class taboo and paid to buy eight thousand young slaves",
+    "They formed a volunteer slave legion led by Gracchus, promised freedom in exchange for deeds in battle",
+    "At the great victory of Beneventum the slave soldiers fought with no thought for their lives and finally won citizenship and the cap of freedom"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The Battle of Cannae cost nearly seventy thousand young men, and Rome's citizens of military age were almost all dead or wounded, so the Senate had to break the sacred iron rule, centuries old, that only free citizens could serve in the army. The Senate used public funds to buy eight thousand strong young slaves from the great families and formed them into the 'volunteers' (Volones), led by the plebeian consul Tiberius Gracchus. Gracchus swore a sacred oath to them: whoever took an enemy's head on the battlefield would be freed on the spot. At the Battle of Beneventum in 214 BC, the slave soldiers fought for their lives against the fierce Carthaginian troops and in the end won a great victory. Before the whole army, Gracchus placed on the heads of the slaves who had earned it the brimless Phrygian cap (Pileus) that symbolized freedom, forging these slaves into the Republic's most steadfast iron-blooded guard.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "Rome's greatness lies not in never suffering disaster, but in this: even its slaves, under the banner of the Republic, can burst forth in fighting spirit for freedom with a courage that astonishes the gods!"
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 76 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "Yesterday we were beasts of burden under the whip; today the consul gives us short swords and shields. To wash away our slavery and become free men, we will gladly shed every drop of our blood!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 76, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 76 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The Romans actually make lowly slaves put on heavy armor and go to war. Their proud citizen legions exist only in name; they are clinging to life by relying on slaves."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Spartacus revolt",
+    "Triangular trade",
+    "Black slaves",
+    "American Civil War"
+  ],
+  "Keywords": [
+    "Volones",
+    "slave volunteers",
+    "eight thousand slaves",
+    "Tiberius Gracchus",
+    "Beneventum 214 BC",
+    "pileus",
+    "freedom for slaves",
+    "after Cannae"
+  ]
 }

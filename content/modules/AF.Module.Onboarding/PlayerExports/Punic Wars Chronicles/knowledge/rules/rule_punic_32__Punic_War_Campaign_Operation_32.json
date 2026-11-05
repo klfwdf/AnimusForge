@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_32",
-  "Name": "Punic War Campaign Operation 32",
-  "Keywords": [
-    "rule_punic_32",
-    "Punic Operation 32",
-    "Strategic Campaign 32",
-    "Mediterranean Theater 32"
+  "Name": "The Snowbound Ambush at the Trebia and Mago's Flank Attack",
+  "Description": "At the winter solstice in December 218 BC, Hannibal used light cavalry to lure the Roman legions across the bitterly cold Trebia, forced battle on a hungry and frozen enemy, and, with Mago's hidden troops bursting from the reed beds to strike them from behind, destroyed the main Roman army of 30,000.",
+  "Tags": [
+    "Battle of the Trebia",
+    "Hannibal",
+    "Longus",
+    "Mago's ambush",
+    "Battle in snow and ice",
+    "Tactical decoy"
   ],
+  "Category": "Military",
+  "DefaultPriority": 85,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 32 concerning Mediterranean operations during the Second Punic War."
+    "At the Battle of the Trebia at the winter solstice of 218 BC, Hannibal used the bitter cold and a hidden force to defeat Rome badly.",
+    "Light cavalry lured the Roman army, which had eaten no breakfast, into wading the chest-deep, bitterly cold Trebia.",
+    "Mago led a thousand picked foot and horse hidden in a deep reed-choked gully by the river and struck the Roman line from behind at the decisive moment."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 32 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 32, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The Battle of the Trebia is a peerless model of tactical psychology and close use of ground! On the morning of the battle heavy snow was falling. Hannibal had the whole army eat a hot meal around the campfires and rub thick oil over their bodies against the cold, while the arrogant consul Longus, provoked by a few hundred taunting Numidian riders, ordered his hungry Roman soldiers to wade across chest-deep icy water! By the time the two armies met, the Romans were so frozen they could barely grip their javelins, and Mago's thousand hidden men burst like death itself from the reed gully and drove straight into the enemy rear, trapping the 30,000 Roman legionaries against the icy river and tearing them to pieces!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 32 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "That was a piercing cold the legionaries will never forget! A whole morning without bread, and once in the river the icy water numbed our legs almost at once, while our soaked armor grew heavy as lead. Yet even when attacked front and rear and rammed by maddened elephants, the ten thousand legionary infantry in the center held together in a tight shield formation with unbelievable courage, cut straight through Carthage's Gallic auxiliaries and escaped alive! The one who lost that day was the rash, reckless consul, never the iron will of the Roman legions!"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The icy river was full of floating red Roman shields and corpses. The wind and snow cut across your face like knives, and when the Romans were driven into the water their hands shook so badly they could not even draw their short swords. When Mago's ambushers charged out of the reeds, their horses trampled right over the soldiers sprawled in the muddy water. If that band of veterans in the center had not hacked a bloody road through and escaped to Placentia, I fear not one of the forty thousand would have been left alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At the winter solstice in December 218 BC, Hannibal used a decoy on the Trebia to lure the Roman consul Sempronius Longus into leading his whole army, unfed, across the icy river to face the rested Carthaginian main force, who had oiled themselves against the cold. During the battle, Hannibal's youngest brother Mago led hidden troops out of a reed gully to strike the Roman rear. The Romans were heavily defeated with more than 20,000 casualties, and the battle firmly established Hannibal's strategic advantage on the plains of northern Italy."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battle of the Trebia",
+    "Trebia 218 BC winter battle",
+    "Mago reed ambush",
+    "Sempronius Longus defeat"
+  ]
 }

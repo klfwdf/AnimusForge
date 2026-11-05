@@ -1,42 +1,50 @@
 {
   "Id": "rule_punic_city_14",
-  "Name": "Metropolis of Gades Atlantic Trading Post",
-  "Keywords": [
-    "rule_punic_city_14",
-    "Urban Center Gades Atlantic Trading Post",
-    "Citadel of Gades Atlantic Trading Post",
-    "Harbor of Gades Atlantic Trading Post"
-  ],
+  "Name": "Cirta, Highland Royal Capital of Numidia: The Natural Fortress of the Gorge",
+  "Category": "geography",
+  "Priority": 86,
   "RagShortTexts": [
-    "The fortified urban center of Gades Atlantic Trading Post served as a vital strategic,..."
+    "Cirta is built on a sheer, isolated crag ringed by the Rhumel River, with cliffs hundreds of feet deep",
+    "Capital of Syphax's kingdom of the Masaesyli, it later became the royal seat of Masinissa, who united the tribes",
+    "Joined to the land only by a single natural stone ridge, it is the most impregnable natural fortress of the North African highlands"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Cirta (town_carthage_kirtan, also called Kirtan, modern Constantine) lies on the edge of a plateau more than six hundred meters above sea level in eastern Algeria in North Africa. The whole city stands on a huge isolated limestone rock platform enclosed on three sides by the sheer walls of the deep Rhumel gorge. The gorge drops vertically some two hundred meters and surrounds the city like an abyss; only to the southwest does a very narrow natural stone ridge connect it to the mainland plain, making it a true natural fortress. Syphax built a lofty palace and massive stone walls here and made it the center of Masaesylian hegemony. After Syphax was captured alive following the Battle of the Great Plains, the army of Masinissa and Laelius crossed the stone ridge and took Cirta, and Sophonisba drank poison and died here. Afterwards Cirta became the flourishing royal capital of the united kingdom of Numidia.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Gades Atlantic Trading Post represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+      "Content": "The rock platform above the abyss is the eagle's nest! King Masinissa raises his scepter in Cirta, the chieftains of every tribe bow before the cliffs, and Numidia is one at last!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Behind the stone towers of Gades Atlantic Trading Post, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+      "Content": "The fall of Cirta robbed us of our last strong ally in the North African interior. Queen Sophonisba's fragrant soul sleeps forever in the deep gorge, and Carthage has lost its western shield for good."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Possession of Gades Atlantic Trading Post anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "The gorge of the Rhumel is daunting, but Roman infantry and cavalry still crossed the chasm and planted their standards. Cirta is the crown jewel of the empire's most loyal ally on its southern frontier."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "French colony",
+    "Constantine suspension bridge",
+    "Barbary pirates",
+    "modern gun battery"
+  ],
+  "Keywords": [
+    "Cirta",
+    "Constantine",
+    "Rhumel gorge",
+    "Masinissa capital"
+  ]
 }

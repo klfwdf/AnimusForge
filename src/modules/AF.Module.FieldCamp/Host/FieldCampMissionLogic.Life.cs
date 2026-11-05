@@ -242,8 +242,8 @@ public sealed partial class FieldCampMissionLogic
 					ReleasePose(campAgent);
 					campAgent.Seated = false;
 				}
-				StopCampNavigation(agent);
-				if (keepRestPose || _prisoners.Contains(agent)) agent.SetIsAIPaused(true);
+				if (keepRestPose || _prisoners.Contains(agent)) HoldCampAgentStill(agent, agent.LookDirection.AsVec2);
+				else StopCampNavigation(agent);
 			}
 			_sceneConversationAgents.Add(agent);
 			return true;
@@ -451,9 +451,8 @@ public sealed partial class FieldCampMissionLogic
     {
         Agent agent = entry.Agent;
         // Arrived: release the movement goal before applying an idle animation.
-        StopCampNavigation(agent);
-        agent.SetIsAIPaused(true);
-        agent.LookDirection = new Vec3(entry.TargetFacing.x, entry.TargetFacing.y, 0f);
+        HoldCampAgentStill(agent, entry.TargetFacing);
+        entry.StallCount = 0;
         if (!_assembled)
         {
             ApplyPose(entry);
@@ -483,7 +482,7 @@ public sealed partial class FieldCampMissionLogic
         if (entry.Activity == Activity.Wander || finishedWork)
         {
             entry.NextWanderTime = _elapsed + 0.5f;
-            if (_campStrollBudget <= 0 || _campRouteBudget <= 0) return;
+            if (_campStrollBudget <= 0 || _campRouteBudget <= 0) { CountStrollFailure(StrollBudget); return; }
             entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(2f, 5f);
             if (TryNearbyStroll(entry, out Vec3 patrol))
             {
@@ -492,9 +491,18 @@ public sealed partial class FieldCampMissionLogic
             }
             else
             {
+                CountStrollFailure(_strollStage);
                 LogCampWalkPending(entry, "no reachable stroll destination");
                 entry.PoseVariant++;
                 ApplyPose(entry);
+                // A real dead end (not a budget deferral): chat with a nearby idle mate or face the
+                // nearest fire, then wait longer before trying again instead of re-polling every 2-5 s.
+                if (_strollStage != StrollBudget)
+                {
+                    // Set first: SettleWanderer holds the listening mate until this time.
+                    entry.NextWanderTime = _elapsed + MBRandom.RandomFloatRanged(8f, 15f);
+                    if (entry.Activity == Activity.Wander) SettleWanderer(entry);
+                }
             }
             return;
         }
@@ -567,44 +575,118 @@ public sealed partial class FieldCampMissionLogic
 			agent?.ClearTargetFrame();
 		}
 
+        // A paused AI keeps its last movement input: settled residents with no clip kept walking
+        // forward through the fence (2026-11-05 log: paused=True, velocity.y 0.15-1.38).
+        // Same soft hold as native IdleAgentBehavior; StopCampNavigation's ClearTargetFrame releases it.
+        // SetMovementDirection is the body facing (native ballista/conversation use it so), not a
+        // velocity: zeroing it turned every settled resident to one default heading.
+        private static void HoldCampAgentStill(Agent agent, Vec2 facing)
+        {
+            StopCampNavigation(agent);
+            if (agent == null) return;
+            if (facing.LengthSquared > 0.01f)
+            {
+                Vec2 direction = facing.Normalized();
+                agent.SetMovementDirection(in direction);
+                agent.LookDirection = new Vec3(direction.x, direction.y, 0f);
+            }
+            agent.MovementInputVector = Vec2.Zero;
+            agent.MovementFlags = Agent.MovementControlFlag.None;
+            agent.SetTargetPosition(agent.Position.AsVec2);
+            agent.SetIsAIPaused(true);
+        }
+
 		private bool TryNearbyStroll(CampAgent entry, out Vec3 target)
 		{
 			target = entry.Home;
+            _strollStage = StrollBudget;
             if (_campStrollBudget <= 0 || _campRouteBudget <= 0) return false;
             _campStrollBudget--;
+            _strollStage = StrollTooFar;
             // Dense layouts need nearby choices rather than only distant layout slots.
             for (int i = 0; i < 6; i++)
             {
                 float angle = MBRandom.RandomFloat * MathF.PI * 2f;
                 float distance = MBRandom.RandomFloatRanged(1.8f, 4f);
                 Vec3 candidate = entry.Agent.Position + new Vec3(MathF.Cos(angle) * distance, MathF.Sin(angle) * distance, 0f);
-                if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) <= 144f &&
-                    FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target) &&
-                    IsInsideCamp(target) && !IsReservedCeremonyPosition(target)
-                    && IsCampPositionAvailable(entry.Agent, target, 0.8f))
-                {
-                    _campRouteBudget--;
-                    if (TryCampRoute(entry.Agent.Position, target, out Vec3[] route))
-                    { entry.Route = route; entry.RoutePrepared = true; return true; }
-                    if (_campRouteBudget <= 0) return false;
-                }
-            }
-			int count = _layout.WanderSlots.Count;
-			int start = count > 0 ? MBRandom.RandomInt(count) : 0;
-			for (int i = 0; i < Math.Min(count, 12); i++)
-			{
-				Vec3 candidate = ToWorld(_layout.WanderSlots[(start + i) % count].Position);
-				if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) > 144f ||
-					candidate.AsVec2.DistanceSquared(entry.Agent.Position.AsVec2) < 4f ||
-					!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target) ||
-                    (!IsInsideCamp(target) || IsReservedCeremonyPosition(target))
-                    || !IsCampPositionAvailable(entry.Agent, target, 0.8f)) continue;
+                if (candidate.AsVec2.DistanceSquared(entry.Home.AsVec2) > 144f) continue;
+                if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target)
+                    || !IsInsideCamp(target) || IsReservedCeremonyPosition(target))
+                { NoteStrollStage(StrollGround); continue; }
+                if (!IsCampPositionAvailable(entry.Agent, target, 0.8f)) { NoteStrollStage(StrollOccupied); continue; }
                 _campRouteBudget--;
                 if (TryCampRoute(entry.Agent.Position, target, out Vec3[] route))
                 { entry.Route = route; entry.RoutePrepared = true; return true; }
-                if (_campRouteBudget <= 0) return false;
-			}
+                NoteStrollStage(StrollRoute);
+                if (_campRouteBudget <= 0) { _strollStage = StrollBudget; return false; }
+            }
+            // A random window of 12 list entries often lay entirely on the far side of the camp,
+            // so the 12 m filter left a resident with nothing. Use his own nearest points instead.
+            int[] near = NearWanderSlotsFor(entry);
+            int start = near.Length > 0 ? MBRandom.RandomInt(near.Length) : 0;
+            for (int i = 0; i < near.Length; i++)
+            {
+                Vec3 candidate = _campWanderWorld[near[(start + i) % near.Length]];
+                if (candidate.AsVec2.DistanceSquared(entry.Agent.Position.AsVec2) < 4f) continue;
+                if (!FieldCampSite.TryResolveGroundedPosition(Mission.Scene, candidate, 0.4f, out target)
+                    || !IsInsideCamp(target) || IsReservedCeremonyPosition(target))
+                { NoteStrollStage(StrollGround); continue; }
+                if (!IsCampPositionAvailable(entry.Agent, target, 0.8f)) { NoteStrollStage(StrollOccupied); continue; }
+                _campRouteBudget--;
+                if (TryCampRoute(entry.Agent.Position, target, out Vec3[] route))
+                { entry.Route = route; entry.RoutePrepared = true; return true; }
+                NoteStrollStage(StrollRoute);
+                if (_campRouteBudget <= 0) { _strollStage = StrollBudget; return false; }
+            }
             return false;
+        }
+
+        // Stroll failure reasons, counted per failed attempt (the furthest stage reached) and
+        // summarised once per 30 s. Only integer increments on the failure path.
+        private const int StrollBudget = 0, StrollTooFar = 1, StrollGround = 2, StrollOccupied = 3, StrollRoute = 4;
+        private readonly int[] _strollFailures = new int[5];
+        private int _strollStage;
+        private float _nextStrollSummaryTime;
+        private List<Vec3> _campWanderWorld;
+
+        private void NoteStrollStage(int stage) { if (stage > _strollStage) _strollStage = stage; }
+
+        private void CountStrollFailure(int reason)
+        {
+            _strollFailures[reason]++;
+            if (_elapsed < _nextStrollSummaryTime) return;
+            _nextStrollSummaryTime = _elapsed + 30f;
+            Logger.Log(LogSource, "stroll failures last30s budget=" + _strollFailures[StrollBudget] + " tooFar=" + _strollFailures[StrollTooFar]
+                + " ground=" + _strollFailures[StrollGround] + " occupied=" + _strollFailures[StrollOccupied]
+                + " route=" + _strollFailures[StrollRoute] + " residents=" + _agents.Count + " routeBudget=" + CampRouteBudgetPerBatch());
+            Array.Clear(_strollFailures, 0, _strollFailures.Length);
+        }
+
+        /// <summary>
+        /// Up to 12 wander points within 12 m of Home, nearest first. Layout points are converted to
+        /// world once per mission; each resident's list is built once per Home (one pass over the points).
+        /// </summary>
+        private int[] NearWanderSlotsFor(CampAgent entry)
+        {
+            if (entry.NearWanderSlots != null && entry.NearWanderHome.AsVec2.DistanceSquared(entry.Home.AsVec2) < 0.01f)
+                return entry.NearWanderSlots;
+            if (_campWanderWorld == null)
+            {
+                _campWanderWorld = new List<Vec3>(_layout.WanderSlots.Count);
+                foreach (FieldCampLayout.Slot slot in _layout.WanderSlots) _campWanderWorld.Add(ToWorld(slot.Position));
+            }
+            var picked = new List<KeyValuePair<float, int>>();
+            for (int i = 0; i < _campWanderWorld.Count; i++)
+            {
+                float d = _campWanderWorld[i].AsVec2.DistanceSquared(entry.Home.AsVec2);
+                if (d <= 144f) picked.Add(new KeyValuePair<float, int>(d, i));
+            }
+            picked.Sort((a, b) => a.Key.CompareTo(b.Key));
+            var result = new int[Math.Min(12, picked.Count)];
+            for (int i = 0; i < result.Length; i++) result[i] = picked[i].Value;
+            entry.NearWanderSlots = result;
+            entry.NearWanderHome = entry.Home;
+            return result;
         }
 
         /// <summary>
@@ -618,6 +700,8 @@ public sealed partial class FieldCampMissionLogic
         {
             Agent agent = entry.Agent;
             CampAgent mate = NearestIdleMate(entry, PairTalkRadius);
+            // One stop in three near a fire turns into a drink (alone, or face to face with a wandering mate).
+            bool drinking = TryNearestFire(agent.Position, 6f, out _) && MBRandom.RandomFloat < 0.3f;
             if (mate != null)
             {
                 Vec2 between = mate.Agent.Position.AsVec2 - agent.Position.AsVec2;
@@ -631,12 +715,12 @@ public sealed partial class FieldCampMissionLogic
                     if (mate.Activity == Activity.Wander)
                     {
                         mate.TargetFacing = -between;
-                        PlayLoop(mate, ListenActions);
+                        PlayLoop(mate, drinking ? DrinkActions : ListenActions);
                         // The listener stays for the talk instead of walking off mid-sentence.
                         mate.NextWanderTime = Math.Max(mate.NextWanderTime, entry.NextWanderTime);
                     }
                 }
-                PlayLoop(entry, TalkActions);
+                PlayLoop(entry, drinking ? DrinkActions : TalkActions);
                 return;
             }
             if (TryNearestFire(agent.Position, 12f, out Vec3 fire))
@@ -649,6 +733,9 @@ public sealed partial class FieldCampMissionLogic
                     entry.TargetFacing = toFire;
                 }
             }
+            if (drinking) PlayLoop(entry, DrinkActions);
+            // Alone with nothing to do reads as standing punished: move on sooner than a talking pair.
+            else entry.NextWanderTime = Math.Min(entry.NextWanderTime, _elapsed + MBRandom.RandomFloatRanged(8f, 15f));
         }
 
         /// <summary>Starts a verified ambient hold without restarting its native alternatives.</summary>
@@ -842,6 +929,19 @@ public sealed partial class FieldCampMissionLogic
         // Replan from the actual position. Never teleport on collision or stall.
         Vec3 goal = entry.Target;
         LogCampWalkPending(entry, "walk stalled or deadline reached");
+        entry.StallCount = entry.StallGoal.AsVec2.DistanceSquared(goal.AsVec2) < 0.25f ? entry.StallCount + 1 : 1;
+        entry.StallGoal = goal;
+        // The same spot stalled twice (2026-11-05 log: two residents retrying one choke for 2 min).
+        // A wanderer's stroll goal is optional: give it up here and let camp life pick another.
+        // Workers keep the existing walk-home retry; their station is not optional.
+        if (entry.StallCount >= 2 && !_assembled && entry.Activity == Activity.Wander && IsInsideCamp(entry.Agent.Position))
+        {
+            entry.StallCount = 0;
+            entry.Target = entry.Agent.Position;
+            SettleCampAgent(entry, blocked: false);
+            entry.NextWanderTime = Math.Min(entry.NextWanderTime, _elapsed + MBRandom.RandomFloatRanged(2f, 5f));
+            return;
+        }
         SettleCampAgent(entry, blocked: true);
         entry.Target = goal;
         entry.RouteQueued = _assembled || !IsInsideCamp(entry.Agent.Position);
@@ -900,8 +1000,9 @@ public sealed partial class FieldCampMissionLogic
 
     private void SettleCampAgent(CampAgent entry, bool blocked)
     {
-        StopCampNavigation(entry.Agent);
-        entry.Agent.SetIsAIPaused(true);
+        // Settling at the target spot faces its station; a stop short of it keeps the current heading.
+        HoldCampAgentStill(entry.Agent, entry.Agent.Position.AsVec2.DistanceSquared(entry.Target.AsVec2) <= ArriveDistanceSquared
+            ? entry.TargetFacing : entry.Agent.LookDirection.AsVec2);
         entry.Route = Array.Empty<Vec3>();
         entry.RouteIndex = 0;
         entry.RoutePrepared = false;
@@ -1044,6 +1145,7 @@ public sealed partial class FieldCampMissionLogic
 	{
         entry.PoseAction = ActionIndexCache.act_none;
         entry.RestPose = CampRestPose.None;
+        entry.ReseatAfterExit = false;
         entry.PoseTransition = CampPoseTransition.None;
         entry.TransitionAction = ActionIndexCache.act_none;
         entry.Training = false;

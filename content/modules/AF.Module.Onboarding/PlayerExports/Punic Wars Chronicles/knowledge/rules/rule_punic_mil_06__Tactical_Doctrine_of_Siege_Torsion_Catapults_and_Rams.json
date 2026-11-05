@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_mil_06",
-  "Name": "Tactical Doctrine of Siege Torsion Catapults and Rams",
-  "Keywords": [
-    "rule_punic_mil_06",
-    "Doctrine of Siege Torsion Catapults and Rams",
-    "Combat Mastery Siege Torsion Catapults and Rams",
-    "Tactical Formations Siege Torsion Catapults and Rams"
-  ],
+  "Name": "North African Forest War Elephants: Trampling Terror and the Mahout's Law of Killing by Spinal Chisel",
+  "Category": "military",
+  "Priority": 89,
   "RagShortTexts": [
-    "The tactical doctrine of Siege Torsion Catapults and Rams governed battlefield formations..."
+    "Carthage used the now-extinct North African forest elephant of the Atlas, two and a half meters at the shoulder, agile and fierce",
+    "The elephants carried towers with archers on their backs; their huge feet trampled and their iron-banded tusks rammed, deeply terrifying enemy horses",
+    "If a war elephant ran mad and turned back from fright or pain, the mahout was required by law to kill it by driving an iron chisel into its skull with a hammer"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Carthaginian war elephants were North African forest elephants (Loxodonta cyclotis pharaoensis, now extinct) that lived on the southern slopes of the Atlas Mountains. They stood about two and a half meters at the shoulder; smaller than Indian elephants, they were drought-resistant, alert and easy to train. The war elephants wore leather armor, had sharp iron blades fitted to bands on their tusks, and carried wooden towers strapped to their backs with one mahout and two archers or slingers. The charge of the herd not only crushed infantry lines with the tremendous kinetic energy of their bodies; their peculiar furious trumpeting and their smell also triggered the instinctive flight of untrained horses. Yet war elephants were easily driven mad and out of control by the blows of long spears and the blare of horns. Carthaginian military law strictly required that every mahout carry at his waist a sharp long iron chisel and a heavy wooden mallet; if an elephant panicked and turned to trample its own lines, the mahout had to set the chisel instantly against the nerve center of the elephant's skull and cervical spine and drive it in with the mallet with all his strength, killing it on the spot to prevent the rout of the whole army.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The development of Siege Torsion Catapults and Rams exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+      "Content": "I raised it from a calf, and it trampled the Roman legions with its iron tusks for the general; but when I was forced to drive the iron chisel into the back of its head, my heart broke along with it in the yellow sand."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of Siege Torsion Catapults and Rams became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "The earth trembles at the roar of the giant beasts! But General Scipio taught us: just sound the bronze horns, throw torches and open lanes in the ranks, and the mad beasts will charge down the passages into the abyss and destroy themselves!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Mastery of Siege Torsion Catapults and Rams separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "Standing beside a war elephant is a gamble. It can crush the enemies in front, but once it turns around screaming in pain, whoever runs too slowly becomes a smear of flesh."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "tranquilizer gun",
+    "biological poison gas",
+    "modern animal protection law",
+    "heavy machine-gun fire"
+  ],
+  "Keywords": [
+    "Carthaginian war elephants",
+    "North African forest elephant",
+    "mahout chisel",
+    "elephant towers",
+    "Zama elephants"
+  ]
 }

@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_66",
-  "Name": "Punic War Campaign Operation 66",
-  "Keywords": [
-    "rule_punic_66",
-    "Punic Operation 66",
-    "Strategic Campaign 66",
-    "Mediterranean Theater 66"
-  ],
+  "Name": "The Fall of the Royal City of Cirta and the Restoration of Masinissa",
+  "Category": "history",
+  "Priority": 88,
   "RagShortTexts": [
-    "Strategic campaign doctrine 66 concerning Mediterranean operations during the Second Punic War."
+    "Laelius and Masinissa pursued Syphax hard to the royal city of Cirta and took him alive",
+    "Masinissa regained the ancestral Massylian throne and united the tribes of eastern Numidia",
+    "Syphax was sent in disgrace to the Roman Senate and finally died in a prison cell at Alba"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "After the defeat on the Great Plains, Syphax fled in haste back to Cirta, the capital of his kingdom. Masinissa and the Roman cavalry commander Laelius pressed on day and night, pursuing him for fifteen days and nights without a break. In the decisive fight outside the city, Syphax's horse was speared and fell, and he himself was taken alive by the Romans. Masinissa advanced on Cirta holding the scepter of royal power, and the nobles and common people of the whole city opened the gates and surrendered. This prince of eastern Numidia, who had spent years in exile and seen his kinsmen slaughtered, finally won back the throne of the Massylii, and he annexed the lands of the Masaesyli, laying the foundation of a united Numidian kingdom. Syphax was then sent to Rome in golden chains, humiliated in a triumph, and confined at Alba Fucens until he died of illness.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 66 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "The lion who wandered the desert has returned to his throne! Masinissa's iron cavalry of vengeance has crushed the usurper's crown, and the city of Cirta rings once again with the cheers of the Massylian warriors!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 66, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "Capturing Syphax has removed Carthage's strongest arm in Africa. The loyal Masinissa should rightly rule this land and become Rome's firm bulwark in the south."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 66 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The fall of Syphax has stripped Carthage completely of its western shield. Masinissa's light cavalry can now even parade their strength beneath the walls of Carthage."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Ottoman",
+    "Barbary pirates",
+    "French Algeria",
+    "Governor-general"
+  ],
+  "Keywords": [
+    "Cirta",
+    "fall of Cirta",
+    "Masinissa restored",
+    "Syphax captured",
+    "Laelius",
+    "Massylii",
+    "Masaesyli",
+    "Numidian kingdom"
+  ]
 }

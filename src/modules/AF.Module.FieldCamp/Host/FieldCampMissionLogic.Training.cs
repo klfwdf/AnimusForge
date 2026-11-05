@@ -49,10 +49,10 @@ public sealed partial class FieldCampMissionLogic
                 if (distance < nearest) { nearest = distance; target = candidate; }
             }
         }
-        if (target == null) return false;
-        if (!IsCampShootingLaneClear(entry, target)) return false;
+        if (target == null) { LogCampArcheryBlocked(entry, "no target within 16 m targets=" + FieldCampProps.ArcheryTargets.Count); return false; }
+        if (!IsCampShootingLaneClear(entry, target)) { LogCampArcheryBlocked(entry, "lane occupied"); return false; }
         ReleasePose(entry);
-        if (!EquipCampPracticeBow(entry)) return false;
+        if (!EquipCampPracticeBow(entry)) { LogCampArcheryBlocked(entry, "practice bow or arrows item missing"); return false; }
         StopCampNavigation(entry.Agent);
         entry.TrainingTarget = target;
         entry.Training = true;
@@ -65,6 +65,17 @@ public sealed partial class FieldCampMissionLogic
         entry.NextWanderTime = entry.NextTrainingTime;
         Logger.Log(LogSource, "archery started agent=" + entry.Agent.Index);
         return true;
+    }
+
+    private float _nextArcheryDiagnosticTime;
+
+    // At most one line per 15 s: only the four range stations ever reach this.
+    private void LogCampArcheryBlocked(CampAgent entry, string reason)
+    {
+        if (_elapsed < _nextArcheryDiagnosticTime) return;
+        _nextArcheryDiagnosticTime = _elapsed + 15f;
+        Logger.Log(LogSource, "archery not started agent=" + entry.Agent.Index + " reason=" + reason
+            + " homeOffset=" + Math.Sqrt(entry.Agent.Position.AsVec2.DistanceSquared(entry.Home.AsVec2)).ToString("0.00"));
     }
 
     // Four shooting lanes at most, checked in the existing 20-resident upkeep batch.
@@ -89,7 +100,7 @@ public sealed partial class FieldCampMissionLogic
         if (entry.TrainingTarget == null || !IsCampShootingLaneClear(entry, entry.TrainingTarget))
         {
             ReleasePose(entry);
-            entry.Agent.SetIsAIPaused(true);
+            HoldCampAgentStill(entry.Agent, entry.HomeFacing);
             PlayLoop(entry, LookoutActions);
             entry.NextWanderTime = _elapsed + 2f;
             return;

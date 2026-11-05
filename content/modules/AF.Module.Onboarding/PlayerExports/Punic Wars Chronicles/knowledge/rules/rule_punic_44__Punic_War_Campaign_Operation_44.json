@@ -1,42 +1,108 @@
 {
   "Id": "rule_punic_44",
-  "Name": "Punic War Campaign Operation 44",
-  "Keywords": [
-    "rule_punic_44",
-    "Punic Operation 44",
-    "Strategic Campaign 44",
-    "Mediterranean Theater 44"
+  "Name": "The Claw of Archimedes and Enemy Ships Overturned at the Sea Wall",
+  "Description": "During the defense of Syracuse in 214 BC, Archimedes used the principles of the lever and pulley to build the 'Claw of Archimedes', which reached out over the sea wall, seized the prows of Roman warships close under the wall with precision, hoisted them into the air and flipped them over into the sea.",
+  "Tags": [
+    "Claw of Archimedes",
+    "Lifting machines",
+    "Principle of the lever",
+    "Roman warships capsized",
+    "Defense of Syracuse",
+    "Ancient technological marvel"
   ],
+  "Category": "Military",
+  "DefaultPriority": 88,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 44 concerning Mediterranean operations during the Second Punic War."
+    "Archimedes used the principles of lever and pulley to build huge iron-clawed crane arms reaching out from the cliff-top sea wall.",
+    "Worked by heavy chains, the giant claw gripped the prows of Roman warships close under the wall with precision and hoisted them high into the air.",
+    "When the arm let go, the enemy ship was dropped upside down into the deep sea or smashed against the rocks, throwing the Roman sailors into extreme panic."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 44 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 95,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 44, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 44 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "'Give me a place to stand, and I will move the whole earth!' Old Archimedes' vow became reality on the sea wall! When the Roman warships, holding up their shields, tried to slip into the blind spot beneath the sea wall, iron crane arms like the long necks of great dragons slowly reached out from behind the battlements, and the massive steel claws at their tips plunged down on their chains and hooked the enemy keels with precision! Inside the walls, counterweight boulders weighing tons were suddenly released, and a whole quinquereme weighing many tons was bodily lifted off the sea and left hanging in the air! Then the chain was unhooked, and the great ship tumbled over in midair and crashed upside down into the raging waves, sending up spray mixed with splintered timber and the entrails of sailors! Archimedes alone is worth ten legions!"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That was no power a mortal could possess; it was sorcery commanding evil spirits! Our comrades watched helplessly as our great ships were seized by the prow like little wooden puppets by black iron claws reaching out from the walls. The whole ship stood on end, and the soldiers on deck all fell into the sea and were crushed by iron shields. The vessel swung half around in midair and was then dashed to pieces on the rocks beneath the cliffs! General Marcellus had no choice but to bitterly order the fleet to pull back: 'We are fighting a hundred-handed giant!'"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Everyone on the docks was clapping and cheering! Those great Roman ships that usually barged about wherever they liked were hauled up into the air by the cranes like fish on a line the moment they came near the cliffs, sterns stuck down in the water and prows reaching into the clouds, while the sailors fell off screaming. When the iron claw let go there was a tremendous crash, and the big ship went down without so much as a bubble coming up."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "During the siege of Syracuse in 214 BC, the famous scientist Archimedes developed the 'Claw of Archimedes', a heavy lever-and-pulley machine reaching out from the walls. It could drop a steel grappling hook from the high wall to seize the prow of a Roman warship, use a counterweight to lift it vertically and hang it upside down in the air, then suddenly release it, capsizing and sinking the enemy ship or smashing it against the rocks. It dealt the Roman navy an enormous psychological and tactical shock."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Claw of Archimedes",
+    "iron hand ship-shaker",
+    "Archimedes lever and pulley crane",
+    "Syracuse sea wall defense"
+  ]
 }

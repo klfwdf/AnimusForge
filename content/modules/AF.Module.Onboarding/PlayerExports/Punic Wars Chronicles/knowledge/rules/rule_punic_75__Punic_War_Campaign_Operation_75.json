@@ -1,42 +1,55 @@
 {
   "Id": "rule_punic_75",
-  "Name": "Punic War Campaign Operation 75",
-  "Keywords": [
-    "rule_punic_75",
-    "Punic Operation 75",
-    "Strategic Campaign 75",
-    "Mediterranean Theater 75"
-  ],
+  "Name": "The Oppian Sumptuary Law and the Protest of Roman Matrons",
+  "Category": "politics",
+  "Priority": 84,
   "RagShortTexts": [
-    "Strategic campaign doctrine 75 concerning Mediterranean operations during the Second Punic War."
+    "In 215 BC the tribune Oppius passed a wartime sumptuary law restricting women's gold and purple garments",
+    "Women were forbidden to own more than half an ounce of gold or to wear richly dyed clothing",
+    "Roman women took to the streets and surrounded the Forum demanding repeal, sparking a fierce constitutional debate"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In 215 BC, the year after the Battle of Cannae, the Roman treasury was empty and its gold exhausted. The plebeian tribune Gaius Oppius passed a severe wartime sumptuary law, the Lex Oppia. It strictly forbade any Roman woman to own more than half an ounce of gold, to wear conspicuous purple or striped embroidered clothes, or to ride in a two-wheeled carriage within one mile of the city. The women of the whole city donated all their gold and silver jewelry to fund the soldiers' pay. But as Rome gradually gained the upper hand in the later years of the war, the women could not bear for the wartime ban to become a permanent shackle. Thousands of Roman matrons took to the streets, surrounded the entrances of the Senate and the Forum, and publicly petitioned and protested to the consuls and tribunes, setting off the first open political storm over women's civil rights in Roman history.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 75 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "The soldiers at the front are bleeding in the mud. How can the women and children at home indulge in the vanity of gold and murex-purple robes? Simplicity and restraint are the foundation of victory over Carthage!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 75, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "We gave our sons, our husbands and the gold jewelry of our dowries. Now that the dawn of peace has appeared, why must the shackles of wartime still strip Roman matrons of the honor and dignity they are due?"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 75 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The Romans even have to snatch women's hairpins and earrings to keep the war going. Such desperate straits only show that their empire is an empty shell, strong outside and hollow within."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Feminist movement",
+    "Victorian era",
+    "Women's suffrage",
+    "Modern equal rights"
+  ],
+  "Keywords": [
+    "Lex Oppia",
+    "Oppian Law",
+    "Gaius Oppius",
+    "sumptuary law",
+    "215 BC",
+    "Roman matrons protest",
+    "women's gold",
+    "wartime austerity"
+  ]
 }

@@ -1,42 +1,109 @@
 {
   "Id": "rule_punic_20",
-  "Name": "Punic War Campaign Operation 20",
-  "Keywords": [
-    "rule_punic_20",
-    "Punic Operation 20",
-    "Strategic Campaign 20",
-    "Mediterranean Theater 20"
+  "Name": "Battle of Cissa and Gnaeus Scipio's Northeastern Front",
+  "Description": "In autumn 218 BC the Roman commander Gnaeus Scipio landed at Emporion and crushed Hanno, the Carthaginian commander left behind, at Cissa, seizing the land north of the Ebro and capturing Hannibal's baggage and Iberian hostages.",
+  "Tags": [
+    "Battle of Cissa",
+    "Gnaeus Scipio",
+    "Emporion",
+    "Hanno",
+    "Indibilis",
+    "Northern Iberian front"
   ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 20 concerning Mediterranean operations during the Second Punic War."
+    "In autumn 218 BC Gnaeus Scipio routed Hanno at Cissa in northeastern Spain.",
+    "The Battle of Cissa cut Hannibal's rear overland route for drawing troops and supplies from Spain.",
+    "In this battle the Roman legions captured the rear commander Hanno and many Iberian tribal noble hostages."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 20 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 20, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "General Gnaeus Scipio's landing at Emporion was a stroke of genius! Beneath the town of Cissa he swept away Hanno's ten thousand infantry and thousand cavalry at a single blow, not only bringing all the land north of the Ebro under Roman control but also seizing the whole heavy baggage train that Hannibal had left behind for his expedition to Italy. So long as the house of the Scipios holds the southern foothills of the Pyrenees, Hannibal in Italy will forever be an isolated army without supply from the rear!"
     },
     {
-      "Priority": 1,
+      "Priority": 85,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hanno was careless and underestimated the enemy. After Hannibal's main army crossed the Pyrenees he failed to hold fast in his fortresses and rashly fought a field battle on the plain of Cissa against rested Roman veterans waiting for him. This defeat not only cost more than ten thousand men but also let the Romans gain a firm foothold in Catalonia, leaving Lord Hasdrubal trapped in the quagmire of facing enemies on two fronts, north and south."
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 20 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The Battle of Cissa defeated not only the Carthaginians but also dragged us Ilergetes down with them! Our king Indibilis was unfortunately captured in this battle, and the young men of our tribe suffered heavy losses in the rout. From that day the Roman eagle was planted on our coast, and the tribal chiefs began to see clearly that between two robbers there is no justice at all."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In autumn 218 BC the Roman commander Gnaeus Cornelius Scipio Calvus landed at Emporion and destroyed the army of Hanno, the Carthaginian commander left behind, at the Battle of Cissa. This battle gave Rome firm control of the north bank of the Ebro and cut Hannibal's lifeline for receiving Spanish reinforcements and supplies by land."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battle of Cissa and Gnaeus Scipio's Northeastern Front",
+    "Battle of Cissa",
+    "Gnaeus Scipio landing at Emporion",
+    "Defeat of Hanno",
+    "Capture of Indibilis"
+  ]
 }

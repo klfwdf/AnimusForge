@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_74",
-  "Name": "Punic War Campaign Operation 74",
-  "Keywords": [
-    "rule_punic_74",
-    "Punic Operation 74",
-    "Strategic Campaign 74",
-    "Mediterranean Theater 74"
-  ],
+  "Name": "Execution of Unchaste Vestal Virgins and the Panic over Divine Punishment",
+  "Category": "culture",
+  "Priority": 86,
   "RagShortTexts": [
-    "Strategic campaign doctrine 74 concerning Mediterranean operations during the Second Punic War."
+    "After the disaster at Cannae, Rome investigated the dying of the sacred flame and a scandal of Vestal Virgins breaking their chastity",
+    "Two Vestals, Opimia and Floronia, were condemned to death; one killed herself and the other was buried alive",
+    "The pontifical scribe who seduced a Vestal was flogged to death with rods in the Comitium"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Around the time of the defeat at Cannae, the sacred flame in the temple of Vesta, the symbol of Rome's undying fortune, burned abnormally low several times, and rumors spread everywhere. The college of pontiffs at once launched a full investigation and charged the Vestal Virgins Opimia and Floronia with breaking their vows by the great crime of unchastity. The whole city was convinced that the defilement of this holy vow had brought down the gods' punishment at Cannae. Under Rome's sacred ancient law, Floronia took poison and killed herself, while Opimia was stripped of her priestly headdress, led along the road of mourning to the infamous stone chamber outside the Colline Gate, and buried alive underground in public. Lucius Cantilius, the tribune's scribe suspected of seducing her, was flogged to death with whips by the pontifex maximus in public in the Forum, cleansing the city's stain with blood.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "The flame of Vesta holds the lifeblood of the city, and a Vestal who breaks her chastity betrays the gods. Only by punishing the guilty under the ancient law can Rome find new life amid the scorched earth."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 74 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "The nobles' great army perished abroad, yet the high priests in the city blame the disaster on wretched women. An atmosphere of terror hangs over every street."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 74, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 74 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Rome is tearing itself apart from within, with trials and executions staged in their own sanctuaries. Their gods abandoned this violent city of robbers long ago."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Inquisition",
+    "Convent",
+    "Crusades",
+    "Witch trials"
+  ],
+  "Keywords": [
+    "Vestal Virgins",
+    "Opimia",
+    "Floronia",
+    "unchastity",
+    "buried alive",
+    "Colline Gate",
+    "Lucius Cantilius",
+    "sacred flame of Vesta"
+  ]
 }

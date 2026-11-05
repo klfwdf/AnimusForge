@@ -1,41 +1,40 @@
 {
   "Id": "rule_punic_13",
-  "Name": "Punic War Campaign Operation 13",
   "Keywords": [
-    "rule_punic_13",
-    "Punic Operation 13",
-    "Strategic Campaign 13",
-    "Mediterranean Theater 13"
+    "Zama: Lanes Against the Elephants and the Mediterranean Endgame",
+    "Battle of Zama",
+    "Scipio defeats the war elephants",
+    "Lane tactics and trumpets to panic elephants",
+    "Hannibal versus Scipio, the ultimate duel",
+    "Peace treaty of 201 BC"
   ],
   "RagShortTexts": [
-    "Strategic campaign doctrine 13 concerning Mediterranean operations during the Second Punic War."
+    "At the decisive battle of Zama in 202 BC, Scipio neutralized Hannibal's eighty war elephants with open lanes and blaring trumpets, and Masinissa's cavalry sealed the outcome by enveloping the enemy."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 13 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "On 19 October 202 BC, the Second Punic War, which had lasted seventeen years, reached its final decisive battle on the plain of Zama in North Africa, a battle that decided the course of human civilization. Hannibal, forced to withdraw from Italy to defend his homeland, placed more than eighty fierce North African war elephants in his front line as battering rams. Scipio, who knew the elephants' weaknesses well, made an inspired tactical reform: he abandoned the traditional checkerboard formation of the Roman legion and lined up the maniples one behind another in straight parallel columns, deliberately leaving several wide open lanes through the army. When the elephants charged with a roar, the whole Roman army blew trumpets and horns wildly and beat hard on their bronze shields; the deafening noise stunned and terrified the great beasts. The panicked elephants instinctively fled down the prepared lanes and through the lines, where light infantry waiting in formation on both sides speared them to death, and some of the maddened animals even turned back and trampled Carthage's own cavalry on the flank. While the infantry in the center were locked in bloody combat, the Roman and Numidian cavalry under Masinissa and Laelius utterly routed the enemy horse, then wheeled around in a wide arc and struck Hannibal's center from behind with a crushing, fatal blow (a reversed replay of Cannae). Hannibal's army collapsed; more than twenty thousand were killed and twenty thousand taken prisoner. In 201 BC the two sides signed a peace treaty: Carthage was forced to give up all its overseas territories and its war elephants, was allowed to keep only ten warships, could not wage war abroad without Rome's permission, and had to pay an indemnity of ten thousand talents. Carthage was reduced to a second-rate dependent city, and from then on Rome established unshakable, absolute supremacy over the western Mediterranean."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 13, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "Zama is the day of vengeance for all Romans, the final triumph granted to the Republic by Mars, the war god of the Capitol! For seventeen years, from Trasimene to Cannae, Rome had shed the blood of two whole generations of its finest sons, and Scipio, with his peerless genius and discipline, repaid Hannibal in his own coin on the plains of Hannibal's own homeland! The blare of the trumpets shattered the arrogance of the barbarian giant beasts, and the short swords of the centuries and the iron hooves of Masinissa trampled the ambitions of the Carthaginians into dust! After the battle of Zama, Scipio was hailed by the multitude as \"Africanus\" (conqueror of Africa), and Rome could at last proudly proclaim to the Mediterranean: no power can ever again stop the Republic's march to the summit of the world!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 13 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The Battle of Zama is the mournful elegy of the sunset of Carthage's thousand-year empire. Hannibal had been invincible on the battlefields of Italy, but the cold obstruction of the Council of One Hundred at home exhausted his elite troops, and in the end he could only meet the strong Roman and Numidian army on African soil with hastily assembled mercenaries, untrained war elephants and the remnants of his veterans. Before the battle the two great war gods met in the middle of the plain with the mutual respect of heroes, but that could not stop the cruel turning of the wheel of fate. After his defeat Hannibal showed true royal dignity: he personally persuaded the council to accept the humiliating peace to preserve the city's lifeblood, and then, as suffete, worked hard to reform domestic government, yet he still could not escape the Romans' relentless pursuit into exile. Carthage had its sharp sword broken, but its pride in fighting fate to the bitter end will be engraved forever deep in the waves of the Mediterranean."
     }
   ],
   "TextMappings": []

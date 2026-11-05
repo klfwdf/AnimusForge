@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_cult_06",
-  "Name": "Ancient Tradition of Hellenistic Stoic Philosophy",
-  "Keywords": [
-    "rule_punic_cult_06",
-    "Sacred Code of Hellenistic Stoic Philosophy",
-    "Civic Rites Hellenistic Stoic Philosophy",
-    "Ancestral Law Hellenistic Stoic Philosophy"
-  ],
+  "Name": "The Iberian Retainer's Sacred Oath of Devotion and Following the Lord into Death",
+  "Category": "culture",
+  "Priority": 86,
   "RagShortTexts": [
-    "The institutional tradition of Hellenistic Stoic Philosophy defined social hierarchy, civic..."
+    "Warriors of the Iberian and Celtic tribes swore sacred oaths of devotion to their tribal chief or commander",
+    "Before the war god's altar they bound their lives and souls completely to the chief in life and in death",
+    "If the chief fell and the retainer survived, it was the greatest disgrace, and he had to take his own life on the spot to follow his lord"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The native tribes of the Iberian Peninsula had a tradition of retainer oaths that classical writers saw as almost fanatical, the 'oath of devotion' (Devotio Celtiberica). Before the sacred altar of the war god Neto and the gods of the underworld, a warrior cut his arm, let his blood drip into wine and drank it, swearing to give his body and soul wholly to the tribe's high chieftain or to the commander the chieftain recognized. Under the sacred law of the oath, the retainer in battle had to act as a human shield and never leave his lord's side. If the commander he served had the misfortune to fall while the retainer himself survived, he was regarded as a traitor and a wandering ghost despised by the whole tribe and could not return home; only by drawing his sword and cutting his own throat on the battlefield, or by charging alone into the enemy ranks to die, could he preserve his honor and follow his lord into the underworld. Hannibal, and later Scipio, used exactly this sacred oath to win over large numbers of elite Spanish guard infantry and cavalry sworn to loyalty unto death.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The social order of antiquity was rooted in Hellenistic Stoic Philosophy. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+      "Content": "My sword is my chief's sword, my blood is my chief's blood! If my chief falls, the sun goes out before my eyes, there is no place left in the world for me to stand, and my short sword will pierce my own throat!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
-          "lord",
-          "notable"
+          "soldier",
+          "warrior"
         ]
       },
-      "Content": "Without Hellenistic Stoic Philosophy, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
+      "Content": "General Scipio has won the admiration of the Spaniards, and those barbarian warriors have willingly sworn oaths of life and death to him. Such fanatical loyalty is ten times stronger than any mercenary bought with money."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "peasant",
-          "villager"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "From childhood our elders taught us to revere Hellenistic Stoic Philosophy. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+      "Content": "The Barcid family needed thirty years of blood and sweat to earn the devotion oaths of the Iberian warriors, yet the greedy Council of One Hundred thinks a few bags of silver coins can buy these fanatical swordsmen."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Japanese samurai seppuku",
+    "kamikaze special attack units",
+    "medieval feudal law of retainers",
+    "modern extremist suicide bombing"
+  ],
+  "Keywords": [
+    "devotio",
+    "Iberian oath of devotion",
+    "soldurii",
+    "Celtiberian retainers",
+    "Neto war god"
+  ]
 }

@@ -25,13 +25,13 @@ public partial class DuelSettings
 
     private float _ambientIdleSeconds = 20f;
     [SettingPropertyFloatingInteger("{=AF_MCM_Ambient_IdleSeconds}Player idle time before ambient interaction (s)", 5f, 120f, "0", Order = 31, RequireRestart = false,
-        HintText = "{=AF_MCM_Ambient_IdleSeconds_Hint}You must not have shouted, talked or opened a menu for this long. Default: 20.")]
+        HintText = "{=AF_MCM_Ambient_IdleSeconds_Hint}You must not have shouted, talked or opened a menu for this long. Halved in your field camp. Default: 20.")]
     [SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
     public float AmbientSceneIdleSeconds { get => _ambientIdleSeconds; set => _ambientIdleSeconds = System.Math.Max(5f, System.Math.Min(120f, value)); }
 
     private float _ambientCooldownSeconds = 120f;
     [SettingPropertyFloatingInteger("{=AF_MCM_Ambient_Cooldown}Interval between ambient interactions (s)", 30f, 900f, "0", Order = 32, RequireRestart = false,
-        HintText = "{=AF_MCM_Ambient_Cooldown_Hint}Minimum time after one ambient interaction ends before another may start. Default: 120.")]
+        HintText = "{=AF_MCM_Ambient_Cooldown_Hint}Minimum time after one ambient interaction ends before another may start. Halved in your field camp. Default: 120.")]
     [SettingPropertyGroup("{=AF_MCM_Shout_Group}3. Scene shout")]
     public float AmbientSceneCooldownSeconds { get => _ambientCooldownSeconds; set => _ambientCooldownSeconds = System.Math.Max(30f, System.Math.Min(900f, value)); }
 

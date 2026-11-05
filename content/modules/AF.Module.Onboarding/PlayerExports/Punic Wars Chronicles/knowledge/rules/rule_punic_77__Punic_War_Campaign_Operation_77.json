@@ -1,42 +1,55 @@
 {
   "Id": "rule_punic_77",
-  "Name": "Punic War Campaign Operation 77",
-  "Keywords": [
-    "rule_punic_77",
-    "Punic Operation 77",
-    "Strategic Campaign 77",
-    "Mediterranean Theater 77"
-  ],
+  "Name": "The Crisis of Refilling the Senate Roll and the Dictator Buteo",
+  "Category": "politics",
+  "Priority": 85,
   "RagShortTexts": [
-    "Strategic campaign doctrine 77 concerning Mediterranean operations during the Second Punic War."
+    "The Battle of Cannae left eighty senators, former consuls and tribunes dead on the field",
+    "With more than half its seats empty, the Senate specially named the senior consular Buteo dictator without a master of horse",
+    "Buteo enrolled 177 new senators at a stroke according to law and merit, and resigned his office at once"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The three bloody battles of the Trebia, Trasimene and Cannae left more than eighty Roman senators and more than twenty consuls and praetors dead, so that more than half the seats of the three-hundred-member supreme deliberative body stood empty and the constitution faced paralysis. In 216 BC the Senate made an exception and appointed Marcus Fabius Buteo, the oldest living former censor, as 'dictator for the specific purpose of choosing senators', with no master of horse. Buteo kept strictly to the constitution and acted with complete impartiality: first he enrolled former magistrates not yet on the roll, then officers who had taken enemy heads or won distinction in battle, and finally brave plebeian equites, filling 177 new senatorial seats at once. On the very day he finished reading out the list, Buteo refused all privileges and guards, announced his resignation as dictator in the Forum on the spot, and walked home alone, becoming an enduring model of the old-fashioned constitutional virtue of Rome.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 77 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "The dictator Buteo showed the purest virtue of our forefathers. No favoritism, only merit and virtue: the strength of the Senate is reborn through fire in this list!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 77, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "Countless brave plebeians won the purple-bordered toga through their deeds in battle. Blood has broken the barriers of birth, and the new Senate belongs to the iron-blooded men who defended Rome!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 77 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "No matter how many of their senators we kill, this stubborn city can always scrape together, out of the ruins, another crowd of equally arrogant white-haired old men."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Parliamentary system",
+    "Constitutional court",
+    "Separation of powers",
+    "Modern elections"
+  ],
+  "Keywords": [
+    "Marcus Fabius Buteo",
+    "dictator",
+    "refilling the Senate",
+    "177 new senators",
+    "216 BC",
+    "Senate losses at Cannae",
+    "Roman constitution",
+    "civic virtue"
+  ]
 }

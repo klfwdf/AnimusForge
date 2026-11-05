@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_36",
-  "Name": "Punic War Campaign Operation 36",
-  "Keywords": [
-    "rule_punic_36",
-    "Punic Operation 36",
-    "Strategic Campaign 36",
-    "Mediterranean Theater 36"
+  "Name": "The Double Envelopment at Cannae and the Destruction of Rome's Legionary Elite",
+  "Description": "On 2 August 216 BC at Cannae on the Aufidus, Hannibal with an outnumbered force of 50,000 faced a Roman army of 86,000. His convex center bent back to absorb the shock while the elite troops on both wings wheeled inward to envelop the enemy, annihilating nearly 70,000 Roman legionaries and creating the timeless masterpiece of the battle of encirclement in military history.",
+  "Tags": [
+    "Battle of Cannae",
+    "Double envelopment",
+    "Hannibal",
+    "Death of Paullus",
+    "Varro",
+    "Unprecedented Roman catastrophe"
   ],
+  "Category": "Military",
+  "DefaultPriority": 95,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 36 concerning Mediterranean operations during the Second Punic War."
+    "At the Battle of Cannae on 2 August 216 BC Hannibal achieved the most perfect double envelopment in military history.",
+    "The bulging Spanish and Gallic center took the shock and slowly sagged inward, luring 80,000 Roman legionaries into the pocket of encirclement.",
+    "The cavalry on both wings routed the Roman flanks, then closed in and struck from behind, causing the catastrophe of the age in which nearly 70,000 Romans were annihilated."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 36 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 98,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 36, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "Cannae was the day a mortal climbed to stand beside the god of war! Facing 86,000 Roman legionaries in iron, our general Hannibal drew up a brilliant crescent formation bulging toward the enemy. When battle was joined, the Spanish and Gallic warriors in the center, with Hannibal himself directing them, fought as they gave ground, and the bulging line bent naturally inward into a vast hollow pocket. The Romans, sure that victory was theirs, surged madly into the center, and the hidden African heavy infantry on both sides shut on them like great sluice gates! Maharbal's iron horsemen, having swept away the Roman wings, rolled over the enemy rear! Eight hours of hacking, and seventy thousand enemies were chopped to pieces like cattle, heaped layer on layer in a killing ground a few miles across! By the protection of Melqart, the backbone of Rome was snapped clean through that day!"
     },
     {
-      "Priority": 1,
+      "Priority": 95,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 36 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "To this day the wind and dust on the banks of the Aufidus still reek of blood! A fifth of the Roman Senate, eighty pillars of the state of consular and praetorian rank, two quaestors, twenty-nine military tribunes, and nearly seventy thousand fine young citizen soldiers all fell into the dust on that accursed summer day! A whole generation of Roman men was slaughtered almost to the last, and the Carthaginians filled three full measures with the gold equestrian rings stripped from the fingers of the dead! The consul Paullus died where he stood without retreating, and there was not one household in all Rome that was not in mourning! Not since the Gauls burned the city had the Republic suffered such an overwhelming disaster!"
+    },
+    {
+      "Priority": 78,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "By the end it was no longer a battle but slaughter on an assembly line! The Romans were packed so tight they could not even draw their short swords, and the men in the middle could only watch as ring after ring of comrades on the outside were speared down. The ground underfoot was all slick entrails and shredded flesh, and some Roman soldiers buried their heads in mud pits and smothered themselves, just to die more quickly. By the time the killing reached sunset, the Spanish horsemen doing the cutting had arms so swollen they could not lift them. Seventy thousand men, covering the whole plain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "On 2 August 216 BC, the Battle of Cannae was fought. Hannibal with 50,000 men faced a Roman army of 86,000. Using a convex formation that absorbed the shock and gradually sagged inward, he lured the entire Roman army into the central pocket. The African infantry on the Carthaginian wings turned inward to seal it while the cavalry closed the ring from behind, destroying nearly 70,000 Roman troops; the consul Paullus was killed. The battle became the supreme model of the double envelopment in the history of tactics."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battle of Cannae",
+    "Cannae double envelopment 216 BC",
+    "death of consul Aemilius Paullus",
+    "Hannibal crescent formation"
+  ]
 }

@@ -52,6 +52,13 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 		internal int PoseVariant;
         internal ActionIndexCache PoseAction = ActionIndexCache.act_none;
         internal CampRestPose RestPose;
+        /// <summary>Index into SitRestClips/LieRestClips for the posture currently held.</summary>
+        internal int RestVariant;
+        /// <summary>Standing up only to change posture; sit down again when the exit clip ends.</summary>
+        internal bool ReseatAfterExit;
+        /// <summary>Consecutive stalls on walks to the same goal; reset on arrival or a new goal.</summary>
+        internal int StallCount;
+        internal Vec3 StallGoal;
         internal CampPoseTransition PoseTransition;
         internal ActionIndexCache TransitionAction = ActionIndexCache.act_none;
         internal float PoseTransitionStartedAt, PoseTransitionDeadline;
@@ -76,6 +83,9 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
         internal bool Run;
         internal Vec3 LastWalkPosition;
         internal float ProgressAt;
+        /// <summary>Up to 12 cached wander points nearest Home, nearest first; built once per Home.</summary>
+        internal int[] NearWanderSlots;
+        internal Vec3 NearWanderHome;
 	}
 
 	private readonly List<MobileParty> _parties;
@@ -474,6 +484,7 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
 	private void TrackAssignedResident(Agent agent, Activity activity, Vec2 local, Vec2 facing, FormationClass troopClass, FieldCampLayout.WorkKind work = FieldCampLayout.WorkKind.None, bool canLeavePost = false, bool walkToAssignedSlot = false)
 	{
         Vec3 home = agent.Position;
+        bool reachedSlot = false;
         if (walkToAssignedSlot)
         {
             Vec3 desired = ToWorld(local);
@@ -493,11 +504,14 @@ public sealed partial class FieldCampMissionLogic : MissionLogic
                 if (routeProbes++ >= 4) break;
                 if (!TryCampRoute(agent.Position, assigned, out _)) continue;
                 home = assigned;
+                reachedSlot = true;
                 break;
             }
         }
-        // Do not leave a healthy companion at the entrance when a role post is blocked.
-        if (walkToAssignedSlot && home.AsVec2.DistanceSquared(agent.Position.AsVec2) < 0.01f)
+        // Do not leave a healthy companion at the entrance when a role post is blocked. Test the
+        // search result, not the distance: a troop spawned exactly on its range station resolves to
+        // the same cell, and the old distance test sent every such archer off to gossip instead.
+        if (walkToAssignedSlot && !reachedSlot)
         {
             int count = _layout.WanderSlots.Count;
             int routeProbes = 0;

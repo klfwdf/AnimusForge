@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_cult_11",
-  "Name": "Ancient Tradition of Greek Agora Debate and Rhetoric",
-  "Keywords": [
-    "rule_punic_cult_11",
-    "Sacred Code of Greek Agora Debate and Rhetoric",
-    "Civic Rites Greek Agora Debate and Rhetoric",
-    "Ancestral Law Greek Agora Debate and Rhetoric"
-  ],
+  "Name": "The Debasement of the Carthaginian Silver Shekel and the Pay of Overseas Mercenaries",
+  "Category": "economy",
+  "Priority": 86,
   "RagShortTexts": [
-    "The institutional tradition of Greek Agora Debate and Rhetoric defined social hierarchy,..."
+    "In the later war, after losing the silver mines of Castulo in Spain, the flow of silver into Carthage's treasury dried up",
+    "The Council of One Hundred was forced to mix large amounts of bronze, copper and lead into the silver shekel, cutting its fineness in half",
+    "Mercenaries refused the debased coins, setting off mutinies among the Danube Gallic legions and the Iberian soldiers"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In sharp contrast to Rome, which stabilized its finances in adversity with the denarius, the Carthaginian financial and monetary system suffered a devastating collapse through debasement in the later years of the war. Its traditional pure-silver coin, the 'shekel' (Shekel), had once been backed by the mines of Andalusia and New Carthage and was of very high fineness. But when Scipio Africanus took New Carthage completely and occupied the silver mines of Castulo between 209 and 206 BC, the silver supply of the Carthaginian homeland dried up at once. In extreme panic, the mint of the Council of One Hundred had to mix large amounts of copper, lead and impurities into the molten silver, so that the silver content of the circulating Carthaginian shekel plunged from 90 percent to less than 35 percent, and the faces of the coins even showed a blackened verdigris. The profit-minded mercenaries tested the coins with fire on payday and flew into a rage; several times they broke out in riots and mutinies, refusing to march and seizing the officers in charge of the baggage train, and the fighting strength of the Carthaginian army was drained away completely in the financial collapse.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The social order of antiquity was rooted in Greek Agora Debate and Rhetoric. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+      "Content": "Look at this blackened scrap copper! Does the Carthaginian Senate want to pay us off with silver filings in muddy water and send us against the Roman javelins? Without pure silver shekels, the line will split apart by itself tomorrow!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
-          "lord",
-          "notable"
+          "soldier",
+          "warrior"
         ]
       },
-      "Content": "Without Greek Agora Debate and Rhetoric, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
+      "Content": "The silver ships from Spain no longer sail, and even the rats in the treasury are fighting! If we do not mix in copper to get through this crisis, are we supposed to smash the golden statues in the temples and share them out among those greedy barbarians?"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "peasant",
-          "villager"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "From childhood our elders taught us to revere Greek Agora Debate and Rhetoric. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+      "Content": "The Carthaginian empire of money is falling apart with the loss of its silver mines. Mercenaries who gathered for silver coins will surely betray their employers the moment they are handed false money."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "CPI inflation index",
+    "modern quantitative easing",
+    "paper currency devaluation crisis",
+    "modern financial crisis"
+  ],
+  "Keywords": [
+    "Carthaginian shekel",
+    "coin debasement",
+    "mercenary pay",
+    "loss of Spanish silver",
+    "Punic coinage"
+  ]
 }

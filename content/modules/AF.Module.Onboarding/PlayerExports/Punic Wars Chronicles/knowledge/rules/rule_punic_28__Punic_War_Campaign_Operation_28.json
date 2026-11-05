@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_28",
-  "Name": "Punic War Campaign Operation 28",
-  "Keywords": [
-    "rule_punic_28",
-    "Punic Operation 28",
-    "Strategic Campaign 28",
-    "Mediterranean Theater 28"
+  "Name": "Revolt of the Ilergetes and the Disillusionment of the Iberian Tribes",
+  "Description": "In 206 to 205 BC Indibilis and Mandonius, kings of the Ilergetes, rose in revolt against the crushing taxes of the Roman governors; outmatched in strength, they were defeated and killed, opening two hundred years of bloody resistance in Spain.",
+  "Tags": [
+    "Revolt of Indibilis",
+    "Death of Mandonius",
+    "Revolt of the Ilergetes",
+    "Roman provincial exploitation",
+    "Tribal resistance",
+    "Celtiberian struggle"
   ],
+  "Category": "History",
+  "DefaultPriority": 80,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 28 concerning Mediterranean operations during the Second Punic War."
+    "In 206 to 205 BC Indibilis and Mandonius raised a great revolt against the Roman governors.",
+    "The Iberian tribes that had once helped Scipio realized with a shock that Rome had not kept its promise to grant the tribes freedom.",
+    "Indibilis fell in battle and Mandonius was tried and executed, opening two hundred years of blood and tears in the peninsula's resistance to Rome."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 28 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 28, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "Indibilis and Mandonius are the very model of ungrateful rebels! General Scipio once treated their kin with honor and granted them countless rewards and the favor of self-rule, yet when General Scipio was weakened, falling ill and recovering or being recalled from the peninsula, they stirred up mobs to attack Roman outposts! For such fickle barbarian tribes, the Roman legions can only force submission with the harshest sword, and every rebel can only go to the execution ground after judgment under military law!"
     },
     {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 28 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "King Indibilis was the eagle of Iberia until his death! Back then the Romans were full of talk of benevolence and justice, claiming to be liberators come to free us from Carthaginian tyranny; but once the Carthaginians left, the Romans demanded ten times more silver, grain and hostages than before! King Indibilis fought to the death on the battlefield, and Mandonius willingly went to his death to save the tribe. So long as the wind still blows on the high mountains, the men of Iberia will never lay down the short sword of resistance!"
+    },
+    {
+      "Priority": 72,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This place Spain is one great man-eating bog! The Carthaginians had only just left, and we thought we could hang up our armor and go home, but instead we were dragged into the deep mountains to hunt down the rebel army of Indibilis. The guerrilla war in the high mountains is impossible to guard against, with arrows from nowhere and falling rocks everywhere. So what if we caught Mandonius? Every village and every hilltop in this land hates Rome, and blood will have to flow here for at least another two hundred years!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 206 to 205 BC Indibilis, king of the Ilergetes, who had helped Scipio drive out the Carthaginians, and his brother Mandonius, angered by the harsh levies and extortion of the Roman legions, launched an armed revolt across the whole peninsula. The Roman praetors gathered large forces and crushed it brutally; Indibilis was killed and Mandonius was captured and executed. This event raised the curtain on two hundred years of warfare by the native tribes of the Iberian Peninsula against Rome."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Revolt of the Ilergetes and the Disillusionment of the Iberian Tribes",
+    "Revolt of Indibilis and Mandonius",
+    "Ilergetes uprising",
+    "Iberian resistance to Rome",
+    "Roman provincial taxation in Spain"
+  ]
 }

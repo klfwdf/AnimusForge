@@ -88,7 +88,7 @@ check('AmbientStage.Opening' in ambient and 'AmbientStage.Presenting' in ambient
       'ambient opening generation and presentation precede reply window')
 check('ownerCancellationToken: session.OpeningLifetime.Token' in ambient and 'canStillPublish: () => CanPublishAmbientOpening(session)' in ambient,
       'late opening publication is owner-cancelled and revalidated')
-check('Math.Min(count, 12)' in life and 'DistanceSquared(entry.Home.AsVec2) > 144f' in life,
+check('new int[Math.Min(12, picked.Count)]' in life and 'if (d <= 144f)' in life and 'DistanceSquared(entry.Home.AsVec2) > 144f' in life,
       'stroll targets bounded near home with finite candidates')
 check('TryBuildGroundedRoute' in life and 'stayInsideCamp: true' in life and 'RecoverBlockedCampWalk(entry);' in life and
       'MoveDeadline' in main and 'entry.MoveBlocked = blocked;' in life,

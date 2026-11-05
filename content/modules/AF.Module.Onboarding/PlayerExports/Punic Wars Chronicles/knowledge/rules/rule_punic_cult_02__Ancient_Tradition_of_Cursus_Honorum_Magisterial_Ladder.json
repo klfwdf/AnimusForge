@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_cult_02",
-  "Name": "Ancient Tradition of Cursus Honorum Magisterial Ladder",
-  "Keywords": [
-    "rule_punic_cult_02",
-    "Sacred Code of Cursus Honorum Magisterial Ladder",
-    "Civic Rites Cursus Honorum Magisterial Ladder",
-    "Ancestral Law Cursus Honorum Magisterial Ladder"
-  ],
+  "Name": "The Phoenician Sign of Tanit, Queen of Heaven, and the Heavenly Furnace of Baal Hammon",
+  "Category": "culture",
+  "Priority": 86,
   "RagShortTexts": [
-    "The institutional tradition of Cursus Honorum Magisterial Ladder defined social hierarchy,..."
+    "The goddess Tanit is the chief protecting goddess and queen of heaven of Carthage, symbol of fertility, the moon and motherly protection",
+    "The Sign of Tanit, a triangular pillar bearing a disk and outstretched arms, is carved on stelae and armor",
+    "Baal Hammon, the heavenly bull and god of fire, governs the ultimate fate of the city"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The heart of the spiritual faith of the city of Carthage lies in the chief god Baal Hammon and his consort, the city's supreme protecting goddess Tanit (Tanit Pene Baal, meaning 'Face of Baal'). Tanit rules over fertility, the turning of the moon's phases, water sources and the safety of warships. Throughout Carthaginian territory, almost every bronze vessel, amulet, pottery jar and funerary stele bears the emblematic 'Sign of Tanit' (Symbol of Tanit): a firm equilateral triangle forms the body, a crossbar at its top represents outstretched protecting arms, and above it floats a round head with a crescent moon. Citizens and sailors bound for distant seas firmly believed that wearing a thin gold-leaf plate engraved with this sign inside their armor would protect them from the armor-piercing Roman javelin and from being swallowed by the raging waves.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The social order of antiquity was rooted in Cursus Honorum Magisterial Ladder. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+      "Content": "The most holy Tanit, Queen of Heaven, stretches out her arms to shelter the thousand purple sails of the Gulf of Tunis! As long as the sacred golden triangle shines on my chest, neither storms nor Roman iron can harm a hair of my head."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
-          "lord",
-          "notable"
+          "soldier",
+          "warrior"
         ]
       },
-      "Content": "Without Cursus Honorum Magisterial Ladder, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
+      "Content": "Baal Hammon watches over Carthage from the thunder. The frankincense and fertility offerings the city presents have won the Barcid family the radiant, war-god glory of their unbroken victories overseas."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "peasant",
-          "villager"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "From childhood our elders taught us to revere Cursus Honorum Magisterial Ladder. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+      "Content": "The Carthaginians cover their stelae with strange, eerie figures and prostrate themselves before a dark queen of heaven and a throne of fire. Righteous Jupiter will surely shatter these foreign idols with his thunderbolts!"
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Catholic statue of the Virgin Mary",
+    "modern archaeological dating device",
+    "Islamic crescent flag",
+    "Greek Orthodox Church"
+  ],
+  "Keywords": [
+    "Tanit",
+    "Sign of Tanit",
+    "Baal Hammon",
+    "Carthaginian religion",
+    "Punic amulets"
+  ]
 }

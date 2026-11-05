@@ -1,42 +1,113 @@
 {
   "Id": "rule_punic_56",
-  "Name": "Punic War Campaign Operation 56",
-  "Keywords": [
-    "rule_punic_56",
-    "Punic Operation 56",
-    "Strategic Campaign 56",
-    "Mediterranean Theater 56"
+  "Name": "Massaliote Allied Fleet Escorts and Control of the Gallic Straits",
+  "Description": "Massalia (modern Marseille), a Hellenized commercial ally, put its elite navy fully at Rome's service. It took on scouting along the Gallic coast, traffic control in the straits and escort of legionary supplies, and became a solid ally in containing Carthaginian communications by land and sea.",
+  "Tags": [
+    "Massalia",
+    "Greek ally",
+    "Naval escort",
+    "Gallic straits",
+    "Pilots and intelligence",
+    "Wartime staging post"
   ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 56 concerning Mediterranean operations during the Second Punic War."
+    "The Hellenized city-state of Massalia sent its elite fleet to give full escort to the Roman legions sailing to and from Spain.",
+    "With their great seafaring experience, Massaliote pilots served as the eyes, ears and guides of the Roman legions in the western Mediterranean.",
+    "Tight patrols of the straits cut the secret route by which Carthage sent gold from the Spanish coast to the tribes of northern Gaul."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "massalia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For generation after generation the Massaliotes have lived with these waves, and we know every secret of current and wind! The Romans know how to build camps and kill enemies on land, but in the ever-changing Gulf of Lion, without our Massaliote fast boats to pilot them, their heavy warships would long ago have been smashed to pieces on the reefs! We escort the fleets of the Scipio brothers and spy out the enemy at the mouth of the Ebro. The gold and warships of Massalia are sworn to Rome unto death, and we will never let those coarse, greedy Carthaginian pirates rule this sacred Greek sea!"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Massalia is Rome's most loyal and most precious eye and arm west of the Alps! When Hannibal marched through Gaul, it was Massaliote scouts who first rushed word to the consul Scipio that the enemy was crossing the river. Through the long six years of hard fighting in Spain, the harbor of Massalia always stood open to Roman warships to repair battle damage and transfer the wounded. The Senate has solemnly sworn that after the war Massalia will receive the highest honors and a permanent exemption from taxes!"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "These self-righteous Greek merchants of Massalia are even more hateful than the Roman legions! Using their knowledge of the reefs in the straits, they act as the Romans' faithful hounds and lackeys, and they have intercepted countless secret letters and shipments of gold passing between us in Spain and Liguria! If Massalia had not held the Gallic coast in a death grip on our flank, Hasdrubal Barca could long ago have advanced by land and sea together and struck straight into northern Italy!"
+    },
+    {
       "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 56 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 56, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 56 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Massalia played an extremely important role as a Roman naval ally in the Second Punic War. Thanks to its excellent position and fine seamanship, the Massaliote fleet gave Rome vital naval escort, hydrographic guidance and frontline intelligence, and became the central pivot of Roman control over the sea lanes of the Ligurian Sea and the waters off Iberia."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Massalia",
+    "Marseille",
+    "Greek naval ally",
+    "naval escort",
+    "Gulf of Lion",
+    "Massaliote pilots",
+    "Scipio brothers",
+    "Ebro"
+  ]
 }

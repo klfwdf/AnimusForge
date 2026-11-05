@@ -1,42 +1,106 @@
 {
   "Id": "rule_punic_35",
-  "Name": "Punic War Campaign Operation 35",
-  "Keywords": [
-    "rule_punic_35",
-    "Punic Operation 35",
-    "Strategic Campaign 35",
-    "Mediterranean Theater 35"
+  "Name": "The Night Escape from the Falernian Pass with Torches on Oxen Horns",
+  "Description": "In autumn 217 BC, the dictator Fabius trapped Hannibal's army in the narrow Falernian plain of Campania. By night Hannibal tied dry brushwood to the horns of two thousand oxen, set it alight and drove the herd up the ridges, deceiving and drawing off the Roman guards so that his whole army broke out.",
+  "Tags": [
+    "Falernian plain",
+    "Hannibal",
+    "Burning oxen stratagem",
+    "Night breakout",
+    "Fabian tactics",
+    "War is the art of deception"
   ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 35 concerning Mediterranean operations during the Second Punic War."
+    "In autumn 217 BC Hannibal was hemmed in and shut into the Falernian pass by the strong forces of the dictator Fabius.",
+    "By night he tied flammable firewood to the horns of two thousand oxen, set it alight and drove them toward the ridges to fake a night attack by the whole army.",
+    "The Roman guards misread the firelight and pulled away the main body holding the pass, so the entire Carthaginian army and its baggage broke out safely."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fabius thought that by raising stone walls and choking the pass he could treat us like beasts in a cage! But our general Hannibal's cunning would make even the gods marvel! He gathered two thousand sturdy plow oxen and bound their horns with wood soaked in pitch. Deep in the night a horn sounded, the fire was lit on their horns, and the herd, maddened by pain, stampeded toward the high ridge, sparks flying everywhere like ten thousand divine soldiers in a night assault! The four thousand Roman infantry guarding the pass were scared out of their wits, abandoned it and ran to cut off the oxen, while our army marched in good order, driving tens of thousands of plundered baggage cattle and sheep, and strolled straight through the proper road of the pass!"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dictator Fabius's dispositions were flawless: ringed by mountains, the pass sealed tight, and if we only held fast, within a few days Hannibal would run out of grain and destroy himself. Who could have imagined that the officer guarding the pass would be fooled by burning oxen stampeding all over the hills and would leave his post to chase the fire up the slopes! Hannibal not only got away unscathed but made all Rome deeply doubt Fabius's caution. The popular party began to howl 'This is cowardice feeding the enemy', and the Republic was pushed once again to the edge of a reckless decisive battle!"
+    },
+    {
+      "Priority": 72,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the middle of the night half the sky over the hilltops suddenly burned red, and countless fiery dragons went bellowing and crashing about the cliffs. The folk in the fields thought Vulcan, the fire god, had flown into a rage! When day broke and we looked, the hills were covered with charred dead oxen, and the army of that one-eyed Hannibal had long since carried off every drop of wine and grain of wheat on the whole plain, without leaving so much as a shadow behind!"
+    },
+    {
       "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 35 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 35, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 35 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In autumn 217 BC, the Roman dictator Fabius trapped Hannibal's whole army, which had been plundering Campania, in the Falernian plain. At night Hannibal tied torches to the horns of two thousand oxen and drove them up the hills to fake a night attack, drawing away the Roman garrison holding the vital pass, and led his whole army out safely. This stratagem broke Rome's deadly encirclement of Hannibal."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Falernian plain escape",
+    "Hannibal burning oxen torches",
+    "Ager Falernus 217 BC",
+    "Fabius Cunctator trap"
+  ]
 }

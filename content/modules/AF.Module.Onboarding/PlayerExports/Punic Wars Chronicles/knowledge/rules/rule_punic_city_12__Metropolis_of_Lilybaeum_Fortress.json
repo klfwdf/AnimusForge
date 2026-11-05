@@ -1,42 +1,50 @@
 {
   "Id": "rule_punic_city_12",
-  "Name": "Metropolis of Lilybaeum Fortress",
-  "Keywords": [
-    "rule_punic_city_12",
-    "Urban Center Lilybaeum Fortress",
-    "Citadel of Lilybaeum Fortress",
-    "Harbor of Lilybaeum Fortress"
-  ],
+  "Name": "Mediolanum, Capital of Cisalpine Gaul: The Sacred-Grove Stronghold of the Insubres",
+  "Category": "geography",
+  "Priority": 84,
   "RagShortTexts": [
-    "The fortified urban center of Lilybaeum Fortress served as a vital strategic, naval, and..."
+    "Mediolanum is the royal seat and sacred meeting place of the Insubres, the strongest tribe of Cisalpine Gaul",
+    "It guards the crossroads where the Alpine routes descend into the Po plain, with rich land and well-armed warriors",
+    "After crossing the Alps, Hannibal was warmly embraced here by the Gallic tribes and reinforced with tens of thousands of barbarian warriors"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Mediolanum (town_rome_mediolanum, modern Milan) lies at the center of the fertile, river-laced plain in the northwest of the Po valley, and is the political and religious sanctuary of the Insubres, the largest Celtic tribe on the southern slopes of the Alps. In the Celtic language its name means 'the place in the middle of the sacred grove'. The city stands at the hub of communications linking the Alpine passes with the depths of the Italian peninsula, surrounded by dense forests, iron mines, forges and pastures, and Insubrian smiths are skilled at forging heavy longswords and horned bronze helmets. After Hannibal came down from the Alpine passes, having lost more than half his army to the ordeal of the snowy mountains, he received at Mediolanum the grand sworn allegiance of the Insubrian and Boian high chieftains, and tens of thousands of Gallic berserkers eager for revenge on Rome joined the Carthaginian standard here, so that the expeditionary army rose again from the fire.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Lilybaeum Fortress represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+      "Content": "The sacred oak grove has witnessed the oath! Hannibal, the god of war, has brought iron armor and war elephants, and the longswords of the Insubrian warriors thirst to drink the blood of Roman consuls!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Behind the stone towers of Lilybaeum Fortress, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+      "Content": "The granaries and smiths of Mediolanum saved an expeditionary army on the brink of ruin. The Gallic barbarians are reckless and undisciplined, but their valor is exactly the hammer that tears apart the Roman infantry lines."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Possession of Lilybaeum Fortress anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "Mediolanum is the poisonous breeding ground of barbarian rebellion against Rome. One day the consul's army will plant the eagle standard on the altars of the Insubres and subdue them completely!"
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Milan Cathedral",
+    "La Scala opera house",
+    "Sforza Castle",
+    "fashion week"
+  ],
+  "Keywords": [
+    "Mediolanum",
+    "Insubres",
+    "Milan",
+    "Gallic allies of Hannibal"
+  ]
 }

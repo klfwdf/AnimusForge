@@ -39,15 +39,28 @@ function Write-AnimusForgeExtremeSevenZip {
     finally { Pop-Location }
 }
 
-# Preserve the established ZIP layout/build-marker checks internally. Only the
-# selected archive is published; the .7z contains the module tree, not a ZIP.
+# Encode the locked projection directly; no ZIP compression or extraction occurs.
+function Assert-AnimusForgeProjectionSources {
+    param([Parameter(Mandatory = $true)]$Projection)
+    foreach ($item in $Projection) {
+        if ($null -eq $item.Bytes) {
+            $actual = (Get-FileHash -LiteralPath $item.SourcePath -Algorithm SHA256).Hash
+        } else {
+            $sha = [Security.Cryptography.SHA256]::Create()
+            try { $actual = [BitConverter]::ToString($sha.ComputeHash([byte[]]$item.Bytes)).Replace('-', '') }
+            finally { $sha.Dispose() }
+        }
+        if ($actual -ine $item.Hash) { throw "Localization source changed during packaging: $($item.Target)" }
+    }
+}
 function Write-AnimusForgeProjectedSevenZip {
     param(
-        [Parameter(Mandatory = $true)][string]$VerifiedZipPath,
         [Parameter(Mandatory = $true)][string]$ArchivePath,
-        [Parameter(Mandatory = $true)]$Projection
+        [Parameter(Mandatory = $true)]$Projection,
+        [scriptblock]$ValidatePayload
     )
     $archiveFull = [IO.Path]::GetFullPath($ArchivePath)
+    if (Test-Path -LiteralPath $archiveFull) { throw "Refusing to overwrite an archive: $archiveFull" }
     $parent = [IO.Path]::GetDirectoryName($archiveFull).TrimEnd('\', '/')
     $work = [IO.Path]::GetFullPath((Join-Path $parent ('.af7z-' + [Guid]::NewGuid().ToString('N'))))
     $prefix = $parent + [IO.Path]::DirectorySeparatorChar
@@ -55,15 +68,30 @@ function Write-AnimusForgeProjectedSevenZip {
     New-Item -ItemType Directory -Path $work -ErrorAction Stop | Out-Null
     try {
         $payload = Join-Path $work 'payload'
-        [IO.Compression.ZipFile]::ExtractToDirectory($VerifiedZipPath, $payload)
+        $targets = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+        foreach ($item in $Projection) {
+            Assert-AnimusForgeRelativeContentPath -Path $item.Target -Label 'Package projection target'
+            if (-not $targets.Add($item.Target)) { throw "Duplicate projection target: $($item.Target)" }
+            $file = Join-Path $payload ('AnimusForge/' + $item.Target)
+            [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($file)) | Out-Null
+            if ($null -eq $item.Bytes) {
+                Assert-AnimusForgeNoReparsePoint -Path $item.SourcePath -Label 'Package projection source'
+                [IO.File]::Copy($item.SourcePath, $file, $false)
+            } else {
+                [IO.File]::WriteAllBytes($file, [byte[]]$item.Bytes)
+            }
+            if ((Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash -ine $item.Hash) { throw "Payload differs from its localization projection: $($item.Target)" }
+        }
+        if ($ValidatePayload) { & $ValidatePayload $payload }
         $list = Join-Path $work 'include.txt'
         $entries = [string[]]@($Projection | ForEach-Object { 'AnimusForge/' + $_.Target })
         [IO.File]::WriteAllLines($list, $entries, [Text.UTF8Encoding]::new($false))
-        Write-AnimusForgeExtremeSevenZip -InputDirectory $payload -IncludeListPath $list -ArchivePath $archiveFull
+        $candidate = Join-Path $work 'candidate.7z'
+        Write-AnimusForgeExtremeSevenZip -InputDirectory $payload -IncludeListPath $list -ArchivePath $candidate
 
         $readback = Join-Path $work 'readback'
         $sevenZip = Resolve-AnimusForgeSevenZip
-        & $sevenZip 'x' '-y' '-bsp0' ('-o' + $readback) $archiveFull | Out-Host
+        & $sevenZip 'x' '-y' '-bsp0' ('-o' + $readback) $candidate | Out-Host
         if ($LASTEXITCODE -ne 0) { throw "7-Zip readback failed: $archiveFull" }
         $files = @(Get-ChildItem -LiteralPath $readback -Recurse -File -Force)
         if ($files.Count -ne $Projection.Count) { throw '7-Zip entry count differs from the locked localization projection.' }
@@ -72,6 +100,10 @@ function Write-AnimusForgeProjectedSevenZip {
             if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "7-Zip is missing a projected entry: $($item.Target)" }
             if ((Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash -ine $item.Hash) { throw "7-Zip differs from its localization projection: $($item.Target)" }
         }
+        if ($ValidatePayload) { & $ValidatePayload $readback }
+        Assert-AnimusForgeProjectionSources -Projection $Projection
+        if (Test-Path -LiteralPath $archiveFull) { throw "Refusing to overwrite an archive: $archiveFull" }
+        [IO.File]::Move($candidate, $archiveFull)
     }
     finally {
         $cleanup = [IO.Path]::GetFullPath($work)

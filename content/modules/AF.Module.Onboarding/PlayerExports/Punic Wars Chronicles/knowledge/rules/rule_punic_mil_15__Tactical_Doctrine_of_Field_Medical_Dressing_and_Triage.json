@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_mil_15",
-  "Name": "Tactical Doctrine of Field Medical Dressing and Triage",
-  "Keywords": [
-    "rule_punic_mil_15",
-    "Doctrine of Field Medical Dressing and Triage",
-    "Combat Mastery Field Medical Dressing and Triage",
-    "Tactical Formations Field Medical Dressing and Triage"
-  ],
+  "Name": "The Roman Legion's Law of Decimation and the Oak-Leaf Crown, the Highest Award for Valor",
+  "Category": "military",
+  "Priority": 88,
   "RagShortTexts": [
-    "The tactical doctrine of Field Medical Dressing and Triage governed battlefield formations..."
+    "When a legion fled in battle, the whole unit was tried and one soldier in ten, chosen by lot, was cudgeled to death by his comrades",
+    "The survivors lost their wheat ration, were made to eat barley instead, and were driven out of the camp to sleep outside in disgrace",
+    "A hero who saved the life of a citizen received the oak-leaf crown and the honor of the Senate rising to its feet to salute him"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The Roman army's system of rewards and punishments for discipline and valor was extremely clear-cut and bred into the bone. For any unit that fled in battle, abandoned its eagle standard or mutinied, the commander could invoke the ancient and bloody 'law of decimation' (Decimatio): the soldiers on trial were made to draw lots in groups of ten, and whoever drew the black lot, however distinguished his past service, had to be beaten to death in public with cudgels and stones by the other nine comrades of his group. The rations of the surviving soldiers were reduced to the barley fed to livestock, and they were driven out of the fortified camp to sleep in the cold outside the ditch until they could wash away their shame by killing an enemy commander or distinguishing themselves in the next bloody battle. Conversely, any soldier who killed an enemy commander in front of the lines or personally saved a Roman citizen from being killed was awarded the sacred 'oak-leaf crown' (Corona Civica). Whoever wore the oak-leaf crown was exempt from public burdens for life, and when he entered the great theater of Rome or the Senate, all the senators and consuls had to rise and bare their heads to salute him.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The development of Field Medical Dressing and Triage exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+      "Content": "The cudgel smashes cowardice, and the oak leaf kindles glory! The legion's fear of desertion must be a hundred times greater than its fear of the enemy's spears; only then can the army be invincible!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of Field Medical Dressing and Triage became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "Watching the comrades you live with day and night have their skulls smashed by your own cudgels, that terror makes every survivor charge madly into the enemy ranks in the next battle, preferring death to taking even half a step back!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Mastery of Field Medical Dressing and Triage separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "The Romans are crueler to their own soldiers than to their enemies. Yet it is precisely this almost brutal sacred law that has created furious legions that cannot be broken however hard you strike them."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "military police battle-line executions",
+    "Geneva Convention on prisoners of war",
+    "First World War trench court-martial",
+    "modern Medal of Honor"
+  ],
+  "Keywords": [
+    "decimation",
+    "decimatio",
+    "corona civica",
+    "oak-leaf crown",
+    "Roman military discipline"
+  ]
 }

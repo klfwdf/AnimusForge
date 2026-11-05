@@ -1,42 +1,111 @@
 {
   "Id": "rule_punic_54",
-  "Name": "Punic War Campaign Operation 54",
-  "Keywords": [
-    "rule_punic_54",
-    "Punic Operation 54",
-    "Strategic Campaign 54",
-    "Mediterranean Theater 54"
+  "Name": "The Corsican Naval Blockade and Rome's Privateering Patrol Net",
+  "Description": "The Roman navy used the fortress of Aleria on Corsica as its forward strategic base and set up a tight blockade line of two-way naval mines and patrolling warships, intercepting the smuggling merchantmen and supply warships sailing from Carthage and Liguria toward southern Italy.",
+  "Tags": [
+    "Corsican blockade",
+    "Naval port of Aleria",
+    "Privateering patrols",
+    "Sea grain route",
+    "Tyrrhenian Sea",
+    "Blockade tactics"
   ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 54 concerning Mediterranean operations during the Second Punic War."
+    "Using the naval port of Aleria on Corsica as its hub, the Roman navy wove a dense net of privateering patrols across the Tyrrhenian Sea.",
+    "Fast biremes and light assault boats were sent out specifically to hunt down the supply ships Carthage was sending to Italy.",
+    "This tight stranglehold at sea trapped Hannibal on the Italian peninsula, long forced to find his own food, fodder and arms."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 54 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 54, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The naval port of Aleria on Corsica is the tightest noose around Hannibal's neck! Our fast squadrons patrol the throat of the strait day and night, and any freighter flying the purple banner of Carthage that shows itself is at once rammed through the keel by our light craft! In sixteen years, seven or eight of every ten siege engines, fine suits of armor and fresh African recruits that Hannibal longed for were intercepted by us and sent to the cold seabed off Corsica! Hannibal may be king on land, but on this sea every drop of water obeys the will of Roman warships!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 54 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The Roman pirates have completely torn off their mask of legal pretense! They have strung out swarms of interceptor boats around Corsica and fall like wolf packs on our defenseless grain ships. For every victory Lord Hannibal wins in southern Italy, he faces the hopeless fact that not a single decent short sword, not even one spare iron pot, can reach him from home! The Corsican blockade line seals off the Barcid army's road to survival more cruelly than the walls of Rome!"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The patrol boats off Corsica are the worst at robbing robbers! The Roman praetor pays his marines next to nothing, but promises that from any Carthaginian merchantman they seize, the gold, pig iron and slaves on board are split three to seven with the captors. The moment those fast boats sight a cargo sail, they pounce on it like sharks smelling blood. Hardly a day passes without burned, blackened timbers washing up on the beaches of the strait."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "During the Second Punic War, Rome used its military base on Corsica to enforce a tight blockade of the western Tyrrhenian Sea. Fast patrol warships intercepted Carthaginian supply freighters bound for mainland Italy and the Gallic coast, effectively cutting the channel through which Hannibal's expedition could draw a steady flow of heavy weapons, recruits and strategic supplies from home."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Corsica blockade",
+    "Aleria",
+    "Roman patrol squadrons",
+    "Tyrrhenian Sea",
+    "privateering",
+    "Carthaginian supply ships",
+    "Hannibal supply line",
+    "naval blockade"
+  ]
 }

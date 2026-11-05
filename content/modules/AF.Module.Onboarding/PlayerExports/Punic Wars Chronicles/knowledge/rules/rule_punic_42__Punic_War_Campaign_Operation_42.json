@@ -1,42 +1,107 @@
 {
   "Id": "rule_punic_42",
-  "Name": "Punic War Campaign Operation 42",
-  "Keywords": [
-    "rule_punic_42",
-    "Punic Operation 42",
-    "Strategic Campaign 42",
-    "Mediterranean Theater 42"
+  "Name": "The Assassination of Hieronymus and the Massacre at Leontini",
+  "Description": "In 214 BC the cruel young king Hieronymus was ambushed and killed by assassins in a street of Leontini. Soon afterward the Roman Marcellus stormed Leontini and executed two thousand deserters, rousing the whole of Syracuse to a shared, furious resolve to resist Rome.",
+  "Tags": [
+    "Assassination of Hieronymus",
+    "Massacre at Leontini",
+    "Marcellus",
+    "Epicydes",
+    "Hippocrates",
+    "Anti-Roman alliance"
   ],
+  "Category": "History",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 42 concerning Mediterranean operations during the Second Punic War."
+    "In 214 BC the young Syracusan king Hieronymus was cut down in the street by conspirators while inspecting Leontini.",
+    "Marcellus stormed Leontini and, after having them flogged, cruelly executed two thousand Roman deserters and defenders.",
+    "The bloody news of the Leontini massacre reached Syracuse and roused every citizen to a resolve to resist Rome to the death."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 42 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 42, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 42 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Hieronymus was arrogant and cruel and deserved his death, but the brutality of the Romans is worse than that of beasts! After Leontini opened its gates, Marcellus actually ordered two thousand Greek fighters who had laid down their arms to be tied to stakes and flogged to death with rods, then beheaded as a public example! Blood flowed over the stone steps of Leontini! Epicydes and Hippocrates, the envoys sent by Hannibal, denounced this blood feud before the citizen assembly, and every citizen of Syracuse roared: if we open the gates and surrender, Leontini's today will be our women and children's tomorrow! Take up arms and fight to the death!"
+    },
+    {
+      "Priority": 88,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What General Marcellus carried out at Leontini was pure and sacred military law! Those executed were Roman deserters who had fled and turned traitor from the fields of Cannae and the Trebia; they not only broke their oaths but took up arms to help Greek rebels fight the legions of their own fatherland! Any traitor who betrays the eagle standard deserves only the gallows and the axe! The general did not lay a finger on lawful citizens; it was Carthaginian spies spreading lies who stirred up panic among the Syracusan mob!"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The young king was stabbed to death by a flurry of blades in a narrow alley, and his purple robe was soaked through with blood. Right after that, refugees from Leontini fled into the city, wailing that the Romans cut off heads the moment they came in, and that even defenders who surrendered were stripped and whipped until their bones showed. The whole city's common folk were trembling, the smithies forged spears day and night, and everyone knew disaster was at the door."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 214 BC, King Hieronymus of Syracuse was assassinated in the street while inspecting Leontini, and the city fell into chaos. Afterward the Roman commander Marcellus stormed Leontini and executed two thousand rebel deserters. This act thoroughly enraged and terrified the whole of Syracuse, enabling Carthage's representatives Epicydes and Hippocrates to take control of the Syracusan government and launch an all-out war of resistance against Rome."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "assassination of Hieronymus",
+    "Leontini massacre 214 BC",
+    "Epicydes and Hippocrates",
+    "Marcellus executes deserters"
+  ]
 }

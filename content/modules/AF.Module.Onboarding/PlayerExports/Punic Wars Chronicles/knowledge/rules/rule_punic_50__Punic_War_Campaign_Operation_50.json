@@ -1,42 +1,109 @@
 {
   "Id": "rule_punic_50",
-  "Name": "Punic War Campaign Operation 50",
-  "Keywords": [
-    "rule_punic_50",
-    "Punic Operation 50",
-    "Strategic Campaign 50",
-    "Mediterranean Theater 50"
+  "Name": "Fabius Retakes Tarentum by Stratagem and the Enormous Spoils",
+  "Description": "In 209 BC the veteran consul Fabius exploited a love affair between the commander of the Bruttian mercenaries in the Tarentine garrison and a woman of his own people to win him over as an insider, retook Tarentum in a night attack, seized 83,000 pounds of silver and countless treasures, and sold 30,000 citizens into slavery.",
+  "Tags": [
+    "Recapture of Tarentum",
+    "Fabius",
+    "The Bruttian insider",
+    "Suppressing revolt in Magna Graecia",
+    "Spoils of war",
+    "Thirty thousand slaves"
   ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 50 concerning Mediterranean operations during the Second Punic War."
+    "In 209 BC Fabius, nearly eighty years old, used the private affections of the Bruttian officer guarding the walls to win him over and break into the city.",
+    "On the day the city fell, the Roman legions slaughtered the rebels and plundered 83,000 pounds of silver and countless Greek art treasures.",
+    "Selling 30,000 Tarentine citizens into slavery utterly destroyed Hannibal's most important harbor foothold in Magna Graecia."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
+      "Priority": 92,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old consul Fabius won the Republic the most dazzling triumph of his later years! The old general did not spend soldiers' lives storming the walls; instead he precisely exploited the love affair of the Bruttian mercenary captain guarding the defenses to turn him. At midnight the insider opened the gate, and the legions poured into the city like tigers coming down the mountain! Democrates, who had betrayed Rome, was killed in the fighting, and thirty thousand rebellious citizens were put in heavy chains and sent up onto the slave auction block! The treasury received 83,000 pounds of pure silver and crates of Greek golden statues! When Hannibal, hurrying up at the news, saw the Roman eagles on the walls from a few miles away, he could only sigh in bitter regret: 'The Romans too have their Hannibal!'"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "tarentum"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The pearl of Magna Graecia was ground to dust beneath the iron hooves of the barbarous Romans! One greedy foreign Bruttian mercenary sold out the walls for gold and a mistress! The Romans slaughtered unarmed citizens in the streets without asking right from wrong, and even the mercenary captain who had let the wolf in was killed to silence him! The gold in the temples was scraped clean, and thirty thousand of our countrymen were driven off and sold like oxen and horses! The centuries-old dream of freedom of the Greek cities of Magna Graecia was utterly extinguished beneath Fabius's sinister smile!"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This was the heaviest blow Hannibal suffered in southern Italy! Our general had already marched back to relieve the city and was only five miles from Tarentum; one more day and he could have caught Fabius between the city and his own army and destroyed him. Who could have known a traitor would hand over the city in a single night! The fall of Tarentum cut off for good the only good harbor where we could receive reinforcements from the Balkans across the Adriatic, and from then on Hannibal was hopelessly trapped among the barren, stony mountains of Bruttium."
+    },
+    {
       "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 50 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 50, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 50 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In 209 BC, the Roman consul Quintus Fabius Maximus turned an officer of the Bruttian mercenaries in the city garrison into an insider and successfully retook Tarentum by surprise attack. The Roman legions sacked the whole city, killed the pro-Carthaginian leaders, carried off 83,000 pounds of silver and sold 30,000 inhabitants into slavery. The battle dealt a heavy blow to Hannibal's most important strategic harbor base in southern Italy."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "recapture of Tarentum 209 BC",
+    "Fabius Maximus at Tarentum",
+    "Bruttian commander betrays Tarentum",
+    "83,000 pounds of silver"
+  ]
 }

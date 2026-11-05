@@ -1,42 +1,106 @@
 {
   "Id": "rule_punic_47",
-  "Name": "Punic War Campaign Operation 47",
-  "Keywords": [
-    "rule_punic_47",
-    "Punic Operation 47",
-    "Strategic Campaign 47",
-    "Mediterranean Theater 47"
+  "Name": "The Night Infiltration During the Festival of Artemis and the Fall of the Epipolae Cliffs",
+  "Description": "In spring 212 BC the whole of Syracuse was sunk in drunken revelry for the festival of Artemis and left unguarded. Marcellus sent a hundred-man storming party up ladders by night onto a low stretch of wall above the cliffs of Epipolae to seize the gates, and the impregnable outer fortress fell through carelessness.",
+  "Tags": [
+    "Fall of Epipolae",
+    "Festival of Artemis",
+    "Marcellus's night attack",
+    "Storming party scales the wall",
+    "Breach of Syracuse",
+    "Careless revelry"
   ],
+  "Category": "Military",
+  "DefaultPriority": 85,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 47 concerning Mediterranean operations during the Second Punic War."
+    "In spring 212 BC the people of Syracuse drank wine for three days at the festival of Artemis, and the whole city's guard grew slack.",
+    "Acting on a secret report from his envoys, Marcellus measured where the cliff-top wall of Epipolae was lower and sent a storming party to climb it by night.",
+    "The hundred-man storming party cut the sentries' throats in the night and opened the gates, letting the elite Roman legions flood into the strategic outer city."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Two whole years of bitter fighting and torment by Archimedes' machines, and tonight at last the patience and inspired cunning of the Roman legions tore open a breach! General Marcellus had learned from the negotiating envoys how many courses of stone there were in the wall above the northern cliffs of Epipolae, and had calculated that the city would be dead drunk for the festival of Artemis! Deep in the silent night, a thousand Roman volunteers for death, short swords clenched in their teeth, set up their scaling ladders without a sound. When we reached the top of the wall, the Greek sentries had their throats silently cut amid their wine-soaked snoring! The gates were thrown open, the legion trumpets blared at dawn, and the strong heights of Epipolae lay beneath the feet of the Roman legions!"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This was a shameful, absurd betrayal! Archimedes' machines held back two years of storm and fire, yet the whole city was ruined by a few barrels of cheap wine! Because grain was short, the commanders handed out only wine for the festival, and the foolish soldiers drank until they were reeling, without a single sentry left on the battlements! By the time the dawn trumpets sounded, the Romans were already standing in the streets with their short swords, slaughtering citizens who had not yet woken from their hangovers! Two years of a war of resistance fought in blood and tears were thrown away completely in this one night!"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The evening before, people were still dancing and singing in the streets, young and old celebrating the goddess's festival, and even the gate guards were sprawled over the tables, drunk as dead pigs. In the middle of the night we suddenly heard hurried footsteps outside the window, and when we looked out, the alleys were full of silent Roman soldiers in armor running everywhere and spearing anyone they saw. By the time the sun came up, the Syracusan banners on the walls had been torn down and trampled in the mud."
+    },
+    {
       "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 47 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 47, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 47 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In spring 212 BC, the Syracusan garrison drank heavily during the festival of Artemis and grew careless. The Roman commander Marcellus, using a low point in the cliff-top wall that had been surveyed and calculated earlier, sent a picked party of volunteers to slip up the outer wall of Epipolae by night, where they killed the sentries in secret and opened six gates. The main Roman force poured in and took the fortress of Epipolae, pushing the front line into the city's inner core, Achradina and the island of Ortygia."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "fall of Epipolae 212 BC",
+    "festival of Artemis Syracuse",
+    "Marcellus night escalade",
+    "six gates of Syracuse opened"
+  ]
 }

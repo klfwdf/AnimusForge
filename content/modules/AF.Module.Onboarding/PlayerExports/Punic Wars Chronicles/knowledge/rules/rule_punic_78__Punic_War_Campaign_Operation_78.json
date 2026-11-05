@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_78",
-  "Name": "Punic War Campaign Operation 78",
-  "Keywords": [
-    "rule_punic_78",
-    "Punic Operation 78",
-    "Strategic Campaign 78",
-    "Mediterranean Theater 78"
-  ],
+  "Name": "The Black Stone of the Phrygian Great Mother Is Brought from Asia Minor to Rome",
+  "Category": "culture",
+  "Priority": 87,
   "RagShortTexts": [
-    "Strategic campaign doctrine 78 concerning Mediterranean operations during the Second Punic War."
+    "In 205 BC Rome consulted the oracles and was told to bring Cybele, Mother of the Gods, from the East",
+    "The sacred black meteorite of the Great Mother was brought back from her temple at Pessinus in Asia Minor",
+    "The Vestal Claudia miraculously drew the grounded sacred ship, the black stone entered the city, and the next year Hannibal left Italy"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In 205 BC, as the war entered its thirteenth year, showers of meteors appeared again and again and the people grew restless. The Sibylline oracle revealed: 'Whenever a foreign enemy invades Italy, he can be driven out only if the Great Mother of Pessinus (Magna Mater/Cybele) is brought to Rome.' Rome sent envoys across the sea to the Kingdom of Pergamon in Asia Minor, and with the help of Attalus I they brought back from Phrygia the sacred black stone of the Great Mother (her embodiment in a meteorite). When the ship carrying the goddess ran aground at the mouth of the Tiber, the noblewoman Claudia Quinta, falsely accused of unchastity, prayed to the goddess and then, with only a sash and a single hand, drew the great ship upstream against the current, clearing her name and astonishing the whole city. The black stone was enshrined in the temple of Victory, and the next year Hannibal was indeed forced to leave Italy. The whole city of Rome credited the victory to the protection of the Great Mother.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "The Mother of the Gods has come down the Tiber on a great ship from the East! The miracle of Claudia shows the goddess's delight, and the barbarian Hannibal, under the might of the gods, can only flee in panic!"
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 78 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "The alliance of Pergamon and Rome is not only a joining of armies but an eastward expansion of the map of the gods. The black stone of the goddess Cybele will change the faith of Italy forever."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 78, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 78 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The Romans are so desperate that they kneel and bow to a heathen stone from Anatolia. But even with priests and sorcerers borrowed from the East, they cannot erase sixteen years of fear."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Christian Virgin Mary",
+    "Islamic Kaaba",
+    "Medieval pilgrimage",
+    "Gunpowder weapons"
+  ],
+  "Keywords": [
+    "Magna Mater",
+    "Cybele",
+    "Pessinus",
+    "black stone",
+    "205 BC",
+    "Claudia Quinta",
+    "Attalus I",
+    "Sibylline oracle"
+  ]
 }

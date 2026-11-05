@@ -1,42 +1,114 @@
 {
   "Id": "rule_punic_59",
-  "Name": "Punic War Campaign Operation 59",
-  "Keywords": [
-    "rule_punic_59",
-    "Punic Operation 59",
-    "Strategic Campaign 59",
-    "Mediterranean Theater 59"
+  "Name": "Rome Allies with the Aetolian League and Pergamon in an Eastern Encirclement",
+  "Description": "In 211 BC, Rome practiced an offshore-balancing diplomacy of 'using Greeks to check Greeks', allying with the Aetolian League, the Kingdom of Pergamon and Sparta to build an airtight eastern strategic encirclement against Macedon.",
+  "Tags": [
+    "Eastern encirclement",
+    "Aetolian League",
+    "Pergamene allies",
+    "Offshore balancing",
+    "Philip V hemmed in",
+    "Using foreigners to check foreigners"
   ],
+  "Category": "Political",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 59 concerning Mediterranean operations during the Second Punic War."
+    "In 211 BC Rome and the Aetolian League formally concluded a full offensive and defensive alliance against Macedon.",
+    "The agreement provided that after victory all land and fortresses would go to the Aetolians, while all captives, movable wealth and spoils would go to Rome.",
+    "Drawing in the navy of Pergamon in Asia Minor and Sparta kept Philip V firmly trapped in a draining war inside Greece."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 59 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 59, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 59 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "This is the Roman Senate's finest diplomatic masterpiece! In the dark years when Hannibal was trampling madly over Italy itself, with nothing more than a task squadron of twenty-five warships and a diplomatic treaty we pinned Macedon's vast ambitions to the ground in the Balkans! The treaty spells it out plainly: after victory the land goes to the Greek barbarians, the gold and slaves are shipped back to Rome! The javelins of the Aetolian League and the elite fleet of King Attalus of Pergamon are striking on every side in the east, and Philip V cannot even put out the fires in his own backyard. Does he still dream of crossing the sea to help Hannibal? Never!"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "aetolian_league"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Aetolians are the true guardians of Greek freedom! Ever since Philip II and Alexander, Macedon has treated the Greeks as house slaves of the crown, and we will smash that tyrannical monarchy to pieces with the axes in our hands! With the Roman fleet covering our flank at sea and the iron treasury of Pergamon behind us, we can strike the Macedonian phalanx hard on every hilltop in Thessaly and Acarnania! The land of Greece ought to be governed by our Greek league!"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hellenic"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "These Aetolian mountain bandits and robbers are traitors to their own people who have let the wolf into the house! They have lured the bloodthirsty western barbarians of Rome into the sacred Greek world and let the Roman legions plunder the temples of Greek cities and sell free Greek citizens into slavery! His Majesty Philip V rushes from fire to fire, marching south against Sparta, holding off Aetolia in the west and Pergamon in the east. We are bleeding in a bitter struggle on behalf of all Greek civilization against the inroads of savage robbers!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 211 BC, Rome succeeded in building a powerful network of alliances against the Kingdom of Macedon in the east, allying with the Aetolian League, the Kingdom of Pergamon, Sparta and other powers. With a minimum of troops Rome pinned down the main Macedonian army and sank Philip V into a multi-front war in mainland Greece, completely removing the strategic threat that Macedon might advance on Italy from the flank to support Hannibal."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Aetolian League treaty 211 BC",
+    "Roman-Aetolian alliance",
+    "Pergamon",
+    "Attalus I",
+    "Sparta",
+    "Philip V",
+    "First Macedonian War",
+    "eastern encirclement"
+  ]
 }

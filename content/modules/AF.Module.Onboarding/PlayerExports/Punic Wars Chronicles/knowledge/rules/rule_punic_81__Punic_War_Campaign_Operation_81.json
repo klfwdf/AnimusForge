@@ -1,42 +1,55 @@
 {
   "Id": "rule_punic_81",
-  "Name": "Punic War Campaign Operation 81",
-  "Keywords": [
-    "rule_punic_81",
-    "Punic Operation 81",
-    "Strategic Campaign 81",
-    "Mediterranean Theater 81"
-  ],
+  "Name": "The Threat of Crucifixion for Defeated Commanders and the Alienation of Overseas Generals",
+  "Category": "military",
+  "Priority": 86,
   "RagShortTexts": [
-    "Strategic campaign doctrine 81 concerning Mediterranean operations during the Second Punic War."
+    "Under Carthage's cruel military law, any defeated or derelict commander could be crucified by order of the Senate",
+    "Fearing the Senate's punishment, generals on the overseas fronts grew timid in battle or harbored divided loyalties",
+    "This extreme system of punishment left generals unwilling to take risks and deepened the mistrust between the front and the Council of One Hundred"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Carthage's constitution and military law kept a cruel Eastern survival: any general who suffered a major defeat abroad, lost a fleet or was judged to have fought poorly could be put to death on a cross by direct order of the Council of One Hundred. This bloody law was meant to stamp out cowardice and desertion in the face of the enemy, but in the Second Punic War it backfired disastrously. Overseas generals such as Bomilcar and Himilco knew that if they came home defeated they would surely face a cruel execution, so when the fighting was deadlocked they became extremely cautious and withdrew, preferring to watch allied armies be destroyed rather than risk a decisive battle; in moments of crisis some even secretly offered their loyalty to the enemy or abandoned their armies to save themselves. This noose hanging over the generals' heads gravely weakened the initiative of the Carthaginian army and the strategic coordination among its forces.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 81 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "In Rome, a defeated consul who returns to the city is still thanked by the Senate; in Carthage, the shadow of the cross hangs over our heads forever! How can anyone dare to risk everything?"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 81, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "Those given command squander the city's flesh and blood and vast wealth. If defeated generals are indulged, how can we console the brave men who died and the citizens who were ruined? The cross is the guarantee of order!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 81 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Rome treated the consul Varro leniently, because though defeated he did not despair; Carthage nails its generals to wooden stakes. The gap between barbarism and civilization is plain to see in their laws."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Medieval hanging",
+    "Court-martial jury",
+    "Geneva Conventions",
+    "Electric chair"
+  ],
+  "Keywords": [
+    "crucifixion of generals",
+    "Carthaginian military law",
+    "Council of One Hundred",
+    "Bomilcar",
+    "Himilco",
+    "defeated commanders",
+    "Varro",
+    "punishment"
+  ]
 }

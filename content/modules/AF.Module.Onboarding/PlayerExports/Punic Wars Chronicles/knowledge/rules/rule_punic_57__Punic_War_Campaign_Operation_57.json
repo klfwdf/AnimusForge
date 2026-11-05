@@ -1,42 +1,114 @@
 {
   "Id": "rule_punic_57",
-  "Name": "Punic War Campaign Operation 57",
-  "Keywords": [
-    "rule_punic_57",
-    "Punic Operation 57",
-    "Strategic Campaign 57",
-    "Mediterranean Theater 57"
+  "Name": "The East-West Mediterranean Alliance of Hannibal and Philip V",
+  "Description": "In 215 BC, after the Battle of Cannae, King Philip V of Macedon sent envoys deep into the southern tip of Italy to conclude a treaty with Hannibal: Macedon would send forces to the eastern shore of the Adriatic to tie Rome down, and after the war the two would share hegemony and drive Rome out.",
+  "Tags": [
+    "Macedonian treaty",
+    "Philip V",
+    "Hannibal",
+    "East-west partition treaty",
+    "First Macedonian War",
+    "Anti-Roman alliance"
   ],
+  "Category": "Political",
+  "DefaultPriority": 85,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 57 concerning Mediterranean operations during the Second Punic War."
+    "In 215 BC, after Cannae, King Philip V of Macedon sent envoys to conclude an offensive and defensive alliance with Hannibal.",
+    "The treaty provided that Macedon would cross the sea to attack Rome's holdings in Illyria and that after the war the two powers would share the Mediterranean.",
+    "On the way home the Macedonian envoys' ship carrying a copy of the treaty was captured by Roman warships, setting off the First Macedonian War."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 57 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hellenic"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 57, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "This is a glorious chance to revive the empire of Alexander the Great! The Roman barbarians have long since stretched their greedy claws to the eastern shore of the Adriatic, swallowing Illyria and threatening the Greek states! In accord with heaven and men, His Majesty Philip V has sworn a sacred oath with Hannibal, the greatest general of the age: the spears of Macedon and the swords of Carthage will advance together from east and west! On the day Hannibal levels the walls of Rome, every port on the western shore of the Adriatic and the Greek homeland will return to the Macedonian crown!"
     },
     {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 57 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "This treaty we intercepted will be nailed forever to the pillar of shame for treachery! When our patrol squadron caught that disguised merchant ship off Calabria and found the parchment bearing Hannibal's own signature, the whole Senate gasped! Philip V dared to dream of looting a burning house and carving up Rome! The Senate acted at once: Valerius Laevinus was sent with a great fleet and legions to seal off Brundisium. Even if Rome must shed its last drop of blood at home, it will never let the spears of the East set foot on Italian soil!"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "With unmatched diplomatic vision, our commander Hannibal built a grand web of alliances to strangle Rome! From the Boii of Gaul and Capua in Campania to Macedon, master of the Aegean, the whole civilized world is uniting to resist the oppression of Roman power! The bitter part is that on their way home the envoys carelessly let themselves be caught by a Roman patrol ship, the secret leaked out, and the Romans gained a breathing space to set up their defenses in the east early."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 215 BC, after the Battle of Cannae, King Philip V of Macedon sent special envoys to conclude a formal offensive and defensive alliance with Hannibal. The two sides agreed that Macedon would attack Rome's possessions in Illyria in the east, and that after the war Carthage would dominate the western Mediterranean while Macedon would dominate Greece and the eastern shore of the Adriatic. The envoys were captured by the Roman navy on their way back, and the exposure of the treaty led Rome to formally declare war on Macedon, opening the First Macedonian War."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Hannibal Philip V treaty",
+    "Macedonian alliance 215 BC",
+    "Philip V",
+    "First Macedonian War",
+    "Illyria",
+    "Valerius Laevinus",
+    "Brundisium",
+    "captured envoys"
+  ]
 }

@@ -3,30 +3,37 @@
   "HeroId": "",
   "CultureId": "numidian",
   "DisplayName": "Numidian Nomads and Light Cavalry",
-  "Description": "Natural-born horsemen reared on the arid plateaus and scrublands beneath the Atlas Mountains. Riding bareback without saddles or bridles, armed only with light javelins and small round bucklers, they excel in uncatchable skirmishing and encirclement, hunting like desert hawks.",
+  "Description": "Born horsemen of the vast, arid steppes of North Africa and the foothills of the Atlas. They wear no heavy armor, only a short cloak of coarse hemp, with a light round leather shield on the left arm and several sharp, fire-hardened iron-tipped javelins in the right hand. They ride without even a saddle or bit, and with nothing but a thin hemp cord around the horse's neck and their whistles they become one with their spirited North African horses. On the battlefield they are like shifting gusts of hot desert wind: they never collide head-on with heavy legions, but use masterful skirmishing, circling volleys and feigned retreats to lure the enemy's flanks into a death trap. They were the deadly wings that carried Hannibal over the Alps and through victory after victory, and later the decisive blow that closed the encirclement for Scipio Africanus at the Battle of Zama. As long as the horses beneath them still neigh and the long wind of the wilderness still howls, they are the sentinels of death on these wild plains, whom no one dares to challenge.",
   "Traits": [
+    {
+      "Id": "bold",
+      "Strength": 3
+    },
     {
       "Id": "opportunistic",
       "Strength": 3
     },
     {
-      "Id": "bold",
+      "Id": "curious",
       "Strength": 2
     },
     {
-      "Id": "patient",
+      "Id": "impulsive",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Protect desert pastureland and earn rich war booty through unmatched mobility."
+    "Chase the finest warhorses and the richest spoils across the endless wilderness, winning lush pastures and plentiful water for their own tribe.",
+    "Use horsemanship no one can match to earn gold, fine horses and harness in the wars of the great empires, and make their name known far and wide."
   ],
   "Values": [
-    "Nomadic autonomy, loyalty to tribal blood kin, and mastery of the desert courser."
+    "Treat the warhorse as their own flesh and blood, and believe in absolute freedom of movement and the nomadic law of coming and going like the wind.",
+    "Prize toying with clumsy heavy infantry through superb horsemanship, and regard rigid, blind charges as the most laughable folly on the battlefield."
   ],
   "Fears": [
-    "Being pinned against fortified obstacles where horses cannot maneuver."
+    "Being lured into narrow, rocky, muddy street fighting or into deep valleys and marshes, losing the open space their horses need to gallop.",
+    "Their beloved warhorse being wounded, leaving them trapped among infantry squares like a lamb waiting for slaughter."
   ],
-  "SpeechStyle": "Swift, sharp, and concise; devoid of flowery rhetoric, direct as a thrown javelin.",
+  "SpeechStyle": "Light and unrestrained, with a slightly hoarse voice weathered by the dry wilderness and speech as fast as a passing gust; fond of comparisons to fine horses, falcons and hunted antelope, their words carry the bold, untamed pride and sly agility of a nomadic tribe.",
   "VoiceId": ""
 }

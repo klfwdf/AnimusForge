@@ -1,42 +1,51 @@
 {
   "Id": "rule_punic_mil_01",
-  "Name": "Tactical Doctrine of Manipular Legion Cohort Tactics",
-  "Keywords": [
-    "rule_punic_mil_01",
-    "Doctrine of Manipular Legion Cohort Tactics",
-    "Combat Mastery Manipular Legion Cohort Tactics",
-    "Tactical Formations Manipular Legion Cohort Tactics"
-  ],
+  "Name": "The Roman Three-Line Heavy Legion: Checkerboard Formation and the Doctrine of Line Rotation",
+  "Category": "military",
+  "Priority": 90,
   "RagShortTexts": [
-    "The tactical doctrine of Manipular Legion Cohort Tactics governed battlefield formations..."
+    "Roman heavy infantry was divided into three echelons: young soldiers, men in their prime and reserve veterans",
+    "The staggered checkerboard formation left gaps so that battered front-line units could fall back smoothly and in order",
+    "The reserve veterans knelt on one knee with long spears, forming the last wall of bronze and iron for a fight to the death"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "During the Second Punic War the Roman legion used the mature manipular checkerboard formation (Manipular Quincunx). The main heavy infantry of the legion was strictly divided by age, experience and property into three lines: the first line was the hot-blooded young soldiers (Hastati), the second the mature, seasoned men in their prime (Principes), and the third the reserve of veterans of a hundred battles (Triarii). The maniples were spaced at equal intervals and staggered in a checkerboard pattern. In battle, the skirmishers threw their javelins and withdrew to the rear through the gaps; the hastati hurled their heavy javelins and then charged with drawn swords; if the hastati were checked and exhausted, the principes could calmly pass through the gaps, take their place and keep up the slaughter; if the whole army fell into danger, the third-line reserve veterans knelt on one knee, bracing the left knee behind their huge convex shields, and leveled their heavy four-meter spears to form an impassable hedgehog wall of iron, covering the first two lines as they re-formed or made a last-ditch counterattack. The Roman saying 'it has come to the triarii' (Ad triarios redisse) refers to exactly such a moment of final, decisive battle.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "The three-line legion is the embodiment of the Republic's order! The checkerboard formation takes in and sends out men as easily as breathing, and any reckless phalanx will collapse after being ground down by the hastati and principes in turn."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "The Roman infantry lines are so orderly they take your breath away, but precisely because they depend on smooth rotation, once heavy cavalry outflank both wings and tear open the gaps, the packed mass of men turns into a slaughterhouse where they trample one another."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "The development of Manipular Legion Cohort Tactics exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "Drill after drill in the blazing sun until the movements of Manipular Legion Cohort Tactics became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Mastery of Manipular Legion Cohort Tactics separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "You cut down the first rank of young men, and stronger men press forward to meet you; when you are exhausted, those last gray-haired veterans kneeling behind their shields will drive their spears through your throat."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "flintlock musket",
+    "Napoleonic square",
+    "machine gun",
+    "tank-infantry coordination"
+  ],
+  "Keywords": [
+    "manipular legion",
+    "hastati principes triarii",
+    "quincunx formation",
+    "line rotation",
+    "ad triarios redisse"
+  ]
 }

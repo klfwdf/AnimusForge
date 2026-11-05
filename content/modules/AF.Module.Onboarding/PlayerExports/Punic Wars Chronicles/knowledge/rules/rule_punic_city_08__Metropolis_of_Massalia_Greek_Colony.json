@@ -1,42 +1,50 @@
 {
   "Id": "rule_punic_city_08",
-  "Name": "Metropolis of Massalia Greek Colony",
-  "Keywords": [
-    "rule_punic_city_08",
-    "Urban Center Massalia Greek Colony",
-    "Citadel of Massalia Greek Colony",
-    "Harbor of Massalia Greek Colony"
-  ],
+  "Name": "Lilybaeum, Western Gate of Sicily: The Great Stone Sea Fortress",
+  "Category": "geography",
+  "Priority": 85,
   "RagShortTexts": [
-    "The fortified urban center of Massalia Greek Colony served as a vital strategic, naval, and..."
+    "Lilybaeum sits on the westernmost headland of Sicily and directly commands the crossing to Tunisia",
+    "Reefs surround it and the channel winds through treacherous waters; only skilled local sailors can enter safely",
+    "Untaken after ten years of assault in the First Punic War, it became Rome's military and administrative base in Sicily"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Lilybaeum (castle_rome_lilybaeum, modern Marsala) towers over the westernmost promontory of Sicily and faces the cape of North Africa across the Strait of Sicily at a distance of only some eighty nautical miles, making it the shortest sea stepping-stone between Europe and Africa. Its harbor is ringed by naturally sharp reefs and shoals, and only one narrow, artificially marked serpentine channel admits large ships; outside sailors who make the slightest mistake strike the rocks and sink. In the First Punic War, Rome spent ten years and tens of thousands of dead and wounded without breaching its great stone fortress, and after the war it was ceded to Rome under the peace treaty. During the Second Punic War, Lilybaeum served as the headquarters of the Roman garrison in Sicily and as the base for Scipio's expedition to North Africa, and with its dense coastal artillery towers it repeatedly drove off and destroyed the Carthaginian raiding fleets that came against it.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "Lilybaeum is Rome's sharpest dagger in Sicily. It was from these stone quays that General Scipio's army boarded ship, crossed the strait, and struck straight at the heart of Carthage!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "That is a fortress our ancestors forged with their blood; our fathers held out against Rome here for ten years without a single defeat. Seeing the enemy's eagle standards flying over the towers of Lilybaeum, Punic hearts bleed."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Massalia Greek Colony represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "Behind the stone towers of Massalia Greek Colony, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Possession of Massalia Greek Colony anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "In this channel full of fierce waves and hidden reefs, only the most seasoned helmsmen of Marsala can pass through the fog. Any foreign ironclad that dares to blunder in will be smashed to pieces."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Marsala winery",
+    "Garibaldi's Expedition of the Thousand",
+    "steam barge",
+    "radar station"
+  ],
+  "Keywords": [
+    "Lilybaeum",
+    "Marsala",
+    "Strait of Sicily",
+    "siege of Lilybaeum"
+  ]
 }

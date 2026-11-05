@@ -1,42 +1,50 @@
 {
   "Id": "rule_punic_city_09",
-  "Name": "Metropolis of New Carthage Naval Basin",
-  "Keywords": [
-    "rule_punic_city_09",
-    "Urban Center New Carthage Naval Basin",
-    "Citadel of New Carthage Naval Basin",
-    "Harbor of New Carthage Naval Basin"
-  ],
+  "Name": "Saguntum, Powder Keg of Iberia: The Clifftop City and Its Oath unto Death",
+  "Category": "geography",
+  "Priority": 87,
   "RagShortTexts": [
-    "The fortified urban center of New Carthage Naval Basin served as a vital strategic, naval,..."
+    "Saguntum rises on a steep rocky ridge overlooking the fertile coastal plain of Valencia",
+    "Trusting its treaty with Rome, the city shut its gates and resisted the siege of Hannibal's main army for eight months",
+    "With food gone and no relief, the city lit great pyres, burned its treasures, and its people leapt into the flames, sparking the great war"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Saguntum (around castle_carthage_valentia / village_carthage_saguntum) stands on a steep limestone ridge in the east of the Iberian Peninsula, a mile from the coast. On three sides it is bounded by sheer, knife-cut cliffs, and only one winding mountain path leads up to the summit citadel. Although the city lay south of the Ebro, it had concluded a treaty of protection with Rome. In 219 BC, Hannibal besieged Saguntum with an army of 150,000 in order to remove the threat in his rear and to test Rome's resolve. Relying on the cliffs, on stones, rolling logs and spears, the Saguntines fought a bloody defense for eight months, repeatedly beat back the siege ramps and scaling-ladder assaults, and even seriously wounded Hannibal in the leg. At last, as the walls collapsed and the food ran out in despair, the senators led the whole city, soldiers and civilians alike, in heaping their gold and silver in the forum and setting a great fire, and all of them threw themselves into the flames and died for their city. It became the tragic spark that set off the Second Punic War.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of New Carthage Naval Basin represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+      "Content": "We watched the sea for eight months, until the last dog had been eaten, and the Roman warships never came! The Saguntines would rather turn to ashes in the fire than become slaves of Carthage!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Behind the stone towers of New Carthage Naval Basin, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+      "Content": "The arrogant hillmen mistook Rome's empty pledges for a lifeline. General Hannibal leveled the clifftop fortress and proclaimed, with the ruins of Saguntum, that his march on the Apennines could not be stopped!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Possession of New Carthage Naval Basin anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "The blood of the Saguntine martyrs cries for vengeance in the hall of the Senate! Carthage broke faith and destroyed an allied city; Rome must carry the fire of war with the blade of vengeance across every inch of the enemy's land!"
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Napoleon's Peninsular War",
+    "explosive charge",
+    "modern heavy artillery",
+    "Spanish Civil War"
+  ],
+  "Keywords": [
+    "Saguntum",
+    "siege of Saguntum",
+    "Saguntine mass suicide",
+    "cause of the Second Punic War"
+  ]
 }

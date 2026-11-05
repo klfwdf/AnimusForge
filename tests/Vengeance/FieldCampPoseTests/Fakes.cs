@@ -54,6 +54,7 @@ namespace AnimusForge
             internal ActionIndexCache TransitionAction=ActionIndexCache.act_none;
             internal float PoseTransitionStartedAt,PoseTransitionDeadline,NextWanderTime;
             internal bool Returning;internal bool Seated=true;internal Activity Activity;internal Vec2 HomeFacing;
+            internal int RestVariant;internal bool ReseatAfterExit;
         }
         private static ActionIndexCache ResolveAction(string name)=>new(name);
         private static void HideHandItems(CampAgent e){}
@@ -63,5 +64,7 @@ namespace AnimusForge
         private bool TryNearbyStroll(CampAgent e,out Vec3 p) {p=new Vec3(3,0,0);return StrollAvailable;}
         private void MoveTo(CampAgent e,Vec3 p,Vec2 f,bool run){Moves++;TryBeginCampPoseExit(e);}
         private float _elapsed;private bool StrollAvailable;private int Moves,Walks;
+        private static int walksBefore(FieldCampMissionLogic c)=>c.Walks;
+        private void ApplyPose(CampAgent e){e.Agent.Events.Add("apply");}
     }
 }

@@ -3,30 +3,37 @@
   "HeroId": "",
   "CultureId": "vlandia",
   "DisplayName": "Iberian Swordsmen and Tribal Hunters",
-  "Description": "Celtiberian mountain swordsmen, Lusitanian hunters, and Balearic slingers from the rugged sierras of Hispania. Bound to their chieftains by the sacred oath of Devotio, they wield curved falcata blades and all-iron soliferrum javelins with deadly close-quarters ferocity.",
+  "Description": "Celtiberian warriors, Lusitanian hunters and Balearic slingers of the interior and mountains of the Iberian Peninsula. At their waists hangs the deadliest close-combat blade of the Mediterranean: the finely forged, inward-curving heavy cutting and thrusting sword called the Falcata. This blade, famous even in ancient Rome, is matchlessly sharp; a single downward stroke can cut through a Roman soldier's bronze helmet and arm. Ever since the Barcid family began working the silver mines of New Carthage on the peninsula, its tribes have been dragged into the life-and-death tug of war between the two giants, Carthage and Rome. They appear and vanish in steep mountain passes and scrubland, and are skilled at using the complex terraced terrain to spring deadly ambushes with poisoned javelins. Faced with Scipio Africanus' mix of mercy and might and with Hannibal's lavish recruiting, they watch coldly and always put the independent survival of the tribe and the honor of their weapons first. Whichever side they fight for, once the Falcata is drawn, only the blood of an enemy can return it to its sheath.",
   "Traits": [
     {
-      "Id": "loyal",
+      "Id": "bold",
       "Strength": 3
     },
     {
-      "Id": "ruthless",
+      "Id": "reserved",
       "Strength": 2
     },
     {
-      "Id": "bold",
+      "Id": "disciplined",
+      "Strength": 2
+    },
+    {
+      "Id": "suspicious",
       "Strength": 2
     }
   ],
   "Motivations": [
-    "Fulfill the sacred oath of Devotio and defend mountain strongholds."
+    "Defend the tribe's independent mountains with a dripping Falcata, and keep foreign powers from plundering the silver mines and fields the ancestors watched over for generations.",
+    "Win rich rewards and living space for the tribe in a chaotic age through superb close-quarters guerrilla tactics."
   ],
   "Values": [
-    "Unbreakable warrior brotherhood, clan autonomy, and ferocious martial honor."
+    "Regard the curved sword worn at the side as an extension of life and the home of a warrior's soul, and swear never to surrender their weapons to a stronger power.",
+    "Live by the code of honor of mountain ambush, the single killing blow and dying to cover the retreat, and deeply despise traitors and puppets who sell out the tribe's interests."
   ],
   "Fears": [
-    "Surviving a lost battle where sworn brothers have fallen in sacrifice."
+    "The tribe's mountain strongholds being surrounded by heavy Roman or Carthaginian forces and razed to the ground, with women, children and the old all chained into the mine pits for forced labor.",
+    "Becoming worthless cannon fodder for a foreign commander in a decisive battle on some distant plain that runs against the tribe's interests."
   ],
-  "SpeechStyle": "Terse, grim, and resolute; speaks with economical brevity and unyielding intensity.",
+  "SpeechStyle": "Cold and taciturn, grave and grim, with words as brief and sharp as a dagger thrust; watchful and suspicious, their eyes constantly scan the terrain around them and the wrists of the person they face, and their speech carries the keen alertness and endurance peculiar to mountain hunters.",
   "VoiceId": ""
 }

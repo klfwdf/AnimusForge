@@ -567,7 +567,8 @@ function Get-ZipEntrySha256 {
 
 function Assert-ZipBuildMarker {
     param(
-        [Parameter(Mandatory = $true)][System.IO.Compression.ZipArchive]$Archive,
+        [System.IO.Compression.ZipArchive]$Archive,
+        [string]$PayloadDirectory,
         [Parameter(Mandatory = $true)][string]$DllEntryName,
         [Parameter(Mandatory = $true)][string]$MarkerEntryName,
         [Parameter(Mandatory = $true)][string]$ExpectedRole,
@@ -577,16 +578,17 @@ function Assert-ZipBuildMarker {
         [Parameter(Mandatory = $true)][int]$ExpectedReferenceMinor
     )
 
-    $dllEntry = Get-RequiredZipEntry -Archive $Archive -EntryName $DllEntryName
-    $markerEntry = Get-RequiredZipEntry -Archive $Archive -EntryName $MarkerEntryName
-    try {
-        $marker = Read-ZipEntryText -Entry $markerEntry | ConvertFrom-Json
+    if ($PayloadDirectory) {
+        $dllPath = Join-Path $PayloadDirectory $DllEntryName
+        $marker = Get-Content -LiteralPath (Join-Path $PayloadDirectory $MarkerEntryName) -Raw -Encoding UTF8 | ConvertFrom-Json
+        $actualHash = Get-FileSha256 -LiteralPath $dllPath
+    } else {
+        $dllEntry = Get-RequiredZipEntry -Archive $Archive -EntryName $DllEntryName
+        $markerEntry = Get-RequiredZipEntry -Archive $Archive -EntryName $MarkerEntryName
+        try { $marker = Read-ZipEntryText -Entry $markerEntry | ConvertFrom-Json }
+        catch { throw "ZIP build marker is invalid JSON: $MarkerEntryName" }
+        $actualHash = Get-ZipEntrySha256 -Entry $dllEntry
     }
-    catch {
-        throw "ZIP build marker is invalid JSON: $MarkerEntryName"
-    }
-
-    $actualHash = Get-ZipEntrySha256 -Entry $dllEntry
     $referenceVersion = [string]$marker.ReferenceGameVersion
     $createdUtc = [string]$marker.CreatedUtc
     $createdTimestamp = [DateTimeOffset]::MinValue
@@ -611,14 +613,27 @@ function Assert-ZipBuildMarker {
 
 function Assert-ZipLayout {
     param(
-        [Parameter(Mandatory = $true)][string]$ZipPath,
+        [string]$ZipPath,
+        [string]$PayloadDirectory,
         [Parameter(Mandatory = $true)][string]$ExpectedVersion,
         [bool]$CustomPromptsMustBeAbsent
     )
 
-    $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
+    $archive = $null
+    $markerInput = @{}
+    if ($PayloadDirectory) {
+        $payloadFull = (Get-FullPathSafe -Path $PayloadDirectory).TrimEnd('\', '/')
+        $markerInput.PayloadDirectory = $payloadFull
+    } else {
+        $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
+        $markerInput.Archive = $archive
+    }
     try {
-        $names = @($archive.Entries | ForEach-Object { $_.FullName })
+        $names = if ($PayloadDirectory) {
+            @(Get-ChildItem -LiteralPath $payloadFull -Recurse -File -Force | ForEach-Object { $_.FullName.Substring($payloadFull.Length).TrimStart('\', '/').Replace('\', '/') })
+        } else { @($archive.Entries | ForEach-Object { $_.FullName }) }
+        $entryNames = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+        foreach ($name in $names) { if (-not $entryNames.Add($name)) { throw "Duplicate package entry: $name" } }
         if ($names | Where-Object { Test-AnimusForgePlayerPackageOmission -RelativePath ($_ -replace '^AnimusForge/', '') } | Select-Object -First 1) {
             throw "Player packages must not contain PDB debug symbols or the Calradia Chronicles Lite worldbook; retain them in source/local Stage."
         }
@@ -644,11 +659,8 @@ function Assert-ZipLayout {
             $dll14EntryName,
             $marker14EntryName
         )
-        foreach ($required in $requiredEntries) {
-            $null = Get-RequiredZipEntry -Archive $archive -EntryName $required
-        }
-        foreach ($requiredRuntimeDll in $AllowedPackageRootDllNames) {
-            $null = Get-RequiredZipEntry -Archive $archive -EntryName ($shippingPrefix + $requiredRuntimeDll)
+        foreach ($required in @($requiredEntries) + @($AllowedPackageRootDllNames | ForEach-Object { $shippingPrefix + $_ })) {
+            if (-not $entryNames.Contains($required)) { throw "Package is missing a required entry: $required" }
         }
 
         $allowedVersionEntries = @(
@@ -707,7 +719,9 @@ function Assert-ZipLayout {
         }
 
         try {
-            [xml]$subModuleXml = Read-ZipEntryText -Entry (Get-RequiredZipEntry -Archive $archive -EntryName $subModuleEntryName)
+            [xml]$subModuleXml = if ($PayloadDirectory) {
+                Get-Content -LiteralPath (Join-Path $payloadFull $subModuleEntryName) -Raw -Encoding UTF8
+            } else { Read-ZipEntryText -Entry (Get-RequiredZipEntry -Archive $archive -EntryName $subModuleEntryName) }
         }
         catch {
             throw "ZIP SubModule.xml is invalid XML."
@@ -725,15 +739,15 @@ function Assert-ZipLayout {
             throw "ZIP SubModule.xml must use version '$ExpectedVersion' and point only to Bootstrap."
         }
 
-        $null = Assert-ZipBuildMarker -Archive $archive -DllEntryName $bootstrapDllEntryName -MarkerEntryName $bootstrapMarkerEntryName -ExpectedRole "Bootstrap" -ExpectedAssemblyName $BootstrapAssemblyName -ExpectedReferenceMinor 3
-        $hash13 = Assert-ZipBuildMarker -Archive $archive -DllEntryName $dll13EntryName -MarkerEntryName $marker13EntryName -ExpectedRole "Implementation" -ExpectedAssemblyName "AnimusForge" -ExpectedApi "1.3" -ExpectedFlavor $Flavor13 -ExpectedReferenceMinor 3
-        $hash14 = Assert-ZipBuildMarker -Archive $archive -DllEntryName $dll14EntryName -MarkerEntryName $marker14EntryName -ExpectedRole "Implementation" -ExpectedAssemblyName "AnimusForge" -ExpectedApi "1.4" -ExpectedFlavor $Flavor14 -ExpectedReferenceMinor 4
+        $null = Assert-ZipBuildMarker @markerInput -DllEntryName $bootstrapDllEntryName -MarkerEntryName $bootstrapMarkerEntryName -ExpectedRole "Bootstrap" -ExpectedAssemblyName $BootstrapAssemblyName -ExpectedReferenceMinor 3
+        $hash13 = Assert-ZipBuildMarker @markerInput -DllEntryName $dll13EntryName -MarkerEntryName $marker13EntryName -ExpectedRole "Implementation" -ExpectedAssemblyName "AnimusForge" -ExpectedApi "1.3" -ExpectedFlavor $Flavor13 -ExpectedReferenceMinor 3
+        $hash14 = Assert-ZipBuildMarker @markerInput -DllEntryName $dll14EntryName -MarkerEntryName $marker14EntryName -ExpectedRole "Implementation" -ExpectedAssemblyName "AnimusForge" -ExpectedApi "1.4" -ExpectedFlavor $Flavor14 -ExpectedReferenceMinor 4
         if ($hash13 -eq $hash14) {
             throw "ZIP contains identical 1.3 and 1.4 implementation DLLs."
         }
     }
     finally {
-        $archive.Dispose()
+        if ($archive) { $archive.Dispose() }
     }
 }
 
@@ -842,28 +856,29 @@ function Write-ZipFromModule {
             $projections[$language] = @(Get-AnimusForgePackageProjection -ProjectRoot $projectRoot -StageModuleDir $moduleFull -Language $language -PackageVersion $PackageVersion) + @($selectedOnnx)
         }
         foreach ($language in @('CN', 'EN')) {
-            Write-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
-            Assert-ZipLayout -ZipPath $temporaryPaths[$language] -ExpectedVersion $PackageVersion -CustomPromptsMustBeAbsent:$false
-            Assert-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
-        }
-        if ($archiveExtension -eq '7z') {
-            foreach ($language in @('CN', 'EN')) {
-                $encodedPaths[$language] = $temporaryPaths[$language] + '.7z'
-                Write-AnimusForgeProjectedSevenZip -VerifiedZipPath $temporaryPaths[$language] -ArchivePath $encodedPaths[$language] -Projection $projections[$language]
+            if ($archiveExtension -eq '7z') {
+                $encodedPath = $temporaryPaths[$language] + '.7z'
+                Write-AnimusForgeProjectedSevenZip -ArchivePath $encodedPath -Projection $projections[$language] -ValidatePayload {
+                    param($directory)
+                    Assert-ZipLayout -PayloadDirectory $directory -ExpectedVersion $PackageVersion -CustomPromptsMustBeAbsent:$false
+                }
+                $encodedPaths[$language] = $encodedPath
+            } else {
+                Write-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
+                Assert-ZipLayout -ZipPath $temporaryPaths[$language] -ExpectedVersion $PackageVersion -CustomPromptsMustBeAbsent:$false
+                Assert-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
             }
         }
         Assert-AnimusForgeCleanStage -ProjectRoot $projectRoot -StageModuleDir $moduleFull -RequireCurrentArtifacts
         foreach ($language in @('CN', 'EN')) {
             # Recheck both source snapshots after both archives have been written.
-            Assert-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language]
+            if ($archiveExtension -eq '7z') { Assert-AnimusForgeProjectionSources -Projection $projections[$language] }
+            else { Assert-AnimusForgeProjectedZip -ZipPath $temporaryPaths[$language] -Projection $projections[$language] }
         }
         foreach ($language in @('CN', 'EN')) {
             $publishSource = if ($archiveExtension -eq '7z') { $encodedPaths[$language] } else { $temporaryPaths[$language] }
             [System.IO.File]::Move($publishSource, $zipPaths[$language])
             $published.Add($zipPaths[$language])
-        }
-        if ($archiveExtension -eq '7z') {
-            foreach ($path in $temporaryPaths.Values) { Remove-Item -LiteralPath $path -Force }
         }
         Write-Host "Package Mode : CN and EN $archiveExtension archives, each with both supported game versions"
         if ($archiveExtension -eq '7z') { Write-Host 'Compression  : LZMA2, level 9, 16MiB dictionary, fb273, solid, 2 threads' }

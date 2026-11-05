@@ -1,42 +1,53 @@
 {
   "Id": "rule_punic_cult_13",
-  "Name": "Ancient Tradition of Triumphus Military Victory Parade",
-  "Keywords": [
-    "rule_punic_cult_13",
-    "Sacred Code of Triumphus Military Victory Parade",
-    "Civic Rites Triumphus Military Victory Parade",
-    "Ancestral Law Triumphus Military Victory Parade"
-  ],
+  "Name": "Roman Wartime Marriage Customs for the Relief of Widows and the Law of Support for Posthumous Children",
+  "Category": "culture",
+  "Priority": 85,
   "RagShortTexts": [
-    "The institutional tradition of Triumphus Military Victory Parade defined social hierarchy,..."
+    "A string of crushing defeats drastically reduced the men of marriageable age in Rome, leaving tens of thousands of widows in empty homes",
+    "The Senate shortened the traditional ten-month legal period of widowhood to encourage widows to remarry and raise new sources of soldiers",
+    "The state used public funds to support the orphans of fallen soldiers, placing them under the guardianship of their kin to keep the bloodlines alive"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The catastrophes of the three battles of the Trebia, Trasimene and Cannae caused a devastating imbalance in the sex structure of the population inside the city of Rome. According to Plutarch's count, after Cannae nearly thirty percent of the adult men of military age in Rome were lost; almost every clan and plebeian family had relatives killed in battle, and the city was full of widows and orphans in deep black mourning clothes. Facing an unprecedented crisis of families dying out, the Senate was forced to intervene in ancient family law. It temporarily shortened the sacred legal mourning period of ten months (Mensis Luctus) that a woman had to observe before remarrying, and strictly ordered the elders of each clan to arrange quick marriages between widows and surviving citizens and disabled veterans so as to bring forth new offspring. At the same time, the Senate passed a special state pension and relief measure, using the treasury reserves to take full charge of raising the underage orphans (Pupilli) of citizens killed in war and exempting them from all taxes, until they came of age, put on the pure white toga of manhood (Toga Virilis) and inherited their fathers' short swords.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The social order of antiquity was rooted in Triumphus Military Victory Parade. Governing religious duties, family lineages, political offices, and sacred treaties, it established the moral boundaries and civic expectations that bound citizens to their respective commonwealths."
+      "Content": "Our black mourning robes have not yet faded, and already the Senate urges us to put on the red bridal veil. So that Rome's line will not die out, the mothers swallow their tears and raise the next generation of warriors in empty courtyards."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
+      "When": {
+        "Roles": [
+          "soldier",
+          "warrior"
+        ]
+      },
+      "Content": "Raising the population is part of the defense line! When the war god has reaped our strongest sons, the Republic must open its arms and protect every orphan, because sixteen years from now they will be the new legions that cross the sea and smash Carthage!"
+    },
+    {
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Without Triumphus Military Victory Parade, the commonwealth dissolves into anarchy and civil bloodshed. It is the sacred duty of magistrates and elders to uphold these ancient pillars against moral decay and foreign corruption."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "peasant",
-          "villager"
-        ]
-      },
-      "Content": "From childhood our elders taught us to revere Triumphus Military Victory Parade. Break the sacred custom, and the wrath of gods and magistrates will surely crush your household."
+      "Content": "Faced with such a terrible catastrophe that wiped out whole families, any other people would long since have knelt and begged for peace, yet the Romans are like a great tree whose crown has been cut off, sending its roots deeper into the soil of grief."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "modern widow's pension",
+    "modern orphanage and welfare home",
+    "contraceptives",
+    "civil affairs marriage registry"
+  ],
+  "Keywords": [
+    "Roman war widows",
+    "mourning period",
+    "war orphans",
+    "pupilli",
+    "Roman manpower crisis"
+  ]
 }

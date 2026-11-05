@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_65",
-  "Name": "Punic War Campaign Operation 65",
-  "Keywords": [
-    "rule_punic_65",
-    "Punic Operation 65",
-    "Strategic Campaign 65",
-    "Mediterranean Theater 65"
-  ],
+  "Name": "The Battle of the Great Plains on the Bagradas and the Rout of Syphax",
+  "Category": "history",
+  "Priority": 89,
   "RagShortTexts": [
-    "Strategic campaign doctrine 65 concerning Mediterranean operations during the Second Punic War."
+    "In 203 BC, at the Battle of the Great Plains, Scipio met the combined army of Hasdrubal and Syphax",
+    "Four thousand Celtiberian auxiliaries resisted to the death and were wiped out to the last man",
+    "Roman heavy infantry maneuvered in three lines and enveloped both wings, sweeping away the main field army of inland North Africa"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Only thirty days after their camps were burned, Hasdrubal Gisco and Syphax, with newly levied recruits and four thousand Celtic mercenary infantry who had come from Iberia, regrouped on the 'Great Plains' (Campi Magni) by the Bagradas River and gathered more than thirty thousand men to face Scipio. In the decisive battle Scipio showed astonishing tactical and operational innovation: he had the hastati hold the brave Iberian mercenaries in front, ordered the principes and triarii behind them to deploy quickly to both wings in an arcing maneuver, while the cavalry of Masinissa and Laelius swept away the enemy wings and then enveloped them from behind. The Carthaginian and Numidian recruits broke at the first clash. Only the four thousand Iberian mercenaries, knowing they had no way out, held their ground until every man was dead. This battle wiped out Carthage's last regular army in the North African interior, leaving the city of Carthage completely isolated.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "The legion's three lines wheeled on both wings like gears of fine steel. Before Roman order and tactics, every kind of reckless courage meets only one fate: to be ground to pieces. The African Great Plains now belong entirely to the Senate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "The Spanish mercenaries shed their last drop of blood, while our recruits scattered in fear. The Senate has no army left to send; all it can do is weep and beg Hannibal to come back from Italy and save the country."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 65 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 65, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 65 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "We did not break our oath. Celtic blades cut through Roman iron spears, and all four thousand warriors fell on the Great Plains. Our souls will never yield!"
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Napoleon",
+    "Trenches",
+    "Musket",
+    "Modern army"
+  ],
+  "Keywords": [
+    "Battle of the Great Plains",
+    "Campi Magni",
+    "Bagradas River",
+    "203 BC",
+    "Syphax defeated",
+    "Celtiberian mercenaries",
+    "Scipio tactics",
+    "hastati principes triarii"
+  ]
 }

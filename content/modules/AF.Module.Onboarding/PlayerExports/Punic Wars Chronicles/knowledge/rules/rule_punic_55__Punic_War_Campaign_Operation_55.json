@@ -1,42 +1,110 @@
 {
   "Id": "rule_punic_55",
-  "Name": "Punic War Campaign Operation 55",
-  "Keywords": [
-    "rule_punic_55",
-    "Punic Operation 55",
-    "Strategic Campaign 55",
-    "Mediterranean Theater 55"
+  "Name": "The Interception off Lilybaeum and the Strangling of the Sicilian Supply Line",
+  "Description": "At the very start of the war in 218 BC, the Roman praetor Aemilius routed thirty-five Carthaginian warships that came to strike by surprise off Lilybaeum, the fortress at the western tip of Sicily. He captured seven of them and crushed Carthage's opening attempt to seize the Sicilian naval base.",
+  "Tags": [
+    "Naval battle of Lilybaeum",
+    "Sicilian supply line",
+    "Opening defeat",
+    "Quinquereme boarding action",
+    "Coastal defense",
+    "Outpost counterstroke"
   ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 55 concerning Mediterranean operations during the Second Punic War."
+    "At the very start of the war in 218 BC, the Roman navy ambushed the Carthaginian fleet that came to strike by surprise off Lilybaeum.",
+    "Early warning from the coastal beacon towers let Rome quickly gather elite boarding troops, capture seven enemy ships and defeat the surprise attack.",
+    "The stubborn defense of the fortress of Lilybaeum fully preserved the key springboard for Rome's crossing to North Africa."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 55 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lilybaeum is the pearl of the sea that Rome won only after ten years of blood and flesh in the First Punic War! At the start of this war the Carthaginians tried to steal back this chokepoint under cover of a moonless, windy night, but our coastal beacon towers had already marked every move of the enemy! Our marines boarded their ships through the night, formed the battle line with the wind at their backs as dawn broke, and the short swords and boarding bridges of the Roman legions came crashing down onto the enemy decks. We took seven warships on the spot and captured one thousand seven hundred enemy soldiers! Anyone who wants Lilybaeum will have to wait until the Tyrrhenian Sea runs dry!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The plan to surprise Lilybaeum was ruined by the storm and by the far too dense Roman watchtowers. The thirty-five warships of the detached squadron were scattered by wind and waves on the night passage and lost the line-abreast formation they needed for a surprise strike, and at daybreak they found themselves surrounded by the main Roman warships instead. This opening defeat put an end to the Senate's hope of retaking the springboard at the western end of Sicily, and it let the Romans keep firm hold of the best launching point from which to eye our African homeland."
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "soldier",
-          "warrior"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 55, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "When the beacon flared on the headland of Lilybaeum, the whole west coast of Sicily went into an uproar. Roman soldiers stamped across the decks with their javelins, splinters flew everywhere when two big ships crashed together, and once the short swords came out, steel went in clean and came out red. The Carthaginians may be fine seamen, but once heavily armored Roman fighters stormed the bow, there was no holding back the crush of those heavy Roman shields on a narrow deck."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 55 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "At the outbreak of the Second Punic War in 218 BC, Carthage sent a fleet to make a surprise attack on Lilybaeum, the key town at the western tip of Sicily. Warned by the coastal beacons, the Roman praetor Marcus Aemilius led his warships out to meet it, routed the Carthaginian fleet in the sea battle and captured seven enemy ships, securing this key forward fortress in Sicily."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Lilybaeum",
+    "naval battle 218 BC",
+    "Marcus Aemilius",
+    "Sicily",
+    "beacon towers",
+    "boarding action",
+    "quinqueremes",
+    "Carthaginian surprise attack"
+  ]
 }

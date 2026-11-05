@@ -1,42 +1,109 @@
 {
   "Id": "rule_punic_22",
-  "Name": "Punic War Campaign Operation 22",
-  "Keywords": [
-    "rule_punic_22",
-    "Punic Operation 22",
-    "Strategic Campaign 22",
-    "Mediterranean Theater 22"
+  "Name": "Battle of Dertosa and Hasdrubal's Thwarted March to Italy",
+  "Description": "In spring 215 BC the Roman Scipio brothers routed, at Dertosa on the south bank of the Ebro, the army of Hasdrubal, who was trying to march north to join Hannibal in Italy, forcing Carthage to divert its main reinforcements to the Spanish theater.",
+  "Tags": [
+    "Battle of Dertosa",
+    "Battle of Ibera",
+    "The two Scipios",
+    "Hasdrubal Barca",
+    "Aftermath of Cannae",
+    "Strategic containment"
   ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 22 concerning Mediterranean operations during the Second Punic War."
+    "At the Battle of Dertosa in 215 BC the two Roman Scipios heavily defeated the army of Hasdrubal Barca.",
+    "Hasdrubal tried to imitate the double envelopment of Cannae but suffered a crushing defeat when his Iberian center gave way.",
+    "This battle shattered the grand strategic plan of the two Carthaginian brothers to strike Rome's homeland from both sides in Italy."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 22 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Battle of Dertosa saved the Roman Republic from the nightmare of Cannae! After the disaster of Cannae, if Hasdrubal's army had then joined Hannibal in triumph beneath the walls of Rome, the Republic would have been finished! The two generals Publius and Gnaeus Scipio fought to the death on the south bank of the Ebro without yielding a step; the legions of the center, iron and immovable as a mountain, drove right through the line of rebellious Gauls and Spaniards and locked the Barcid reinforcements fast in Iberia!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "It was a fatal battle that failed at the last step. Our commander Hasdrubal had already received strict orders from the senate to force his way across the Pyrenees with his army and reinforce his elder brother in Italy. At Dertosa he meant to repeat the miracle of the double envelopment of Cannae, but the hastily conscripted Iberian center was weak in spirit; under the pressure of the Roman heavy infantry it turned and fled in the middle of the battle and instead threw our elite core into disorder. Had it not been for this setback, Rome would have knelt to Hannibal and begged for peace as early as 214 BC!"
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "soldier",
-          "warrior"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 22, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The Carthaginians put us Iberian warriors in the most dangerous sunken center, expecting us to stop the Romans' heavy javelins and short swords with our flesh and blood, while they hid their African elites on the wings! When the Romans crashed into us like a flood of steel, who would still die for those Carthaginian lordlings who never treated us as human? Throwing away our shields and scattering to run for our lives was the only way to survive!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 22 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In spring 215 BC, at Dertosa in Iberia (also called Ibera), the brothers Publius and Gnaeus Scipio led the Roman army against Hasdrubal Barca. Hasdrubal tried to copy the encirclement tactics of his elder brother Hannibal, but his Iberian auxiliaries in the center quickly collapsed, leading to a rout along the whole line. This battle succeeded in keeping the Carthaginian army out of Italy and changed the entire strategic situation of the Mediterranean."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Battle of Dertosa and Hasdrubal's Thwarted March to Italy",
+    "Battle of Dertosa",
+    "Battle of Ibera",
+    "Publius and Gnaeus Scipio",
+    "Hasdrubal Barca defeated"
+  ]
 }

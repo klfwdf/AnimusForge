@@ -1,42 +1,110 @@
 {
   "Id": "rule_punic_60",
-  "Name": "Punic War Campaign Operation 60",
-  "Keywords": [
-    "rule_punic_60",
-    "Punic Operation 60",
-    "Strategic Campaign 60",
-    "Mediterranean Theater 60"
+  "Name": "The Rise of the Spartan Tyrant Machanidas and War in the Peloponnese",
+  "Description": "From 211 to 207 BC, Machanidas, a Spartan tyrant backed by mercenaries, broke with the traditional constitution and rose to power. He sided fully with Rome and the Aetolian League and expanded furiously across the Peloponnese, slaughtering the forces of the Achaean League.",
+  "Tags": [
+    "Spartan tyrant",
+    "Machanidas",
+    "Achaean League",
+    "War in the Peloponnese",
+    "Mercenary warlord",
+    "Greek civil strife"
   ],
+  "Category": "History",
+  "DefaultPriority": 78,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 60 concerning Mediterranean operations during the Second Punic War."
+    "From 211 to 207 BC the Spartan strongman Machanidas cast aside the ancestral constitution and made himself a ruthless wartime tyrant.",
+    "Relying on barbarian mercenaries hired at great cost, he slaughtered and expanded madly across the Peloponnese and threatened Achaea.",
+    "Fully allied with Rome and Aetolia, he served as the most vicious attack dog holding down the pro-Macedonian camp in southern Greece."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 60 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "achaean_league"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Machanidas is a bloodthirsty warlord fattened entirely on Roman coin! He has long since trampled the sacred laws of Sparta's ancestor Lycurgus into the mud, and by gathering fugitives from every quarter and heathen mercenaries he has set up a reign of terror in Laconia! He burns and plunders across the Peloponnese with his catapults and cavalry, and is closing on Mantinea! The Achaean League will never bow to this arrogant tyrant. Our general Philopoemen has already sharpened his spear and will take this demon's head with his own hands!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Spartans may be savage and stubborn, but Machanidas is a fierce and capable fighting dog! He has bitten hard into the hind leg of the pro-Macedonian Achaean League and keeps them running ragged, unable to send a single soldier to Philip V! As long as the Greek city-states of the Balkans keep wearing one another down forever in pools of their own blood, Rome is glad to see the Spartan axe keep swinging at the gates of any city that dares to draw close to Macedon!"
+    },
+    {
+      "Priority": 72,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "soldier",
-          "warrior"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 60, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "Machanidas's camp is full of desperadoes who live by the blade: Cretan archers, deserters from Tarentum, Gallic berserkers. The tyrant pays silver by the day, and whoever takes a town or stronghold is allowed to burn and loot it for three days. The villages of southern Greece have been plowed over again and again by his horsemen, and dead men hang from olive trees everywhere."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 60 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "From 211 to 207 BC, Machanidas, regent and tyrant of Sparta, rose to power in the Peloponnese. He broke with the traditional system and built up a huge mercenary army, joined the camp of Rome and the Aetolian League, and fiercely attacked the pro-Macedonian Achaean League, carrying the fighting of the First Macedonian War deep into the heart of Greece, until he was killed at the Battle of Mantinea in 207 BC."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Machanidas",
+    "Spartan tyrant",
+    "Sparta",
+    "Achaean League",
+    "Peloponnese",
+    "mercenaries",
+    "Philopoemen",
+    "Mantinea"
+  ]
 }

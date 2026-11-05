@@ -1,304 +1,298 @@
 {
   "Profiles": {
     "empire_s": {
-      "NationalPersonality": "Austere, relentless, legalistic, fiercely devoted to civic duty, martial glory, and republican supremacy; possessing indomitable resilience in adversity.",
-      "LongTermStrategy": "Solidify the Italian alliance perimeter; seal Sicilian sea passages; cut Punic maritime supply lines from Hispania; force decisive battle on African soil.",
-      "Religion": "Capitoline Triad & Cult of Vesta",
+      "NationalPersonality": "Resolute and grave, faithful to the ancestral custom (Mos Maiorum) and loyal to the city unto death; it prizes military glory, the citizen's duty of service, and the order of law above all. In desperate straits such as the disasters of Trasimene and Cannae it shows an unbreakable resilience in mobilization, regards a compromise peace as the deepest disgrace, and believes in crushing foreign enemies completely with disciplined legionary formations and a war of iron attrition.",
+      "LongTermStrategy": "Blockade the Strait of Sicily and the Tyrrhenian sea lanes; wear down Hannibal's main army in Italy itself with Fabian tactics; campaign in Hispania along two lines to cut the lifeblood of Carthage's silver mines; and finally let Scipio Africanus strike the African homeland directly and force Carthage into complete submission at Zama.",
+      "Religion": "The Capitoline Triad (Jupiter, Juno, Minerva), Mars the war god, and the sacred fire of Vesta",
       "Name": "Roman Republic"
     },
     "aserai": {
-      "NationalPersonality": "Commercial, pragmatic, sophisticated, bound by sacred contracts; ambitious in external conquest yet hamstrung by domestic oligarchic factionalism.",
-      "LongTermStrategy": "Annihilate consular armies in Italy; shatter Rome's Italian alliance network; forge anti-Roman coalitions with Macedon and Syracuse; secure Iberian silver mines.",
-      "Religion": "Cult of Ba'al Hammon, Tanit & Melqart",
+      "NationalPersonality": "Shrewd and pragmatic, devoted to trade and credit, and in awe of sacred contracts; it is ambitious for overseas conquest, but its politics at home are hampered by the infighting and rivalry of the aristocratic oligarchs of the Council of One Hundred and Four. It favors using its great wealth to field multi-ethnic mercenary armies fighting alongside elite Numidian light cavalry.",
+      "LongTermStrategy": "Rely on Hannibal Barca to annihilate the main Roman legions one after another on Italian soil; break apart Rome's alliance system and draw Syracuse and Macedon into a pincer from east and west; hold the rich silver mines and recruiting grounds of Iberia; and use lightning war to force Rome into a peace of ceded land and indemnities.",
+      "Religion": "Baal Hammon, the goddess Tanit, and the sacred clan oaths of Melqart",
       "Name": "Republic of Carthage"
     },
     "empire": {
-      "NationalPersonality": "Proud, martial, obsessed with Alexander's imperial heritage; aggressive in pursuing regional hegemony yet constrained by overstretched logistics.",
-      "LongTermStrategy": "Neutralize northern Balkan tribal raids; suppress the Aetolian League and Sparta; cooperate with Carthage to reclaim Adriatic ports.",
-      "Religion": "Olympian Pantheon & Argead Heraclean Cult",
+      "NationalPersonality": "Proud and warlike, it reveres the military legacy of Alexander the Great and is obsessed with restoring its hegemony over Greece and the Balkans; its military style is fierce and daring, skilled in the pike phalanx and the charge of the Companion cavalry, but its diplomatic strategy lacks long-range depth and the logistical endurance for overseas war.",
+      "LongTermStrategy": "Suppress the Aetolian League and the counterattacks of Sparta; seize the opportunity of Rome's rout at Cannae to conclude a secret treaty with Hannibal; and take the chance to expand its footholds into Illyria on the eastern shore of the Adriatic, blocking the eastward spread of Roman power.",
+      "Religion": "Worship of the Twelve Olympians and the ancestral cult of Heracles as forefather of the royal house",
       "Name": "Kingdom of Macedon"
     },
     "empire_w": {
-      "NationalPersonality": "Wild, ferocious, honor-driven, prizing single combat and warrior sodalities; deeply resentful of Roman conquest but deficient in siegecraft.",
-      "LongTermStrategy": "Raze Roman colonial garrisons across the Po; march south with Hannibal to ravage central Italy; safeguard permanent independence from the Senate.",
-      "Religion": "Druidic Cults & Esus Sacred Martial Rites",
+      "NationalPersonality": "Untamable, ferocious and brave, devoted to single combat before the lines and to the oaths of warrior brotherhoods; it bitterly hates the military oppression of Rome in founding colonial strongholds such as Cremona on its land, and greets the Carthaginian army's crossing of the Alps as a jubilant chance to win back its freedom.",
+      "LongTermStrategy": "Utterly destroy the Roman colonial forts along the Po plain; join Hannibal's army as its vanguard and march south to plunder Etruria and Campania; and secure the permanent self-rule of the Cisalpine Gallic tribes, free of the Roman yoke.",
+      "Religion": "Druidic nature rites and the cult of the sacred thunder god Taranis and the war god Esus",
       "Name": "Cisalpine Gallic Confederation"
     },
-    "sturgia": {
-      "NationalPersonality": "Ferocious, austere, disdainful of urban luxury, embracing death in battle as supreme glory; guided by tribal honor and primeval laws.",
-      "LongTermStrategy": "Expand tribal grazing and iron deposits toward the Rhine; raid wealthy Celtic settlements; check rival incursions from northern Germanic clans.",
-      "Religion": "Wodanaz, Tiwaz & Sacred Grove Cults",
-      "Name": "Swebagaistaz (Suebi Confederacy)"
-    },
-    "vlandia": {
-      "NationalPersonality": "Tenacious, defiant, fanatically loyal to blood oaths; fiercely independent mountain fighters who wage bitter guerilla warfare against imperial occupiers.",
-      "LongTermStrategy": "Defend mountain oppida independence; exploit Roman-Punic rivalries for gold and weapons; wipe out imperial foraging columns venturing inland.",
-      "Religion": "Iberian Bull Cult & Devotio Sacred Rites",
-      "Name": "Tribes of Iberia"
-    },
-    "battania": {
-      "NationalPersonality": "Ostentatious, generous, fiercely martial; prone to internal clan rivalries yet capable of explosive mobilization under charismatic war-leaders.",
-      "LongTermStrategy": "Unite central Gallic tribal councils; repel Germanic cross-border incursions; monopolize riverine trade arteries linking the Atlantic to the Mediterranean.",
-      "Religion": "Druidic Order & Toutatis/Taranis Rites",
-      "Name": "Gallic Tribes (Transalpine Gaul)"
-    },
-    "khuzait": {
-      "NationalPersonality": "Nomadic, lethal, reverence for solar deities; opportunistic toward sedentary cities, possessing unrivaled mastery of mounted shock warfare.",
-      "LongTermStrategy": "Consolidate control over Pontic pasturelands; exact heavy tribute from Bosporan Greek ports; dominate east-west steppe migration corridors.",
-      "Religion": "Atar Fire Cult & Sacred Iron Sword Rites",
-      "Name": "Sarmatian Hordes"
-    },
-    "nord": {
-      "NationalPersonality": "Hardy, seafaring, deeply superstitious; bound by blood feuds, ascetic in daily life yet fearless when braving oceanic gales and coastal raids.",
-      "LongTermStrategy": "Secure Jutland shipbuilding anchorages; monopolize Baltic amber export routes; repel inland Germanic tribal encroachment from the south.",
-      "Religion": "Njord Sea Cult, Nerthus & Bog Offerings",
-      "Name": "Ingwafraujingaz Confederacy"
-    },
-    "pergamon": {
-      "NationalPersonality": "Scholarly, culturally sophisticated, calculating; adept at balance-of-power diplomacy, leveraging foreign empires to dismantle regional rivals.",
-      "LongTermStrategy": "Leverage Roman naval treaties to contain Macedon and Antiochus; expand coastal trading hegemony; preserve prestige as champions of Hellenism.",
-      "Religion": "Cult of Athena Polias & Great Altar of Zeus",
-      "Name": "Kingdom of Pergamon"
-    },
-    "baktria": {
-      "NationalPersonality": "Cosmopolitan, visionary, combining Hellenic discipline with Asian nomadic mobility; tolerant toward native Iranian elites while guarding western culture.",
-      "LongTermStrategy": "Fortify Oxus river bastions; expand south across the Hindu Kush into the Punjab; hold northern desert marches against Saka nomadic pressure.",
-      "Religion": "Greco-Persian Syncretism (Zeus-Mithra)",
-      "Name": "Greco-Bactrian Kingdom"
-    },
     "syracuse": {
-      "NationalPersonality": "Intellectually brilliant, proud, prone to dramatic political revolutions; passionately attached to urban independence yet trapped in Mediterranean crossfire.",
-      "LongTermStrategy": "Utilize Archimedean defensive artillery; coordinate with Carthaginian squadrons to break Roman blockades; reclaim hegemony over Sicilian Greek cities.",
-      "Religion": "Cult of Apollo & Demeter-Kore Mysteries",
+      "NationalPersonality": "Self-assured and shrewd, wealthy and refined, with the political cunning of a Greek city-state where democracy and tyranny are intertwined; it looks down on the Mediterranean from the height of its unrivaled engineering, its system of harbor fortresses, and the mechanical marvels of Archimedes.",
+      "LongTermStrategy": "Leave the Roman alliance after the death of the old king Hiero II; go over to Carthage on the strength of Hannibal's run of victories in exchange for supremacy over all of Sicily; and repel the Roman naval siege behind its strong inner city and defensive engines.",
+      "Religion": "The oracle of Apollo, the protection of Athena, and the civic cult of Heracles",
       "Name": "Kingdom of Syracuse"
     },
-    "massalia": {
-      "NationalPersonality": "Honorable, mercantile, legally sophisticated; proud of guarding Hellenic civilization amidst Gallic tribes while maintaining strategic fidelity to Rome.",
-      "LongTermStrategy": "Maintain trading monopolies down the Rhône; deploy elite triremes to intercept Punic coastal couriers; support Roman logistics into Transalpine Gaul.",
-      "Religion": "Cult of Ephesian Artemis & Apollo Delphinios",
-      "Name": "City-State of Massalia"
-    },
-    "ermuningaz": {
-      "NationalPersonality": "Ferocious, isolated, deeply traditional; valuing warrior camaraderie and ritual physical endurance over material accumulation.",
-      "LongTermStrategy": "Advance down the Elbe valley; displace rival Celtic oppida in Bohemia; preserve ancestral pagan sanctuary groves against foreign desecration.",
-      "Religion": "Mannus Ancestor Cult & Thunder Axe Rites",
-      "Name": "Ermuningaz (Herminones)"
-    },
-    "thrace": {
-      "NationalPersonality": "Fierce, martial, passionate lovers of gold armor and unwatered wine; peerless guerilla raiders capable of terrifying two-handed blade charges.",
-      "LongTermStrategy": "Repel Macedonian expansion along the Aegean littoral; levy tolls on straits commerce; assert dominance over Getic tribes along the Danube.",
-      "Religion": "Thracian Rider Hero & Sabazios Cult",
-      "Name": "Odrysian Kingdom of Thrace"
-    },
     "massylii": {
-      "NationalPersonality": "Agile, observant, indomitable; enduring mountain exile with stoic patience while plotting ruthless revenge against Carthaginian betrayers.",
-      "LongTermStrategy": "Provide vital cavalry superiority to Scipio's African campaign; destroy Syphax's army; unite all Berber tribes under a single Numidian crown.",
-      "Religion": "Berber Solar Cult & Sacred Steed Rites",
-      "Name": "Kingdom of the Massylii"
+      "NationalPersonality": "Swift as the wind, fierce and bold, devoted to the freedom of mounted archery and nomadic life; it holds fast to its steppe horses and tribal lands, fears neither the threats nor the bribes of any foreign power, acts decisively, and is quick to see fleeting opportunities on the battlefield.",
+      "LongTermStrategy": "Under Gala and Masinissa, resist the annexation ambitions of Syphax; once the course of the war is clear, resolutely ally with Scipio Africanus; sweep the North African battlefield with saddleless light cavalry; and finally, with Roman support, found a unified Numidian empire.",
+      "Religion": "The nomadic sun god, the cult of the Atlas mountain god, and ancient Berber ancestral totems",
+      "Name": "Massylii (Eastern Numidia)"
     },
     "masaesyli": {
-      "NationalPersonality": "Proud, vacillating, swayed by dynastic ambition and romantic passion; aspiring to regional mastery yet trapped between Rome and Carthage.",
-      "LongTermStrategy": "Eliminate Masinissa's exile faction; assist Carthage in repelling Roman amphibious invasions; monopolize Saharan frontier trade routes.",
-      "Religion": "Indigenous Berber Earth & Phoenician Cults",
-      "Name": "Kingdom of the Masaesyli"
+      "NationalPersonality": "Arrogant and powerful, it holds vast tribal lands and thriving ports; it is skilled at geopolitical calculation, but at great political turning points it is easily swayed by emotion and by the lure of a marriage to a peerless beauty.",
+      "LongTermStrategy": "After marrying Sophonisba, the celebrated noblewoman of Carthage, Syphax goes firmly over to Carthage; he aims to annex the eastern Massylii tribes and unite Numidia; and he builds an iron line of defense on African soil to block the Roman expeditionary army.",
+      "Religion": "North African nature totem spirits shaped by the cult of Baal, and the worship of ancient Numidian ancestral spirits",
+      "Name": "Masaesyli (Western Numidia)"
     },
-    "garamantes": {
-      "NationalPersonality": "Secretive, ingenious, masters of desert warfare and hydraulic engineering; guarding desert aquifers and profiting from Mediterranean trade.",
-      "LongTermStrategy": "Guard oasis irrigation networks; keep coastal imperial conflicts away from desert trade routes; expand trans-Saharan caravan monopolies.",
-      "Religion": "Saharan Sun Cult & Underground Aquifer Rites",
-      "Name": "Kingdom of the Garamantes"
+    "vlandia": {
+      "NationalPersonality": "Fierce and enduring, plain and suspicious, with a fervent devotion to courage and the honor of the weapon; armed with the deadly Falcata, they excel at mountain ambush and close-quarters fighting, value tribal independence above all, and are deeply wary of plunder by both Rome and Carthage.",
+      "LongTermStrategy": "Waver again and again between the lavish recruiting of the Barcid family and Scipio Africanus' mix of mercy and might; use the struggle of the two great powers to regain control of the inland mining districts; and, under Indibilis and Mandonius, fight to the last for the survival and autonomy of the tribes.",
+      "Religion": "Celtiberian nature and megalith worship, the war god Neto, and oaths sworn on the souls of ancestral swords",
+      "Name": "Iberian Tribal Confederation"
     },
-    "seleucid": {
-      "NationalPersonality": "Majestic, imperialistic, possessing exceptional strategic drive; determined to restore the full universal empire of Seleucus I Nicator.",
-      "LongTermStrategy": "Secure Syrian metropolitan heartlands; enforce tributary submission across Parthia and Bactria; evict Egyptian garrisons from Phoenicia and Coele-Syria.",
-      "Religion": "Imperial Cult of Apollo & Zeus Olympios",
-      "Name": "Seleucid Empire"
+    "battania": {
+      "NationalPersonality": "Fierce and battle-loving, unafraid of death, devoted to primal tribal duels and trophy heads; skilled at forest ambush, rapid raiding, and hewing with the double-edged longsword, they despise the elaborate formalities of Mediterranean city-state civilization.",
+      "LongTermStrategy": "Stop the Roman legions from pushing deep into the Rhone valley and southern Gaul; send companies of berserker mercenaries south to join Hannibal's Italian campaign; and plunder Mediterranean silver and crafted goods to enrich the tribal sanctuaries.",
+      "Religion": "Druidic oak altars, the war god Teutates, and the sacred totems of Lugus",
+      "Name": "Gallic Tribes"
     },
-    "ptolemaic": {
-      "NationalPersonality": "Immense wealth, scholarly patron of the Great Library, diplomatically cautious; prone to court intrigue, wielding grain exports as geopolitical leverage.",
-      "LongTermStrategy": "Secure Nile agricultural yields and Red Sea spice routes; check Seleucid thrusts into Palestine; retain naval dominance across Cyprus and the Cyclades.",
-      "Religion": "Cult of Serapis, Amun-Ra & Isis Mysteries",
-      "Name": "Ptolemaic Kingdom of Egypt"
-    },
-    "aetolian_league": {
-      "NationalPersonality": "Aggressive, piratical, fiercely protective of federal autonomy; ruthless guerilla skirmishers who despise royal autocracy.",
-      "LongTermStrategy": "Coordinate naval raids with Roman squadrons against Macedonian ports; secure federal control over Delphi; crush the pro-Macedonian Achaean League.",
-      "Religion": "Cult of Artemis Laphria & Apollo Thermios",
-      "Name": "Aetolian League"
+    "sturgia": {
+      "NationalPersonality": "Cold and rugged, bloodthirsty and hardened to the cold, devoted to forest hunting and the law of the duel to the death; they regard sword wounds as the highest glory and scorn the luxury and extravagance of the settled cities of the Mediterranean.",
+      "LongTermStrategy": "Build a strong tribal line of defense in the deep mountain forests east of the Rhine; raid the Celtic border strongholds around them; and maintain the primal tribal assembly that governs them and their blood-oath alliances.",
+      "Religion": "Wodan, the war god Tyr, and ancient sacred oak groves with totems of human sacrifice",
+      "Name": "Istvaeones Germanic Tribes"
     },
     "achaean_league": {
-      "NationalPersonality": "Constitutional, orderly, deeply attached to pan-Hellenic federalism; militarily formidable yet squeezed inexorably between giant imperial powers.",
-      "LongTermStrategy": "Eliminate revanchist threats from Sparta; maintain fragile neutrality between Macedon and the Senate; integrate the entire Peloponnese into the federal union.",
-      "Religion": "Cult of Zeus Homarios & Poseidon Helikonios",
-      "Name": "Achaean League"
-    },
-    "epirus": {
-      "NationalPersonality": "Vigilant, war-scarred, reverent toward ancient oracles; diplomatically fragile, perpetually balancing between maritime Rome and inland Macedon.",
-      "LongTermStrategy": "Protect the Dodona sanctuary from desecration; prevent Epirus from becoming the battleground of Rome and Philip; guard mountain passes to the coast.",
-      "Religion": "Dodona Sacred Oak Oracle of Zeus",
-      "Name": "Epirote League"
-    },
-    "illyria": {
-      "NationalPersonality": "Audacious mariners, opportunistic, fiercely practical; considering maritime piracy a traditional birthright and vital sovereign revenue.",
-      "LongTermStrategy": "Exploit Rome's Italian crisis to rebuild naval raiding power; harry Macedonian coastal supply routes; strengthen inland mountain clan alliances.",
-      "Religion": "Illyrian Serpent Deity & War Totems",
-      "Name": "Illyrian Kingdom"
-    },
-    "veneti": {
-      "NationalPersonality": "Industrious, peaceful, famed for equestrian craftsmanship; diplomatically astute, preferring stable treaties over destructive tribal warfare.",
-      "LongTermStrategy": "Hold the Adige river defensive line against Gallic raids; safeguard northern Adriatic commerce; supply prime cavalry mounts to Roman forces.",
-      "Religion": "Cult of Reitia & Sacred Horse Offerings",
-      "Name": "Veneti Tribe"
-    },
-    "belgae": {
-      "NationalPersonality": "Savage, unyielding, disdainful of Mediterranean luxury; bound by fierce clan honor, fighting with terrifying disregard for personal safety.",
-      "LongTermStrategy": "Consolidate fortified oppida across the northern lowlands; expand colonial bridgeheads in southern Britain; repel trans-Rhenish Germanic warbands.",
-      "Religion": "Belgic Megaliths & Camulos Martial Rites",
-      "Name": "Belgae Gallic Tribes"
-    },
-    "catuvellauni": {
-      "NationalPersonality": "Wild, agile, invoking battle goddesses with ritual tattoos; masters of high-speed chariot warfare, proud of island isolation and autonomy.",
-      "LongTermStrategy": "Unite rival Thames basin clans; monopolize cross-Channel tin shipping anchorages; repel raids from northern Caledonian tribes.",
-      "Religion": "Cult of Andraste & Sacred Mistletoe Rites",
-      "Name": "Tribes of Prettanike (Catuvellauni)"
-    },
-    "caledonia": {
-      "NationalPersonality": "Ghostly, ferocious, completely adapted to frozen bogs; valuing primeval clan freedom above all, fiercely hostile to foreign intrusions.",
-      "LongTermStrategy": "Hold highland broch fortresses; launch winter raids into southern valleys for cattle; preserve megalithic stone circle rituals against outside corruption.",
-      "Religion": "Megalithic Stone Circles & Highland Spirits",
-      "Name": "Caledonii Tribes"
-    },
-    "boii": {
-      "NationalPersonality": "Fanatically martial, vengeance-driven, embracing death in battle; sworn enemies of the Roman Republic who fight to the last living warrior.",
-      "LongTermStrategy": "Unite with Hannibal's vanguard to raze Roman colonies; wipe out consular legions on northern frontiers; secure northern Italy forever.",
-      "Religion": "Sacred Bear Cult & Taranis Thunder Rites",
-      "Name": "The Boii Coalition"
-    },
-    "hiberni": {
-      "NationalPersonality": "Poetic, brave, deeply attuned to nature spirits and heroic sagas; valuing cattle wealth, warrior hospitality, and bardic ancestral memory.",
-      "LongTermStrategy": "Maintain equilibrium among island provincial kings at Tara; guard coastal havens against sea raiders; celebrate seasonal festivals honoring Danu.",
-      "Religion": "Tuatha Dé Danann & Sacred Sidhe Mounds",
-      "Name": "Hibernii Tribes"
-    },
-    "scythian": {
-      "NationalPersonality": "Aristocratic, nostalgic, master horse archers; bridging nomad heritage with Greek urban culture while stubbornly holding their Crimean redoubt.",
-      "LongTermStrategy": "Fortify Crimean hill-citadels; levy grain taxes on Bosporan maritime shipping; stem the western advance of aggressive Sarmatian cataphracts.",
-      "Religion": "Tabiti Hearth Cult & Gold Stag Totemism",
-      "Name": "Scythian Kingdom (Crimean Scythia)"
-    },
-    "saka": {
-      "NationalPersonality": "Fiercely autonomous, migratory, masters of open steppe envelopment; ruthless in mounted archery and sudden devastating ambushes.",
-      "LongTermStrategy": "Dominate Syr Darya winter grazing; extract tribute from Fergana oasis towns; mass horse archer reserves for future thrusts into Bactria.",
-      "Religion": "Solar Deity & Winged Golden Stallion Cult",
-      "Name": "Saka Rauka"
-    },
-    "galatia": {
-      "NationalPersonality": "Fierce, mercenary, deeply attached to ancestral Gallic warrior ethos; selling formidable sword arms to the highest bidder in Asian dynastic wars.",
-      "LongTermStrategy": "Defend high plateaus around Ancyra; demand enormous gold subsidies as mercenary shock troops; counter Pergamene military expansion.",
-      "Religion": "Drunemeton Sacred Oak Assembly & Esus",
-      "Name": "The Galatian Tribes"
-    },
-    "getae": {
-      "NationalPersonality": "Fanatical, fearless of death through belief in physical immortality; peerless mountain fighters wielding lethal curved falx blades with religious fury.",
-      "LongTermStrategy": "Fortify Carpathian mountain passes and gold veins; utilize the Danube natural barrier against Macedonian thrusts; strengthen Zalmoxian priestly rule.",
-      "Religion": "Cult of Zalmoxis & Kogaionon Sacred Mountain",
-      "Name": "The Getic Kingdom (Dacia)"
-    },
-    "armenia": {
-      "NationalPersonality": "Proud, ancient, politically astute; fiercely attached to highland ancestral soil and resilient amidst imperial collisions between East and West.",
-      "LongTermStrategy": "Secure Lake Van and Sevan agricultural valleys; maintain balance between Seleucid armies and rising Parthian nomads; expand royal cataphract corps.",
-      "Religion": "Cult of Anahita, Aramazd & Vahagn the Dragon-Reaper",
-      "Name": "Kingdom of Armenia"
-    },
-    "parthia": {
-      "NationalPersonality": "Cunning, patient, unmatched in mobile archery and psychological warfare; disciplined in feigned retreats, fiercely committed to Iranian liberation.",
-      "LongTermStrategy": "Evade pitched battle against Antiochus III using scorched earth; strike back into Media once the Seleucid king returns west; control the Silk Road.",
-      "Religion": "Zoroastrian Sacred Fire Altars & Mithra",
-      "Name": "The Arsacid Kingdom (Parthia)"
-    },
-    "bosporus": {
-      "NationalPersonality": "Cosmopolitan, mercantile, diplomatic; sustaining Greek civic life upon the barbarian frontier through strategic grain monopolies and paid tributes.",
-      "LongTermStrategy": "Guarantee maritime security through the Kerch straits; maximize wheat profits to Aegean markets; subsidize Sarmatian mercenaries to shield farmlands.",
-      "Religion": "Cult of Apollo Iatros & Pontic Aphrodite",
-      "Name": "The Bosporan Kingdom"
-    },
-    "kush": {
-      "NationalPersonality": "Majestic, religiously devout, honoring royal warrior queens; culturally ancient, commanding unmatched ironworking and deadly archery.",
-      "LongTermStrategy": "Secure Meroë industrial ironfoundries; dominate African trade corridors linking the Nile to the Red Sea; repel Ptolemaic garrisons past the First Cataract.",
-      "Religion": "Cult of Apedemak & Amun of Napata",
-      "Name": "Kingdom of Kush (Meroë)"
-    },
-    "saba": {
-      "NationalPersonality": "Peaceful, fabulously wealthy, pious; relying upon vast desert barriers and irrigation genius to preserve autonomous spice kingdoms.",
-      "LongTermStrategy": "Preserve the architectural integrity of the Great Dam of Marib; safeguard caravan ports on the Arabian Sea; defend oasis cities from Bedouin raiders.",
-      "Religion": "Cult of Almaqah & Solar Incense Rites",
-      "Name": "Kingdom of Saba' (Arabia Felix)"
-    },
-    "nabataea": {
-      "NationalPersonality": "Cunning, ascetic, masters of arid survival and rock architecture; fiercely protective of geographic water secrets while negotiating lucrative transit treaties.",
-      "LongTermStrategy": "Guard Petra canyon approaches and hidden cistern networks; maintain diplomatic neutrality between Seleucids and Ptolemies; profit from Dead Sea bitumen trade.",
-      "Religion": "Cult of Dushara & Sacred Baetyl Stones",
-      "Name": "The Nabataean Kingdom"
+      "Name": "Achaean League",
+      "NationalPersonality": "Rational and restrained, it values city-state democracy and the common deliberation of the federation; it reveres law and civic self-government, but caught between powers such as Macedon and Sparta it keeps an extremely pragmatic and alert instinct for self-preservation.",
+      "LongTermStrategy": "Resist the infiltration of the Aetolian League; rely on Philip V of Macedon and even on Roman protection to suppress the revival of Sparta; and unite the cities of the Peloponnese to preserve the federation's independence.",
+      "Religion": "The Olympian gods and the federal sanctuary of Zeus Homarios"
     },
     "achaeus": {
-      "NationalPersonality": "Bold, militarily brilliant, fiercely ambitious; driven to seize the Seleucid diadema yet dangerously isolated on the international chessboard.",
-      "LongTermStrategy": "Hold the rock fortress of Sardis against imperial siege engines; coordinate financial subsidies with Ptolemaic Egypt; check Pergamene border raids.",
-      "Religion": "Cult of Apollo & Seleucid Royal Ancestor Rites",
-      "Name": "The Realm of Achaios"
+      "Name": "Kingdom of Achaeus (Breakaway Realm in Asia Minor)",
+      "NationalPersonality": "Arrogantly ambitious and rebellious; confident in its royal blood and military authority, it acts ruthlessly and decisively, with the fierce temperament of a breakaway power bent on dominance.",
+      "LongTermStrategy": "Hold a breakaway realm in the heart of Asia Minor against the legitimate Seleucid king Antiochus III; form a secret alliance with Pergamon and Ptolemaic Egypt to pin him down on two fronts; and hold the citadel of Sardis while waiting for events to turn.",
+      "Religion": "The Hellenistic royal cult of Apollo and the worship of the Anatolian earth mother goddess"
+    },
+    "aetolian_league": {
+      "Name": "Aetolian League",
+      "NationalPersonality": "Fierce and warlike, untamable; it upholds a tribal tradition of raiding and the glory of mercenary service, scorns the traditional order of the city-states, and is highly aggressive and adventurous.",
+      "LongTermStrategy": "Control the oracle of Delphi to establish a pan-Hellenic hegemony; join with Roman power to counter Macedonian expansion in the Balkans; and contain the expanding sphere of the Achaean League.",
+      "Religion": "Apollo Thermios and the tribal cult of the war god Ares"
+    },
+    "armenia": {
+      "Name": "Kingdom of Armenia (Orontid Dynasty)",
+      "NationalPersonality": "Proud and enduring, dwelling deep in the high mountains; it combines the aristocratic bearing of the Persian Empire with the tenacity of the Caucasian highlanders, and sets great store by clan bloodlines and the integrity of its lords' domains.",
+      "LongTermStrategy": "Use the geopolitical gap between the Seleucid and Parthian struggle for supremacy to seek full sovereignty; hold the fortresses of Lake Van and the Caucasus passes; and resist the southward raids of the nomadic steppe cavalry.",
+      "Religion": "The Zoroastrian Persian pantheon and the native Armenian high gods Aramazd and Vahagn"
+    },
+    "baktria": {
+      "Name": "Kingdom of Bactria (Greco-Bactria)",
+      "NationalPersonality": "Proud of its nobility and eager to break new ground; it carried Greek city-state civilization to a key crossroads of the eastern Silk Road and combines Central Asian cavalry and Indian war elephant tactics, full of a pioneer's daring and a keen commercial sense.",
+      "LongTermStrategy": "Consolidate its core of fertile cities in the Oxus basin; resist sudden raids by the Saka and the nomadic tribes to the north; and, as the Seleucids decline in the east, cross the Hindu Kush to campaign in the Indus valley.",
+      "Religion": "The Greek Olympian gods (Heracles, Athena) fused with the Eastern Zoroastrian worship of water and fire"
     },
     "bastarnae": {
-      "NationalPersonality": "Fierce, mercenary-minded, formidable in physical stature; selling brutal shock combat to Mediterranean monarchs to fund seasonal migrations.",
-      "LongTermStrategy": "Carve out rich winter grazing along the Dniester; fulfill mercenary contracts for Macedonian gold against Thracian rivals; control Carpathian passes.",
-      "Religion": "Germanic-Sarmatian Syncretic Martial Cults",
-      "Name": "The Bastarnian Confederacy"
+      "Name": "Bastarnae Tribal Confederation",
+      "NationalPersonality": "Fierce and warlike, wild and unrestrained; tall and brave, they are eager to be hired as heavily armored mercenaries by Hellenistic kings, and regard death on the battlefield as a warrior's highest end.",
+      "LongTermStrategy": "Establish dominance on the eastern slopes of the Carpathians and the lower Danube plain; plunder the Getae and the Greek cities of the Black Sea; and stand ready to enter the wars of Macedon and Thrace as well-paid mercenaries.",
+      "Religion": "A primal mix of Germanic and Celtic thunder and war god totems and the worship of sacred forest trees"
     },
-    "tarentum": {
-      "NationalPersonality": "Culturally sophisticated, proud of Spartan heritage, passionately anti-Roman; eager to reclaim Hellenic maritime supremacy in southern Italy.",
-      "LongTermStrategy": "Assist Hannibal in reducing the Roman isthmus fortress; open maritime communication with Punic navies; rally Magna Graecia against consular armies.",
-      "Religion": "Cult of Taras the Dolphin Rider & Poseidon",
-      "Name": "The City of Taras (Tarentum)"
+    "belgae": {
+      "Name": "Belgae Tribal Confederation",
+      "NationalPersonality": "Praised by Caesar as the bravest and fiercest of the Gallic tribes; far from the luxury of the Mediterranean, they are simple and fierce, unafraid of death, and devoted to sheer force of arms and tribal independence.",
+      "LongTermStrategy": "Seal the lower Rhine against the raids of the Germanic peoples on the eastern bank; cross the sea to extend their colonies and trade into southern Britain; and guard against the infiltration of Roman legions into northern Gaul.",
+      "Religion": "The Druidic mysteries, the war god Toutatis, and the totem of the great forest bear"
     },
     "bithynia": {
-      "NationalPersonality": "Opportunistic, resilient, fiercely competitive; navigating coastal straits politics to preserve dynastic power against Pergamene expansion.",
-      "LongTermStrategy": "Secure strategic toll collection along the Propontis; contain Pergamene northern conquests; utilize Galatian mercenaries against regional rivals.",
-      "Religion": "Thracian-Hellenic Syncretism (Zeus Stratios)",
-      "Name": "Kingdom of Bithynia"
+      "Name": "Kingdom of Bithynia",
+      "NationalPersonality": "Adaptable and cunning, pragmatic and resourceful; it combines Thracian valor with the intrigue of a Hellenistic court, and excels at maneuvering among the great powers to protect itself and maximize its gains.",
+      "LongTermStrategy": "Watch and contain the territorial expansion of its neighbors Pergamon and Pontus; serve as a bargaining chip for Rome or Macedon in the great-power game; and monopolize the trade tolls of the southern shore of the Bosporus.",
+      "Religion": "Zeus Stratios and the native Thracian earth gods"
     },
-    "pontus": {
-      "NationalPersonality": "Austere, strategic, imperialistic; fusing Persian royal legitimacy with Hellenic naval engineering, patient in expanding highland power.",
-      "LongTermStrategy": "Incorporate Greek maritime ports along the Pontic coast; secure interior iron and timber resources; maintain prudent neutrality toward Antiochus III.",
-      "Religion": "Greco-Persian Syncretism (Mithra-Zeus)",
-      "Name": "Kingdom of Pontus"
+    "boii": {
+      "Name": "Boii Tribal Confederation",
+      "NationalPersonality": "Violent and defiant, unbowed in exile; they once sacked Rome and ravaged central Europe, are famed for fearless death-or-glory charges, and nurse a bitter blood feud against the Roman legions handed down through generations.",
+      "LongTermStrategy": "Act in concert with Bohemia in central Europe from the Po plain; throw the whole tribe's elite behind Hannibal to rout the Roman punitive armies marching south; and recover the ancestral hunting grounds and towns on both banks of the Po.",
+      "Religion": "The Celtic war god Catus, the thunder god Taranis, and blood-sacrifice totems"
+    },
+    "bosporus": {
+      "Name": "Bosporan Kingdom",
+      "NationalPersonality": "A state founded on trade that absorbs many peoples; Greek colonial aristocrats and Scythian steppe cavalry have merged into one, eager for profit and war, and skilled at dominating the region through wealth and Black Sea fortresses.",
+      "LongTermStrategy": "Monopolize the network exporting wheat, salted fish and slaves from the northern Black Sea coast to Athens and the Aegean; and pacify the surrounding Scythian and Sarmatian nomadic cavalry to keep its rear secure.",
+      "Religion": "A blended cult of Apollo Iatros as chief god and the steppe great mother goddess Api"
+    },
+    "caledonia": {
+      "Name": "Caledonian Tribes (Scottish Highlands)",
+      "NationalPersonality": "Ferocious and isolated, never retreating from a fight; relying on high mountains, sea lochs and deadly bogs, they meet the enemy bare-chested and tattooed, and see foreign invaders as prey to be hunted with undying hatred.",
+      "LongTermStrategy": "Guard the highland frontier against encroachment by the Pritani tribes of southern Britain; and use ruthless guerrilla warfare and ambush to strangle any invading army that dares set foot in the Scottish mountains and forests.",
+      "Religion": "Ancient Pictish gods, the celestial worship of sacred stone circles, and blood-spear rites"
     },
     "cappadocia": {
-      "NationalPersonality": "Pious, equestrian, conservative; ruled through cooperation with powerful priestly castes presiding over temple-states and horse estates.",
-      "LongTermStrategy": "Guard northern Taurus mountain defiles; supply cavalry levies to secure Seleucid alliances; repel border raids by predatory Galatians.",
-      "Religion": "Cult of Ma at Comana & Iranian Fire Altars",
-      "Name": "Kingdom of Cappadocia"
+      "Name": "Kingdom of Cappadocia",
+      "NationalPersonality": "Steady and reserved, enduring bitter cold; it lies at a key crossroads of the high deserts of the Anatolian plateau, is famed for fine horses and armored cavalry, and acts with care and prudence to survive in the shadow of empires.",
+      "LongTermStrategy": "Rely on the barrier of the Taurus Mountains to keep its independence; maintain a strategic balance with the Seleucids or Rome; and resist the annexation designs of Pontus to the north.",
+      "Religion": "The Persian sacred fire cult of the water goddess Anahita and the worship of Cappadocian earth gods"
     },
-    "paphlagonia": {
-      "NationalPersonality": "Stubborn, reclusive, attached to ancestral mountain homelands; master scouts in heavily forested terrain who defend valley fortresses to the death.",
-      "LongTermStrategy": "Leverage forested ravines to repel Bithynian and Pontic armies; preserve coastal timber export rights to Greek shipwrights.",
-      "Religion": "Anatolian Mountain Spirits & Trojan Horse Cults",
-      "Name": "Kingdom of Paphlagonia"
+    "catuvellauni": {
+      "Name": "British Tribal Confederation (Pritani)",
+      "NationalPersonality": "Wild and agile, expert at chariot raids; painted with woad and revering the spirits of nature, they possess a deep Druidic priestly tradition and a fierce code of warrior honor.",
+      "LongTermStrategy": "Unite the clan territories of southeastern Britain; monopolize the Cornish tin mines and the sea trade routes across the strait to Gaul; and resist raids by the tribes of the wild northern highlands.",
+      "Religion": "Druidism, the sun and war god Belenus, and offerings of sacred swords in waters and bogs"
     },
-    "rhodes": {
-      "NationalPersonality": "Noble, enlightened, strictly dedicated to maritime law and naval discipline; international champions of safe sea navigation and commercial integrity.",
-      "LongTermStrategy": "Suppress Cretan piracy throughout the Aegean; safeguard maritime grain convoys between Egypt and Greece; coordinate naval blockades with Rome.",
-      "Religion": "Cult of Helios & Colossus of Rhodes",
-      "Name": "The Republic of Rhodes"
+    "epirus": {
+      "Name": "Epirote League",
+      "NationalPersonality": "Proud and unbending, still lit by the afterglow of the legend of Pyrrhus; martial and resolute, it values honor above life and combines the toughness of mountain folk with the strict discipline of the Greek phalanx.",
+      "LongTermStrategy": "Guard against Illyrian pirate raids and Macedon's westward annexation; and in the contest between Rome and the great Hellenistic powers, keep a strategic neutrality or flexibly sell its support to the highest bidder.",
+      "Religion": "The sacred oak of the oracle of Zeus at Dodona and the ancestral myths of Achilles"
+    },
+    "ermuningaz": {
+      "Name": "Ermuningaz Tribal Confederation",
+      "NationalPersonality": "Rough and stern, putting their faith in the forest and the storm; they see farming as drudgery and take pride in war and bloodshed, the tribe is united like iron and stone, and they will never pay tribute or submit to foreigners.",
+      "LongTermStrategy": "Establish the confederacy's leadership in the Elbe basin; press southwest on the Celtic borderlands; and stop Roman power from crossing the northern Alpine foothills and advancing deep into the forests.",
+      "Religion": "Wotan (the ancient form of Odin), the war god Tyr, and the worship of the sacred Irminsul pillar"
+    },
+    "galatia": {
+      "Name": "Galatian Gaulish Kingdom",
+      "NationalPersonality": "Violent and impulsive, mad for war; descendants of Celtic warriors who burned and plundered their way from central Europe into the heart of Asia Minor, their wild longsword slaughter strikes terror into eastern kings.",
+      "LongTermStrategy": "Extort huge ransoms (the 'Galatian gold') from the Hellenistic kingdoms of Asia Minor around them; serve as the decisive iron mercenary force in the contests of the great empires; and hold their camps on the Ankara plateau.",
+      "Religion": "The Celtic triad (Taranis, Esus, Toutatis) fused with Cybele, the Anatolian mother goddess"
+    },
+    "garamantes": {
+      "Name": "Saharan Oasis Kingdom of the Garamantes",
+      "NationalPersonality": "Mysterious and enduring, ghosts of the desert; skilled in four-horse chariot charges and in building underground oasis water channels (foggaras), they awe the coastal cities of North Africa with silent desert raids.",
+      "LongTermStrategy": "Control the trans-Saharan trade routes and the network of gold, ivory and salt; and press north on the outlying Roman and Carthaginian enclaves in Tripolitania.",
+      "Religion": "The secret Saharan cult of Ammon and ancient desert wind and fire totems"
+    },
+    "getae": {
+      "Name": "Getic Kingdom (Lower Danubian Dacia)",
+      "NationalPersonality": "Believing the soul is immortal, they face death without fear; inspired by the divine authority of the prophet Zalmoxis they fight with no regard for their lives, and combine the strengths of Balkan infantry with steppe horsemanship and curved swords.",
+      "LongTermStrategy": "Rely on Carpathian fortresses to hold the natural barrier of the lower Danube; resist the invasions of the Bastarnae and Sarmatians from the east; and launch plundering raids south across the Danube.",
+      "Religion": "The immortal cult of Zalmoxis and the totem of the wolf-headed standard"
+    },
+    "hiberni": {
+      "Name": "Hibernian Tribal Confederation (Ireland)",
+      "NationalPersonality": "Isolated on their green island, wild and poetic; they love bardic verse and tribal cattle raids, see personal valor as the highest crown, and have no reverence at all for the worldly order beyond their island.",
+      "LongTermStrategy": "Keep the balance among the divided kingdoms of Ireland; raid the west coast of Britain across the sea to seize slave laborers and bronze; and defend pure ancient Celtic customs from foreign contamination.",
+      "Religion": "The Tuatha De Danann, the sun god Lugh, and the sacred Druidic oak groves"
     },
     "iberia": {
-      "NationalPersonality": "Unyielding, proud, spiritually anchored to Caucasian alpine bastions; vigilant defenders of the mountain gates against northern incursions.",
-      "LongTermStrategy": "Lock the Darial Gorge against nomadic steppe invasions; sustain dynastic alliances with Armenia; protect trans-Caucasian overland trade routes.",
-      "Religion": "Cult of Armazi the Moon God & Kartlos Ancestor Rites",
-      "Name": "The Kingdom of Kartli (Caucasian Iberia)"
+      "Name": "Kingdom of Caucasian Iberia (Ancient Georgia)",
+      "NationalPersonality": "Proud children of the high mountains, loyal and fierce; they guard the throat of the Darial Gorge in Transcaucasia, are shaped by both Persian imperial culture and Hellenism, and are bold, hard fighters.",
+      "LongTermStrategy": "Hold the Caucasus passes to stop the iron cavalry of the northern nomads from riding south; keep their territorial sovereignty between Armenia and Albania; and play the great powers off against each other to borrow their strength.",
+      "Religion": "Ancestral idols of the moon god Armazi and the Caucasian sun and sky god"
+    },
+    "illyria": {
+      "Name": "Illyrian Kingdom (Ardiaean Dynasty)",
+      "NationalPersonality": "Ferocious and fierce, born of the wild waves; they range the Adriatic in swift light Lembi boats and see piracy as a natural and brave way of life.",
+      "LongTermStrategy": "Plunder merchant ships off the west coast of Greece and choke the narrows of the Adriatic; resist Rome's setting up of maritime protectorates on the western Balkan coast; and join with Macedon against the Roman fleet.",
+      "Religion": "A water-serpent totem high god, the storm and sea god, and the cult of the Illyrian war god"
     },
     "ingwafraujingaz": {
-      "NationalPersonality": "Hardy, seafaring, deeply superstitious; bound by blood feuds, ascetic in daily life yet fearless when braving oceanic gales and coastal raids.",
-      "LongTermStrategy": "Secure Jutland shipbuilding anchorages; monopolize Baltic amber export routes; repel inland Germanic tribal encroachment from the south.",
-      "Religion": "Njord Sea Cult, Nerthus & Bog Offerings",
-      "Name": "Ingwafraujingaz Confederacy"
+      "Name": "Ingwafraujingaz Tribal Confederation (Germanic North Sea Coast and Jutland)",
+      "NationalPersonality": "Enduring and rugged, battling wind and wave; they worship the storms of the North Sea and the wonders of the bogs, hold blood vengeance for kin as a sacred law, and live hard, frugal lives yet fear nothing in battle.",
+      "LongTermStrategy": "Monopolize the amber and fur trade routes of the Baltic and the North Sea; hold the shipbuilding bases of Jutland; and defeat the pressure of inland Germanic clans pushing south and west.",
+      "Religion": "The sea god Njord, Nerthus the earth mother, and sacred offerings in the bogs"
+    },
+    "khuzait": {
+      "Name": "Great Sarmatian Nomadic Tribes",
+      "NationalPersonality": "Ferocious and swift, with men and women alike as warriors; male and female fighters can all ride, draw the bow and wear heavy armor, their lances stand like a forest and their hooves roll like thunder, and they look down on the Eurasian steppe through conquest by iron and blood.",
+      "LongTermStrategy": "Press west from the Volga and Don basins on the remnants of the Scythians; plunder the rich Greek cities of the northern Black Sea coast; and gradually build a cavalry hegemony over the great steppe north of the Black Sea.",
+      "Religion": "The cult of the war god of the sacred sword, the sun and fire god, and the shamanism of the steppe priestesses who commune with spirits"
+    },
+    "kush": {
+      "Name": "Kingdom of Kush (Meroitic Dynasty)",
+      "NationalPersonality": "Solemn and sacred, proud of its long history; heir to the deep civilizations of ancient Egypt and Nubia, famed for its powerful queens, the Kandake, and renowned across the ancient world for its precise and deadly black archers.",
+      "LongTermStrategy": "Guard the lifelines of the gold, ivory and iron mines of the upper Nile; block the southward incursions of Ptolemaic Egypt's war elephant hunting parties; and defend the sacred tradition of the temples of Amun.",
+      "Religion": "The temples of the high god Amun-Ra and the cult of the lion-headed war god Apedemak"
+    },
+    "massalia": {
+      "Name": "Greek Republic of Massalia",
+      "NationalPersonality": "Shrewd and refined, great merchants of the sea; it keeps strictly to the laws of an aristocratic oligarchic republic and holds its place on the wild Gallic coast through outstanding trade, a tradition of exploration (Pytheas) and diplomatic wisdom.",
+      "LongTermStrategy": "Hold firmly to a close alliance with Rome against Carthaginian naval supremacy; work with the inland Gallic tribes to buy up the tin and fur trade routes of the Rhone; and keep shipping on the Ligurian Sea safe.",
+      "Religion": "Artemis of Ephesus as chief goddess and Apollo Delphinios as guardian of the sea"
+    },
+    "nabataea": {
+      "Name": "Nabataean Arab Kingdom (Petra)",
+      "NationalPersonality": "Secretive and enduring, immensely wealthy; risen from desert nomadic tribes to master the Incense Road, they are skilled at carving cities into cliffs and hiding water in the desert, flexible on the outside and firm within, and adept at maneuvering.",
+      "LongTermStrategy": "Monopolize the overland relay trade in frankincense, myrrh and Indian spices; maneuver skillfully in the standoff between the Ptolemies and the Seleucids; and build Petra into an impregnable rock fortress.",
+      "Religion": "The stone-carved high god Dushara and the cult of Atargatis, the all-powerful mother goddess of the starry sky"
+    },
+    "paphlagonia": {
+      "Name": "Paphlagonian Tribal Confederation",
+      "NationalPersonality": "Tenacious and defiant, fierce and skilled horsemen; shielded by the steep mountains of the Black Sea coast and by fine cavalry, they stay extremely alert and stubbornly independent while surrounded by great powers.",
+      "LongTermStrategy": "Resist the swallowing expansion of the Mithridatic dynasty of Pontus; hold the mountain passes around Sinope and Amastris; and seek room to survive among the great powers of central Asia Minor.",
+      "Religion": "The Anatolian moon god Men and Greek mountain rites of Zeus"
+    },
+    "parthia": {
+      "Name": "Kingdom of Parthia (Arsacid Dynasty)",
+      "NationalPersonality": "Fierce and swift, like an eagle spreading its wings; sprung from the Dahae nomadic tribes, with the deadly Parthian shot and fully armored cavalry that crush man and horse alike, they are determined to revive the might of the Persian Empire.",
+      "LongTermStrategy": "Drive out the Seleucid Hellenistic governors and garrisons; gradually push west into the key points of the Iranian plateau; and build a cavalry empire spanning the Eurasian Silk Road.",
+      "Religion": "Ahura Mazda as the Zoroastrian high god and steppe festivals of the horse god and the fire of war"
+    },
+    "pergamon": {
+      "Name": "Kingdom of Pergamon (Attalid Dynasty)",
+      "NationalPersonality": "Self-styled bearers of civilization who prize intellect and power; it sees itself as the faithful heir of Athenian civilization, built the grand acropolis and great library of Pergamon, acts with agility, and is good at attaching itself to a powerful patron to gain much from little.",
+      "LongTermStrategy": "Serve resolutely as Rome's most steadfast proxy ally in the eastern Mediterranean; incite Rome to intervene against Macedon and the Seleucids; and nibble away at the lands around it in Asia Minor.",
+      "Religion": "The temple of the Great Altar of Zeus at Pergamon and the cult of Athena, goddess of wisdom"
+    },
+    "pontus": {
+      "Name": "Kingdom of Pontus",
+      "NationalPersonality": "Far-sighted and blending Greek and Persian ways; it combines the glorious royal blood of the Persian Achaemenids with Hellenistic military organization, is highly ambitious, and has the spirit of a contender for empire.",
+      "LongTermStrategy": "Annex the northern coast of Asia Minor and the whole Bosporan Black Sea; bring the Greek cities of Anatolia under its rule; and wait for the moment to march west and drive Roman power out of the Aegean.",
+      "Religion": "Zeus Stratios as war god and the sacred fire of the Persian Ahura Mazda"
+    },
+    "ptolemaic": {
+      "Name": "Ptolemaic Egyptian Empire",
+      "NationalPersonality": "Rich and luxurious, strong in both civil and military affairs; relying on the abundant fertile soil of the Nile and the Great Library of Alexandria, it styles itself both pharaoh and Greek savior and regards wealth as the strongest armament.",
+      "LongTermStrategy": "Win the Syrian Wars against the Seleucid Empire to keep Coele-Syria; control the Aegean islands and the naval bases of Cyprus; and protect the Red Sea trade route to India.",
+      "Religion": "Serapis as high god (the official Greco-Egyptian syncretic god), the goddess Isis, and the divine authority of Amun and the pharaoh"
+    },
+    "rhodes": {
+      "Name": "Maritime Republic of Rhodes",
+      "NationalPersonality": "United and sincere, unmatched in naval warfare in its time; it keeps strictly to a rigorous system of commercial maritime law (the Rhodian Sea Law), its naval tactics are without equal, and it stands proud in the eastern sea as the guardian of free navigation.",
+      "LongTermStrategy": "Clear out the Cilician and Cretan pirates of the eastern Mediterranean; keep Aegean navigation and the grain trade free; and maintain an aloof armed neutrality among the Hellenistic powers.",
+      "Religion": "The sun god Helios (worship of the Colossus of Rhodes) and festivals of Apollo as sea god"
+    },
+    "saba": {
+      "Name": "Kingdom of the Sabaeans (Ancient Sheba)",
+      "NationalPersonality": "Ancient and serene, rich beyond measure; relying on the irrigation marvel of the Marib Dam it built an oasis empire in the desert, guards itself with the wealth of the Incense Road, loves peace, and has no taste for foreign conquest.",
+      "LongTermStrategy": "Carefully maintain the irrigation lifeline of the great Marib Dam; protect the gold and spice trade routes to the Mediterranean and India; and resist raids by the Bedouin nomads of the north.",
+      "Religion": "The moon god Almaqah and the worship of an all-powerful triad of astral gods"
+    },
+    "saka": {
+      "Name": "Saka Nomadic Confederation (Central Asian Scythian Nobility)",
+      "NationalPersonality": "Aloof and fierce, born to the saddle; they range freely over the great steppes of Central Asia in bronze scale armor with composite bows, scorn settled farming life, and worship pure strength.",
+      "LongTermStrategy": "Cross the Jaxartes to the south to demand huge tribute from the rich Greek cities of Bactria; resist the pressure of powerful nomadic neighbors to the east; and keep absolute control of the steppe's water and pastures.",
+      "Religion": "The golden eagle of the steppe sun, the sacred sword totem of the war god, and the shamanic worship of the heavenly wolf"
+    },
+    "scythian": {
+      "Name": "Scythian Kingdom (Crimean Scythia)",
+      "NationalPersonality": "A former overlord whose pride still endures; as the Sarmatians advanced west it fell back to the Crimean peninsula and the lower Dnieper, built towns and became semi-settled, yet still fights with great ferocity and resilience.",
+      "LongTermStrategy": "Hold its ground at the fortress of Scythian Neapolis in Crimea; extort protection money from the Greek cities of the Bosporus; and stop the Sarmatian cavalry from crossing the Danube altogether.",
+      "Religion": "The fire goddess Tabiti, the sacred sword rites of Ares, and the worship of the golden battle-axe"
+    },
+    "seleucid": {
+      "Name": "Seleucid Empire (Syrian Empire)",
+      "NationalPersonality": "Vast and majestic, striving for revival; it rules a wide realm from the Mediterranean to the Persian Gulf, and under Antiochus III it has rekindled the ambition of a 'Great King', sworn to reunite the old lands of Alexander.",
+      "LongTermStrategy": "Crush Ptolemaic Egypt completely in the Syrian Wars and take the whole Levant; march east to recover the old lands of Parthia and Bactria; and keep Roman power from meddling in Asia Minor.",
+      "Religion": "The cult of Apollo as founding ancestor of the royal house, Zeus Nikator, and the Syrian earth goddess Atargatis"
+    },
+    "tarentum": {
+      "Name": "City-State of Tarentum (Magna Graecia in Southern Italy)",
+      "NationalPersonality": "Prosperous and refined, and full of hatred for Rome; it once invited Pyrrhus across the sea to fight Rome, has suffered long under the oppression of Roman legions and the servitude of a Roman garrison, and waits at every moment to welcome outside help and take revenge.",
+      "LongTermStrategy": "Make secret contact with Hannibal's army; raise the whole city in revolt and drive the Roman garrison into the citadel; and serve as Carthage's home port for land and sea support in southern Italy.",
+      "Religion": "The sea god Poseidon, the dolphin-riding hero Taras as totem, and the temple of Heracles"
+    },
+    "thrace": {
+      "Name": "Odrysian Kingdom of Thrace",
+      "NationalPersonality": "Ferocious and defiant, with blood like fire; Thracian berserkers swinging the curved, inward-edged war blade (Rhomphaia) make all of Europe tremble, and by nature they love strong wine, single combat and war.",
+      "LongTermStrategy": "Unite the Thracian mountain tribes to resist the southward pressure of Philip V of Macedon; launch tactical raids along the Danube and the Aegean coast; and sell their services as heavily armored shock troops to the highest bidder.",
+      "Religion": "The ancient Thracian god behind the war god Ares, the ecstatic rites of Dionysus the wine god, and the god Sabazios"
+    },
+    "veneti": {
+      "Name": "Veneti Tribal Confederation",
+      "NationalPersonality": "Mild and pragmatic, skilled in horse breeding and trade; living at the mouth of the Po and the southern foothills of the Alps, they value peace and order and have always followed a pro-Roman policy to protect themselves.",
+      "LongTermStrategy": "Help the Roman legions against the ferocious neighboring Boii and Insubrian Gallic tribes; make the Adriatic amber trade by sea flourish; and keep the trading towns of the Po delta safe.",
+      "Religion": "The mother goddess Reitia, the guardian spirits of horses, and prayers to the currents of the Adriatic"
     }
   }
 }

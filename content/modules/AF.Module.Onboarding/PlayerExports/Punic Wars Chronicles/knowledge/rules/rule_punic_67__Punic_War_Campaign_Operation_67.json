@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_67",
-  "Name": "Punic War Campaign Operation 67",
-  "Keywords": [
-    "rule_punic_67",
-    "Punic Operation 67",
-    "Strategic Campaign 67",
-    "Mediterranean Theater 67"
-  ],
+  "Name": "Sophonisba's Wedding, the Poisoned Cup and Her Tragic Death",
+  "Category": "history",
+  "Priority": 92,
   "RagShortTexts": [
-    "Strategic campaign doctrine 67 concerning Mediterranean operations during the Second Punic War."
+    "When Cirta fell, Sophonisba begged Masinissa not to hand her over to the Romans",
+    "Masinissa hastily married Sophonisba and was sharply rebuked by Scipio, who claimed her as spoils of war",
+    "Sophonisba calmly drained the royal poison, preserving the dignity and honor of a noblewoman of Carthage"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "As Cirta fell, Sophonisba, a noblewoman of Carthage and queen of Syphax, met Masinissa, her first love, on the palace steps as he burst into the city. She knelt and begged him not to let her become a plaything in a Roman triumph. Masinissa's old love was rekindled and he wished to protect her, so that very day he married Sophonisba at the court. But when the commander Scipio learned of it, he flew into a rage and declared sternly that Sophonisba was Roman spoils of war and the chief instigator of the revolt, and that she must be handed over. In agony and despair, Masinissa knew he could not stand against Roman power, so he had a servant bring his new wife a cup of deadly poison and a sword, with the message that only this could keep his promise not to deliver her to the Romans. With noble bearing Sophonisba calmly said, 'Though this marriage was brief, I have no regrets,' raised the cup, drank it to the last drop and died, in the most tragic scene of the Mediterranean epic.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "Sophonisba, daughter of Gisco, defended the dignity of a noblewoman of Carthage with her life! She would rather drink poison and die in a foreign court than let the brutal Romans humiliate her soul!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "Beauty and witchery cannot shake the law of Rome. General Scipio upheld the authority of the Republic, and every ringleader who stirs up rebellion must be punished."
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 67 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 67, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 67 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The king's heart is bleeding; he sent the woman he loved the release of death. The coldness of the Romans has struck the whole royal palace of Cirta silent with fear."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Romeo and Juliet",
+    "Opera",
+    "Modern drama",
+    "Red wine"
+  ],
+  "Keywords": [
+    "Sophonisba",
+    "poisoned cup",
+    "Masinissa marriage",
+    "Cirta",
+    "Scipio",
+    "daughter of Gisco",
+    "Syphax queen",
+    "tragic suicide"
+  ]
 }

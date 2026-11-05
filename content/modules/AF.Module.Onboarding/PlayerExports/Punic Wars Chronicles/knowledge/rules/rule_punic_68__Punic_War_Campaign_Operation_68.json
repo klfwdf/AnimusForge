@@ -1,42 +1,58 @@
 {
   "Id": "rule_punic_68",
-  "Name": "Punic War Campaign Operation 68",
-  "Keywords": [
-    "rule_punic_68",
-    "Punic Operation 68",
-    "Strategic Campaign 68",
-    "Mediterranean Theater 68"
-  ],
+  "Name": "Hannibal's Tearful Farewell to Italy and Lonely Voyage Home to Africa",
+  "Category": "history",
+  "Priority": 93,
   "RagShortTexts": [
-    "Strategic campaign doctrine 68 concerning Mediterranean operations during the Second Punic War."
+    "In 203 BC the Carthaginian Council of One Hundred urgently recalled Hannibal to abandon Italy and sail home to defend it",
+    "Undefeated in sixteen years, Hannibal left Croton with bitter regret because his homeland was in danger",
+    "Before leaving he set up a bronze inscription recording his deeds and raged at the Senate whose envy and withheld supplies had ruined his cause"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In late autumn of 203 BC, facing the destruction of their homeland, the Carthaginian Council of One Hundred sent fast ships to recall Hannibal urgently for its defense. Hannibal read the order before the temple on the headland at Croton in southern Italy, and, overcome with grief and anger, he wept aloud. For sixteen years he had ranged across Italy, from the Trebia and Trasimene to Cannae, without a single defeat, destroying six Roman consular armies, yet in the end he fell short because the oligarchs of his own state withheld his pay and left him without support. He denounced them: 'It is not the Roman Senate or Scipio that has defeated Hannibal, but the envy and cowardice of the Carthaginian Senate of One Hundred!' Before leaving, he set up a great bronze and stone inscription before the temple of Hera, engraved in Greek and Punic with the deeds of his sixteen years of campaigning. He slaughtered the sick and wounded warhorses that could not be shipped, and with the remnant of his army, made up of Italian veterans and Gallic shock troops, he sailed alone across the sea and returned in sorrow to Hadrumetum.",
   "Variants": [
     {
       "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 68 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 68, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The god of war has at last set foot on his native soil! Even if Italy is burned to the ground, so long as General Hannibal's great standard is raised in Africa, Carthage will never bow to Roman power!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 68 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The nightmare of sixteen years is finally over! Hannibal has slunk out of the Italian peninsula like a stray dog, the fields of Italy can at last know peace, and the battlefield of vengeance now moves to Africa!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire_s"
+        ]
+      },
+      "Content": "He took his picked veterans with him and left us, the allied towns that betrayed Rome, to the cruel revenge of the Roman legions. Southern Italy is now a land of ruins."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Steamship",
+    "Medieval knight",
+    "Pope",
+    "Telegraph"
+  ],
+  "Keywords": [
+    "Hannibal recalled",
+    "203 BC",
+    "Hannibal leaves Italy",
+    "Croton",
+    "temple of Hera inscription",
+    "Hadrumetum",
+    "Council of One Hundred",
+    "Italian veterans"
+  ]
 }

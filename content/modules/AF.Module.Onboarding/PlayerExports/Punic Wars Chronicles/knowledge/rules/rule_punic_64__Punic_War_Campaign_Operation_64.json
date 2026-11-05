@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_64",
-  "Name": "Punic War Campaign Operation 64",
-  "Keywords": [
-    "rule_punic_64",
-    "Punic Operation 64",
-    "Strategic Campaign 64",
-    "Mediterranean Theater 64"
-  ],
+  "Name": "The Night Raid near Utica Burns the Carthaginian and Numidian Camps",
+  "Category": "history",
+  "Priority": 90,
   "RagShortTexts": [
-    "Strategic campaign doctrine 64 concerning Mediterranean operations during the Second Punic War."
+    "In 203 BC Scipio used sham peace talks to scout the enemy camps, then launched a night raid and set them on fire",
+    "The Numidian huts of straw went up in towering flames, and the allies trampled and killed one another, with forty thousand dead or wounded",
+    "Gisco's Carthaginian camp was struck in turn, and more than forty thousand men perished in the fire and by the sword"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "In the spring of 203 BC, under cover of peace negotiations with Syphax, Scipio repeatedly sent picked officers disguised as servants deep into the enemy camps, and learned that the allied tents were built entirely of straw, reeds and dry branches. On the night the talks broke down, the Roman army moved out in two columns: Laelius and Masinissa led their troops in a surprise attack on Syphax's camp and set the huts on fire. Driven by a strong wind, the whole camp became a sea of flames, and the Numidian soldiers fled half-dressed, trampling one another. Gisco's camp, thinking the fire was an accident among their allies, rushed out to help and ran straight into an ambush by the main Roman force under Scipio himself. In the dark and the flames, the Roman legions of sword and shield closed in like an iron wall, and more than forty thousand were killed or trampled to death. Nearly one hundred thousand allied troops fell apart in a single night, and Gisco and Syphax fled in disarray with only a few horsemen and stragglers.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "empire"
+        ]
+      },
+      "Content": "This is the masterpiece of the art of war! Lulling the enemy chiefs with false peace talks and punishing the faithless with a sky full of fire, the night raid near Utica shattered Carthage's last dream of defending its homeland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "Base, treacherous Romans! They posed as envoys of peace to spy on us, then carried out this slaughter with fire in the dark. Tens of thousands of brave men did not fall for any fault in battle; they died by the wicked trick of savage robbers!"
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 64 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 64, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 64 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The tents collapsed in the blaze, and warhorses and kinsmen were burned to charcoal amid the screams. It was the deepest curse of the long night, and King Syphax's royal power was shaken to its foundations in the flames."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Hand grenade",
+    "Gasoline",
+    "Incendiary bomb",
+    "Gunpowder"
+  ],
+  "Keywords": [
+    "night raid Utica",
+    "203 BC",
+    "burning of the camps",
+    "Syphax",
+    "Hasdrubal Gisco",
+    "Laelius",
+    "Masinissa",
+    "Numidian camp fire"
+  ]
 }

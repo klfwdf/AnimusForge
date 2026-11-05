@@ -1,42 +1,114 @@
 {
   "Id": "rule_punic_62",
-  "Name": "Punic War Campaign Operation 62",
-  "Keywords": [
-    "rule_punic_62",
-    "Punic Operation 62",
-    "Strategic Campaign 62",
-    "Mediterranean Theater 62"
+  "Name": "The Peace of Phoenice Sets a Fragile Balance on the Balkan Front",
+  "Description": "In 205 BC, with every side exhausted, Philip V of Macedon and the Roman praetor Sempronius signed a peace at the city of Phoenice in Epirus. It formally ended the First Macedonian War and bought a brief balance of power on the eastern Mediterranean front.",
+  "Tags": [
+    "Peace of Phoenice",
+    "End of the First Macedonian War",
+    "Philip V compromises",
+    "Rome's breathing space",
+    "Balkan balance of power",
+    "Undercurrents"
   ],
+  "Category": "Political",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 62 concerning Mediterranean operations during the Second Punic War."
+    "In 205 BC Rome and Macedon formally signed an armistice and peace at the city of Phoenice in Epirus.",
+    "It confirmed that Philip V kept a small foothold in Illyria but gave up for good any attempt to cross the sea and meddle in the war in Italy.",
+    "The peace let Rome withdraw from the eastern front and throw its full support behind Scipio Africanus opening the final, decisive theater in North Africa."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 62 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 62, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 62 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The Peace of Phoenice is a major strategic victory for Rome on the eastern front, winning us room to breathe! At the negotiating table in Epirus we gave up none of our core interests. By merely recognizing a few unimportant footholds for Philip V up in the mountain valleys, we freed a full thirty-five patrol warships and tens of thousands of veterans from the Balkans! Scipio Africanus is drilling a new army in Sicily, and at last the Senate can pour all of Rome's iron, warships and grain into his holy war to invade the Carthaginian homeland and destroy that state! Once we have dealt with Hannibal, the Roman Senate will settle this old Balkan account with Philip twice over!"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hellenic"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "His Majesty Philip V has overcome, with astonishing resolve, the deathtrap the whole West laid for Macedon! Facing encirclement on four sides by Rome, Aetolia, Sparta and Pergamon, His Majesty fought north and south, beat the Aetolian League into suing for a separate peace, and even forced the haughty Roman Senate to send thirty-five warships and envoys hurrying to Phoenice to sue for peace and sign! Macedon has kept its supremacy in the Aegean and its Illyrian shield, proving that the Antigonid dynasty is still an unshakable giant of the eastern Mediterranean!"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This peace is yet another merciless betrayal for Hannibal in Italy! Philip V once swore up and down that he would cross the sea and drink from the Tiber with Hannibal, but the moment he suffered a small setback in his own backyard, he tore the old treaty to shreds for a few border fortresses and made a separate peace with Rome! Carthage's isolated army in Italy will never see even one Macedonian spearman come to its aid, and Hannibal has been reduced to a lonely island surrounded by a boundless sea of enemies!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 205 BC, after nearly ten years of exhausting back-and-forth fighting, Rome and the Kingdom of Macedon formally concluded the Peace of Phoenice at the city of Phoenice in Epirus, and the First Macedonian War was declared over. The peace formally confirmed the existing spheres of influence on the eastern shore of the Mediterranean. Its signing freed Rome entirely from worries in the east and let it concentrate all its military strength on the decisive North African campaign planned by Scipio Africanus."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Peace of Phoenice 205 BC",
+    "Phoenice",
+    "Epirus",
+    "end of First Macedonian War",
+    "Philip V",
+    "Sempronius",
+    "Scipio Africanus",
+    "Balkan balance"
+  ]
 }

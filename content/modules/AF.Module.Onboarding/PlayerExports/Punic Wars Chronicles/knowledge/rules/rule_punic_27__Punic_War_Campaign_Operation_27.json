@@ -1,42 +1,111 @@
 {
   "Id": "rule_punic_27",
-  "Name": "Punic War Campaign Operation 27",
-  "Keywords": [
-    "rule_punic_27",
-    "Punic Operation 27",
-    "Strategic Campaign 27",
-    "Mediterranean Theater 27"
+  "Name": "Peaceful Surrender of Gadir and the Creation of the Two Spanish Provinces",
+  "Description": "At the end of 206 BC the ancient city of Gadir, Carthage's last stronghold in Spain, surrendered to the Roman navy by secret agreement; Mago withdrew by sea with the remnants of his army, and the Roman Senate created the two provinces of Hispania Citerior and Hispania Ulterior to establish colonial rule.",
+  "Tags": [
+    "Surrender of Gadir",
+    "Cadiz",
+    "Province of Hispania Citerior",
+    "Province of Hispania Ulterior",
+    "Mago's withdrawal",
+    "Silver mining"
   ],
+  "Category": "Political",
+  "DefaultPriority": 80,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 27 concerning Mediterranean operations during the Second Punic War."
+    "At the end of 206 BC Gadir, Carthage's last fortress in Spain, opened its gates and surrendered to Rome.",
+    "The commander Mago Barca stripped the city of its treasure and sailed away with the warships of his remaining forces to the Balearic Islands.",
+    "The Roman Senate then created two permanent military provinces on the peninsula, Hispania Citerior and Hispania Ulterior."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 27 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 27, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 27 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The surrender of Gadir brought Rome's six-year Spanish campaign to a perfect close! The Senate has formally decided to create two provinces, Hispania Citerior and Hispania Ulterior, each with a senior praetor commanding a permanent army. Every pound of pure silver from the huge mines of Castulo and New Carthage will now be shipped to the Roman treasury, not only filling the army's pay chests but completely ending any chance of a hostile power rising again from the ashes on the peninsula!"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Gadir is the oldest jewel our Phoenician ancestors founded overseas, and in its temple burns the eternal sacred fire of Melqart! Yet those cowardly merchant elders betrayed their homeland, quietly shut the city gates against our commander Mago and fawned like dogs on the Roman heathens! Lord Mago could only plunder the remaining gold and silver of the temple to pay his army and lead his lonely surviving ships out into the raging waves. So the great epic of the house of Barca in Spain came to its desolate end."
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "headman"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "No sooner had Gadir changed its banner than the Roman governor came rushing in with his ledgers and his whip! They carved this land of our ancestors into so-called provinces of Hispania Citerior and Hispania Ulterior and began to seize our wheat and conscript our miners. The tribes thought they had seen off the man-eating jackals, but what came instead was an iron wolf that will grind up even our bones!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At the end of 206 BC the council of the ancient Phoenician city of Gadir (modern Cadiz) secretly reached an agreement with the Roman naval commander Laelius and peacefully handed the city over to Rome. The Carthaginian commander Mago Barca was forced to withdraw his fleet from Spanish waters. Rome then divided the Iberian Peninsula into the two provinces of Hispania Citerior and Hispania Ulterior, beginning a long period of colonial and provincial rule."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Surrender of Gadir and the Two Spanish Provinces",
+    "Surrender of Gadir",
+    "Hispania Citerior and Hispania Ulterior",
+    "Mago Barca's withdrawal by sea",
+    "Roman provincial rule in Spain"
+  ]
 }

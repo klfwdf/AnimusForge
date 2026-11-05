@@ -1,42 +1,111 @@
 {
   "Id": "rule_punic_53",
-  "Name": "Punic War Campaign Operation 53",
-  "Keywords": [
-    "rule_punic_53",
-    "Punic Operation 53",
-    "Strategic Campaign 53",
-    "Mediterranean Theater 53"
+  "Name": "Storm Diverts the Carthaginian Relief Fleet and Reverses the War in Sardinia",
+  "Description": "In 215 BC a large Carthaginian relief fleet bound for Sardinia ran into a violent storm in the Tyrrhenian Sea. Most of its warships were blown off course toward the Balearic Islands, and the months of delay let Rome pacify the whole island at its leisure.",
+  "Tags": [
+    "Mediterranean storm",
+    "Fleet blown off course",
+    "Logistics severed",
+    "Sardinia changes hands",
+    "Gain and loss of sea power",
+    "Weather in war"
   ],
+  "Category": "History",
+  "DefaultPriority": 78,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 53 concerning Mediterranean operations during the Second Punic War."
+    "In 215 BC dozens of the main Carthaginian supply warships sailing for Sardinia were struck by a rare and violent storm.",
+    "The fleet was badly damaged and driven by gales and contrary seas hundreds of miles off to the Balearic Islands, losing its chance to act.",
+    "The months of delay left the isolated Sardinian rebels without help, and they were destroyed piecemeal when the Roman veterans struck back."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 53 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 53, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "If not for that sudden, towering gale, Sardinia would already be back in Carthage's embrace! Sixty quinqueremes loaded with grain and iron armor were meant to reach the waters off the port of Carales within seven days and join Hampsicora! Who could have known that the Tyrrhenian Sea would rise in mountainous waves, tearing the sails and cracking the keels? The whole fleet was swept by the storm all the way to the Balearic Islands off Spain, to refit and lie aground! By the time the sea was calm, the ships repaired and the fleet on its way again, the rebels on the island had already been surrounded and devoured by the Roman legions! Heaven has forsaken Carthage. How unjust!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 53 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Neptune and Jupiter watch over Rome! The Carthaginian fleet thought it could slip across the strait while Rome was weak, but in the raging seas the gods raised it was scattered to the winds and dashed to pieces on the rocks! That heaven-sent storm won General Torquatus a precious month to finish mobilizing and gathering his forces, and when the remnants of the Carthaginian fleet finally arrived, all that awaited them were the cold, freshly honed short swords of the Roman legions!"
+    },
+    {
+      "Priority": 72,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In a war at sea, men count for three parts and heaven for seven. Carthaginian ships may be well built, but when a black waterspout comes, a great ship of a hundred oars is no better than a leaf. The sailors rowed for their lives and still could not beat the wind and waves. By the time they had finally hauled their ships back off some barren island, the brothers on Sardinia had been hacked apart by the Romans until not even their bones were left."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 215 BC, the fleet Carthage sent to reinforce the Sardinian revolt ran into a sudden, violent storm on its voyage. Many warships were damaged and drifted far off course to the Balearic Islands. This serious setback in logistics and navigation gave Rome ample time to move troops and counterattack, and it indirectly decided the complete failure of the campaign in Sardinia."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Carthaginian relief fleet",
+    "storm",
+    "Balearic Islands",
+    "Sardinia 215 BC",
+    "Hampsicora",
+    "Torquatus",
+    "Carales",
+    "fleet blown off course"
+  ]
 }

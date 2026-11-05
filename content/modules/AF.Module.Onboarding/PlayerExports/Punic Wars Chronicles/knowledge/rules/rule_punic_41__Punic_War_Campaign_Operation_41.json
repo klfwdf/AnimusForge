@@ -1,42 +1,110 @@
 {
   "Id": "rule_punic_41",
-  "Name": "Punic War Campaign Operation 41",
-  "Keywords": [
-    "rule_punic_41",
-    "Punic Operation 41",
-    "Strategic Campaign 41",
-    "Mediterranean Theater 41"
+  "Name": "The Death of Hiero II and the Pro-Carthaginian Coup in Syracuse",
+  "Description": "In 215 BC Hiero II, the wise ruler who had governed Syracuse for fifty-four years, died. His fifteen-year-old grandson Hieronymus came to the throne and, manipulated by the pro-Carthaginian Adranodorus, tore up the half-century alliance with Rome and went over to Hannibal.",
+  "Tags": [
+    "Hiero II",
+    "Hieronymus",
+    "Syracusan coup",
+    "Adranodorus",
+    "War comes to Sicily",
+    "Alliance with Hannibal"
   ],
+  "Category": "Political",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 41 concerning Mediterranean operations during the Second Punic War."
+    "In 215 BC the death of Hiero II, who had ruled Syracuse for half a century, set off a violent power struggle at court.",
+    "The fifteen-year-old young king Hieronymus, manipulated by powerful ministers, tore up the half-century alliance with Rome and went over to Carthage.",
+    "The defection of Syracuse set all Sicily ablaze and forced Rome to send strong forces to encircle the island's greatest city by land and sea."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 41 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 41, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "Old King Hiero won Syracuse boundless prosperity and gold through fifty years of piety and clear-headed rule, but the moment he closed his eyes, a fifteen-year-old greenhorn was blinded by the honeyed words of Adranodorus! Hannibal promised to grant Syracuse the crown of all Sicily, but the price is our merchant ships and the lives of our young men, spent as the Phoenicians' vanguard pawns! The Roman legions will never swallow the insult of betrayal, and at this moment the death knell has sounded for the golden age of Syracuse!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "senator"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 41 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Hiero II was once Rome's most faithful friend; after the catastrophe at Cannae he even sent a golden statue of Victory weighing three hundred pounds and tens of thousands of measures of wheat to keep Rome alive. Yet before his body was cold, the ungrateful Syracusan traitors insulted the Roman envoys, drove them out of the palace and threw themselves into the arms of the butcher Hannibal! The will of the Senate tolerates no such defiance. General Marcellus will lead the fleet to trample the island of Ortygia flat and teach these oath-breaking Greek tricksters a lesson in blood!"
+    },
+    {
+      "Priority": 85,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The awakening of Syracuse is a blessing from the god Melqart! For fifty years this great Greek city was squeezed by Rome's extortionate treaty and made to serve as Rome's granary in Sicily. His Majesty Hieronymus has followed the will of heaven in allying with Hannibal, and Carthage will not only provide Syracuse with an army of twenty thousand to protect its independence but will also help it recover Messana and Lilybaeum. The dawn has already broken on Sicily's return to the free trading network of the Mediterranean!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In 215 BC, Hiero II, the old king of Syracuse who had kept a firm alliance with Rome for fifty years, died. His fifteen-year-old grandson and successor Hieronymus, influenced by the powerful pro-Carthaginian minister Adranodorus, tore up the treaty with Rome and went over to Hannibal. This move overturned the balance of power in Sicily, and Rome quickly sent the consul Marcellus at the head of a great army on an expedition to Sicily."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "death of Hiero II",
+    "Hieronymus of Syracuse",
+    "Syracuse defects to Carthage 215 BC",
+    "Adranodorus coup"
+  ]
 }

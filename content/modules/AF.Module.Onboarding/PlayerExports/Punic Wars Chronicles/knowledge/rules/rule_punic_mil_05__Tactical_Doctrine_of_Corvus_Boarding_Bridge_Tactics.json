@@ -1,42 +1,51 @@
 {
   "Id": "rule_punic_mil_05",
-  "Name": "Tactical Doctrine of Corvus Boarding Bridge Tactics",
-  "Keywords": [
-    "rule_punic_mil_05",
-    "Doctrine of Corvus Boarding Bridge Tactics",
-    "Combat Mastery Corvus Boarding Bridge Tactics",
-    "Tactical Formations Corvus Boarding Bridge Tactics"
-  ],
+  "Name": "Numidian Saddleless Light Cavalry: Javelin Mobility and Guerrilla Tactics of Luring the Enemy",
+  "Category": "military",
+  "Priority": 89,
   "RagShortTexts": [
-    "The tactical doctrine of Corvus Boarding Bridge Tactics governed battlefield formations and..."
+    "Numidian riders wore no heavy armor and used no saddle, controlling their horses with only a leather cord or grass bridle",
+    "Riding at speed to circle around, they wore down heavy legions with continuous javelin volleys and feigned retreats",
+    "On the battlefields of Cannae and Zama they repeatedly carried out deep encirclements and rolled up the enemy, deciding the outcome"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Numidian light cavalry were the light horsemen with the greatest mobile deterrent power in the classical age. They were small, lean and tough, wore coarse woolen cloaks, and carried round leather shields and several poisoned short javelins. Astonishingly, the Numidians used neither heavy saddles nor stirrups; with only a thin leather cord or a woven grass rein around the horse's neck, and slight pressure of their legs to shift their weight, they became one with their swift little North African horses and moved over rocky desert as if on level ground. In battle they never clashed head-on with Roman heavy infantry, but wheeled and galloped like locusts, throwing javelins with precision at the enemy's flanks and rear while at full gallop; as soon as the enemy organized a counterattack, they at once scattered in a feigned rout, luring the enemy formation into breaking apart, and then, when the enemy was exhausted, suddenly turned back and surrounded them. Hannibal used these mobile tactics to the fullest at the Trebia and at Cannae.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The development of Corvus Boarding Bridge Tactics exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+      "Content": "The wind is our guide and the horse is our legs! The heavy Roman infantry will never touch a hair on our heads, and our javelins always drink blood in the gaps between their shields!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of Corvus Boarding Bridge Tactics became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "These barefoot African demons on horseback are as cunning as foxes and wolves! They never stay in one place; when you chase them they flee, and when you stop, their flying javelins come whistling at your back."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Mastery of Corvus Boarding Bridge Tactics separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "General Hannibal's most loyal hounds! As long as the Numidian cavalry seal off both wings, the Romans' backs are completely exposed to our killing blades."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "modern introduction of the stirrup",
+    "cavalry revolver",
+    "dragoon rifle",
+    "Mongol horse roads"
+  ],
+  "Keywords": [
+    "Numidian cavalry",
+    "saddleless riding",
+    "javelin skirmishing",
+    "feigned retreat",
+    "Numidians at Cannae"
+  ]
 }

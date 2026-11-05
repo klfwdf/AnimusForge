@@ -1,42 +1,50 @@
 {
   "Id": "rule_punic_city_13",
-  "Name": "Metropolis of Agrigentum Greek Sanctuary",
-  "Keywords": [
-    "rule_punic_city_13",
-    "Urban Center Agrigentum Greek Sanctuary",
-    "Citadel of Agrigentum Greek Sanctuary",
-    "Harbor of Agrigentum Greek Sanctuary"
-  ],
+  "Name": "Castulo, Silver-Mining Hub of Andalusia: The Mountain City and the Barcid Vein of Wealth",
+  "Category": "geography",
+  "Priority": 85,
   "RagShortTexts": [
-    "The fortified urban center of Agrigentum Greek Sanctuary served as a vital strategic,..."
+    "Castulo is the chief stronghold of the Oretani and controls the vast silver mines of the Sierra Morena",
+    "Hannibal married Imilce, a princess of Castulo, sealing a royal marriage alliance and economic bond",
+    "Hundreds of pounds of pure silver a day paid the enormous wages of Carthage's hundreds of thousands of mercenaries"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Castulo (castle_carthage_castulo) stands on the heights of the north bank of the upper Guadalquivir, against the southern slopes of the mineral-rich Sierra Morena. It is the most powerful fortified city of the Iberian Oretani, and it directly controls the ancient silver mine of Baebelo, the richest in the entire Mediterranean world. According to Pliny, this one mine alone required thousands of slaves to work it every day and yielded more than three hundred pounds of pure silver daily. Hannibal's father Hamilcar and Hannibal himself knew that this place was the lifeblood of the war, and Hannibal took Imilce, the daughter of Castulo's chieftain, as his wife, holding the silver mountain firmly through a sacred marriage. It was the endless flow of silver from Castulo that forged the war god's iron flood of Balearic slingers, Gallic swordsmen and Numidian cavalry.",
   "Variants": [
     {
       "Priority": 0,
+      "When": {
+        "Cultures": [
+          "aserai"
+        ]
+      },
+      "Content": "The mines of Castulo pour out the lifeblood of the empire. As long as the furnaces of the Sierra Morena burn day and night, General Hannibal can recruit the bravest mercenaries on any battlefield!"
+    },
+    {
+      "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Agrigentum Greek Sanctuary represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+      "Content": "The Barcid family traded a marriage for our silver mountain and our young men. Tens of thousands of tribal miners bleed and sweat in pitch-dark shafts, and all they get in return is a foreigner's coins."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Behind the stone towers of Agrigentum Greek Sanctuary, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
-    },
-    {
-      "Priority": 1,
-      "When": {
-        "Roles": [
-          "lord",
-          "notable"
-        ]
-      },
-      "Content": "Possession of Agrigentum Greek Sanctuary anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "The moment Scipio's army took Castulo, Hannibal's purse was tied shut for good. Without its silver mines, Carthage's mercenary army is nothing but loose sand!"
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "modern ore-dressing plant",
+    "dynamite mining",
+    "cyanide gold extraction",
+    "modern banking system"
+  ],
+  "Keywords": [
+    "Castulo",
+    "Sierra Morena silver mines",
+    "Imilce",
+    "Baebelo mine"
+  ]
 }

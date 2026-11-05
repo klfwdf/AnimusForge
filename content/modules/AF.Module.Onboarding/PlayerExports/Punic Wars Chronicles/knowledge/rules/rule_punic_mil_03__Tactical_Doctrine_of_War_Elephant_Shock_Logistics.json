@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_mil_03",
-  "Name": "Tactical Doctrine of War Elephant Shock Logistics",
-  "Keywords": [
-    "rule_punic_mil_03",
-    "Doctrine of War Elephant Shock Logistics",
-    "Combat Mastery War Elephant Shock Logistics",
-    "Tactical Formations War Elephant Shock Logistics"
-  ],
+  "Name": "The Spanish Broad-Bladed Short Sword: Close-Quarters Cutting and Thrusting and Its Ergonomics",
+  "Category": "military",
+  "Priority": 89,
   "RagShortTexts": [
-    "The tactical doctrine of War Elephant Shock Logistics governed battlefield formations and..."
+    "Rome adopted Iberian Celtic forging techniques to make the Spanish short sword",
+    "Its parallel double edges taper to a sharp leaf-shaped point, and at about sixty centimeters long it serves for both thrusting and cutting",
+    "In close combat, a heavy shield blow broke the enemy's guard, followed by a forehand short-sword thrust that left a fatal penetrating wound"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Early in the Second Punic War, after Roman soldiers saw the terrible wounds inflicted by the 'Spanish short sword' (Gladius Hispaniensis) carried by Iberian mercenaries, they quickly adopted it as standard issue for the whole army. The sword was made from fine high-carbon steel of the Toledo region, folded and forged in many layers. The blade was about sixty to sixty-five centimeters long, broad and thick, with a slight waisted curve and a leaf-shaped point as sharp as a dagger. In the crush of a packed, shoulder-to-shoulder melee, a longsword was easily blocked for lack of room to swing, whereas the Roman infantryman, carrying a huge, curved convex heavy shield (Scutum), used the lower edge of the shield or its iron boss (Umbo) to strike and knock the enemy off balance, and then, within half an arm's length, thrust with the short sword forehand at very high frequency into the enemy's belly, throat or inner thigh. A penetration of five centimeters was enough to kill, and it completely overpowered Celtic longsword infantry who relied on wide, sweeping cuts.",
   "Variants": [
     {
       "Priority": 0,
-      "When": null,
-      "Content": "The development of War Elephant Shock Logistics exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
-    },
-    {
-      "Priority": 1,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of War Elephant Shock Logistics became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "The short sword is the iron tooth with which the Roman legions conquer the world! Hold the great shield firm against the enemy, and the point needs only one push forward; even the mightiest barbarian giant will fall wailing, clutching his belly."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
+      "When": null,
+      "Content": "The Romans hide like tortoises behind their red wooden shields and jab wildly through the little gaps with their despicable iron points! They do not dare raise a great sword and cut openly like true warriors!"
+    },
+    {
+      "Priority": 0,
       "When": {
         "Roles": [
           "lord",
           "notable"
         ]
       },
-      "Content": "Mastery of War Elephant Shock Logistics separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "The rivers of the Sierra Morena tempered steel blades both hard and supple. We sold the swords to the Carthaginians, and now the Romans run rampant across the Mediterranean with the very same short swords."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "bayonet fighting",
+    "modern research on Damascus pattern steel",
+    "three-edged military bayonet",
+    "rifle-butt strike"
+  ],
+  "Keywords": [
+    "gladius hispaniensis",
+    "Spanish short sword",
+    "scutum and umbo",
+    "Roman sword fighting",
+    "Celtiberian steel"
+  ]
 }

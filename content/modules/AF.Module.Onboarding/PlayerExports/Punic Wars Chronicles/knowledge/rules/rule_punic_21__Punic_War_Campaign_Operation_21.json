@@ -1,42 +1,111 @@
 {
   "Id": "rule_punic_21",
-  "Name": "Punic War Campaign Operation 21",
-  "Keywords": [
-    "rule_punic_21",
-    "Punic Operation 21",
-    "Strategic Campaign 21",
-    "Mediterranean Theater 21"
+  "Name": "Naval Battle of the Ebro Mouth and the Struggle for the Western Mediterranean",
+  "Description": "In spring 217 BC, guided by Massaliot pilots, the Roman fleet surprised Hasdrubal's Carthaginian fleet at the mouth of the Ebro, sinking or capturing many quinqueremes and firmly establishing absolute Roman command of the sea along the Iberian coast.",
+  "Tags": [
+    "Naval battle of the Ebro",
+    "Gnaeus Scipio",
+    "Hasdrubal Barca",
+    "Quinqueremes",
+    "Massaliot alliance",
+    "Command of the sea"
   ],
+  "Category": "Military",
+  "DefaultPriority": 80,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 21 concerning Mediterranean operations during the Second Punic War."
+    "In spring 217 BC Roman warships ambushed forty Carthaginian quinqueremes at the mouth of the Ebro.",
+    "The superb seamanship of the allied Massaliot fleet helped the Roman fleet achieve surprise at sea.",
+    "This battle crushed the Carthaginian fleet and firmly established Roman command of the sea along the Iberian coast."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 21 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 21, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The glorious victory at the mouth of the Ebro utterly shattered Carthage's dreams at sea! Hasdrubal arrogantly led forty warships north along the coast, imagining he could advance by land and sea together. But with the scouting and guidance of the fast ships of our Massaliot allies, Scipio's thirty-five warships struck with the wind behind them, smashed the Carthaginian flagship and captured twenty-nine warships intact! From then on every bay of Iberia lay under the iron lock of the Roman navy!"
     },
     {
-      "Priority": 1,
+      "Priority": 85,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "It was a bitterly painful defeat at sea. Our sailors were slack and unprepared at the river mouth, and when the Roman fleet burst out of the sea mist our fleet could not even form a battle line; many sailors panicked, ran their ships aground and abandoned them. The loss of command of the sea directly cut off any chance of aiding Hannibal in Italy by water, and left the harbor of New Carthage always exposed to the shadow of a Roman surprise attack."
+    },
+    {
+      "Priority": 82,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "massalia"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 21 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The Massaliots' knowledge of the sea is far beyond anything the Romans can match! It was our city's pilots and scout ships that precisely located the creeks where the Carthaginians lay at anchor, and that is what made the complete victory at the mouth of the Ebro possible. So long as the maritime alliance of Massalia and Rome stands unbreakable, Phoenician pirates and warships will never cross a single step of the Ligurian Sea!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In spring 217 BC Gnaeus Scipio led a combined Roman and Massaliot fleet to surprise the Carthaginian navy commanded by Hasdrubal Barca at the mouth of the Ebro. Rome won a complete victory, capturing or destroying nearly thirty warships and taking full command of the sea along the eastern coast of Iberia, which forced Carthage to abandon its strategic plan of supporting Hannibal by sea."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Naval Battle of the Ebro Mouth and the Western Mediterranean",
+    "Battle of the Ebro River",
+    "Roman and Massaliot fleet",
+    "Hasdrubal Barca's fleet",
+    "Iberian command of the sea"
+  ]
 }

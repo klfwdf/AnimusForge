@@ -1,42 +1,109 @@
 {
   "Id": "rule_punic_29",
-  "Name": "Punic War Campaign Operation 29",
-  "Keywords": [
-    "rule_punic_29",
-    "Punic Operation 29",
-    "Strategic Campaign 29",
-    "Mediterranean Theater 29"
+  "Name": "Forced Crossing of the Rhone and the Earth-Covered Rafts for the Elephants",
+  "Description": "In autumn 218 BC Hannibal's army reached the turbulent Rhone; he cleverly sent a detachment upstream to cross and outflank the Gallic forces waiting in ambush, and laid giant earth-covered wooden rafts to carry thirty-seven huge African war elephants across the river.",
+  "Tags": [
+    "Battle of the Rhone",
+    "Hannibal",
+    "Elephants crossing the river",
+    "Gallic ambush",
+    "Wide flanking maneuver",
+    "Prelude to the expedition"
   ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 29 concerning Mediterranean operations during the Second Punic War."
+    "In autumn 218 BC Hannibal's army forced a crossing of the raging Rhone with coordinated tactics on water and land.",
+    "Giant wooden rafts covered with earth to look like solid ground carried thirty-seven frightened African war elephants safely across the great river.",
+    "Hanno's detachment, sent around upstream, set fires and struck from behind, completely shattering the attempt of the allied Gallic tribes guarding the bank to block the crossing."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 29 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 90,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
         "Roles": [
-          "soldier",
-          "warrior"
-        ]
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 29, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "The forced crossing of the Rhone fully displayed our commander Hannibal's brilliant combination of terrain and engineering! While tens of thousands of Gallic barbarians howled and roared on the far bank to block the crossing, Hanno's light cavalry had already floated across upstream on inflated hide bags and swung round behind the enemy to set fires! Even more marvelous were those thirty-seven giant elephants: the engineers anchored huge rafts with thick wooden stakes and covered them with a deep layer of earth and grass, so that the beasts believed they were still treading on solid ground and crossed the mighty river in safety!"
     },
     {
-      "Priority": 1,
+      "Priority": 88,
       "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the fleet of the consul Publius Scipio reached the mouth of the Rhone, he expected to pin the Carthaginians west of the river. But Hannibal, with unbelievable speed, completed the forced crossing of his whole army in just four days! By the time our scouting party clashed with the enemy's Numidian cavalry, Hannibal's huge force of foot and horse had long vanished in a cloud of dust, heading straight for the snow-covered passes of the Alps!"
+    },
+    {
+      "Priority": 80,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 29 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "The camp of the Gauls burst apart in black smoke! We thought the surging Rhone was enough to stop the boots of the foreigners, but suddenly the forest behind us went up in towering flames, and countless African horsemen swept into our backs like a whirlwind! Then floating land rose on the river, and monsters with huge noses and long tusks trod across the earth and stepped onto the bank; the warriors of the tribe broke completely in terror and scattered!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In autumn 218 BC Hannibal's expeditionary army met stubborn resistance at the Rhone from the Gallic Volcae, who held the river line. Hannibal sent a detachment to cross secretly upstream and strike the rear of the Gallic camp, while at the front he used giant earth-covered rafts disguised as solid ground to carry his whole army of foot and horse and thirty-seven war elephants across the river, completely opening the line of march to the Alps."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Forced Crossing of the Rhone and the Elephant Rafts",
+    "Hannibal crosses the Rhone",
+    "Earth-covered rafts for war elephants",
+    "Hanno's flanking detachment upstream",
+    "Volcae ambush at the Rhone"
+  ]
 }

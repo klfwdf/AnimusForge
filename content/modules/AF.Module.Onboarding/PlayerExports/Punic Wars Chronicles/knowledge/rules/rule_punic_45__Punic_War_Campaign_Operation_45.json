@@ -1,42 +1,108 @@
 {
   "Id": "rule_punic_45",
-  "Name": "Punic War Campaign Operation 45",
-  "Keywords": [
-    "rule_punic_45",
-    "Punic Operation 45",
-    "Strategic Campaign 45",
-    "Mediterranean Theater 45"
+  "Name": "Archimedes' Massed Catapult Batteries and the Graduated Crossfire Net",
+  "Description": "Archimedes placed catapults and ballistae all along the walls of Syracuse, graded by range, and pierced the walls with hidden arrow slits, creating a long-, medium- and short-range crossfire barrage with no blind spots, so that the enemy suffered devastating saturation fire whether a thousand paces away or right at the foot of the walls.",
+  "Tags": [
+    "Archimedes' catapults",
+    "Geometric range tables",
+    "Fire net with no blind spots",
+    "Hidden wall slits",
+    "Sambucas destroyed",
+    "Mechanical defense"
   ],
+  "Category": "Military",
+  "DefaultPriority": 82,
+  "IsActive": true,
   "RagShortTexts": [
-    "Strategic campaign doctrine 45 concerning Mediterranean operations during the Second Punic War."
+    "On the walls of Syracuse Archimedes deployed precise throwing engines of every size, large, medium and small, strictly according to mathematical gradations.",
+    "Heavy stone-throwers smashed the twin-ship bridges at long range, light ballistae covered medium and close range, and narrow hidden slits were cut through the walls.",
+    "Interwoven three-dimensional crossfire with no blind spots meant the Romans were struck by a storm of missiles whether sailing far off or hugging the dead ground at the wall."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
-      "Priority": 0,
-      "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 45 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
-    },
-    {
-      "Priority": 1,
+      "Priority": 92,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
-        ]
-      },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 45, keeping our shields locked and swords sharp against sudden enemy ambushes."
-    },
-    {
-      "Priority": 1,
-      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "greek"
+        ],
+        "KingdomIds": [
+          "syracuse"
+        ],
+        "SettlementIds": null,
         "Roles": [
           "lord",
-          "notable"
-        ]
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 45 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "Archimedes turned the whole wall of Syracuse into a precise geometric killing instrument! Working from his calculations of the parabola, he aimed giant catapults hurling ten-talent stones at enemy ships far out to sea; once the enemy had charged halfway in, medium torsion ballistae loosed dense volleys of heavy iron javelins; and most brilliant of all were the man-high narrow slits cut thickly through the foot of the wall. The Roman infantry crouching at the base of the wall thought they had reached the dead ground, yet out of those slits came row upon row of poisoned arrows and short scorpion bolts! Under his mathematics, not even a bird could have escaped the whole harbor!"
+    },
+    {
+      "Priority": 90,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Marcellus joked bitterly that our warships were like targets at a geometer's shooting practice! The moment a Roman 'sambuca' siege bridge was pushed into range, a stone ball weighing hundreds of pounds came screaming down from the walls like a thunderbolt, smashed straight through four decks and wrecked the bridge completely! And when we fought our way to the foot of the wall, thinking we could set up scaling ladders, a downpour of short arrows burst from countless small holes in the stone wall! Archimedes had measured every distance and every rock with perfect clarity, and a direct assault was nothing but suicide!"
+    },
+    {
+      "Priority": 75,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "If even a stake of wood no thicker than a finger poked up over the wall, every Roman grunt would scatter in terror with his arms over his head, screaming 'Archimedes is aiming his machines at us again!' Those stones landing on a deck could crush a warhorse to pulp, and a javelin could skewer three shields together and go clean through. In the end the general did not even dare approach the walls, and could only order a pull-back of ten miles to dig long trenches for a drawn-out blockade."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For the defense of Syracuse, Archimedes built a layered system of artillery positions strictly graded by geometry and range. Through the overlapping crossfire of large, medium and small torsion catapults and ballistae, combined with hidden slits in the walls to shoot enemies in the dead ground, he kept the main Roman land and sea forces outside effective striking range and badly damaged and destroyed the 'sambucas' and other siege engines the Romans had so carefully built."
     }
   ],
-  "TextMappings": []
+  "TextMappings": [],
+  "Keywords": [
+    "Archimedes catapults",
+    "Syracuse artillery by range",
+    "scorpion arrow slits in the wall",
+    "destruction of the sambucas"
+  ]
 }

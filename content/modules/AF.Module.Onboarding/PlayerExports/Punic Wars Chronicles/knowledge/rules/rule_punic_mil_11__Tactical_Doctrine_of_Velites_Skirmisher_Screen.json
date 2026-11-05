@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_mil_11",
-  "Name": "Tactical Doctrine of Velites Skirmisher Screen",
-  "Keywords": [
-    "rule_punic_mil_11",
-    "Doctrine of Velites Skirmisher Screen",
-    "Combat Mastery Velites Skirmisher Screen",
-    "Tactical Formations Velites Skirmisher Screen"
-  ],
+  "Name": "The Judicial Power of the Carthaginian Court of the Hundred and Four and the Constitutional Powers of the Suffetes",
+  "Category": "politics",
+  "Priority": 87,
   "RagShortTexts": [
-    "The tactical doctrine of Velites Skirmisher Screen governed battlefield formations and..."
+    "The highest civil magistrates of Carthage were the two suffetes elected each year",
+    "The Court of the Hundred and Four, made up of one hundred and four aristocratic judges for life, monopolized judicial trials",
+    "The appointment and dismissal of overseas commanders and their accountability for defeats were all controlled by the court, leaving no strategic independence"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Classical scholars regarded the constitution of the city of Carthage as a mixed constitution of commercial aristocratic oligarchy. The highest everyday executive and civil heads were the two 'suffetes' (Suffetes, meaning judges) elected each year by the assembly of aristocratic citizens; their functions were similar to those of Roman consuls, but they had no right to lead troops in war directly. The body that actually monopolized the city's supreme judicial power over life and death was the 'Court of the Hundred and Four' (Court of the Hundred and Four), selected from among the elders. It was originally set up to prevent generals at the head of armies from seizing power in a military coup, and every commander returning home from the front had to submit to the court's extremely harsh audit of his campaign accounts and to military trial. In the Punic Wars, however, the court was controlled by the conservative merchant faction, and its harsh scrutiny of overseas generals, who were constantly threatened with crucifixion, greatly stifled the independence of commanders at the front.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The development of Velites Skirmisher Screen exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+      "Content": "The one hundred and four venerable judges are the Republic's wall of bronze and iron against the ambitions of tyrants! If generals commanding great armies were not closely supervised, Carthage would long ago have become the warlord fief of Mago or Hannibal!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of Velites Skirmisher Screen became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "Those old fools sitting in the hall of Salammbo have turned the law code into a noose for persecuting loyal men! The soldiers at the front trade their blood for land, while they are pondering which hero to nail to a stake after a defeat!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Mastery of Velites Skirmisher Screen separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "The suffetes of Carthage are mere puppets, and the Court of the Hundred and Four cares only for its ledgers of silver coins. How can a city ruled by peddlers and pettifoggers stand against the iron-hard Roman legions?"
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Daliyuan supreme court",
+    "Supreme People's Court",
+    "bourgeois constitutionalism",
+    "modern judicial independence"
+  ],
+  "Keywords": [
+    "suffetes",
+    "Court of the Hundred and Four",
+    "Carthaginian constitution",
+    "crucifixion of generals",
+    "Carthaginian oligarchy"
+  ]
 }

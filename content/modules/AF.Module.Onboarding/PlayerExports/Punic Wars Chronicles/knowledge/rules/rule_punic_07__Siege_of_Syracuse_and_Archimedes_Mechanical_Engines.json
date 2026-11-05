@@ -1,42 +1,40 @@
 {
   "Id": "rule_punic_07",
-  "Name": "Siege of Syracuse and Archimedes' Mechanical Engines",
   "Keywords": [
-    "rule_punic_07",
-    "Siege of Syracuse",
-    "Archimedes Engines",
+    "Great Siege of Syracuse and the Mechanical Marvels of Archimedes",
     "Claw of Archimedes",
-    "Marcellus Syracuse Assault"
+    "Archimedes' catapults",
+    "Marcellus besieges Syracuse",
+    "Death of Archimedes",
+    "Do not disturb my circles"
   ],
   "RagShortTexts": [
-    "From 214 to 212 BC, Archimedes defended Syracuse with giant cranes and catapults against..."
+    "During the siege of Syracuse from 214 to 212 BC, Archimedes thwarted Rome's land and sea forces with giant catapults and lifting iron claws, and died tragically when the city was stormed."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "Following the death of King Hiero II, Syracuse allied with Carthage, prompting Consul Marcus Claudius Marcellus to lay siege by land and sea. For two years, the legendary mathematician Archimedes held the Roman fleets at bay with revolutionary mechanical defenses: massive shore cranes ('The Claw') that lifted Roman quinqueremes by the bow and dashed them against rocks, coupled with deadly ranged catapult arrays. Marcellus finally breached the citadel during the feast of Artemis, and Archimedes was slain by a soldier."
+      "Content": "After the wise ruler Hiero II of Syracuse died in 215 BC, his successor Hieronymus tore up the alliance and went over to Carthage. In 214 BC Marcellus, \"the Sword of Rome,\" led a vast army and fleet to encircle Syracuse. In this protracted siege the great scientist Archimedes, then past seventy, rewrote the history of siege defense with the power of one mortal man. He built heavy torsion catapults carefully matched for long and short ranges and rapid-firing bolt throwers that battered Roman warships at a distance. From the walls there also reached out a terrifying giant lifting arm, the \"Claw of Archimedes,\" which seized the prows of Roman ships that came close, hoisted them high with levers and pulleys and then suddenly let go, so that the ships capsized straight down and sank. The Roman soldiers were so terrified that at one point, at the sight of a rope or a beam poking over the wall, they cried out and fled. With assaults failing, Marcellus had to turn to a long blockade to starve the city. In 212 BC the Roman legions slipped in and took the city while the defenders were lax during a festival of Artemis. Marcellus strictly ordered that Archimedes not be harmed, but a common Roman soldier who did not recognize the great master burst into his house. Archimedes, absorbed in geometric figures drawn in the sand, rebuked him: \"Do not disturb my circles.\" The enraged soldier drew his sword and killed him. The fall of Archimedes marked the tragic end of the golden age of ancient Greek science."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "You couldn't row near those sea walls! Giant iron grappling hooks swung out from the towers, seized our war galley by the prow, hoisted it clean out of the water, and slammed it upside down into the surf!"
+      "Content": "To the soldiers of the Roman legions, it seemed as if a geometric demigod wielding the magic of geometry was perched on the walls of Syracuse. Marcellus's elite marines had planned to storm the walls with giant floating siege ladders, the \"sambuca\" (Sambuca), carried on paired warships lashed together, only to see them smashed to splinters by hundred-pound stones hurled by Archimedes, while ships were plucked into the air by uncanny iron claws and dashed to pieces. Even the ever-victorious Marcellus could only joke bitterly: \"Our ships are nothing but the wooden ladles this geometrical giant uses to scoop up seawater for his bath.\" Although Archimedes' death at the hands of rampaging soldiers grieved Marcellus deeply, and he gave him a solemn public funeral, the capture of Syracuse at last uprooted Carthage's deadly bridgehead in Sicily and recovered the most important grain-producing and shipping center of the Mediterranean."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "greek"
         ]
       },
-      "Content": "A single geometer's mind held Roman legions and fleets at bay for two years. Marcellus wept at the city's destruction, for true nobility respects genius even in an enemy."
+      "Content": "The fall of Syracuse and the death of Archimedes are an indelible, eternal national grief for the whole Hellenistic world! With unrivaled mathematics, the mechanics of the lever and marvelous machines, Archimedes proved the boundless power of civilized wisdom to the barbarous and arrogant Roman conquerors. For two years an aged man, with his mind alone, held tens of thousands of iron-clad Roman legionaries outside the city gates, unable to advance a single step. Yet a traitor's betrayal and the crude, savage short sword of a common Roman soldier finally destroyed this beacon of science that had lit the Mediterranean for centuries. The tomb of Archimedes, carved with the figure of a sphere inscribed in a cylinder, will forever accuse the Roman legions of brutally trampling the wisdom of classical civilization!"
     }
   ],
   "TextMappings": []

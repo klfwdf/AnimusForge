@@ -1,42 +1,52 @@
 {
   "Id": "rule_punic_mil_09",
-  "Name": "Tactical Doctrine of Celtiberian Falcata Infantry",
-  "Keywords": [
-    "rule_punic_mil_09",
-    "Doctrine of Celtiberian Falcata Infantry",
-    "Combat Mastery Celtiberian Falcata Infantry",
-    "Tactical Formations Celtiberian Falcata Infantry"
-  ],
+  "Name": "The Final Decree of the Roman Senate and the Constitutional Law of Emergency Rule",
+  "Category": "politics",
+  "Priority": 89,
   "RagShortTexts": [
-    "The tactical doctrine of Celtiberian Falcata Infantry governed battlefield formations and..."
+    "When the state was in extreme danger, the Roman Senate passed the final decree of the Senate",
+    "The supreme order declared that the consuls should take action to ensure the Republic suffered no harm",
+    "It temporarily suspended the tribunes' protection of the person of plebeians and gave the consuls unlimited military discretion"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "The 'final decree of the Senate' (Senatus Consultum Ultimum) was the ultimate emergency martial-law measure of the Roman Republic's constitutional system at moments of life and death. When Hannibal approached the city of Rome or widespread revolts among the allies spread panic through the city, the Senate could constitutionally convene an emergency closed session and formally pass the supreme decree: 'Let the consuls see to it that the Republic suffers no harm' (Videant consules ne quid res publica detrimenti capiat). Once the decree was issued, ordinary citizen rights inside the city of Rome, the tribunes' veto protecting the person, and the lengthy trial procedures of the popular assemblies were temporarily suspended, and the consuls automatically gained the supreme military emergency power to levy citizen troops within the city, place the city defenses under martial law, execute traitors on the spot and dispose of all public and private property. It reflected the constitutional wisdom of Rome in yielding the flexibility of law to the survival of the state in a crisis.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The development of Celtiberian Falcata Infantry exemplified the brutal pragmatism of ancient Mediterranean warfare. By coordinating specialized arms, standardized training, and flexible tactical subunits, commanders maximized shock power while adapting rapidly to changing battlefield crises."
+      "Content": "The final decree is not tyranny but the Republic's strong shield at the edge of the abyss! When the barbarian sword hangs over our heads, only by entrusting the power of life and death to the consuls can the state find life in a hopeless situation."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
         "Roles": [
           "soldier",
           "warrior"
         ]
       },
-      "Content": "Drill after drill in the blazing sun until the movements of Celtiberian Falcata Infantry became second nature! In the press of shield-to-shield combat, your training is the only thing keeping you breathing."
+      "Content": "This is a double-edged sword in the hands of the aristocratic Senate. To resist Hannibal we give up the freedoms of the plebeians for now, but once the war is over, the reins of the constitution must never fall into the hands of a single tyrant!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Mastery of Celtiberian Falcata Infantry separated victorious commanders from slaughtered fools. Rigorous doctrine and unrelenting discipline transform a mob of armed men into an invincible instrument of state will."
+      "Content": "Rome, which talks endlessly of its freedom and rule of law, will abolish its own laws in a single day the moment it feels fear, and becomes no different from an autocratic dictator."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Weimar Constitution emergency law",
+    "presidential executive order",
+    "modern martial-law command",
+    "National Security Council"
+  ],
+  "Keywords": [
+    "senatus consultum ultimum",
+    "final decree of the Senate",
+    "Roman emergency powers",
+    "videant consules",
+    "Roman martial law"
+  ]
 }

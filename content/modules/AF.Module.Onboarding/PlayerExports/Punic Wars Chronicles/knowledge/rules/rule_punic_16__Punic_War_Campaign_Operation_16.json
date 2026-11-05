@@ -1,41 +1,40 @@
 {
   "Id": "rule_punic_16",
-  "Name": "Punic War Campaign Operation 16",
   "Keywords": [
-    "rule_punic_16",
-    "Punic Operation 16",
-    "Strategic Campaign 16",
-    "Mediterranean Theater 16"
+    "Phoenician Trade Network and the Sacred Oath at the Temple of Melqart",
+    "Sacred oath at the temple of Melqart",
+    "Worship of Baal Hammon and Tanit",
+    "Phoenician maritime trade",
+    "Controversy over human sacrifice at the Tophet",
+    "Hannibal's oath at age nine"
   ],
   "RagShortTexts": [
-    "Strategic campaign doctrine 16 concerning Mediterranean operations during the Second Punic War."
+    "Carthage linked the Mediterranean through the Phoenician sea-trade network, and the sacred oath at the temple of Melqart and the worship of Tanit were the source of the Barcid family's spiritual strength."
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "During the Second Punic War, military and naval maneuvers around operation 16 shaped the strategic contest between Rome and Carthage, dictating troop deployments, supply lines, and territorial alliances across the Mediterranean basin."
+      "Content": "Carthaginian civilization descended from the ancient Phoenician mother city of Tyre, and its prosperity was built on an early, far-reaching maritime trade network woven from British tin, the silver of Gadir (Cadiz), Sicilian grain and the murex purple dye of the Levant. Its religion rested on the chief god Baal Hammon, the protecting goddess Tanit and Melqart, guardian of seafarers. Ancient historical accounts record that in times of extreme national peril the Carthaginians performed extremely harsh burnt-offering rites in the sacred \"Tophet\" sanctuary to appease the wrath of the gods (later often widely portrayed by Rome and other enemies as the cruel sacrifice of young children). In 237 BC, before setting out on his expedition to Iberia, Hamilcar Barca brought his nine-year-old eldest son Hannibal before the altar of the ancient temple of Melqart at Gadir, had the boy lay his right hand in the blood of the sacrificial victim, and made him swear a sacred blood oath never in all his life to be a friend of Rome. This absolute reverence for the gods and for the family's mission became the inexhaustible source of spirit that kept Hannibal fighting to the very last through seventeen long years of hardship."
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "KingdomIds": [
+          "aserai"
         ]
       },
-      "Content": "We marched through dust and mud under strict centurion orders for operation 16, keeping our shields locked and swords sharp against sudden enemy ambushes."
+      "Content": "In the hearts of Carthaginian sailors and nobles, the god Melqart is like the pole star in the night, guarding the Phoenician long ships through the towering waves of the Strait of Gibraltar and spreading the flame of civilization and rich trade to every harbor of the West. The sacred oath Hannibal swore before the altar was not barbaric hatred but a vow to defend the freedom of the seas that his ancestors had opened up with their blood over many centuries! When, on the eve of his expedition, Hannibal sacrificed to Melqart a second time at the temple of Gadir, the god sent him in a dream the vision of a giant serpent destroying everything in its path, a sign that this was a god-given blade of vengeance, and that anyone who defied Melqart's oracle and shrank from battle in fear would surely be forsaken by the god!"
     },
     {
-      "Priority": 1,
+      "Priority": 2,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "KingdomIds": [
+          "empire_s"
         ]
       },
-      "Content": "The Senate and military commanders weighed the logistical balance of operation 16 with utmost gravity, recognizing that single miscalculations could jeopardize the Republic's sovereignty."
+      "Content": "In the eyes of Roman citizens devoted to piety (Pietas), the religion of the Carthaginians is a barbarous heresy that sickens the gods. They cast cold-blooded idols of gold and bronze, and in the dark Tophet sanctuary they threw their own innocent children into the flames of bronze furnaces as offerings to the bloodthirsty demon Moloch in exchange for filthy gold and silver. The poisonous oath Hannibal swore at the altar at the age of nine proves that this people carries in its very bones a violent, bloodthirsty, demonic nature that defies the laws of nature. The Roman legions draw their swords in the name of Mars, the god of war, not only to defend their city but to cleanse this Mediterranean land polluted by evil altars!"
     }
   ],
   "TextMappings": []

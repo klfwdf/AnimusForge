@@ -1,42 +1,54 @@
 {
   "Id": "rule_punic_city_05",
-  "Name": "Metropolis of Tarentum Harbor Citadel",
-  "Keywords": [
-    "rule_punic_city_05",
-    "Urban Center Tarentum Harbor Citadel",
-    "Citadel of Tarentum Harbor Citadel",
-    "Harbor of Tarentum Harbor Citadel"
-  ],
+  "Name": "Capua, Capital of Campania: a Luxurious City and Hotbed of Rebellion",
+  "Category": "geography",
+  "Priority": 87,
   "RagShortTexts": [
-    "The fortified urban center of Tarentum Harbor Citadel served as a vital strategic, naval,..."
+    "Capua is the second richest great city of the Italian peninsula after Rome, famed for its luxurious goods",
+    "After Cannae it changed sides and opened its gates to Hannibal's army, scheming to share mastery of the Italian peninsula",
+    "Rome besieged it cruelly behind a double ditch, and after the city fell it lost its self-government and became subject territory"
   ],
   "SemanticPrototypes": [],
+  "BaseText": "Capua (town_rome_neapolis, the area around modern Capua) lies in the heart of the volcanic plain of Campania, so fertile it seems to run with oil, and was the most prosperous great city of classical Italy after Rome and Syracuse. The city had a magnificent amphitheater and luxurious perfume and bronze workshops, and its goods were extremely plentiful. In 216 BC, after Cannae, Capua's ambitious nobles broke their treaty of alliance with Rome and opened the gates to Hannibal, even arrogantly demanding that after the war Capuan magistrates should take turns ruling Italy. Hannibal's army wintered and rested here, and it is said that 'the luxury of Capua dulled the blades of warriors of a hundred battles'. In 211 BC Fulvius and Appius besieged Capua with strong walls and ditches tens of miles long. After hunger forced it to surrender, Rome slaughtered the rebel senators and reduced the whole city to directly ruled territory without self-government.",
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "The ancient metropolis of Tarentum Harbor Citadel represented a paramount strongpoint in the Mediterranean theater. Enclosed by massive stone ramparts and commanding vital maritime or overland transit routes, its markets, granaries, and harbors sustained thousands of citizens and garrisoned legions."
+      "Content": "Capua's wealth far surpasses that of barbarous Rome, and we should have shared the Italian peninsula with Hannibal! Who could have known that the ditches of the Roman legions would strangle the life out of the whole city like chains."
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "soldier",
-          "warrior"
+        "Cultures": [
+          "empire"
         ]
       },
-      "Content": "Behind the stone towers of Tarentum Harbor Citadel, sentries watched the horizon day and night, checking every grain wagon and suspicious merchant at the iron-studded city gates."
+      "Content": "City of traitors who broke their treaty! They led Hannibal into the plain of Campania, and today the axes of the Roman consuls are the most just sentence for those who break faith!"
     },
     {
-      "Priority": 1,
+      "Priority": 0,
       "When": {
-        "Roles": [
-          "lord",
-          "notable"
+        "Cultures": [
+          "aserai"
         ]
       },
-      "Content": "Possession of Tarentum Harbor Citadel anchored regional sovereignty. Its revenues, dockyards, and civic loyalty provided the indispensable foundation for maintaining standing armies in the field."
+      "Content": "Capua's soft bed made our soldiers long for sweet wine and silken couches, but even more deadly was that we could not break through the Romans' double wall to rescue our ally."
     }
   ],
-  "TextMappings": []
+  "ForbiddenKeywords": [
+    "Kingdom of Naples",
+    "Bourbon dynasty",
+    "Pizza",
+    "Modern Italian unification"
+  ],
+  "Keywords": [
+    "Capua",
+    "Campania",
+    "defection of Capua",
+    "siege of Capua 211 BC",
+    "luxury of Capua",
+    "Hannibal winter quarters",
+    "Fulvius",
+    "Appius Claudius"
+  ]
 }
