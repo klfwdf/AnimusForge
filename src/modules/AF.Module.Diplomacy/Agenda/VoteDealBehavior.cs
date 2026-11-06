@@ -1812,18 +1812,10 @@ namespace AnimusForge
 					return false;
 				}
 
-				record.CounterpartCreated = true;
-				float delayDays = 3f;
+				// Counterparts bypass AddDecision, so apply the same schedule and
+				// player notification contract as a normally queued kingdom agenda.
+				float delayDays = GetAgendaDelayDays(kingdom);
 				SetDecisionTriggerTime(decision, delayDays);
-				try
-				{
-					CampaignEventDispatcher.Instance.OnKingdomDecisionAdded(decision, false);
-				}
-				catch (Exception eventEx)
-				{
-					Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart OnKingdomDecisionAdded failed: {eventEx.Message}");
-				}
-
 				if (!unresolved.Contains(decision))
 				{
 					unresolved.Add(decision);
@@ -1834,7 +1826,18 @@ namespace AnimusForge
 					return false;
 				}
 
+				record.CounterpartCreated = true;
 				RegisterAgendaDelaySnapshot(decision, kingdom, delayDays);
+				// Listeners may inspect or display the agenda synchronously.
+				// Publish only after it is present with its final deadline.
+				try
+				{
+					CampaignEventDispatcher.Instance.OnKingdomDecisionAdded(decision, IsPlayerInvolvedInDecision(decision));
+				}
+				catch (Exception eventEx)
+				{
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart OnKingdomDecisionAdded failed: {eventEx.Message}");
+				}
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Queued counterpart agenda directly: id={record.RecordId} kingdom={kingdom.StringId} decision={GetSafeDecisionTitle(decision)}");
 				return true;
 			}
@@ -1845,6 +1848,11 @@ namespace AnimusForge
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Queue counterpart agenda failed: {ex.Message}");
 				return false;
 			}
+		}
+
+		private static float GetAgendaDelayDays(Kingdom kingdom)
+		{
+			return kingdom != null && kingdom == Clan.PlayerClan?.Kingdom ? 21f : 3f;
 		}
 
 		private static void SetDecisionTriggerTime(KingdomDecision decision, float delayDays)
@@ -3481,7 +3489,7 @@ namespace AnimusForge
 					return;
 				}
 				if (kingdom == null) return;
-				float delayDays = (kingdom == Clan.PlayerClan?.Kingdom) ? 21f : 3f;
+				float delayDays = GetAgendaDelayDays(kingdom);
 				RegisterAgendaDelaySnapshot(kingdomDecision, kingdom, delayDays);
 				behavior?.TryPublishPendingAgendaMapNotifications();
 			}
