@@ -147,6 +147,8 @@ internal static class Program
         { try { CountryAdmissionReplay.Run(); Console.WriteLine("PASS country admission assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--event-convergence"))
         { try { EventConvergenceReplay.Run(); Console.WriteLine("PASS convergence assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--silence-load"))
+        { try { EventConvergenceReplay.SilenceLoad(); WorldProfileReplay.Run(); PersistenceSyncReplay.Run(); Console.WriteLine("PASS silence load assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if(args.Contains("--player-opening-model"))
         { try { MaterialCountryThirdReplay.PlayerOpeningModel();return 0; } catch(Exception ex){Console.Error.WriteLine(ex);return 1;} }
         var openingIncident = args.FirstOrDefault(x=>x.StartsWith("--player-opening-incident=",StringComparison.Ordinal));

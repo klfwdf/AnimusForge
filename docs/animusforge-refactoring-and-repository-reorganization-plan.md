@@ -1,3 +1,24 @@
+<a id="diplomacy-silence-load-20261106"></a>
+## 2026-11-06 外交读档超时队列恢复修复
+
+LOCAL_VERIFIED / DUAL_BUILD_PASS / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED。用户明确要求先修复 Logs (16) 排查发现的读档超时队列丢失。工作区 E:/Mount-Blade-Bannerlord-AnimusForge-mod-main，main；基线 3111511d14e24929f68268de3dec739d2a029a61，本地空检查点 7f5f90882。本条与生产修复同提交；其余原有未提交文档和未跟踪资料保留，未纳入本任务提交。
+
+根因：Loaded/Session 原先先 NormalizeStorage 恢复玩家等待索引，再 ResetTransientRuntime 清空索引；持久等待仍阻止事件结束。现改为先清理上个会话，再归一化/恢复并核对工作项。等待索引在既有存档归一化边界重新建立，仅从已发布公文的 ActualPlayerNoticeHour 补全缺失的 NotifiedHour；保留已调整的期限，不以普通通知布尔值推断展示时间。已回复、已有结束公文、不再需要回答或被旧通知迁移抑制的记录不生成超时任务。既有 72 小时规则、关闭期间暂停、任务身份与重复读档去重保持。
+
+性能/范围：复用原有存档归一化循环，只重建活跃事件等待索引；不增加 Tick 全量扫描、文件 IO、反射或后台游戏对象访问。不新增存档字段、键、版本或 Prompt/UI 文案；不改变玩家公文、执行结果或已完成状态。未操作玩家 .sav 文件；已卡记录只在真实通知时间有证据时补计时。
+
+| 当前源码证据（本条同提交） | owner / 实际消费与覆盖 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLifecycleApplication.cs:11-28` | `Run`，Loaded/Session 真实生命周期；Reset 在 NormalizeStorage 前，新游戏分支保持 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PlayerEvents.cs:29-58,820-869` | `IndexPlayerWait` / `RestorePlayerSilenceSchedule` / `NormalizePlayerEventState`，恢复索引、证据补时、完成记录排除；真实超时消费沿用 `ProcessDuePlayerSilence` |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/PlayerSilenceLoadReplay.cs:17-91` | JSON 往返、真实 Loaded/Session、通知与超时调度；10 种情形和重复读档；游戏世界/传输使用现有受控叶端口 |
+
+验证：临时隔离 runner 链接真实产品源码，`--silence-load` PASS（66 断言，含 WorldProfile 生命周期和 PersistenceSync）；`--event-convergence` PASS（247 断言，含该回归）。将两个受影响生产文件换为检查点版本的独立 baseline runner，在同一测试的 noticed 场景失败：RequiresAnswer=true、Jobs=[]，证明旧代码丢失超时安排。修复后验证读档前/后通知、旧记录缺时、调整后期限保留、未通知/已回答/已结束/撤回/迁移抑制、关闭期间暂停及任务不重复。
+
+沿用原 `scripts/build/build_single_module.ps1 -ProjectRoot <当前仓库> -BannerlordRoot "E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Bannerlord14ReferenceDir <当前仓库>/.tmp/build_check/1.4 -WorkshopContentDir E:/SteamLibrary/steamapps/workshop/content/261550 -HarmonyCorePath <WorkshopContentDir>/2859188632/bin/Win64_Shipping_Client/0Harmony.dll -Configuration Debug`，不带 Stage/Deploy。退出码 0；1.3.15.110062 / 1.4.6.115628 两实现各 411 警告、0 错误，Bootstrap 2 警告、0 错误；双 Coup seam / memory port / registration smoke 通过。警告数量与既有构建一致，含 NuGet 漏洞索引不可达。
+
+产物位于 `bin/Debug/single_module_artifacts/`；SHA256：1.3 `201024f7ba0675084a5ada69dc27491fecc0f9ca236553d93f9091f25574d1f4`；1.4 `9e715184f0362739f1274e3f13555e9253c015dbce5225bebf6631d21c7fcd18`；Bootstrap `235d2f239842025b5ad791eb99b0bf46f5c4c34ea865fddff63ba5beb27c174b`。临时隔离项目、对照源码、日志在交付前清理，正式构建产物保留。未部署、打包、push、启动游戏、调用真实模型或验证该玩家 .sav；不能将离线检查当作实机验收。回滚使用本任务提交的定向逆提交，不回滚其他作者改动。
+
 <a id="camp-pose-roast-speech-deploy-20261105"></a>
 ## 2026-11-05 连续坐姿、烤架食物与发言卡顿修复已部署
 

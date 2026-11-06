@@ -13,6 +13,8 @@ internal static partial class EventConvergenceReplay
         internal int Tendency = 50, Draw = -1, Draws;
         internal readonly List<string> Logs = new();
         internal readonly LiveDiplomacyFixReplay.Prestige Standing = new();
+        public override IWorldDiplomacyStorageNormalizationSource StorageNormalizationSource() => new PersistenceSyncReplay.NormSource();
+        public override IWorldDiplomacyCanonicalHistoryMigrationSource CanonicalHistoryMigrationSource() => new PersistenceSyncReplay.MigrationSource();
         public int WarTendency() => Tendency;
         public int DrawEndingRoute(int max) { Draws++; return Draw < 0 ? max - 1 : Draw % max; }
         public override void Log(string text) => Logs.Add(text);
@@ -74,6 +76,7 @@ internal static partial class EventConvergenceReplay
     { foreach (var j in o.CurrentStorage.Jobs.Where(x => x.AuthorKingdomId == author && x.Kind == "generate").ToList()) o.RemoveJob(j.JobId); }
     internal static void Run()
     {
+        SilenceLoad();
         PlayerThreatReplyRepair();
         WithdrawnThreatAuthor(false); WithdrawnThreatAuthor(true);
         Dependencies(); ExecutionRecovery(); ExecutionRecovery(true); RecoveryGuards();
