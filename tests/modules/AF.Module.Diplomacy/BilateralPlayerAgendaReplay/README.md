@@ -3,7 +3,7 @@
 Run from the repository with a new output directory:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tests/modules/AF.Module.Diplomacy/BilateralPlayerAgendaReplay/run.ps1 -OutputDir artifacts/bilateral-player-agenda-replay -BaselineRevision 6d3994f77
+powershell -NoProfile -ExecutionPolicy Bypass -File tests/modules/AF.Module.Diplomacy/BilateralPlayerAgendaReplay/run.ps1 -OutputDir artifacts/bilateral-player-agenda-replay -BaselineRevision 31c3eee34
 ```
 
 The launcher copies the actual queue, timing, participant detection, snapshot,
