@@ -8,7 +8,7 @@ using System.Linq;
 // keep legacy propagation snapshots behind the validation gate.
 internal static class PersistenceSyncReplay
 {
-    private sealed class NormSource : IWorldDiplomacyStorageNormalizationSource
+    internal sealed class NormSource : IWorldDiplomacyStorageNormalizationSource
     {
         internal readonly List<string> Events = new();
         internal int Day = 42;
@@ -63,7 +63,7 @@ internal static class PersistenceSyncReplay
         public void Log(string message) => Events.Add("log:" + message);
     }
 
-    private sealed class MigrationSource : IWorldDiplomacyCanonicalHistoryMigrationSource
+    internal sealed class MigrationSource : IWorldDiplomacyCanonicalHistoryMigrationSource
     {
         public bool HasCampaignWorld => false;
         public int CurrentDay => 42;

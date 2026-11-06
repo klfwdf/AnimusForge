@@ -79,8 +79,8 @@ internal static class WorldProfileReplay
             WorldDiplomacyLifecycleApplication.Run(lifecycle, orchestration, ref source);
             string[] expected = lifecycle == WorldDiplomacyLifecycleEvent.NewGame
                 ? new[] { "ResetStorageForNewGame", "EnsureScheduleInitialized", "reset:new-game" }
-                : new[] { "NormalizeStorage", "RecoverPlayerCourtReceiptsFromKnowledge",
-                    "EnsureScheduleInitialized", lifecycle == WorldDiplomacyLifecycleEvent.Loaded ? "reset:game-loaded" : "reset:session-launched", "ReconcileActiveDiplomacyAfterLoad" };
+                : new[] { lifecycle == WorldDiplomacyLifecycleEvent.Loaded ? "reset:game-loaded" : "reset:session-launched",
+                    "NormalizeStorage", "RecoverPlayerCourtReceiptsFromKnowledge", "EnsureScheduleInitialized", "ReconcileActiveDiplomacyAfterLoad" };
             Test.True(orchestration.Calls.SequenceEqual(expected), "Application owns complete lifecycle order: " + lifecycle);
         }
     }

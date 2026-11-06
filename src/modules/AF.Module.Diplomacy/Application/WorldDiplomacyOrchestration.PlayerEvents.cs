@@ -31,8 +31,29 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (ResolveDocument(wait.SourceDocumentId)?.LegacyNoticeSuppressed == true)
             wait.RequiresAnswer = false;
         _waitingByDocument[wait.SourceDocumentId] = new(round, wait);
-        if (wait.NotifiedHour >= 0 && wait.RequiresAnswer && string.IsNullOrEmpty(wait.AnswerDocumentId))
+        if (wait.NotifiedHour >= 0 && wait.RequiresAnswer && string.IsNullOrEmpty(wait.AnswerDocumentId)
+            && string.IsNullOrEmpty(wait.ClosureDocumentId))
             EnqueueSilenceDeadline(round.RoundId, wait.SourceDocumentId, wait.NotifiedHour + 72);
+    }
+    private void RestorePlayerSilenceSchedule()
+    {
+        // Load/reset boundary only: saved obligations survive transient queue resets.
+        _silenceDeadlines.Clear(); _silenceTicketIds.Clear(); _waitingByDocument.Clear();
+        foreach (var round in GetLiveRounds().Where(DiplomacyEventRules.IsEvent))
+            foreach (var wait in round.PlayerNegotiationWaits)
+            {
+                if (wait.NotifiedHour < 0 && wait.RequiresAnswer && string.IsNullOrEmpty(wait.AnswerDocumentId)
+                    && string.IsNullOrEmpty(wait.ClosureDocumentId))
+                {
+                    var document = ResolveDocument(wait.SourceDocumentId);
+                    // Older sessions could display the notice after losing the wait index.
+                    // Only an actual display timestamp repairs it; preserve adjusted deadlines.
+                    if (document?.IsReadyForPublication == true && !document.LegacyNoticeSuppressed
+                        && document.ActualPlayerNoticeHour >= 0)
+                        wait.NotifiedHour = document.ActualPlayerNoticeHour;
+                }
+                IndexPlayerWait(round, wait);
+            }
     }
     private void EnqueueSilenceDeadline(string roundId, string sourceId, double due)
     {
@@ -844,9 +865,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             { document.FormalNoticeShown = false; document.IsNotified = false; }
             Storage.PlayerDiplomacySchemaVersion = 1;
         }
-        _waitingByDocument.Clear();
-        foreach (var round in GetLiveRounds().Where(DiplomacyEventRules.IsEvent))
-            foreach (var wait in round.PlayerNegotiationWaits) IndexPlayerWait(round, wait);
+        RestorePlayerSilenceSchedule();
     }
 
     private void MaintainPlayerAuthority()

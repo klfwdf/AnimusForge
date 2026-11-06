@@ -13,6 +13,8 @@ internal static partial class EventConvergenceReplay
         internal int Tendency = 50, Draw = -1, Draws;
         internal readonly List<string> Logs = new();
         internal readonly LiveDiplomacyFixReplay.Prestige Standing = new();
+        public override IWorldDiplomacyStorageNormalizationSource StorageNormalizationSource() => new PersistenceSyncReplay.NormSource();
+        public override IWorldDiplomacyCanonicalHistoryMigrationSource CanonicalHistoryMigrationSource() => new PersistenceSyncReplay.MigrationSource();
         public int WarTendency() => Tendency;
         public int DrawEndingRoute(int max) { Draws++; return Draw < 0 ? max - 1 : Draw % max; }
         public override void Log(string text) => Logs.Add(text);
@@ -74,6 +76,8 @@ internal static partial class EventConvergenceReplay
     { foreach (var j in o.CurrentStorage.Jobs.Where(x => x.AuthorKingdomId == author && x.Kind == "generate").ToList()) o.RemoveJob(j.JobId); }
     internal static void Run()
     {
+        SilenceLoad();
+        WarEndingReconciliation();
         PlayerThreatReplyRepair();
         WithdrawnThreatAuthor(false); WithdrawnThreatAuthor(true);
         Dependencies(); ExecutionRecovery(); ExecutionRecovery(true); RecoveryGuards();
@@ -281,13 +285,12 @@ internal static partial class EventConvergenceReplay
         Test.True(externalOwner.CurrentStorage.Jobs.Count(x=>x.EndingRecoveryDocumentId==externalWar.DocumentId)==1
             && externalRound.EventConvergence.ExecutionRecoveryAttempts==1 && externalHost.Effects==0,
             "saved external-ultimatum dependency queues one audited repair without automatic war");
-        foreach(string kind in new[]{"uncertain","legacy","partial","player","valid_condition","limit","owner_changed"})
+        foreach(string kind in new[]{"uncertain","legacy","partial","valid_condition","limit","owner_changed"})
         {
             var(h,o,r)=Fixture();var d=HeldWar(o,r);
             if(kind=="uncertain")d.Actions[0].ExecutionState="uncertain";
             if(kind=="legacy")d.Actions[0].ExecutionState="";
             if(kind=="partial")d.Actions.Add(new(){Intent="cancel_trade",ChangedDiplomaticState=true});
-            if(kind=="player")d.IsPlayerAuthored=true;
             if(kind=="valid_condition")d.Actions[0].DependencyActionIds=new(){"failed-war#action_1"};
             if(kind=="limit")r.EventConvergence.ExecutionRecoveryAttempts=3;
             if(kind=="owner_changed")d.AuthorRulerId="former_ruler";

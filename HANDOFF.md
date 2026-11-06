@@ -1,3 +1,13 @@
+<a id="diplomacy-war-ending-reconcile-20261106"></a>
+## 2026-11-06 宣战失败挂起恢复修复
+
+按原宣战收据和当前战争状态解除对应执行阻塞：已交战不重宣、不把原失败记作成功；玩家确认未执行则保留失败并正常收尾，新的宣战仍由玩家决定。未知/部分执行和真实待履行义务保留。双语解释接入实际请求；专项 95 / 收尾回归 341 断言及双语门禁通过，旧代码对照失败；双 API/Bootstrap 构建通过。保留前条读档超时修复，未部署、打包、push 或实机。版本、源码范围与验证边界见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-war-ending-reconcile-20261106)，既有模块职责见[代码范围图](docs/architecture/af-framework-code-scope.md)。
+
+<a id="diplomacy-silence-load-20261106"></a>
+## 2026-11-06 外交读档超时队列恢复修复
+
+已修复 Loaded/Session 恢复等待队列后再次清空的问题，并从真实通知时间补回旧记录缺失的计时；保留原有期限、暂停与去重规则。离线专项 66 / 外交收尾回归 247 断言通过，旧代码对照复现失败；1.3/1.4/Bootstrap 和原构建检查通过。未部署、打包、push 或实机验证。源码范围、产物哈希与未验边界见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-silence-load-20261106)，既有模块职责仍见[代码范围图](docs/architecture/af-framework-code-scope.md)；没有扩展到其他外交问题。
+
 ## 2026-11-05 连续坐姿、烤架食物与发言卡顿修复部署完成
 
 用户授权后，游戏/启动器退出且三DLL解除占用。按未改动的一键脚本构建部署2939fba1f3（含产品6079ac7ac2与信使c6107d5eaa）：双API各407警告0错误、Bootstrap0/0，双seam/注册smoke通过，更新9受管文件。3DLL+3marker+模块声明+2布局回读hash一致，Bootstrap-only，替换临时文件无残留。保留玩家数据策略，无Recovery自动备份。此条取代下方相关未部署状态；未实机、打包或push，姿态/烤肉位置/发言帧耗时/信使要人排除实机仍待验。证据work/camp-pose-roast-deploy-20261105/；详细版本、边界和回滚见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#camp-pose-roast-speech-deploy-20261105)。
