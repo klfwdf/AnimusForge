@@ -482,6 +482,8 @@ internal sealed partial class WorldDiplomacyOrchestration
             ordinary_round_limit = DiplomacyConvergenceRules.OrdinaryRoundLimit,
             unexpressed_core_kingdoms = round.Participants.Where(x => HasUnexpressedEndingAgenda(round, x.KingdomId)).Select(x => x.KingdomId),
             convergence = round.EventConvergence,
+            result_explanation = string.IsNullOrEmpty(round.EventConvergence?.Result) ? ""
+                : DiplomacyPromptTexts.Get("EndingResult_" + round.EventConvergence.Result, round.EventConvergence.Result),
             existing_threats = Storage.DiplomaticThreats.Where(x => x.StageRoundId == round.RoundId)
                 .Select(x => new { x.Stage, x.Status, x.StageDocumentId, x.TargetDecision, x.TargetDecisionDocumentId, x.ResolutionDocumentId }) });
 

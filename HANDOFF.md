@@ -1,3 +1,8 @@
+<a id="diplomacy-war-ending-reconcile-20261106"></a>
+## 2026-11-06 宣战失败挂起恢复修复
+
+按原宣战收据和当前战争状态解除对应执行阻塞：已交战不重宣、不把原失败记作成功；玩家确认未执行则保留失败并正常收尾，新的宣战仍由玩家决定。未知/部分执行和真实待履行义务保留。双语解释接入实际请求；专项 95 / 收尾回归 341 断言及双语门禁通过，旧代码对照失败；双 API/Bootstrap 构建通过。保留前条读档超时修复，未部署、打包、push 或实机。版本、源码范围与验证边界见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-war-ending-reconcile-20261106)，既有模块职责见[代码范围图](docs/architecture/af-framework-code-scope.md)。
+
 <a id="diplomacy-silence-load-20261106"></a>
 ## 2026-11-06 外交读档超时队列恢复修复
 

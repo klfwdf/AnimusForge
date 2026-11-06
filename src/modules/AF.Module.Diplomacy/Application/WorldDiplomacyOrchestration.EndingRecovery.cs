@@ -62,10 +62,17 @@ internal sealed partial class WorldDiplomacyOrchestration
         const string warPrefix = "war_execution_failed:";
         if (!state.TechnicalFailure.StartsWith(warPrefix, StringComparison.Ordinal)) return;
         var original = ResolveDocument(state.TechnicalFailure.Substring(warPrefix.Length));
-        if (original?.RoundId != round.RoundId) return;
-        if (original.Actions?.Count == 1 && original.Actions[0].Intent == "declare_war"
+        if (original?.RoundId != round.RoundId || !original.IsReadyForPublication
+            || original.AnalysisStatus == "pending_analysis") return;
+        if (original.Actions?.Count == 1 && original.Actions[0]?.Intent == "declare_war"
+            && !string.IsNullOrEmpty(original.TargetKingdomId) && original.Actions[0].TargetKingdomId == original.TargetKingdomId
             && original.Actions[0].ChangedDiplomaticState && original.Actions[0].ExecutionState == "applied")
-        { ClearEndingExecutionHold(round); state.ActualWar = true; BeginEventEnding(round, "war_executed"); return; }
+        { ReconcileEndingWarReceipt(round, original, "war_executed"); return; }
+        if (!HasKnownUnexecutedEndingWar(original)) return;
+        if (_host.PartiesAtWar(original.AuthorKingdomId, original.TargetKingdomId))
+        { ReconcileEndingWarReceipt(round, original, "war_already_active"); return; }
+        if (original.IsPlayerAuthored || _host.IsPlayerParty(original.AuthorKingdomId))
+        { ReconcileEndingWarReceipt(round, original, "player_war_not_executed"); return; }
         if (!CanRecoverEndingWar(original) || state.ExecutionRecoveryAttempts >= 3
             || Storage.Jobs.Any(x => x.RoundId == round.RoundId && x.EndingRecoveryDocumentId == original.DocumentId)) return;
         if (!_host.HasIndependentAuthority(original.AuthorKingdomId) || !_host.HasIndependentAuthority(original.TargetKingdomId)
@@ -92,16 +99,40 @@ internal sealed partial class WorldDiplomacyOrchestration
             + " attempt=" + state.ExecutionRecoveryAttempts);
     }
 
-    private bool CanRecoverEndingWar(WorldDiplomacyDocument original)
+    private void ReconcileEndingWarReceipt(WorldDiplomacyRound round, WorldDiplomacyDocument original, string result)
     {
-        if (original?.IsReadyForPublication != true || original.IsPlayerAuthored || original.EventExecutionPending
-            || original.ChangedDiplomaticState || original.Actions?.Count != 1
+        // Retire only retries of this receipt; late transport results must not
+        // execute a second declaration after world/receipt reconciliation.
+        foreach (var job in Storage.Jobs.Where(x => x.RoundId == round.RoundId
+            && x.EndingRecoveryDocumentId == original.DocumentId).ToList()) RemoveJob(job.JobId);
+        ClearEndingExecutionHold(round);
+        if (result == "war_executed") round.EventConvergence.ActualWar = true;
+        BeginEventEnding(round, result);
+        _host.Log("diplomacy.ending_war_reconciled event=" + round.RoundId + " source=" + original.DocumentId + " result=" + result);
+    }
+
+    private bool CanRecoverEndingWar(WorldDiplomacyDocument original)
+        => original?.IsPlayerAuthored == false && HasKnownUnexecutedEndingWar(original);
+
+    private bool HasKnownUnexecutedEndingWar(WorldDiplomacyDocument original)
+    {
+        if (original?.IsReadyForPublication != true || original.EventExecutionPending
+            || original.ChangedDiplomaticState || string.IsNullOrEmpty(original.AuthorKingdomId)
+            || string.IsNullOrEmpty(original.TargetKingdomId) || original.AuthorKingdomId == original.TargetKingdomId
             || !string.IsNullOrEmpty(original.DialogueArrangementId)) return false;
+        // A rejected player analysis can predate structured action receipts.
+        // Preserve that explicit rejection; absence of an action alone proves nothing.
+        bool rejectedPlayer = original.IsPlayerAuthored && original.AnalysisStatus == "published_action_rejected";
+        if (original.Actions == null || original.Actions.Count == 0)
+            return rejectedPlayer && original.Intent == "declare_war" && original.Commitment == "binding"
+                && original.PeaceTerms == null && original.TreatyTerms == null;
+        if (original.Actions.Count != 1) return false;
         var action = original.Actions[0];
         if (action == null || action.Intent != "declare_war" || action.Commitment != "binding"
             || action.ChangedDiplomaticState || action.TargetKingdomId != original.TargetKingdomId
             || action.PeaceTerms != null || action.TreatyTerms != null) return false;
-        if (action.ExecutionState is "not_attempted" or "not_applied")
+        if (action.ExecutionState is "not_attempted" or "not_applied"
+            || rejectedPlayer && string.IsNullOrEmpty(action.ExecutionState))
             return action.DependencyActionIds == null || action.DependencyActionIds.Count == 0;
         // Old releases persisted this explicit non-execution receipt. Valid
         // conditional bargains remain deferred; only malformed graphs qualify.

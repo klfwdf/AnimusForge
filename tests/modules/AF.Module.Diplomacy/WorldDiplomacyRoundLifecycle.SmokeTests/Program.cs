@@ -147,6 +147,8 @@ internal static class Program
         { try { CountryAdmissionReplay.Run(); Console.WriteLine("PASS country admission assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--event-convergence"))
         { try { EventConvergenceReplay.Run(); Console.WriteLine("PASS convergence assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
+        if (args.Contains("--war-ending-reconciliation"))
+        { try { EventConvergenceReplay.WarEndingReconciliation(); Console.WriteLine("PASS war ending reconciliation assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if (args.Contains("--silence-load"))
         { try { EventConvergenceReplay.SilenceLoad(); WorldProfileReplay.Run(); PersistenceSyncReplay.Run(); Console.WriteLine("PASS silence load assertions=" + Test.Assertions); return 0; } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; } }
         if(args.Contains("--player-opening-model"))

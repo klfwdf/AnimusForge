@@ -1,3 +1,27 @@
+<a id="diplomacy-war-ending-reconcile-20261106"></a>
+## 2026-11-06 宣战执行失败后的外交事件挂起修复
+
+LOCAL_VERIFIED / DUAL_BUILD_PASS / LIVE_NOT_RUN / NOT_DEPLOYED / NOT_PUSHED。用户确认按已说明方案修复“无辞檄战”所涉及的执行失败挂起。当前工作区 E:/Mount-Blade-Bannerlord-AnimusForge-mod-main，main；基线为已交付读档超时队列修复 7fd0e9e154994e88b333652bbc1e369d640d3a84，本地修改检查点 afa86ddd34a28c116d4d359bdfa17b0e632c61c6。本条与修复同提交；延续前条读档修复，不取代其结论。其余用户未提交文档和资料保留，仅提交本条新增记录。
+
+问题与修复：原恢复分支排除玩家公文，且已交战时只返回，导致已确认失败的宣战继续阻塞收尾。现在按原公文绑定的执行记录分类：原单项宣战存在明确 applied/ChangedDiplomaticState 收据才认作成功；确认原动作未执行而双方已交战，只解除该执行阻塞，保留失败记录、不归因原公文、不重复宣战或结算；确认未执行且仍和平的玩家公文也解除该阻塞，继续真实剩余义务后正常结束，重新宣战由玩家另行决定。已明确拒绝但缺少结构化动作的旧玩家公文，只在原意图/承诺/对象可确认时兼容。结果不明、部分生效、真实条件未满足、待执行、未发布及其他 owner 的挂起仍保留。既有 NPC 有界技术修正流程保持。
+
+终止的只是同事件、同原公文的恢复任务；旧回包受现有身份/会话版本与租约规则保护。原公文正文、动作及失败原因不改写；不自动扣费、不补结声望、不重新抽取外交路线。正常收尾仍经过未完成义务检查、结束文书与审核。新增两条结果解释通过原 DiplomacyPromptTexts 语言 reader 接入 BuildEndingContext 和既有 EventOutcomeReason/结束文书请求；中英文同交付，不新增包或语言选择逻辑。
+
+性能/持久化：沿用既有事件队列和 30 秒恢复检查间隔；同公文任务筛选只在解除挂起这一状态转换发生，不新增 Tick 全量扫描、反射、磁盘 IO 或后台世界查询。复用既有 Result 字符串和持久恢复退避，不新增存档字段、分块键、版本或序列化路径，不操作玩家 .sav。
+
+| 当前源码证据（本条同提交） | owner / 实际消费与覆盖 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.EndingRecovery.cs:28-143` | `TryRecoverEndingExecution` / `ReconcileEndingWarReceipt` / `HasKnownUnexecutedEndingWar`，按真实收据分流、仅解除本次执行挂起、退役对应恢复任务；`CanRecoverEndingWar` 保留 NPC 修正边界 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Convergence.cs:437-445,480-490` | 既有 `FinishEventEnding` 消费结果原因；`BuildEndingContext` 新增实际语言解释，进入真实宣告请求 |
+| `content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json:17-18` 及同目录 `DiplomacyPromptTexts.en.json:17-18` | 两个稳定 key 的 CN/EN 同义资源；复用已登记的内容映射/嵌入 reader，保留未执行事实和玩家决策权 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/WarEndingReconciliationReplay.cs:7-112` | 实际编排源码回放，双语请求、失败收据、JSON 往返/Loaded/Session、结束审核发布、危险收据保留与旧回包排除；世界/传输为受控测试叶端口 |
+
+验证：隔离 runner 的 `--war-ending-reconciliation` PASS（95 断言）；`--event-convergence` PASS（341 断言，含本次专项、上一条读档恢复和既有 NPC 修正）。替换为检查点的两个生产文件后，同一专项在首个 player_at_war 场景失败，复现已交战仍卡住。覆盖玩家/NPC 已交战、玩家仍和平、旧拒绝状态、原执行成功、10 类不可自动解除记录以及已在途 NPC 恢复请求的迟到回包；正常旧拒绝案例走完结束审核/发布并读档。回放为构造输入，不是该玩家完整存档或真实模型验收。`python tools/localization/l10n_gate.py` PASS：26 对表、0 缺失/错误，2109 运行源码文件、0 未投影汉字字面量。
+
+构建：沿用未修改的 `scripts/build/build_single_module.ps1`，Debug，现有游戏 1.3 引用及 `.tmp/build_check/1.4`，不带 Stage/Deploy。退出码 0；1.3.15.110062 / 1.4.6.115628 两实现各 411 警告、0 错误，Bootstrap 2 警告、0 错误；双 Coup seam / memory port（各 20 断言）/ registration smoke 通过。警告数与前条构建一致，含 NuGet 漏洞索引不可达。产物在 `bin/Debug/single_module_artifacts/`，SHA256：1.3 `574954b918c53e214530e3aaa230aefc1d837b5b4cf56b7ccde474ada8e7e206`；1.4 `bf49f3e988ca03bda4a7eac45a177a6b7023c9c268ce3e8ef9741371fc02915d`；Bootstrap `fd5daeb5d054791a91c39f07d65d8ec6fce40d189d153b86dfc10fae7b8e6660`。
+
+范围限制：没有部署、打包、push、启动游戏、调用真实模型或实测该玩家 .sav，也未修改 12000 token 截断问题或其他外交机制。不能将离线回放、双编译当作该玩家实机已恢复。临时 runner、对照源码与日志在交付前清理，正式构建产物保留。回滚使用本任务提交的定向逆提交，不回退前条读档修复或用户其他改动。
+
 <a id="diplomacy-silence-load-20261106"></a>
 ## 2026-11-06 外交读档超时队列恢复修复
 

@@ -77,6 +77,7 @@ internal static partial class EventConvergenceReplay
     internal static void Run()
     {
         SilenceLoad();
+        WarEndingReconciliation();
         PlayerThreatReplyRepair();
         WithdrawnThreatAuthor(false); WithdrawnThreatAuthor(true);
         Dependencies(); ExecutionRecovery(); ExecutionRecovery(true); RecoveryGuards();
@@ -284,13 +285,12 @@ internal static partial class EventConvergenceReplay
         Test.True(externalOwner.CurrentStorage.Jobs.Count(x=>x.EndingRecoveryDocumentId==externalWar.DocumentId)==1
             && externalRound.EventConvergence.ExecutionRecoveryAttempts==1 && externalHost.Effects==0,
             "saved external-ultimatum dependency queues one audited repair without automatic war");
-        foreach(string kind in new[]{"uncertain","legacy","partial","player","valid_condition","limit","owner_changed"})
+        foreach(string kind in new[]{"uncertain","legacy","partial","valid_condition","limit","owner_changed"})
         {
             var(h,o,r)=Fixture();var d=HeldWar(o,r);
             if(kind=="uncertain")d.Actions[0].ExecutionState="uncertain";
             if(kind=="legacy")d.Actions[0].ExecutionState="";
             if(kind=="partial")d.Actions.Add(new(){Intent="cancel_trade",ChangedDiplomaticState=true});
-            if(kind=="player")d.IsPlayerAuthored=true;
             if(kind=="valid_condition")d.Actions[0].DependencyActionIds=new(){"failed-war#action_1"};
             if(kind=="limit")r.EventConvergence.ExecutionRecoveryAttempts=3;
             if(kind=="owner_changed")d.AuthorRulerId="former_ruler";
